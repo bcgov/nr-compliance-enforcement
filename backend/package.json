@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bcgov/nr-quickstart-typescript.git"
+    "url": "git+https://github.com/bcgov/nr-compliance-enforcement.git"
   },
   "keywords": [
     "openshift",
@@ -36,9 +36,9 @@
   "author": "Derek Roberts",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/bcgov/nr-quickstart-typescript/issues"
+    "url": "https://github.com/bcgov/nr-compliance-enforcement/issues"
   },
-  "homepage": "https://github.com/bcgov/nr-quickstart-typescript#readme",
+  "homepage": "https://github.com/bcgov/nr-compliance-enforcement#readme",
   "dependencies": {
     "@nestjs/cli": "^9.3.0",
     "@nestjs/common": "^9.2.1",

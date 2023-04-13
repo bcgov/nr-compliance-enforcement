@@ -9,9 +9,11 @@
 [![MIT License](https://img.shields.io/github/license/bcgov/nr-quickstart-typescript.svg)](/LICENSE.md)
 [![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
-# QuickStart: OpenShift, TypeScript and Postgres/PostGIS
+# Compliance and Enforcement: OpenShift, TypeScript and Postgres/PostGIS
 
-The DevOps Quickstart is a fully functional set of pipeline workflows and a starter application stack intended to help Agile DevOps teams hit the ground running.  Currently OpenShift is supported with plans for AWS (Amazon Web Services).  Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-quickstart-typescript/actions).
+Manages public complaints as well as investigative case files for multiple Compliance and Enforcement divisions across the natural resource sector.
+
+Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-quickstart-typescript/actions).
 
 Features:
 * Pull Request-based pipeline
@@ -108,17 +110,6 @@ The following are required:
 * Project namespaces:
     * OpenShift - [Register a New Project](https://registry.developer.gov.bc.ca/public-landing)
 
-
-
-## GitHub Repository from Template
-
-Create a new repository using this repository as a template.
-
-* Select bcgov/nr-quickstart-typescript under Repository template
-* Check Codecov | Code Coverage to grant access
-* Jira cannot be unchecked (I try every time!)
-
-![](./common/graphics/template.png)
 
 
 ## GitHub Secrets, Variables and Environments

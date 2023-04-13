@@ -45,7 +45,7 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "chown -R root . && npm ci && npm run dev"
+      - "chown -R root . && npm ci && npm run start"
     environment:
       NODE_ENV: development
       BACKEND_URL: backend
