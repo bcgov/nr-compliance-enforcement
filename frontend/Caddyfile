@@ -20,10 +20,6 @@ redir @www_host http://{$HOST_ROUTE}{path}
 handle @unspecified_path {
         try_files {path} {path}/ /?_url={uri}
 }
-handle /env-config.js {
-        header Content-Type text/javascript
-        respond `window.config = {"VITE_KC_URL": "{$VITE_KC_URL}", "VITE_KC_REALM": "{$VITE_KC_REALM}", "VITE_KC_CLIENT_ID": "{$VITE_KC_CLIENT_ID}"};`
-}
 
 encode {
         gzip 7
