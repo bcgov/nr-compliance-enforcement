@@ -12,7 +12,6 @@
     "@types/react": "^18.0.6",
     "@types/react-dom": "^18.0.2",
     "@typescript-eslint/parser": "5.56.0",
-    "@vitejs/plugin-react": "^3.1.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "jsdom": "^21.0.0",
     "keycloak-js": "^21.0.0",
@@ -25,8 +24,6 @@
     "react-scripts": "^5.0.1",
     "react-test-renderer": "^18.2.0",
     "typescript": "*",
-    "vite": "^4.2.1",
-    "vitest": "^0.30.1",
     "web-vitals": "^3.0.0"
   },
   "repository": {
@@ -48,11 +45,11 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint",
-    "start": "vite",
-    "build": "tsc && vite build",
-    "test:cov": "vitest",
-    "coverage": "vitest run --coverage",
-    "preview": "vite preview"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "test:cov": "react-scripts test --coverage",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
