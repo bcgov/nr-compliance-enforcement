@@ -1,14 +1,21 @@
 describe('template spec', () => {
   it('passes', () => {
-    cy.visit('https://example.cypress.io')
+    cy.visit('http://localhost:3000/')
 
-    cy.contains('type').click()
+    cy.contains('Add Amount').click()
 
-    cy.url().should('include', '/commands/actions')
+    cy.get('#counter').should('contain', '2')
 
     /* ==== Generated with Cypress Studio ==== */
-    cy.get('#email1').clear('f');
-    cy.get('#email1').type('fake@email.com');
+    cy.get('.Counter_asyncButton__hwwx\\+').click();
     /* ==== End Cypress Studio ==== */
+
+    cy.get('#counter').should('contain', '4')
+
+    /* ==== Generated with Cypress Studio ==== */
+    cy.get(':nth-child(2) > :nth-child(4)').click();
+    /* ==== End Cypress Studio ==== */
+
+    cy.get('#counter').should('contain', '4')
   })
 })
