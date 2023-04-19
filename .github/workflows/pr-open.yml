@@ -95,3 +95,25 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             ${{ matrix.parameters }}
+  cypress-tests:
+    needs: deploys
+    env:
+        DOMAIN: apps.silver.devops.gov.bc.ca
+        PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitCode
+        uses: actions/checkout@v3
+  
+      - name: Run Cypress Test
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: ./frontend
+          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+          
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+            name: cypress-videos
+            path: /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
