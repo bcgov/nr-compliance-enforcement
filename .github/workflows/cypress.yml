@@ -7,6 +7,9 @@ on:
   pull_request:
 jobs:
  Cypress-Test:
+   env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
    runs-on: ubuntu-latest
    steps:
      - name: Checkout GitCode
