@@ -1,5 +1,9 @@
 name: Cypress Cloud Tests
-on: [push]
+on:
+  workflow_run:
+      workflows: ["Pull Request"]
+      types:
+        - completed
 jobs:
  Cypress-Test:
    runs-on: ubuntu-latest
@@ -12,3 +16,4 @@ jobs:
        with:
          working-directory: ./frontend
          command: npx cypress run
+         config: baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
