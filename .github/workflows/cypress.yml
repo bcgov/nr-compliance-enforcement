@@ -1,4 +1,4 @@
-name: Cypress Cloud Tests
+name: Cypress Tests
 on:
 #  workflow_run:
 #      workflows: [Pull Request]
@@ -27,4 +27,4 @@ jobs:
        if: always()
        with:
           name: cypress-videos
-          path: cypress/videos
+          path: /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
