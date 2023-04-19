@@ -1,14 +1,9 @@
 name: End-to-end tests
 on:
-  pull_request:
+  workflow_run:
+    workflows: [Pull Request]
     types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
-  push:
-    branches:
-      - main
+      - completed
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
