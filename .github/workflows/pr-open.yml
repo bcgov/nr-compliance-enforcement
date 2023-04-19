@@ -96,6 +96,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             ${{ matrix.parameters }}
   cypress-tests:
+    needs: deploys
     env:
         DOMAIN: apps.silver.devops.gov.bc.ca
         PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
