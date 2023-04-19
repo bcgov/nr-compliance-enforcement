@@ -1,9 +1,10 @@
 name: Cypress Cloud Tests
 on:
-  workflow_run:
-      workflows: [Pull Request]
-      types:
-        - completed
+#  workflow_run:
+#      workflows: [Pull Request]
+#      types:
+#        - completed
+  pull_request:
 jobs:
  Cypress-Test:
    runs-on: ubuntu-latest
