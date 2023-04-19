@@ -25,6 +25,7 @@ Features:
 * Enforced code reviews and pipeline checks
 * Templates and setup documentation
 * Starter TypeScript application stack
+* Cypress e2e github action
 
 # Workflows
 
@@ -37,6 +38,7 @@ Runs on pull request submission.
 - Build triggers select new builds vs reusing builds
 - Deployment includes curl checks and optional penetration tests
 - Other checks and updates as required
+- Cypress e2e test
 
 ![](common/graphics/pr-open.png)
 
