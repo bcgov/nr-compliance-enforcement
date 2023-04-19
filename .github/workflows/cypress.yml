@@ -20,7 +20,7 @@ jobs:
        with:
          config: baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
          working-directory: ./frontend
-         command: npx cypress run
+         start: npx cypress run
         
      - name: Upload Artifacts
        uses: actions/upload-artifact@v2
