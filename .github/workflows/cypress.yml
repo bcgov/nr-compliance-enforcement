@@ -10,4 +10,5 @@ jobs:
      - name: Run Cypress Test
        uses: cypress-io/github-action@v5
        with:
+         working-directory: ./frontend
          command: npx cypress run
