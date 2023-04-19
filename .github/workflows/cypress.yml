@@ -1,7 +1,7 @@
 name: Cypress Cloud Tests
 on:
   workflow_run:
-      workflows: ["Pull Request"]
+      workflows: [Pull Request]
       types:
         - completed
 jobs:
