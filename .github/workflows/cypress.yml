@@ -5,7 +5,7 @@ jobs:
    runs-on: ubuntu-latest
    steps:
      - name: Checkout GitCode
-       uses: actions/checkout@v3npm 
+       uses: actions/checkout@v3
  
      - name: Run Cypress Test
        uses: cypress-io/github-action@v5
