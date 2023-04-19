@@ -1,0 +1,13 @@
+name: Cypress Cloud Tests
+on: [push]
+jobs:
+ Cypress-Test:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout GitCode
+       uses: actions/checkout@v3npm 
+ 
+     - name: Run Cypress Test
+       uses: cypress-io/github-action@v5
+       with:
+         command: npx cypress run

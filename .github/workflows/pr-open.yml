@@ -8,10 +8,6 @@ concurrency:
   group: pr-${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
-env:
-  REGISTRY: ghcr.io
-  NAME: nr-compliance-enforcement/frontend
-
 jobs:
   pr-greeting:
     name: PR Greeting
@@ -99,33 +95,3 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             ${{ matrix.parameters }}
-  e2e-smoke:
-    name: E2E Smoke on Chrome
-    needs: 
-      - deploys
-    continue-on-error: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v5.0.9
-        with:
-          install: false
-          working-directory: frontend
-          config: baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
-
-      - name: Upload screenshots on failure
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-
-      - name: Upload videos
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cypress-videos
-          path: cypress/videos
