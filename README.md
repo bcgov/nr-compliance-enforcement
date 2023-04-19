@@ -205,7 +205,7 @@ Pull Requests:
 
 Packages are available from your repository (link on right).  All should have visibility set to public for the workflows to run successfully.
 
-E.g. https://github.com/bcgov/nr-quickstart-typescript/packages
+https://github.com/orgs/bcgov/packages?repo_name=nr-compliance-enforcement
 
 ### Branch Protection
 
