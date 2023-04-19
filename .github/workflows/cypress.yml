@@ -18,9 +18,8 @@ jobs:
      - name: Run Cypress Test
        uses: cypress-io/github-action@v5
        with:
-         config: baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
          working-directory: ./frontend
-         start: npx cypress run
+         command: npx cypress run baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
         
      - name: Upload Artifacts
        uses: actions/upload-artifact@v2
