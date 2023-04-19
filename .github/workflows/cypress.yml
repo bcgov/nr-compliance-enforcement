@@ -19,7 +19,7 @@ jobs:
        uses: cypress-io/github-action@v5
        with:
          working-directory: ./frontend
-         command: npx cypress run baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+         command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
         
      - name: Upload Artifacts
        uses: actions/upload-artifact@v2
