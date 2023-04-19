@@ -8,6 +8,10 @@ concurrency:
   group: pr-${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  NAME: nr-compliance-enforcement/frontend
+
 jobs:
   pr-greeting:
     name: PR Greeting
@@ -106,10 +110,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cypress run
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5.0.9
         with:
-          browser: chrome
-          config: baseUrl=https://${{ env.NAME }}-${{ github.event.number }}-app.apps.silver.devops.gov.bc.ca
+          install: false
+          working-directory: frontend
+          config: baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
 
       - name: Upload screenshots on failure
         uses: actions/upload-artifact@v3
