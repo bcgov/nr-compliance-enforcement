@@ -25,6 +25,7 @@ Features:
 * Enforced code reviews and pipeline checks
 * Templates and setup documentation
 * Starter TypeScript application stack
+* Cypress e2e github action
 
 # Workflows
 
@@ -37,6 +38,7 @@ Runs on pull request submission.
 - Build triggers select new builds vs reusing builds
 - Deployment includes curl checks and optional penetration tests
 - Other checks and updates as required
+- Cypress e2e test
 
 ![](common/graphics/pr-open.png)
 
@@ -205,7 +207,7 @@ Pull Requests:
 
 Packages are available from your repository (link on right).  All should have visibility set to public for the workflows to run successfully.
 
-E.g. https://github.com/bcgov/nr-quickstart-typescript/packages
+https://github.com/orgs/bcgov/packages?repo_name=nr-compliance-enforcement
 
 ### Branch Protection
 
