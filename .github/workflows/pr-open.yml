@@ -96,7 +96,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             ${{ matrix.parameters }}
   cypress-tests:
-    needs: deploys
+    #needs: deploys
     env:
         DOMAIN: apps.silver.devops.gov.bc.ca
         PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
@@ -112,8 +112,10 @@ jobs:
           command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
           
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
-            name: cypress-videos
-            path: /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
+            name: cypress-artifacts
+            path: |-
+                  /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
+                  /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
