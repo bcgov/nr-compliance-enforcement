@@ -13,6 +13,8 @@ services:
     hostname: database
     restart: always
     user: postgres
+    ports:
+      - "5433:5432"
     volumes:
       - /pgdata
 
