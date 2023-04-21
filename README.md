@@ -1,11 +1,11 @@
 <!-- Project Shields -->
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_nr-quickstart-typescript&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_nr-quickstart-typescript)
-[![Merge to Main](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/merge-main.yml)
-[![Unit Tests and Analysis](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/unit-tests.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_nr-compliance-enforcement&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_nr-compliance-enforcement)
+[![Merge to Main](https://github.com/bcgov/nr-compliance-enforcement/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/nr-compliance-enforcement/actions/workflows/merge-main.yml)
+[![Unit Tests and Analysis](https://github.com/bcgov/nr-compliance-enforcement/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/nr-compliance-enforcement/actions/workflows/unit-tests.yml)
 
-[![Issues](https://img.shields.io/github/issues/bcgov/nr-quickstart-typescript)](/../../issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/nr-quickstart-typescript)](/../../pulls)
+[![Issues](https://img.shields.io/github/issues/bcgov/nr-compliance-enforcement)](/../../issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/nr-compliance-enforcement)](/../../pulls)
 [![MIT License](https://img.shields.io/github/license/bcgov/nr-quickstart-typescript.svg)](/LICENSE.md)
 [![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
@@ -13,7 +13,7 @@
 
 Manages public complaints as well as investigative case files for multiple Compliance and Enforcement divisions across the natural resource sector.
 
-Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-quickstart-typescript/actions).
+Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-compliance-enforcement/actions).
 
 Features:
 * Pull Request-based pipeline
