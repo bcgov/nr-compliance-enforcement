@@ -44,6 +44,7 @@
     "@nestjs/common": "^9.2.1",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.2.1",
+    "@nestjs/jwt": "^10.0.3",
     "@nestjs/platform-express": "^9.2.1",
     "@nestjs/schematics": "^9.0.4",
     "@nestjs/swagger": "^6.1.4",
