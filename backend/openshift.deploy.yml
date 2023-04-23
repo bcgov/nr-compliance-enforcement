@@ -108,17 +108,17 @@ objects:
                 - name: KEYCLOCK_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: KEYCLOCK_CLIENT_ID
+                      name: keycloak-client-id
                       key: ceds-backend-oicd
                 - name: JWKS_URI
                   valueFrom:
                     secretKeyRef:
-                      name: JWKS_URI
+                      name: jwks-uri
                       key: ceds-backend-oicd
                 - name: JWT_ISSUER
                   valueFrom:
                     secretKeyRef:
-                      name: JWT_ISSUER
+                      name: jwt-issuer
                       key: ceds-backend-oicd
               ports:
                 - containerPort: 3000
