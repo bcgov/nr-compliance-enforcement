@@ -105,6 +105,21 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-database
                       key: database-user
+                - name: KEYCLOCK_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: KEYCLOCK_CLIENT_ID
+                      key: ceds-backend-oicd
+                - name: JWKS_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: JWKS_URI
+                      key: ceds-backend-oicd
+                - name: JWT_ISSUER
+                  valueFrom:
+                    secretKeyRef:
+                      name: JWT_ISSUER
+                      key: ceds-backend-oicd
               ports:
                 - containerPort: 3000
                   protocol: TCP
