@@ -176,14 +176,14 @@ BC Government employees can request SonarCloud projects from [bcdevops/devops-re
 
 OpenShift server address.
 * Consume: `{{ vars.OC_SERVER }}`
-* Value: `https://api.gold.devops.gov.bc.ca:6443` or `https://api.silver.devops.gov.bc.ca:6443`
+* Value: `https://api.silver.devops.gov.bc.ca:6443`
 
 **OC_NAMESPACE**
 
 OpenShift project/namespace.  Provided by your OpenShift platform team.
 
 * Consume: `{{ vars.OC_NAMESPACE }}`
-* Value: format `abc123-dev | test | prod`
+* Value: format `c1c7ed-dev | test | prod`
 
 ## Repository Configuration
 
@@ -227,17 +227,6 @@ This is required to prevent direct pushes and merges to the default branch.  The
             * Select checks as appropriate, e.g. Build x, Deploy y
     * `[check] Require conversation resolution before merging`
     * `[check] Include administrators` (optional)
-
-### Adding Team Members
-
-Don't forget to add your team members!  
-
-1. Select Settings (gear, top right) -> Collaborators and teams (under Access)
-2. Click `Add people` or `Add teams`
-3. Use the search box to find people or teams
-4. Choose a role (read, triage, write, maintain, admin)
-5. Click Add
-
 
 # Natural Resources Kickstarter
 
