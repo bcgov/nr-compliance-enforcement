@@ -115,5 +115,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-            name: cypress-videos
-            path: /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
+            name: cypress-artifacts
+            path: |-
+                  /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
+                  /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
