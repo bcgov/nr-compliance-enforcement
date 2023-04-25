@@ -27,7 +27,38 @@ Features:
 * Starter TypeScript application stack
 * Cypress e2e github action
 
+# Environments
+
+The workflows are triggered via github actions, and allow the migration of the application through the dev, test, and production Openshift environments.  The term "dev" is a Ministry Openshift naming standard, and can be thought of as a "delivery" environment.
+
+## Dev Environment
+The Openshift dev environment is the environment in which the application is prepared and packaged for deployment. It is a staging environment where the latest code changes are integrated, compiled, and tested in Openshift to ensure that they are ready for deployment to the upper tier environmts (test and prod).  Several automated tests are performed here, which will help the code reviewer to verify that the application is behaving as expected, eliminating the need for the code reviewer to setup the application in their own environment.
+
+## Test environment:
+The test environment is where the software is tested thoroughly before deployment to production. It is designed to replicate the production environment as closely as possible and is used to run various types of tests such as unit tests, integration tests, performance tests, and acceptance tests. This environment helps ensure that the software meets the required quality standards and that it is stable and reliable.
+
+## Production environment:
+The production environment is the live environment where the software is deployed and used by end-users. It is the final destination for the software and is where it will be accessed and used by customers. The production environment must be carefully managed and maintained to ensure the software remains available, stable, and secure.
+
+In summary, the delivery environment is where software is prepared for deployment, the test environment is where software is tested to ensure it is reliable, and the production environment is where the software is deployed and used by end-users.
+
 # Workflows
+
+As described below, an initial pull request will deploy the application to a sandboxed deployment environment in Openshift's dev namespace.  There can be multiple instances of the application running in this environment, each related to different pull requests.  Refering to the github actions page (https://github.com/bcgov/nr-compliance-enforcement/actions), developers can review the automated actions that are triggered by a pull request.  Multiple commits to the same pull request will trigger multiple workflow runs, each using the same sandboxed deployment environment dedicated to the individual pull request (where each pull request has its own sandboxed environment).  To view the URL for the sandboxed environment:
+
+1. Go to the github actions page (https://github.com/bcgov/nr-compliance-enforcement/actions).  You will see a list of previous workflow runs named by the branch name associated with your pull request.  Click on the workflow run associated with your pull request (different workflows are associated with different actions, in this case you want the workflow associated with a pull request as pointed to by the blue arrow below).
+
+![](common/graphics/workflow-list.png)
+
+2. Click the "PR Greeting" job to see your endpoints associated with your pull request.
+
+![](common/graphics/dev-endpoints-on-pr.png)
+
+Github protection rules have been setup to require an approval before a pull request is merged into main.  Developers cannot approve their own pull request.
+
+Approving the pull request will trigger a migration request to TEST.  To complete the migration, an approved member of the team will need to review and approve the deployment.
+
+Similarly, once deployed to test, there is an option to approve the migration to production.
 
 ## Pull Request Opened
 
@@ -58,8 +89,11 @@ Runs on merge to main branch.
 - Code scanning and reporting to GitHub Security overview
 - Zero-downtime* TEST deployment
 - Penetration tests on TEST deployment
-- Zero-downtime* PROD deployment
+- Zero-downtime* PROD deployment.
 - Labels successful deployment images as PROD
+- Guarded migrations to test and production.  Each require a review
+
+![](common/graphics/production-review-guard.png) 
 
 \* excludes database changes
 
@@ -73,6 +107,13 @@ Runs on pull request submission or merge to main.
 - Optionally, report results to Sonarcloud
 
 ![](common/graphics/unit-tests.png)
+
+## Cypress Tests
+
+Automated user interaction tests are executed on pull requests.  The test is recorded as a video and can be downloaded by clicking the "cypress-videos" artifact (green arrow below).  Note that this is only available on the summary of the pull request workflow (red arrow below).
+
+![](common/graphics/cypress-artifacts.png)
+
 
 # Starter Application
 
