@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { UsersModule } from "./users/users.module";
+import { UsersModule } from "./v1/users/users.module";
 import { JwtAuthModule } from './auth/jwtauth.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);

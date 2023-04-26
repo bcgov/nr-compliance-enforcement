@@ -7,11 +7,15 @@
 [![Issues](https://img.shields.io/github/issues/bcgov/nr-compliance-enforcement)](/../../issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/nr-compliance-enforcement)](/../../pulls)
 [![MIT License](https://img.shields.io/github/license/bcgov/nr-quickstart-typescript.svg)](/LICENSE.md)
-[![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+[![Lifecycle](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 # Compliance and Enforcement: OpenShift, TypeScript and Postgres/PostGIS
 
 Manages public complaints as well as investigative case files for multiple Compliance and Enforcement divisions across the natural resource sector.
+
+Dev URLs:
+Test URL: https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
+Prod URL: tbd
 
 Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-compliance-enforcement/actions).
 

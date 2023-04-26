@@ -12,12 +12,17 @@ import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { JwtAuthGuard } from '../auth/jwtauth.guard';
+import { JwtAuthGuard } from '../../auth/jwtauth.guard';
+import { Roles } from "src/auth/decorators/roles.decorator";
+import { JwtRoleGuard } from "src/auth/jwtrole.guard";
+import { Role } from "src/enum/role.enum";
 
 
 @ApiTags("users")
-@Controller("users")
-@UseGuards(JwtAuthGuard)
+@Roles(Role.COS_OFFICER, Role.COS_ADMIN)
+@Controller({
+  path: 'users',
+  version: '1'})
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
