@@ -12,9 +12,9 @@ import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { JwtRoleGuard } from "src/auth/jwtrole.guard";
-import { Role } from "src/enum/role.enum";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { Role } from "../../enum/role.enum";
 
 
 @ApiTags("users")

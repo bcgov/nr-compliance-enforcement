@@ -12,7 +12,8 @@ import { ROLES_KEY } from './decorators/roles.decorator';
 
 @Injectable()
 /**
- * A route guard used to authorize controller methods.  This guard checks for othe @Roles decorator, and compares it against the role_names of the authenticated user's jwt.
+ * An API guard used to authorize controller methods.  This guard checks for othe @Roles decorator, and compares it against the role_names of the authenticated user's jwt.
+ * Requires the @JwtRoleGuard to be applied against the class, even if the @Role is used at the method levels
  */
 export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
 
@@ -22,6 +23,7 @@ export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
     super();
   } 
   
+  // returns false if the user does not have the required role indicated by the API's @Roles decorator
   canActivate(context: ExecutionContext): boolean {
 
     // get the roles associated with the request
@@ -39,12 +41,16 @@ export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
       throw new UnauthorizedException(
         'Cannot verify user authorization',
       );
+    } else {
+      this.logger.debug('User authorization verified');
     }
 
     // if there aren't any required roles, don't allow the user to access any api.  Unless the API is marked as public, at least one role is required.
     if (!requiredRoles) {
       this.logger.error(`Endpoint ${request.originalUrl} is not properly guarded.  Endpoint needs to either be marked as public, or at least one role is required.`)
       return false;
+    } else {
+      this.logger.error(`Endpoint ${request.originalUrl} is properly guarded.`)
     }
 
     // roles that the user has
