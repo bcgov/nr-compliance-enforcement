@@ -1,6 +1,5 @@
 import {
   ExecutionContext,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
   Logger,
@@ -21,8 +20,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+    
     if (isPublic) {
-      // 💡 See this condition
       return true;
     }
     return super.canActivate(context);
@@ -30,12 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user) {
       this.logger.error("JWT Is not Valid");
       throw err || new UnauthorizedException();
-    }
-    const roles: string[] = user.client_roles;
-    if (!roles.includes('COS_OFFICER')) {
-      this.logger.error("User is not in any role");
-      throw new ForbiddenException();
-    }
+    }   
     return user;
   }
 }

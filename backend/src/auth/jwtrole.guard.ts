@@ -1,7 +1,7 @@
 import {
   ExecutionContext,
-  ForbiddenException,
   Injectable,
+  CanActivate,
   UnauthorizedException,
   Logger,
 } from '@nestjs/common';
@@ -11,7 +11,10 @@ import { Role } from 'src/enum/role.enum';
 import { ROLES_KEY } from './decorators/roles.decorator';
 
 @Injectable()
-export class JwtRoleGuard extends AuthGuard('jwt') {
+/**
+ * A route guard used to authorize controller methods.  This guard checks for othe @Roles decorator, and compares it against the role_names of the authenticated user's jwt.
+ */
+export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
 
   private readonly logger = new Logger(JwtRoleGuard.name);
 
@@ -19,31 +22,34 @@ export class JwtRoleGuard extends AuthGuard('jwt') {
     super();
   } 
   
-  canActivate(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-
-    if (!user) {
-      throw new UnauthorizedException(
-        "Cannot verify user authorization",
-      );
-    }
+  canActivate(context: ExecutionContext): boolean {
 
     // get the roles associated with the request
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]);       
+    ]);      
 
-    // if there aren't any required roles, don't allow the user to access any api.  All users need at least one role
+    this.logger.debug(`Guarded Roles: ${requiredRoles}`);
+
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Cannot verify user authorization',
+      );
+    }
+
+    // if there aren't any required roles, don't allow the user to access any api.  Unless the API is marked as public, at least one role is required.
     if (!requiredRoles) {
+      this.logger.error(`Endpoint ${request.originalUrl} is not properly guarded.  Endpoint needs to either be marked as public, or at least one role is required.`)
       return false;
     }
 
     // roles that the user has
     const userRoles: string[] = user.client_roles;
 
-    this.logger.debug(`Guarded Roles: ${requiredRoles}`);
     this.logger.debug(`User Roles: ${userRoles}`);
 
     // does the user have a required role?
