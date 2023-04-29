@@ -1,9 +1,24 @@
 import { Counter } from './features/counter/Counter';
 import './App.css';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
+import React from 'react';
+import { Provider } from 'react-redux';
+import keycloak from './keycloak';
+import { store } from './store/store';
 
 function App() {
   return (
-    <Counter/>
+    <ReactKeycloakProvider authClient={keycloak}
+    initOptions={{ onLoad: 'login-required',
+                   'public-client': true,
+                   pkceMethod: 'S256' }}>
+      <React.StrictMode>
+        <Provider store={store}>
+          <Counter/>
+        </Provider>
+      </React.StrictMode>
+    </ReactKeycloakProvider>
+  
   );
 }
 
