@@ -5,6 +5,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import keycloak from './keycloak';
 import { store } from './store/store';
+import PrivateRoute from './routes/PrivateRoute';
+import Roles from './constants/roles';
 
 function App() {
   return (
@@ -14,7 +16,9 @@ function App() {
                    pkceMethod: 'S256' }}>
       <React.StrictMode>
         <Provider store={store}>
-          <Counter/>
+          <PrivateRoute role={Roles.COS_OFFICER}>
+            <Counter/>
+          </PrivateRoute>
         </Provider>
       </React.StrictMode>
     </ReactKeycloakProvider>
