@@ -1,16 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useState } from "react";
+import logo from "./logo.svg";
+import { Counter } from "./features/counter/Counter";
+import "./App.css";
 
-function App() {
+import Button from "react-bootstrap/Button";
+import Alert from "react-bootstrap/Alert";
+
+const App = () => {
+  const AlertDismissibleExample = () => {
+    const [show, setShow] = useState(false);
+
+    if (show) {
+      return (
+        <Alert variant="danger" onClose={() => setShow(false)} dismissible>
+          <Alert.Heading>
+            I am an alert of type <span className="dangerText">danger</span>!
+            But my color is Teal!
+          </Alert.Heading>
+          <p>
+            By the way the button you just clicked is an{" "}
+            <span className="infoText">Info</span> button but is using the color
+            Tomato. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Accusantium debitis deleniti distinctio impedit officia
+            reprehenderit suscipit voluptatibus. Earum, nam necessitatibus!
+          </p>
+        </Alert>
+      );
+    }
+    return (
+      <Button variant="info" onClick={() => setShow(true)}>
+        Show Custom Styled Alert
+      </Button>
+    );
+  };
+
   return (
     <div className="App">
       <header className="App-header">
+        <AlertDismissibleExample />
+        icon: <i className="bi bi-badge-tm-fill"></i>
         <img src={logo} className="App-logo" alt="logo" />
         <Counter />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.  Testing the pipeline process.
+          Edit <code>src/App.tsx</code> and save to reload. Testing the pipeline
+          process.
         </p>
         <span>
           <span>Learn </span>
@@ -53,6 +86,6 @@ function App() {
       </header>
     </div>
   );
-}
+};
 
 export default App;

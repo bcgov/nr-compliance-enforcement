@@ -1,0 +1,10 @@
+@import "./colors.scss";
+@import "./grid-spacing.scss";
+@import "./shadows-borders.scss";
+@import "./images.scss";
+@import "./icons.scss";
+@import "./typography.scss";
+
+/* import bootstrap to set changes */
+@import "../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../../node_modules/bootstrap-icons/font/bootstrap-icons.scss";

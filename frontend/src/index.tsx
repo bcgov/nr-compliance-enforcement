@@ -6,6 +6,8 @@ import reportWebVitals from "./reportWebVitals";
 import App from "./app/App";
 import { store } from "./app/store/store";
 
+import "./assets/sass/app.scss"
+
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
