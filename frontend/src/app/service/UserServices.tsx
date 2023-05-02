@@ -16,7 +16,7 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
   })
     .then((authenticated) => {
       if (!authenticated) {
-        console.log("user is not authenticated..!");
+        console.log("user is not authenticated!");
       }
       onAuthenticatedCallback();
     })
@@ -36,7 +36,8 @@ const updateToken = (successCallback: ((value: boolean) => boolean | PromiseLike
     .then(successCallback)
     .catch(doLogin);
 
-const getUsername = () => _kc.tokenParsed?.preferred_username;
+const getUsername = () => _kc.tokenParsed?.display_name;
+
 
 const hasRole = (roles: any) => {
     const jwt = _kc.tokenParsed;

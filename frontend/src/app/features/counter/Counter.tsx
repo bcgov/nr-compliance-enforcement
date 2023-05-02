@@ -10,6 +10,7 @@ import {
   selectCount,
 } from './counterSlice';
 import styles from './Counter.module.css';
+import UserService from '../../service/UserServices';
 
 export function Counter() {
   const count = useAppSelector(selectCount);
@@ -20,6 +21,9 @@ export function Counter() {
 
   return (
     <div>
+      <div>
+        Signed in as {UserService.getUsername()}
+      </div>
       <div className={styles.row}>
         <button
           className={styles.button}

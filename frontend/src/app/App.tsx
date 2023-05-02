@@ -13,7 +13,7 @@ function App() {
         <Provider store={store}>
           <BrowserRouter>
             <div className="container">
-              <RenderOnRole roles={[Roles.COS_ADMINISTRATOR]}>
+              <RenderOnRole roles={[Roles.COS_OFFICER]}>
                 <Counter/>
               </RenderOnRole>
             </div>

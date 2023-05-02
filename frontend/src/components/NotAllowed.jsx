@@ -1,5 +1,5 @@
 const NotAllowed = () => (
-  <h1 className="text-info">Access is not allowed! ⛔️</h1>
+  <h1>You are not authorized to view this page.</h1>
 )
 
 export default NotAllowed
