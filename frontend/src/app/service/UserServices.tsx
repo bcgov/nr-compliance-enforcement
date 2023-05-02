@@ -1,7 +1,4 @@
-import Keycloak from "keycloak-js";
 import _kc from "../keycloak";
-
-
 
 /**
  * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
@@ -16,7 +13,7 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
   })
     .then((authenticated) => {
       if (!authenticated) {
-        console.log("user is not authenticated!");
+        console.log('User is not authenticated.');
       }
       onAuthenticatedCallback();
     })
@@ -38,16 +35,16 @@ const updateToken = (successCallback: ((value: boolean) => boolean | PromiseLike
 
 const getUsername = () => _kc.tokenParsed?.display_name;
 
-
+/**
+ * Determines if a user's role(s) overlap with the role on the private route.  The user's role is determined via jwt.client_roles
+ * @param roles 
+ * @returns True or false, inidicating if the user has the role or not.
+ */
 const hasRole = (roles: any) => {
     const jwt = _kc.tokenParsed;
     const userroles = jwt?.client_roles;
-    
-    // Determines if a user's role(s) overlap with the role on the private route.
     const includesRoles = typeof roles === 'string' ? userroles?.includes(roles) : roles.some((r: any) => userroles?.includes(r));
-
     return includesRoles;
-
 }
 
 const UserService = {
