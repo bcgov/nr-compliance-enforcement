@@ -1,28 +1,25 @@
 import { Counter } from './features/counter/Counter';
 import './App.css';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 import React from 'react';
 import { Provider } from 'react-redux';
-import keycloak from './keycloak';
 import { store } from './store/store';
-import PrivateRoute from './routes/PrivateRoute';
+import { BrowserRouter } from "react-router-dom";
+import RenderOnRole from '../components/RenderOnRole';
 import Roles from './constants/roles';
 
 function App() {
   return (
-    <ReactKeycloakProvider authClient={keycloak}
-    initOptions={{ onLoad: 'login-required',
-                   'public-client': true,
-                   pkceMethod: 'S256' }}>
       <React.StrictMode>
         <Provider store={store}>
-          <PrivateRoute role={Roles.COS_OFFICER}>
-            <Counter/>
-          </PrivateRoute>
+          <BrowserRouter>
+            <div className="container">
+              <RenderOnRole roles={[Roles.COS_ADMINISTRATOR]}>
+                <Counter/>
+              </RenderOnRole>
+            </div>
+          </BrowserRouter>        
         </Provider>
       </React.StrictMode>
-    </ReactKeycloakProvider>
-  
   );
 }
 

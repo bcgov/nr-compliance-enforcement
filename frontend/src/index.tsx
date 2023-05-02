@@ -1,11 +1,12 @@
 import reportWebVitals from "./reportWebVitals";
 import App from "./app/App";
 import { createRoot } from "react-dom/client";
+import UserService from "./app/service/UserServices";
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
-root.render(
+const renderApp = () =>root.render(
         <App />
 );
 
@@ -13,3 +14,5 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+UserService.initKeycloak(renderApp);
