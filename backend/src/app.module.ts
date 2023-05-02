@@ -4,7 +4,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { UsersModule } from "./users/users.module";
+import { UsersModule } from "./v1/users/users.module";
+import { JwtAuthModule } from './auth/jwtauth.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -30,6 +31,7 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
       synchronize: true, // This changes the DB schema to match changes to entities, which we might not want.
     }),
     UsersModule,
+    JwtAuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

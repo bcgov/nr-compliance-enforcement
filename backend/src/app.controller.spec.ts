@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { JwtAuthGuard } from './auth/jwtauth.guard';
+import { JwtRoleGuard } from './auth/jwtrole.guard';
+import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -18,5 +21,6 @@ describe('AppController', () => {
     it('should return "Hello Backend!"', () => {
       expect(appController.getHello()).toBe('Hello Backend!');
     });
+
   });
 });
