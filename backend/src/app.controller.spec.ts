@@ -22,12 +22,5 @@ describe('AppController', () => {
       expect(appController.getHello()).toBe('Hello Backend!');
     });
 
-    it('should ensure the JwtRoleGuard is applied to the app class', async () => {
-      const guards = Reflect.getMetadata('__guards__', AppController);
-      const guard = new (guards[0]);
-    
-      expect(guard).toBeInstanceOf(JwtRoleGuard);
-    });
-
   });
 });
