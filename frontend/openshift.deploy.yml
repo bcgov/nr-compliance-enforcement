@@ -113,7 +113,7 @@ objects:
                 - name: CYPRESS_KEYCLOAK_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: cypress-secrests
+                      name: cypress-secrets
                       key: cypress-keycloak-password
               ports:
                 - containerPort: 3000
