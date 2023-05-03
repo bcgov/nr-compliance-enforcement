@@ -1,12 +1,13 @@
 import Keycloak from 'keycloak-js';
+import config from "../config";
 
 // Setup Keycloak instance as needed
 // Pass initialization options as required or leave blank to load from 'keycloak.json'
 const _kc = new Keycloak({
-  url: `${process.env.REACT_APP_KEYCLOAK_URL}`,
-  realm: `${process.env.REACT_APP_KEYCLOAK_REALM}`,
-  clientId: `${process.env.REACT_APP_KEYCLOAK_CLIENT_ID}`,
+  url: config.KEYCLOAK_URL,
+  realm: config.KEYCLOAK_REALM,
+  clientId: config.KEYCLOAK_CLIENT_ID,
 });
 
-console.log(`Keycloak URL ${process.env.REACT_APP_KEYCLOAK_URL}`)
+console.log(`Keycloak URL ${config.KEYCLOAK_URL}`)
 export default _kc;
