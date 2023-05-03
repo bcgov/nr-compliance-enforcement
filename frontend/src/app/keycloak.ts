@@ -1,5 +1,5 @@
 import Keycloak from 'keycloak-js';
-import config from "../config";
+import config from "../config.json";
 
 // Setup Keycloak instance as needed
 // Pass initialization options as required or leave blank to load from 'keycloak.json'

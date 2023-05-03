@@ -1,0 +1,5 @@
+{
+  "KEYCLOAK_URL": "https://dev.loginproxy.gov.bc.ca/auth",
+  "KEYCLOAK_REALM": "standard",
+  "KEYCLOAK_CLIENT_ID": "compliance-and-enforcement-digital-services-web-4794"
+}

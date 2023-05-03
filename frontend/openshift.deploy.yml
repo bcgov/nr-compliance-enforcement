@@ -83,24 +83,31 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: app-config
+              configMap: 
+                name: app-config
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              volumeMounts:
+                - name: app-config
+                  mountPath: /srv/config
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: KEYCLOAK_CLIENT_ID
+                - name: REACT_KEYCLOAK_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
                       name:  react-keycloak
                       key: react-app-keycloak-client-id
-                - name: KEYCLOAK_REALM
+                - name: REACT_KEYCLOAK_REALM
                   valueFrom:
                     secretKeyRef:
                       name: react-keycloak
                       key: react-app-keycloak-realm
-                - name: KEYCLOAK_URL
+                - name: REACT_KEYCLOAK_URL
                   valueFrom:
                     secretKeyRef:
                       name: react-keycloak

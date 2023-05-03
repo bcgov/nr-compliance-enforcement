@@ -1,8 +1,0 @@
-const config = {
-    KEYCLOAK_URL: process.env.REACT_APP_KEYCLOAK_URL || '{{ env "KEYCLOAK_URL" }}',
-    KEYCLOAK_REALM: process.env.REACT_APP_KEYCLOAK_REALM || '{{ env "KEYCLOAK_REALM" }}',
-    KEYCLOAK_CLIENT_ID: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || '{{ env "KEYCLOAK_CLIENT_ID" }}',
-    CYPRESS_KEYCLOAK_USER: process.env.CYPRESS_KEYCLOAK_USER || '{{ env "CYPRESS_KEYCLOAK_USER" }}',
-    CYPRESS_KEYCLOAK_PASSWORD: process.env.CYPRESS_KEYCLOAK_PASSWORD || '{{ env "CYPRESS_KEYCLOAK_PASSWORD" }}',
-  }
-  export default config;
