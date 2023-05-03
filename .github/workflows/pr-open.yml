@@ -110,6 +110,12 @@ jobs:
         with:
           working-directory: ./frontend
           command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+        env:
+          REACT_APP_KEYCLOAK_URL: ${{vars.KEYCLOAK_URL}}
+          REACT_APP_KEYCLOAK_REALM: ${{vars.KEYCLOAK_REALM}}
+          REACT_APP_KEYCLOAK_CLIENT_ID: ${{vars.KEYCLOAK_CLIENT_ID}}
+          CYPRESS_KEYCLOAK_USER: ${{vars.KEYCLOAK_USER}}
+          CYPRESS_KEYCLOAK_PASSWORD: ${{secrets.KEYCLOAK_PASSWORD}}
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
