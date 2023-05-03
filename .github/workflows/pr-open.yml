@@ -109,11 +109,6 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           working-directory: ./frontend
-          REACT_APP_KEYCLOAK_URL: ${{vars.KEYCLOAK_URL}}
-          REACT_APP_KEYCLOAK_REALM: ${{vars.KEYCLOAK_REALM}}
-          REACT_APP_KEYCLOAK_CLIENT_ID: ${{vars.KEYCLOAK_CLIENT_ID}}
-          CYPRESS_KEYCLOAK_USER: ${{vars.KEYCLOAK_USER}}
-          CYPRESS_KEYCLOAK_PASSWORD: ${{secrets.KEYCLOAK_PASSWORD}}
           command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
           
       - name: Upload Artifacts
