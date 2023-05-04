@@ -143,6 +143,14 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+              volumeMounts:
+              - mountPath: /srv/static/js/config.js
+                name: config-js
+                subPath: config.js
+          volumes:
+          - configMap:
+              name: app-config
+            name: config-js
   - apiVersion: v1
     kind: Service
     metadata:
