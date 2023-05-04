@@ -109,12 +109,12 @@ jobs:
         uses: cypress-io/github-action@v5
         env:
           KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
           KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
           KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}          
         with:
           working-directory: ./frontend
-          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=$KEYCLOAK_URL,auth_realm=$KEYCLOAK_REALM,auth_client_id=$KEYCLOAK_CLIENT_ID,keycloak_user=$KEYCLOAK_USER,keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
+          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL }},auth_realm=$KEYCLOAK_REALM,auth_client_id=$KEYCLOAK_CLIENT_ID,keycloak_user=$KEYCLOAK_USER,keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
