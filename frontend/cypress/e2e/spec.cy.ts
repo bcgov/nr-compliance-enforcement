@@ -5,7 +5,6 @@ describe('template spec', () => {
   });
 
   it('passes', () => {
-    cy.origin(Cypress.config().baseUrl, () => {
 
       cy.visit("/")
 
@@ -24,6 +23,5 @@ describe('template spec', () => {
       /* ==== End Cypress Studio ==== */
 
       cy.get('#counter').should('contain', '4')
-  })
 })
 })
