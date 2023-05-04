@@ -14,9 +14,6 @@ jobs:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}    
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: write
@@ -110,14 +107,9 @@ jobs:
   
       - name: Run Cypress Test
         uses: cypress-io/github-action@v5
-        env:
-          KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-          KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-          KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}          
         with:
           working-directory: ./frontend
-          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.OC_NAMESPACE }},auth_realm=${{ vars.OC_SERVER}},auth_client_id=$KEYCLOAK_CLIENT_ID,keycloak_user=$KEYCLOAK_USER,keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
+          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
