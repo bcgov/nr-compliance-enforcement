@@ -114,7 +114,7 @@ jobs:
           KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}          
         with:
           working-directory: ./frontend
-          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ env.KEYCLOAK_URL }},auth_realm=${{ env.KEYCLOAK_REALM }},auth_client_id=${{ env.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ env.KEYCLOAK_USER }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
+          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=$KEYCLOAK_URL,auth_realm=$KEYCLOAK_REALM,auth_client_id=$KEYCLOAK_CLIENT_ID,keycloak_user=$KEYCLOAK_USER,keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
