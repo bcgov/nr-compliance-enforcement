@@ -5,8 +5,7 @@ describe('template spec', () => {
   });
 
   it('passes', () => {
-
-    cy.origin('http://localhost:3000', () => {
+    cy.origin(Cypress.config().baseUrl, () => {
 
       cy.visit("/")
 
