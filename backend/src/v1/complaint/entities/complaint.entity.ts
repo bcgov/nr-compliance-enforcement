@@ -176,7 +176,6 @@ export class Complaint {
   update_timestamp: Date;
 
   constructor() {
-    
 
   }
 

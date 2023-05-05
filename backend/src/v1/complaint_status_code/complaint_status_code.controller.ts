@@ -30,18 +30,18 @@ export class ComplaintStatusCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.complaintStatusCodeService.findOne(+id);
+    return this.complaintStatusCodeService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateComplaintStatusCodeDto: UpdateComplaintStatusCodeDto) {
-    return this.complaintStatusCodeService.update(+id, updateComplaintStatusCodeDto);
+    return this.complaintStatusCodeService.update(id, updateComplaintStatusCodeDto);
   }
 
   @Delete(':id')
   @Roles(Role.COS_OFFICER)
   remove(@Param('id') id: string) {
-    return this.complaintStatusCodeService.remove(+id);
+    return this.complaintStatusCodeService.remove(id);
   }
 }

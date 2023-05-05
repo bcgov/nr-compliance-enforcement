@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateComplaintStatusCodeDto } from './dto/create-complaint_status_code.dto';
 import { UpdateComplaintStatusCodeDto } from './dto/update-complaint_status_code.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ComplaintStatusCode } from './entities/complaint_status_code.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ComplaintStatusCodeService {
-  create(createComplaintStatusCodeDto: CreateComplaintStatusCodeDto) {
-    return 'This action adds a new complaintStatusCode';
+  constructor(
+    @InjectRepository(ComplaintStatusCode)
+    private complaintStatusCodeRepository: Repository<ComplaintStatusCode>
+  ) {}
+
+  async create(complaintStatusCode: CreateComplaintStatusCodeDto): Promise<ComplaintStatusCode> {
+    const newComplaintStatusCode = this.complaintStatusCodeRepository.create(complaintStatusCode);
+    await this.complaintStatusCodeRepository.save(newComplaintStatusCode);
+    return newComplaintStatusCode;
   }
 
-  findAll() {
-    return `This action returns all complaintStatusCode`;
+  async findAll(): Promise<ComplaintStatusCode[]> {
+    return this.complaintStatusCodeRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} complaintStatusCode`;
+  async findOne(id: any): Promise<ComplaintStatusCode> {
+    return this.complaintStatusCodeRepository.findOneOrFail(id);
   }
 
-  update(id: number, updateComplaintStatusCodeDto: UpdateComplaintStatusCodeDto) {
-    return `This action updates a #${id} complaintStatusCode`;
+  async update(complaint_status_code: string, updateComplaintStatusCodeDto: UpdateComplaintStatusCodeDto): Promise<ComplaintStatusCode> {
+    await this.complaintStatusCodeRepository.update({ complaint_status_code }, updateComplaintStatusCodeDto);
+    return this.findOne(complaint_status_code);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} complaintStatusCode`;
+  async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
+    try {
+      await this.complaintStatusCodeRepository.delete(id);
+      return { deleted: true };
+    } catch (err) {
+      return { deleted: false, message: err.message };
+    }
   }
 }
