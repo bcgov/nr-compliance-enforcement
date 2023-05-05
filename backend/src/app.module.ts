@@ -6,6 +6,17 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { UsersModule } from "./v1/users/users.module";
 import { JwtAuthModule } from './auth/jwtauth.module';
+import { ComplaintStatusCodeModule } from './v1/complaint_status_code/complaint_status_code.module';
+import { AgencyCodeModule } from './v1/agency_code/agency_code.module';
+import { ComplaintModule } from './v1/complaint/complaint.module';
+import { ViolationCodeModule } from './v1/violation_code/violation_code.module';
+import { AllegationComplaintModule } from './v1/allegation_complaint/allegation_complaint.module';
+import { GeoOrgUnitStructureModule } from './v1/geo_org_unit_structure/geo_org_unit_structure.module';
+import { GeoOrganizationUnitCodeModule } from './v1/geo_organization_unit_code/geo_organization_unit_code.module';
+import { GeoOrgUnitTypeCodeModule } from './v1/geo_org_unit_type_code/geo_org_unit_type_code.module';
+import { OfficeModule } from './v1/office/office.module';
+import { PersonModule } from './v1/person/person.module';
+import { OfficerModule } from './v1/officer/officer.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -32,6 +43,17 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     }),
     UsersModule,
     JwtAuthModule,
+    ComplaintStatusCodeModule,
+    AgencyCodeModule,
+    ComplaintModule,
+    ViolationCodeModule,
+    AllegationComplaintModule,
+    GeoOrgUnitStructureModule,
+    GeoOrganizationUnitCodeModule,
+    GeoOrgUnitTypeCodeModule,
+    OfficeModule,
+    PersonModule,
+    OfficerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
