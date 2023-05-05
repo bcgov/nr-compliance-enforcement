@@ -113,3 +113,4 @@ test-report.xml
 # Mac files
 *.DS_Store
 *.mp4
+frontend/cypress/screenshots/spec.cy.ts/template spec -- passes (failed).png
