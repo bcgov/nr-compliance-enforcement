@@ -3,7 +3,6 @@ CREATE EXTENSION postgis with schema ceds;
 -- ceds.agency_code definition
 
 -- Drop table
-
 -- DROP TABLE ceds.agency_code;
 
 CREATE TABLE ceds.agency_code (
