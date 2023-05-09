@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { GeoOrgUnitTypeCodeDto } from "src/v1/geo_org_unit_type_code/dto/geo_org_unit_type_code.dto";
 
 export class GeoOrganizationUnitCodeDto 
@@ -40,7 +41,7 @@ export class GeoOrganizationUnitCodeDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the geo organization unit",
       })
-      create_user_guid: string;
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -58,7 +59,7 @@ export class GeoOrganizationUnitCodeDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the geo organization unit",
       })
-      update_user_guid: string;
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

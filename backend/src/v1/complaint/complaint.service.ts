@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
+import { Complaint } from './entities/complaint.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ComplaintService {
-  create(createComplaintDto: CreateComplaintDto) {
-    return 'This action adds a new complaint';
+  constructor(
+    @InjectRepository(Complaint)
+    private complaintsRepository: Repository<Complaint>
+  ) {}
+
+  async create(complaint: CreateComplaintDto): Promise<Complaint> {
+    const newComplaint = this.complaintsRepository.create(complaint);
+    await this.complaintsRepository.save(newComplaint);
+    return newComplaint;
   }
 
-  findAll() {
-    return `This action returns all complaint`;
+  async findAll(): Promise<Complaint[]> {
+    return this.complaintsRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} complaint`;
+  async findOne(id: any): Promise<Complaint> {
+    return this.complaintsRepository.findOneOrFail(id);
   }
 
-  update(id: number, updateComplaintDto: UpdateComplaintDto) {
-    return `This action updates a #${id} complaint`;
+  async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {
+    await this.complaintsRepository.update({ complaint_identifier }, updateComplaintDto);
+    return this.findOne(complaint_identifier);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} complaint`;
+  async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
+    try {
+      await this.complaintsRepository.delete(id);
+      return { deleted: true };
+    } catch (err) {
+      return { deleted: false, message: err.message };
+    }
   }
 }

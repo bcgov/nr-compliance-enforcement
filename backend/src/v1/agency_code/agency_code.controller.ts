@@ -36,12 +36,12 @@ export class AgencyCodeController {
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateAgencyCodeDto: UpdateAgencyCodeDto) {
-    return this.agencyCodeService.update(+id, updateAgencyCodeDto);
+    return this.agencyCodeService.update(id, updateAgencyCodeDto);
   }
 
   @Delete(':id')
   @Roles(Role.COS_OFFICER)
   remove(@Param('id') id: string) {
-    return this.agencyCodeService.remove(+id);
+    return this.agencyCodeService.remove(id);
   }
 }

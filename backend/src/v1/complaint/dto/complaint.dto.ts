@@ -1,36 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Geometry, Point } from 'typeorm';
+import { UUID } from 'crypto';
+import { AgencyCode } from 'src/v1/agency_code/entities/agency_code.entity';
+import { ComplaintStatusCode } from 'src/v1/complaint_status_code/entities/complaint_status_code.entity';
+import { GeoOrganizationUnitCode } from 'src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity';
+import { Point } from 'typeorm';
 
-export class ComplaintDto {
+export abstract class ComplaintDto {
   @ApiProperty({
-    example: "1",
-    description: "The ID of the complaint",
+    example: "COS-3425",
+    description: "The identifier of the complaint",
   })
-  complaint_id: number;
+  complaint_identifier: string;
 
   @ApiProperty({
     example: "COS",
     description: "The organization code of the organization that referred the complaint",
   })
-  referred_by_agency_code: string;
+  referred_by_agency_code: AgencyCode;
 
   @ApiProperty({
     example: "COS",
     description: "The organization code of the organization that currently owns the complaint",
   })
-  owned_by_agency_code: string;
+  owned_by_agency_code: AgencyCode;
 
   @ApiProperty({
     example: "Open",
     description: "The complaint status code",
   })
-  complaint_status_code: string;
+  complaint_status_code: ComplaintStatusCode;
 
   @ApiProperty({
     example: "DCC",
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  geo_organization_unit_code: string;
+  geo_organization_unit_code: GeoOrganizationUnitCode;
 
   @ApiProperty({
     example: "Bear overturning garbage bins",
@@ -114,7 +118,7 @@ export class ComplaintDto {
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The unique guid of the user that created the complaint",
   })
-  create_user_guid: string;
+  create_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
@@ -132,7 +136,7 @@ export class ComplaintDto {
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The unique guid of the user that last updated the complaint",
   })
-  update_user_guid: string;
+  update_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",

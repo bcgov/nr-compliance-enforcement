@@ -1,1 +1,39 @@
-export class CreateAllegationComplaintDto {}
+import { PickType } from "@nestjs/swagger";
+import { AllegationComplaintDto } from "./allegation_complaint.dto";
+
+export class CreateAllegationComplaintDto extends PickType(AllegationComplaintDto, [
+    "complaint_identifier",
+    "violation_code",
+    "in_progress_ind",
+    "observed_ind",
+    "suspect_witnesss_dtl_text",
+    "create_user_id",
+    "create_user_guid",
+    "create_timestamp",
+    "update_user_id",
+    "update_user_guid",
+    "update_timestamp",
+    "detail_text",
+"caller_name",
+"caller_address",
+"caller_email",
+"caller_phone_1",
+"caller_phone_2",
+"caller_phone_3",
+"location_geometry_point",
+"location_summary_text",
+"location_detailed_text",
+"incident_date",
+"referred_by_agency_other_text",
+"create_user_id",
+"create_timestamp",
+"update_user_id",
+"update_timestamp",
+"create_user_guid",
+"update_user_guid",
+"complaint_identifier",
+"referred_by_agency_code",
+"owned_by_agency_code",
+"complaint_status_code",
+"geo_organization_unit_code"
+          ] as const) {}

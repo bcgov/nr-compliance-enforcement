@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { Office } from "src/v1/office/entities/office.entity";
 import { Person } from "src/v1/person/entities/person.entity";
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn, Unique } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 @Unique(["person_guid"])
@@ -11,15 +12,15 @@ export class Officer
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The guid for this officer",
       })
-      @PrimaryColumn()
-      officer_guid: string;
+      @PrimaryGeneratedColumn("uuid")
+      officer_guid: UUID;
 
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The person for this officer",
       })
       @OneToOne(() => Person)
-      @JoinColumn()
+      @JoinColumn({name: "person_guid"})
       person_guid: Person;
 
       @ApiProperty({
@@ -27,29 +28,29 @@ export class Officer
         description: "The office for this officer",
       })
       @OneToOne(() => Office, { nullable: true })
-      @JoinColumn()
+      @JoinColumn({name: "office_guid"})
       office_guid: Office;
       
       @ApiProperty({
         example: "Charles",
         description: "The user id of this officer",
       })
-      @Column()
+      @Column({length: 32})
       user_id: string;
     
       @ApiProperty({
         example: "IDIR\mburns",
         description: "The id of the user that created the officer",
       })
-      @Column()
+      @Column({length: 32})
       create_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the officer",
       })
-      @Column()
-      create_user_guid: string;
+      @Column({type: "uuid"})
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -62,15 +63,15 @@ export class Officer
         example: "IDIR\mburns",
         description: "The id of the user that last updated the officer",
       })
-      @Column()
+      @Column({length: 32})
       update_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the officer",
       })
-      @Column()
-      update_user_guid: string;
+      @Column({type: "uuid"})
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

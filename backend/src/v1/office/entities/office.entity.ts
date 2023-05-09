@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Office 
@@ -10,15 +11,15 @@ export class Office
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The guid for this office",
       })
-      @PrimaryColumn()
-      office_guid: string;
+      @PrimaryGeneratedColumn("uuid")
+      office_guid: UUID;
 
       @ApiProperty({
         example: "DCC",
         description: "The geo organization code for the office",
       })
       @OneToOne(() => GeoOrganizationUnitCode, { nullable: true })
-      @JoinColumn()
+      @JoinColumn({name: "geo_organization_unit_code"})
       geo_organization_unit_code: GeoOrganizationUnitCode;
       
       @ApiProperty({
@@ -26,22 +27,22 @@ export class Office
         description: "The agency code for the office",
       })
       @OneToOne(() => AgencyCode)
-      @JoinColumn()
+      @JoinColumn({name: "agency_code"})
       agency_code: AgencyCode;
     
       @ApiProperty({
         example: "IDIR\mburns",
         description: "The id of the user that created the office",
       })
-      @Column()
+      @Column({length: 32})
       create_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the office",
       })
-      @Column()
-      create_user_guid: string;
+      @Column({type: "uuid"})
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -54,15 +55,15 @@ export class Office
         example: "IDIR\mburns",
         description: "The id of the user that last updated the office",
       })
-      @Column()
+      @Column({length: 32})
       update_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the office",
       })
-      @Column()
-      update_user_guid: string;
+      @Column({type: "uuid"})
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

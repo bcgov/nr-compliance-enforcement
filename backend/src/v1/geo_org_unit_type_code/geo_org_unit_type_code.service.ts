@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGeoOrgUnitTypeCodeDto } from './dto/create-geo_org_unit_type_code.dto';
 import { UpdateGeoOrgUnitTypeCodeDto } from './dto/update-geo_org_unit_type_code.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { GeoOrgUnitTypeCode } from './entities/geo_org_unit_type_code.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class GeoOrgUnitTypeCodeService {
-  create(createGeoOrgUnitTypeCodeDto: CreateGeoOrgUnitTypeCodeDto) {
-    return 'This action adds a new geoOrgUnitTypeCode';
+  constructor(
+    @InjectRepository(GeoOrgUnitTypeCode)
+    private geoOrgUnitTypeCodeRepository: Repository<GeoOrgUnitTypeCode>
+  ) {}
+
+  async create(user: CreateGeoOrgUnitTypeCodeDto): Promise<GeoOrgUnitTypeCode> {
+    const newGeoOrgUniteTypeCode = this.geoOrgUnitTypeCodeRepository.create(user);
+    await this.geoOrgUnitTypeCodeRepository.save(newGeoOrgUniteTypeCode);
+    return newGeoOrgUniteTypeCode;
   }
 
-  findAll() {
-    return `This action returns all geoOrgUnitTypeCode`;
+  async findAll(): Promise<GeoOrgUnitTypeCode[]> {
+    return this.geoOrgUnitTypeCodeRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} geoOrgUnitTypeCode`;
+  async findOne(id: any): Promise<GeoOrgUnitTypeCode> {
+    return this.geoOrgUnitTypeCodeRepository.findOneOrFail(id);
   }
 
-  update(id: number, updateGeoOrgUnitTypeCodeDto: UpdateGeoOrgUnitTypeCodeDto) {
-    return `This action updates a #${id} geoOrgUnitTypeCode`;
+  async update(geo_org_unit_type_code: string, updateGeoOrgUnitTypeCodeDto: UpdateGeoOrgUnitTypeCodeDto): Promise<GeoOrgUnitTypeCode> {
+    await this.geoOrgUnitTypeCodeRepository.update({ geo_org_unit_type_code }, updateGeoOrgUnitTypeCodeDto);
+    return this.findOne(geo_org_unit_type_code);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} geoOrgUnitTypeCode`;
+  async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
+    try {
+      await this.geoOrgUnitTypeCodeRepository.delete(id);
+      return { deleted: true };
+    } catch (err) {
+      return { deleted: false, message: err.message };
+    }
   }
 }

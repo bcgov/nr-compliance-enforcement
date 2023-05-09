@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { OfficeDto } from "src/v1/office/dto/office.dto";
 
 export class PersonDto 
@@ -7,13 +8,7 @@ export class PersonDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The guid for this person",
       })
-      person_guid: string;
-
-      @ApiProperty({
-        example: "DCC",
-        description: "The office for this person",
-      })
-      office_guid: OfficeDto;
+      person_guid: UUID;
       
       @ApiProperty({
         example: "Charles",
@@ -49,7 +44,7 @@ export class PersonDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the person",
       })
-      create_user_guid: string;
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -67,7 +62,7 @@ export class PersonDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the person",
       })
-      update_user_guid: string;
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

@@ -30,18 +30,18 @@ export class GeoOrgUnitTypeCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.geoOrgUnitTypeCodeService.findOne(+id);
+    return this.geoOrgUnitTypeCodeService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateGeoOrgUnitTypeCodeDto: UpdateGeoOrgUnitTypeCodeDto) {
-    return this.geoOrgUnitTypeCodeService.update(+id, updateGeoOrgUnitTypeCodeDto);
+    return this.geoOrgUnitTypeCodeService.update(id, updateGeoOrgUnitTypeCodeDto);
   }
 
   @Delete(':id')
   @Roles(Role.COS_OFFICER)
   remove(@Param('id') id: string) {
-    return this.geoOrgUnitTypeCodeService.remove(+id);
+    return this.geoOrgUnitTypeCodeService.remove(id);
   }
 }

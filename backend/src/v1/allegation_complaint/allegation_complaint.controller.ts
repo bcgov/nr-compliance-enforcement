@@ -6,6 +6,10 @@ import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/enum/role.enum';
+import { UUID } from 'crypto';
+import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
+import { ComplaintService } from '../complaint/complaint.service';
+import { ComplaintDto } from '../complaint/dto/complaint.dto';
 
 @ApiTags("allegation-complaint")
 @UseGuards(JwtRoleGuard)
@@ -13,6 +17,7 @@ import { Role } from 'src/enum/role.enum';
   path: 'allegation-complaint',
   version: '1'})
 export class AllegationComplaintController {
+  complaint: ComplaintDto;
   constructor(private readonly allegationComplaintService: AllegationComplaintService) {}
 
   @Post()
@@ -29,19 +34,19 @@ export class AllegationComplaintController {
 
   @Get(':id')
   @Roles(Role.COS_OFFICER)
-  findOne(@Param('id') id: string) {
-    return this.allegationComplaintService.findOne(+id);
+  findOne(@Param('id') id: UUID) {
+    return this.allegationComplaintService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: string, @Body() updateAllegationComplaintDto: UpdateAllegationComplaintDto) {
-    return this.allegationComplaintService.update(+id, updateAllegationComplaintDto);
+  update(@Param('id') id: UUID, @Body() updateAllegationComplaintDto: UpdateAllegationComplaintDto) {
+    return this.allegationComplaintService.update(id, updateAllegationComplaintDto);
   }
 
   @Delete(':id')
   @Roles(Role.COS_OFFICER)
-  remove(@Param('id') id: string) {
-    return this.allegationComplaintService.remove(+id);
+  remove(@Param('id') id: UUID) {
+    return this.allegationComplaintService.remove(id);
   }
 }

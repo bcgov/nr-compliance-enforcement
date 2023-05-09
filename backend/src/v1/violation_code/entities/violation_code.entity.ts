@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity()
@@ -8,15 +9,15 @@ export class ViolationCode
         example: "IVL",
         description: "The violation code",
       })
-      @PrimaryColumn()
+      @PrimaryColumn({length: 3})
       violation_code: string;
     
       @ApiProperty({ example: "Invalid License", description: "The short description of the violation code" })
-      @Column()
+      @Column({length: 120})
       short_description: string;
     
       @ApiProperty({ example: "Invalid License", description: "The long description of the violation code" })
-      @Column({ nullable: true })
+      @Column({length: 120, nullable: true })
       long_description: string;
     
       @ApiProperty({ example: "1", description: "The display order of the violation code" })
@@ -26,24 +27,20 @@ export class ViolationCode
       @ApiProperty({ example: "True", description: "An indicator to determine if the violation code is active" })
       @Column()
       active_ind: boolean;
-
-      @ApiProperty({ example: "IFK", description: "The legacy code of the violation code" })
-      @Column({ nullable: true })
-      legacy_code: string;
     
       @ApiProperty({
         example: "IDIR\mburns",
         description: "The id of the user that created the violation",
       })
-      @Column()
+      @Column({length: 32})
       create_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the violation",
       })
-      @Column()
-      create_user_guid: string;
+      @Column({type: "uuid"})
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -56,15 +53,15 @@ export class ViolationCode
         example: "IDIR\mburns",
         description: "The id of the user that last updated the violation",
       })
-      @Column()
+      @Column({length: 32})
       update_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the violation",
       })
-      @Column()
-      update_user_guid: string;
+      @Column({type: "uuid"})
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
