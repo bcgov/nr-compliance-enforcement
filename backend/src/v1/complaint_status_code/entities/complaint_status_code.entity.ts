@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity()
@@ -7,15 +8,15 @@ export class ComplaintStatusCode {
     example: "OPN",
     description: "The complaint status code",
   })
-  @PrimaryColumn()
+  @PrimaryColumn({length: 3})
   complaint_status_code: string;
 
   @ApiProperty({ example: "Open", description: "The short description of the complaint status code" })
-  @Column()
+  @Column({length: 120})
   short_description: string;
 
   @ApiProperty({ example: "Open", description: "The short description of the complaint status code" })
-  @Column( {nullable: true} )
+  @Column( {length: 120, nullable: true} )
   long_description: string;
 
   @ApiProperty({ example: "1", description: "The display order of the complaint status code" })
@@ -30,15 +31,15 @@ export class ComplaintStatusCode {
     example: "IDIR\mburns",
     description: "The id of the user that created the complaint",
   })
-  @Column()
+  @Column({length: 32})
   create_user_id: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The unique guid of the user that created the complaint",
   })
-  @Column()
-  create_user_guid: string;
+  @Column({type: "uuid"})
+  create_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
@@ -51,15 +52,15 @@ export class ComplaintStatusCode {
     example: "IDIR\mburns",
     description: "The id of the user that last updated the complaint",
   })
-  @Column()
+  @Column({length: 32})
   update_user_id: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The unique guid of the user that last updated the complaint",
   })
-  @Column()
-  update_user_guid: string;
+  @Column({type: "uuid"})
+  update_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",

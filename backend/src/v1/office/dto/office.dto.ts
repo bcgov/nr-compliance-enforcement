@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { AgencyCodeDto } from "src/v1/agency_code/dto/agency_code.dto";
 import { CreateGeoOrganizationUnitCodeDto } from "src/v1/geo_organization_unit_code/dto/create-geo_organization_unit_code.dto";
 
@@ -8,7 +9,7 @@ export class OfficeDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The guid for this office",
       })
-      office_guid: string;
+      office_guid: UUID;
 
       @ApiProperty({
         example: "DCC",
@@ -32,7 +33,7 @@ export class OfficeDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the office",
       })
-      create_user_guid: string;
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -50,7 +51,7 @@ export class OfficeDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the office",
       })
-      update_user_guid: string;
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

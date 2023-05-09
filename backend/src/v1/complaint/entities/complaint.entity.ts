@@ -1,24 +1,25 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, Point, Geometry } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Point, PrimaryColumn } from "typeorm";
 import { ComplaintStatusCode } from "src/v1/complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
+import { UUID } from "crypto";
 
 @Entity()
-export class Complaint {
+export abstract class Complaint {
   @ApiProperty({
-    example: "1",
+    example: "COS-324",
     description: "The ID of the complaint",
   })
-  @PrimaryGeneratedColumn()
-  complaint_id: number;
+  @PrimaryColumn({length: 20})
+  complaint_identifier: string;
 
   @ApiProperty({
     example: "COS",
     description: "The organization code of the organization that referred the complaint",
   })
   @OneToOne(() => AgencyCode, { nullable: true })
-  @JoinColumn()
+  @JoinColumn({name: "referred_by_agency_code"})
   referred_by_agency_code: AgencyCode;
 
   @ApiProperty({
@@ -26,7 +27,7 @@ export class Complaint {
     description: "The organization code of the organization that currently owns the complaint",
   })
   @OneToOne(() => AgencyCode)
-  @JoinColumn()
+  @JoinColumn({name: "owned_by_agency_code"})
   owned_by_agency_code: AgencyCode;
 
   @ApiProperty({
@@ -34,7 +35,7 @@ export class Complaint {
     description: "The complaint status code",
   })
   @OneToOne(() => ComplaintStatusCode)
-  @JoinColumn()
+  @JoinColumn({name: "complaint_status_code"})
   complaint_status_code: ComplaintStatusCode;
 
   @ApiProperty({
@@ -42,56 +43,56 @@ export class Complaint {
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
   @OneToOne(() => GeoOrganizationUnitCode)
-  @JoinColumn()
+  @JoinColumn({name: "geo_organization_unit_code"})
   geo_organization_unit_code: GeoOrganizationUnitCode;
 
   @ApiProperty({
     example: "Bear overturning garbage bins",
     description: "Description of the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 250, nullable: true })
   detail_text: string;
 
   @ApiProperty({
     example: "Monty Burns",
     description: "The name of the caller reporting the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 120, nullable: true })
   caller_name: string;
 
   @ApiProperty({
     example: "1264 Robson St.",
     description: "The address of the caller reporting the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 120, nullable: true })
   caller_address: string;
 
   @ApiProperty({
     example: "Monty Burns",
     description: "The email of the caller reporting the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 120, nullable: true })
   caller_email: string;
 
   @ApiProperty({
     example: "(778)-888-5534",
     description: "The phone number of the caller reporting the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 15, nullable: true })
   caller_phone_1: string;
 
   @ApiProperty({
     example: "(778)-888-5534",
     description: "The phone number of the caller reporting the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 15, nullable: true })
   caller_phone_2: string;
 
   @ApiProperty({
     example: "(778)-888-5534",
     description: "The phone number of the caller reporting the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 15, nullable: true })
   caller_phone_3: string;
 
 
@@ -109,14 +110,14 @@ export class Complaint {
     example: "Near Golden",
     description: "The summary text for the location of the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 120, nullable: true })
   location_summary_text: string;
 
   @ApiProperty({
     example: "10 KM Northwest of Golden",
     description: "The detailed text for the location of the complaint",
   })
-  @Column({ nullable: true })
+  @Column({length: 255, nullable: true })
   location_detailed_text: string;
 
   @ApiProperty({
@@ -130,22 +131,22 @@ export class Complaint {
     example: "Referred to COS because of jurisdictional reaons",
     description: "The text explaining the reason for referral and other details",
   })
-  @Column({ nullable: true })
+  @Column({length: 120, nullable: true })
   referred_by_agency_other_text: string;
 
   @ApiProperty({
     example: "IDIR\mburns",
     description: "The id of the user that created the complaint",
   })
-  @Column()
+  @Column({length: 32})
   create_user_id: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The unique guid of the user that created the complaint",
   })
-  @Column()
-  create_user_guid: string;
+  @Column({type: "uuid"})
+  create_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
@@ -158,15 +159,15 @@ export class Complaint {
     example: "IDIR\mburns",
     description: "The id of the user that last updated the complaint",
   })
-  @Column()
+  @Column({length: 32})
   update_user_id: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The unique guid of the user that last updated the complaint",
   })
-  @Column()
-  update_user_guid: string;
+  @Column({type: "uuid"})
+  update_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",

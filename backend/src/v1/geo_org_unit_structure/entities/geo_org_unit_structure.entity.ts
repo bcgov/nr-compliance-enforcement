@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn, Unique } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 @Unique(["parent_geo_org_unit_code", "child_geo_org_unit_code"])
@@ -11,22 +12,22 @@ export class GeoOrgUnitStructure
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The Unique identifier for the Geo Org Unit Structure",
       })
-      @PrimaryColumn()
-      geo_org_unit_structure_guid: string;
+      @PrimaryGeneratedColumn("uuid")
+      geo_org_unit_structure_guid: UUID;
     
       @ApiProperty({ example: "COS", description: "The agency this geo org unit structure references" })
       @OneToOne(() => AgencyCode, { nullable: true })
-      @JoinColumn()
+      @JoinColumn({name: "agency_code"})
       agency_code: AgencyCode;
     
       @ApiProperty({ example: "903f87c8-76dd-427c-a1bb-4d179e443252", description: "The parent geo org unit structure" })
       @OneToOne(() => GeoOrganizationUnitCode, { nullable: true })
-      @JoinColumn()
+      @JoinColumn({name: "parent_geo_org_unit_code"})
       parent_geo_org_unit_code: GeoOrganizationUnitCode;
     
       @ApiProperty({ example: "903f87c8-76dd-427c-a1bb-4d179e443252", description: "The child geo org unit structure" })
       @OneToOne(() => GeoOrganizationUnitCode, { nullable: true })
-      @JoinColumn()
+      @JoinColumn({name: "child_geo_org_unit_code"})
       child_geo_org_unit_code: GeoOrganizationUnitCode;
 
       @ApiProperty({ example: "2023-01-22", description: "The effective date for this geo org unit structure" })
@@ -41,15 +42,15 @@ export class GeoOrgUnitStructure
         example: "IDIR\mburns",
         description: "The id of the user that created the violation",
       })
-      @Column()
+      @Column({length: 32})
       create_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the violation",
       })
-      @Column()
-      create_user_guid: string;
+      @Column({type: "uuid"})
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -62,15 +63,15 @@ export class GeoOrgUnitStructure
         example: "IDIR\mburns",
         description: "The id of the user that last updated the violation",
       })
-      @Column()
+      @Column({length: 32})
       update_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the violation",
       })
-      @Column()
-      update_user_guid: string;
+      @Column({type: "uuid"})
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

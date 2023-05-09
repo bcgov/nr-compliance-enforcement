@@ -1,17 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UUID } from "crypto";
 import { ComplaintDto } from "src/v1/complaint/dto/complaint.dto";
 import { ViolationCodeDto } from "src/v1/violation_code/dto/violation_code.dto";
 
-export class AllegationComplaintDto 
+export class AllegationComplaintDto extends ComplaintDto
 {
     @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The Unique identifier for the allegation",
       })
-      alegation_complaint_guid: string;
-    
-      @ApiProperty({ example: "1", description: "The complaint this allegation references" })
-      complaint_id: ComplaintDto;
+      allegation_complaint_guid: UUID;
     
       @ApiProperty({ example: "INV", description: "The violation code for this allegation" })
       violation_code: ViolationCodeDto;
@@ -38,7 +36,7 @@ export class AllegationComplaintDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that created the violation",
       })
-      create_user_guid: string;
+      create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
@@ -56,7 +54,7 @@ export class AllegationComplaintDto
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The unique guid of the user that last updated the violation",
       })
-      update_user_guid: string;
+      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

@@ -30,18 +30,18 @@ export class ViolationCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.violationCodeService.findOne(+id);
+    return this.violationCodeService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateViolationCodeDto: UpdateViolationCodeDto) {
-    return this.violationCodeService.update(+id, updateViolationCodeDto);
+    return this.violationCodeService.update(id, updateViolationCodeDto);
   }
 
   @Delete(':id')
   @Roles(Role.COS_OFFICER)
   remove(@Param('id') id: string) {
-    return this.violationCodeService.remove(+id);
+    return this.violationCodeService.remove(id);
   }
 }
