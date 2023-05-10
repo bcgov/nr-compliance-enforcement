@@ -1,0 +1,36 @@
+/* generate grayscale documentation classes */
+@each $name, $entity in $grays {
+  .doc-bg-gray-#{$name} {
+    background-color: var(--bs-gray-#{$name});
+  }
+}
+
+@each $weight, $value in $primaryVariants {
+  .doc-bg-bc-gov-primary-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $secondaryVariants {
+  .doc-bg-bc-gov-secondary-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $successVariants {
+  .doc-bg-bc-gov-success-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $dangerVariants {
+  .doc-bg-bc-gov-danger-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $warningVariants {
+  .doc-bg-bc-gov-warning-#{$weight} {
+    background-color: #{$value};
+  }
+}
