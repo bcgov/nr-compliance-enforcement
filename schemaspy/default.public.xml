@@ -1,5 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?><database name="default" schema="public" type="PostgreSQL - 15.2 (Debian 15.2-1.pgdg110+1)">
    <tables>
+      <table name="agency_code" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="owned_by_agency_code" foreignKey="FK_596a2a29d2977428baec6b93306" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+            <child column="referred_by_agency_code" foreignKey="FK_321c0e5df9f2fbb47faaf163284" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+            <child column="owned_by_agency_code" foreignKey="FK_e5b618c0886888304c411f35dfc" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="referred_by_agency_code" foreignKey="FK_f8090f20f0139d2d7420f6163ed" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="agency_code" foreignKey="FK_40f171342e55119d30711e80706" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+            <child column="agency_code" foreignKey="FK_d871704008bd95de356e4b95eea" implied="false" onDeleteCascade="false" schema="public" table="office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="agency_code" sequenceNumberInPK="1"/>
+         <index name="PK_478945fb4f3b754f1e5dccc3f34" unique="true">
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="allegation_complaint" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_identifier" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="detail_text" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="caller_name" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="caller_address" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="caller_email" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="caller_phone_1" nullable="true" remarks="" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="caller_phone_2" nullable="true" remarks="" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="caller_phone_3" nullable="true" remarks="" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="location_geometry_point" nullable="true" remarks="" size="2147483647" type="geometry" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="location_summary_text" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="location_detailed_text" nullable="true" remarks="" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="incident_date" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="referred_by_agency_other_text" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="19" name="allegation_complaint_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="in_progress_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="observed_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="suspect_witnesss_dtl_text" nullable="true" remarks="" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="referred_by_agency_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_321c0e5df9f2fbb47faaf163284" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="owned_by_agency_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_596a2a29d2977428baec6b93306" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="complaint_status_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="complaint_status_code" foreignKey="FK_afe7ba3e34bd78442c790ebf5b2" implied="false" onDeleteCascade="false" schema="public" table="complaint_status_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="geo_organization_unit_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_cfc709dd7b1f9b169d511e8470e" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="violation_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="violation_code" foreignKey="FK_affe09f04d2660f47ef2b1a65e1" implied="false" onDeleteCascade="false" schema="public" table="violation_code"/>
+         </column>
+         <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
+         <primaryKey column="allegation_complaint_guid" sequenceNumberInPK="2"/>
+         <index name="PK_ffec83326dcc6ceecad4f0bc349" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+            <column ascending="true" name="allegation_complaint_guid"/>
+         </index>
+         <index name="REL_321c0e5df9f2fbb47faaf16328" unique="true">
+            <column ascending="true" name="referred_by_agency_code"/>
+         </index>
+         <index name="REL_596a2a29d2977428baec6b9330" unique="true">
+            <column ascending="true" name="owned_by_agency_code"/>
+         </index>
+         <index name="REL_afe7ba3e34bd78442c790ebf5b" unique="true">
+            <column ascending="true" name="complaint_status_code"/>
+         </index>
+         <index name="REL_affe09f04d2660f47ef2b1a65e" unique="true">
+            <column ascending="true" name="violation_code"/>
+         </index>
+         <index name="REL_cfc709dd7b1f9b169d511e8470" unique="true">
+            <column ascending="true" name="geo_organization_unit_code"/>
+         </index>
+         <index name="UQ_075f7b85cdd7dc303e89e92159a" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+         </index>
+      </table>
+      <table name="complaint" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_identifier" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="detail_text" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="caller_name" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="caller_address" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="caller_email" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="caller_phone_1" nullable="true" remarks="" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="caller_phone_2" nullable="true" remarks="" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="caller_phone_3" nullable="true" remarks="" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="location_geometry_point" nullable="true" remarks="" size="2147483647" type="geometry" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="location_summary_text" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="location_detailed_text" nullable="true" remarks="" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="incident_date" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="referred_by_agency_other_text" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="referred_by_agency_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_f8090f20f0139d2d7420f6163ed" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="owned_by_agency_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_e5b618c0886888304c411f35dfc" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="complaint_status_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="complaint_status_code" foreignKey="FK_e6601e9b13ab5aa9ab06b517993" implied="false" onDeleteCascade="false" schema="public" table="complaint_status_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="geo_organization_unit_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_09d2c019654f41e85cd46e25177" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
+         <index name="PK_81608122813eb4d5312f48e9eb4" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+         </index>
+         <index name="REL_09d2c019654f41e85cd46e2517" unique="true">
+            <column ascending="true" name="geo_organization_unit_code"/>
+         </index>
+         <index name="REL_e5b618c0886888304c411f35df" unique="true">
+            <column ascending="true" name="owned_by_agency_code"/>
+         </index>
+         <index name="REL_e6601e9b13ab5aa9ab06b51799" unique="true">
+            <column ascending="true" name="complaint_status_code"/>
+         </index>
+         <index name="REL_f8090f20f0139d2d7420f6163e" unique="true">
+            <column ascending="true" name="referred_by_agency_code"/>
+         </index>
+      </table>
+      <table name="complaint_status_code" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_status_code" nullable="false" remarks="" size="3" type="varchar" typeCode="12">
+            <child column="complaint_status_code" foreignKey="FK_afe7ba3e34bd78442c790ebf5b2" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+            <child column="complaint_status_code" foreignKey="FK_e6601e9b13ab5aa9ab06b517993" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="complaint_status_code" sequenceNumberInPK="1"/>
+         <index name="PK_661c4fa1830ed8d75c7092e9a80" unique="true">
+            <column ascending="true" name="complaint_status_code"/>
+         </index>
+      </table>
       <table name="flyway_schema_history" remarks="" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
@@ -17,6 +174,207 @@
          </index>
          <index name="flyway_schema_history_s_idx" unique="false">
             <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="geo_org_unit_structure" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="geo_org_unit_structure_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="effective_date" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="expiry_date" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="agency_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_40f171342e55119d30711e80706" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="parent_geo_org_unit_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_1e0515bf260c0a46b79a62e57d1" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="child_geo_org_unit_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_3a68bdf62164968168d2e76c362" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <primaryKey column="geo_org_unit_structure_guid" sequenceNumberInPK="1"/>
+         <index name="PK_61c2072baf86ce6538f03046b1e" unique="true">
+            <column ascending="true" name="geo_org_unit_structure_guid"/>
+         </index>
+         <index name="UQ_8b0283b29814749150d18386fed" unique="true">
+            <column ascending="true" name="parent_geo_org_unit_code"/>
+            <column ascending="true" name="child_geo_org_unit_code"/>
+         </index>
+      </table>
+      <table name="geo_org_unit_type_code" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_org_unit_type_code" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <child column="geo_org_unit_type_code" foreignKey="FK_7dfeedee1f44facd4894bd7b2ce" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="geo_org_unit_type_code" sequenceNumberInPK="1"/>
+         <index name="PK_1286498f2aec8be1877eee5850a" unique="true">
+            <column ascending="true" name="geo_org_unit_type_code"/>
+         </index>
+      </table>
+      <table name="geo_organization_unit_code" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_organization_unit_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
+            <child column="geo_organization_unit_code" foreignKey="FK_cfc709dd7b1f9b169d511e8470e" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+            <child column="geo_organization_unit_code" foreignKey="FK_09d2c019654f41e85cd46e25177" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="child_geo_org_unit_code" foreignKey="FK_3a68bdf62164968168d2e76c362" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+            <child column="parent_geo_org_unit_code" foreignKey="FK_1e0515bf260c0a46b79a62e57d1" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+            <child column="geo_organization_unit_code" foreignKey="FK_5a2fc0ce51b01923aa42bca1531" implied="false" onDeleteCascade="false" schema="public" table="office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="effective_date" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="expiry_date" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="geo_org_unit_type_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="geo_org_unit_type_code" foreignKey="FK_7dfeedee1f44facd4894bd7b2ce" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_type_code"/>
+         </column>
+         <primaryKey column="geo_organization_unit_code" sequenceNumberInPK="1"/>
+         <index name="PK_58b8d8fd2b72c1601fdf041ce80" unique="true">
+            <column ascending="true" name="geo_organization_unit_code"/>
+         </index>
+      </table>
+      <table name="geography_columns" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT current_database() AS f_table_catalog,&#10;    n.nspname AS f_table_schema,&#10;    c.relname AS f_table_name,&#10;    a.attname AS f_geography_column,&#10;    postgis_typmod_dims(a.atttypmod) AS coord_dimension,&#10;    postgis_typmod_srid(a.atttypmod) AS srid,&#10;    postgis_typmod_type(a.atttypmod) AS type&#10;   FROM pg_class c,&#10;    pg_attribute a,&#10;    pg_type t,&#10;    pg_namespace n&#10;  WHERE ((t.typname = 'geography'::name) AND (a.attisdropped = false) AND (a.atttypid = t.oid) AND (a.attrelid = c.oid) AND (c.relnamespace = n.oid) AND (c.relkind = ANY (ARRAY['r'::&quot;char&quot;, 'v'::&quot;char&quot;, 'm'::&quot;char&quot;, 'f'::&quot;char&quot;, 'p'::&quot;char&quot;])) AND (NOT pg_is_other_temp_schema(c.relnamespace)) AND has_table_privilege(c.oid, 'SELECT'::text));">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="f_table_catalog" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="f_table_schema" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="f_table_name" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="f_geography_column" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="coord_dimension" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="srid" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="spatial_ref_sys"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="type" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+      </table>
+      <table name="geometry_columns" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT (current_database())::character varying(256) AS f_table_catalog,&#10;    n.nspname AS f_table_schema,&#10;    c.relname AS f_table_name,&#10;    a.attname AS f_geometry_column,&#10;    COALESCE(postgis_typmod_dims(a.atttypmod), sn.ndims, 2) AS coord_dimension,&#10;    COALESCE(NULLIF(postgis_typmod_srid(a.atttypmod), 0), sr.srid, 0) AS srid,&#10;    (replace(replace(COALESCE(NULLIF(upper(postgis_typmod_type(a.atttypmod)), 'GEOMETRY'::text), st.type, 'GEOMETRY'::text), 'ZM'::text, ''::text), 'Z'::text, ''::text))::character varying(30) AS type&#10;   FROM ((((((pg_class c&#10;     JOIN pg_attribute a ON (((a.attrelid = c.oid) AND (NOT a.attisdropped))))&#10;     JOIN pg_namespace n ON ((c.relnamespace = n.oid)))&#10;     JOIN pg_type t ON ((a.atttypid = t.oid)))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            replace(split_part(s.consrc, ''''::text, 2), ')'::text, ''::text) AS type&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* '%geometrytype(% = %'::text)) st ON (((st.connamespace = n.oid) AND (st.conrelid = c.oid) AND (a.attnum = ANY (st.conkey)))))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            (replace(split_part(s.consrc, ' = '::text, 2), ')'::text, ''::text))::integer AS ndims&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* '%ndims(% = %'::text)) sn ON (((sn.connamespace = n.oid) AND (sn.conrelid = c.oid) AND (a.attnum = ANY (sn.conkey)))))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            (replace(replace(split_part(s.consrc, ' = '::text, 2), ')'::text, ''::text), '('::text, ''::text))::integer AS srid&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* '%srid(% = %'::text)) sr ON (((sr.connamespace = n.oid) AND (sr.conrelid = c.oid) AND (a.attnum = ANY (sr.conkey)))))&#10;  WHERE ((c.relkind = ANY (ARRAY['r'::&quot;char&quot;, 'v'::&quot;char&quot;, 'm'::&quot;char&quot;, 'f'::&quot;char&quot;, 'p'::&quot;char&quot;])) AND (NOT (c.relname = 'raster_columns'::name)) AND (t.typname = 'geometry'::name) AND (NOT pg_is_other_temp_schema(c.relnamespace)) AND has_table_privilege(c.oid, 'SELECT'::text));">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="f_table_catalog" nullable="true" remarks="" size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="f_table_schema" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="f_table_name" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="f_geometry_column" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="coord_dimension" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="srid" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="spatial_ref_sys"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="type" nullable="true" remarks="" size="30" type="varchar" typeCode="12"/>
+      </table>
+      <table name="office" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="office_guid" foreignKey="FK_58a97aa6c3b709335d64f90c06a" implied="false" onDeleteCascade="false" schema="public" table="officer"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geo_organization_unit_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_5a2fc0ce51b01923aa42bca1531" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="agency_code" nullable="true" remarks="" size="3" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_d871704008bd95de356e4b95eea" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <primaryKey column="office_guid" sequenceNumberInPK="1"/>
+         <index name="PK_bbad043d9dc25e69ee87831a69c" unique="true">
+            <column ascending="true" name="office_guid"/>
+         </index>
+         <index name="REL_5a2fc0ce51b01923aa42bca153" unique="true">
+            <column ascending="true" name="geo_organization_unit_code"/>
+         </index>
+         <index name="REL_d871704008bd95de356e4b95ee" unique="true">
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="officer" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="person_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="person_guid" foreignKey="FK_31caec31972d727196a8350934c" implied="false" onDeleteCascade="false" schema="public" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="office_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="office_guid" foreignKey="FK_58a97aa6c3b709335d64f90c06a" implied="false" onDeleteCascade="false" schema="public" table="office"/>
+         </column>
+         <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
+         <index name="PK_7fc935f4ae529157693940d5652" unique="true">
+            <column ascending="true" name="officer_guid"/>
+         </index>
+         <index name="REL_58a97aa6c3b709335d64f90c06" unique="true">
+            <column ascending="true" name="office_guid"/>
+         </index>
+         <index name="UQ_31caec31972d727196a8350934c" unique="true">
+            <column ascending="true" name="person_guid"/>
+         </index>
+      </table>
+      <table name="person" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="person_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="person_guid" foreignKey="FK_31caec31972d727196a8350934c" implied="false" onDeleteCascade="false" schema="public" table="officer"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="first_name" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="middle_name_1" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="middle_name_2" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="person_guid" sequenceNumberInPK="1"/>
+         <index name="PK_df1f2874a3d7d873e16cb26d4c7" unique="true">
+            <column ascending="true" name="person_guid"/>
+         </index>
+      </table>
+      <table name="spatial_ref_sys" numRows="8500" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="srid" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <child column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="geography_columns"/>
+            <child column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="geometry_columns"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="auth_name" nullable="true" remarks="" size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="auth_srid" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="srtext" nullable="true" remarks="" size="2048" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="proj4text" nullable="true" remarks="" size="2048" type="varchar" typeCode="12"/>
+         <primaryKey column="srid" sequenceNumberInPK="1"/>
+         <index name="spatial_ref_sys_pkey" unique="true">
+            <column ascending="true" name="srid"/>
+         </index>
+         <checkConstraint constraint="(((srid &gt; 0) AND (srid &lt;= 998999)))" name="spatial_ref_sys_srid_check"/>
+      </table>
+      <table name="violation_code" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="violation_code" nullable="false" remarks="" size="3" type="varchar" typeCode="12">
+            <child column="violation_code" foreignKey="FK_affe09f04d2660f47ef2b1a65e1" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="violation_code" sequenceNumberInPK="1"/>
+         <index name="PK_300d986eb9a47d3a01a1a59d379" unique="true">
+            <column ascending="true" name="violation_code"/>
          </index>
       </table>
    </tables>
