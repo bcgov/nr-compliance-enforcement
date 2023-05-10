@@ -10,22 +10,22 @@ import { UUID } from 'crypto';
 import { ComplaintDto } from '../complaint/dto/complaint.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 
+@UseGuards(JwtRoleGuard)
 @ApiTags("allegation-complaint")
 @Controller({
   path: 'allegation-complaint',
   version: '1'})
 export class AllegationComplaintController {
-  complaint: ComplaintDto;
   constructor(private readonly allegationComplaintService: AllegationComplaintService) {}
 
   @Post()
-  @Public()
+  @Roles(Role.COS_OFFICER)
   create(@Body() createAllegationComplaintDto: CreateAllegationComplaintDto) {
       return this.allegationComplaintService.create(createAllegationComplaintDto);
   }
 
   @Get()
-  @Public()
+  @Roles(Role.COS_OFFICER)
   findAll() {
     return this.allegationComplaintService.findAll();
   }
