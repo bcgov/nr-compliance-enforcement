@@ -135,7 +135,7 @@ export class Complaint {
     description: "The date of the incident the complaint was filed about",
   })
   @Column({ nullable: true })
-  incident_date: Date;
+  incident_reported_datetime: Date;
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",
