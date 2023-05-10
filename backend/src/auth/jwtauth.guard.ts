@@ -38,7 +38,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       this.logger.error('JWT Is not Valid');
       throw err || new UnauthorizedException();
     } else {
-      this.logger.debug('JWT is valids');
+      this.logger.debug('JWT is valid');
     }
     return user;
   }
