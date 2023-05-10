@@ -17,7 +17,12 @@ export class GeoOrgUnitStructureService {
   findAll() {
     return this.geoOrgUnitStructureRepository.find({
       relations: { 
+          parent_geo_org_unit_code: {
 
+          },
+          child_geo_org_unit_code: {
+          
+          }
       },
     });
   }
