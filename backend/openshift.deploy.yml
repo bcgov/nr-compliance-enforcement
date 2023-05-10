@@ -38,6 +38,12 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-compliance-enforcement/backend:prod
+  - name: PROMOTE_MIGRATION
+    description: Image (namespace/name:tag) for migration to promote/import
+    value: bcgov/nr-compliance-enforcement/database-migrations:test
+  - name: COMPONENT_DB_MIGRATION
+    description: Component name for database migrations
+    value: database-migrations
 objects:
   - apiVersion: v1
     kind: ImageStream
