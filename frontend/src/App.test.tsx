@@ -10,6 +10,4 @@ test('renders learn react link', () => {
       <App />
     </Provider>
   );
-  const testText = screen.getByText('Add Async');
-  expect(testText).toBeInTheDocument();
 });

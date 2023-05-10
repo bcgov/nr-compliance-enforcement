@@ -83,7 +83,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.3
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
@@ -109,7 +109,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           working-directory: ./frontend
-          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+          command: npx cypress run --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
