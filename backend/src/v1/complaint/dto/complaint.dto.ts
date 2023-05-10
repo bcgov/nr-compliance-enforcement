@@ -3,7 +3,7 @@ import { UUID } from 'crypto';
 import { AgencyCode } from 'src/v1/agency_code/entities/agency_code.entity';
 import { ComplaintStatusCode } from 'src/v1/complaint_status_code/entities/complaint_status_code.entity';
 import { GeoOrganizationUnitCode } from 'src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity';
-import { Point } from 'geojson';
+import { Geometry, Point } from 'geojson';
 
 export class ComplaintDto {
   @ApiProperty({
