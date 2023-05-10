@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Office } from "src/v1/office/entities/office.entity";
 import { Person } from "src/v1/person/entities/person.entity";
-import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 
 @Entity()
 @Unique(["person_guid"])
@@ -27,7 +27,7 @@ export class Officer
         example: "DCC",
         description: "The office for this officer",
       })
-      @OneToOne(() => Office, { nullable: true })
+      @ManyToOne(() => Office, { nullable: true })
       @JoinColumn({name: "office_guid"})
       office_guid: Office;
       

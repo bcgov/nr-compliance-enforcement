@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, OneToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, PrimaryColumn, Index, ManyToOne } from "typeorm";
 import { ComplaintStatusCode } from "src/v1/complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { UUID } from "crypto";
-import { Point } from "geojson";
+import { Point, Geometry } from "geojson";
 
 @Entity()
 export class Complaint {
@@ -19,7 +19,7 @@ export class Complaint {
     example: "COS",
     description: "The organization code of the organization that referred the complaint",
   })
-  @OneToOne(() => AgencyCode, { nullable: true })
+  @ManyToOne(() => AgencyCode, { nullable: true })
   @JoinColumn({name: "referred_by_agency_code"})
   referred_by_agency_code: AgencyCode;
 
@@ -27,7 +27,7 @@ export class Complaint {
     example: "COS",
     description: "The organization code of the organization that currently owns the complaint",
   })
-  @OneToOne(() => AgencyCode)
+  @ManyToOne(() => AgencyCode)
   @JoinColumn({name: "owned_by_agency_code"})
   owned_by_agency_code: AgencyCode;
 
@@ -35,7 +35,7 @@ export class Complaint {
     example: "Open",
     description: "The complaint status code",
   })
-  @OneToOne(() => ComplaintStatusCode)
+  @ManyToOne(() => ComplaintStatusCode)
   @JoinColumn({name: "complaint_status_code"})
   complaint_status_code: ComplaintStatusCode;
 
@@ -43,7 +43,7 @@ export class Complaint {
     example: "DCC",
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  @OneToOne(() => GeoOrganizationUnitCode)
+  @ManyToOne(() => GeoOrganizationUnitCode)
   @JoinColumn({name: "geo_organization_unit_code"})
   geo_organization_unit_code: GeoOrganizationUnitCode;
 
@@ -106,7 +106,6 @@ export class Complaint {
   @Column({
   type: 'geometry',
   nullable: true,
-  spatialFeatureType: 'Point',
   srid: 4326
   })
   location_geometry_point: Point;

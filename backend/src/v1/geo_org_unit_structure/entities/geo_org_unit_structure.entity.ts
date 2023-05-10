@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 
 @Entity()
 @Unique(["parent_geo_org_unit_code", "child_geo_org_unit_code"])
@@ -16,17 +16,17 @@ export class GeoOrgUnitStructure
       geo_org_unit_structure_guid: UUID;
     
       @ApiProperty({ example: "COS", description: "The agency this geo org unit structure references" })
-      @OneToOne(() => AgencyCode, { nullable: true })
+      @ManyToOne(() => AgencyCode, { nullable: true })
       @JoinColumn({name: "agency_code"})
       agency_code: AgencyCode;
     
       @ApiProperty({ example: "903f87c8-76dd-427c-a1bb-4d179e443252", description: "The parent geo org unit structure" })
-      @OneToOne(() => GeoOrganizationUnitCode, { nullable: true })
+      @ManyToOne(() => GeoOrganizationUnitCode, { nullable: true })
       @JoinColumn({name: "parent_geo_org_unit_code"})
       parent_geo_org_unit_code: GeoOrganizationUnitCode;
     
       @ApiProperty({ example: "903f87c8-76dd-427c-a1bb-4d179e443252", description: "The child geo org unit structure" })
-      @OneToOne(() => GeoOrganizationUnitCode, { nullable: true })
+      @ManyToOne(() => GeoOrganizationUnitCode, { nullable: true })
       @JoinColumn({name: "child_geo_org_unit_code"})
       child_geo_org_unit_code: GeoOrganizationUnitCode;
 

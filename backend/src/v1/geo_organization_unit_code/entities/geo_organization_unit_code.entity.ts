@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { GeoOrgUnitTypeCode } from "src/v1/geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
 
 @Entity()
 export class GeoOrganizationUnitCode 
@@ -17,7 +17,7 @@ export class GeoOrganizationUnitCode
         example: "Open",
         description: "The complaint status code",
       })
-      @OneToOne(() => GeoOrgUnitTypeCode)
+      @ManyToOne(() => GeoOrgUnitTypeCode)
       @JoinColumn({name: "geo_org_unit_type_code"})
       geo_org_unit_type_code: GeoOrgUnitTypeCode;
     

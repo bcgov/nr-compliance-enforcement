@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Complaint } from "src/v1/complaint/entities/complaint.entity";
 import { ViolationCode } from "src/v1/violation_code/entities/violation_code.entity";
-import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 
 @Entity()
 @Unique(["complaint_identifier"])
@@ -21,7 +21,7 @@ export class AllegationComplaint
       complaint_identifier: Complaint;
     
       @ApiProperty({ example: "INV", description: "The violation code for this allegation" })
-      @OneToOne(() => ViolationCode, { nullable: true })
+      @ManyToOne(() => ViolationCode, { nullable: true })
       @JoinColumn({name: "violation_code"})
       violation_code: ViolationCode;
     
