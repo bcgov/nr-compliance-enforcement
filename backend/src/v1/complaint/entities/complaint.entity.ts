@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, OneToOne, JoinColumn, PrimaryColumn, Index, ManyToOne } from "typeorm";
+import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne } from "typeorm";
 import { ComplaintStatusCode } from "src/v1/complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { UUID } from "crypto";
-import { Point, Geometry } from "geojson";
+import { Point } from "geojson";
 
 @Entity()
 export class Complaint {
