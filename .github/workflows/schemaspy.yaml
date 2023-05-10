@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgis
+        image: postgis/postgis
         env:
           POSTGRES_DB: default
           POSTGRES_USER: postgres
