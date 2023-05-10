@@ -2,305 +2,211 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
 
--- public.agency_code definition
-
--- Drop table
-
--- DROP TABLE public.agency_code;
-
 CREATE TABLE public.agency_code (
 	agency_code varchar(6) NOT NULL,
 	short_description varchar(120) NOT NULL,
-	long_description varchar(120) NULL,
-	display_order int4 NOT NULL,
-	active_ind bool NOT NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	CONSTRAINT "PK_478945fb4f3b754f1e5dccc3f34" PRIMARY KEY (agency_code)
+    long_description varchar(120) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_agency_code_agency_code" PRIMARY KEY (agency_code)
 );
-
-
--- public.complaint_status_code definition
-
--- Drop table
-
--- DROP TABLE public.complaint_status_code;
 
 CREATE TABLE public.complaint_status_code (
-	complaint_status_code varchar(3) NOT NULL,
-	short_description varchar(120) NOT NULL,
-	long_description varchar(120) NULL,
-	display_order int4 NOT NULL,
-	active_ind bool NOT NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	CONSTRAINT "PK_661c4fa1830ed8d75c7092e9a80" PRIMARY KEY (complaint_status_code)
+    complaint_status_code varchar(6) NOT NULL,
+    short_description varchar(120) NOT NULL,
+    long_description varchar(120) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_complaint_status_code" PRIMARY KEY (complaint_status_code)
 );
-
-
--- public.geo_org_unit_type_code definition
-
--- Drop table
-
--- DROP TABLE public.geo_org_unit_type_code;
 
 CREATE TABLE public.geo_org_unit_type_code (
-	geo_org_unit_type_code varchar(6) NOT NULL,
-	short_description varchar(32) NOT NULL,
-	long_description varchar(120) NULL,
-	display_order int4 NOT NULL,
-	active_ind bool NOT NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	CONSTRAINT "PK_1286498f2aec8be1877eee5850a" PRIMARY KEY (geo_org_unit_type_code)
+    geo_org_unit_type_code varchar(6) NOT NULL,
+    short_description varchar(32) NOT NULL,
+    long_description varchar(120) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_geo_org_unit_type_code" PRIMARY KEY (geo_org_unit_type_code)
 );
-
-
--- public.person definition
-
--- Drop table
-
--- DROP TABLE public.person;
 
 CREATE TABLE public.person (
-	person_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
-	first_name varchar(32) NOT NULL,
-	middle_name_1 varchar(32) NULL,
-	middle_name_2 varchar(32) NULL,
-	last_name varchar(32) NOT NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	CONSTRAINT "PK_df1f2874a3d7d873e16cb26d4c7" PRIMARY KEY (person_guid)
+    person_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    first_name varchar(32) NOT NULL,
+    middle_name_1 varchar(32) NULL,
+    middle_name_2 varchar(32) NULL,
+    last_name varchar(32) NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_person" PRIMARY KEY (person_guid)
 );
 
-
--- public.violation_code definition
-
--- Drop table
-
--- DROP TABLE public.violation_code;
+CREATE TABLE public.users (
+    id serial4 NOT NULL,
+    "name" varchar NOT NULL,
+    email varchar NOT NULL,
+    CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY (id)
+);
 
 CREATE TABLE public.violation_code (
-	violation_code varchar(3) NOT NULL,
-	short_description varchar(120) NOT NULL,
-	long_description varchar(120) NULL,
-	display_order int4 NOT NULL,
-	active_ind bool NOT NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	CONSTRAINT "PK_300d986eb9a47d3a01a1a59d379" PRIMARY KEY (violation_code)
+    violation_code varchar(10) NOT NULL,
+    short_description varchar(120) NOT NULL,
+    long_description varchar(120) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_violation_code" PRIMARY KEY (violation_code)
 );
 
-
--- public.geo_organization_unit_code definition
-
--- Drop table
-
--- DROP TABLE public.geo_organization_unit_code;
 
 CREATE TABLE public.geo_organization_unit_code (
-	geo_organization_unit_code varchar(10) NOT NULL,
-	short_description varchar(120) NULL,
-	long_description varchar(120) NULL,
-	effective_date timestamp NOT NULL,
-	expiry_date timestamp NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	geo_org_unit_type_code varchar(6) NULL,
-	CONSTRAINT "PK_58b8d8fd2b72c1601fdf041ce80" PRIMARY KEY (geo_organization_unit_code),
-	CONSTRAINT "FK_7dfeedee1f44facd4894bd7b2ce" FOREIGN KEY (geo_org_unit_type_code) REFERENCES public.geo_org_unit_type_code(geo_org_unit_type_code)
+    geo_organization_unit_code varchar(12) NOT NULL,
+    short_description varchar(120) NULL,
+    long_description varchar(120) NULL,
+    effective_date timestamp NOT NULL,
+    expiry_date timestamp NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    geo_org_unit_type_code varchar(6) NULL,
+    CONSTRAINT "PK_geo_organization_unit_code" PRIMARY KEY (geo_organization_unit_code),
+    CONSTRAINT "FK_geo_organization_unit_code_geo_org_unit_type_code" FOREIGN KEY (geo_org_unit_type_code) REFERENCES public.geo_org_unit_type_code(geo_org_unit_type_code)
 );
 
-
--- public.office definition
-
--- Drop table
-
--- DROP TABLE public.office;
 
 CREATE TABLE public.office (
-	office_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	geo_organization_unit_code varchar(3) NULL,
-	agency_code varchar(3) NULL,
-	CONSTRAINT "PK_bbad043d9dc25e69ee87831a69c" PRIMARY KEY (office_guid),
-	CONSTRAINT "REL_5a2fc0ce51b01923aa42bca153" UNIQUE (geo_organization_unit_code),
-	CONSTRAINT "REL_d871704008bd95de356e4b95ee" UNIQUE (agency_code),
-	CONSTRAINT "FK_5a2fc0ce51b01923aa42bca1531" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-	CONSTRAINT "FK_d871704008bd95de356e4b95eea" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
+    office_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    geo_organization_unit_code varchar(3) NULL,
+    agency_code varchar(3) NULL,
+    CONSTRAINT "PK_office" PRIMARY KEY (office_guid),
+    CONSTRAINT "FK_office_ geo_organization_unit_code" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_office_agencyu_code" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
 );
 
-
--- public.officer definition
-
--- Drop table
-
--- DROP TABLE public.officer;
 
 CREATE TABLE public.officer (
-	officer_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
-	user_id varchar(32) NOT NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	person_guid uuid NULL,
-	office_guid uuid NULL,
-	CONSTRAINT "PK_7fc935f4ae529157693940d5652" PRIMARY KEY (officer_guid),
-	CONSTRAINT "REL_58a97aa6c3b709335d64f90c06" UNIQUE (office_guid),
-	CONSTRAINT "UQ_31caec31972d727196a8350934c" UNIQUE (person_guid),
-	CONSTRAINT "FK_31caec31972d727196a8350934c" FOREIGN KEY (person_guid) REFERENCES public.person(person_guid),
-	CONSTRAINT "FK_58a97aa6c3b709335d64f90c06a" FOREIGN KEY (office_guid) REFERENCES public.office(office_guid)
+    officer_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    user_id varchar(32) NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    person_guid uuid NULL,
+    office_guid uuid NULL,
+    CONSTRAINT "PK_officer" PRIMARY KEY (officer_guid),
+    CONSTRAINT "UQ_officer" UNIQUE (person_guid),
+    CONSTRAINT "FK_officer_person" FOREIGN KEY (person_guid) REFERENCES public.person(person_guid),
+    CONSTRAINT "FK_officer_office_guid" FOREIGN KEY (office_guid) REFERENCES public.office(office_guid)
 );
-
-
--- public.allegation_complaint definition
-
--- Drop table
-
--- DROP TABLE public.allegation_complaint;
-
-CREATE TABLE public.allegation_complaint (
-	complaint_identifier varchar(20) NOT NULL,
-	detail_text varchar(250) NULL,
-	caller_name varchar(120) NULL,
-	caller_address varchar(120) NULL,
-	caller_email varchar(120) NULL,
-	caller_phone_1 varchar(15) NULL,
-	caller_phone_2 varchar(15) NULL,
-	caller_phone_3 varchar(15) NULL,
-	location_geometry_point public.geometry NULL,
-	location_summary_text varchar(120) NULL,
-	location_detailed_text varchar(255) NULL,
-	incident_date timestamp NULL,
-	referred_by_agency_other_text varchar(120) NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	allegation_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
-	in_progress_ind bool NOT NULL,
-	observed_ind bool NOT NULL,
-	suspect_witnesss_dtl_text varchar(255) NULL,
-	referred_by_agency_code varchar(3) NULL,
-	owned_by_agency_code varchar(3) NULL,
-	complaint_status_code varchar(3) NULL,
-	geo_organization_unit_code varchar(3) NULL,
-	violation_code varchar(3) NULL,
-	CONSTRAINT "PK_ffec83326dcc6ceecad4f0bc349" PRIMARY KEY (complaint_identifier, allegation_complaint_guid),
-	CONSTRAINT "REL_321c0e5df9f2fbb47faaf16328" UNIQUE (referred_by_agency_code),
-	CONSTRAINT "REL_596a2a29d2977428baec6b9330" UNIQUE (owned_by_agency_code),
-	CONSTRAINT "REL_afe7ba3e34bd78442c790ebf5b" UNIQUE (complaint_status_code),
-	CONSTRAINT "REL_affe09f04d2660f47ef2b1a65e" UNIQUE (violation_code),
-	CONSTRAINT "REL_cfc709dd7b1f9b169d511e8470" UNIQUE (geo_organization_unit_code),
-	CONSTRAINT "UQ_075f7b85cdd7dc303e89e92159a" UNIQUE (complaint_identifier),
-	CONSTRAINT "FK_321c0e5df9f2fbb47faaf163284" FOREIGN KEY (referred_by_agency_code) REFERENCES public.agency_code(agency_code),
-	CONSTRAINT "FK_596a2a29d2977428baec6b93306" FOREIGN KEY (owned_by_agency_code) REFERENCES public.agency_code(agency_code),
-	CONSTRAINT "FK_afe7ba3e34bd78442c790ebf5b2" FOREIGN KEY (complaint_status_code) REFERENCES public.complaint_status_code(complaint_status_code),
-	CONSTRAINT "FK_affe09f04d2660f47ef2b1a65e1" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code),
-	CONSTRAINT "FK_cfc709dd7b1f9b169d511e8470e" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code)
-);
-
-
--- public.complaint definition
-
--- Drop table
-
--- DROP TABLE public.complaint;
 
 CREATE TABLE public.complaint (
-	complaint_identifier varchar(20) NOT NULL,
-	detail_text varchar(250) NULL,
-	caller_name varchar(120) NULL,
-	caller_address varchar(120) NULL,
-	caller_email varchar(120) NULL,
-	caller_phone_1 varchar(15) NULL,
-	caller_phone_2 varchar(15) NULL,
-	caller_phone_3 varchar(15) NULL,
-	location_geometry_point public.geometry NULL,
-	location_summary_text varchar(120) NULL,
-	location_detailed_text varchar(255) NULL,
-	incident_date timestamp NULL,
-	referred_by_agency_other_text varchar(120) NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	referred_by_agency_code varchar(3) NULL,
-	owned_by_agency_code varchar(3) NULL,
-	complaint_status_code varchar(3) NULL,
-	geo_organization_unit_code varchar(3) NULL,
-	CONSTRAINT "PK_81608122813eb4d5312f48e9eb4" PRIMARY KEY (complaint_identifier),
-	CONSTRAINT "REL_09d2c019654f41e85cd46e2517" UNIQUE (geo_organization_unit_code),
-	CONSTRAINT "REL_e5b618c0886888304c411f35df" UNIQUE (owned_by_agency_code),
-	CONSTRAINT "REL_e6601e9b13ab5aa9ab06b51799" UNIQUE (complaint_status_code),
-	CONSTRAINT "REL_f8090f20f0139d2d7420f6163e" UNIQUE (referred_by_agency_code),
-	CONSTRAINT "FK_09d2c019654f41e85cd46e25177" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-	CONSTRAINT "FK_e5b618c0886888304c411f35dfc" FOREIGN KEY (owned_by_agency_code) REFERENCES public.agency_code(agency_code),
-	CONSTRAINT "FK_e6601e9b13ab5aa9ab06b517993" FOREIGN KEY (complaint_status_code) REFERENCES public.complaint_status_code(complaint_status_code),
-	CONSTRAINT "FK_f8090f20f0139d2d7420f6163ed" FOREIGN KEY (referred_by_agency_code) REFERENCES public.agency_code(agency_code)
+    complaint_identifier varchar(20) NOT NULL,
+    detail_text varchar(250) NULL,
+    caller_name varchar(120) NULL,
+    caller_address varchar(120) NULL,
+    caller_email varchar(120) NULL,
+    caller_phone_1 varchar(15) NULL,
+    caller_phone_2 varchar(15) NULL,
+    caller_phone_3 varchar(15) NULL,
+    location_summary_text varchar(120) NULL,
+    location_detailed_text varchar(255) NULL,
+    incident_reported_datetime timestamp NULL,
+    referred_by_agency_other_text varchar(120) NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    referred_by_agency_code varchar(3) NULL,
+    owned_by_agency_code varchar(3) NULL,
+    complaint_status_code varchar(3) NULL,
+    geo_organization_unit_code varchar(3) NULL,
+    location_geometry_point public.geometry NULL,
+    CONSTRAINT "PK_complaint" PRIMARY KEY (complaint_identifier),
+    CONSTRAINT "FK_complaint_geo_organization_unit_code" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_complaint_owned_by_agency_code" FOREIGN KEY (owned_by_agency_code) REFERENCES public.agency_code(agency_code),
+    CONSTRAINT "FK_complaint_complaint_status_code" FOREIGN KEY (complaint_status_code) REFERENCES public.complaint_status_code(complaint_status_code),
+    CONSTRAINT "FK_complaint_referred_by_agency_code" FOREIGN KEY (referred_by_agency_code) REFERENCES public.agency_code(agency_code)
+);
+CREATE INDEX "IDX_adbfa452bdecec83d2daf17d18" ON public.complaint USING gist (location_geometry_point);
+
+
+CREATE TABLE public.geo_org_unit_structure (
+    geo_org_unit_structure_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    effective_date timestamp NOT NULL,
+    expiry_date timestamp NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    agency_code varchar(3) NULL,
+    parent_geo_org_unit_code varchar(12) NULL,
+    child_geo_org_unit_code varchar(12) NULL,
+    CONSTRAINT "PK_geo_org_unit_structure" PRIMARY KEY (geo_org_unit_structure_guid),
+    CONSTRAINT "UQ_geo_org_unit_structure" UNIQUE (parent_geo_org_unit_code, child_geo_org_unit_code),
+    CONSTRAINT "FK_geo_org_unit_structure_parent_geo_org_unit_code" FOREIGN KEY (parent_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_geo_org_unit_structure_child_geo_org_unit_code" FOREIGN KEY (child_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_geo_org_unit_structure_agency_code" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
 );
 
 
--- public.geo_org_unit_structure definition
-
--- Drop table
-
--- DROP TABLE public.geo_org_unit_structure;
-
-CREATE TABLE public.geo_org_unit_structure (
-	geo_org_unit_structure_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
-	effective_date timestamp NOT NULL,
-	expiry_date timestamp NULL,
-	create_user_id varchar(32) NOT NULL,
-	create_user_guid uuid NULL,
-	create_timestamp timestamp NOT NULL,
-	update_user_id varchar(32) NOT NULL,
-	update_user_guid uuid NULL,
-	update_timestamp timestamp NOT NULL,
-	agency_code varchar(6) NULL,
-	parent_geo_org_unit_code varchar(10) NULL,
-	child_geo_org_unit_code varchar(10) NULL,
-	CONSTRAINT "PK_61c2072baf86ce6538f03046b1e" PRIMARY KEY (geo_org_unit_structure_guid),
-	CONSTRAINT "UQ_8b0283b29814749150d18386fed" UNIQUE (parent_geo_org_unit_code, child_geo_org_unit_code),
-	CONSTRAINT "FK_1e0515bf260c0a46b79a62e57d1" FOREIGN KEY (parent_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-	CONSTRAINT "FK_3a68bdf62164968168d2e76c362" FOREIGN KEY (child_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-	CONSTRAINT "FK_40f171342e55119d30711e80706" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
+CREATE TABLE public.allegation_complaint (
+    allegation_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    in_progress_ind bool NOT NULL,
+    observed_ind bool NOT NULL,
+    suspect_witnesss_dtl_text varchar(255) NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    complaint_identifier varchar(20) NULL,
+    violation_code varchar(3) NULL,
+    CONSTRAINT "PK_allegation_complaint" PRIMARY KEY (allegation_complaint_guid),
+    CONSTRAINT "UQ_allegation_complaint" UNIQUE (complaint_identifier),
+    CONSTRAINT "FK_allegation_complaint_complaint_identifier" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
+    CONSTRAINT "FK_allegation_complaint_violation_code" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code)
 );
 
 
@@ -2405,3 +2311,157 @@ values (now(), null, user, null, now(), user, null, now(), 'COS','KTNY','CLMBAKT
 	(now(), null, user, null, now(), user, null, now(), 'COS','DNCN','YOUBOU'),
 	(now(), null, user, null, now(), user, null, now(), 'COS','100MLHSE','YOUNGLK'),
 	(now(), null, user, null, now(), user, null, now(), 'COS','PRTMCNL','ZEBALLOS');
+
+	-- comments
+
+comment on table public.agency_code is 'An agency is an organized and named grouping of people that interacts in some way with the Ministry.';
+comment on table public.geo_org_unit_structure is 'A geographical organization unit structure is a parent/child relationship between two geographical organization units.';
+comment on table public.geo_organization_unit_code is 'A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White';
+comment on table public.geo_org_unit_type_code is 'A geographical organization unit type describes the level of granularity for a given geographical organization unit. Supported geographical organization unit types are (ZONE = Zone; REGION = Region; OFFLOC = Office Location; AREA = Area).  ';
+comment on table public.office is 'An office is a physical location that serves as a central organization point for groups of users of the system.   ';
+comment on table public.person is 'A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence.';
+comment on table public.officer is 'An officer is a subtype of a person who can be identified through their IDIR.';
+comment on table public.complaint_status_code is 'The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed.';
+comment on table public.complaint is 'Initial information provided on a potential incident.';
+comment on table public.violation_code is 'The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)';
+comment on table public.allegation_complaint is 'A complaint for which a caller believes that a Violation has occurred and should be investigated.';
+
+comment on column public.agency_code.agency_code is 'A human readable code used to identify an agency.';
+comment on column public.agency_code.short_description is 'The short description of the agency code.';
+comment on column public.agency_code.long_description is 'The long description of the agency code.';
+comment on column public.agency_code.display_order is 'The order in which the values of the agency code table should be displayed when presented to a user in a list.';
+comment on column public.agency_code.active_ind is 'A boolean indicator to determine if the agency code is active.';
+comment on column public.agency_code.create_user_id is 'The id of the user that created the agency code.';
+comment on column public.agency_code.create_user_guid is 'The unique guid of the user that created the agency code.';
+comment on column public.agency_code.create_timestamp is 'The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.agency_code.update_user_id is 'The id of the user that updated the agency code.';
+comment on column public.agency_code.update_user_guid is 'The unique guid of the user that updated the agency code.';
+comment on column public.agency_code.update_timestamp is 'The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.geo_org_unit_structure.geo_org_unit_structure_guid is 'System generated unique key for a geographical organization unit structure. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.geo_org_unit_structure.agency_code is 'A human readable code used to identify an agency.  The agency that defines the geographical organization unit structural relationship.';
+comment on column public.geo_org_unit_structure.parent_geo_org_unit_code is 'The geographical organization that contains the child geographical organization unit.';
+comment on column public.geo_org_unit_structure.child_geo_org_unit_code is 'The geographical organization that is contained by the parent geographical organization unit.';
+comment on column public.geo_org_unit_structure.effective_date is 'The date the Geographical Organizational Unit Structure becomes effective as a valid relationship within the Ministry organizational structure.';
+comment on column public.geo_org_unit_structure.expiry_date is 'The date the Geographical Organizational Unit Structure is no longer recognized as a valid relationship within the Ministry organizational structure.';
+comment on column public.geo_org_unit_structure.create_user_id is 'The id of the user that created the geographical organization unit structure.';
+comment on column public.geo_org_unit_structure.create_user_guid is 'The unique guid of the user that created the geographical organization unit structure.';
+comment on column public.geo_org_unit_structure.create_timestamp is 'The timestamp when the geographical organization unit structure was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.geo_org_unit_structure.update_user_id is 'The id of the user that updated the geographical organization unit structure.';
+comment on column public.geo_org_unit_structure.update_user_guid is 'The unique guid of the user that updated the geographical organization unit structure.';
+comment on column public.geo_org_unit_structure.update_timestamp is 'The timestamp when the geographical organization unit structure was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.geo_organization_unit_code.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.';
+comment on column public.geo_organization_unit_code.geo_org_unit_type_code is 'A human readable code used to identify a geographical organization unit type.';
+comment on column public.geo_organization_unit_code.short_description is 'The short description of the geographical organization unit code.';
+comment on column public.geo_organization_unit_code.long_description is 'The long description of the geographical organization unit code.';
+comment on column public.geo_organization_unit_code.effective_date is 'The date the Geographical Organizational Unit becomes effective as a boundaried physical location within the Ministry organizational structure.';
+comment on column public.geo_organization_unit_code.expiry_date is 'The date the Geographical Organizational Unit is no longer recognized as a valid physical location within the Ministry organizational structure.';
+comment on column public.geo_organization_unit_code.create_user_id is 'The id of the user that created the geographical organization unit code.';
+comment on column public.geo_organization_unit_code.create_user_guid is 'The unique guid of the user that created the geographical organization unit code.';
+comment on column public.geo_organization_unit_code.create_timestamp is 'The timestamp when the geographical organization unit code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.geo_organization_unit_code.update_user_id is 'The id of the user that updated the geographical organization unit code.';
+comment on column public.geo_organization_unit_code.update_user_guid is 'The unique guid of the user that updated the geographical organization unit code.';
+comment on column public.geo_organization_unit_code.update_timestamp is 'The timestamp when the geographical organization unit code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.geo_org_unit_type_code.geo_org_unit_type_code is 'A human readable code used to identify a geographical organization unit type.';
+comment on column public.geo_org_unit_type_code.short_description is 'The short description of the geographical organization unit type code.';
+comment on column public.geo_org_unit_type_code.long_description is 'The long description of the geographical organization unit type code.';
+comment on column public.geo_org_unit_type_code.display_order is 'The order in which the values of the geographical organization unit type code table should be displayed when presented to a user in a list.';
+comment on column public.geo_org_unit_type_code.active_ind is 'A boolean indicator to determine if the geographical organization unit type code is active.';
+comment on column public.geo_org_unit_type_code.create_user_id is 'The id of the user that created the geographical organization unit type code.';
+comment on column public.geo_org_unit_type_code.create_user_guid is 'The unique guid of the user that created the geographical organization unit type code.';
+comment on column public.geo_org_unit_type_code.create_timestamp is 'The timestamp when the geographical organization unit type code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.geo_org_unit_type_code.update_user_id is 'The id of the user that updated the geographical organization unit type code.';
+comment on column public.geo_org_unit_type_code.update_user_guid is 'The unique guid of the user that updated the geographical organization unit type code.';
+comment on column public.geo_org_unit_type_code.update_timestamp is 'The timestamp when the geographical organization unit type code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.office.office_guid is 'System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.office.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy.';
+comment on column public.office.agency_code is 'A human readable code used to identify an agency.  The agency that owns the office.';
+comment on column public.office.create_user_id is 'The id of the user that created the office.';
+comment on column public.office.create_user_guid is 'The unique guid of the user that created the the office.';
+comment on column public.office.create_timestamp is 'The timestamp when the office was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.office.update_user_id is 'The id of the user that updated the office.';
+comment on column public.office.update_user_guid is 'The unique guid of the user that updated the office.';
+comment on column public.office.update_timestamp is 'The timestamp when the office was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.person.person_guid is 'System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.person.first_name is 'The first name of a person.';
+comment on column public.person.middle_name_1 is 'The first middle name of a person.';
+comment on column public.person.middle_name_2 is 'Any remaining middle names beyond the first of a person.';
+comment on column public.person.last_name is 'The last name of a person.';
+comment on column public.person.create_user_id is 'The id of the user that created the person.';
+comment on column public.person.create_user_guid is 'The unique guid of the user that created the person.';
+comment on column public.person.create_timestamp is 'The timestamp when the person was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.person.update_user_id is 'The id of the user that updated the person.';
+comment on column public.person.update_user_guid is 'The unique guid of the user that updated the person.';
+comment on column public.person.update_timestamp is 'The timestamp when the person was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.officer.officer_guid is 'System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.officer.person_guid is 'System generated unique key for an person.';
+comment on column public.officer.office_guid is 'System generated unique key for an office. The primary office an officer is assigned to.';
+comment on column public.officer.user_id is 'The IDIR ID issued to the user by the Government of British Columbia as part of their employment.';
+comment on column public.officer.create_user_id is 'The id of the user that created the officer.';
+comment on column public.officer.create_user_guid is 'The unique guid of the user that created the the officer.';
+comment on column public.officer.create_timestamp is 'The timestamp when the officer was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.officer.update_user_id is 'The id of the user that updated the officer.';
+comment on column public.officer.update_user_guid is 'The unique guid of the user that updated the officer.';
+comment on column public.officer.update_timestamp is 'The timestamp when the officer was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.complaint_status_code.complaint_status_code is 'A human readable code used to identify a complaint status.';
+comment on column public.complaint_status_code.short_description is 'The short description of the complaint status code.';
+comment on column public.complaint_status_code.long_description is 'The long description of the complaint status code.';
+comment on column public.complaint_status_code.display_order is 'The order in which the values of the complaint status code table should be displayed when presented to a user in a list.';
+comment on column public.complaint_status_code.active_ind is 'A boolean indicator to determine if the complaint status code is active.';
+comment on column public.complaint_status_code.create_user_id is 'The id of the user that created the complaint status code.';
+comment on column public.complaint_status_code.create_user_guid is 'The unique guid of the user that created the complaint status code.';
+comment on column public.complaint_status_code.create_timestamp is 'The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.complaint_status_code.update_user_id is 'The id of the user that updated the complaint status code.';
+comment on column public.complaint_status_code.update_user_guid is 'The unique guid of the user that updated the complaint status code.';
+comment on column public.complaint_status_code.update_timestamp is 'The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.complaint.referred_by_agency_code is 'A human readable code used to identify an agency.  The agency that originally referred the complaint.';
+comment on column public.complaint.owned_by_agency_code is 'A human readable code used to identify an agency.  The agency that currently owns the complaint.';
+comment on column public.complaint.complaint_status_code is 'A human readable code used to identify a complaint status.';
+comment on column public.complaint.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.   The finest known grain geographical organization unit where the complaint occurred.  ';
+comment on column public.complaint.detail_text is 'Verbatim details of the complaint as recorded by the call centre or through the web form.';
+comment on column public.complaint.caller_name is 'The name provided by the caller to the call centre or entered onto the web form.';
+comment on column public.complaint.caller_address is 'The address provided by the caller to the call centre or entered onto the web form.';
+comment on column public.complaint.caller_email is 'The email address provided by the caller to the call centre or entered onto the web form.';
+comment on column public.complaint.caller_phone_1 is 'The primary phone number provided by the caller to the call centre or entered onto the web form.';
+comment on column public.complaint.caller_phone_2 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
+comment on column public.complaint.caller_phone_3 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
+comment on column public.complaint.location_geometry_point is 'The closest approximation to where the incident occurred.   Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)';
+comment on column public.complaint.location_summary_text is 'A brief summary of the location of the complaint.';
+comment on column public.complaint.location_detailed_text is 'A more detailed description of the location of the complaint.';
+comment on column public.complaint.referred_by_agency_other_text is 'Provides a more detailed description when the referred by Agency is of type "OTHER" ';
+comment on column public.complaint.create_user_id is 'The id of the user that created the complaint.';
+comment on column public.complaint.create_user_guid is 'The unique guid of the user that created the complaint.';
+comment on column public.complaint.create_timestamp is 'The timestamp when the complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.complaint.update_user_id is 'The id of the user that updated the complaint.';
+comment on column public.complaint.update_user_guid is 'The unique guid of the user that updated the complaint.';
+comment on column public.complaint.update_timestamp is 'The timestamp when the complaint was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.violation_code.violation_code is 'A human readable code used to identify a violation.';
+comment on column public.violation_code.short_description is 'The short description of the violation code.';
+comment on column public.violation_code.long_description is 'The long description of the violation code.';
+comment on column public.violation_code.display_order is 'The order in which the values of the violation code table should be displayed when presented to a user in a list.';
+comment on column public.violation_code.active_ind is 'A boolean indicator to determine if the violation code is active.';
+comment on column public.violation_code.create_user_id is 'The id of the user that created the violation code.';
+comment on column public.violation_code.create_user_guid is 'The unique guid of the user that created the violation code.';
+comment on column public.violation_code.create_timestamp is 'The timestamp when the violation code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.violation_code.update_user_id is 'The id of the user that updated the violation code.';
+comment on column public.violation_code.update_user_guid is 'The unique guid of the user that updated the violation code.';
+comment on column public.violation_code.update_timestamp is 'The timestamp when the violation code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.allegation_complaint.allegation_complaint_guid is 'System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.allegation_complaint.violation_code is 'A human readable code used to identify a violation.';
+comment on column public.allegation_complaint.in_progress_ind is 'True if the alleged violation is currently described as being in progress.  False otherwise.';
+comment on column public.allegation_complaint.observed_ind is 'True if the alleged violation was observed first hand.  False otherwise.';
+comment on column public.allegation_complaint.create_user_id is 'The id of the user that created the allegation complaint.';
+comment on column public.allegation_complaint.create_user_guid is 'The unique guid of the user that created the allegation complaint.';
+comment on column public.allegation_complaint.create_timestamp is 'The timestamp when the allegation complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.allegation_complaint.update_user_id is 'The id of the user that updated the allegation complaint.';
+comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
+comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
