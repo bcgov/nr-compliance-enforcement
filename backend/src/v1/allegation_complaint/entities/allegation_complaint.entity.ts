@@ -3,11 +3,10 @@ import { UUID } from "crypto";
 import { Complaint } from "src/v1/complaint/entities/complaint.entity";
 import { ViolationCode } from "src/v1/violation_code/entities/violation_code.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
-import { ComplaintService } from "../../complaint/complaint.service";
 
 @Entity()
 @Unique(["complaint_identifier"])
-export class AllegationComplaint extends Complaint
+export class AllegationComplaint
 {
     @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
@@ -15,6 +14,11 @@ export class AllegationComplaint extends Complaint
       })
       @PrimaryGeneratedColumn("uuid")
       allegation_complaint_guid: UUID;
+    
+      @ApiProperty({ example: "COS-5436", description: "The complaint this allegation references" })
+      @OneToOne(() => Complaint)
+      @JoinColumn({name: "complaint_identifier"})
+      complaint_identifier: Complaint;
     
       @ApiProperty({ example: "INV", description: "The violation code for this allegation" })
       @OneToOne(() => ViolationCode, { nullable: true })
@@ -79,6 +83,6 @@ export class AllegationComplaint extends Complaint
       update_timestamp: Date;
     
       constructor() {
-        super();
+
       }
 }
