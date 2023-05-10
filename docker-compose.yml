@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: default
-      POSTGRES_DB: default
+      POSTGRES_DB: postgres
     hostname: database
     restart: always
     user: postgres
@@ -27,7 +27,7 @@ services:
     volumes:
       - "./backend/db/migrations:/flyway/sql"
     environment:
-      - FLYWAY_URL=jdbc:postgresql://database:5432/default
+      - FLYWAY_URL=jdbc:postgresql://database:5432/postgres
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=default
       - FLYWAY_BASELINE_ON_MIGRATE=true
@@ -46,7 +46,7 @@ services:
       POSTGRESQL_HOST: database
       POSTGRESQL_USER: postgres
       POSTGRESQL_PASSWORD: default
-      POSTGRESQL_DATABASE: default
+      POSTGRESQL_DATABASE: postgres
     hostname: backend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
     links:

@@ -62,6 +62,22 @@ objects:
           referencePolicy:
             type: Local
   - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT_DB_MIGRATION}
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: ${IMAGE_TAG}
+          from:
+            kind: DockerImage
+            name: ${REGISTRY}/${PROMOTE_MIGRATION}
+          referencePolicy:
+            type: Local
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -79,6 +95,14 @@ objects:
             from:
               kind: ImageStreamTag
               name: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}-${COMPONENT_DB_MIGRATION}
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}-${ZONE}-${COMPONENT_DB_MIGRATION}:${IMAGE_TAG}
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       strategy:

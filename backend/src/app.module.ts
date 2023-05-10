@@ -37,7 +37,6 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
       username: process.env.POSTGRESQL_USER || "postgres",
       password: process.env.POSTGRESQL_PASSWORD,
       autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
-//      synchronize: true, // This changes the DB schema to match changes to entities, which we might not want.
     }),
     JwtAuthModule,
     ComplaintStatusCodeModule,
