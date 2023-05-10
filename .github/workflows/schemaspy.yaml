@@ -13,10 +13,10 @@ jobs:
 
     services:
       postgres:
-        image: postgres
+        image: postgis
         env:
           POSTGRES_DB: default
-          POSTGRES_USER: user
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: default
         options: >-
           --health-cmd pg_isready
@@ -31,7 +31,7 @@ jobs:
       - uses: joshuaavalon/flyway-action@v3.0.0
         with:
           url: jdbc:postgresql://postgres:5432/default
-          user: user
+          user: postgres
           password: default
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
@@ -41,7 +41,7 @@ jobs:
           mkdir output
           chmod a+rwx -R output
       - name: Run Schemaspy
-        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:snapshot -t pgsql -db default -host 127.0.0.1 -port 5432 -u user -p default
+        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:snapshot -t pgsql -db default -host 127.0.0.1 -port 5432 -u postgres -p default
       - name: Deploy to Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
