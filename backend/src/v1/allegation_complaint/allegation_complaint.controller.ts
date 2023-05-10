@@ -7,12 +7,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/enum/role.enum';
 import { UUID } from 'crypto';
-import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
-import { ComplaintService } from '../complaint/complaint.service';
 import { ComplaintDto } from '../complaint/dto/complaint.dto';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @ApiTags("allegation-complaint")
-@UseGuards(JwtRoleGuard)
 @Controller({
   path: 'allegation-complaint',
   version: '1'})
@@ -21,13 +19,13 @@ export class AllegationComplaintController {
   constructor(private readonly allegationComplaintService: AllegationComplaintService) {}
 
   @Post()
-  @Roles(Role.COS_OFFICER)
+  @Public()
   create(@Body() createAllegationComplaintDto: CreateAllegationComplaintDto) {
-    return this.allegationComplaintService.create(createAllegationComplaintDto);
+      return this.allegationComplaintService.create(createAllegationComplaintDto);
   }
 
   @Get()
-  @Roles(Role.COS_OFFICER)
+  @Public()
   findAll() {
     return this.allegationComplaintService.findAll();
   }

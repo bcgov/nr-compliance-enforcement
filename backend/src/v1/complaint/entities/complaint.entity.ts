@@ -1,12 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, OneToOne, JoinColumn, Point, PrimaryColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
 import { ComplaintStatusCode } from "src/v1/complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { UUID } from "crypto";
+import { Point } from "geojson";
 
 @Entity()
-export abstract class Complaint {
+export class Complaint {
   @ApiProperty({
     example: "COS-324",
     description: "The ID of the complaint",
@@ -100,11 +101,21 @@ export abstract class Complaint {
     example: "43.43,-123.55",
     description: "The lat/long point of the complaint",
   })
-  @Column({ 
+
+  @Index({ spatial: true })
+  @Column({
   type: 'geometry',
-  srid: 4326,
-  nullable: true })
+  nullable: true,
+  spatialFeatureType: 'Point',
+  srid: 4326
+  })
   location_geometry_point: Point;
+
+
+  /*
+ @Column()
+ location_geometry_point: string;
+ */
 
   @ApiProperty({
     example: "Near Golden",

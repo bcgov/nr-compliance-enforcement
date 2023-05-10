@@ -3,13 +3,16 @@ import { UUID } from "crypto";
 import { ComplaintDto } from "src/v1/complaint/dto/complaint.dto";
 import { ViolationCodeDto } from "src/v1/violation_code/dto/violation_code.dto";
 
-export class AllegationComplaintDto extends ComplaintDto
+export class AllegationComplaintDto
 {
     @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
         description: "The Unique identifier for the allegation",
       })
       allegation_complaint_guid: UUID;
+    
+      @ApiProperty({ example: "COS-231", description: "The complaint this allegation references" })
+      complaint_identifier: ComplaintDto;
     
       @ApiProperty({ example: "INV", description: "The violation code for this allegation" })
       violation_code: ViolationCodeDto;

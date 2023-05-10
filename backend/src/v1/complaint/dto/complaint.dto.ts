@@ -3,9 +3,9 @@ import { UUID } from 'crypto';
 import { AgencyCode } from 'src/v1/agency_code/entities/agency_code.entity';
 import { ComplaintStatusCode } from 'src/v1/complaint_status_code/entities/complaint_status_code.entity';
 import { GeoOrganizationUnitCode } from 'src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity';
-import { Point } from 'typeorm';
+import { Point } from 'geojson';
 
-export abstract class ComplaintDto {
+export class ComplaintDto {
   @ApiProperty({
     example: "COS-3425",
     description: "The identifier of the complaint",

@@ -13,17 +13,40 @@ export class ComplaintService {
   ) {}
 
   async create(complaint: CreateComplaintDto): Promise<Complaint> {
+
+  console.log(complaint.location_geometry_point);
+    /*const newComplaint = await this.complaintsRepository.createQueryBuilder().insert().values(
+    {
+      location_geometry_point: () => "ST_GeomFromText('${complaint.location_geometry_point}', 4326)",
+    }).execute() as any;*/
     const newComplaint = this.complaintsRepository.create(complaint);
+    console.log(complaint.location_geometry_point);
     await this.complaintsRepository.save(newComplaint);
+    console.log(newComplaint.location_geometry_point);
     return newComplaint;
   }
 
   async findAll(): Promise<Complaint[]> {
-    return this.complaintsRepository.find();
+    return this.complaintsRepository.find({
+      relations: { 
+        referred_by_agency_code: true,
+        owned_by_agency_code: true,
+        complaint_status_code: true,
+        geo_organization_unit_code: true,
+      },
+    });
   }
 
   async findOne(id: any): Promise<Complaint> {
-    return this.complaintsRepository.findOneOrFail(id);
+    return this.complaintsRepository.findOneOrFail({
+      where: {complaint_identifier: id},
+      relations: { 
+        referred_by_agency_code: true,
+        owned_by_agency_code: true,
+        complaint_status_code: true,
+        geo_organization_unit_code: true,
+      },
+    });
   }
 
   async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {
