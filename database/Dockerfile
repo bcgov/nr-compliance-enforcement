@@ -1,7 +1,7 @@
-# RedHat UBI 8 with nodejs 14 
+# RedHat UBI 8 with nodejs 14
 FROM postgis/postgis:15-master@sha256:cff6ce199157318c0a6d656f8e081d3113bdf4f0fcd0282d511e49e8210b8839
 
-# Enable extensions using this pattern on startup
+# Enable pgcrypto extension on startup
 RUN sed -i '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;' \
         /docker-entrypoint-initdb.d/10_postgis.sh
 

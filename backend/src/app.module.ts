@@ -4,7 +4,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { UsersModule } from "./v1/users/users.module";
 import { JwtAuthModule } from './auth/jwtauth.module';
 import { ComplaintStatusCodeModule } from './v1/complaint_status_code/complaint_status_code.module';
 import { AgencyCodeModule } from './v1/agency_code/agency_code.module';
@@ -37,11 +36,8 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
       database: process.env.POSTGRESQL_DATABASE || "postgres",
       username: process.env.POSTGRESQL_USER || "postgres",
       password: process.env.POSTGRESQL_PASSWORD,
-      // entities: [User],
-      autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
-      synchronize: true, // This changes the DB schema to match changes to entities, which we might not want.
+      autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
     }),
-    UsersModule,
     JwtAuthModule,
     ComplaintStatusCodeModule,
     AgencyCodeModule,
