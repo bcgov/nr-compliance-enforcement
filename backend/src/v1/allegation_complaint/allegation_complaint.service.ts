@@ -16,7 +16,7 @@ export class AllegationComplaintService {
   ) {
   }
   @Inject(ComplaintService)
-  private readonly complaintService: ComplaintService;
+  protected readonly complaintService: ComplaintService;
 
   async create(allegationComplaint: any): Promise<AllegationComplaint> {
     await this.complaintService.create(<CreateComplaintDto>allegationComplaint);

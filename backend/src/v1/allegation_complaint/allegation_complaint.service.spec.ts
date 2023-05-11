@@ -186,7 +186,9 @@ describe("AllegationComplaintService", () => {
             delete: jest.fn().mockResolvedValue(true),
           },
         },
+        
       ],
+      
     }).compile();
 
     service = module.get<AllegationComplaintService>(AllegationComplaintService);
@@ -216,8 +218,8 @@ describe("AllegationComplaintService", () => {
   describe("findOne", () => {
     it("should get a single user", () => {
       const repoSpy = jest.spyOn(repo, "findOneOrFail");
-      expect(service.findOne(1)).resolves.toEqual(oneAllegationComplaint);
-      expect(repoSpy).toBeCalledWith(1);
+      expect(service.findOne(oneAllegationComplaint.allegation_complaint_guid)).resolves.toEqual(oneAllegationComplaint);
+      expect(repoSpy).toBeCalledWith(oneAllegationComplaint.allegation_complaint_guid);
     });
   });
 
