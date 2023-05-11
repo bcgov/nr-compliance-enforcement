@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Office } from "src/v1/office/entities/office.entity";
-import { Person } from "src/v1/person/entities/person.entity";
+import { Office } from "../../office/entities/office.entity";
+import { Person } from "../../person/entities/person.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 
 @Entity()
