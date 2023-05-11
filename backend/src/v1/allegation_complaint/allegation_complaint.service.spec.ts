@@ -8,7 +8,6 @@ import { Complaint } from '../complaint/entities/complaint.entity';
 import { AgencyCodeService } from '../agency_code/agency_code.service';
 import { GeoOrganizationUnitCodeService } from '../geo_organization_unit_code/geo_organization_unit_code.service';
 import { ComplaintStatusCodeService } from '../complaint_status_code/complaint_status_code.service';
-import { Point } from "geojson";
 
 describe("AllegationComplaintService", async () => {
   let service: AllegationComplaintService;

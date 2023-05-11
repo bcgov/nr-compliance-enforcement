@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { AgencyCodeService } from './agency_code.service';
 import { CreateAgencyCodeDto } from './dto/create-agency_code.dto';
 import { UpdateAgencyCodeDto } from './dto/update-agency_code.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
 
 @ApiTags("agency-code")
 @UseGuards(JwtRoleGuard)

@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { OfficerService } from './officer.service';
 import { CreateOfficerDto } from './dto/create-officer.dto';
 import { UpdateOfficerDto } from './dto/update-officer.dto';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags("officer")

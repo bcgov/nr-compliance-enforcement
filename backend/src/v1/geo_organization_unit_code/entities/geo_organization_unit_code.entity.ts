@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { GeoOrgUnitTypeCode } from "src/v1/geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
+import { GeoOrgUnitTypeCode } from "../../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { Entity, Column, PrimaryColumn, JoinColumn, ManyToOne } from "typeorm";
 
 @Entity()

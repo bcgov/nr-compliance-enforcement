@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { OfficeDto } from "src/v1/office/dto/office.dto";
 
 export class PersonDto 
 {

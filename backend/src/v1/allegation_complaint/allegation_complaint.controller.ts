@@ -2,13 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { AllegationComplaintService } from './allegation_complaint.service';
 import { CreateAllegationComplaintDto } from './dto/create-allegation_complaint.dto';
 import { UpdateAllegationComplaintDto } from './dto/update-allegation_complaint.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
 import { UUID } from 'crypto';
-import { ComplaintDto } from '../complaint/dto/complaint.dto';
-import { Public } from 'src/auth/decorators/public.decorator';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("allegation-complaint")

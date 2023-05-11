@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { ComplaintDto } from "src/v1/complaint/dto/complaint.dto";
-import { ViolationCodeDto } from "src/v1/violation_code/dto/violation_code.dto";
+import { ComplaintDto } from "../../complaint/dto/complaint.dto";
+import { ViolationCodeDto } from "../../violation_code/dto/violation_code.dto";
 
 export class AllegationComplaintDto
 {

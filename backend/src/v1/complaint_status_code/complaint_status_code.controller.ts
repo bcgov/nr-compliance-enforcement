@@ -3,9 +3,9 @@ import { ComplaintStatusCodeService } from './complaint_status_code.service';
 import { CreateComplaintStatusCodeDto } from './dto/create-complaint_status_code.dto';
 import { UpdateComplaintStatusCodeDto } from './dto/update-complaint_status_code.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
 
 @ApiTags("complaint-status-code")
 @UseGuards(JwtRoleGuard)
