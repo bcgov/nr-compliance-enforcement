@@ -34,3 +34,93 @@
     background-color: #{$value};
   }
 }
+
+@each $weight, $value in $neutralVariants {
+  .doc-bg-bc-gov-neutral-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $shadeVariants {
+  .doc-bg-bc-gov-shade-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-01-variants {
+  .doc-bg-bc-standard-01-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-02-variants {
+  .doc-bg-bc-standard-02-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-03-variants {
+  .doc-bg-bc-standard-03-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-04-variants {
+  .doc-bg-bc-standard-04-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-05-variants {
+  .doc-bg-bc-standard-05-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-06-variants {
+  .doc-bg-bc-standard-06-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-07-variants {
+  .doc-bg-bc-standard-07-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-08-variants {
+  .doc-bg-bc-standard-08-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-09-variants {
+  .doc-bg-bc-standard-09-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-10-variants {
+  .doc-bg-bc-standard-10-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-11-variants {
+  .doc-bg-bc-standard-11-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-12-variants {
+  .doc-bg-bc-standard-12-#{$weight} {
+    background-color: #{$value};
+  }
+}
+
+@each $weight, $value in $bc-standard-13-variants {
+  .doc-bg-bc-standard-13-#{$weight} {
+    background-color: #{$value};
+  }
+}

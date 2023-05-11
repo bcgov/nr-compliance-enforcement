@@ -1,10 +1,12 @@
+@import "../../../node_modules/bootstrap/scss/functions";
+
 //-- ---
 //-- COLORS
 //-- ---
 $white:    #fff !default;
 $black:    #000 !default;
 
-/* primary theme colors */
+/* Bootstrap Primary theme override colors */
 $bc-gov-primary: #003366;
 $bc-gov-secondary: #fcba19;
 $bc-gov-success: #2e8540;
@@ -14,85 +16,13 @@ $bc-gov-info: #d9eaf7;
 $bc-gov-light: $white;
 $bc-gov-dark: $black;
 
-/* primary theme shades */
-$bc-gov-primary-100: #f0f6fd;
-$bc-gov-primary-200: #96abc0;
-$bc-gov-primary-300: #6b89a6;
-$bc-gov-primary-400: #154878;
-$bc-gov-primary-500: $bc-gov-primary;
-$bc-gov-primary-600: #001f3e;
-$bc-gov-primary-700: #002447;
-
-$primaryVariants: (
-  "main": $bc-gov-primary,
-  "100": $bc-gov-primary-100,
-  "200": $bc-gov-primary-200,
-  "300": $bc-gov-primary-300,
-  "400": $bc-gov-primary-400,
-  "500": $bc-gov-primary-500,
-  "600": $bc-gov-primary-600,
-  "700": $bc-gov-primary-700,
-);
-
-$bc-gov-secondary-100: #fff8e8;
-$bc-gov-secondary-200: #fee3a1;
-$bc-gov-secondary-300: #fdd77a;
-$bc-gov-secondary-400: #fdc640;
-$bc-gov-secondary-500: $bc-gov-secondary;
-$bc-gov-secondary-600: #9a710f;
-$bc-gov-secondary-700: #b08212;
-
-$secondaryVariants: (
-  "main": $bc-gov-secondary,
-  "100": $bc-gov-secondary-100,
-  "200": $bc-gov-secondary-200,
-  "300": $bc-gov-secondary-300,
-  "400": $bc-gov-secondary-400,
-  "500": $bc-gov-secondary-500,
-  "600": $bc-gov-secondary-600,
-  "700": $bc-gov-secondary-700,
-);
-
-$bc-gov-success-100: #eaf3ec;
-$bc-gov-success-200: #a9cdb1;
-$bc-gov-success-300: #45a766;
-$bc-gov-success-400: $bc-gov-success;
-$bc-gov-success-500: #1c5127;
-
-$successVariants: (
-  "main": $bc-gov-success,
-  "100": $bc-gov-success-100,
-  "200": $bc-gov-success-200,
-  "300": $bc-gov-success-300,
-  "400": $bc-gov-success-400,
-  "500": $bc-gov-success-500,
-);
-
-$bc-gov-danger-100: #fbeaea;
-$bc-gov-danger-200: #efa7aa;
-$bc-gov-danger-300: $bc-gov-danger;
-$bc-gov-danger-400: #84191d;
-
-$dangerVariants: (
-  "main": $bc-gov-danger,
-  "100": $bc-gov-danger-100,
-  "200": $bc-gov-danger-200,
-  "300": $bc-gov-danger-300,
-  "400": $bc-gov-danger-400,
-);
-
-$bc-gov-warning-100: #fef9e8;
-$bc-gov-warning-200: #f9e6a2;
-$bc-gov-warning-300: $bc-gov-warning;
-$bc-gov-warning-400: #694e16;
-
-$warningVariants: (
-  "main": $bc-gov-warning,
-  "100": $bc-gov-warning-100,
-  "200": $bc-gov-warning-200,
-  "300": $bc-gov-warning-300,
-  "400": $bc-gov-warning-400,
-);
+/* BC Primary */
+$bc-brand-blue: #003366;
+$bc-brand-gold: #FCBA19;
+$bc-brand-text: #313132;
+$bc-brand-links: #1A5A96;
+$bc-brand-background-blue: #38598A;
+$bc-brand-background-light-gray: #F2F2F2;
 
 /* BC Standard */
 $bc-standard-01: #004F4B !default;
@@ -105,7 +35,7 @@ $bc-standard-07: #243C7C !default;
 $bc-standard-08: #5F3795 !default;
 $bc-standard-09: #883895 !default;
 $bc-standard-10: #DD5857 !default;
-$bc-standard-11: #DD5857 !default;
+$bc-standard-11: #F38489 !default;
 $bc-standard-12: #F2A488 !default;
 $bc-standard-13: #ECC51D !default;
 
@@ -117,7 +47,7 @@ $gray-400: #A1A1A1 !default;
 $gray-500: #8C8C8C !default;
 $gray-600: #7A7A7A !default;
 $gray-700: #595959 !default;
-$gray-800: #3D3D3D !default;
+$gray-800: #313132 !default;
 $gray-900: #1A1A1A !default;
 
 $grays: (
@@ -134,16 +64,27 @@ $grays: (
 
 $theme-colors: (
   "primary": $bc-gov-primary,
-  "secondary": $bc-gov-secondary,
+  "secondary": $bc-gov-secondary, 
   "success": $bc-gov-success,
   "warning": $bc-gov-warning,
   "info": $bc-gov-info,
   "danger": $bc-gov-danger,
   "light": $bc-gov-light,
-  "dark": $bc-gov-dark,
+  "dark": $bc-gov-dark
 ) !default;
 
-/* implementation */
+$custom-theme-colors:(
+  "bc-brand-blue": $bc-brand-blue,
+  "bc-brand-gold": $bc-brand-gold,
+  "bc-brand-text": $bc-brand-text,
+  "bc-brand-links": $bc-brand-links,
+  "bc-brand-background-blue": $bc-brand-background-blue,
+  "bc-brand-background-light-gray": $bc-brand-background-light-gray,
+);
 
-@import "../../../node_modules/bootstrap/scss/bootstrap";
+$theme-colors: map-merge($theme-colors, $custom-theme-colors);
+
+@import "../../../node_modules/bootstrap/scss/mixins";
 @import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/maps";
+@import "../../../node_modules/bootstrap/scss/root";
