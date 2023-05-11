@@ -111,8 +111,8 @@ CREATE TABLE public.office (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    geo_organization_unit_code varchar(3) NULL,
-    agency_code varchar(3) NULL,
+    geo_organization_unit_code varchar(12) NULL,
+    agency_code varchar(6) NULL,
     CONSTRAINT "PK_office" PRIMARY KEY (office_guid),
     CONSTRAINT "FK_office_ geo_organization_unit_code" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
     CONSTRAINT "FK_office_agencyu_code" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
@@ -155,10 +155,10 @@ CREATE TABLE public.complaint (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    referred_by_agency_code varchar(3) NULL,
-    owned_by_agency_code varchar(3) NULL,
-    complaint_status_code varchar(3) NULL,
-    geo_organization_unit_code varchar(3) NULL,
+    referred_by_agency_code varchar(6) NULL,
+    owned_by_agency_code varchar(6) NULL,
+    complaint_status_code varchar(6) NULL,
+    geo_organization_unit_code varchar(12) NULL,
     location_geometry_point public.geometry NULL,
     CONSTRAINT "PK_complaint" PRIMARY KEY (complaint_identifier),
     CONSTRAINT "FK_complaint_geo_organization_unit_code" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
@@ -179,7 +179,7 @@ CREATE TABLE public.geo_org_unit_structure (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    agency_code varchar(3) NULL,
+    agency_code varchar(6) NULL,
     parent_geo_org_unit_code varchar(12) NULL,
     child_geo_org_unit_code varchar(12) NULL,
     CONSTRAINT "PK_geo_org_unit_structure" PRIMARY KEY (geo_org_unit_structure_guid),
@@ -202,7 +202,7 @@ CREATE TABLE public.allegation_complaint (
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
     complaint_identifier varchar(20) NULL,
-    violation_code varchar(3) NULL,
+    violation_code varchar(10) NULL,
     CONSTRAINT "PK_allegation_complaint" PRIMARY KEY (allegation_complaint_guid),
     CONSTRAINT "UQ_allegation_complaint" UNIQUE (complaint_identifier),
     CONSTRAINT "FK_allegation_complaint_complaint_identifier" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
@@ -225,6 +225,13 @@ values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),
 	  ('REGION', 'Region', null, 2, true, user, null, now(), user, null, now()),
 	  ('OFFLOC', 'Off Location', null, 3, true, user, null, now(), user, null, now()),
       ('AREA', 'Area', null, 4, true, user, null, now(), user, null, now());
+
+insert into violation_code (violation_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('IVL', 'IVL', 'Invalid License', 1, true, user, null, now(), user, null, now());
+
+insert into complaint_status_code (complaint_status_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('OPN', 'OPN', 'Open', 1, true, user, null, now(), user, null, now());
+
 
 insert into geo_organization_unit_code(geo_organization_unit_code, short_description, long_description, effective_date, expiry_date, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_org_unit_type_code)
 values ('KTNY','Kootney','Kootney', now(), null, user, null, now(), user, null, now(), 'REGION'),

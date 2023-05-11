@@ -186,8 +186,33 @@ export class Complaint {
   @Column()
   update_timestamp: Date;
 
-  constructor() {
-
+  constructor(detail_text?:string, caller_name?:string, caller_address?:string, caller_email?:string, caller_phone_1?:string, caller_phone_2?:string, caller_phone_3?:string, location_geometry_point?:Point,
+    location_summary_text?:string, location_detailed_text?:string, incident_reported_datetime?:Date, referred_by_agency_other_text?:string, create_user_id?:string, create_user_guid?:UUID, create_timestamp?:Date,
+    update_user_id?:string, update_user_guid?:UUID, update_timestamp?:Date, complaint_identifier?:string, referred_by_agency_code?:AgencyCode, owned_by_agency_code?:AgencyCode, complaint_status_code?:ComplaintStatusCode, geo_organization_unit_code?:GeoOrganizationUnitCode) 
+  {
+    this.detail_text = detail_text;
+    this.caller_name = caller_name;
+    this.caller_address = caller_address;
+    this.caller_email = caller_email;
+    this.caller_phone_1 = caller_phone_1;
+    this.caller_phone_2 = caller_phone_2;
+    this.caller_phone_3 = caller_phone_3;
+    this.location_geometry_point = location_geometry_point;
+    this.location_summary_text = location_summary_text;
+    this.location_detailed_text = location_detailed_text;
+    this.incident_reported_datetime = incident_reported_datetime;
+    this.referred_by_agency_other_text = referred_by_agency_other_text;
+    this.create_user_id = create_user_id;
+    this.create_user_guid = create_user_guid;
+    this.create_timestamp = create_timestamp;
+    this.update_user_id = update_user_id;
+    this.update_user_guid = update_user_guid;
+    this.update_timestamp = update_timestamp;
+    this.complaint_identifier = complaint_identifier;
+    this.referred_by_agency_code = referred_by_agency_code;
+    this.owned_by_agency_code = owned_by_agency_code;
+    this.complaint_status_code = complaint_status_code;
+    this.geo_organization_unit_code = geo_organization_unit_code;
   }
 
 }

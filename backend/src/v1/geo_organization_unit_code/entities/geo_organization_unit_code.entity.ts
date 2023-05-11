@@ -1,16 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { GeoOrgUnitTypeCode } from "src/v1/geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryColumn, JoinColumn, ManyToOne } from "typeorm";
 
 @Entity()
 export class GeoOrganizationUnitCode 
 {
     @ApiProperty({
-        example: "DCC",
+        example: "CRBOCHLCTN",
         description: "The geo organization unit code",
       })
-      @PrimaryColumn({length: 3})
+      @PrimaryColumn({length: 12})
       geo_organization_unit_code: string;
 
       @ApiProperty({
