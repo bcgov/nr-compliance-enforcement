@@ -12,6 +12,7 @@ import { AgencyCode } from '../agency_code/entities/agency_code.entity';
 import { ComplaintStatusCode } from '../complaint_status_code/entities/complaint_status_code.entity';
 import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
 import { ViolationCode } from '../violation_code/entities/violation_code.entity';
+import { ComplaintService } from '../complaint/complaint.service';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
@@ -185,6 +186,11 @@ describe("AllegationComplaintService", () => {
             // we just make sure that their resolve is true to not crash
             delete: jest.fn().mockResolvedValue(true),
           },
+        },
+        ComplaintService,
+        {
+          provide: getRepositoryToken(Complaint),
+          useValue: {},
         },
         
       ],
