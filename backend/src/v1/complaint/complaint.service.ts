@@ -7,9 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ComplaintService {
+  @InjectRepository(Complaint)
+  private complaintsRepository: Repository<Complaint>
   constructor(
-    @InjectRepository(Complaint)
-    private complaintsRepository: Repository<Complaint>
   ) {}
 
   async create(complaint: CreateComplaintDto): Promise<Complaint> {
