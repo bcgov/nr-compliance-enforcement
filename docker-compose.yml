@@ -61,6 +61,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      database-migrations:
+        condition: service_started
   frontend:
     container_name: frontend
     entrypoint:

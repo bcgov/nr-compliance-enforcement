@@ -11,6 +11,33 @@ import {
 } from './counterSlice';
 import styles from './Counter.module.css';
 import UserService from '../../service/UserServices';
+import axios from 'axios';
+
+interface APIResponse {
+  data: JSON
+}
+
+
+
+const getOrgsJSON = function(): Promise<void> {
+
+  let token = localStorage.getItem("user");
+  console.log(`Token: ${token}`);
+
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  
+  let config = {method: 'get',
+  maxBodyLength: Infinity,
+  url: 'http://localhost:3000/v1/geo-organization-unit-code'};
+
+  return axios.request(config)
+  .then((response) => {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
 
 export function Counter() {
   const count = useAppSelector(selectCount);
@@ -65,6 +92,12 @@ export function Counter() {
           onClick={() => dispatch(incrementIfOdd(incrementValue))}
         >
           Add If Odd
+        </button>
+        <button
+          className={styles.button}
+          onClick={() => getOrgsJSON()}
+        >
+          Get Orgs
         </button>
       </div>
     </div>
