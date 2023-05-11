@@ -8,8 +8,12 @@ import { Complaint } from '../complaint/entities/complaint.entity';
 import { AgencyCodeService } from '../agency_code/agency_code.service';
 import { GeoOrganizationUnitCodeService } from '../geo_organization_unit_code/geo_organization_unit_code.service';
 import { ComplaintStatusCodeService } from '../complaint_status_code/complaint_status_code.service';
+import { AgencyCode } from '../agency_code/entities/agency_code.entity';
+import { ComplaintStatusCode } from '../complaint_status_code/entities/complaint_status_code.entity';
+import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
+import { ViolationCode } from '../violation_code/entities/violation_code.entity';
 
-describe("AllegationComplaintService", async () => {
+describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
   let violationCodeService: ViolationCodeService;
   let agencyCodeService: AgencyCodeService;
@@ -37,14 +41,14 @@ describe("AllegationComplaintService", async () => {
     "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "COS-1788",
-    await agencyCodeService.findOne("COS"),
-    await agencyCodeService.findOne("COS"),
-    await complaintStatusCodeService.findOne("OPN"),
-    await geoOrganizationUnitCodeService.findOne("CRBOCHLCTN")
+    new AgencyCode(),
+    new AgencyCode(),
+    new ComplaintStatusCode(),
+    new GeoOrganizationUnitCode()
 );
   const oneAllegationComplaint = new AllegationComplaint(
     oneComplaint,
-    await violationCodeService.findOne("IVL"),
+    new ViolationCode(),
     true,
     true,
     "witness details",
@@ -76,14 +80,14 @@ describe("AllegationComplaintService", async () => {
     "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "COS-1789",
-    await agencyCodeService.findOne("COS"),
-    await agencyCodeService.findOne("COS"),
-    await complaintStatusCodeService.findOne("OPN"),
-    await geoOrganizationUnitCodeService.findOne("CRBOCHLCTN")
+    new AgencyCode(),
+    new AgencyCode(),
+    new ComplaintStatusCode(),
+    new GeoOrganizationUnitCode()
 );
   const twoAllegationComplaint = new AllegationComplaint(
     twoComplaint,
-    await violationCodeService.findOne("IVL"),
+    new ViolationCode(),
     true,
     true,
     "witness details2",
@@ -114,15 +118,15 @@ describe("AllegationComplaintService", async () => {
   const threeUpdateUserGuid = "903f87c8-76dd-427c-a1bb-4d179e443252";
   const threeUpdateTimestamp = new Date();
   const threeCompliantIdentifier = "COS-1800";
-  const threeReferredByAgencyCode = await agencyCodeService.findOne("COS");
-  const threeOwnedByAgencyCode = await agencyCodeService.findOne("COS");
-  const threeComplaintStatusCode = await complaintStatusCodeService.findOne("OPN");
-  const threeGeoOrganizationUnitCode = await geoOrganizationUnitCodeService.findOne("CRBOCHLCTN");
+  const threeReferredByAgencyCode = new AgencyCode();
+  const threeOwnedByAgencyCode = new AgencyCode();
+  const threeComplaintStatusCode = new ComplaintStatusCode();
+  const threeGeoOrganizationUnitCode = new GeoOrganizationUnitCode();
 
   const threeComplaint = new Complaint(threeDetailText, threeCallerName, threeCallerAddress, threeCallerEmail, threeCallerPhone1, threeCallerPhone2, threeCallerPhone3, threeLocationGeometryPoint,
     threeLocationSummaryText, threeLocationDetailText, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateUserGuid, threeCreateTimestamp, threeUpdateUserId,
     threeUpdateUserGuid, threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode);
-    const threeViolationCode = await violationCodeService.findOne("IVL");
+    const threeViolationCode = new ViolationCode();
     const threeInProgressInd = true;
     const threeObservedInd = true;
     const threeSuspectWitnessDtlText = "witness 3";
