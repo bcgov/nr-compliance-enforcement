@@ -85,7 +85,7 @@ $custom-theme-colors: (
 $theme-colors: map-merge($theme-colors, $custom-theme-colors);
 
 /* spacing */
-$sides: (top, bottom, left, right); 
+$sides: (top, bottom, left, right);
 $space-units: (
   "xxs": 4,
   "xs": 8,
@@ -95,6 +95,13 @@ $space-units: (
   "xl": 40,
   "xxl": 48,
 );
+
+/* shadows */
+$box-shadow: 0px 4px 4px rgba($black, 0.15);
+$box-shadow-sm: 0px 8px 16px rgba($black, 0.075);
+$box-shadow-lg: 0px 16px 48px rgba($black, 0.175);
+
+/* borders */
 
 @import "../../../node_modules/bootstrap/scss/mixins";
 @import "../../../node_modules/bootstrap/scss/variables";

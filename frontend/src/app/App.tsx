@@ -1,11 +1,11 @@
-import { SpaceReference } from "./components/reference";
+import { MiscReference } from "./components/reference";
 
 
 const App = () => {
 
   return (
     <div className="App">
-      <SpaceReference />
+      <MiscReference />
     </div>
   );
 };

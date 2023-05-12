@@ -1,8 +1,10 @@
 import { ColorReference } from "./color-reference";
 import { SpaceReference } from "./space-reference";
+import { MiscReference } from "./misc-reference";
 
 export { 
-    SpaceReference
+    SpaceReference,
+    MiscReference
 }
 
 export default ColorReference;
