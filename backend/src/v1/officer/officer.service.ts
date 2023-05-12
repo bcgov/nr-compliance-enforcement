@@ -1,15 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOfficerDto } from './dto/create-officer.dto';
 import { UpdateOfficerDto } from './dto/update-officer.dto';
+import { Officer } from './entities/officer.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class OfficerService {
+  constructor(
+    @InjectRepository(Officer)
+    private officerRepository: Repository<Officer>
+  ) {
+  }
   create(createOfficerDto: CreateOfficerDto) {
     return 'This action adds a new officer';
   }
 
   findAll() {
-    return `This action returns all officer`;
+    return this.officerRepository.find({
+      relations: {
+        office_guid: {
+          geo_organization_unit_code: true
+        },
+        person_guid: {
+
+        }
+      } ,
+      });
   }
 
   findOne(id: number) {

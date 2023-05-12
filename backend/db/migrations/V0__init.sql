@@ -223,7 +223,7 @@ values('BCWF', 'BCWF', 'BC Wildlife Federation', 1, true, user, null, now(), use
 insert into geo_org_unit_type_code (geo_org_unit_type_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
 values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),
 	  ('REGION', 'Region', null, 2, true, user, null, now(), user, null, now()),
-	  ('OFFLOC', 'Off Location', null, 3, true, user, null, now(), user, null, now()),
+	  ('OFFLOC', 'Office Location', null, 3, true, user, null, now(), user, null, now()),
       ('AREA', 'Area', null, 4, true, user, null, now(), user, null, now());
 
 
@@ -280,13 +280,13 @@ values ('KTNY','Kootney','Kootney', now(), null, user, null, now(), user, null, 
     ('TMPSNNCLA','Thompson Nicola','Thompson Nicola', now(), null, user, null, now(), user, null, now(), 'ZONE'),
     ('WKTNY','West Kootney','West Kootney', now(), null, user, null, now(), user, null, now(), 'ZONE'),
     ('100MLHSE','100 Mile House','100 Mile House', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
-    ('ATLIN','Atlin','Atlin', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
+    ('ATLINOF','AtlinOffice','Atlin Office', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('BLLACLA','Bella Coola','Bella Coola', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('BLKCRKCR','Black Creek/Campbell River','Black Creek/Campbell River', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('BURNSLK','Burns Lake','Burns Lake', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
-    ('CSTLGR','Castlegar','Castlegar', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
+    ('CSTLGROF','Castlegar Office','Castlegar Office', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('CHTWD','Chetwynd','Chetwynd', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
-    ('CLRWTR','Clearwater','Clearwater', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
+    ('CLRWTROF','Clearwater Office','Clearwater Office', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('CRNBK','Cranbrook','Cranbrook', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('CRSTN','Creston','Creston', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
     ('DJNG','Daajing Giids','Daajing Giids', now(), null, user, null, now(), user, null, now(), 'OFFLOC'),
@@ -368,7 +368,7 @@ values ('KTNY','Kootney','Kootney', now(), null, user, null, now(), user, null, 
     ('ASHTNCRK','Ashton Creek','Ashton Creek', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('ASPNGRV','Aspen Grove','Aspen Grove', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('ATHALMR','Athalmer','Athalmer', now(), null, user, null, now(), user, null, now(), 'AREA'),
---    ('ATLIN','Atlin','Atlin', now(), null, user, null, now(), user, null, now(), 'AREA'),
+    ('ATLIN','Atlin','Atlin', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('ATTACHI','Attachie','Attachie', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('AVOLA','Avola','Avola', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('BALDNLL','Baldonell','Baldonell', now(), null, user, null, now(), user, null, now(), 'AREA'),
@@ -471,7 +471,7 @@ values ('KTNY','Kootney','Kootney', now(), null, user, null, now(), user, null, 
     ('CSSR','Cassiar','Cassiar', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CSSDY','Cassidy','Cassidy', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CTSRVR','Castle River','Castle River', now(), null, user, null, now(), user, null, now(), 'AREA'),
---    ('CSTLGR','Castlegar','Castlegar', now(), null, user, null, now(), user, null, now(), 'AREA'),
+    ('CSTLGR','Castlegar','Castlegar', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CWSTN','Cawston','Cawston', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CYCS','Caycuse','Caycuse', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CSLLK','Cecil Lake','Cecil Lake', now(), null, user, null, now(), user, null, now(), 'AREA'),
@@ -502,7 +502,7 @@ values ('KTNY','Kootney','Kootney', now(), null, user, null, now(), user, null, 
     ('CLNWLM','Clanwilliam','Clanwilliam', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CLAYHRST','Clayhurst','Clayhurst', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CLRBRK','Clearbrook','Clearbrook', now(), null, user, null, now(), user, null, now(), 'AREA'),
---    ('CLRWTR','Clearwater','Clearwater', now(), null, user, null, now(), user, null, now(), 'AREA'),
+    ('CLRWTR','Clearwater','Clearwater', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CLEMRTA','Clemretta','Clemretta', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CLINTON','Clinton','Clinton', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('CLOVRDLE','Cloverdale','Cloverdale', now(), null, user, null, now(), user, null, now(), 'AREA'),
@@ -586,7 +586,6 @@ values ('KTNY','Kootney','Kootney', now(), null, user, null, now(), user, null, 
     ('ESLOPPPP','East slope Pine Pass (almost to Azouetta Lake)','East slope Pine Pass (almost to Azouetta Lake)', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('EASTSKE','East Sooke','East Sooke', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('ETHURLOW','East Thurlow Island','East Thurlow Island', now(), null, user, null, now(), user, null, now(), 'AREA'),
---    ('EASTGATE','Eastgate','Eastgate', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('EDGEWATER','Edgewater','Edgewater', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('EDGEWOOD','Edgewood','Edgewood', now(), null, user, null, now(), user, null, now(), 'AREA'),
     ('EGMONT','Egmont','Egmont', now(), null, user, null, now(), user, null, now(), 'AREA'),
@@ -2334,8 +2333,32 @@ values (now(), null, user, null, now(), user, null, now(), 'COS','KTNY','CLMBAKT
 	(now(), null, user, null, now(), user, null, now(), 'COS','100MLHSE','YOUNGLK'),
 	(now(), null, user, null, now(), user, null, now(), 'COS','PRTMCNL','ZEBALLOS');
 
-	-- comments
+-- populate offices
+insert into office (create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_organization_unit_code, agency_code)
+select user, null, now(), user, null, now(), geo_organization_unit_code, 'COS'
+from geo_organization_unit_code;
 
+-- create test people
+insert into person (first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values ('Julia', 'R.', null, 'McMillan', user, null, now(), user, null, now()),
+        ('Fred', null, null, 'Penner', user, null, now(), user, null, now());
+
+
+-- create test officers
+insert into officer(user_id, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, person_guid)
+select first_name || last_name, user, null, now(), user, null, now(), person_guid
+from person;
+
+-- set office for officers
+update officer set office_guid = (select office_guid from office where geo_organization_unit_code = 'STRTHNVR')
+WHERE officer_guid =(select officer_guid first FROM officer ORDER BY officer_guid asc LIMIT 1) ;
+
+update officer set office_guid = (select office_guid from office where geo_organization_unit_code = 'PNTCTN')
+WHERE officer_guid =(select officer_guid first FROM officer ORDER BY officer_guid desc  LIMIT 1) ;
+
+
+
+-- comments
 comment on table public.agency_code is 'An agency is an organized and named grouping of people that interacts in some way with the Ministry.';
 comment on table public.geo_org_unit_structure is 'A geographical organization unit structure is a parent/child relationship between two geographical organization units.';
 comment on table public.geo_organization_unit_code is 'A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White';
@@ -2489,3 +2512,4 @@ comment on column public.allegation_complaint.create_timestamp is 'The timestamp
 comment on column public.allegation_complaint.update_user_id is 'The id of the user that updated the allegation complaint.';
 comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
 comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
+
