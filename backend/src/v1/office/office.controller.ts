@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { OfficeService } from './office.service';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/enum/role.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags("office")
 @UseGuards(JwtRoleGuard)

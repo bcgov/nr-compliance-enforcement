@@ -9,15 +9,15 @@ export class AgencyCode
         example: "COS",
         description: "The agency code",
       })
-      @PrimaryColumn({length: 3})
+      @PrimaryColumn({length: 10})
       agency_code: string;
     
       @ApiProperty({ example: "CO Service", description: "The short description of the agency code" })
-      @Column({length: 120})
+      @Column({length: 50})
       short_description: string;
     
       @ApiProperty({ example: "Conservation Officer Service", description: "The long description of the agency code" })
-      @Column({length: 120, nullable: true })
+      @Column({length: 250, nullable: true })
       long_description: string;
     
       @ApiProperty({ example: "1", description: "The display order of the agency code" })
@@ -70,7 +70,7 @@ export class AgencyCode
       @Column()
       update_timestamp: Date;
     
-      constructor() {
-    
+      constructor(agency_code?:string) {
+        this.agency_code = agency_code;
       }
 }

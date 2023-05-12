@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
-import { ViolationCode } from "src/v1/violation_code/entities/violation_code.entity";
+import { Complaint } from "../../complaint/entities/complaint.entity";
+import { ViolationCode } from "../../violation_code/entities/violation_code.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 
 @Entity()
@@ -37,7 +37,7 @@ export class AllegationComplaint
         example: "Witnessed individual dumping garbage on crown land",
         description: "The details the witness has reported about this allegation",
       })
-      @Column( {length: 255, nullable: true})
+      @Column( {length: 4000, nullable: true})
       suspect_witnesss_dtl_text: string;
     
       @ApiProperty({
@@ -81,8 +81,19 @@ export class AllegationComplaint
       })
       @Column()
       update_timestamp: Date;
-    
-      constructor() {
-
+   
+      constructor(complaint_identifier?: Complaint, violation_code?: ViolationCode, in_progress_ind?: boolean, observed_ind?: boolean, suspect_witnesss_dtl_text?: string, 
+        create_user_id?: string, create_user_guid?: UUID, create_timestamp?: Date, update_user_id?: string, update_user_guid?: UUID, update_timestamp?: Date) {
+        this.complaint_identifier = complaint_identifier;
+        this.violation_code = violation_code;
+        this.in_progress_ind = in_progress_ind;
+        this.observed_ind = observed_ind;
+        this.suspect_witnesss_dtl_text = suspect_witnesss_dtl_text;
+        this.create_user_id = create_user_id;
+        this.create_user_guid = create_user_guid;
+        this.create_timestamp = create_timestamp;
+        this.update_user_id = update_user_id;
+        this.update_user_guid = update_user_guid;
+        this.update_timestamp = update_timestamp;
       }
 }

@@ -9,15 +9,15 @@ export class ViolationCode
         example: "IVL",
         description: "The violation code",
       })
-      @PrimaryColumn({length: 3})
+      @PrimaryColumn({length: 10})
       violation_code: string;
     
       @ApiProperty({ example: "Invalid License", description: "The short description of the violation code" })
-      @Column({length: 120})
+      @Column({length: 50})
       short_description: string;
     
       @ApiProperty({ example: "Invalid License", description: "The long description of the violation code" })
-      @Column({length: 120, nullable: true })
+      @Column({length: 250, nullable: true })
       long_description: string;
     
       @ApiProperty({ example: "1", description: "The display order of the violation code" })
@@ -70,7 +70,7 @@ export class ViolationCode
       @Column()
       update_timestamp: Date;
     
-      constructor() {
-    
+      constructor(violation_code?: string) {
+        this.violation_code = violation_code;
       }
 }

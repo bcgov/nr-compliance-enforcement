@@ -7,17 +7,16 @@ import { Repository } from 'typeorm';
 import { UUID } from 'crypto';
 import { ComplaintService } from '../complaint/complaint.service';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
-import { Complaint } from '../complaint/entities/complaint.entity';
 
 @Injectable()
 export class AllegationComplaintService {
   constructor(
-    @InjectRepository(AllegationComplaint)
-    private allegationComplaintsRepository: Repository<AllegationComplaint>
   ) {
   }
+  @InjectRepository(AllegationComplaint)
+  private allegationComplaintsRepository: Repository<AllegationComplaint>;
   @Inject(ComplaintService)
-  private readonly complaintService: ComplaintService;
+  protected readonly complaintService: ComplaintService;
 
   async create(allegationComplaint: any): Promise<AllegationComplaint> {
     await this.complaintService.create(<CreateComplaintDto>allegationComplaint);

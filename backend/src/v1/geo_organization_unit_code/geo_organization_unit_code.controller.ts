@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { GeoOrganizationUnitCodeService } from './geo_organization_unit_code.service';
 import { CreateGeoOrganizationUnitCodeDto } from './dto/create-geo_organization_unit_code.dto';
 import { UpdateGeoOrganizationUnitCodeDto } from './dto/update-geo_organization_unit_code.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/enum/role.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags("geo-organization-unit-code")
 @UseGuards(JwtRoleGuard)

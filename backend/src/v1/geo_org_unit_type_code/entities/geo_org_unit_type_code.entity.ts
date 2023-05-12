@@ -9,15 +9,15 @@ export class GeoOrgUnitTypeCode
         example: "D",
         description: "The geo org unit type code",
       })
-      @PrimaryColumn({length: 3})
+      @PrimaryColumn({length: 10})
       geo_org_unit_type_code: string;
     
       @ApiProperty({ example: "Invalid License", description: "The short description of the geo org unit type code" })
-      @Column({length: 32})
+      @Column({length: 50})
       short_description: string;
     
       @ApiProperty({ example: "Invalid License", description: "The long description of the geo org unit type code" })
-      @Column({length: 120, nullable: true })
+      @Column({length: 250, nullable: true })
       long_description: string;
     
       @ApiProperty({ example: "1", description: "The display order of the geo org unit type code" })
@@ -70,7 +70,7 @@ export class GeoOrgUnitTypeCode
       @Column()
       update_timestamp: Date;
     
-      constructor() {
-    
+      constructor(geo_org_unit_type_code?: string) {
+        this.geo_org_unit_type_code = geo_org_unit_type_code;
       }
 }
