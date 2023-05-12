@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 export class OfficerService {
   constructor(
     @InjectRepository(Officer)
-    private officeRepository: Repository<Officer>
+    private officerRepository: Repository<Officer>
   ) {
   }
   create(createOfficerDto: CreateOfficerDto) {
@@ -17,7 +17,7 @@ export class OfficerService {
   }
 
   findAll() {
-    return this.officeRepository.find({
+    return this.officerRepository.find({
       relations: {
         office_guid: {
           geo_organization_unit_code: true
