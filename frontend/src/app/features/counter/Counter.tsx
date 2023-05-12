@@ -20,10 +20,11 @@ interface OrganizationUnitOption {
   long_description: string;
 }
 
-interface OfficeOption {
-  office_guid: string;
-  geo_organization_unit_code: {geo_organization_unit_code: string,short_description: string, long_description: string};
-  agency_code: {agency_code: string,short_description: string, long_description: string};
+interface OfficerOption {
+  officer_guid: string;
+  office_guid: {geo_organization_unit_code: {geo_organization_unit_code: string,short_description: string, long_description: string}};
+  agency_code: {agency_code: string, short_description: string, long_description: string};
+  person_guid: {first_name: string, last_name: string};
 }
 
 // temporary react component that renders a list of organizations retrieved from the backend API
@@ -65,8 +66,8 @@ const OrganizationCodeDropdown: React.FC = () => {
 };
 
 // temporary react component that renders a list of organizations retrieved from the backend API
-const OfficeDropdown: React.FC = () => {
-  const [options, setOptions] = useState<OfficeOption[]>([]);
+const OfficerDropdown: React.FC = () => {
+  const [options, setOptions] = useState<OfficerOption[]>([]);
   const [selectedOption, setSelectedOption] = useState('');
 
   useEffect(() => {
@@ -75,7 +76,7 @@ const OfficeDropdown: React.FC = () => {
         let token = localStorage.getItem("user");
           axios.defaults.headers.common.Authorization = `Bearer ${token}`;
               
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/v1/office`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/v1/officer`);
         setOptions(response.data);
       } catch (error) {
         console.error(error);
@@ -91,11 +92,11 @@ const OfficeDropdown: React.FC = () => {
 
   return (
     <div>
-      <label htmlFor="dropdown">Offices:</label>
+      <label htmlFor="dropdown">Officers:</label>
       <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
-        <option value="">Select an Office</option>
+        <option value="">Select an Officer</option>
         {options.map((option) => (
-          <option key={option.office_guid} value={option.geo_organization_unit_code.geo_organization_unit_code}>{option.geo_organization_unit_code.long_description}</option>
+          <option key={option.officer_guid} value={option.officer_guid}>{option.person_guid.first_name} {option.person_guid.last_name} - {option.office_guid.geo_organization_unit_code.long_description}</option>
         ))}
       </select>
     </div>
@@ -157,8 +158,12 @@ export function Counter() {
           Add If Odd
         </button>
       </div>
-      <OrganizationCodeDropdown/>
-      <OfficeDropdown/>
+      <div>
+        <OrganizationCodeDropdown/>
+      </div>
+      <div>
+        <OfficerDropdown/>
+      </div>
     </div>
   );
 }
