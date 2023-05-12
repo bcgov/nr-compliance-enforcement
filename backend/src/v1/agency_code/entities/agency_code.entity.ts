@@ -70,7 +70,7 @@ export class AgencyCode
       @Column()
       update_timestamp: Date;
     
-      constructor() {
-    
+      constructor(agency_code?:string) {
+        this.agency_code = agency_code;
       }
 }

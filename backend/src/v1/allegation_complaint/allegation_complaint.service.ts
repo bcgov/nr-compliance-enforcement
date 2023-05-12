@@ -11,10 +11,10 @@ import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
 @Injectable()
 export class AllegationComplaintService {
   constructor(
-    @InjectRepository(AllegationComplaint)
-    private allegationComplaintsRepository: Repository<AllegationComplaint>
   ) {
   }
+  @InjectRepository(AllegationComplaint)
+  private allegationComplaintsRepository: Repository<AllegationComplaint>;
   @Inject(ComplaintService)
   protected readonly complaintService: ComplaintService;
 

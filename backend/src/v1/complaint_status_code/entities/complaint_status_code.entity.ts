@@ -69,7 +69,7 @@ export class ComplaintStatusCode {
   @Column()
   update_timestamp: Date;
 
-  constructor() {
-
+  constructor(complaint_status_code?: string) {
+    this.complaint_status_code = complaint_status_code;
   }
 }

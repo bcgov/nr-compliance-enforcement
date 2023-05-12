@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AllegationComplaintService } from './allegation_complaint.service';
 import { Repository } from 'typeorm';
 import { AllegationComplaint } from './entities/allegation_complaint.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { Complaint } from '../complaint/entities/complaint.entity';
 import { AgencyCode } from '../agency_code/entities/agency_code.entity';
 import { ComplaintStatusCode } from '../complaint_status_code/entities/complaint_status_code.entity';
@@ -26,6 +26,7 @@ describe("AllegationComplaintService", () => {
     "summary",
     "detail_text",
     new Date(),
+    new Date(),
     "other text",
     "chris",
     "903f87c8-76dd-427c-a1bb-4d179e443252",
@@ -34,14 +35,14 @@ describe("AllegationComplaintService", () => {
     "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "COS-1788",
-    new AgencyCode(),
-    new AgencyCode(),
-    new ComplaintStatusCode(),
-    new GeoOrganizationUnitCode()
+    new AgencyCode("COS"),
+    new AgencyCode("COS"),
+    new ComplaintStatusCode("OPEN"),
+    new GeoOrganizationUnitCode("CRBOCHLCTN")
 );
   const oneAllegationComplaint = new AllegationComplaint(
     oneComplaint,
-    new ViolationCode(),
+    new ViolationCode("AINVSPC"),
     true,
     true,
     "witness details",
@@ -65,6 +66,7 @@ describe("AllegationComplaintService", () => {
     "summary2",
     "detail_text2",
     new Date(),
+    new Date(),
     "other text2",
     "chris",
     "903f87c8-76dd-427c-a1bb-4d179e443252",
@@ -73,14 +75,14 @@ describe("AllegationComplaintService", () => {
     "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "COS-1789",
-    new AgencyCode(),
-    new AgencyCode(),
-    new ComplaintStatusCode(),
-    new GeoOrganizationUnitCode()
+    new AgencyCode("COS"),
+    new AgencyCode("COS"),
+    new ComplaintStatusCode("OPEN"),
+    new GeoOrganizationUnitCode("CRBOCHLCTN")
 );
   const twoAllegationComplaint = new AllegationComplaint(
     twoComplaint,
-    new ViolationCode(),
+    new ViolationCode("AINVSPC"),
     true,
     true,
     "witness details2",
@@ -102,6 +104,7 @@ describe("AllegationComplaintService", () => {
   const threeLocationGeometryPoint =  JSON.parse(" { \"type\": \"Point\", \"coordinates\": [ -48.23456, 20.12345 ] }");
   const threeLocationSummaryText = "summary3";
   const threeLocationDetailText = "detail_text3";
+  const threeIncidentDatetime = new Date();
   const threeIncidentReportedDatetime = new Date();
   const threeReferredByAgencyOtherText = "other text3";
   const threeCreateUserId = "chris";
@@ -111,15 +114,14 @@ describe("AllegationComplaintService", () => {
   const threeUpdateUserGuid = "903f87c8-76dd-427c-a1bb-4d179e443252";
   const threeUpdateTimestamp = new Date();
   const threeCompliantIdentifier = "COS-1800";
-  const threeReferredByAgencyCode = new AgencyCode();
-  const threeOwnedByAgencyCode = new AgencyCode();
-  const threeComplaintStatusCode = new ComplaintStatusCode();
-  const threeGeoOrganizationUnitCode = new GeoOrganizationUnitCode();
-
+  const threeReferredByAgencyCode = new AgencyCode("COS");
+  const threeOwnedByAgencyCode = new AgencyCode("COS");
+  const threeComplaintStatusCode = new ComplaintStatusCode("OPEN");
+  const threeGeoOrganizationUnitCode = new GeoOrganizationUnitCode("CRBOCHLCTN");
   const threeComplaint = new Complaint(threeDetailText, threeCallerName, threeCallerAddress, threeCallerEmail, threeCallerPhone1, threeCallerPhone2, threeCallerPhone3, threeLocationGeometryPoint,
-    threeLocationSummaryText, threeLocationDetailText, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateUserGuid, threeCreateTimestamp, threeUpdateUserId,
+    threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateUserGuid, threeCreateTimestamp, threeUpdateUserId,
     threeUpdateUserGuid, threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode);
-    const threeViolationCode = new ViolationCode();
+    const threeViolationCode = new ViolationCode("AINVSPC");
     const threeInProgressInd = true;
     const threeObservedInd = true;
     const threeSuspectWitnessDtlText = "witness 3";
@@ -138,6 +140,7 @@ describe("AllegationComplaintService", () => {
     location_geometry_point: threeLocationGeometryPoint,
     location_summary_text: threeLocationSummaryText,
     location_detailed_text: threeLocationDetailText,
+    incident_datetime: threeIncidentDatetime,
     incident_reported_datetime: threeIncidentReportedDatetime,
     referred_by_agency_other_text: threeReferredByAgencyOtherText,
     create_user_id: threeCreateUserId,
@@ -161,6 +164,7 @@ describe("AllegationComplaintService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      //imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint])],
       providers: [
         AllegationComplaintService,
         {

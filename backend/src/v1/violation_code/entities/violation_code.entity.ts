@@ -70,7 +70,7 @@ export class ViolationCode
       @Column()
       update_timestamp: Date;
     
-      constructor() {
-    
+      constructor(violation_code?: string) {
+        this.violation_code = violation_code;
       }
 }

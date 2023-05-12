@@ -70,7 +70,7 @@ export class GeoOrgUnitTypeCode
       @Column()
       update_timestamp: Date;
     
-      constructor() {
-    
+      constructor(geo_org_unit_type_code?: string) {
+        this.geo_org_unit_type_code = geo_org_unit_type_code;
       }
 }
