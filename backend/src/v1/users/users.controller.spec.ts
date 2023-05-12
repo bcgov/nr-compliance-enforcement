@@ -14,7 +14,9 @@ describe("UserController", () => {
         UsersService,
         {
           provide: getRepositoryToken(Users),
-          useValue: {},
+          useValue: {
+
+          },
         },
       ],
     }).compile();

@@ -10,7 +10,7 @@ export class GeoOrganizationUnitCode
         example: "CRBOCHLCTN",
         description: "The geo organization unit code",
       })
-      @PrimaryColumn({length: 12})
+      @PrimaryColumn({length: 10})
       geo_organization_unit_code: string;
 
       @ApiProperty({
@@ -22,11 +22,11 @@ export class GeoOrganizationUnitCode
       geo_org_unit_type_code: GeoOrgUnitTypeCode;
     
       @ApiProperty({ example: "Caribou", description: "The short description of the geo organization unit code" })
-      @Column({length: 120, nullable: true })
+      @Column({length: 50, nullable: true })
       short_description: string;
     
       @ApiProperty({ example: "Caribou", description: "The long description of the geo organization unit code" })
-      @Column({length: 120, nullable: true })
+      @Column({length: 250, nullable: true })
       long_description: string;
     
       @ApiProperty({ example: "2023-01-22", description: "The effective date for this geo org unit structure" })

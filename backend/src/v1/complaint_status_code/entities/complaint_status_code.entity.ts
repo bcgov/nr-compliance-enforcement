@@ -8,15 +8,15 @@ export class ComplaintStatusCode {
     example: "OPN",
     description: "The complaint status code",
   })
-  @PrimaryColumn({length: 3})
+  @PrimaryColumn({length: 10})
   complaint_status_code: string;
 
   @ApiProperty({ example: "Open", description: "The short description of the complaint status code" })
-  @Column({length: 120})
+  @Column({length: 50})
   short_description: string;
 
   @ApiProperty({ example: "Open", description: "The short description of the complaint status code" })
-  @Column( {length: 120, nullable: true} )
+  @Column( {length: 4000, nullable: true} )
   long_description: string;
 
   @ApiProperty({ example: "1", description: "The display order of the complaint status code" })

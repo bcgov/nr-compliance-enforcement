@@ -3,11 +3,7 @@ import { AllegationComplaintService } from './allegation_complaint.service';
 import { Repository } from 'typeorm';
 import { AllegationComplaint } from './entities/allegation_complaint.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ViolationCodeService } from '../violation_code/violation_code.service';
 import { Complaint } from '../complaint/entities/complaint.entity';
-import { AgencyCodeService } from '../agency_code/agency_code.service';
-import { GeoOrganizationUnitCodeService } from '../geo_organization_unit_code/geo_organization_unit_code.service';
-import { ComplaintStatusCodeService } from '../complaint_status_code/complaint_status_code.service';
 import { AgencyCode } from '../agency_code/entities/agency_code.entity';
 import { ComplaintStatusCode } from '../complaint_status_code/entities/complaint_status_code.entity';
 import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
@@ -16,10 +12,6 @@ import { ComplaintService } from '../complaint/complaint.service';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
-  let violationCodeService: ViolationCodeService;
-  let agencyCodeService: AgencyCodeService;
-  let complaintStatusCodeService: ComplaintStatusCodeService;
-  let geoOrganizationUnitCodeService: GeoOrganizationUnitCodeService
   let repo: Repository<AllegationComplaint>;
 
   const oneComplaint = new Complaint(

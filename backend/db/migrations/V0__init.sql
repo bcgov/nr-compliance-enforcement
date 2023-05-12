@@ -3,9 +3,9 @@ CREATE EXTENSION IF NOT EXISTS "postgis";
 
 
 CREATE TABLE public.agency_code (
-	agency_code varchar(6) NOT NULL,
-	short_description varchar(120) NOT NULL,
-    long_description varchar(120) NULL,
+	agency_code varchar(10) NOT NULL,
+	short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
     display_order int4 NOT NULL,
     active_ind bool NOT NULL,
     create_user_id varchar(32) NOT NULL,
@@ -14,13 +14,13 @@ CREATE TABLE public.agency_code (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    CONSTRAINT "PK_agency_code_agency_code" PRIMARY KEY (agency_code)
+    CONSTRAINT "PK_agengycode" PRIMARY KEY (agency_code)
 );
 
 CREATE TABLE public.complaint_status_code (
-    complaint_status_code varchar(6) NOT NULL,
-    short_description varchar(120) NOT NULL,
-    long_description varchar(120) NULL,
+    complaint_status_code varchar(10) NOT NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
     display_order int4 NOT NULL,
     active_ind bool NOT NULL,
     create_user_id varchar(32) NOT NULL,
@@ -29,13 +29,13 @@ CREATE TABLE public.complaint_status_code (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    CONSTRAINT "PK_complaint_status_code" PRIMARY KEY (complaint_status_code)
+    CONSTRAINT "PK_cmpntstscd" PRIMARY KEY (complaint_status_code)
 );
 
 CREATE TABLE public.geo_org_unit_type_code (
-    geo_org_unit_type_code varchar(6) NOT NULL,
-    short_description varchar(32) NOT NULL,
-    long_description varchar(120) NULL,
+    geo_org_unit_type_code varchar(10) NOT NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
     display_order int4 NOT NULL,
     active_ind bool NOT NULL,
     create_user_id varchar(32) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE public.geo_org_unit_type_code (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    CONSTRAINT "PK_geo_org_unit_type_code" PRIMARY KEY (geo_org_unit_type_code)
+    CONSTRAINT "PK_gorgtypecd" PRIMARY KEY (geo_org_unit_type_code)
 );
 
 CREATE TABLE public.person (
@@ -66,13 +66,13 @@ CREATE TABLE public.users (
     id serial4 NOT NULL,
     "name" varchar NOT NULL,
     email varchar NOT NULL,
-    CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY (id)
+    CONSTRAINT "PK_users" PRIMARY KEY (id)
 );
 
 CREATE TABLE public.violation_code (
     violation_code varchar(10) NOT NULL,
-    short_description varchar(120) NOT NULL,
-    long_description varchar(120) NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
     display_order int4 NOT NULL,
     active_ind bool NOT NULL,
     create_user_id varchar(32) NOT NULL,
@@ -81,14 +81,14 @@ CREATE TABLE public.violation_code (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    CONSTRAINT "PK_violation_code" PRIMARY KEY (violation_code)
+    CONSTRAINT "PK_violatncd" PRIMARY KEY (violation_code)
 );
 
 
 CREATE TABLE public.geo_organization_unit_code (
-    geo_organization_unit_code varchar(12) NOT NULL,
-    short_description varchar(120) NULL,
-    long_description varchar(120) NULL,
+    geo_organization_unit_code varchar(10) NOT NULL,
+    short_description varchar(50) NULL,
+    long_description varchar(250) NULL,
     effective_date timestamp NOT NULL,
     expiry_date timestamp NULL,
     create_user_id varchar(32) NOT NULL,
@@ -98,8 +98,8 @@ CREATE TABLE public.geo_organization_unit_code (
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
     geo_org_unit_type_code varchar(6) NULL,
-    CONSTRAINT "PK_geo_organization_unit_code" PRIMARY KEY (geo_organization_unit_code),
-    CONSTRAINT "FK_geo_organization_unit_code_geo_org_unit_type_code" FOREIGN KEY (geo_org_unit_type_code) REFERENCES public.geo_org_unit_type_code(geo_org_unit_type_code)
+    CONSTRAINT "PK_geoorgutnd" PRIMARY KEY (geo_organization_unit_code),
+    CONSTRAINT "FK_geoorgutnd_gorgtypecd" FOREIGN KEY (geo_org_unit_type_code) REFERENCES public.geo_org_unit_type_code(geo_org_unit_type_code)
 );
 
 
@@ -114,8 +114,7 @@ CREATE TABLE public.office (
     geo_organization_unit_code varchar(12) NULL,
     agency_code varchar(6) NULL,
     CONSTRAINT "PK_office" PRIMARY KEY (office_guid),
-    CONSTRAINT "FK_office_ geo_organization_unit_code" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_office_agencyu_code" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
+    CONSTRAINT "FK_office_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
 );
 
 
@@ -133,12 +132,12 @@ CREATE TABLE public.officer (
     CONSTRAINT "PK_officer" PRIMARY KEY (officer_guid),
     CONSTRAINT "UQ_officer" UNIQUE (person_guid),
     CONSTRAINT "FK_officer_person" FOREIGN KEY (person_guid) REFERENCES public.person(person_guid),
-    CONSTRAINT "FK_officer_office_guid" FOREIGN KEY (office_guid) REFERENCES public.office(office_guid)
+    CONSTRAINT "FK_officer_office" FOREIGN KEY (office_guid) REFERENCES public.office(office_guid)
 );
 
 CREATE TABLE public.complaint (
     complaint_identifier varchar(20) NOT NULL,
-    detail_text varchar(250) NULL,
+    detail_text varchar(4000) NULL,
     caller_name varchar(120) NULL,
     caller_address varchar(120) NULL,
     caller_email varchar(120) NULL,
@@ -146,7 +145,8 @@ CREATE TABLE public.complaint (
     caller_phone_2 varchar(15) NULL,
     caller_phone_3 varchar(15) NULL,
     location_summary_text varchar(120) NULL,
-    location_detailed_text varchar(255) NULL,
+    location_detailed_text varchar(4000) NULL,
+    incident_datetime timestamp NULL,
     incident_reported_datetime timestamp NULL,
     referred_by_agency_other_text varchar(120) NULL,
     create_user_id varchar(32) NOT NULL,
@@ -161,10 +161,10 @@ CREATE TABLE public.complaint (
     geo_organization_unit_code varchar(12) NULL,
     location_geometry_point public.geometry NULL,
     CONSTRAINT "PK_complaint" PRIMARY KEY (complaint_identifier),
-    CONSTRAINT "FK_complaint_geo_organization_unit_code" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_complaint_owned_by_agency_code" FOREIGN KEY (owned_by_agency_code) REFERENCES public.agency_code(agency_code),
-    CONSTRAINT "FK_complaint_complaint_status_code" FOREIGN KEY (complaint_status_code) REFERENCES public.complaint_status_code(complaint_status_code),
-    CONSTRAINT "FK_complaint_referred_by_agency_code" FOREIGN KEY (referred_by_agency_code) REFERENCES public.agency_code(agency_code)
+    CONSTRAINT "FK_complaint_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_complaint_owned_by_agencycode" FOREIGN KEY (owned_by_agency_code) REFERENCES public.agency_code(agency_code),
+    CONSTRAINT "FK_complaint_compntstscd" FOREIGN KEY (complaint_status_code) REFERENCES public.complaint_status_code(complaint_status_code),
+    CONSTRAINT "FK_complaint_referred_by_agencycode" FOREIGN KEY (referred_by_agency_code) REFERENCES public.agency_code(agency_code)
 );
 CREATE INDEX "IDX_adbfa452bdecec83d2daf17d18" ON public.complaint USING gist (location_geometry_point);
 
@@ -182,11 +182,11 @@ CREATE TABLE public.geo_org_unit_structure (
     agency_code varchar(6) NULL,
     parent_geo_org_unit_code varchar(12) NULL,
     child_geo_org_unit_code varchar(12) NULL,
-    CONSTRAINT "PK_geo_org_unit_structure" PRIMARY KEY (geo_org_unit_structure_guid),
-    CONSTRAINT "UQ_geo_org_unit_structure" UNIQUE (parent_geo_org_unit_code, child_geo_org_unit_code),
-    CONSTRAINT "FK_geo_org_unit_structure_parent_geo_org_unit_code" FOREIGN KEY (parent_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_geo_org_unit_structure_child_geo_org_unit_code" FOREIGN KEY (child_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_geo_org_unit_structure_agency_code" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
+    CONSTRAINT "PK_gorgustrct" PRIMARY KEY (geo_org_unit_structure_guid),
+    CONSTRAINT "UQ_gorgustrct" UNIQUE (parent_geo_org_unit_code, child_geo_org_unit_code),
+    CONSTRAINT "FK_gorgustrct_parent_geoorgutcd" FOREIGN KEY (parent_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_gorgustrct_child_geoorgutcd" FOREIGN KEY (child_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_gorgustrct_agencycode" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
 );
 
 
@@ -194,7 +194,7 @@ CREATE TABLE public.allegation_complaint (
     allegation_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     in_progress_ind bool NOT NULL,
     observed_ind bool NOT NULL,
-    suspect_witnesss_dtl_text varchar(255) NULL,
+    suspect_witnesss_dtl_text varchar(4000) NULL,
     create_user_id varchar(32) NOT NULL,
     create_user_guid uuid NULL,
     create_timestamp timestamp NOT NULL,
@@ -203,10 +203,10 @@ CREATE TABLE public.allegation_complaint (
     update_timestamp timestamp NOT NULL,
     complaint_identifier varchar(20) NULL,
     violation_code varchar(10) NULL,
-    CONSTRAINT "PK_allegation_complaint" PRIMARY KEY (allegation_complaint_guid),
-    CONSTRAINT "UQ_allegation_complaint" UNIQUE (complaint_identifier),
-    CONSTRAINT "FK_allegation_complaint_complaint_identifier" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
-    CONSTRAINT "FK_allegation_complaint_violation_code" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code)
+    CONSTRAINT "PK_algtncmplt" PRIMARY KEY (allegation_complaint_guid),
+    CONSTRAINT "UQ_algtncmplt" UNIQUE (complaint_identifier),
+    CONSTRAINT "FK_algtncmplt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
+    CONSTRAINT "FK_algtncmplt_violatncd" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code)
 );
 
 
@@ -226,11 +226,26 @@ values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),
 	  ('OFFLOC', 'Off Location', null, 3, true, user, null, now(), user, null, now()),
       ('AREA', 'Area', null, 4, true, user, null, now(), user, null, now());
 
+
+
+
 insert into violation_code (violation_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
-values('IVL', 'IVL', 'Invalid License', 1, true, user, null, now(), user, null, now());
+values('AINVSPC', 'AINVSPC', 'Aquatic: Invasive Species', 1, true, user, null, now(), user, null, now()),
+values('BOATING', 'BOATING', 'Boating', 2, true, user, null, now(), user, null, now()),
+values('DUMPING', 'DUMPING', 'Dumping', 3, true, user, null, now(), user, null, now()),
+values('FISHERY', 'FISHERY', 'Fisheries', 4, true, user, null, now(), user, null, now()),
+values('ORV', 'ORV', 'Off-road vehicles (ORV)', 5, true, user, null, now(), user, null, now()),
+values('OPENBURN', 'OPENBURN', 'Open Burning', 6, true, user, null, now(), user, null, now()),
+values('OTHER', 'OTHER', 'Other', 7, true, user, null, now(), user, null, now()),
+values('PESTICDE', 'PESTICDE', 'Pesticide', 8, true, user, null, now(), user, null, now()),
+values('RECREATN', 'RECREATN', 'Recreation sites/ trails', 9, true, user, null, now(), user, null, now()),
+values('WASTE', 'WASTE', 'Waste', 10, true, user, null, now(), user, null, now()),
+values('WILDLIFE', 'WILDLIFE', 'Wildlife', 11, true, user, null, now(), user, null, now()),
+values('WINVSPC', 'WINVSPC', 'Wildlife: Invasive Species', 12, true, user, null, now(), user, null, now());
 
 insert into complaint_status_code (complaint_status_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
-values('OPN', 'OPN', 'Open', 1, true, user, null, now(), user, null, now());
+values('OPEN', 'OPEN', 'Open', 1, true, user, null, now(), user, null, now());
+values('CLOSED', 'CLOSED', 'Closed', 1, true, user, null, now(), user, null, now());
 
 
 insert into geo_organization_unit_code(geo_organization_unit_code, short_description, long_description, effective_date, expiry_date, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_org_unit_type_code)
@@ -2439,7 +2454,9 @@ comment on column public.complaint.caller_email is 'The email address provided b
 comment on column public.complaint.caller_phone_1 is 'The primary phone number provided by the caller to the call centre or entered onto the web form.';
 comment on column public.complaint.caller_phone_2 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
 comment on column public.complaint.caller_phone_3 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.location_geometry_point is 'The closest approximation to where the incident occurred.   Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)';
+comment on column public.complaint.incident_datetime is 'The date and time at which the complaint occurred.';
+comment on column public.complaint.incident_reported_datetime is 'The date and time at which the complaint was reported.';
+comment on column public.complaint.location_geometry_point is 'The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)';
 comment on column public.complaint.location_summary_text is 'A brief summary of the location of the complaint.';
 comment on column public.complaint.location_detailed_text is 'A more detailed description of the location of the complaint.';
 comment on column public.complaint.referred_by_agency_other_text is 'Provides a more detailed description when the referred by Agency is of type "OTHER" ';
