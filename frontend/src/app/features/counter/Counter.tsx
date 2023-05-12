@@ -11,13 +11,8 @@ import {
 } from './counterSlice';
 import styles from './Counter.module.css';
 import UserService from '../../service/UserServices';
+
 import axios from 'axios';
-
-interface APIResponse {
-  data: JSON
-}
-
-
 
 const getOrgsJSON = function(): Promise<void> {
 
@@ -32,7 +27,8 @@ const getOrgsJSON = function(): Promise<void> {
 
   return axios.request(config)
   .then((response) => {
-    console.log(JSON.stringify(response.data));
+    let jsonResponseTextArea : HTMLInputElement = (document.getElementById('jsonResponse') as HTMLInputElement);
+    jsonResponseTextArea.value=JSON.stringify(response.data);
   })
   .catch((error) => {
     console.log(error);
@@ -93,12 +89,18 @@ export function Counter() {
         >
           Add If Odd
         </button>
+      </div>
+      <div>
         <button
-          className={styles.button}
-          onClick={() => getOrgsJSON()}
-        >
-          Get Orgs
-        </button>
+            className={styles.button}
+            onClick={() => getOrgsJSON()}
+          >
+            Get Organization Units
+          </button>
+
+      </div>
+      <div>
+          <textarea cols={200} id="jsonResponse"></textarea> 
       </div>
     </div>
   );
