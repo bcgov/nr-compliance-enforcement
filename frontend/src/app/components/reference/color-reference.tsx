@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import logo from "../../assets/images/BCID_H_rgb_rev.png";
+import { ReferenceHeader } from "./reference-header";
 
 export const ColorReference: FC = () => {
   const primaryVariants: string[] = [
@@ -262,41 +262,10 @@ export const ColorReference: FC = () => {
   return (
     <>
       <Container fluid style={{ backgroundColor: "#F5F5F5" }}>
-        <Row
-          style={{
-            backgroundColor: "#004968",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            padding: "96px",
-            gap: "10px",
-            height: "461px",
-          }}
-        >
-          <Col
-            md={12}
-            style={{
-              backgroundColor: "#004968",
-              color: "white",
-              fontFamily: "BC Sans",
-              fontStyle: "normal",
-
-              fontSize: "18px",
-              lineHeight: "25px",
-            }}
-          >
-            <img style={{ height: "53px" }} src={logo} alt="logo" /> Ministry of
-            Environment and Climate Change Strategy
-          </Col>
-          <Col md={12}>
-            <h1 style={{ fontSize: "96px", color: "white" }}>
-              B.C. Gov Design System: Colors
-            </h1>
-          </Col>
-        </Row>
+        <ReferenceHeader title="B.C. Gov Design System: Colors" />
         <Row>
           <Col md={12}>
-            <Card>
+            <Card className="comp-mt-m">
               <Card.Header>Bootstrap Primary Theme Colors</Card.Header>
               <Card.Body>
                 <Row>

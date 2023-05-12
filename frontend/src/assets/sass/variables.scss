@@ -3,8 +3,8 @@
 //-- ---
 //-- COLORS
 //-- ---
-$white:    #fff !default;
-$black:    #000 !default;
+$white: #fff !default;
+$black: #000 !default;
 
 /* Bootstrap Primary theme override colors */
 $bc-gov-primary: #003366;
@@ -18,37 +18,37 @@ $bc-gov-dark: $black;
 
 /* BC Primary */
 $bc-brand-blue: #003366;
-$bc-brand-gold: #FCBA19;
+$bc-brand-gold: #fcba19;
 $bc-brand-text: #313132;
-$bc-brand-links: #1A5A96;
-$bc-brand-background-blue: #38598A;
-$bc-brand-background-light-gray: #F2F2F2;
+$bc-brand-links: #1a5a96;
+$bc-brand-background-blue: #38598a;
+$bc-brand-background-light-gray: #f2f2f2;
 
 /* BC Standard */
-$bc-standard-01: #004F4B !default;
-$bc-standard-02: #20754E !default;
-$bc-standard-03: #61A744 !default;
-$bc-standard-04: #31BA9A !default;
-$bc-standard-05: #05A6D1 !default;
-$bc-standard-06: #005C98 !default;
-$bc-standard-07: #243C7C !default;
-$bc-standard-08: #5F3795 !default;
+$bc-standard-01: #004f4b !default;
+$bc-standard-02: #20754e !default;
+$bc-standard-03: #61a744 !default;
+$bc-standard-04: #31ba9a !default;
+$bc-standard-05: #05a6d1 !default;
+$bc-standard-06: #005c98 !default;
+$bc-standard-07: #243c7c !default;
+$bc-standard-08: #5f3795 !default;
 $bc-standard-09: #883895 !default;
-$bc-standard-10: #DD5857 !default;
-$bc-standard-11: #F38489 !default;
-$bc-standard-12: #F2A488 !default;
-$bc-standard-13: #ECC51D !default;
+$bc-standard-10: #dd5857 !default;
+$bc-standard-11: #f38489 !default;
+$bc-standard-12: #f2a488 !default;
+$bc-standard-13: #ecc51d !default;
 
 /* grayscale */
-$gray-100: #F1F1F1 !default;
-$gray-200: #E4E4E4 !default; 
-$gray-300: #C7C7C7 !default; 
-$gray-400: #A1A1A1 !default;
-$gray-500: #8C8C8C !default;
-$gray-600: #7A7A7A !default;
+$gray-100: #f1f1f1 !default;
+$gray-200: #e4e4e4 !default;
+$gray-300: #c7c7c7 !default;
+$gray-400: #a1a1a1 !default;
+$gray-500: #8c8c8c !default;
+$gray-600: #7a7a7a !default;
 $gray-700: #595959 !default;
 $gray-800: #313132 !default;
-$gray-900: #1A1A1A !default;
+$gray-900: #1a1a1a !default;
 
 $grays: (
   "100": $gray-100,
@@ -59,21 +59,21 @@ $grays: (
   "600": $gray-600,
   "700": $gray-700,
   "800": $gray-800,
-  "900": $gray-900
+  "900": $gray-900,
 ) !default;
 
 $theme-colors: (
   "primary": $bc-gov-primary,
-  "secondary": $bc-gov-secondary, 
+  "secondary": $bc-gov-secondary,
   "success": $bc-gov-success,
   "warning": $bc-gov-warning,
   "info": $bc-gov-info,
   "danger": $bc-gov-danger,
   "light": $bc-gov-light,
-  "dark": $bc-gov-dark
+  "dark": $bc-gov-dark,
 ) !default;
 
-$custom-theme-colors:(
+$custom-theme-colors: (
   "bc-brand-blue": $bc-brand-blue,
   "bc-brand-gold": $bc-brand-gold,
   "bc-brand-text": $bc-brand-text,
@@ -83,6 +83,18 @@ $custom-theme-colors:(
 );
 
 $theme-colors: map-merge($theme-colors, $custom-theme-colors);
+
+/* spacing */
+$sides: (top, bottom, left, right); 
+$space-units: (
+  "xxs": 4,
+  "xs": 8,
+  "s": 16,
+  "m": 24,
+  "l": 32,
+  "xl": 40,
+  "xxl": 48,
+);
 
 @import "../../../node_modules/bootstrap/scss/mixins";
 @import "../../../node_modules/bootstrap/scss/variables";

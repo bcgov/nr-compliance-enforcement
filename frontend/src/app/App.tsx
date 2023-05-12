@@ -1,10 +1,11 @@
-import { ColorReference } from "./components/color-reference";
+import { SpaceReference } from "./components/reference";
+
 
 const App = () => {
 
   return (
     <div className="App">
-      <ColorReference />
+      <SpaceReference />
     </div>
   );
 };
