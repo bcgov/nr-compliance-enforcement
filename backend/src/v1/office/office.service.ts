@@ -19,7 +19,9 @@ export class OfficeService {
 
   findAll() {
     return this.officeRepository.find({
-      relations: { 
+      relations: {
+          geo_organization_unit_code: {},
+          agency_code: {}
         } ,
       });
   }
