@@ -114,7 +114,7 @@ CREATE TABLE public.office (
     geo_organization_unit_code varchar(12) NULL,
     agency_code varchar(6) NULL,
     CONSTRAINT "PK_office" PRIMARY KEY (office_guid),
-    CONSTRAINT "FK_office_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_office_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code)
 );
 
 
@@ -231,21 +231,21 @@ values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),
 
 insert into violation_code (violation_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
 values('AINVSPC', 'AINVSPC', 'Aquatic: Invasive Species', 1, true, user, null, now(), user, null, now()),
-values('BOATING', 'BOATING', 'Boating', 2, true, user, null, now(), user, null, now()),
-values('DUMPING', 'DUMPING', 'Dumping', 3, true, user, null, now(), user, null, now()),
-values('FISHERY', 'FISHERY', 'Fisheries', 4, true, user, null, now(), user, null, now()),
-values('ORV', 'ORV', 'Off-road vehicles (ORV)', 5, true, user, null, now(), user, null, now()),
-values('OPENBURN', 'OPENBURN', 'Open Burning', 6, true, user, null, now(), user, null, now()),
-values('OTHER', 'OTHER', 'Other', 7, true, user, null, now(), user, null, now()),
-values('PESTICDE', 'PESTICDE', 'Pesticide', 8, true, user, null, now(), user, null, now()),
-values('RECREATN', 'RECREATN', 'Recreation sites/ trails', 9, true, user, null, now(), user, null, now()),
-values('WASTE', 'WASTE', 'Waste', 10, true, user, null, now(), user, null, now()),
-values('WILDLIFE', 'WILDLIFE', 'Wildlife', 11, true, user, null, now(), user, null, now()),
-values('WINVSPC', 'WINVSPC', 'Wildlife: Invasive Species', 12, true, user, null, now(), user, null, now());
+('BOATING', 'BOATING', 'Boating', 2, true, user, null, now(), user, null, now()),
+('DUMPING', 'DUMPING', 'Dumping', 3, true, user, null, now(), user, null, now()),
+('FISHERY', 'FISHERY', 'Fisheries', 4, true, user, null, now(), user, null, now()),
+('ORV', 'ORV', 'Off-road vehicles (ORV)', 5, true, user, null, now(), user, null, now()),
+('OPENBURN', 'OPENBURN', 'Open Burning', 6, true, user, null, now(), user, null, now()),
+('OTHER', 'OTHER', 'Other', 7, true, user, null, now(), user, null, now()),
+('PESTICDE', 'PESTICDE', 'Pesticide', 8, true, user, null, now(), user, null, now()),
+('RECREATN', 'RECREATN', 'Recreation sites/ trails', 9, true, user, null, now(), user, null, now()),
+('WASTE', 'WASTE', 'Waste', 10, true, user, null, now(), user, null, now()),
+('WILDLIFE', 'WILDLIFE', 'Wildlife', 11, true, user, null, now(), user, null, now()),
+('WINVSPC', 'WINVSPC', 'Wildlife: Invasive Species', 12, true, user, null, now(), user, null, now());
 
 insert into complaint_status_code (complaint_status_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
-values('OPEN', 'OPEN', 'Open', 1, true, user, null, now(), user, null, now());
-values('CLOSED', 'CLOSED', 'Closed', 1, true, user, null, now(), user, null, now());
+values('OPEN', 'OPEN', 'Open', 1, true, user, null, now(), user, null, now()),
+('CLOSED', 'CLOSED', 'Closed', 1, true, user, null, now(), user, null, now());
 
 
 insert into geo_organization_unit_code(geo_organization_unit_code, short_description, long_description, effective_date, expiry_date, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_org_unit_type_code)
