@@ -223,7 +223,7 @@ values('BCWF', 'BCWF', 'BC Wildlife Federation', 1, true, user, null, now(), use
 insert into geo_org_unit_type_code (geo_org_unit_type_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
 values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),
 	  ('REGION', 'Region', null, 2, true, user, null, now(), user, null, now()),
-	  ('OFFLOC', 'Off Location', null, 3, true, user, null, now(), user, null, now()),
+	  ('OFFLOC', 'Office Location', null, 3, true, user, null, now(), user, null, now()),
       ('AREA', 'Area', null, 4, true, user, null, now(), user, null, now());
 
 
