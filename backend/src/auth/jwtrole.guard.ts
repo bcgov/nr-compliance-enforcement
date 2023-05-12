@@ -38,6 +38,7 @@ export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
     const user = request.user;
 
     if (!user) {
+      this.logger.error('User authorization not verified');
       throw new UnauthorizedException(
         'Cannot verify user authorization',
       );
