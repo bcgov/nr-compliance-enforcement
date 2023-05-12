@@ -2312,14 +2312,32 @@ values (now(), null, user, null, now(), user, null, now(), 'COS','KTNY','CLMBAKT
 	(now(), null, user, null, now(), user, null, now(), 'COS','100MLHSE','YOUNGLK'),
 	(now(), null, user, null, now(), user, null, now(), 'COS','PRTMCNL','ZEBALLOS');
 
-    -- populate offices
-    insert into office (create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_organization_unit_code, agency_code)
-    select user, null, now(), user, null, now(), geo_organization_unit_code, 'COS'
-    from geo_organization_unit_code;
+-- populate offices
+insert into office (create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_organization_unit_code, agency_code)
+select user, null, now(), user, null, now(), geo_organization_unit_code, 'COS'
+from geo_organization_unit_code;
 
-    -- create test users
+-- create test people
+insert into person (first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values ('Julia', 'R.', null, 'McMillan', user, null, now(), user, null, now()),
+        ('Fred', null, null, 'Penner', user, null, now(), user, null, now());
 
-	-- comments
+
+-- create test officers
+insert into officer(user_id, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, person_guid)
+select first_name || last_name, user, null, now(), user, null, now(), person_guid
+from person;
+
+-- set office for officers
+update officer set office_guid = (select office_guid from office where geo_organization_unit_code = 'STRTHNVR')
+WHERE officer_guid =(select officer_guid first FROM officer ORDER BY officer_guid asc LIMIT 1) ;
+
+update officer set office_guid = (select office_guid from office where geo_organization_unit_code = 'PNTCTN')
+WHERE officer_guid =(select officer_guid first FROM officer ORDER BY officer_guid desc  LIMIT 1) ;
+
+
+
+-- comments
 comment on table public.agency_code is 'An agency is an organized and named grouping of people that interacts in some way with the Ministry.';
 comment on table public.geo_org_unit_structure is 'A geographical organization unit structure is a parent/child relationship between two geographical organization units.';
 comment on table public.geo_organization_unit_code is 'A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White';
