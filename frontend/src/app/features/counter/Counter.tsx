@@ -17,13 +17,12 @@ import axios from 'axios';
 const getOrgsJSON = function(): Promise<void> {
 
   let token = localStorage.getItem("user");
-  console.log(`Token: ${token}`);
-
+  
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   
   let config = {method: 'get',
   maxBodyLength: Infinity,
-  url: 'http://localhost:3000/v1/geo-organization-unit-code'};
+  url: `${process.env.REACT_APP_API_URL}/v1/geo-organization-unit-code`};
 
   return axios.request(config)
   .then((response) => {

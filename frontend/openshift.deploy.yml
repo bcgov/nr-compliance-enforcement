@@ -56,6 +56,17 @@ objects:
           referencePolicy:
             type: Local
   - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: app-config
+      app: ${NAME}-${ZONE}
+    data:
+      config.js: |
+        window.REACT_APP_KEYCLOAK_URL="https://dev.loginproxy.gov.bc.ca/auth";
+        window.REACT_APP_KEYCLOAK_REALM="standard";
+        window.REACT_APP_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-web-4794";
+        window.API_BASE_URL=https://${NAME}-${ZONE}-backend.${DOMAIN}
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -90,31 +101,6 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: REACT_KEYCLOAK_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name:  react-keycloak
-                      key: react-app-keycloak-client-id
-                - name: REACT_KEYCLOAK_REALM
-                  valueFrom:
-                    secretKeyRef:
-                      name: react-keycloak
-                      key: react-app-keycloak-realm
-                - name: REACT_KEYCLOAK_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: react-keycloak
-                      key: react-app-keycloak-url
-                - name: CYPRESS_KEYCLOAK_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: cypress-secrets
-                      key: cypress-keycloak-user
-                - name: CYPRESS_KEYCLOAK_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: cypress-secrets
-                      key: cypress-keycloak-password
               ports:
                 - containerPort: 3000
                   protocol: TCP
