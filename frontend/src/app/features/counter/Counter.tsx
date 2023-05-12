@@ -13,6 +13,7 @@ import styles from './Counter.module.css';
 import UserService from '../../service/UserServices';
 
 import axios from 'axios';
+import config from '../../../config';
 
 interface OrganizationUnitOption {
   geo_organization_unit_code: string;
@@ -38,7 +39,7 @@ const OrganizationCodeDropdown: React.FC = () => {
         let token = localStorage.getItem("user");
           axios.defaults.headers.common.Authorization = `Bearer ${token}`;
               
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/v1/geo-organization-unit-code`);
+        const response = await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code`);
         setOptions(response.data);
       } catch (error) {
         console.error(error);
@@ -76,7 +77,7 @@ const OfficerDropdown: React.FC = () => {
         let token = localStorage.getItem("user");
           axios.defaults.headers.common.Authorization = `Bearer ${token}`;
               
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/v1/officer`);
+        const response = await axios.get(`${config.API_BASE_URL}/v1/officer`);
         setOptions(response.data);
       } catch (error) {
         console.error(error);
