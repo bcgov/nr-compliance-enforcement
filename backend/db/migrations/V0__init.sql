@@ -2312,8 +2312,14 @@ values (now(), null, user, null, now(), user, null, now(), 'COS','KTNY','CLMBAKT
 	(now(), null, user, null, now(), user, null, now(), 'COS','100MLHSE','YOUNGLK'),
 	(now(), null, user, null, now(), user, null, now(), 'COS','PRTMCNL','ZEBALLOS');
 
-	-- comments
+    -- populate offices
+    insert into office (create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, geo_organization_unit_code, agency_code)
+    select user, null, now(), user, null, now(), geo_organization_unit_code, 'COS'
+    from geo_organization_unit_code;
 
+    -- create test users
+
+	-- comments
 comment on table public.agency_code is 'An agency is an organized and named grouping of people that interacts in some way with the Ministry.';
 comment on table public.geo_org_unit_structure is 'A geographical organization unit structure is a parent/child relationship between two geographical organization units.';
 comment on table public.geo_organization_unit_code is 'A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White';
@@ -2465,3 +2471,4 @@ comment on column public.allegation_complaint.create_timestamp is 'The timestamp
 comment on column public.allegation_complaint.update_user_id is 'The id of the user that updated the allegation complaint.';
 comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
 comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
+

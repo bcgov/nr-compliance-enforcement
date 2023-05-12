@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from "../../hooks/hooks"
 import {
@@ -14,25 +14,52 @@ import UserService from '../../service/UserServices';
 
 import axios from 'axios';
 
-const getOrgsJSON = function(): Promise<void> {
-
-  let token = localStorage.getItem("user");
-  
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  
-  let config = {method: 'get',
-  maxBodyLength: Infinity,
-  url: `${process.env.REACT_APP_API_URL}/v1/geo-organization-unit-code`};
-
-  return axios.request(config)
-  .then((response) => {
-    let jsonResponseTextArea : HTMLInputElement = (document.getElementById('jsonResponse') as HTMLInputElement);
-    jsonResponseTextArea.value=JSON.stringify(response.data);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+interface Option {
+  geo_organization_unit_code: string;
+  short_description: string;
+  long_description: string;
 }
+
+// temporary react component that renders a list of organizations retrieved from the backend API
+const OrganizationCodeDropdown: React.FC = () => {
+  const [options, setOptions] = useState<Option[]>([]);
+  const [selectedOption, setSelectedOption] = useState('');
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let token = localStorage.getItem("user");
+          axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+              
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/v1/geo-organization-unit-code`);
+        console.log(`Token: ${response.data}`)
+        setOptions(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedOption(event.target.value);
+  };
+
+  return (
+    <div>
+      <label htmlFor="dropdown">Organization Units:</label>
+      <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
+        <option value="">Select an option</option>
+        {options.map((option) => (
+          <option key={option.geo_organization_unit_code} value={option.geo_organization_unit_code}>{option.long_description}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 export function Counter() {
   const count = useAppSelector(selectCount);
@@ -89,18 +116,7 @@ export function Counter() {
           Add If Odd
         </button>
       </div>
-      <div>
-        <button
-            className={styles.button}
-            onClick={() => getOrgsJSON()}
-          >
-            Get Organization Units
-          </button>
-
-      </div>
-      <div>
-          <textarea cols={200} id="jsonResponse"></textarea> 
-      </div>
+      <OrganizationCodeDropdown/>
     </div>
   );
 }
