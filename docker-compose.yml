@@ -71,7 +71,7 @@ services:
       - "chown -R root . && npm ci && npm run start"
     environment:
       NODE_ENV: development
-      BACKEND_URL: backend
+      REACT_APP_API_URL: http://localhost:3001
     hostname: frontend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
     links:
