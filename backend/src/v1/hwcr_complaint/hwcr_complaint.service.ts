@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
-import { AttractantHwcrXref } from '../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
 
 @Injectable()
@@ -26,12 +25,10 @@ export class HwcrComplaintService {
       await this.complaintService.create(<CreateComplaintDto>hwcrComplaint);
       const newHwcrComplaint = this.hwcrComplaintsRepository.create(<CreateHwcrComplaintDto>hwcrComplaint);
       await this.hwcrComplaintsRepository.save(newHwcrComplaint);
-      console.log(newHwcrComplaint);
       await newHwcrComplaint.attractant_hwcr_xref.forEach((attractant_hwcr_xref) => {
         const blankHwcrComplaint = new HwcrComplaint();
         blankHwcrComplaint.hwcr_complaint_guid = newHwcrComplaint.hwcr_complaint_guid;
         attractant_hwcr_xref.hwcr_complaint = blankHwcrComplaint;
-        console.log(attractant_hwcr_xref);
         this.attractantHwcrXrefService.create(attractant_hwcr_xref);
       }
       );
@@ -68,6 +65,9 @@ export class HwcrComplaintService {
           } ,
           species_code: true,
           hwcr_complaint_nature_code: true,
+          attractant_hwcr_xref: {
+            attractant_code: true,
+          },
         },
       });
     }
