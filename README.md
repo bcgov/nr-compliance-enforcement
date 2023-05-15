@@ -17,6 +17,8 @@ Dev URLs:
 Test URL: https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
 Prod URL: tbd
 
+SchemaSpy: https://bcgov.github.io/nr-compliance-enforcement/schemaspy/index.html
+
 Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-compliance-enforcement/actions).
 
 Features:
@@ -30,6 +32,8 @@ Features:
 * Templates and setup documentation
 * Starter TypeScript application stack
 * Cypress e2e github action
+* Schemapsy
+* Flyway automated database migrations
 
 # Environments
 
