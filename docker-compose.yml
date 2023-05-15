@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: default
-      POSTGRES_DB: default
+      POSTGRES_DB: postgres
     hostname: database
     restart: always
     user: postgres
@@ -17,7 +17,24 @@ services:
       - "5432:5432"
     volumes:
       - /pgdata
-
+  database-migrations:
+    image: flyway/flyway:9.10-alpine
+    container_name: backend-migrations
+    command:
+      - info
+      - migrate
+      - info
+    volumes:
+      - "./backend/db/migrations:/flyway/sql"
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://database:5432/postgres
+      - FLYWAY_USER=postgres
+      - FLYWAY_PASSWORD=default
+      - FLYWAY_BASELINE_ON_MIGRATE=true
+      - FLYWAY_DEFAULT_SCHEMA=public
+    depends_on:
+      database:
+        condition: service_healthy
   backend:
     container_name: backend
     entrypoint:
@@ -29,7 +46,7 @@ services:
       POSTGRESQL_HOST: database
       POSTGRESQL_USER: postgres
       POSTGRESQL_PASSWORD: default
-      POSTGRESQL_DATABASE: default
+      POSTGRESQL_DATABASE: postgres
     hostname: backend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
     links:
@@ -41,7 +58,11 @@ services:
       - /app/node_modules
     user: root
     working_dir: "/app"
-
+    depends_on:
+      database:
+        condition: service_healthy
+      database-migrations:
+        condition: service_started
   frontend:
     container_name: frontend
     entrypoint:
@@ -50,7 +71,7 @@ services:
       - "chown -R root . && npm ci && npm run start"
     environment:
       NODE_ENV: development
-      BACKEND_URL: backend
+      REACT_APP_API_URL: http://localhost:3001
     hostname: frontend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
     links:

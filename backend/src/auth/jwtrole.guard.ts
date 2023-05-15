@@ -38,6 +38,7 @@ export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
     const user = request.user;
 
     if (!user) {
+      this.logger.error('User authorization not verified');
       throw new UnauthorizedException(
         'Cannot verify user authorization',
       );
@@ -50,7 +51,7 @@ export class JwtRoleGuard extends AuthGuard('jwt') implements CanActivate {
       this.logger.error(`Endpoint ${request.originalUrl} is not properly guarded.  Endpoint needs to either be marked as public, or at least one role is required.`)
       return false;
     } else {
-      this.logger.error(`Endpoint ${request.originalUrl} is properly guarded.`)
+      this.logger.debug(`Endpoint ${request.originalUrl} is properly guarded.`);
     }
 
     // roles that the user has

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from "../../hooks/hooks"
 import {
@@ -11,6 +11,98 @@ import {
 } from './counterSlice';
 import styles from './Counter.module.css';
 import UserService from '../../service/UserServices';
+
+import axios from 'axios';
+import config from '../../../config';
+
+interface OrganizationUnitOption {
+  geo_organization_unit_code: string;
+  short_description: string;
+  long_description: string;
+}
+
+interface OfficerOption {
+  officer_guid: string;
+  office_guid: {geo_organization_unit_code: {geo_organization_unit_code: string,short_description: string, long_description: string}};
+  agency_code: {agency_code: string, short_description: string, long_description: string};
+  person_guid: {first_name: string, last_name: string};
+}
+
+// temporary react component that renders a list of organizations retrieved from the backend API
+const OrganizationCodeDropdown: React.FC = () => {
+  const [options, setOptions] = useState<OrganizationUnitOption[]>([]);
+  const [selectedOption, setSelectedOption] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let token = localStorage.getItem("user");
+          axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+              
+        const response = await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code`);
+        setOptions(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedOption(event.target.value);
+  };
+
+  return (
+    <div>
+      <label htmlFor="dropdown">Organization Units:</label>
+      <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
+        <option value="">Select an option</option>
+        {options.map((option) => (
+          <option key={option.geo_organization_unit_code} value={option.geo_organization_unit_code}>{option.long_description}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+// temporary react component that renders a list of organizations retrieved from the backend API
+const OfficerDropdown: React.FC = () => {
+  const [options, setOptions] = useState<OfficerOption[]>([]);
+  const [selectedOption, setSelectedOption] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let token = localStorage.getItem("user");
+          axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+              
+        const response = await axios.get(`${config.API_BASE_URL}/v1/officer`);
+        setOptions(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedOption(event.target.value);
+  };
+
+  return (
+    <div>
+      <label htmlFor="dropdown">Officers:</label>
+      <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
+        <option value="">Select an Officer</option>
+        {options.map((option) => (
+          <option key={option.officer_guid} value={option.officer_guid}>{option.person_guid.first_name} {option.person_guid.last_name} - {option.office_guid.geo_organization_unit_code.long_description}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 export function Counter() {
   const count = useAppSelector(selectCount);
@@ -66,6 +158,12 @@ export function Counter() {
         >
           Add If Odd
         </button>
+      </div>
+      <div>
+        <OrganizationCodeDropdown/>
+      </div>
+      <div>
+        <OfficerDropdown/>
       </div>
     </div>
   );

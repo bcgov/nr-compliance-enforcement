@@ -14,6 +14,8 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     .then((authenticated) => {
       if (!authenticated) {
         console.log('User is not authenticated.');
+      } else {
+        localStorage.setItem("user", `${_kc.token}`);
       }
       onAuthenticatedCallback();
     })
