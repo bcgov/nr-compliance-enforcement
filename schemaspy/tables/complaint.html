@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>complaint - default.public</title>
+        <title>complaint - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -46,7 +46,7 @@
                 <nav class="navbar navbar-static-top">
                     <div class="container">
                         <div class="navbar-header">
-                            <a href="../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <a href="../index.html" class="navbar-brand"><b>postgres</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
                             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
                         </div>
 
@@ -74,6 +74,19 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>complaint</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Initial information provided on a potential incident.</p>
+                        </div><!-- /.box-body -->
+                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -117,6 +130,11 @@
                                     <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="allegation_complaint.complaint_identifier references complaint.complaint_identifier via FK_algtncmplt_complaint"><a href='allegation_complaint.html'>allegation_complaint</a><span class='relatedKey'>.complaint_identifier</span></td>
+                                                <td class="constraint detail">FK_algtncmplt_complaint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -128,7 +146,7 @@
                                 <tr>
                                     <td><span id="detail_text">detail_text</span></td>
                                     <td>varchar</td>
-                                    <td>250</td>
+                                    <td>4000</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -140,7 +158,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Verbatim details of the complaint as recorded by the call centre or through the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="caller_name">caller_name</span></td>
@@ -157,7 +175,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The name provided by the caller to the call centre or entered onto the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="caller_address">caller_address</span></td>
@@ -174,7 +192,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The address provided by the caller to the call centre or entered onto the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="caller_email">caller_email</span></td>
@@ -191,7 +209,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The email address provided by the caller to the call centre or entered onto the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="caller_phone_1">caller_phone_1</span></td>
@@ -208,7 +226,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The primary phone number provided by the caller to the call centre or entered onto the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="caller_phone_2">caller_phone_2</span></td>
@@ -225,7 +243,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>An alternate phone number provided by the caller to the call centre or entered onto the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="caller_phone_3">caller_phone_3</span></td>
@@ -242,24 +260,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="location_geometry_point">location_geometry_point</span></td>
-                                    <td>geometry</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
+                                    <td><p>An alternate phone number provided by the caller to the call centre or entered onto the web form.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="location_summary_text">location_summary_text</span></td>
@@ -276,12 +277,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A brief summary of the location of the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="location_detailed_text">location_detailed_text</span></td>
                                     <td>varchar</td>
-                                    <td>255</td>
+                                    <td>4000</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -293,10 +294,10 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A more detailed description of the location of the complaint.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="incident_date">incident_date</span></td>
+                                    <td><span id="incident_datetime">incident_datetime</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
                                     <td title='nullable'>√</td>
@@ -310,7 +311,24 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The date and time at which the complaint occurred.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="incident_reported_datetime">incident_reported_datetime</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date and time at which the complaint was reported.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="referred_by_agency_other_text">referred_by_agency_other_text</span></td>
@@ -327,7 +345,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Provides a more detailed description when the referred by Agency is of type &ldquo;OTHER&rdquo;</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -344,7 +362,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that created the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_guid">create_user_guid</span></td>
@@ -361,7 +379,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that created the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_timestamp">create_timestamp</span></td>
@@ -378,7 +396,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the complaint was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -395,7 +413,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that updated the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_guid">update_user_guid</span></td>
@@ -412,7 +430,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that updated the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_timestamp">update_timestamp</span></td>
@@ -429,12 +447,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the complaint was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="referred_by_agency_code">referred_by_agency_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>10</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -445,18 +463,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint.referred_by_agency_code references agency_code.agency_code via FK_f8090f20f0139d2d7420f6163ed"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">FK_f8090f20f0139d2d7420f6163ed</td>
+                                                <td title="complaint.referred_by_agency_code references agency_code.agency_code via FK_complaint_referred_by_agencycode"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">FK_complaint_referred_by_agencycode</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify an agency.  The agency that originally referred the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="owned_by_agency_code">owned_by_agency_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>10</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -467,18 +485,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint.owned_by_agency_code references agency_code.agency_code via FK_e5b618c0886888304c411f35dfc"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">FK_e5b618c0886888304c411f35dfc</td>
+                                                <td title="complaint.owned_by_agency_code references agency_code.agency_code via FK_complaint_owned_by_agencycode"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">FK_complaint_owned_by_agencycode</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify an agency.  The agency that currently owns the complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_status_code">complaint_status_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>10</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -489,18 +507,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_e6601e9b13ab5aa9ab06b517993"><a href='complaint_status_code.html'>complaint_status_code</a><span class='relatedKey'>.complaint_status_code</span></td>
-                                                <td class="constraint detail">FK_e6601e9b13ab5aa9ab06b517993</td>
+                                                <td title="complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_complaint_compntstscd"><a href='complaint_status_code.html'>complaint_status_code</a><span class='relatedKey'>.complaint_status_code</span></td>
+                                                <td class="constraint detail">FK_complaint_compntstscd</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify a complaint status.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="geo_organization_unit_code">geo_organization_unit_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>10</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -511,13 +529,30 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint.geo_organization_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_09d2c019654f41e85cd46e25177"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
-                                                <td class="constraint detail">FK_09d2c019654f41e85cd46e25177</td>
+                                                <td title="complaint.geo_organization_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_complaint_geoorgutnd"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
+                                                <td class="constraint detail">FK_complaint_geoorgutnd</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify a geographical organization unit.   The finest known grain geographical organization unit where the complaint occurred.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="location_geometry_point">location_geometry_point</span></td>
+                                    <td>geometry</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -550,34 +585,16 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_81608122813eb4d5312f48e9eb4</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_complaint</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>complaint_identifier</td>
                                 </tr>
                                 <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> REL_09d2c019654f41e85cd46e2517</td>
-                                    <td>Must be unique</td>
+                                    <td title='Indexed'>IDX_adbfa452bdecec83d2daf17d18</td>
+                                    <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>geo_organization_unit_code</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> REL_e5b618c0886888304c411f35df</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>owned_by_agency_code</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> REL_e6601e9b13ab5aa9ab06b51799</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>complaint_status_code</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> REL_f8090f20f0139d2d7420f6163e</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>referred_by_agency_code</td>
+                                    <td>location_geometry_point</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -602,23 +619,25 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="348,5,811,749">
-<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,661,285,779">
-<area shape="rect" id="node3" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,796,304,943">
-<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,527,255,644">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="855,5,1112,181">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,32,811,805">
+<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,688,285,805">
+<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,823,304,969">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,553,255,671">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="767,5,1013,93">
-<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="335,277,596,395">
-<area shape="rect" id="node3" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,869,615,1016">
-<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="365,685,565,803">
-<area shape="rect" id="node7" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,901,272,989">
-<area shape="rect" id="node5" href="complaint.html" target="_top" title="complaint" alt="" coords="659,111,1121,855">
-<area shape="rect" id="node6" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="759,977,1021,1065">
-<area shape="rect" id="node8" href="office.html" target="_top" title="office" alt="" coords="828,872,952,960">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1165,463,1423,639">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="659,5,1121,779">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="793,1007,987,1095">
+<area shape="rect" id="node4" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="335,680,596,797">
+<area shape="rect" id="node5" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,815,615,961">
+<area shape="rect" id="node6" href="agency_code.html" target="_top" title="agency_code" alt="" coords="365,545,565,663">
+<area shape="rect" id="node8" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,847,272,935">
+<area shape="rect" id="node7" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="759,796,1021,884">
+<area shape="rect" id="node9" href="office.html" target="_top" title="office" alt="" coords="828,901,952,989">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

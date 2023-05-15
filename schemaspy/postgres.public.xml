@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="postgres" schema="public" type="PostgreSQL - 15.3 (Debian 15.3-1.pgdg110+1)">
+   <sequences>
+      <sequence increment="1" name="users_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="agency_code" remarks="An agency is an organized and named grouping of people that interacts in some way with the Ministry." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <child column="owned_by_agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="referred_by_agency_code" foreignKey="FK_complaint_referred_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the agency code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the agency code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the agency code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the agency code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the agency code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the agency code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the agency code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the agency code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="agency_code" sequenceNumberInPK="1"/>
+         <index name="PK_agengycode" unique="true">
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="allegation_complaint" remarks="A complaint for which a caller believes that a Violation has occurred and should be investigated." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="allegation_complaint_guid" nullable="false" remarks="System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="in_progress_ind" nullable="false" remarks="True if the alleged violation is currently described as being in progress.  False otherwise." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="observed_ind" nullable="false" remarks="True if the alleged violation was observed first hand.  False otherwise." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="suspect_witnesss_dtl_text" nullable="true" remarks="" size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the allegation complaint." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the allegation complaint." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_timestamp" nullable="false" remarks="The timestamp when the allegation complaint was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the allegation complaint." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the allegation complaint." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_timestamp" nullable="false" remarks="The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="complaint_identifier" nullable="true" remarks="" size="20" type="varchar" typeCode="12">
+            <parent column="complaint_identifier" foreignKey="FK_algtncmplt_complaint" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="violation_code" nullable="true" remarks="A human readable code used to identify a violation." size="10" type="varchar" typeCode="12">
+            <parent column="violation_code" foreignKey="FK_algtncmplt_violatncd" implied="false" onDeleteCascade="false" schema="public" table="violation_code"/>
+         </column>
+         <primaryKey column="allegation_complaint_guid" sequenceNumberInPK="1"/>
+         <index name="PK_algtncmplt" unique="true">
+            <column ascending="true" name="allegation_complaint_guid"/>
+         </index>
+         <index name="UQ_algtncmplt" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+         </index>
+      </table>
+      <table name="complaint" remarks="Initial information provided on a potential incident." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_identifier" nullable="false" remarks="" size="20" type="varchar" typeCode="12">
+            <child column="complaint_identifier" foreignKey="FK_algtncmplt_complaint" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="detail_text" nullable="true" remarks="Verbatim details of the complaint as recorded by the call centre or through the web form." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="caller_name" nullable="true" remarks="The name provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="caller_address" nullable="true" remarks="The address provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="caller_email" nullable="true" remarks="The email address provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="caller_phone_1" nullable="true" remarks="The primary phone number provided by the caller to the call centre or entered onto the web form." size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="caller_phone_2" nullable="true" remarks="An alternate phone number provided by the caller to the call centre or entered onto the web form." size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="caller_phone_3" nullable="true" remarks="An alternate phone number provided by the caller to the call centre or entered onto the web form." size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="location_summary_text" nullable="true" remarks="A brief summary of the location of the complaint." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="location_detailed_text" nullable="true" remarks="A more detailed description of the location of the complaint." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="incident_datetime" nullable="true" remarks="The date and time at which the complaint occurred." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="incident_reported_datetime" nullable="true" remarks="The date and time at which the complaint was reported." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="referred_by_agency_other_text" nullable="true" remarks="Provides a more detailed description when the referred by Agency is of type &quot;OTHER&quot;" size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="create_user_id" nullable="false" remarks="The id of the user that created the complaint." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the complaint." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="create_timestamp" nullable="false" remarks="The timestamp when the complaint was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="update_user_id" nullable="false" remarks="The id of the user that updated the complaint." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the complaint." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="update_timestamp" nullable="false" remarks="The timestamp when the complaint was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="referred_by_agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that originally referred the complaint." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_complaint_referred_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="owned_by_agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that currently owns the complaint." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="complaint_status_code" nullable="true" remarks="A human readable code used to identify a complaint status." size="10" type="varchar" typeCode="12">
+            <parent column="complaint_status_code" foreignKey="FK_complaint_compntstscd" implied="false" onDeleteCascade="false" schema="public" table="complaint_status_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="geo_organization_unit_code" nullable="true" remarks="A human readable code used to identify a geographical organization unit.   The finest known grain geographical organization unit where the complaint occurred." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_complaint_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="location_geometry_point" nullable="true" remarks="The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)" size="2147483647" type="geometry" typeCode="1111"/>
+         <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
+         <index name="PK_complaint" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+         </index>
+         <index name="IDX_adbfa452bdecec83d2daf17d18" unique="false">
+            <column ascending="true" name="location_geometry_point"/>
+         </index>
+      </table>
+      <table name="complaint_status_code" remarks="The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_status_code" nullable="false" remarks="A human readable code used to identify a complaint status." size="10" type="varchar" typeCode="12">
+            <child column="complaint_status_code" foreignKey="FK_complaint_compntstscd" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the complaint status code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the complaint status code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the complaint status code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the complaint status code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the complaint status code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the complaint status code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the complaint status code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the complaint status code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="complaint_status_code" sequenceNumberInPK="1"/>
+         <index name="PK_cmpntstscd" unique="true">
+            <column ascending="true" name="complaint_status_code"/>
+         </index>
+      </table>
+      <table name="flyway_schema_history" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="script" nullable="false" remarks="" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="checksum" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="installed_by" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="installed_on" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="execution_time" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="success" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="installed_rank" sequenceNumberInPK="1"/>
+         <index name="flyway_schema_history_pk" unique="true">
+            <column ascending="true" name="installed_rank"/>
+         </index>
+         <index name="flyway_schema_history_s_idx" unique="false">
+            <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="geo_org_unit_structure" remarks="A geographical organization unit structure is a parent/child relationship between two geographical organization units." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="geo_org_unit_structure_guid" nullable="false" remarks="System generated unique key for a geographical organization unit structure. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="effective_date" nullable="false" remarks="The date the Geographical Organizational Unit Structure becomes effective as a valid relationship within the Ministry organizational structure." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="expiry_date" nullable="true" remarks="The date the Geographical Organizational Unit Structure is no longer recognized as a valid relationship within the Ministry organizational structure." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the geographical organization unit structure." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the geographical organization unit structure." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit structure was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organization unit structure." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the geographical organization unit structure." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit structure was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that defines the geographical organization unit structural relationship." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="parent_geo_org_unit_code" nullable="true" remarks="The geographical organization that contains the child geographical organization unit." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_gorgustrct_parent_geoorgutcd" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="child_geo_org_unit_code" nullable="true" remarks="The geographical organization that is contained by the parent geographical organization unit." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_gorgustrct_child_geoorgutcd" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <primaryKey column="geo_org_unit_structure_guid" sequenceNumberInPK="1"/>
+         <index name="PK_gorgustrct" unique="true">
+            <column ascending="true" name="geo_org_unit_structure_guid"/>
+         </index>
+         <index name="UQ_gorgustrct" unique="true">
+            <column ascending="true" name="parent_geo_org_unit_code"/>
+            <column ascending="true" name="child_geo_org_unit_code"/>
+         </index>
+      </table>
+      <table name="geo_org_unit_type_code" remarks="A geographical organization unit type describes the level of granularity for a given geographical organization unit. Supported geographical organization unit types are (ZONE = Zone; REGION = Region; OFFLOC = Office Location; AREA = Area)." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_org_unit_type_code" nullable="false" remarks="A human readable code used to identify a geographical organization unit type." size="10" type="varchar" typeCode="12">
+            <child column="geo_org_unit_type_code" foreignKey="FK_geoorgutnd_gorgtypecd" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the geographical organization unit type code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the geographical organization unit type code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the geographical organization unit type code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the geographical organization unit type code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the geographical organization unit type code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the geographical organization unit type code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit type code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organization unit type code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the geographical organization unit type code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit type code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="geo_org_unit_type_code" sequenceNumberInPK="1"/>
+         <index name="PK_gorgtypecd" unique="true">
+            <column ascending="true" name="geo_org_unit_type_code"/>
+         </index>
+      </table>
+      <table name="geo_organization_unit_code" remarks="A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_organization_unit_code" nullable="false" remarks="A human readable code used to identify a geographical organization unit." size="10" type="varchar" typeCode="12">
+            <child column="geo_organization_unit_code" foreignKey="FK_complaint_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="child_geo_org_unit_code" foreignKey="FK_gorgustrct_child_geoorgutcd" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+            <child column="parent_geo_org_unit_code" foreignKey="FK_gorgustrct_parent_geoorgutcd" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+            <child column="geo_organization_unit_code" foreignKey="FK_office_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of the geographical organization unit code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the geographical organization unit code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="effective_date" nullable="false" remarks="The date the Geographical Organizational Unit becomes effective as a boundaried physical location within the Ministry organizational structure." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="expiry_date" nullable="true" remarks="The date the Geographical Organizational Unit is no longer recognized as a valid physical location within the Ministry organizational structure." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the geographical organization unit code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the geographical organization unit code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organization unit code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the geographical organization unit code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="geo_org_unit_type_code" nullable="true" remarks="A human readable code used to identify a geographical organization unit type." size="10" type="varchar" typeCode="12">
+            <parent column="geo_org_unit_type_code" foreignKey="FK_geoorgutnd_gorgtypecd" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_type_code"/>
+         </column>
+         <primaryKey column="geo_organization_unit_code" sequenceNumberInPK="1"/>
+         <index name="PK_geoorgutnd" unique="true">
+            <column ascending="true" name="geo_organization_unit_code"/>
+         </index>
+      </table>
+      <table name="geography_columns" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT current_database() AS f_table_catalog,&#10;    n.nspname AS f_table_schema,&#10;    c.relname AS f_table_name,&#10;    a.attname AS f_geography_column,&#10;    postgis_typmod_dims(a.atttypmod) AS coord_dimension,&#10;    postgis_typmod_srid(a.atttypmod) AS srid,&#10;    postgis_typmod_type(a.atttypmod) AS type&#10;   FROM pg_class c,&#10;    pg_attribute a,&#10;    pg_type t,&#10;    pg_namespace n&#10;  WHERE ((t.typname = 'geography'::name) AND (a.attisdropped = false) AND (a.atttypid = t.oid) AND (a.attrelid = c.oid) AND (c.relnamespace = n.oid) AND (c.relkind = ANY (ARRAY['r'::&quot;char&quot;, 'v'::&quot;char&quot;, 'm'::&quot;char&quot;, 'f'::&quot;char&quot;, 'p'::&quot;char&quot;])) AND (NOT pg_is_other_temp_schema(c.relnamespace)) AND has_table_privilege(c.oid, 'SELECT'::text));">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="f_table_catalog" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="f_table_schema" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="f_table_name" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="f_geography_column" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="coord_dimension" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="srid" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="spatial_ref_sys"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="type" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+      </table>
+      <table name="geometry_columns" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT (current_database())::character varying(256) AS f_table_catalog,&#10;    n.nspname AS f_table_schema,&#10;    c.relname AS f_table_name,&#10;    a.attname AS f_geometry_column,&#10;    COALESCE(postgis_typmod_dims(a.atttypmod), sn.ndims, 2) AS coord_dimension,&#10;    COALESCE(NULLIF(postgis_typmod_srid(a.atttypmod), 0), sr.srid, 0) AS srid,&#10;    (replace(replace(COALESCE(NULLIF(upper(postgis_typmod_type(a.atttypmod)), 'GEOMETRY'::text), st.type, 'GEOMETRY'::text), 'ZM'::text, ''::text), 'Z'::text, ''::text))::character varying(30) AS type&#10;   FROM ((((((pg_class c&#10;     JOIN pg_attribute a ON (((a.attrelid = c.oid) AND (NOT a.attisdropped))))&#10;     JOIN pg_namespace n ON ((c.relnamespace = n.oid)))&#10;     JOIN pg_type t ON ((a.atttypid = t.oid)))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            replace(split_part(s.consrc, ''''::text, 2), ')'::text, ''::text) AS type&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* '%geometrytype(% = %'::text)) st ON (((st.connamespace = n.oid) AND (st.conrelid = c.oid) AND (a.attnum = ANY (st.conkey)))))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            (replace(split_part(s.consrc, ' = '::text, 2), ')'::text, ''::text))::integer AS ndims&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* '%ndims(% = %'::text)) sn ON (((sn.connamespace = n.oid) AND (sn.conrelid = c.oid) AND (a.attnum = ANY (sn.conkey)))))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            (replace(replace(split_part(s.consrc, ' = '::text, 2), ')'::text, ''::text), '('::text, ''::text))::integer AS srid&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* '%srid(% = %'::text)) sr ON (((sr.connamespace = n.oid) AND (sr.conrelid = c.oid) AND (a.attnum = ANY (sr.conkey)))))&#10;  WHERE ((c.relkind = ANY (ARRAY['r'::&quot;char&quot;, 'v'::&quot;char&quot;, 'm'::&quot;char&quot;, 'f'::&quot;char&quot;, 'p'::&quot;char&quot;])) AND (NOT (c.relname = 'raster_columns'::name)) AND (t.typname = 'geometry'::name) AND (NOT pg_is_other_temp_schema(c.relnamespace)) AND has_table_privilege(c.oid, 'SELECT'::text));">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="f_table_catalog" nullable="true" remarks="" size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="f_table_schema" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="f_table_name" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="f_geometry_column" nullable="true" remarks="" size="2147483647" type="name" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="coord_dimension" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="srid" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="spatial_ref_sys"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="type" nullable="true" remarks="" size="30" type="varchar" typeCode="12"/>
+      </table>
+      <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="office_guid" foreignKey="FK_officer_office" implied="false" onDeleteCascade="false" schema="public" table="officer"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="create_user_id" nullable="false" remarks="The id of the user that created the office." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the the office." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="create_timestamp" nullable="false" remarks="The timestamp when the office was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user_id" nullable="false" remarks="The id of the user that updated the office." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the office." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_timestamp" nullable="false" remarks="The timestamp when the office was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="geo_organization_unit_code" nullable="true" remarks="A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_office_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that owns the office." size="6" type="varchar" typeCode="12"/>
+         <primaryKey column="office_guid" sequenceNumberInPK="1"/>
+         <index name="PK_office" unique="true">
+            <column ascending="true" name="office_guid"/>
+         </index>
+      </table>
+      <table name="officer" remarks="An officer is a subtype of a person who can be identified through their IDIR." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_guid" nullable="false" remarks="System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="The IDIR ID issued to the user by the Government of British Columbia as part of their employment." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="The id of the user that created the officer." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the the officer." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The timestamp when the officer was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="The id of the user that updated the officer." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the officer." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_timestamp" nullable="false" remarks="The timestamp when the officer was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="person_guid" nullable="true" remarks="System generated unique key for an person." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="person_guid" foreignKey="FK_officer_person" implied="false" onDeleteCascade="false" schema="public" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="office_guid" nullable="true" remarks="System generated unique key for an office. The primary office an officer is assigned to." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="office_guid" foreignKey="FK_officer_office" implied="false" onDeleteCascade="false" schema="public" table="office"/>
+         </column>
+         <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
+         <index name="PK_officer" unique="true">
+            <column ascending="true" name="officer_guid"/>
+         </index>
+         <index name="UQ_officer" unique="true">
+            <column ascending="true" name="person_guid"/>
+         </index>
+      </table>
+      <table name="person" remarks="A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="person_guid" nullable="false" remarks="System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="person_guid" foreignKey="FK_officer_person" implied="false" onDeleteCascade="false" schema="public" table="officer"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="first_name" nullable="false" remarks="The first name of a person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="middle_name_1" nullable="true" remarks="The first middle name of a person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="middle_name_2" nullable="true" remarks="Any remaining middle names beyond the first of a person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="false" remarks="The last name of a person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the person." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the person was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the person." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the person was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="person_guid" sequenceNumberInPK="1"/>
+         <index name="PK_person" unique="true">
+            <column ascending="true" name="person_guid"/>
+         </index>
+      </table>
+      <table name="spatial_ref_sys" numRows="8500" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="srid" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <child column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="geography_columns"/>
+            <child column="srid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="geometry_columns"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="auth_name" nullable="true" remarks="" size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="auth_srid" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="srtext" nullable="true" remarks="" size="2048" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="proj4text" nullable="true" remarks="" size="2048" type="varchar" typeCode="12"/>
+         <primaryKey column="srid" sequenceNumberInPK="1"/>
+         <index name="spatial_ref_sys_pkey" unique="true">
+            <column ascending="true" name="srid"/>
+         </index>
+         <checkConstraint constraint="(((srid &gt; 0) AND (srid &lt;= 998999)))" name="spatial_ref_sys_srid_check"/>
+      </table>
+      <table name="users" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('users_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="email" nullable="false" remarks="" size="2147483647" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PK_users" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="violation_code" remarks="The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="violation_code" nullable="false" remarks="A human readable code used to identify a violation." size="10" type="varchar" typeCode="12">
+            <child column="violation_code" foreignKey="FK_algtncmplt_violatncd" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the violation code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the violation code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the violation code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the violation code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the violation code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the violation code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the violation code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the violation code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the violation code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the violation code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="violation_code" sequenceNumberInPK="1"/>
+         <index name="PK_violatncd" unique="true">
+            <column ascending="true" name="violation_code"/>
+         </index>
+      </table>
+   </tables>
+</database>

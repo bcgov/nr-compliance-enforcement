@@ -1,13 +1,14 @@
 agency_code
-complaint_status_code
 spatial_ref_sys
+complaint_status_code
 geo_org_unit_type_code
 person
 violation_code
 geo_organization_unit_code
 office
-officer
-geo_org_unit_structure
 complaint
 allegation_complaint
+officer
+geo_org_unit_structure
 flyway_schema_history
+users

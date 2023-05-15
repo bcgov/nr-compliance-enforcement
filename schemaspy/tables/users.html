@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>geometry_columns - postgres.public</title>
+        <title>users - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>geometry_columns</h1><p><span id="recordNumber">0</span> rows</p><br />
+                    <h1>users</h1><p><span id="recordNumber">-1</span> rows</p><br />
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -109,80 +109,12 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td><span id="f_table_catalog">f_table_catalog</span></td>
-                                    <td>varchar</td>
-                                    <td>256</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="f_table_schema">f_table_schema</span></td>
-                                    <td>name</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="f_table_name">f_table_name</span></td>
-                                    <td>name</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="f_geometry_column">f_geometry_column</span></td>
-                                    <td>name</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="coord_dimension">coord_dimension</span></td>
-                                    <td>int4</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="id">id</span></td>
+                                    <td>serial</td>
                                     <td>10</td>
-                                    <td title='nullable'>√</td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>nextval(&#39;users_id_seq&#39;::regclass)</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -194,32 +126,27 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="srid">srid</span></td>
-                                    <td>int4</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="geometry_columns.srid&#39;s name implies that it&#39;s a child of spatial_ref_sys.srid, but it doesn&#39;t reference that column."><a href='spatial_ref_sys.html'>spatial_ref_sys</a><span class='relatedKey'>.srid</span></td>
-                                                <td class="constraint detail">Implied Constraint</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="type">type</span></td>
+                                    <td><span id="name">name</span></td>
                                     <td>varchar</td>
-                                    <td>30</td>
-                                    <td title='nullable'>√</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="email">email</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -238,6 +165,42 @@
                     </div>
                     <div class="box box-primary">
                         <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_users</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
                             <i class="fa fa-code-fork"></i>
                             <h3 id="Relationships" class="box-title">Relationships</h3>
                             <div class="box-tools pull-right">
@@ -250,57 +213,15 @@
                                 <h5>Close relationships within degrees of separation</h5>
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
-                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
-                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="geometry_columns.html" target="_top" title="geometry_columns" alt="" coords="5,5,352,256">
+<area shape="rect" id="node1" href="users.html" target="_top" title="users" alt="" coords="5,5,255,163">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/geometry_columns.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
-                                    </div>
-                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
-                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="geometry_columns.html" target="_top" title="geometry_columns" alt="" coords="244,5,591,256">
-<area shape="rect" id="node2" href="spatial_ref_sys.html" target="_top" title="spatial_ref_sys" alt="" coords="5,155,200,272">
-</map>
-                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/geometry_columns.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
-                                    </div>
-                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
-                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="geography_columns.html" target="_top" title="geography_columns" alt="" coords="301,5,534,69">
-<area shape="rect" id="node2" href="spatial_ref_sys.html" target="_top" title="spatial_ref_sys" alt="" coords="5,120,200,237">
-<area shape="rect" id="node3" href="geometry_columns.html" target="_top" title="geometry_columns" alt="" coords="244,87,591,337">
-</map>
-                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/geometry_columns.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/users.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
-                            </div>
-                        </div><!-- /.box-body -->
-                    </div>
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <i class="fa fa-file-code-o"></i>
-                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="box-body">
-                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">SELECT (current_database())::character varying(256) AS f_table_catalog,&#10;    n.nspname AS f_table_schema,&#10;    c.relname AS f_table_name,&#10;    a.attname AS f_geometry_column,&#10;    COALESCE(postgis_typmod_dims(a.atttypmod), sn.ndims, 2) AS coord_dimension,&#10;    COALESCE(NULLIF(postgis_typmod_srid(a.atttypmod), 0), sr.srid, 0) AS srid,&#10;    (replace(replace(COALESCE(NULLIF(upper(postgis_typmod_type(a.atttypmod)), &#39;GEOMETRY&#39;::text), st.type, &#39;GEOMETRY&#39;::text), &#39;ZM&#39;::text, &#39;&#39;::text), &#39;Z&#39;::text, &#39;&#39;::text))::character varying(30) AS type&#10;   FROM ((((((pg_class c&#10;     JOIN pg_attribute a ON (((a.attrelid &#61; c.oid) AND (NOT a.attisdropped))))&#10;     JOIN pg_namespace n ON ((c.relnamespace &#61; n.oid)))&#10;     JOIN pg_type t ON ((a.atttypid &#61; t.oid)))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            replace(split_part(s.consrc, &#39;&#39;&#39;&#39;::text, 2), &#39;)&#39;::text, &#39;&#39;::text) AS type&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* &#39;%geometrytype(% &#61; %&#39;::text)) st ON (((st.connamespace &#61; n.oid) AND (st.conrelid &#61; c.oid) AND (a.attnum &#61; ANY (st.conkey)))))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            (replace(split_part(s.consrc, &#39; &#61; &#39;::text, 2), &#39;)&#39;::text, &#39;&#39;::text))::integer AS ndims&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* &#39;%ndims(% &#61; %&#39;::text)) sn ON (((sn.connamespace &#61; n.oid) AND (sn.conrelid &#61; c.oid) AND (a.attnum &#61; ANY (sn.conkey)))))&#10;     LEFT JOIN ( SELECT s.connamespace,&#10;            s.conrelid,&#10;            s.conkey,&#10;            (replace(replace(split_part(s.consrc, &#39; &#61; &#39;::text, 2), &#39;)&#39;::text, &#39;&#39;::text), &#39;(&#39;::text, &#39;&#39;::text))::integer AS srid&#10;           FROM ( SELECT pg_constraint.connamespace,&#10;                    pg_constraint.conrelid,&#10;                    pg_constraint.conkey,&#10;                    pg_get_constraintdef(pg_constraint.oid) AS consrc&#10;                   FROM pg_constraint) s&#10;          WHERE (s.consrc ~~* &#39;%srid(% &#61; %&#39;::text)) sr ON (((sr.connamespace &#61; n.oid) AND (sr.conrelid &#61; c.oid) AND (a.attnum &#61; ANY (sr.conkey)))))&#10;  WHERE ((c.relkind &#61; ANY (ARRAY[&#39;r&#39;::&quot;char&quot;, &#39;v&#39;::&quot;char&quot;, &#39;m&#39;::&quot;char&quot;, &#39;f&#39;::&quot;char&quot;, &#39;p&#39;::&quot;char&quot;])) AND (NOT (c.relname &#61; &#39;raster_columns&#39;::name)) AND (t.typname &#61; &#39;geometry&#39;::name) AND (NOT pg_is_other_temp_schema(c.relnamespace)) AND has_table_privilege(c.oid, &#39;SELECT&#39;::text));</textarea>
-                            <div style="padding-top: 5px;"><hr></div>
-                            <div class="box box-solid">
-                                <div class="box-header with-border">
-                                    <i class="fa fa-puzzle-piece"></i>
-                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
-                                </div>
-                                <!-- /.box-header -->
-                                <div class="box-body">
-                                    <ul class="list-unstyled">
-                                    </ul>
-                                </div><!-- /.box-body -->
                             </div>
                         </div><!-- /.box-body -->
                     </div>

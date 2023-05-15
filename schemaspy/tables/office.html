@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>office - default.public</title>
+        <title>office - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -46,7 +46,7 @@
                 <nav class="navbar navbar-static-top">
                     <div class="container">
                         <div class="navbar-header">
-                            <a href="../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <a href="../index.html" class="navbar-brand"><b>postgres</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
                             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
                         </div>
 
@@ -74,6 +74,19 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>office</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>An office is a physical location that serves as a central organization point for groups of users of the system.</p>
+                        </div><!-- /.box-body -->
+                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -118,8 +131,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="officer.office_guid references office.office_guid via FK_58a97aa6c3b709335d64f90c06a"><a href='officer.html'>officer</a><span class='relatedKey'>.office_guid</span></td>
-                                                <td class="constraint detail">FK_58a97aa6c3b709335d64f90c06a</td>
+                                                <td title="officer.office_guid references office.office_guid via FK_officer_office"><a href='officer.html'>officer</a><span class='relatedKey'>.office_guid</span></td>
+                                                <td class="constraint detail">FK_officer_office</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -128,7 +141,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -145,7 +158,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that created the office.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_guid">create_user_guid</span></td>
@@ -162,7 +175,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that created the the office.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_timestamp">create_timestamp</span></td>
@@ -179,7 +192,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the office was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -196,7 +209,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that updated the office.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_guid">update_user_guid</span></td>
@@ -213,7 +226,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that updated the office.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_timestamp">update_timestamp</span></td>
@@ -230,12 +243,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the office was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="geo_organization_unit_code">geo_organization_unit_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>10</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -246,18 +259,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="office.geo_organization_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_5a2fc0ce51b01923aa42bca1531"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
-                                                <td class="constraint detail">FK_5a2fc0ce51b01923aa42bca1531</td>
+                                                <td title="office.geo_organization_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_office_geoorgutnd"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
+                                                <td class="constraint detail">FK_office_geoorgutnd</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="agency_code">agency_code</span></td>
+                                    <td><span id="agency_code">agency_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>6</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -267,14 +280,9 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="office.agency_code references agency_code.agency_code via FK_d871704008bd95de356e4b95eea"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">FK_d871704008bd95de356e4b95eea</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify an agency.  The agency that owns the office.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -307,22 +315,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_bbad043d9dc25e69ee87831a69c</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_office</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>office_guid</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> REL_5a2fc0ce51b01923aa42bca153</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>geo_organization_unit_code</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> REL_d871704008bd95de356e4b95ee</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>agency_code</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -348,23 +344,20 @@
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
 <area shape="rect" id="node1" href="office.html" target="_top" title="office" alt="" coords="348,61,751,395">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,365,255,483">
-<area shape="rect" id="node3" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,201,304,348">
-<area shape="rect" id="node4" href="officer.html" target="_top" title="officer" alt="" coords="795,5,995,181">
+<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,269,304,416">
+<area shape="rect" id="node3" href="officer.html" target="_top" title="officer" alt="" coords="795,5,995,181">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/office.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="737,567,983,655">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,400,615,547">
-<area shape="rect" id="node3" href="agency_code.html" target="_top" title="agency_code" alt="" coords="365,564,565,681">
-<area shape="rect" id="node6" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,432,272,520">
-<area shape="rect" id="node4" href="complaint.html" target="_top" title="complaint" alt="" coords="780,672,940,760">
-<area shape="rect" id="node5" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="729,5,991,93">
-<area shape="rect" id="node7" href="office.html" target="_top" title="office" alt="" coords="659,216,1061,549">
-<area shape="rect" id="node8" href="officer.html" target="_top" title="officer" alt="" coords="1105,120,1305,296">
-<area shape="rect" id="node9" href="person.html" target="_top" title="person" alt="" coords="793,111,927,199">
+<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="780,5,940,93">
+<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,108,615,255">
+<area shape="rect" id="node4" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,140,272,228">
+<area shape="rect" id="node3" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="729,111,991,199">
+<area shape="rect" id="node5" href="office.html" target="_top" title="office" alt="" coords="659,321,1061,655">
+<area shape="rect" id="node6" href="officer.html" target="_top" title="officer" alt="" coords="1105,225,1305,401">
+<area shape="rect" id="node7" href="person.html" target="_top" title="person" alt="" coords="793,216,927,304">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/office.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

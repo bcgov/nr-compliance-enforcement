@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>person - default.public</title>
+        <title>person - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -46,7 +46,7 @@
                 <nav class="navbar navbar-static-top">
                     <div class="container">
                         <div class="navbar-header">
-                            <a href="../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <a href="../index.html" class="navbar-brand"><b>postgres</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
                             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
                         </div>
 
@@ -74,6 +74,19 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>person</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence.</p>
+                        </div><!-- /.box-body -->
+                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -118,8 +131,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="officer.person_guid references person.person_guid via FK_31caec31972d727196a8350934c"><a href='officer.html'>officer</a><span class='relatedKey'>.person_guid</span></td>
-                                                <td class="constraint detail">FK_31caec31972d727196a8350934c</td>
+                                                <td title="officer.person_guid references person.person_guid via FK_officer_person"><a href='officer.html'>officer</a><span class='relatedKey'>.person_guid</span></td>
+                                                <td class="constraint detail">FK_officer_person</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -128,7 +141,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="first_name">first_name</span></td>
@@ -145,7 +158,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The first name of a person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="middle_name_1">middle_name_1</span></td>
@@ -162,7 +175,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The first middle name of a person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="middle_name_2">middle_name_2</span></td>
@@ -179,7 +192,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Any remaining middle names beyond the first of a person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="last_name">last_name</span></td>
@@ -196,7 +209,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The last name of a person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -213,7 +226,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that created the person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_guid">create_user_guid</span></td>
@@ -230,7 +243,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that created the person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_timestamp">create_timestamp</span></td>
@@ -247,7 +260,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the person was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -264,7 +277,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that updated the person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_guid">update_user_guid</span></td>
@@ -281,7 +294,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that updated the person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_timestamp">update_timestamp</span></td>
@@ -298,7 +311,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the person was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -331,7 +344,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_df1f2874a3d7d873e16cb26d4c7</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_person</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>person_guid</td>

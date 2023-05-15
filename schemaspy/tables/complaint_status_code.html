@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>complaint_status_code - default.public</title>
+        <title>complaint_status_code - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -46,7 +46,7 @@
                 <nav class="navbar navbar-static-top">
                     <div class="container">
                         <div class="navbar-header">
-                            <a href="../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <a href="../index.html" class="navbar-brand"><b>postgres</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
                             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
                         </div>
 
@@ -74,6 +74,19 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>complaint_status_code</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed.</p>
+                        </div><!-- /.box-body -->
+                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -111,20 +124,15 @@
                                 <tr>
                                     <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_status_code">complaint_status_code</span></td>
                                     <td>varchar</td>
-                                    <td>3</td>
+                                    <td>10</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="allegation_complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_afe7ba3e34bd78442c790ebf5b2"><a href='allegation_complaint.html'>allegation_complaint</a><span class='relatedKey'>.complaint_status_code</span></td>
-                                                <td class="constraint detail">FK_afe7ba3e34bd78442c790ebf5b2</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_e6601e9b13ab5aa9ab06b517993"><a href='complaint.html'>complaint</a><span class='relatedKey'>.complaint_status_code</span></td>
-                                                <td class="constraint detail">FK_e6601e9b13ab5aa9ab06b517993</td>
+                                                <td title="complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_complaint_compntstscd"><a href='complaint.html'>complaint</a><span class='relatedKey'>.complaint_status_code</span></td>
+                                                <td class="constraint detail">FK_complaint_compntstscd</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -133,12 +141,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify a complaint status.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="short_description">short_description</span></td>
                                     <td>varchar</td>
-                                    <td>120</td>
+                                    <td>50</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -150,12 +158,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The short description of the complaint status code.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="long_description">long_description</span></td>
                                     <td>varchar</td>
-                                    <td>120</td>
+                                    <td>250</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -167,7 +175,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The long description of the complaint status code.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="display_order">display_order</span></td>
@@ -184,7 +192,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The order in which the values of the complaint status code table should be displayed when presented to a user in a list.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="active_ind">active_ind</span></td>
@@ -201,7 +209,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A boolean indicator to determine if the complaint status code is active.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -218,7 +226,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that created the complaint status code.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_guid">create_user_guid</span></td>
@@ -235,7 +243,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that created the complaint status code.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_timestamp">create_timestamp</span></td>
@@ -252,7 +260,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -269,7 +277,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The id of the user that updated the complaint status code.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_guid">update_user_guid</span></td>
@@ -286,7 +294,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The unique guid of the user that updated the complaint status code.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_timestamp">update_timestamp</span></td>
@@ -303,7 +311,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -336,7 +344,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_661c4fa1830ed8d75c7092e9a80</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_cmpntstscd</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>complaint_status_code</td>
@@ -364,20 +372,18 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="415,5,708,299">
-<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,260,371,652">
-<area shape="rect" id="node3" href="complaint.html" target="_top" title="complaint" alt="" coords="415,316,708,551">
+<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="415,5,708,269">
+<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,91,371,483">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint_status_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="415,257,708,551">
-<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,143,371,535">
-<area shape="rect" id="node3" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="39,552,337,640">
-<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="98,37,278,125">
-<area shape="rect" id="node5" href="violation_code.html" target="_top" title="violation_code" alt="" coords="91,657,285,745">
-<area shape="rect" id="node6" href="complaint.html" target="_top" title="complaint" alt="" coords="415,5,708,240">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="752,8,999,96">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="415,5,708,269">
+<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,116,371,508">
+<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="39,525,337,613">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="98,11,278,99">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint_status_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
