@@ -17,6 +17,21 @@ CREATE TABLE public.agency_code (
     CONSTRAINT "PK_agengycode" PRIMARY KEY (agency_code)
 );
 
+CREATE TABLE public.attractant_code (
+	attractant_code varchar(10) NOT NULL,
+	short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_atractntcd" PRIMARY KEY (attractant_code)
+);
+
 CREATE TABLE public.complaint_status_code (
     complaint_status_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
@@ -82,6 +97,37 @@ CREATE TABLE public.violation_code (
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
     CONSTRAINT "PK_violatncd" PRIMARY KEY (violation_code)
+);
+
+CREATE TABLE public.species_code (
+    species_code varchar(10) NOT NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    legacy_code varchar(10) NULL,
+    create_user_id varchar(32) NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_speciescd" PRIMARY KEY (species_code)
+);
+
+CREATE TABLE public.hwcr_complaint_nature_code (
+    hwcr_complaint_nature_code varchar(10) NOT NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_cmpltntrcd" PRIMARY KEY (hwcr_complaint_nature_code)
 );
 
 
@@ -201,12 +247,46 @@ CREATE TABLE public.allegation_complaint (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    complaint_identifier varchar(20) NULL,
+    complaint_identifier varchar(20) NOT NULL,
     violation_code varchar(10) NULL,
     CONSTRAINT "PK_algtncmplt" PRIMARY KEY (allegation_complaint_guid),
     CONSTRAINT "UQ_algtncmplt" UNIQUE (complaint_identifier),
     CONSTRAINT "FK_algtncmplt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
     CONSTRAINT "FK_algtncmplt_violatncd" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code)
+);
+
+CREATE TABLE public.hwcr_complaint (
+    hwcr_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    other_attractants_text varchar(4000) NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    complaint_identifier varchar(20) NOT NULL,
+    species_code varchar(10) NOT NULL,
+    hwcr_complaint_nature_code varchar(10) NULL,
+    CONSTRAINT "PK_hwcrcmplnt" PRIMARY KEY (hwcr_complaint_guid),
+    CONSTRAINT "UQ_hwcrcmplnt" UNIQUE (complaint_identifier),
+    CONSTRAINT "FK_hwcrcmplnt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
+    CONSTRAINT "FK_hwcrcmplnt_speciescd" FOREIGN KEY (species_code) REFERENCES public.species_code(species_code),
+    CONSTRAINT "FK_hwcrcmplnt_cmpltntrcd" FOREIGN KEY (hwcr_complaint_nature_code) REFERENCES public.hwcr_complaint_nature_code(hwcr_complaint_nature_code)
+);
+
+CREATE TABLE public.attractant_hwcr_xref (
+    attractant_hwcr_xref_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    attractant_code varchar(10) NOT NULL,
+    hwcr_complaint_guid uuid NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_attrhwcrx" PRIMARY KEY (attractant_hwcr_xref_guid),
+    CONSTRAINT "FK_attrhwcrx_atractntcd" FOREIGN KEY (attractant_code) REFERENCES public.attractant_code(attractant_code),
+    CONSTRAINT "FK_attrhwcrx_hwcrcmplnt" FOREIGN KEY (hwcr_complaint_guid) REFERENCES public.hwcr_complaint(hwcr_complaint_guid)
 );
 
 
@@ -219,6 +299,76 @@ values('BCWF', 'BCWF', 'BC Wildlife Federation', 1, true, user, null, now(), use
       ('CEB', 'FOR', 'Forestry Compliance and Enforcement Branch', 6, true, user, null, now(), user, null, now()),
       ('LE', 'Police', 'Municipal Police or RCMP', 7, true, user, null, now(), user, null, now()),
       ('OTHER', 'Other', 'Other', 8, true, user, null, now(), user, null, now());
+
+insert into attractant_code (attractant_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('BBQ', 'BBQ', 'Barbequeue', 1, true, user, null, now(), user, null, now()),
+      ('BEEHIVE', 'Beehive', 'Beehive', 2, true, user, null, now(), user, null, now()),
+      ('BIRD FDR', 'Bird Feeder', 'Bird Feeder', 3, true, user, null, now(), user, null, now()),
+      ('CAMP FD', 'Campground Food', 'Campground Food', 4, true, user, null, now(), user, null, now()),
+      ('COMPOST', 'Compost', 'Compost', 5, true, user, null, now(), user, null, now()),
+      ('CROPS', 'Crops', 'Crops', 6, true, user, null, now(), user, null, now()),
+      ('FREEZER', 'Freezer', 'Freezer', 7, true, user, null, now(), user, null, now()),
+      ('GARBAGE', 'Garbage', 'Garbage', 8, true, user, null, now(), user, null, now()),
+      ('INDCAMP', 'Industrial Camp', 'Industrial Camp', 9, true, user, null, now(), user, null, now()),
+      ('LIVESTCK', 'Livestock', 'Livestock', 10, true, user, null, now(), user, null, now()),
+      ('LVSFEED', 'Livestock Feed', 'Livestock Feed', 11, true, user, null, now(), user, null, now()),
+      ('NA', 'Not Applicable', 'Not Applicable', 12, true, user, null, now(), user, null, now()),
+      ('OTHER', 'Other', 'Other', 13, true, user, null, now(), user, null, now()),
+      ('PETFOOD', 'Pet Food', 'Pet Food', 14, true, user, null, now(), user, null, now()),
+      ('PETS', 'Pets', 'Pets', 15, true, user, null, now(), user, null, now()),
+      ('RESFRUIT', 'Residential Fruit/Berries', 'Residential Fruit/Berries', 16, true, user, null, now(), user, null, now()),
+      ('VEGGARD', 'Vegetable Garden', 'Residential: vegetable garden', 17, true, user, null, now(), user, null, now()),
+      ('VNYDORCH', 'Vineyard/Orchard', 'Commercial: vineyard/ orchard', 18, true, user, null, now(), user, null, now()),
+      ('WLDLFEHK', 'Wildlife:Hunter Kill', 'Wildlife:Hunter Kill', 19, true, user, null, now(), user, null, now());
+
+insert into hwcr_complaint_nature_code (hwcr_complaint_nature_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('AGGNOT', 'AGGNOT', 'Aggressive - not present', 1, true, user, null, now(), user, null, now()),
+      ('AGGPRES', 'AGGPRES', 'Aggressive - present/recent', 2, true, user, null, now(), user, null, now()),
+      ('CONFINED', 'CONFINED', 'Confined', 3, true, user, null, now(), user, null, now()),
+      ('COUGARN', 'COUGARN', 'Cougar suspected - killed/injured livestock/pets - not present', 4, true, user, null, now(), user, null, now()),
+      ('DAMNP', 'DAMNP', 'Damage to property - not present', 5, true, user, null, now(), user, null, now()),
+      ('DEADNV', 'DEADNV', 'Dead wildlife - no violation suspected', 6, true, user, null, now(), user, null, now()),
+      ('DEADPSR', 'DEADPSR', 'Dead wildlife - public safety risk', 7, true, user, null, now(), user, null, now()),
+      ('FOODCOND', 'FOODCOND', 'Food Conditioned', 8, true, user, null, now(), user, null, now()),
+      ('HUMINJ', 'HUMINJ', 'Human injury/death', 9, true, user, null, now(), user, null, now()),
+      ('INJNP', 'INJNP', 'Injured/distressed - not present', 10, true, user, null, now(), user, null, now()),
+      ('INJPRES', 'INJPRES', 'Injured/distressed - present', 11, true, user, null, now(), user, null, now()),
+      ('LIVNCOU', 'LIVNCOU', 'Livestock/pets - killed/injured - not present (no cougar suspected)', 12, true, user, null, now(), user, null, now()),
+      ('LIVPRES', 'LIVPRES', 'Livestock/pets - killed/injured - present/recent', 13, true, user, null, now(), user, null, now()),
+      ('ORPHANLG', 'ORPHANLG', 'Orphaned - large carnivores/ungulates only', 14, true, user, null, now(), user, null, now()),
+      ('PROPPRES', 'PROPPRES', 'Property damage - present', 15, true, user, null, now(), user, null, now()),
+      ('SCHPRES', 'SCHPRES', 'School/park/playground - present/recent', 16, true, user, null, now(), user, null, now()),
+      ('SGHTNGS', 'SGHTNGS', 'Sightings', 17, true, user, null, now(), user, null, now()),
+      ('COUGRES', 'COUGRES', 'Sightings of cougars in urban/residential areas', 18, true, user, null, now(), user, null, now()),
+      ('GRZRES', 'GRZRES', 'Sightings of grizzlies in urban/residential areas', 19, true, user, null, now(), user, null, now()),
+      ('TRPLEG', 'TRPLEG', 'Wildlife in leg hold/live trap', 20, true, user, null, now(), user, null, now()),
+      ('TRAP', 'TRAP', 'Wildlife in trap', 21, true, user, null, now(), user, null, now());
+
+insert into species_code (species_code, short_description, long_description, display_order, active_ind, legacy_code, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('BISON', 'Bison', 'Bison', 1, true, user, null, null, now(), user, null, now()),
+      ('BLKBEAR', 'Black Bear', 'Black Bear', 2, true, user, null, null, now(), user, null, now()),
+      ('BOBCAT', 'Bobcat', 'Bobcat', 3, true, user, null, null, now(), user, null, now()),
+      ('COUGAR', 'Cougar', 'Cougar', 4, true, user, null, null, now(), user, null, now()),
+      ('COYOTE', 'Coyote', 'Coyote', 5, true, user, null, null, now(), user, null, now()),
+      ('DEER', 'Deer', 'Deer', 6, true, user, null, null, now(), user, null, now()),
+      ('ELK', 'Elk', 'Elk', 7, true, user, null, null, now(), user, null, now()),
+      ('FOX', 'Fox', 'Fox', 8, true, user, null, null, now(), user, null, now()),
+      ('GRZBEAR', 'Grizzly bear', 'Grizzly bear', 9, true, user, null, null, now(), user, null, now()),
+      ('FERALHOG', 'Hog/pig/boar (feral)', 'Hog/pig/boar (feral)', 10, true, user, null, null, now(), user, null, now()),
+      ('LYNX', 'Lynx', 'Lynx', 11, true, user, null, null, now(), user, null, now()),
+      ('MOOSE', 'Moose', 'Moose', 12, true, user, null, null, now(), user, null, now()),
+      ('MTNGOAT', 'Mountain goats', 'Mountain goats', 13, true, user, null, null, now(), user, null, now()),
+      ('OTHER', 'Other', 'Other', 14, true, user, null, null, now(), user, null, now()),
+      ('RACCOON', 'Racoon', 'Racoon', 15, true, user, null, null, now(), user, null, now()),
+      ('RAPTOR', 'Raptor', 'Raptor', 16, true, user, null, null, now(), user, null, now()),
+      ('RATTLER', 'Rattlesnake', 'Rattlesnake', 17, true, user, null, null, now(), user, null, now()),
+      ('RVROTTER', 'River otter', 'River otter', 18, true, user, null, null, now(), user, null, now()),
+      ('SKUNK', 'Skunk', 'Skunk', 19, true, user, null, null, now(), user, null, now()),
+      ('UNKNOWN', 'Unknown', 'Unknown', 20, true, user, null, null, now(), user, null, now()),
+      ('WLDSHEEP', 'Wild Sheep', 'Wild Sheep', 21, true, user, null, null, now(), user, null, now()),
+      ('WOLF', 'Wolf', 'Wolf', 22, true, user, null, null, now(), user, null, now()),
+      ('WOLVERN', 'Wolverine', 'Wolverine', 23, true, user, null, null, now(), user, null, now());
+
 
 insert into geo_org_unit_type_code (geo_org_unit_type_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
 values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),

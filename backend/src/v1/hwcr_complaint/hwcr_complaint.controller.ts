@@ -1,0 +1,48 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { HwcrComplaintService } from './hwcr_complaint.service';
+import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
+import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
+import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { Role } from 'src/enum/role.enum';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UUID } from 'crypto';
+
+@UseGuards(JwtRoleGuard)
+@ApiTags("hwcr-complaint")
+@Controller({
+  path: 'hwcr-complaint',
+  version: '1'})
+export class HwcrComplaintController {
+  constructor(private readonly hwcrComplaintService: HwcrComplaintService) {}
+
+  @Post()
+  @Roles(Role.COS_OFFICER)
+  create(@Body() createHwcrComplaintDto: CreateHwcrComplaintDto) {
+    return this.hwcrComplaintService.create(createHwcrComplaintDto);
+  }
+
+  @Get()
+  @Roles(Role.COS_OFFICER)
+  findAll() {
+    return this.hwcrComplaintService.findAll();
+  }
+
+  @Get(':id')
+  @Roles(Role.COS_OFFICER)
+  findOne(@Param('id') id: string) {
+    return this.hwcrComplaintService.findOne(+id);
+  }
+
+  @Patch(':id')
+  @Roles(Role.COS_OFFICER)
+  update(@Param('id') id: UUID, @Body() updateHwcrComplaintDto: UpdateHwcrComplaintDto) {
+    return this.hwcrComplaintService.update(id, updateHwcrComplaintDto);
+  }
+
+  @Delete(':id')
+  @Roles(Role.COS_OFFICER)
+  remove(@Param('id') id: UUID) {
+    return this.hwcrComplaintService.remove(id);
+  }
+}
