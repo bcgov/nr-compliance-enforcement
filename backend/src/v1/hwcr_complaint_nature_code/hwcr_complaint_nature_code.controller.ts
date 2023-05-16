@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { HwcrComplaintNatureCodeService } from './hwcr_complaint_nature_code.service';
 import { CreateHwcrComplaintNatureCodeDto } from './dto/create-hwcr_complaint_nature_code.dto';
 import { UpdateHwcrComplaintNatureCodeDto } from './dto/update-hwcr_complaint_nature_code.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
 
 @ApiTags("hwcr-complaint-nature-code")
 @UseGuards(JwtRoleGuard)

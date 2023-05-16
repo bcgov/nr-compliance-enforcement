@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
-import { SpeciesCode } from "src/v1/species_code/entities/species_code.entity";
-import { HwcrComplaintNatureCode } from "src/v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
+import { SpeciesCode } from "../../species_code/entities/species_code.entity";
+import { HwcrComplaintNatureCode } from "../../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
+import { AttractantHwcrXref } from "../../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
 export class HwcrComplaintDto
 {

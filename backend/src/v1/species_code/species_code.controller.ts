@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { SpeciesCodeService } from './species_code.service';
 import { CreateSpeciesCodeDto } from './dto/create-species_code.dto';
 import { UpdateSpeciesCodeDto } from './dto/update-species_code.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/enum/role.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags("species-code")
 @UseGuards(JwtRoleGuard)

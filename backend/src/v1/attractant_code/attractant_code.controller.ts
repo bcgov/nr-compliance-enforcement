@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { AttractantCodeService } from './attractant_code.service';
 import { CreateAttractantCodeDto } from './dto/create-attractant_code.dto';
 import { UpdateAttractantCodeDto } from './dto/update-attractant_code.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/enum/role.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags("attractant-code")
 @UseGuards(JwtRoleGuard)
