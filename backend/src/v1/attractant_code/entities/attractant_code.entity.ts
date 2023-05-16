@@ -7,25 +7,25 @@ import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 export class AttractantCode 
 {
     @ApiProperty({
-        example: "COS",
-        description: "The attractant code",
+        example: "INDCAMP",
+        description: "A human readable code used to identify an attractant.",
       })
       @PrimaryColumn({length: 10})
       attractant_code: string;
     
-      @ApiProperty({ example: "CO Service", description: "The short description of the attractant code" })
+      @ApiProperty({ example: "Industrial Camp", description: "The short description of the attractant code." })
       @Column({length: 50})
       short_description: string;
     
-      @ApiProperty({ example: "Conservation Officer Service", description: "The long description of the attractant code" })
+      @ApiProperty({ example: "Industrial Camp", description: "The long description of the attractant code." })
       @Column({length: 250, nullable: true })
       long_description: string;
     
-      @ApiProperty({ example: "1", description: "The display order of the attractant code" })
+      @ApiProperty({ example: "1", description: "The order in which the values of the attractant code table should be displayed when presented to a user in a list." })
       @Column()
       display_order: number;
     
-      @ApiProperty({ example: "True", description: "An indicator to determine if the attractant code is active" })
+      @ApiProperty({ example: "True", description: "A boolean indicator to determine if the attractant code is active." })
       @Column()
       active_ind: boolean;
 
@@ -35,21 +35,21 @@ export class AttractantCode
     
       @ApiProperty({
         example: "IDIR\mburns",
-        description: "The id of the user that created the attractant",
+        description: "The id of the user that created the attractant code.",
       })
       @Column({length: 32})
       create_user_id: string;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the attractant",
+        description: "The unique guid of the user that created the attractant code.",
       })
       @Column({type: "uuid"})
       create_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
-        description: "The timestamp when the attractant was created",
+        description: "The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
       create_timestamp: Date;
@@ -63,14 +63,14 @@ export class AttractantCode
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that last updated the attractant",
+        description: "The unique guid of the user that updated the attractant code.",
       })
       @Column({type: "uuid"})
       update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",
-        description: "The timestamp when the attractant was last updated",
+        description: "The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
       update_timestamp: Date;

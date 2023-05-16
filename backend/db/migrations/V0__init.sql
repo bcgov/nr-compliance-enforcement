@@ -2521,6 +2521,11 @@ comment on table public.complaint_status_code is 'The status of a Complaint.  Va
 comment on table public.complaint is 'Initial information provided on a potential incident.';
 comment on table public.violation_code is 'The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)';
 comment on table public.allegation_complaint is 'A complaint for which a caller believes that a Violation has occurred and should be investigated.';
+comment on table public.attractant_code is 'A human factor contributing to a Human Wildlife Conflict (E.g. RESFRUIT = Residential Fruit/Berries; LVSFEED = Livestock Feed)';
+comment on table public.attractant_hwcr_xref is 'Cross reference table for linking attractants to HWCR Complaints.';
+comment on table public.hwcr_complaint is 'A complaint that a caller believes could involve a conflict between Humans and Wildlife.';
+comment on table public.species_code is 'The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)';
+comment on table public.hwcr_complaint_nature_code is 'Modifier that further describes the nature of Human Wildlife Conflict complaints.   (E.g. DEADNV = Dead wildlife - no violation suspected; TRAP = Wildlife in trap)';
 
 comment on column public.agency_code.agency_code is 'A human readable code used to identify an agency.';
 comment on column public.agency_code.short_description is 'The short description of the agency code.';
@@ -2664,3 +2669,74 @@ comment on column public.allegation_complaint.update_user_id is 'The id of the u
 comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
 comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
 
+comment on column public.hwcr_complaint_nature_code.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
+comment on column public.hwcr_complaint_nature_code.short_description is 'The short description of the nature of the Human Wildlife Conflict code.';
+comment on column public.hwcr_complaint_nature_code.long_description is 'The long description of the nature of the Human Wildlife Conflict code.';
+comment on column public.hwcr_complaint_nature_code.display_order is 'The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list.';
+comment on column public.hwcr_complaint_nature_code.active_ind is 'A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active.';
+comment on column public.hwcr_complaint_nature_code.create_user_id is 'The id of the user that created the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.create_user_guid is 'The unique guid of the user that created the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.create_timestamp is 'The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.hwcr_complaint_nature_code.update_user_id is 'The id of the user that updated the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.update_user_guid is 'The unique guid of the user that updated the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.update_timestamp is 'The timestamp when the human wildlife conflict nature code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.attractant_code.attractant_code is 'A human readable code used to identify an attractant.';
+comment on column public.attractant_code.short_description is 'The short description of the attractant code.';
+comment on column public.attractant_code.long_description is 'The long description of the attractant code.';
+comment on column public.attractant_code.display_order is 'The order in which the values of the attractant code table should be displayed when presented to a user in a list.';
+comment on column public.attractant_code.active_ind is 'A boolean indicator to determine if the attractant code is active.';
+comment on column public.attractant_code.create_user_id is 'The id of the user that created the attractant code.';
+comment on column public.attractant_code.create_user_guid is 'The unique guid of the user that created the attractant code.';
+comment on column public.attractant_code.create_timestamp is 'The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.attractant_code.update_user_id is 'The id of the user that updated the attractant code.';
+comment on column public.attractant_code.update_user_guid is 'The unique guid of the user that updated the attractant code.';
+comment on column public.attractant_code.update_timestamp is 'The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.species_code.species_code is 'A human readable code used to identify a wildlife species.';
+comment on column public.species_code.short_description is 'The short description of the species code.';
+comment on column public.species_code.long_description is 'The long description of the species code.';
+comment on column public.species_code.display_order is 'The order in which the values of the species code table should be displayed when presented to a user in a list.';
+comment on column public.species_code.active_ind is 'A boolean indicator to determine if the species code is active.';
+comment on column public.species_code.legacy_code is 'The code for the species from the CORS_SPECIES_CODE table in the COORS database.   ';
+comment on column public.species_code.create_user_id is 'The id of the user that created the species code.';
+comment on column public.species_code.create_user_guid is 'The unique guid of the user that created the species code.';
+comment on column public.species_code.create_timestamp is 'The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.species_code.update_user_id is 'The id of the user that updated the species code.';
+comment on column public.species_code.update_user_guid is 'The unique guid of the user that updated the species code.';
+comment on column public.species_code.update_timestamp is 'The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.allegation_complaint.allegation_complaint_guid is 'System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.allegation_complaint.complaint_id is 'Natural key for a complaint generated by webEOC.';
+comment on column public.allegation_complaint.violation_code is 'A human readable code used to identify a violation.';
+comment on column public.allegation_complaint.in_progress_ind is 'True if the alleged violation is currently described as being in progress.  False otherwise.';
+comment on column public.allegation_complaint.observed_ind is 'True if the alleged violation was observed first hand.  False otherwise.';
+comment on column public.allegation_complaint.suspect_witness_dtl_text is 'Caller provided details on the subject of complaint, who is the alleged violator/contravenor.';
+comment on column public.allegation_complaint.create_user_id is 'The id of the user that created the allegation complaint.';
+comment on column public.allegation_complaint.create_user_guid is 'The unique guid of the user that created the allegation complaint.';
+comment on column public.allegation_complaint.create_timestamp is 'The timestamp when the allegation complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.allegation_complaint.update_user_id is 'The id of the user that updated the allegation complaint.';
+comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
+comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.attractant_hwcr_xref.attractant_hwcr_xref_guid is 'System generated unique key for an attractant hwcr relationship. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.attractant_hwcr_xref.attractant_code is 'A human readable code used to identify an attractant.';
+comment on column public.attractant_hwcr_xref.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint.';
+comment on column public.attractant_hwcr_xref.create_user_id is 'The id of the user that created the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.create_user_guid is 'The unique guid of the user that created the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.create_timestamp is 'The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.attractant_hwcr_xref.update_user_id is 'The id of the user that updated the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.update_user_guid is 'The unique guid of the user that updated the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.update_timestamp is 'The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.hwcr_complaint.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.hwcr_complaint.complaint_id is 'Natural key for a complaint generated by webEOC.';
+comment on column public.hwcr_complaint.species_code is 'A human readable code used to identify a wildlife species.';
+comment on column public.hwcr_complaint.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
+comment on column public.hwcr_complaint.other_attractants_text is 'Provides a more detailed description when the attractant of type "OTHER" is included.';
+comment on column public.hwcr_complaint.create_user_id is 'The id of the user that created the HWCR complaint.';
+comment on column public.hwcr_complaint.create_user_guid is 'The unique guid of the user that created the HWCR complaint.';
+comment on column public.hwcr_complaint.create_timestamp is 'The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.hwcr_complaint.update_user_id is 'The id of the user that updated the HWCR complaint.';
+comment on column public.hwcr_complaint.update_user_guid is 'The unique guid of the user that updated the HWCR complaint.';
+comment on column public.hwcr_complaint.update_timestamp is 'The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.';
