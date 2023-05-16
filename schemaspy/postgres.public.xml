@@ -35,7 +35,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the allegation complaint." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the allegation complaint." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_timestamp" nullable="false" remarks="The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="complaint_identifier" nullable="true" remarks="" size="20" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="complaint_identifier" nullable="false" remarks="" size="20" type="varchar" typeCode="12">
             <parent column="complaint_identifier" foreignKey="FK_algtncmplt_complaint" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="violation_code" nullable="true" remarks="A human readable code used to identify a violation." size="10" type="varchar" typeCode="12">
@@ -49,9 +49,48 @@
             <column ascending="true" name="complaint_identifier"/>
          </index>
       </table>
+      <table name="attractant_code" remarks="A human factor contributing to a Human Wildlife Conflict (E.g. RESFRUIT = Residential Fruit/Berries; LVSFEED = Livestock Feed)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="attractant_code" nullable="false" remarks="A human readable code used to identify an attractant." size="10" type="varchar" typeCode="12">
+            <child column="attractant_code" foreignKey="FK_attrhwcrx_atractntcd" implied="false" onDeleteCascade="false" schema="public" table="attractant_hwcr_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the attractant code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the attractant code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the attractant code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the attractant code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the attractant code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the attractant code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the attractant code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the attractant code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="attractant_code" sequenceNumberInPK="1"/>
+         <index name="PK_atractntcd" unique="true">
+            <column ascending="true" name="attractant_code"/>
+         </index>
+      </table>
+      <table name="attractant_hwcr_xref" remarks="Cross reference table for linking attractants to HWCR Complaints." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="attractant_hwcr_xref_guid" nullable="false" remarks="System generated unique key for an attractant hwcr relationship. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="attractant_code" nullable="false" remarks="A human readable code used to identify an attractant." size="10" type="varchar" typeCode="12">
+            <parent column="attractant_code" foreignKey="FK_attrhwcrx_atractntcd" implied="false" onDeleteCascade="false" schema="public" table="attractant_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="hwcr_complaint_guid" nullable="false" remarks="System generated unique key for a hwcr complaint." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="hwcr_complaint_guid" foreignKey="FK_attrhwcrx_hwcrcmplnt" implied="false" onDeleteCascade="false" schema="public" table="hwcr_complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the attractant hwcr cross reference." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the attractant hwcr cross reference." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_timestamp" nullable="false" remarks="The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the attractant hwcr cross reference." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the attractant hwcr cross reference." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_timestamp" nullable="false" remarks="The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="attractant_hwcr_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_attrhwcrx" unique="true">
+            <column ascending="true" name="attractant_hwcr_xref_guid"/>
+         </index>
+      </table>
       <table name="complaint" remarks="Initial information provided on a potential incident." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_identifier" nullable="false" remarks="" size="20" type="varchar" typeCode="12">
             <child column="complaint_identifier" foreignKey="FK_algtncmplt_complaint" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
+            <child column="complaint_identifier" foreignKey="FK_hwcrcmplnt_complaint" implied="false" onDeleteCascade="false" schema="public" table="hwcr_complaint"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="detail_text" nullable="true" remarks="Verbatim details of the complaint as recorded by the call centre or through the web form." size="4000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="caller_name" nullable="true" remarks="The name provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
@@ -224,6 +263,53 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="type" nullable="true" remarks="" size="30" type="varchar" typeCode="12"/>
       </table>
+      <table name="hwcr_complaint" remarks="A complaint that a caller believes could involve a conflict between Humans and Wildlife." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="hwcr_complaint_guid" nullable="false" remarks="System generated unique key for a hwcr complaint. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="hwcr_complaint_guid" foreignKey="FK_attrhwcrx_hwcrcmplnt" implied="false" onDeleteCascade="false" schema="public" table="attractant_hwcr_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="other_attractants_text" nullable="true" remarks="Provides a more detailed description when the attractant of type &quot;OTHER&quot; is included." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="The id of the user that created the HWCR complaint." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the HWCR complaint." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="The id of the user that updated the HWCR complaint." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the HWCR complaint." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_timestamp" nullable="false" remarks="The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="complaint_identifier" nullable="false" remarks="Natural key for a complaint generated by webEOC." size="20" type="varchar" typeCode="12">
+            <parent column="complaint_identifier" foreignKey="FK_hwcrcmplnt_complaint" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="species_code" nullable="false" remarks="A human readable code used to identify a wildlife species." size="10" type="varchar" typeCode="12">
+            <parent column="species_code" foreignKey="FK_hwcrcmplnt_speciescd" implied="false" onDeleteCascade="false" schema="public" table="species_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="hwcr_complaint_nature_code" nullable="true" remarks="A human readable code used to identify the nature of the Human Wildlife Conflict." size="10" type="varchar" typeCode="12">
+            <parent column="hwcr_complaint_nature_code" foreignKey="FK_hwcrcmplnt_cmpltntrcd" implied="false" onDeleteCascade="false" schema="public" table="hwcr_complaint_nature_code"/>
+         </column>
+         <primaryKey column="hwcr_complaint_guid" sequenceNumberInPK="1"/>
+         <index name="PK_hwcrcmplnt" unique="true">
+            <column ascending="true" name="hwcr_complaint_guid"/>
+         </index>
+         <index name="UQ_hwcrcmplnt" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+         </index>
+      </table>
+      <table name="hwcr_complaint_nature_code" remarks="Modifier that further describes the nature of Human Wildlife Conflict complaints.   (E.g. DEADNV = Dead wildlife - no violation suspected; TRAP = Wildlife in trap)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hwcr_complaint_nature_code" nullable="false" remarks="A human readable code used to identify the nature of the Human Wildlife Conflict." size="10" type="varchar" typeCode="12">
+            <child column="hwcr_complaint_nature_code" foreignKey="FK_hwcrcmplnt_cmpltntrcd" implied="false" onDeleteCascade="false" schema="public" table="hwcr_complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the nature of the Human Wildlife Conflict code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the nature of the Human Wildlife Conflict code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the human wildlife conflict nature code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the human wildlife conflict nature code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_timestamp" nullable="false" remarks="The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the human wildlife conflict nature code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the human wildlife conflict nature code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_timestamp" nullable="false" remarks="The timestamp when the human wildlife conflict nature code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="hwcr_complaint_nature_code" sequenceNumberInPK="1"/>
+         <index name="PK_cmpltntrcd" unique="true">
+            <column ascending="true" name="hwcr_complaint_nature_code"/>
+         </index>
+      </table>
       <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="office_guid" foreignKey="FK_officer_office" implied="false" onDeleteCascade="false" schema="public" table="officer"/>
@@ -299,6 +385,26 @@
             <column ascending="true" name="srid"/>
          </index>
          <checkConstraint constraint="(((srid &gt; 0) AND (srid &lt;= 998999)))" name="spatial_ref_sys_srid_check"/>
+      </table>
+      <table name="species_code" remarks="The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="species_code" nullable="false" remarks="A human readable code used to identify a wildlife species." size="10" type="varchar" typeCode="12">
+            <child column="species_code" foreignKey="FK_hwcrcmplnt_speciescd" implied="false" onDeleteCascade="false" schema="public" table="hwcr_complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the species code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the species code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the species code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the species code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="legacy_code" nullable="true" remarks="The code for the species from the CORS_SPECIES_CODE table in the COORS database." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="true" remarks="The id of the user that created the species code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user_guid" nullable="true" remarks="The unique guid of the user that created the species code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="create_timestamp" nullable="false" remarks="The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_id" nullable="true" remarks="The id of the user that updated the species code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="update_user_guid" nullable="true" remarks="The unique guid of the user that updated the species code." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="update_timestamp" nullable="false" remarks="The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="species_code" sequenceNumberInPK="1"/>
+         <index name="PK_speciescd" unique="true">
+            <column ascending="true" name="species_code"/>
+         </index>
       </table>
       <table name="users" remarks="" schema="public" type="TABLE">
          <column autoUpdated="true" defaultValue="nextval('users_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>

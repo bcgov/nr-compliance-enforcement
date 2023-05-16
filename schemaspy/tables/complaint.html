@@ -135,6 +135,11 @@
                                                 <td class="constraint detail">FK_algtncmplt_complaint</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
+                                            <tr>
+                                                <td title="hwcr_complaint.complaint_identifier references complaint.complaint_identifier via FK_hwcrcmplnt_complaint"><a href='hwcr_complaint.html'>hwcr_complaint</a><span class='relatedKey'>.complaint_identifier</span></td>
+                                                <td class="constraint detail">FK_hwcrcmplnt_complaint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -619,25 +624,30 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="855,5,1112,181">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,32,811,805">
-<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,688,285,805">
-<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,823,304,969">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,553,255,671">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="867,5,1124,181">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,128,811,901">
+<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,784,285,901">
+<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,919,304,1065">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,649,255,767">
+<area shape="rect" id="node6" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="855,199,1136,404">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1165,463,1423,639">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="659,5,1121,779">
-<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="793,1007,987,1095">
-<area shape="rect" id="node4" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="335,680,596,797">
-<area shape="rect" id="node5" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,815,615,961">
-<area shape="rect" id="node6" href="agency_code.html" target="_top" title="agency_code" alt="" coords="365,545,565,663">
-<area shape="rect" id="node8" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,847,272,935">
-<area shape="rect" id="node7" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="759,796,1021,884">
-<area shape="rect" id="node9" href="office.html" target="_top" title="office" alt="" coords="828,901,952,989">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1177,15,1435,191">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="659,111,1121,884">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="793,5,987,93">
+<area shape="rect" id="node6" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="335,785,596,903">
+<area shape="rect" id="node7" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,920,615,1067">
+<area shape="rect" id="node8" href="agency_code.html" target="_top" title="agency_code" alt="" coords="365,651,565,768">
+<area shape="rect" id="node4" href="attractant_hwcr_xref.html" target="_top" title="attractant_hwcr_xref" alt="" coords="1491,1053,1737,1141">
+<area shape="rect" id="node5" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1165,1051,1447,1256">
+<area shape="rect" id="node11" href="hwcr_complaint_nature_code.html" target="_top" title="hwcr_complaint_nature_code" alt="" coords="734,1217,1046,1305">
+<area shape="rect" id="node12" href="species_code.html" target="_top" title="species_code" alt="" coords="799,1112,981,1200">
+<area shape="rect" id="node10" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,952,272,1040">
+<area shape="rect" id="node9" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="759,901,1021,989">
+<area shape="rect" id="node13" href="office.html" target="_top" title="office" alt="" coords="828,1007,952,1095">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
