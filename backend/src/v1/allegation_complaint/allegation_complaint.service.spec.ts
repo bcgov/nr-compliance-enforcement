@@ -13,6 +13,8 @@ import { ComplaintService } from '../complaint/complaint.service';
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
   let repo: Repository<AllegationComplaint>;
+  let complaintService: ComplaintService;
+  let complaintsRepository: Repository<Complaint>;
 
   const oneComplaint = new Complaint(
     "test",
@@ -169,6 +171,8 @@ describe("AllegationComplaintService", () => {
         AllegationComplaintService,
         {
           provide: getRepositoryToken(AllegationComplaint),
+          //useExisting: true,
+          
           useValue: {
             // mock repository functions for testing
             find: jest.fn().mockResolvedValue(allegationComplaintArray),
@@ -186,15 +190,21 @@ describe("AllegationComplaintService", () => {
         ComplaintService,
         {
           provide: getRepositoryToken(Complaint),
-          useValue: {},
+          useExisting: true
         },
         
       ],
       
-    }).compile();
+    }).compile().catch((err) => {
+      // Helps catch ninja like errors from compilation
+      console.error(err);
+      throw err;
+    });
 
     service = module.get<AllegationComplaintService>(AllegationComplaintService);
     repo = module.get<Repository<AllegationComplaint>>(getRepositoryToken(AllegationComplaint));
+    complaintService = module.get<ComplaintService>(ComplaintService);
+    complaintsRepository = module.get<Repository<Complaint>>(getRepositoryToken(Complaint));
   });
 
   it("should be defined", () => {

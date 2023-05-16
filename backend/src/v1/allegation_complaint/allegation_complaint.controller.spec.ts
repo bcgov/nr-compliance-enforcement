@@ -25,7 +25,11 @@ describe("AllegationComplaintController", () => {
         },
       ],
       
-    }).compile();
+    }).compile().catch((err) => {
+      // Helps catch ninja like errors from compilation
+      console.error(err);
+      throw err;
+    });;
 
     controller = module.get<AllegationComplaintController>(AllegationComplaintController);
   });

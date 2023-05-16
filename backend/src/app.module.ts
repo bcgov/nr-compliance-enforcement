@@ -16,6 +16,11 @@ import { GeoOrgUnitTypeCodeModule } from './v1/geo_org_unit_type_code/geo_org_un
 import { OfficeModule } from './v1/office/office.module';
 import { PersonModule } from './v1/person/person.module';
 import { OfficerModule } from './v1/officer/officer.module';
+import { SpeciesCodeModule } from './v1/species_code/species_code.module';
+import { HwcrComplaintNatureCodeModule } from './v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.module';
+import { AttractantCodeModule } from './v1/attractant_code/attractant_code.module';
+import { HwcrComplaintModule } from './v1/hwcr_complaint/hwcr_complaint.module';
+import { AttractantHwcrXrefModule } from './v1/attractant_hwcr_xref/attractant_hwcr_xref.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -50,6 +55,11 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     OfficeModule,
     PersonModule,
     OfficerModule,
+    SpeciesCodeModule,
+    HwcrComplaintNatureCodeModule,
+    AttractantCodeModule,
+    HwcrComplaintModule,
+    AttractantHwcrXrefModule,
   ],
   controllers: [AppController],
   providers: [AppService],

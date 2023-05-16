@@ -17,6 +17,21 @@ CREATE TABLE public.agency_code (
     CONSTRAINT "PK_agengycode" PRIMARY KEY (agency_code)
 );
 
+CREATE TABLE public.attractant_code (
+	attractant_code varchar(10) NOT NULL,
+	short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_atractntcd" PRIMARY KEY (attractant_code)
+);
+
 CREATE TABLE public.complaint_status_code (
     complaint_status_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
@@ -82,6 +97,37 @@ CREATE TABLE public.violation_code (
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
     CONSTRAINT "PK_violatncd" PRIMARY KEY (violation_code)
+);
+
+CREATE TABLE public.species_code (
+    species_code varchar(10) NOT NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    legacy_code varchar(10) NULL,
+    create_user_id varchar(32) NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_speciescd" PRIMARY KEY (species_code)
+);
+
+CREATE TABLE public.hwcr_complaint_nature_code (
+    hwcr_complaint_nature_code varchar(10) NOT NULL,
+    short_description varchar(50) NOT NULL,
+    long_description varchar(250) NULL,
+    display_order int4 NOT NULL,
+    active_ind bool NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_cmpltntrcd" PRIMARY KEY (hwcr_complaint_nature_code)
 );
 
 
@@ -201,12 +247,46 @@ CREATE TABLE public.allegation_complaint (
     update_user_id varchar(32) NOT NULL,
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
-    complaint_identifier varchar(20) NULL,
+    complaint_identifier varchar(20) NOT NULL,
     violation_code varchar(10) NULL,
     CONSTRAINT "PK_algtncmplt" PRIMARY KEY (allegation_complaint_guid),
     CONSTRAINT "UQ_algtncmplt" UNIQUE (complaint_identifier),
     CONSTRAINT "FK_algtncmplt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
     CONSTRAINT "FK_algtncmplt_violatncd" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code)
+);
+
+CREATE TABLE public.hwcr_complaint (
+    hwcr_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    other_attractants_text varchar(4000) NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    complaint_identifier varchar(20) NOT NULL,
+    species_code varchar(10) NOT NULL,
+    hwcr_complaint_nature_code varchar(10) NULL,
+    CONSTRAINT "PK_hwcrcmplnt" PRIMARY KEY (hwcr_complaint_guid),
+    CONSTRAINT "UQ_hwcrcmplnt" UNIQUE (complaint_identifier),
+    CONSTRAINT "FK_hwcrcmplnt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
+    CONSTRAINT "FK_hwcrcmplnt_speciescd" FOREIGN KEY (species_code) REFERENCES public.species_code(species_code),
+    CONSTRAINT "FK_hwcrcmplnt_cmpltntrcd" FOREIGN KEY (hwcr_complaint_nature_code) REFERENCES public.hwcr_complaint_nature_code(hwcr_complaint_nature_code)
+);
+
+CREATE TABLE public.attractant_hwcr_xref (
+    attractant_hwcr_xref_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+    attractant_code varchar(10) NOT NULL,
+    hwcr_complaint_guid uuid NOT NULL,
+    create_user_id varchar(32) NOT NULL,
+    create_user_guid uuid NULL,
+    create_timestamp timestamp NOT NULL,
+    update_user_id varchar(32) NOT NULL,
+    update_user_guid uuid NULL,
+    update_timestamp timestamp NOT NULL,
+    CONSTRAINT "PK_attrhwcrx" PRIMARY KEY (attractant_hwcr_xref_guid),
+    CONSTRAINT "FK_attrhwcrx_atractntcd" FOREIGN KEY (attractant_code) REFERENCES public.attractant_code(attractant_code),
+    CONSTRAINT "FK_attrhwcrx_hwcrcmplnt" FOREIGN KEY (hwcr_complaint_guid) REFERENCES public.hwcr_complaint(hwcr_complaint_guid)
 );
 
 
@@ -219,6 +299,76 @@ values('BCWF', 'BCWF', 'BC Wildlife Federation', 1, true, user, null, now(), use
       ('CEB', 'FOR', 'Forestry Compliance and Enforcement Branch', 6, true, user, null, now(), user, null, now()),
       ('LE', 'Police', 'Municipal Police or RCMP', 7, true, user, null, now(), user, null, now()),
       ('OTHER', 'Other', 'Other', 8, true, user, null, now(), user, null, now());
+
+insert into attractant_code (attractant_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('BBQ', 'BBQ', 'Barbequeue', 1, true, user, null, now(), user, null, now()),
+      ('BEEHIVE', 'Beehive', 'Beehive', 2, true, user, null, now(), user, null, now()),
+      ('BIRD FDR', 'Bird Feeder', 'Bird Feeder', 3, true, user, null, now(), user, null, now()),
+      ('CAMP FD', 'Campground Food', 'Campground Food', 4, true, user, null, now(), user, null, now()),
+      ('COMPOST', 'Compost', 'Compost', 5, true, user, null, now(), user, null, now()),
+      ('CROPS', 'Crops', 'Crops', 6, true, user, null, now(), user, null, now()),
+      ('FREEZER', 'Freezer', 'Freezer', 7, true, user, null, now(), user, null, now()),
+      ('GARBAGE', 'Garbage', 'Garbage', 8, true, user, null, now(), user, null, now()),
+      ('INDCAMP', 'Industrial Camp', 'Industrial Camp', 9, true, user, null, now(), user, null, now()),
+      ('LIVESTCK', 'Livestock', 'Livestock', 10, true, user, null, now(), user, null, now()),
+      ('LVSFEED', 'Livestock Feed', 'Livestock Feed', 11, true, user, null, now(), user, null, now()),
+      ('NA', 'Not Applicable', 'Not Applicable', 12, true, user, null, now(), user, null, now()),
+      ('OTHER', 'Other', 'Other', 13, true, user, null, now(), user, null, now()),
+      ('PETFOOD', 'Pet Food', 'Pet Food', 14, true, user, null, now(), user, null, now()),
+      ('PETS', 'Pets', 'Pets', 15, true, user, null, now(), user, null, now()),
+      ('RESFRUIT', 'Residential Fruit/Berries', 'Residential Fruit/Berries', 16, true, user, null, now(), user, null, now()),
+      ('VEGGARD', 'Vegetable Garden', 'Residential: vegetable garden', 17, true, user, null, now(), user, null, now()),
+      ('VNYDORCH', 'Vineyard/Orchard', 'Commercial: vineyard/ orchard', 18, true, user, null, now(), user, null, now()),
+      ('WLDLFEHK', 'Wildlife:Hunter Kill', 'Wildlife:Hunter Kill', 19, true, user, null, now(), user, null, now());
+
+insert into hwcr_complaint_nature_code (hwcr_complaint_nature_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('AGGNOT', 'AGGNOT', 'Aggressive - not present', 1, true, user, null, now(), user, null, now()),
+      ('AGGPRES', 'AGGPRES', 'Aggressive - present/recent', 2, true, user, null, now(), user, null, now()),
+      ('CONFINED', 'CONFINED', 'Confined', 3, true, user, null, now(), user, null, now()),
+      ('COUGARN', 'COUGARN', 'Cougar suspected - killed/injured livestock/pets - not present', 4, true, user, null, now(), user, null, now()),
+      ('DAMNP', 'DAMNP', 'Damage to property - not present', 5, true, user, null, now(), user, null, now()),
+      ('DEADNV', 'DEADNV', 'Dead wildlife - no violation suspected', 6, true, user, null, now(), user, null, now()),
+      ('DEADPSR', 'DEADPSR', 'Dead wildlife - public safety risk', 7, true, user, null, now(), user, null, now()),
+      ('FOODCOND', 'FOODCOND', 'Food Conditioned', 8, true, user, null, now(), user, null, now()),
+      ('HUMINJ', 'HUMINJ', 'Human injury/death', 9, true, user, null, now(), user, null, now()),
+      ('INJNP', 'INJNP', 'Injured/distressed - not present', 10, true, user, null, now(), user, null, now()),
+      ('INJPRES', 'INJPRES', 'Injured/distressed - present', 11, true, user, null, now(), user, null, now()),
+      ('LIVNCOU', 'LIVNCOU', 'Livestock/pets - killed/injured - not present (no cougar suspected)', 12, true, user, null, now(), user, null, now()),
+      ('LIVPRES', 'LIVPRES', 'Livestock/pets - killed/injured - present/recent', 13, true, user, null, now(), user, null, now()),
+      ('ORPHANLG', 'ORPHANLG', 'Orphaned - large carnivores/ungulates only', 14, true, user, null, now(), user, null, now()),
+      ('PROPPRES', 'PROPPRES', 'Property damage - present', 15, true, user, null, now(), user, null, now()),
+      ('SCHPRES', 'SCHPRES', 'School/park/playground - present/recent', 16, true, user, null, now(), user, null, now()),
+      ('SGHTNGS', 'SGHTNGS', 'Sightings', 17, true, user, null, now(), user, null, now()),
+      ('COUGRES', 'COUGRES', 'Sightings of cougars in urban/residential areas', 18, true, user, null, now(), user, null, now()),
+      ('GRZRES', 'GRZRES', 'Sightings of grizzlies in urban/residential areas', 19, true, user, null, now(), user, null, now()),
+      ('TRPLEG', 'TRPLEG', 'Wildlife in leg hold/live trap', 20, true, user, null, now(), user, null, now()),
+      ('TRAP', 'TRAP', 'Wildlife in trap', 21, true, user, null, now(), user, null, now());
+
+insert into species_code (species_code, short_description, long_description, display_order, active_ind, legacy_code, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+values('BISON', 'Bison', 'Bison', 1, true, null, user, null, now(), user, null, now()),
+      ('BLKBEAR', 'Black Bear', 'Black Bear', 2, true, null, user, null, now(), user, null, now()),
+      ('BOBCAT', 'Bobcat', 'Bobcat', 3, true, null, user, null, now(), user, null, now()),
+      ('COUGAR', 'Cougar', 'Cougar', 4, true, null, user, null, now(), user, null, now()),
+      ('COYOTE', 'Coyote', 'Coyote', 5, true, null, user, null, now(), user, null, now()),
+      ('DEER', 'Deer', 'Deer', 6, true, null, user, null, now(), user, null, now()),
+      ('ELK', 'Elk', 'Elk', 7, true, null, user, null, now(), user, null, now()),
+      ('FOX', 'Fox', 'Fox', 8, true, null, user, null, now(), user, null, now()),
+      ('GRZBEAR', 'Grizzly bear', 'Grizzly bear', 9, true, null, user, null, now(), user, null, now()),
+      ('FERALHOG', 'Hog/pig/boar (feral)', 'Hog/pig/boar (feral)', 10, true, null, user, null, now(), user, null, now()),
+      ('LYNX', 'Lynx', 'Lynx', 11, true, null, user, null, now(), user, null, now()),
+      ('MOOSE', 'Moose', 'Moose', 12, true, null, user, null, now(), user, null, now()),
+      ('MTNGOAT', 'Mountain goats', 'Mountain goats', 13, true, null, user, null, now(), user, null, now()),
+      ('OTHER', 'Other', 'Other', 14, true, null, user, null, now(), user, null, now()),
+      ('RACCOON', 'Racoon', 'Racoon', 15, true, null, user, null, now(), user, null, now()),
+      ('RAPTOR', 'Raptor', 'Raptor', 16, true, null, user, null, now(), user, null, now()),
+      ('RATTLER', 'Rattlesnake', 'Rattlesnake', 17, true, null, user, null, now(), user, null, now()),
+      ('RVROTTER', 'River otter', 'River otter', 18, true, null, user, null, now(), user, null, now()),
+      ('SKUNK', 'Skunk', 'Skunk', 19, true, null, user, null, now(), user, null, now()),
+      ('UNKNOWN', 'Unknown', 'Unknown', 20, true, null, user, null, now(), user, null, now()),
+      ('WLDSHEEP', 'Wild Sheep', 'Wild Sheep', 21, true, null, user, null, now(), user, null, now()),
+      ('WOLF', 'Wolf', 'Wolf', 22, true, null, user, null, now(), user, null, now()),
+      ('WOLVERN', 'Wolverine', 'Wolverine', 23, true, null, user, null, now(), user, null, now());
+
 
 insert into geo_org_unit_type_code (geo_org_unit_type_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
 values('ZONE', 'Zone', null, 1, true, user, null, now(), user, null, now()),
@@ -2371,6 +2521,11 @@ comment on table public.complaint_status_code is 'The status of a Complaint.  Va
 comment on table public.complaint is 'Initial information provided on a potential incident.';
 comment on table public.violation_code is 'The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)';
 comment on table public.allegation_complaint is 'A complaint for which a caller believes that a Violation has occurred and should be investigated.';
+comment on table public.attractant_code is 'A human factor contributing to a Human Wildlife Conflict (E.g. RESFRUIT = Residential Fruit/Berries; LVSFEED = Livestock Feed)';
+comment on table public.attractant_hwcr_xref is 'Cross reference table for linking attractants to HWCR Complaints.';
+comment on table public.hwcr_complaint is 'A complaint that a caller believes could involve a conflict between Humans and Wildlife.';
+comment on table public.species_code is 'The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)';
+comment on table public.hwcr_complaint_nature_code is 'Modifier that further describes the nature of Human Wildlife Conflict complaints.   (E.g. DEADNV = Dead wildlife - no violation suspected; TRAP = Wildlife in trap)';
 
 comment on column public.agency_code.agency_code is 'A human readable code used to identify an agency.';
 comment on column public.agency_code.short_description is 'The short description of the agency code.';
@@ -2514,3 +2669,61 @@ comment on column public.allegation_complaint.update_user_id is 'The id of the u
 comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
 comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
 
+comment on column public.hwcr_complaint_nature_code.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
+comment on column public.hwcr_complaint_nature_code.short_description is 'The short description of the nature of the Human Wildlife Conflict code.';
+comment on column public.hwcr_complaint_nature_code.long_description is 'The long description of the nature of the Human Wildlife Conflict code.';
+comment on column public.hwcr_complaint_nature_code.display_order is 'The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list.';
+comment on column public.hwcr_complaint_nature_code.active_ind is 'A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active.';
+comment on column public.hwcr_complaint_nature_code.create_user_id is 'The id of the user that created the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.create_user_guid is 'The unique guid of the user that created the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.create_timestamp is 'The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.hwcr_complaint_nature_code.update_user_id is 'The id of the user that updated the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.update_user_guid is 'The unique guid of the user that updated the human wildlife conflict nature code.';
+comment on column public.hwcr_complaint_nature_code.update_timestamp is 'The timestamp when the human wildlife conflict nature code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.attractant_code.attractant_code is 'A human readable code used to identify an attractant.';
+comment on column public.attractant_code.short_description is 'The short description of the attractant code.';
+comment on column public.attractant_code.long_description is 'The long description of the attractant code.';
+comment on column public.attractant_code.display_order is 'The order in which the values of the attractant code table should be displayed when presented to a user in a list.';
+comment on column public.attractant_code.active_ind is 'A boolean indicator to determine if the attractant code is active.';
+comment on column public.attractant_code.create_user_id is 'The id of the user that created the attractant code.';
+comment on column public.attractant_code.create_user_guid is 'The unique guid of the user that created the attractant code.';
+comment on column public.attractant_code.create_timestamp is 'The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.attractant_code.update_user_id is 'The id of the user that updated the attractant code.';
+comment on column public.attractant_code.update_user_guid is 'The unique guid of the user that updated the attractant code.';
+comment on column public.attractant_code.update_timestamp is 'The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.species_code.species_code is 'A human readable code used to identify a wildlife species.';
+comment on column public.species_code.short_description is 'The short description of the species code.';
+comment on column public.species_code.long_description is 'The long description of the species code.';
+comment on column public.species_code.display_order is 'The order in which the values of the species code table should be displayed when presented to a user in a list.';
+comment on column public.species_code.active_ind is 'A boolean indicator to determine if the species code is active.';
+comment on column public.species_code.legacy_code is 'The code for the species from the CORS_SPECIES_CODE table in the COORS database.   ';
+comment on column public.species_code.create_user_id is 'The id of the user that created the species code.';
+comment on column public.species_code.create_user_guid is 'The unique guid of the user that created the species code.';
+comment on column public.species_code.create_timestamp is 'The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.species_code.update_user_id is 'The id of the user that updated the species code.';
+comment on column public.species_code.update_user_guid is 'The unique guid of the user that updated the species code.';
+comment on column public.species_code.update_timestamp is 'The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.attractant_hwcr_xref.attractant_hwcr_xref_guid is 'System generated unique key for an attractant hwcr relationship. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.attractant_hwcr_xref.attractant_code is 'A human readable code used to identify an attractant.';
+comment on column public.attractant_hwcr_xref.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint.';
+comment on column public.attractant_hwcr_xref.create_user_id is 'The id of the user that created the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.create_user_guid is 'The unique guid of the user that created the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.create_timestamp is 'The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.attractant_hwcr_xref.update_user_id is 'The id of the user that updated the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.update_user_guid is 'The unique guid of the user that updated the attractant hwcr cross reference.';
+comment on column public.attractant_hwcr_xref.update_timestamp is 'The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset.';
+
+comment on column public.hwcr_complaint.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.hwcr_complaint.complaint_identifier is 'Natural key for a complaint generated by webEOC.';
+comment on column public.hwcr_complaint.species_code is 'A human readable code used to identify a wildlife species.';
+comment on column public.hwcr_complaint.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
+comment on column public.hwcr_complaint.other_attractants_text is 'Provides a more detailed description when the attractant of type "OTHER" is included.';
+comment on column public.hwcr_complaint.create_user_id is 'The id of the user that created the HWCR complaint.';
+comment on column public.hwcr_complaint.create_user_guid is 'The unique guid of the user that created the HWCR complaint.';
+comment on column public.hwcr_complaint.create_timestamp is 'The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column public.hwcr_complaint.update_user_id is 'The id of the user that updated the HWCR complaint.';
+comment on column public.hwcr_complaint.update_user_guid is 'The unique guid of the user that updated the HWCR complaint.';
+comment on column public.hwcr_complaint.update_timestamp is 'The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.';
