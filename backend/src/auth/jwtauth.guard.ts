@@ -35,7 +35,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     
   } handleRequest(err, user, info) {
     if (err || !user) {
-      this.logger.error(`JWT is not Valid.  Err: ${err} - ${user} - ${info}`);
+      this.logger.error(`JWT is not Valid.  Err: ${err}. - User ${user}. - Info. ${info}`);
       throw err || new UnauthorizedException();
     } else {
       this.logger.debug('JWT is valid');
