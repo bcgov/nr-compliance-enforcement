@@ -4,8 +4,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { BrowserRouter } from "react-router-dom";
-import RenderOnRole from '../components/RenderOnRole';
 import Roles from './constants/roles';
+import RenderOnRole from "./components/routing/render-on-role";
 
 function App() {
   return (

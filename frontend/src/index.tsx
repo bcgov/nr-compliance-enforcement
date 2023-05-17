@@ -1,7 +1,7 @@
 import reportWebVitals from "./reportWebVitals";
 import App from "./app/App";
 import { createRoot } from "react-dom/client";
-import UserService from "./app/service/UserServices";
+import UserService from "./app/service/user-service";
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

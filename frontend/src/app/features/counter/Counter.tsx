@@ -10,7 +10,7 @@ import {
   selectCount,
 } from './counterSlice';
 import styles from './Counter.module.css';
-import UserService from '../../service/UserServices';
+import UserService from '../../service/user-service';
 
 import axios from 'axios';
 import config from '../../../config';
