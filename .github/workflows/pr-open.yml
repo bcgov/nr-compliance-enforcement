@@ -45,6 +45,8 @@ jobs:
         include:
           - package: backend
             triggers: ('backend/')
+            build_file: ./backend/Dockerfile
+            build_context: ./backend
           - package: database
             triggers: ('database/')
             build_file: ./database/Dockerfile
