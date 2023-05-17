@@ -55,6 +55,8 @@ jobs:
             build_context: ./frontend
           - package: database-migrations
             triggers: ('backend/db')
+            build_file: ./backend/db/Dockerfile
+            build_context: ./backend/db
     steps:
       - uses: actions/checkout@v3
       - uses: bcgov-nr/action-builder-ghcr@v1.1.0
