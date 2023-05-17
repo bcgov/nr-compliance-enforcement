@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors();
   const config = new DocumentBuilder()
     .setTitle("Users example")
-    .setDescription("The user API description")
+    .setDescription("The CED API description")
     .setVersion("1.0")
     .addTag("users")
     .build();
