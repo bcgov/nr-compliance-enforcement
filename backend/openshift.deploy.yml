@@ -37,7 +37,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-compliance-enforcement/backend:prod
+    value: bcgov/nr-compliance-enforcement/backend:test
   - name: PROMOTE_MIGRATION
     description: Image (namespace/name:tag) for migration to promote/import
     value: bcgov/nr-compliance-enforcement/database-migrations:test
