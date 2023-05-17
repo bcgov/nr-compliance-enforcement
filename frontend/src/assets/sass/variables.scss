@@ -112,6 +112,9 @@ $border-units:  (
   "xxl": 32,
 );
 
+/* typography */
+$font-family-sans-serif: 'BC Sans';
+
 @import "../../../node_modules/bootstrap/scss/mixins";
 @import "../../../node_modules/bootstrap/scss/variables";
 @import "../../../node_modules/bootstrap/scss/maps";
