@@ -87,6 +87,7 @@ jobs:
             parameters:
               -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
               -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:${{ github.event.number }}
+              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL}}
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
