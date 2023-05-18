@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
-import UserService from '../app/service/UserServices';
-import NotAllowed from './NotAllowed';
+import UserService from "../../service/user-service";
+import NotAllowed from './not-allowed';
 
 /**
  * Renders the child element if the user is authorized using the UserService.hasRole method.
