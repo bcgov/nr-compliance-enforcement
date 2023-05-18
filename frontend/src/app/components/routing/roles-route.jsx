@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import { Route } from "react-router-dom";
-import NotAllowed from "./not-allowed";
+
 import UserService from "../../service/user-service";
+import { NotAllowed } from "./";
 
 const RolesRoute = ({ roles, children, ...rest }) => (
   <Route {...rest}>
