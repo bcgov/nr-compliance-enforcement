@@ -9,7 +9,9 @@ export class AttractantHwcrXrefController {
 
   @Post()
   create(@Body() createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
-    return this.attractantHwcrXrefService.create(createAttractantHwcrXrefDto);
+    //return this.attractantHwcrXrefService.create(createAttractantHwcrXrefDto);
+    //this endpoint should not be implemented.
+    return "create";
   }
 
   @Get()

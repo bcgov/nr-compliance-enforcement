@@ -3,7 +3,7 @@ import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { HwcrComplaint } from './entities/hwcr_complaint.entity';
 import { ComplaintService } from '../complaint/complaint.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
@@ -11,8 +11,7 @@ import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hw
 
 @Injectable()
 export class HwcrComplaintService {
-  constructor(
-    ) {
+  constructor(private dataSource: DataSource) {
     }
     @InjectRepository(HwcrComplaint)
     private hwcrComplaintsRepository: Repository<HwcrComplaint>;
@@ -21,18 +20,38 @@ export class HwcrComplaintService {
     @Inject(AttractantHwcrXrefService)
     protected readonly attractantHwcrXrefService: AttractantHwcrXrefService;
   
+    
     async create(hwcrComplaint: any): Promise<HwcrComplaint> {
-      await this.complaintService.create(<CreateComplaintDto>hwcrComplaint);
-      const newHwcrComplaint = this.hwcrComplaintsRepository.create(<CreateHwcrComplaintDto>hwcrComplaint);
-      await this.hwcrComplaintsRepository.save(newHwcrComplaint);
-      await newHwcrComplaint.attractant_hwcr_xref.forEach((attractant_hwcr_xref) => {
-        const blankHwcrComplaint = new HwcrComplaint();
-        blankHwcrComplaint.hwcr_complaint_guid = newHwcrComplaint.hwcr_complaint_guid;
-        attractant_hwcr_xref.hwcr_complaint = blankHwcrComplaint;
-        this.attractantHwcrXrefService.create(attractant_hwcr_xref);
+      const queryRunner = this.dataSource.createQueryRunner();
+
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      var newHwcrComplaintString;
+      try
+      {
+        await this.complaintService.create(<CreateComplaintDto>hwcrComplaint, queryRunner);
+        newHwcrComplaintString = await this.hwcrComplaintsRepository.create(<CreateHwcrComplaintDto>hwcrComplaint);
+        var newHwcrComplaint : HwcrComplaint;
+        newHwcrComplaint = <HwcrComplaint>await queryRunner.manager.save(newHwcrComplaintString);
+        if(newHwcrComplaint.attractant_hwcr_xref != null)
+        {
+          for (let i=0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
+              const blankHwcrComplaint = new HwcrComplaint();
+              blankHwcrComplaint.hwcr_complaint_guid = newHwcrComplaint.hwcr_complaint_guid;
+              newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint = blankHwcrComplaint;
+              await this.attractantHwcrXrefService.create(newHwcrComplaint.attractant_hwcr_xref[i], queryRunner);
+          }
+        }
+        await queryRunner.commitTransaction();
       }
-      );
-      return newHwcrComplaint;
+      catch (err) {
+        console.log(err);
+        await queryRunner.rollbackTransaction();
+        newHwcrComplaintString = "Error Occured";
+      } finally {
+        await queryRunner.release();
+      }
+      return newHwcrComplaintString;
     }
   
     async findAll(): Promise<HwcrComplaint[]> {
