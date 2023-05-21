@@ -10,10 +10,10 @@ async function bootstrap() {
   });
   app.enableCors();
   const config = new DocumentBuilder()
-    .setTitle("Users example")
-    .setDescription("The user API description")
+    .setTitle("Compliance and Enforcement API")
+    .setDescription("The Complicance and Enforcement API description")
     .setVersion("1.0")
-    .addTag("users")
+    .addTag("Compliance and Enforcement")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
