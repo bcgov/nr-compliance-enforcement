@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors();
   const config = new DocumentBuilder()
     .setTitle("Compliance and Enforcement API")
-    .setDescription("The Complicance and Enforcement API description")
+    .setDescription("The Complicance and Enforcement API")
     .setVersion("1.0")
     .addTag("Compliance and Enforcement")
     .build();
