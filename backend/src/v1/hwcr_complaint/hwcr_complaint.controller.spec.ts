@@ -31,7 +31,6 @@ describe('HwcrComplaintController', () => {
           useValue: {},
         },
       ],
-      
     }).compile();
 
     controller = module.get<HwcrComplaintController>(HwcrComplaintController);

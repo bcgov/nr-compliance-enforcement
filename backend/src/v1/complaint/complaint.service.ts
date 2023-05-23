@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
 import { Complaint } from './entities/complaint.entity';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -13,9 +13,9 @@ export class ComplaintService {
   @InjectRepository(Complaint)
   private complaintsRepository: Repository<Complaint>;
 
-  async create(complaint: CreateComplaintDto): Promise<Complaint> {
-    const newComplaint = this.complaintsRepository.create(complaint);
-    await this.complaintsRepository.save(newComplaint);
+  async create(complaint: CreateComplaintDto, queryRunner: QueryRunner): Promise<Complaint> {
+    const newComplaint = await this.complaintsRepository.create(complaint);
+    await queryRunner.manager.save(newComplaint);
     return newComplaint;
   }
 

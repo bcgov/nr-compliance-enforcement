@@ -34,15 +34,19 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      host: process.env.POSTGRESQL_HOST || "localhost",
-      port: 5432,
-      database: process.env.POSTGRESQL_DATABASE || "postgres",
-      username: process.env.POSTGRESQL_USER || "postgres",
-      password: process.env.POSTGRESQL_PASSWORD,
-      autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
-    }),
+    TypeOrmModule.forRootAsync({
+      useFactory() {
+        return {
+          type: "postgres",
+          host: process.env.POSTGRESQL_HOST || "localhost",
+          port: 5432,
+          database: process.env.POSTGRESQL_DATABASE || "postgres",
+          username: process.env.POSTGRESQL_USER || "postgres",
+          password: process.env.POSTGRESQL_PASSWORD,
+          autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
+        };
+      },
+    },),
     JwtAuthModule,
     ComplaintStatusCodeModule,
     AgencyCodeModule,
