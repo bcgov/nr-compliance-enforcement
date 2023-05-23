@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateAttractantHwcrXrefDto } from './dto/create-attractant_hwcr_xref.dto';
 import { UpdateAttractantHwcrXrefDto } from './dto/update-attractant_hwcr_xref.dto';
 import { AttractantHwcrXref } from './entities/attractant_hwcr_xref.entity';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
-import { CreateHwcrComplaintDto } from '../hwcr_complaint/dto/create-hwcr_complaint.dto';
 
 @Injectable()
 export class AttractantHwcrXrefService {
@@ -15,10 +14,9 @@ export class AttractantHwcrXrefService {
     @InjectRepository(AttractantHwcrXref)
     private hwcrComplaintsRepository: Repository<AttractantHwcrXref>;
 
-  async create(createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
-      await this.hwcrComplaintsRepository.create(<CreateComplaintDto>createAttractantHwcrXrefDto);
-      const newAttratantHwcrXref = this.hwcrComplaintsRepository.create(<CreateHwcrComplaintDto>createAttractantHwcrXrefDto);
-      await this.hwcrComplaintsRepository.save(newAttratantHwcrXref);
+  async create(createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto, queryRunner: QueryRunner) {
+      const newAttratantHwcrXref = await this.hwcrComplaintsRepository.create(<CreateComplaintDto>createAttractantHwcrXrefDto);
+      await queryRunner.manager.save(newAttratantHwcrXref);
       return newAttratantHwcrXref;
   }
 
