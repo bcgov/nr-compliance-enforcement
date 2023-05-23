@@ -1,0 +1,26 @@
+.comp-container {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  margin: 0;
+}
+
+.fixed-header .comp-header {
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+
+.comp-header {
+  color: $white;
+  background: $bc-gov-primary;
+  height: 72px;
+  padding: 0 72px;
+
+  .comp-header-logo {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    transition: width 0.2s;
+  }
+}
