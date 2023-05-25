@@ -9,7 +9,7 @@ import { ComplaintStatusCode } from '../complaint_status_code/entities/complaint
 import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
 import { ViolationCode } from '../violation_code/entities/violation_code.entity';
 import { ComplaintService } from '../complaint/complaint.service';
-import { MockType, dataSourceMockFactory } from '../../__mocks__/datasource';
+import { MockType, dataSourceMockFactory } from '../../../test/mocks/datasource';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
