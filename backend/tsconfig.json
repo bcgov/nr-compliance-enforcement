@@ -13,7 +13,7 @@
     "incremental": true,
     "skipLibCheck": true,
     "types": [
-      "cypress"
+      "jest"
     ]
   },
   "include": ["src/**/*.ts"],
