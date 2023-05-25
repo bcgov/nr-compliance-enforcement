@@ -3,15 +3,14 @@ import { CreateAllegationComplaintDto } from './dto/create-allegation_complaint.
 import { UpdateAllegationComplaintDto } from './dto/update-allegation_complaint.dto';
 import { AllegationComplaint } from './entities/allegation_complaint.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UUID } from 'crypto';
 import { ComplaintService } from '../complaint/complaint.service';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
 
 @Injectable()
 export class AllegationComplaintService {
-  constructor(
-  ) {
+  constructor(private dataSource: DataSource) {
   }
   @InjectRepository(AllegationComplaint)
   private allegationComplaintsRepository: Repository<AllegationComplaint>;
@@ -19,9 +18,25 @@ export class AllegationComplaintService {
   protected readonly complaintService: ComplaintService;
 
   async create(allegationComplaint: any): Promise<AllegationComplaint> {
-    await this.complaintService.create(<CreateComplaintDto>allegationComplaint);
-    const newAllegationComplaint = this.allegationComplaintsRepository.create(<CreateAllegationComplaintDto>allegationComplaint);
-    await this.allegationComplaintsRepository.save(newAllegationComplaint);
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    var newAllegationComplaint;
+    try
+    {
+      await this.complaintService.create(<CreateComplaintDto>allegationComplaint, queryRunner);
+      newAllegationComplaint = await this.allegationComplaintsRepository.create(<CreateAllegationComplaintDto>allegationComplaint);
+      await queryRunner.manager.save(newAllegationComplaint);
+      await queryRunner.commitTransaction();
+    }
+    catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      newAllegationComplaint = "Error Occured";
+    } finally {
+      await queryRunner.release();
+    }
     return newAllegationComplaint;
   }
 
