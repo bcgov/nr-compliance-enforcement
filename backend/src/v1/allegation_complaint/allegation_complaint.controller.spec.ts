@@ -5,6 +5,8 @@ import { AllegationComplaint } from './entities/allegation_complaint.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ComplaintService } from '../complaint/complaint.service';
 import { Complaint } from '../complaint/entities/complaint.entity';
+import { DataSource } from 'typeorm';
+import { dataSourceMockFactory } from '../../mocks/datasource';
 
 describe("AllegationComplaintController", () => {
   let controller: AllegationComplaintController;
@@ -23,6 +25,10 @@ describe("AllegationComplaintController", () => {
           provide: getRepositoryToken(Complaint),
           useValue: {},
         },
+        {
+          provide: DataSource,
+          useFactory: dataSourceMockFactory
+        }
       ],
       
     }).compile().catch((err) => {
