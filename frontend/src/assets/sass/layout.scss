@@ -12,15 +12,131 @@
 }
 
 .comp-header {
+  height: 72px;
+  padding: 0 0 0 72px;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  position: relative;
+  z-index: 10;
+  transition: all 0.2s;
   color: $white;
   background: $bc-gov-primary;
-  height: 72px;
-  padding: 0 72px;
 
   .comp-header-logo {
+    padding: 0 0;
     height: 72px;
+    width: 200px;
     display: flex;
     align-items: center;
     transition: width 0.2s;
+
+    .logo-src {
+      height: 41px;
+      width: 166px;
+    }
+  }
+
+  .comp-header-content {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex: 1;
+    padding: 0 0 0 15px;
+    height: 72px;
+
+    .comp-header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-btn-lg {
+      margin-left: 0.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .comp-header-right {
+      align-items: center;
+      display: flex;
+      margin-left: auto;
+      height: 72px;
+    }
   }
 }
+
+.comp-profile-avatar {
+  display: inline;
+}
+
+.widget-content {
+  padding: 1rem;
+  flex-direction: row;
+  align-items: center;
+}
+
+.widget-content .widget-content-wrapper {
+  display: flex;
+  flex: 1;
+  position: relative;
+  align-items: center;
+}
+
+.widget-content .widget-content-right {
+  margin-left: auto;
+  padding-right: 34px;
+}
+.widget-content .widget-content-left {
+  margin-left: auto;
+  padding-right: 34px;
+}
+
+.widget-content .widget-content-outer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+// .comp-header {
+//   color: $white;
+//   background: $bc-gov-primary;
+//   height: 72px;
+//   padding: 0 72px !important;
+
+//   display: flex;
+//   align-items: center;
+//   align-content: center;
+//   position: relative;
+//   z-index: 10;
+//   transition: all 0.2s;
+
+//   .comp-header-logo {
+//     height: 72px;
+//     display: flex;
+//     align-items: center;
+//     transition: width 0.2s;
+//   }
+
+//   .comp-header-content {
+//     display: flex;
+//     align-items: center;
+//     align-content: center;
+//     flex: 1;
+//     height: 72px;
+
+//     .comp-left-content {
+//       align-items: center;
+//       display: flex;
+//       margin-right: auto;
+//     }
+
+//     .comp-right-content {
+//       align-items: center;
+//       display: flex;
+//       margin-right: auto;
+//     }
+//   }
+// }
+
+// .comp-profile-avatar {
+//   display: inline;
+// }

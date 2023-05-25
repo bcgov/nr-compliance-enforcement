@@ -1,0 +1,22 @@
+.comp-badge {
+  position: relative;
+  top: -15px;
+  left: -4px;
+}
+
+[data-initials]:before {
+  background: #099bdd;
+  color: white;
+  opacity: 1;
+  content: attr(data-initials);
+  display: inline-block;
+  // font-weight: bold;
+  border-radius: 50%;
+  vertical-align: middle;
+  // margin-right: 0.5em;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 18px;
+  text-align: center;
+}
