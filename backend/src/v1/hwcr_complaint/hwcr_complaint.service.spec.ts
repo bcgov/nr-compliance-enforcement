@@ -7,7 +7,7 @@ import { Complaint } from '../complaint/entities/complaint.entity';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
 import { AttractantHwcrXref } from '../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity';
 import { DataSource } from 'typeorm';
-import { dataSourceMockFactory } from '../../__mocks/datasource';
+import { dataSourceMockFactory } from '../../__mocks__/datasource';
 
 describe('HwcrComplaintService', () => {
   let service: HwcrComplaintService;

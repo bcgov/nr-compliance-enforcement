@@ -6,7 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ComplaintService } from '../complaint/complaint.service';
 import { Complaint } from '../complaint/entities/complaint.entity';
 import { DataSource } from 'typeorm';
-import { dataSourceMockFactory } from '../../__mocks/datasource';
+import { dataSourceMockFactory } from '../../__mocks__/datasource';
 
 describe("AllegationComplaintController", () => {
   let controller: AllegationComplaintController;
