@@ -225,7 +225,7 @@ describe("AllegationComplaintService", () => {
 
   it("should successfully add a complaint", async() => {
     await dataSourceMock.createQueryBuilder;
-    const applications = await service.create(threeAllegationComplaint);
+    await service.create(threeAllegationComplaint);
     expect(dataSourceMock.createQueryRunner).toBeCalled();
   });
 
