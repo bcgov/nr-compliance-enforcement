@@ -133,37 +133,6 @@ describe("AllegationComplaintService", () => {
   const threeAllegationComplaint = new AllegationComplaint(threeComplaint, threeViolationCode, threeInProgressInd, threeObservedInd, threeSuspectWitnessDtlText, threeCreateUserId, threeCreateUserGuid, threeCreateTimestamp, threeUpdateUserId,
     threeUpdateUserGuid, threeUpdateTimestamp);
 
-  const newAllegationComplaint = {
-    detail_text: threeDetailText,
-    caller_name: threeCallerName,
-    caller_address: threeCallerAddress,
-    caller_email: threeCallerEmail,
-    caller_phone_1: threeCallerPhone1,
-    caller_phone_2: threeCallerPhone2,
-    caller_phone_3: threeCallerPhone3,
-    location_geometry_point: threeLocationGeometryPoint,
-    location_summary_text: threeLocationSummaryText,
-    location_detailed_text: threeLocationDetailText,
-    incident_datetime: threeIncidentDatetime,
-    incident_reported_datetime: threeIncidentReportedDatetime,
-    referred_by_agency_other_text: threeReferredByAgencyOtherText,
-    create_user_id: threeCreateUserId,
-    create_user_guid: threeCreateUserGuid,
-    create_timestamp: threeCreateTimestamp,
-    update_user_id: threeUpdateUserId,
-    update_user_guid: threeUpdateUserGuid,
-    update_timestamp: threeUpdateTimestamp,
-    complaint_identifier: threeCompliantIdentifier,
-    referred_by_agency_code: threeReferredByAgencyCode,
-    owned_by_agency_code: threeOwnedByAgencyCode,
-    complaint_status_code: threeComplaintStatusCode,
-    geo_organization_unit_code: threeGeoOrganizationUnitCode,
-    violation_code: threeViolationCode,
-    in_progress_ind: threeInProgressInd,
-    observed_ind: threeObservedInd,
-    suspect_witness_dtl_text: threeSuspectWitnessDtlText,
-  };
-
   const allegationComplaintArray = [oneAllegationComplaint, twoAllegationComplaint];
 
   const allegationComplaintRepositoryMockFactory = () => ({
@@ -255,7 +224,6 @@ describe("AllegationComplaintService", () => {
   });
 
   it("should successfully add a complaint", async() => {
-    //jest.spyOn(repo, 'createQueryBuilder').mockReturnValue(queryBuilder as any);
     await dataSourceMock.createQueryBuilder;
     const applications = await service.create(threeAllegationComplaint);
     expect(dataSourceMock.createQueryRunner).toBeCalled();
@@ -268,31 +236,23 @@ describe("AllegationComplaintService", () => {
  
   describe("findOne", () => {
     it("should get a single user", () => {
-      const repoSpy = jest.spyOn(repo, "findOneOrFail");
+      jest.spyOn(repo, "findOneOrFail");
       expect(service.findOne(oneAllegationComplaint.allegation_complaint_guid)).resolves.toEqual(oneAllegationComplaint);
-      //expect(repoSpy).toBeCalledWith(oneAllegationComplaint.allegation_complaint_guid);
     });
   });
-
-  /* TODO when implementing update
-  describe("update", () => {
-  });
-  */
 
   describe("remove", () => {
     it("should return {deleted: true}", () => {
       expect(service.remove(twoAllegationComplaint.allegation_complaint_guid)).resolves.toEqual({ deleted: true });
     });
     it("should return {deleted: false, message: err.message}", () => {
-      const repoSpy = jest
+      jest
         .spyOn(repo, "delete")
         .mockRejectedValueOnce(new Error("Bad Delete Method."));
       expect(service.remove("903f87c8-76dd-427c-a1bb-111111111111")).resolves.toEqual({
         deleted: false,
         message: "Bad Delete Method.",
       });
-      //expect(repoSpy).toBeCalledWith(-1);
-      //expect(repoSpy).toBeCalledTimes(1);
     });
   });
 });
