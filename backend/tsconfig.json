@@ -11,10 +11,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true,
-    "types": [
-      "jest"
-    ]
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts"],
 }
