@@ -93,5 +93,8 @@
     "sass": "^1.62.1",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
+  },
+  "overrides": {
+    "typescript": "^5.0.4"
   }
 }
