@@ -6,7 +6,7 @@
     align-items: flex-start;
     margin: 0;
     width: 1330px;
-    font-family: 'Noto Sans';
+    font-family: 'Noto Sans', system-ui;
     font-style: normal;
     font-weight: 600;
     font-size: 12px;
@@ -32,13 +32,12 @@
     align-items: flex-start;
     margin: 0;
     width: 1330px;
-    font-family: 'Noto Sans';
+    font-family: 'Noto Sans', system-ui;
     font-style: normal;
     font-size: 12px;
     line-height: 130%;
     height: 38px;
     background: rgba(255, 255, 255, 0.0001);
-    border-spacing: 0px;
     text-align: left;
     border-collapse: initial;
     
@@ -156,7 +155,6 @@
     width: auto;
     height: 20.4px;
 
-    font-family: 'Noto Sans';
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
@@ -176,7 +174,6 @@
     width: auto;
     height: 20.4px;
 
-    font-family: 'Noto Sans';
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
@@ -197,7 +194,6 @@
 
   .comp-hwcr-tabs
   {
-    font-family: 'Noto Sans';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;

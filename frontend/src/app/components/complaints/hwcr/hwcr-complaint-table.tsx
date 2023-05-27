@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import axios from 'axios';
 import config from '../../../../config';
 
-//TODO: fetch data better
 //const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
 //(await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`)).data;
 /*[
@@ -324,9 +323,7 @@ interface HwcrComplaint {
 //TODO: fetch data smarter
 
 export const HwcrComplaintTable: FC = () => {
-    console.error("testing1");
     const [data, setData] = useState<HwcrComplaint[]>([]);
-    console.error("testing2"+data);
     useEffect(() => {
         const fetchData = async () => {
         try {
@@ -334,16 +331,16 @@ export const HwcrComplaintTable: FC = () => {
             axios.defaults.headers.common.Authorization = `Bearer ${token}`;
                 
             const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
-            console.error("testing");
-            console.error(response);
-            console.error(response.data);
             setData(response.data);
         } catch (error) {
             console.error(error);
         }
         };
-        fetchData();
+        fetchData().catch(e => {
+            console.error(e);
+          });
     }, []);
+    
 
     return (
         <table className="comp-hwcr-table">
