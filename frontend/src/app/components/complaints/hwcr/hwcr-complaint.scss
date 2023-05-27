@@ -1,0 +1,251 @@
+@import "../../../../../node_modules/bootstrap/scss/bootstrap";
+
+.comp-hwcr-table-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 0;
+    width: 1330px;
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 130%;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.0001);
+    border-spacing: 0px;
+    text-align: left;
+    border-collapse: initial;
+
+/* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+
+  .comp-hwcr-table {
+    border-spacing: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 0;
+    width: 1330px;
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-size: 12px;
+    line-height: 130%;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.0001);
+    border-spacing: 0px;
+    text-align: left;
+    border-collapse: initial;
+    
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+
+  .comp-hwcr-header-cell
+  {
+    box-sizing: border-box;
+    padding: 0px 12px 0px 12px;
+    height: 38px;
+    vertical-align: middle;
+
+    border-width: 1px 0px 0px 1px;
+    border-style: solid;
+    border-color: #B9B9B9;
+    background: rgba(0, 0, 0, 0.06);
+
+    flex: none;
+    order: 12;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+
+  .comp-hwcr-cell
+  {
+    box-sizing: border-box;
+    padding: 0px 12px 0px 12px;
+    height: 38px;
+    vertical-align: middle;
+
+    border-width: 1px 0px 0px 1px;
+    border-style: solid;
+    border-color: #B9B9B9;
+
+    flex: none;
+    order: 12;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+
+  .comp-hwcr-small-cell {
+    width: 95px;
+  }
+
+  .comp-hwcr-medium-cell {
+    width: 130px;
+  }
+
+  .comp-hwcr-area-cell {
+    width: 165px;
+  }
+
+  .comp-hwcr-location-cell {
+    width: 170px;
+  }
+
+  .comp-hwcr-nature-complaint-cell {
+    width: 344px;
+  }
+
+  .comp-hwcr-status-cell {
+    width: 77px;
+  }
+
+  .comp-hwcr-last-updated-cell {
+    width: 110px;
+    border-width: 1px 1px 0px 1px;
+  }
+
+  .comp-hwcr-header-label
+  {
+    float: left;
+    margin-top: 1px;
+  }
+
+  .comp-hwcr-header-caret
+  {
+    float: right;
+  }
+
+  .comp-hwcr-cell-bottom
+  {
+    border-width: 1px 0px 1px 1px;
+    border-style: solid;
+    border-color: #B9B9B9;
+  }
+
+  .comp-top-left
+  {
+    border-top-left-radius: 3px;
+  }
+  .comp-top-right
+  {
+    border-top-right-radius: 3px;
+  }
+
+  .comp-bottom-left
+  {
+    border-bottom-left-radius: 3px;
+  }
+  .comp-bottom-right
+  {
+    border-width: 1px 1px 1px 1px;
+    border-bottom-right-radius: 3px;
+  }
+
+  .comp-hwcr-status-btn
+  {
+    width: auto;
+    height: 20.4px;
+
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 4.2px 7.8px;
+
+    pointer-events: none;
+  }
+
+  .comp-hwcr-species-btn
+  {
+    width: auto;
+    height: 20.4px;
+
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 4.2px 7.8px;
+
+    pointer-events: none;
+    background-color: #E4E4E4;
+    color: #313132;
+    border-radius: 100px;
+    border-color: #E4E4E4;
+  }
+
+  .comp-hwcr-tabs
+  {
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+  }
+
+  .comp-hwcr-tab-active
+  {
+    color: #495057;
+  }
+
+  .comp-hwcr-tab-inactive
+  {
+    color: #1A5A96;
+  }
+
+  .comp-hwcr-header
+  {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    /* identical to box height, or 133% */
+
+
+    /* BC Primary/Blue */
+
+    color: #003366;
+  }
+
+  .comp-hwcr-circle
+  {
+    width: 20px;
+    height: 20px;
+    float: left;
+    /* Greyscale/10 */
+
+    background: #E4E4E4;
+    border-radius: 100px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 160%;
+  }
+
+  .comp-hwcr-assigned
+  {
+    padding-top : 2px;
+    padding-left: 6px;
+    float:left;
+  }
