@@ -1,4 +1,12 @@
+person_h
+officer_h
+office_h
+hwcr_complaint_h
+geo_org_unit_structure_h
 flyway_schema_history
+complaint_h
+attractant_hwcr_xref_h
+allegation_complaint_h
 geo_org_unit_structure
 officer
 attractant_hwcr_xref
