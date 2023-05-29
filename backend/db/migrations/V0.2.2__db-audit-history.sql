@@ -75,7 +75,7 @@ CONSTRAINT "PK_h_attrhwcrx" PRIMARY KEY (h_attrhwcrx_guid)
 CREATE TABLE complaint_h
 (
   h_complaint_guid uuid NOT NULL  DEFAULT uuid_generate_v4(),
-  target_row_id uuid NOT NULL,
+  target_row_id varchar(20) NOT NULL,
   operation_type char(1) NOT NULL,
   operation_user_id varchar(32) NOT NULL DEFAULT current_user,
   operation_executed_at timestamp NOT NULL DEFAULT now(),
