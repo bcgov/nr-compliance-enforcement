@@ -16,4 +16,3 @@ attractant_hwcr_xref
 officer
 geo_org_unit_structure
 flyway_schema_history
-users

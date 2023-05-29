@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?><database name="postgres" schema="public" type="PostgreSQL - 15.3 (Debian 15.3-1.pgdg110+1)">
-   <sequences>
-      <sequence increment="1" name="users_id_seq" startValue="1"/>
-   </sequences>
    <tables>
       <table name="agency_code" remarks="An agency is an organized and named grouping of people that interacts in some way with the Ministry." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
@@ -408,15 +405,6 @@
          <primaryKey column="species_code" sequenceNumberInPK="1"/>
          <index name="PK_speciescd" unique="true">
             <column ascending="true" name="species_code"/>
-         </index>
-      </table>
-      <table name="users" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('users_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="email" nullable="false" remarks="" size="2147483647" type="varchar" typeCode="12"/>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="PK_users" unique="true">
-            <column ascending="true" name="id"/>
          </index>
       </table>
       <table name="violation_code" remarks="The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)" schema="public" type="TABLE">

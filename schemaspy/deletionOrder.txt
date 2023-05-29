@@ -1,4 +1,3 @@
-users
 flyway_schema_history
 geo_org_unit_structure
 officer
