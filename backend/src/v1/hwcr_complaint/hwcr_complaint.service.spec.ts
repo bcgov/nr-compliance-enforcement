@@ -6,6 +6,8 @@ import { ComplaintService } from '../complaint/complaint.service';
 import { Complaint } from '../complaint/entities/complaint.entity';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
 import { AttractantHwcrXref } from '../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity';
+import { DataSource } from 'typeorm';
+import { dataSourceMockFactory } from '../../../test/mocks/datasource';
 
 describe('HwcrComplaintService', () => {
   let service: HwcrComplaintService;
@@ -31,7 +33,11 @@ describe('HwcrComplaintService', () => {
         {
           provide: getRepositoryToken(AttractantHwcrXref),
           useValue: {},
-        },],
+        },
+        {
+          provide: DataSource,
+          useFactory: dataSourceMockFactory
+        }],
     }).compile().catch((err) => {
       // Helps catch ninja like errors from compilation
       console.error(err);
@@ -39,8 +45,6 @@ describe('HwcrComplaintService', () => {
     });;
 
     service = module.get<HwcrComplaintService>(HwcrComplaintService);
-    complaintService = module.get<ComplaintService>(ComplaintService);
-    attractantHwcrXrefService = module.get<AttractantHwcrXrefService>(AttractantHwcrXrefService);
   });
 
   it('should be defined', () => {
