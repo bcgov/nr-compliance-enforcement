@@ -10,7 +10,7 @@ export const SideBar: FC = () => {
   const isOpen = useAppSelector(isSidebarOpen);
 
   const menueItems: Array<MenuItem> = [
-    { name: "Compaints", icon: "bi bi-file-earmark-medical" },
+    { name: "Complaints", icon: "bi bi-file-earmark-medical" },
   ];
 
   return (
@@ -46,7 +46,7 @@ export const SideBar: FC = () => {
       <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
         {menueItems.map(({ name, icon, route }, idx) => {
           return (
-            <li key={idx}>
+            <li key={idx}> {/*//NOSONAR*/}
               <i className={icon}></i>
               <span className="comp-nav-item-name">{name}</span>
             </li>

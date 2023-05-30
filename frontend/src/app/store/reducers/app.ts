@@ -1,4 +1,3 @@
-// import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import jwtDecode from "jwt-decode";
 import Profile from "../../types/app/profile";
