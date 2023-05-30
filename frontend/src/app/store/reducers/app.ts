@@ -4,15 +4,12 @@ import jwtDecode from "jwt-decode";
 import Profile from "../../types/profile";
 import { RootState, AppThunk } from "../store";
 import { SsoToken } from "../../types/sso-token";
-
-export interface AppState {
-  alerts: number;
-  profile: Profile;
-}
+import { AppState } from "../../types/app-state";
 
 const initialState: AppState = {
   alerts: 2,
   profile: { givenName: "", surName: "", email: "", idir: "" },
+  isSidebarOpen: true
 };
 
 export const appSlice = createSlice({
@@ -30,6 +27,11 @@ export const appSlice = createSlice({
       };
       return { ...state, profile };
     },
+    toggleSidebar: (state) => {
+      const { isSidebarOpen: isOpen } = state;
+
+      return { ...state, isSidebarOpen: !isOpen}
+    }
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -38,7 +40,7 @@ export const appSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setTokenProfile } = appSlice.actions;
+export const { setTokenProfile,toggleSidebar } = appSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -72,9 +74,8 @@ export const profileInitials = (state: RootState) => {
   )}`;
 };
 
-export const alertCount = (state: RootState) => { 
-    const { app } = state;
-    return app.alerts;
-}
+export const alertCount = (state: RootState) => state.app.alerts;
+
+export const isSidebarOpen = (state: RootState) => state.app.isSidebarOpen;
 
 export default appSlice.reducer;

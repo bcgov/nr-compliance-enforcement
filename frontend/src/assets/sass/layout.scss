@@ -64,6 +64,55 @@
   }
 }
 
+.comp-side-bar {
+  background-color: $grey-110;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 254px;
+  top: 72px;
+  padding: 16px;
+  z-index: 8;
+  overflow: hidden;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+
+  &.collapsed {
+    width: 72px;
+  }
+
+  .comp-sidebar-toggle {
+    float: right;
+  }
+}
+
+.comp-main-content {
+  margin-left: 254px;
+  padding: 24px;
+
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+}
+
+.collapsed + .comp-main-content {
+  margin-left: 72px;
+}
+
+.comp-side-bar.collapsed > .comp-organization-nav-logo  { 
+  background-color: green;
+}
+
+
+.comp-side-bar.collapsed > span > span.comp-organization-nav-name{ 
+  display: none;
+}
+
+// .comp-side-bar.collapsed > span > span { 
+//   background-color: blue;
+// }
+
 .comp-profile-avatar {
   display: inline;
 }

@@ -64,6 +64,7 @@ export const Header: FC = () => {
                       ></div>
                     }
                   >
+                    {/* <!-- placeholder menu --> */}
                     <NavDropdown.Item href="#action/3.1">
                       Action
                     </NavDropdown.Item>
