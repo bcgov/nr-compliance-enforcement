@@ -1,11 +1,13 @@
 import { FC } from "react";
-import "./hwcr-complaint.scss";
+import { Row, Table } from "react-bootstrap";
+import "../../../../assets/sass/app.scss";
 import carets from "../../../../assets/images/table-carets.png";
 
 export const HwcrComplaintTableHeader: FC = () => {
-    return <table className="comp-hwcr-table-header">
+    return (
+    <Table className="comp-hwcr-table-header">
         <thead>
-            <tr>
+            <Row>
                 <th className="comp-hwcr-small-cell comp-hwcr-header-cell comp-top-left">
                     <div className="comp-hwcr-header-label">
                         Incident#
@@ -40,7 +42,7 @@ export const HwcrComplaintTableHeader: FC = () => {
                 </th>
                 <th className="comp-hwcr-area-cell comp-hwcr-header-cell">
                     <div className="comp-hwcr-header-label">
-                        Area/Community
+                        Community
                     </div>
                     <div className="comp-hwcr-header-caret">
                         <img src={carets} alt="sort" />
@@ -78,7 +80,8 @@ export const HwcrComplaintTableHeader: FC = () => {
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
-            </tr>
+            </Row>
         </thead>
-    </table>;
+    </Table>
+    );
   };

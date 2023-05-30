@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import counterReducer from '../features/counter/counterSlice';
+import hwcrComplaintsReducer from "./reducers/hwcr-complaints";
 
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
+    hwcrComplaint: hwcrComplaintsReducer,
   },
 });
 

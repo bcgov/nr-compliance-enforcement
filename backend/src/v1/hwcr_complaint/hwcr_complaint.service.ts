@@ -55,7 +55,20 @@ export class HwcrComplaintService {
     }
   
     async findAll(): Promise<HwcrComplaint[]> {
-      return this.hwcrComplaintsRepository.find({
+      return this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+      .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
+      .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
+      .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
+      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+      .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+      .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
+      .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
+      .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
+      .getMany();
+      /*return this.hwcrComplaintsRepository.find({
         relations: { 
           complaint_identifier: {
             owned_by_agency_code: true,
@@ -69,7 +82,12 @@ export class HwcrComplaintService {
             attractant_code: true,
           },
         },
-      });
+        order: {
+          complaint_identifier: {
+             incident_reported_datetime: "DESC",
+          },
+      },
+      });*/
     }
   
     async findOne(id: any): Promise<HwcrComplaint> {
