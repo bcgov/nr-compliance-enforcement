@@ -67,7 +67,7 @@ export const getTokenProfile = (): AppThunk => (dispatch) => {
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const profileInitials = (state: RootState) => {
   const { profile } = state.app;
-  return `${profile.surName?.substring(0, 1)}${profile.givenName?.substring(
+  return `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(
     0,
     1
   )}`;
