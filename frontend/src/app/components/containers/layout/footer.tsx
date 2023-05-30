@@ -1,5 +1,13 @@
 import { FC } from "react";
 
 export const Footer: FC = () => {
-  return <div></div>;
+  return (
+    <>
+      <footer className="mt-auto py-3 comp-footer">
+        <div className="container">
+          <span>{/* <!-- content goes here --> */}</span>
+        </div>
+      </footer>
+    </>
+  );
 };

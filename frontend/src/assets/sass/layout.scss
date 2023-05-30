@@ -82,8 +82,9 @@
     width: 72px;
   }
 
-  .comp-sidebar-toggle {
+  .comp-sidebar-toggle > i {
     float: right;
+    cursor: pointer;
   }
 }
 
@@ -100,21 +101,38 @@
   margin-left: 72px;
 }
 
-.comp-side-bar.collapsed > .comp-organization-nav-logo  { 
-  background-color: green;
-}
-
-
-.comp-side-bar.collapsed > span > span.comp-organization-nav-name{ 
+.comp-side-bar.collapsed > span > span.comp-organization-nav-name {
   display: none;
 }
 
-// .comp-side-bar.collapsed > span > span { 
-//   background-color: blue;
-// }
+.comp-side-bar.collapsed > div.comp-sidebar-toggle > i {
+  float: none;
+  margin-left: 25%;
+}
+
+.comp-side-bar.collapsed > ul > li > span.comp-nav-item-name {
+  display: none;
+}
+
+.comp-side-bar.collapsed > ul > li > i.bi {
+  margin-left: 25%;
+}
+
+.comp-nav-item-list {
+  padding-top: 28px;
+
+  li > i {
+    padding-right: 8px;
+  }
+}
 
 .comp-profile-avatar {
   display: inline;
+}
+
+.comp-footer {
+  height: 72px;
+  background-image: url("../images/layout/ce-footer.svg");
 }
 
 .widget-content {
@@ -144,48 +162,3 @@
   flex: 1;
   flex-direction: column;
 }
-
-// .comp-header {
-//   color: $white;
-//   background: $bc-gov-primary;
-//   height: 72px;
-//   padding: 0 72px !important;
-
-//   display: flex;
-//   align-items: center;
-//   align-content: center;
-//   position: relative;
-//   z-index: 10;
-//   transition: all 0.2s;
-
-//   .comp-header-logo {
-//     height: 72px;
-//     display: flex;
-//     align-items: center;
-//     transition: width 0.2s;
-//   }
-
-//   .comp-header-content {
-//     display: flex;
-//     align-items: center;
-//     align-content: center;
-//     flex: 1;
-//     height: 72px;
-
-//     .comp-left-content {
-//       align-items: center;
-//       display: flex;
-//       margin-right: auto;
-//     }
-
-//     .comp-right-content {
-//       align-items: center;
-//       display: flex;
-//       margin-right: auto;
-//     }
-//   }
-// }
-
-// .comp-profile-avatar {
-//   display: inline;
-// }

@@ -1,10 +1,10 @@
 // import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import jwtDecode from "jwt-decode";
-import Profile from "../../types/profile";
+import Profile from "../../types/app/profile";
 import { RootState, AppThunk } from "../store";
-import { SsoToken } from "../../types/sso-token";
-import { AppState } from "../../types/app-state";
+import { SsoToken } from "../../types/app/sso-token";
+import { AppState } from "../../types/app/app-state";
 
 const initialState: AppState = {
   alerts: 2,

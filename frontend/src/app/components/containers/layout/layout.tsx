@@ -23,7 +23,6 @@ export const Layout: FC<Props> = ({ fixedSidebar, fixedHeader, children }) => {
   return (
     <div className={generateContainerClasses()}>
       <Header />
-     
       <SideBar />
       <div className="comp-main-content">{children}</div>
       <Footer />
