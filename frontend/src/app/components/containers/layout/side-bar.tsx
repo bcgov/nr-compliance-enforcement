@@ -22,21 +22,8 @@ export const SideBar: FC = () => {
     >
       {/* <!-- organization name --> */}
       <span className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none comp-organization-nav-item">
-        <img
-          className="comp-organization-nav-logo"
-          src={logo}
-          alt="logo"
-          style={{ paddingRight: "12px" }}
-        />
-        <span
-          style={{
-            fontSize: "17px",
-            lineHeight: "20px",
-            letterSpacing: "-0.0064em",
-            fontWeight: "700",
-          }}
-          className="comp-organization-nav-name"
-        >
+        <img className="comp-organization-nav-logo" src={logo} alt="logo" />
+        <span className="comp-organization-nav-name">
           Conservation Officer Service
         </span>
       </span>
@@ -46,7 +33,7 @@ export const SideBar: FC = () => {
       <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
         {menueItems.map(({ name, icon, route }, idx) => {
           return (
-            <li key={idx}> {/*//NOSONAR*/}
+            <li key={idx}>
               <i className={icon}></i>
               <span className="comp-nav-item-name">{name}</span>
             </li>
