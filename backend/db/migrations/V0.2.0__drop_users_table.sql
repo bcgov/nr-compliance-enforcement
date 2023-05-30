@@ -1,1 +1,0 @@
-drop TABLE public.users;
