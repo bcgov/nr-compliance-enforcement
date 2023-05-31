@@ -5,6 +5,7 @@ import { store } from "./app/store/store";
 
 import App from "./app/App";
 import UserService from "./app/service/user-service";
+import "./assets/sass/app.scss";
 
 import reportWebVitals from "./reportWebVitals";
 
