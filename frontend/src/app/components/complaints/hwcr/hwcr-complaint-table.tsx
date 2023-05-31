@@ -1,63 +1,25 @@
 import { FC, useEffect, useState } from "react";
 import "../../../../assets/sass/app.scss";
 import { format } from 'date-fns';
-import axios from 'axios';
-import config from '../../../../config';
 import { Row, Table } from "react-bootstrap";
-import { useAppDispatch, useAppSelector, useHwcrSelector } from "../../../hooks/hooks";
-import { getHwcrComplaints, hwcrComplaintsArray } from "../../../store/reducers/hwcr-complaints"
-
-interface HwcrComplaint {
-    complaint_identifier: {complaint_identifier: string, geo_organization_unit_code:{short_description: string}, incident_datetime: string, incident_reported_datetime: string, location_summary_text:string, update_user_id:string, update_timestamp:string, complaint_status_code:{long_description:string}};
-    hwcr_complaint_nature_code: {long_description:string}
-    species_code: {short_description:string}
-  }
-
-//TODO: fetch data smarter
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { getHwcrComplaints, hwcrComplaints } from "../../../store/reducers/hwcr-complaints"
 
 export const HwcrComplaintTable: FC = () => {
-    
     const dispatch = useAppDispatch();
 
-    /*
-    const [hwcrComplaints, setData] = useState<HwcrComplaint[]>([]);
-    useEffect(() => {
-        const fetchData = async () => {
-        try {
-            if(hwcrComplaints.length == 0)
-            {
-                let token = localStorage.getItem("user");
-                axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-                    
-                const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
-                setData(response.data);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-        };
-        fetchData().catch(e => {
-            console.error(e);
-          });
-    }, [hwcrComplaints, dispatch])*/
-
-
-    const hwcrComplaints = useHwcrSelector(hwcrComplaintsArray);
+    const hwcrComplaintsArray = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
-        if (!hwcrComplaints) {
-        dispatch(getHwcrComplaints());
-    }
-  }, [hwcrComplaints, dispatch]); 
+            dispatch(getHwcrComplaints());
+  }, [hwcrComplaints, dispatch])
 
-  console.error(hwcrComplaints);
 
     return (
         <Table className="comp-hwcr-table">
             <tbody>
-                {hwcrComplaints.map((val, key, {length}) => {
+                {hwcrComplaintsArray.map((val, key, {length}) => {
                     //alternate behaviour for last row for alternate borders and radius'
-                    var statusClass = "";
                     if(length - 1 === key)
                     {
                         return (

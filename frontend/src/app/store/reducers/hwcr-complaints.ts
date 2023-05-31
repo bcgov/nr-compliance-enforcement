@@ -1,9 +1,9 @@
 // import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import HwcrComplaint from "../../types/complaints/hwcr-complaint";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
+import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 
 export interface HwcrComplaintState {
   hwcrComplaints: HwcrComplaint[];
@@ -20,9 +20,8 @@ export const hwcrComplaintSlice = createSlice({
   reducers: {
     setHwcrComplaints: (state, action) => {
       const { payload } = action;
-      console.log("testsdignsdaf:" +  payload);
-      const hwcrComplaints:HwcrComplaint[] = payload;
-      return { ...state, hwcrComplaints };
+      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
+      return { ...state, hwcrComplaints};
     },
   },
 
@@ -38,23 +37,22 @@ export const { setHwcrComplaints } = hwcrComplaintSlice.actions;
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getHwcrComplaints = (): AppThunk => (dispatch) => {
+export const getHwcrComplaints = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
         
-    const response = axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
-
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
     dispatch(
       setHwcrComplaints({
-        hwcrComplaints: response
+        hwcrComplaints: response.data
       })
     );
   }
 };
 
-export const hwcrComplaintsArray = (state: HwcrComplaintState) => { 
-  const { hwcrComplaints } = state;
+export const hwcrComplaints = (state: RootState) => { 
+  const { hwcrComplaints } = state.hwcrComplaint;
   return hwcrComplaints;
 }
 
