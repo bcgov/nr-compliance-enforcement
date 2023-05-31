@@ -68,26 +68,6 @@ export class HwcrComplaintService {
       .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
       .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
       .getMany();
-      /*return this.hwcrComplaintsRepository.find({
-        relations: { 
-          complaint_identifier: {
-            owned_by_agency_code: true,
-            referred_by_agency_code: true,
-            complaint_status_code: true,
-            geo_organization_unit_code: true,
-          } ,
-          species_code: true,
-          hwcr_complaint_nature_code: true,
-          attractant_hwcr_xref: {
-            attractant_code: true,
-          },
-        },
-        order: {
-          complaint_identifier: {
-             incident_reported_datetime: "DESC",
-          },
-      },
-      });*/
     }
   
     async findOne(id: any): Promise<HwcrComplaint> {
