@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Row, Table } from "react-bootstrap";
-import "../../../../assets/sass/app.scss";
-import carets from "../../../../assets/images/table-carets.png";
+import "../../../../../assets/sass/app.scss";
+import carets from "../../../../../assets/images/table-carets.png";
 
 export const HwcrComplaintTableHeader: FC = () => {
     return (

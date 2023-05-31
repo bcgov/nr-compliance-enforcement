@@ -1,5 +1,5 @@
-import { FC, useEffect, useState } from "react";
-import "../../../../assets/sass/app.scss";
+import { FC, useEffect } from "react";
+import "../../../../../assets/sass/app.scss";
 import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
@@ -37,10 +37,7 @@ export const HwcrComplaintTable: FC = () => {
                                 <td className="comp-hwcr-area-cell comp-hwcr-cell comp-hwcr-cell-bottom">{val.complaint_identifier.geo_organization_unit_code ? val.complaint_identifier.geo_organization_unit_code.short_description : ""}</td>
                                 <td className="comp-hwcr-location-cell comp-hwcr-cell comp-hwcr-cell-bottom">{val.complaint_identifier.location_summary_text}</td>
                                 <td className="comp-hwcr-medium-cell comp-hwcr-cell comp-hwcr-cell-bottom">
-                                    <div className="comp-hwcr-circle">CN</div>
-                                    <div className="comp-hwcr-assigned">
-                                        {val.complaint_identifier.update_user_id}
-                                    </div>
+                                    Unassigned
                                 </td>
                                 <td className="comp-hwcr-status-cell comp-hwcr-cell comp-hwcr-cell-bottom">
                                     <button type="button" className={ val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-hwcr-status-closed-btn' : 'btn btn-primary comp-hwcr-status-open-btn' }>{val.complaint_identifier.complaint_status_code.long_description}</button>
@@ -70,10 +67,7 @@ export const HwcrComplaintTable: FC = () => {
                                 <td className="comp-hwcr-area-cell comp-hwcr-cell">{val.complaint_identifier.geo_organization_unit_code ? val.complaint_identifier.geo_organization_unit_code.short_description : ""}</td>
                                 <td className="comp-hwcr-location-cell comp-hwcr-cell">{val.complaint_identifier.location_summary_text}</td>
                                 <td className="comp-hwcr-medium-cell comp-hwcr-cell">
-                                    <div className="comp-hwcr-circle">CN</div>
-                                    <div className="comp-hwcr-assigned">
-                                        {val.complaint_identifier.update_user_id}
-                                    </div>
+                                    Unassigned
                                 </td>
                                 <td className="comp-hwcr-status-cell comp-hwcr-cell">
                                 <button type="button" className={ val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-hwcr-status-closed-btn' : 'btn btn-primary comp-hwcr-status-open-btn' }>{val.complaint_identifier.complaint_status_code.long_description}</button>

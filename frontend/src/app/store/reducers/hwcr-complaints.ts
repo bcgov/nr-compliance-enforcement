@@ -4,10 +4,7 @@ import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
-
-export interface HwcrComplaintState {
-  hwcrComplaints: HwcrComplaint[];
-}
+import { HwcrComplaintState } from "../../types/complaints/hrcr-complaint-state";
 
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
