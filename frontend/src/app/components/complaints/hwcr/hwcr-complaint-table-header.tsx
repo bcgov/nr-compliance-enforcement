@@ -8,7 +8,7 @@ export const HwcrComplaintTableHeader: FC = () => {
     <Table className="comp-hwcr-table-header">
         <thead>
             <Row>
-                <th className="comp-hwcr-small-cell comp-hwcr-header-cell comp-top-left">
+                <th className="comp-hwcr-small-cell comp-hwcr-header-cell comp-top-left comp-hwcr-cell-left">
                     <div className="comp-hwcr-header-label">
                         Incident#
                     </div>

@@ -19,16 +19,19 @@ export const HwcrComplaintTable: FC = () => {
     
     const dispatch = useAppDispatch();
 
+    /*
     const [hwcrComplaints, setData] = useState<HwcrComplaint[]>([]);
     useEffect(() => {
         const fetchData = async () => {
         try {
-            
-            let token = localStorage.getItem("user");
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-                
-            const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
-            setData(response.data);
+            if(hwcrComplaints.length == 0)
+            {
+                let token = localStorage.getItem("user");
+                axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+                    
+                const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
+                setData(response.data);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -36,9 +39,8 @@ export const HwcrComplaintTable: FC = () => {
         fetchData().catch(e => {
             console.error(e);
           });
-    }, [hwcrComplaints, dispatch]);
-/*
-    const dispatch = useAppDispatch();
+    }, [hwcrComplaints, dispatch])*/
+
 
     const hwcrComplaints = useHwcrSelector(hwcrComplaintsArray);
 
@@ -48,7 +50,7 @@ export const HwcrComplaintTable: FC = () => {
     }
   }, [hwcrComplaints, dispatch]); 
 
-  console.error(hwcrComplaints);*/
+  console.error(hwcrComplaints);
 
     return (
         <Table className="comp-hwcr-table">
@@ -60,7 +62,7 @@ export const HwcrComplaintTable: FC = () => {
                     {
                         return (
                             <Row key={key}>
-                                <td className="comp-hwcr-small-cell comp-hwcr-cell comp-hwcr-cell-bottom comp-bottom-left">{val.complaint_identifier.complaint_identifier}</td>
+                                <td className="comp-hwcr-small-cell comp-hwcr-cell comp-hwcr-cell-bottom comp-hwcr-cell-left comp-bottom-left">{val.complaint_identifier.complaint_identifier}</td>
                                 <td className="comp-hwcr-small-cell comp-hwcr-cell-bottom comp-hwcr-cell">
                                     {
                                         val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : ""
@@ -93,7 +95,7 @@ export const HwcrComplaintTable: FC = () => {
                     {
                         return (
                             <Row key={key}>
-                                <td className="comp-hwcr-small-cell comp-hwcr-cell">{val.complaint_identifier.complaint_identifier}</td>
+                                <td className="comp-hwcr-small-cell comp-hwcr-cell comp-hwcr-cell-left">{val.complaint_identifier.complaint_identifier}</td>
                                 <td className="comp-hwcr-small-cell comp-hwcr-cell">
                                     {
                                         val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : ""

@@ -136,9 +136,17 @@
     border-color: #B9B9B9;
   }
 
+  .comp-hwcr-cell-left
+  {
+    border-style: solid;
+    border-color: #B9B9B9;
+    border-width: 0px 1px 0px 1px;
+  }
+
   .comp-top-left
   {
     border-top-left-radius: 3px;
+    border-width: 1px 1px 0px 1px;
   }
   .comp-top-right
   {
@@ -195,9 +203,6 @@
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
-
-    
-
 
     display: flex;
     flex-direction: row;

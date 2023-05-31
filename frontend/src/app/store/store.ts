@@ -1,5 +1,4 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
 import hwcrComplaintsReducer from "./reducers/hwcr-complaints";
 import appReducer from "./reducers/app";
 
