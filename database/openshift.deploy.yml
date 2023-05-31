@@ -308,7 +308,7 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           name: object-store
-                          key: "object-store-secret-key"
+                          key: "object-store-access-key"
                     - name: OBJECTSTORE_URL
                       valueFrom:
                         secretKeyRef:
@@ -328,7 +328,7 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           name: object-store
-                          key: "object-store-access-key"
+                          key: "object-store-secret-key"
               volumes:
                 - name: backup
                   persistentVolumeClaim:
