@@ -2,8 +2,8 @@ import { FC, useEffect, useState } from "react";
 import "../../../../assets/sass/app.scss";
 import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { getHwcrComplaints, hwcrComplaints } from "../../../store/reducers/hwcr-complaints"
+import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
+import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 
 export const HwcrComplaintTable: FC = () => {
     const dispatch = useAppDispatch();
