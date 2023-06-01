@@ -41,17 +41,18 @@ export class AllegationComplaintService {
   }
 
   async findAll(): Promise<AllegationComplaint[]> {
-    return this.allegationComplaintsRepository.find({
-      relations: { 
-        complaint_identifier: {
-          owned_by_agency_code: true,
-          referred_by_agency_code: true,
-          complaint_status_code: true,
-          geo_organization_unit_code: true,
-        } ,
-        violation_code: false,
-      },
-    });
+
+    return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
+      .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
+      .leftJoinAndSelect('hwcr_complaint.violation_code','violation_code')
+      .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+      .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
+      .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
+      .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
+      .getMany();
   }
 
   async findOne(id: any): Promise<AllegationComplaint> {
