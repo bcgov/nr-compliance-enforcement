@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "../../../../../assets/sass/app.scss";
 import { HwcrComplaintTableHeader } from "./hwcr-complaint-table-header";
 import { HwcrComplaintTable } from "./hwcr-complaint-table";
 

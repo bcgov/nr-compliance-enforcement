@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "../../../../assets/sass/app.scss";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 
 export const HwcrComplaintContainer: FC = () => {
