@@ -5,13 +5,15 @@ import Roles from "./constants/roles";
 import RenderOnRole from "./components/routing/render-on-role";
 import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
+import AllegationComplaint from "./store/reducers/allegation-complaint";
+import { AllegationComplaintTabContainer } from "./components/containers/complaints/allegations/allegation-complaint-tab-container";
 
 const App: FC = () => {
   return (
     <BrowserRouter>
       <RenderOnRole roles={[Roles.COS_OFFICER]}>
         <Layout fixedSidebar>
-          <ComplaintContainer />
+          <ComplaintContainer initialState={1} />
         </Layout>
       </RenderOnRole>
     </BrowserRouter>

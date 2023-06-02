@@ -200,7 +200,7 @@
     border-color: #D8292F;
   }
 
-  .comp-allegation-species-btn
+  .comp-allegation-in-progress-btn
   {
     width: auto;
 
@@ -213,10 +213,16 @@
     padding: 4.2px 7.8px;
 
     pointer-events: none;
-    background-color: #E4E4E4;
-    color: #313132;
-    border-radius: 100px;
-    border-color: #E4E4E4;
+    
+    background: #2E8540;
+    border-color: #2E8540;
+    color: white;
+    border-radius: 4px;
+  }
+
+  .btn-hidden
+  {
+    display: none;
   }
 
   .comp-allegation-tabs

@@ -22,7 +22,8 @@ export const AllegationComplaintTable: FC = () => {
                     const complaint_identifier = val.complaint_identifier.complaint_identifier;
                     const incident_reported_datetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
                     const violation_code = val.violation_code != null ? val.violation_code.long_description : "";
-                    const in_progreess_button =  val.in_progreess === 'true' ? "<button type=\"button\" className=\"btn btn-primary comp-allegation-species-btn\">" + val.in_progreess + "</button>" : "";
+                    const in_progress_class = (String)(val.in_progress_ind) === 'true' ? "btn btn-primary comp-allegation-in-progress-btn" : "btn btn-primary comp-allegation-in-progress-btn btn-hidden";
+                    const in_progress_ind = (String)(val.in_progress_ind) === 'true' ? "In Progress" : "";
                     const geo_organization_unit_code = val.complaint_identifier.geo_organization_unit_code ? val.complaint_identifier.geo_organization_unit_code.short_description : "";
                     const location_summary = val.complaint_identifier.location_summary_text;
                     const statusClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-allegation-status-closed-btn' : 'btn btn-primary comp-allegation-status-open-btn';
@@ -33,11 +34,11 @@ export const AllegationComplaintTable: FC = () => {
                     {
                         return (
                             <Row key={key}>
-                                <td id="comp-allegation-id-coulmn{length}" className="comp-allegation-small-cell comp-allegation-cell comp-allegation-cell-bottom comp-allegation-cell-left comp-bottom-left">{complaint_identifier}</td>
+                                <td className="comp-allegation-small-cell comp-allegation-cell comp-allegation-cell-bottom comp-allegation-cell-left comp-bottom-left">{complaint_identifier}</td>
                                 <td className="comp-allegation-small-cell comp-allegation-cell-bottom comp-allegation-cell">{incident_reported_datetime}</td>
                                 <td className="comp-allegation-violation-cell comp-allegation-cell comp-allegation-cell-bottom">{violation_code}</td>
                                 <td className="comp-allegation-in-progress-cell comp-allegation-cell comp-allegation-cell-bottom">
-                                    {in_progreess_button}
+                                    <button type="button" className={in_progress_class}>{in_progress_ind}</button>
                                 </td>
                                 <td className="comp-allegation-area-cell comp-allegation-cell comp-allegation-cell-bottom">{geo_organization_unit_code}</td>
                                 <td className="comp-allegation-location-cell comp-allegation-cell comp-allegation-cell-bottom">{location_summary}</td>
@@ -58,8 +59,8 @@ export const AllegationComplaintTable: FC = () => {
                                 <td className="comp-allegation-small-cell comp-allegation-cell comp-allegation-cell-left">{complaint_identifier}</td>
                                 <td className="comp-allegation-small-cell comp-allegation-cell">{incident_reported_datetime}</td>
                                 <td className="comp-allegation-violation-cell comp-allegation-cell">{violation_code}</td>
-                                <td className="comp-allegation-in-prg-cell comp-allegation-cell">
-                                    {in_progreess_button}
+                                <td className="comp-allegation-in-progress-cell comp-allegation-cell">
+                                    <button type="button" className={in_progress_class}>{in_progress_ind}</button>
                                 </td>
                                 <td className="comp-allegation-area-cell comp-allegation-cell">{geo_organization_unit_code}</td>
                                 <td className="comp-allegation-location-cell comp-allegation-cell">{location_summary}</td>

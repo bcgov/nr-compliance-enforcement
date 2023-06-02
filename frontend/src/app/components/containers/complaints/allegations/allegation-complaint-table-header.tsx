@@ -24,7 +24,7 @@ export const AllegationComplaintTableHeader: FC = () => {
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
-                <th className="comp-allegation-violaion-cell comp-allegation-header-cell">
+                <th className="comp-allegation-violation-cell comp-allegation-header-cell">
                     <div className="comp-allegation-header-label">
                         Violation Type
                     </div>
