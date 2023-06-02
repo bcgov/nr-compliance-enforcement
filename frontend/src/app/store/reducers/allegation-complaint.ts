@@ -3,7 +3,7 @@ import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
-import { AllegationComplaintState } from "../../types/complaints/allegation-complaint-state";
+import { AllegationComplaintState } from "../../types/complaints/allegation-complaints-state";
 
 const initialState: AllegationComplaintState = {
   allegationComplaints: [],

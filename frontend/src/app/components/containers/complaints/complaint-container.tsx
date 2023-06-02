@@ -16,14 +16,14 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     if(value === ComplaintType.HWCR_COMPLAINT)
     {
         return <>
-            <div className="comp-allegation-header">Complaints</div>
+            <div className="comp-sub-header">Complaints</div>
             <div><HwcrComplaintTabContainer handleChange={handleChange}/></div>
         </>;
     }
     else if(value === ComplaintType.ALLEGATION_COMPLAINT)
     {
         return <>
-            <div className="comp-allegation-header">Complaints</div>
+            <div className="comp-sub-header">Complaints</div>
             <div><AllegationComplaintTabContainer handleChange={handleChange}/></div>
         </>;
     }

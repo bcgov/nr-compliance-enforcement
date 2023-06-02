@@ -8,11 +8,11 @@ type Props = {
 }
 
 export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange }) => {
-    return <><div className="hwcr-div-tab"><ul className="nav nav-tabs comp-hwcr-tab">
-        <li className="nav-item comp-hwcr-tab-active">
+    return <><div className="comp-div-tab"><ul className="nav nav-tabs comp-tab">
+        <li className="nav-item comp-tab-active">
             <a className="nav-link active">Human Wildlife Conflicts</a>
         </li>
-        <li className="nav-item comp-hwcr-tab-inactive">
+        <li className="nav-item comp-tab-inactive">
             <a className="nav-link" href="#" onClick={() => handleChange(ComplaintType.ALLEGATION_COMPLAINT)}>Enforcement</a>
         </li>
         </ul>
