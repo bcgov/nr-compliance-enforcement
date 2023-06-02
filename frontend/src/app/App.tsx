@@ -5,7 +5,6 @@ import Roles from "./constants/roles";
 import RenderOnRole from "./components/routing/render-on-role";
 import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
-import React from "react";
 
 const App: FC = () => {
   return (
