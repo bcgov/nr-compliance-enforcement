@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "../../../../../assets/sass/app.scss";
 import { AllegationComplaintTableHeader } from "./allegation-complaint-table-header";
 import { AllegationComplaintTable } from "./allegation-complaint-table";
 

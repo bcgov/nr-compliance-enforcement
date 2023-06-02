@@ -1,5 +1,4 @@
 import { FC, useEffect } from "react";
-import "../../../../../assets/sass/app.scss";
 import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";

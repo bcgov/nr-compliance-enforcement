@@ -3,18 +3,16 @@ import { BrowserRouter } from "react-router-dom";
 
 import Roles from "./constants/roles";
 import RenderOnRole from "./components/routing/render-on-role";
-import { HwcrComplaintContainer } from "./components/containers/complaints/complaint-container";
 import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
-import AllegationComplaint from "./store/reducers/allegation-complaint";
-import { AllegationComplaintTabContainer } from "./components/containers/complaints/allegations/allegation-complaint-tab-container";
+import React from "react";
 
 const App: FC = () => {
   return (
     <BrowserRouter>
       <RenderOnRole roles={[Roles.COS_OFFICER]}>
         <Layout fixedSidebar>
-          <ComplaintContainer initialState={1} />
+          <ComplaintContainer initialState={0} />
         </Layout>
       </RenderOnRole>
     </BrowserRouter>
