@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { HwcrComplaintTableHeader } from "./hwcr-complaint-table-header";
 import { HwcrComplaintTable } from "./hwcr-complaint-table";
+import ComplaintType from "../../../../constants/complaint-types";
 
 type Props = {
     handleChange: Function;
@@ -12,7 +13,7 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange }) => {
             <a className="nav-link active">Human Wildlife Conflicts</a>
         </li>
         <li className="nav-item comp-hwcr-tab-inactive">
-            <a className="nav-link" href="#" onClick={() => handleChange(1)}>Enforcement</a>
+            <a className="nav-link" href="#" onClick={() => handleChange(ComplaintType.ALLEGATION_COMPLAINT)}>Enforcement</a>
         </li>
         </ul>
     </div>

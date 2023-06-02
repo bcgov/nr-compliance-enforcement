@@ -7,17 +7,17 @@ import { getAllegationComplaints, allegationComplaints } from "../../../../store
 export const AllegationComplaintTable: FC = () => {
     const dispatch = useAppDispatch();
 
-    const allegationComplaintsArray = useAppSelector(allegationComplaints);
+    const allegationComplaintsJson = useAppSelector(allegationComplaints);
 
     useEffect(() => {
             dispatch(getAllegationComplaints());
-  }, [allegationComplaints, dispatch])
+  }, [dispatch])
 
 
     return (
         <Table id="comp-allegation-table" className="comp-allegation-table">
             <tbody>
-                {allegationComplaintsArray.map((val, key, {length}) => {
+                {allegationComplaintsJson.map((val, key, {length}) => {
                     const complaint_identifier = val.complaint_identifier.complaint_identifier;
                     const incident_reported_datetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
                     const violation_code = val.violation_code != null ? val.violation_code.long_description : "";

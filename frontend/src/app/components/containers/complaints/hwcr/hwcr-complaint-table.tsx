@@ -7,17 +7,17 @@ import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hw
 export const HwcrComplaintTable: FC = () => {
     const dispatch = useAppDispatch();
 
-    const hwcrComplaintsArray = useAppSelector(hwcrComplaints);
+    const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
             dispatch(getHwcrComplaints());
-  }, [hwcrComplaints, dispatch])
+  }, [dispatch])
 
 
     return (
         <Table id="comp-hwcr-table" className="comp-hwcr-table">
             <tbody>
-                {hwcrComplaintsArray.map((val, key, {length}) => {
+                {hwcrComplaintsJson.map((val, key, {length}) => {
                     const complaint_identifier = val.complaint_identifier.complaint_identifier;
                     const incident_reported_datetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
                     const hwcr_complaint_nature_code = val.hwcr_complaint_nature_code != null ? val.hwcr_complaint_nature_code.long_description : "";
@@ -32,7 +32,7 @@ export const HwcrComplaintTable: FC = () => {
                     {
                         return (
                             <Row key={key}>
-                                <td id="comp-hwcr-id-coulmn{length}" className="comp-hwcr-small-cell comp-hwcr-cell comp-hwcr-cell-bottom comp-hwcr-cell-left comp-bottom-left">{complaint_identifier}</td>
+                                <td className="comp-hwcr-small-cell comp-hwcr-cell comp-hwcr-cell-bottom comp-hwcr-cell-left comp-bottom-left">{complaint_identifier}</td>
                                 <td className="comp-hwcr-small-cell comp-hwcr-cell-bottom comp-hwcr-cell">{incident_reported_datetime}</td>
                                 <td className="comp-hwcr-nature-complaint-cell comp-hwcr-cell comp-hwcr-cell-bottom">{hwcr_complaint_nature_code}</td>
                                 <td className="comp-hwcr-medium-cell comp-hwcr-cell comp-hwcr-cell-bottom">
