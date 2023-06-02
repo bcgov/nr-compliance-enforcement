@@ -73,7 +73,6 @@ jobs:
 
 
   deploys:
-    if: github.event.pull_request.draft == false
     name: Deploys
     needs:
       - builds
