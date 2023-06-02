@@ -74,9 +74,9 @@
   padding: 16px;
   z-index: 8;
   overflow: hidden;
-  -webkit-transition: all 0.1s ease-in-out;
-  -moz-transition: all 0.1s ease-in-out;
-  transition: all 0.1s ease-in-out;
+  // -webkit-transition: all 0.1s ease-in-out;
+  // -moz-transition: all 0.1s ease-in-out;
+  // transition: all 0.1s ease-in-out;
 
   &.collapsed {
     width: 72px;
@@ -132,6 +132,7 @@
 
 .comp-side-bar.collapsed > ul > li > i.bi {
   margin-left: 25%;
+  font-size: 22px;
 }
 
 .comp-nav-item-list {

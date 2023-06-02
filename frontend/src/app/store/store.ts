@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import hwcrComplaintsReducer from "./reducers/hwcr-complaints";
 import appReducer from "./reducers/app";
 import allegationComplaintsReducer from "./reducers/allegation-complaint";
 
@@ -6,6 +7,7 @@ export const store = configureStore({
   reducer: {
     app: appReducer,
     allegationComplaint: allegationComplaintsReducer,
+    hwcrComplaint: hwcrComplaintsReducer,
   },
 });
 

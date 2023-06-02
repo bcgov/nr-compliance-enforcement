@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import Roles from "./constants/roles";
 import RenderOnRole from "./components/routing/render-on-role";
+import { HwcrComplaintContainer } from "./components/containers/complaints/complaint-container";
 import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
 import AllegationComplaint from "./store/reducers/allegation-complaint";
@@ -18,10 +19,6 @@ const App: FC = () => {
       </RenderOnRole>
     </BrowserRouter>
   );
-};
-
-const Placeholder = () => {
-  return <div>placeholder</div>;
 };
 
 export default App;
