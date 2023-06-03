@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Row, Table } from "react-bootstrap";
 import carets from "../../../../../assets/images/table-carets.png";
 
-export const HwcrComplaintTableHeader: FC = () => {
+export const AllegationComplaintTableHeader: FC = () => {
     return (
     <Table className="comp-table-header">
         <thead>
@@ -23,17 +23,17 @@ export const HwcrComplaintTableHeader: FC = () => {
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
-                <th className="comp-nature-complaint-cell comp-header-cell">
+                <th className="comp-violation-cell comp-header-cell">
                     <div className="comp-header-label">
-                        Nature of Complaint
+                        Violation Type
                     </div>
                     <div className="comp-header-caret">
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
-                <th className="comp-medium-cell comp-header-cell">
+                <th className="comp-in-progress-cell comp-header-cell">
                     <div className="comp-header-label">
-                        Species
+                        Violation In Progress
                     </div>
                     <div className="comp-header-caret">
                         <img src={carets} alt="sort" />
