@@ -40,6 +40,7 @@ parameters:
     value: bcgov/nr-compliance-enforcement/frontend:prod
   - name: KEYCLOAK_URL
     description: Keycloak auth url
+    value: https://dev.loginproxy.gov.bc.ca/auth
 objects:
   - apiVersion: v1
     kind: ImageStream
