@@ -2,26 +2,27 @@ import { FC, useEffect } from "react";
 import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
+import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
 
-export const HwcrComplaintTable: FC = () => {
+export const AllegationComplaintTable: FC = () => {
     const dispatch = useAppDispatch();
 
-    const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
+    const allegationComplaintsJson = useAppSelector(allegationComplaints);
 
     useEffect(() => {
-            dispatch(getHwcrComplaints());
+            dispatch(getAllegationComplaints());
   }, [dispatch])
 
 
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
-                {hwcrComplaintsJson.map((val, key, {length}) => {
+                {allegationComplaintsJson.map((val, key, {length}) => {
                     const complaint_identifier = val.complaint_identifier.complaint_identifier;
                     const incident_reported_datetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
-                    const hwcr_complaint_nature_code = val.hwcr_complaint_nature_code != null ? val.hwcr_complaint_nature_code.long_description : "";
-                    const species = val.species_code.short_description;
+                    const violation_code = val.violation_code != null ? val.violation_code.long_description : "";
+                    const in_progress_class = (String)(val.in_progress_ind) === 'true' ? "btn btn-primary comp-in-progress-btn" : "btn btn-primary comp-in-progress-btn btn-hidden";
+                    const in_progress_ind = (String)(val.in_progress_ind) === 'true' ? "In Progress" : "";
                     const geo_organization_unit_code = val.complaint_identifier.geo_organization_unit_code ? val.complaint_identifier.geo_organization_unit_code.short_description : "";
                     const location_summary = val.complaint_identifier.location_summary_text;
                     const statusClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
@@ -34,9 +35,9 @@ export const HwcrComplaintTable: FC = () => {
                             <Row key={key}>
                                 <td className="comp-small-cell comp-cell comp-cell-bottom comp-cell-left comp-bottom-left">{complaint_identifier}</td>
                                 <td className="comp-small-cell comp-cell-bottom comp-cell">{incident_reported_datetime}</td>
-                                <td className="comp-nature-complaint-cell comp-cell comp-cell-bottom">{hwcr_complaint_nature_code}</td>
-                                <td className="comp-medium-cell comp-cell comp-cell-bottom">
-                                    <button type="button" className="btn btn-primary comp-species-btn">{species}</button>
+                                <td className="comp-violation-cell comp-cell comp-cell-bottom">{violation_code}</td>
+                                <td className="comp-in-progress-cell comp-cell comp-cell-bottom">
+                                    <button type="button" className={in_progress_class}>{in_progress_ind}</button>
                                 </td>
                                 <td className="comp-area-cell comp-cell comp-cell-bottom">{geo_organization_unit_code}</td>
                                 <td className="comp-location-cell comp-cell comp-cell-bottom">{location_summary}</td>
@@ -55,9 +56,9 @@ export const HwcrComplaintTable: FC = () => {
                             <Row key={key}>
                                 <td className="comp-small-cell comp-cell comp-cell-left">{complaint_identifier}</td>
                                 <td className="comp-small-cell comp-cell">{incident_reported_datetime}</td>
-                                <td className="comp-nature-complaint-cell comp-cell">{hwcr_complaint_nature_code}</td>
-                                <td className="comp-medium-cell comp-cell">
-                                    <button type="button" className="btn btn-primary comp-species-btn">{species}</button>
+                                <td className="comp-violation-cell comp-cell">{violation_code}</td>
+                                <td className="comp-in-progress-cell comp-cell">
+                                    <button type="button" className={in_progress_class}>{in_progress_ind}</button>
                                 </td>
                                 <td className="comp-area-cell comp-cell">{geo_organization_unit_code}</td>
                                 <td className="comp-location-cell comp-cell">{location_summary}</td>

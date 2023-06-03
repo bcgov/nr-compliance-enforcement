@@ -3,7 +3,7 @@ import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
-import { HwcrComplaintState } from "../../types/complaints/hrcr-complaint-state";
+import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
 
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
