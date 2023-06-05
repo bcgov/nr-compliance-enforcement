@@ -230,7 +230,7 @@ describe("AllegationComplaintService", () => {
   });
 
     it("should return an array of users", async () => {
-      const users = await service.findAll();
+      const users = await service.findAll('incident_reported_datetime', 'DESC');
       expect(users).toEqual(allegationComplaintArray);
     });
  

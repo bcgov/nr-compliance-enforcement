@@ -1,13 +1,8 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
+import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
+import ComplaintType from "../../../constants/complaint-types";
 
-<<<<<<< Updated upstream
-export const HwcrComplaintContainer: FC = () => {
-    return <><div className="comp-hwcr-header">Complaints</div>
-        <HwcrComplaintTabContainer/>
-    </>
-    ;
-=======
 type Props = {
     initialState: number;
 }
@@ -57,5 +52,4 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     {
         return <></>;
     }
->>>>>>> Stashed changes
 }
