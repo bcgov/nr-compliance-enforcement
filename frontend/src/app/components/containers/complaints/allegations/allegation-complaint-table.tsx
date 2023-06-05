@@ -4,14 +4,19 @@ import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
 
-export const AllegationComplaintTable: FC = () => {
+type Props = {
+    sortColumn: string,
+    sortOrder: string,
+}
+
+export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
 
     const allegationComplaintsJson = useAppSelector(allegationComplaints);
 
     useEffect(() => {
-            dispatch(getAllegationComplaints());
-  }, [dispatch])
+            dispatch(getAllegationComplaints(sortColumn, sortOrder));
+  }, [dispatch, allegationComplaints])
 
 
     return (

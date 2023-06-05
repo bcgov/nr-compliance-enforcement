@@ -54,7 +54,8 @@ export class HwcrComplaintService {
       return newHwcrComplaintString;
     }
   
-    async findAll(): Promise<HwcrComplaint[]> {
+    async findAll(sortColumn: string, sortOrder: string): Promise<HwcrComplaint[]> {
+      const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       return this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
@@ -65,8 +66,8 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
-      .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
-      .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
+      .orderBy('complaint_identifier.' + sortColumn, sortOrderString)
+      .addOrderBy('complaint_identifier.incident_reported_datetime', 'DESC')
       .getMany();
     }
   

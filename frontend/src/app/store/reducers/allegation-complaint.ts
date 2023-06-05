@@ -33,12 +33,12 @@ export const { setAllegationComplaints } = allegationComplaintSlice.actions;
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getAllegationComplaints = (): AppThunk => async (dispatch) => {
+export const getAllegationComplaints = (sortColumn: string, sortOrder: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
         
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`);
+    const response = await axios.get('${config.API_BASE_URL}/v1/allegation-complaint?sortColumn=' + sortColumn + 'sortOrder=' + sortOrder);
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data

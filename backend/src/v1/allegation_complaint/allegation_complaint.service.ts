@@ -40,8 +40,22 @@ export class AllegationComplaintService {
     return newAllegationComplaint;
   }
 
+<<<<<<< Updated upstream
   async findAll(): Promise<AllegationComplaint[]> {
-
+    return this.allegationComplaintsRepository.find({
+      relations: { 
+        complaint_identifier: {
+          owned_by_agency_code: true,
+          referred_by_agency_code: true,
+          complaint_status_code: true,
+          geo_organization_unit_code: true,
+        } ,
+        violation_code: false,
+      },
+    });
+=======
+  async findAll(sortColumn: string, sortOrder: string): Promise<AllegationComplaint[]> {
+    const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
     return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
       .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
@@ -49,9 +63,10 @@ export class AllegationComplaintService {
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
-      .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
-      .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
+      .orderBy('complaint_identifier.' + sortColumn, sortOrderString)
+      .addOrderBy('complaint_identifier.incident_reported_datetime', 'DESC')
       .getMany();
+>>>>>>> Stashed changes
   }
 
   async findOne(id: any): Promise<AllegationComplaint> {
