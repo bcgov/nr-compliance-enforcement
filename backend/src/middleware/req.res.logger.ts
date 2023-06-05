@@ -10,8 +10,7 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
 
     response.on('finish', () => {
       const {statusCode} = response;
-      const contentLength = response.get('content-length');
-      const hostedHttpLogFormat = `${method} ${originalUrl} ${statusCode} ${contentLength} - ${request.get('user-agent')}`;
+      const hostedHttpLogFormat = `${method} ${originalUrl} ${statusCode} - ${request.get('user-agent')}`;
       this.logger.log(hostedHttpLogFormat);
     });
     next();

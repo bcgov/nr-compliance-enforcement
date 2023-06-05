@@ -7,7 +7,7 @@ const globalLoggerFormat: winston.Logform.Format = winston.format.timestamp({for
 const localLoggerFormat: winston.Logform.Format = winston.format.combine(
   winston.format.colorize(),
   winston.format.align(),
-  utilities.format.nestLike('Backend', {prettyPrint: true})
+  utilities.format.nestLike('Backend - c1c7ed', {prettyPrint: true})
 );
 
 

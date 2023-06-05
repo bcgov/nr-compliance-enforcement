@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
@@ -21,6 +21,7 @@ import { HwcrComplaintNatureCodeModule } from './v1/hwcr_complaint_nature_code/h
 import { AttractantCodeModule } from './v1/attractant_code/attractant_code.module';
 import { HwcrComplaintModule } from './v1/hwcr_complaint/hwcr_complaint.module';
 import { AttractantHwcrXrefModule } from './v1/attractant_hwcr_xref/attractant_hwcr_xref.module';
+import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -68,4 +69,9 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  // let's add a middleware on all routes
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HTTPLoggerMiddleware).forRoutes('*');
+  }
+}
