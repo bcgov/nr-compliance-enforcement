@@ -61,7 +61,7 @@ jobs:
             build_context: ./backend/db
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.2
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
@@ -94,6 +94,7 @@ jobs:
             file: frontend/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+                        -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL}}
           - name: init
             file: common/openshift.init.yml
             overwrite: false

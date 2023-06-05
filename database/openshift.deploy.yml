@@ -259,7 +259,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}
-                  image: "bcgovimages/backup-container:latest"
+                  image: "ghcr.io/bcgov/compliance-enforcement/backup-container-ced:latest"
                   command:
                     - "/bin/bash"
                     - "-c"
@@ -304,6 +304,31 @@ objects:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}-database
                           key: "database-password"
+                    - name: OBJECTSTORE_ACCESS_KEY
+                      valueFrom:
+                        secretKeyRef:
+                          name: object-store
+                          key: "object-store-access-key"
+                    - name: OBJECTSTORE_URL
+                      valueFrom:
+                        secretKeyRef:
+                          name: object-store
+                          key: "object-store-host"
+                    - name: OBJECTSTORE_BACKUP_DIRECTORY
+                      valueFrom:
+                        secretKeyRef:
+                          name: object-store
+                          key: "object-store-backup-directory"
+                    - name: OBJECTSTORE_BUCKET
+                      valueFrom:
+                        secretKeyRef:
+                          name: object-store
+                          key: "object-store-bucket"
+                    - name: OBJECTSTORE_SECRET_KEY
+                      valueFrom:
+                        secretKeyRef:
+                          name: object-store
+                          key: "object-store-secret-key"
               volumes:
                 - name: backup
                   persistentVolumeClaim:

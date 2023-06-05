@@ -23,9 +23,9 @@ parameters:
   - name: MEMORY_REQUEST
     value: "50Mi"
   - name: CPU_LIMIT
-    value: "75m"
+    value: "50m"
   - name: MEMORY_LIMIT
-    value: "150Mi"
+    value: "100Mi"
   - name: MIN_REPLICAS
     description: The minimum amount of replicas for the horizontal pod autoscaler.
     value: "3"
@@ -38,6 +38,9 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-compliance-enforcement/frontend:prod
+  - name: KEYCLOAK_URL
+    description: Keycloak auth url
+    value: https://dev.loginproxy.gov.bc.ca/auth
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -62,7 +65,7 @@ objects:
       app: ${NAME}-${ZONE}
     data:
       config.js: |
-        window.REACT_APP_KEYCLOAK_URL="https://dev.loginproxy.gov.bc.ca/auth";
+        window.REACT_APP_KEYCLOAK_URL="${KEYCLOAK_URL}";
         window.REACT_APP_KEYCLOAK_REALM="standard";
         window.REACT_APP_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-web-4794";
         window.REACT_APP_API_URL="https://${NAME}-${ZONE}-backend.${DOMAIN}";

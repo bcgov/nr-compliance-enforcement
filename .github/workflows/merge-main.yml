@@ -56,6 +56,7 @@ jobs:
             overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
+            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL}}
             overwrite: true
           - name: init
             file: common/openshift.init.yml
@@ -92,6 +93,7 @@ jobs:
             overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
+            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL}}
             overwrite: true
           - name: init
             file: common/openshift.init.yml
