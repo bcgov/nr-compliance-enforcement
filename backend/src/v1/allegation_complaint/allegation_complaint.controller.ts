@@ -24,8 +24,8 @@ export class AllegationComplaintController {
 
   @Get()
   @Roles(Role.COS_OFFICER)
-  findAll() {
-    return this.allegationComplaintService.findAll();
+  findAll(@Param('sortColumn') sortColumn: string, @Param('sortOrder') sortOrder: string) {
+    return this.allegationComplaintService.findAll(sortColumn, sortOrder);
   }
 
   @Get(':id')

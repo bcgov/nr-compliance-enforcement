@@ -24,8 +24,8 @@ export class HwcrComplaintController {
 
   @Get()
   @Roles(Role.COS_OFFICER)
-  findAll() {
-    return this.hwcrComplaintService.findAll();
+  findAll(@Param('sortColumn') sortColumn: string, @Param('sortOrder') sortOrder: string) {
+    return this.hwcrComplaintService.findAll(sortColumn, sortOrder);
   }
 
   @Get(':id')
