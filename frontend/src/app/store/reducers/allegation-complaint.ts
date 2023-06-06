@@ -38,7 +38,7 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string): 
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
         
-    const response = await axios.get('${config.API_BASE_URL}/v1/allegation-complaint?sortColumn=' + sortColumn + 'sortOrder=' + sortOrder);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data

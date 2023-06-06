@@ -56,10 +56,10 @@ export class HwcrComplaintService {
   
     async findAll(sortColumn: string, sortOrder: string): Promise<HwcrComplaint[]> {
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-      const rootTable = 'complaint_identifier.';
+      var rootTable = 'complaint_identifier.';
       if(sortColumn in ['complaint_identifier', 'species_code', 'hwcr_complaint_nature_code'])
       {
-        const rootTable = 'hwcr_complaint.';
+        rootTable = 'hwcr_complaint.';
       }
       return this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')

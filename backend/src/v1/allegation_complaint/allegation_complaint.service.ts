@@ -42,10 +42,10 @@ export class AllegationComplaintService {
 
   async findAll(sortColumn: string, sortOrder: string): Promise<AllegationComplaint[]> {
     const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-    const rootTable = 'complaint_identifier.';
+    var rootTable = 'complaint_identifier.';
       if(sortColumn in ['complaint_identifier', 'violation_code'])
       {
-        const rootTable = 'allegation_complaint.';
+        rootTable = 'allegation_complaint.';
       }
     return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
       .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')

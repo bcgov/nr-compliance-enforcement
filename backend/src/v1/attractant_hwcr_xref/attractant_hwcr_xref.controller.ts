@@ -2,8 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AttractantHwcrXrefService } from './attractant_hwcr_xref.service';
 import { CreateAttractantHwcrXrefDto } from './dto/create-attractant_hwcr_xref.dto';
 import { UpdateAttractantHwcrXrefDto } from './dto/update-attractant_hwcr_xref.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('attractant-hwcr-xref')
+@ApiTags("attractant-hwcr-xref")
+@Controller({
+  path: 'attractant-hwcr-xref',
+  version: '1'})
 export class AttractantHwcrXrefController {
   constructor(private readonly attractantHwcrXrefService: AttractantHwcrXrefService) {}
 

@@ -9,43 +9,44 @@ type Props = {
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [complaintType, setComplaintType] = useState(initialState);
-    const [sortColumn, setSortColumn] = useState("incident_reported_datetime");
-    const [sortOrder, setSortOrder] = useState("DESC");
+    const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     function handleChange(newState: number)
     {
+        console.log("wtf2: " + newState);
         setComplaintType(newState);
     }
     function handleSort(newSortColumn: string)
     {
-        if(newSortColumn === sortColumn)
+        console.log("wtf: " + newSortColumn);
+        if(newSortColumn === sort[0])
         {
-            if(sortOrder === "DESC")
+            if(sort[1] === "DESC")
             {
-                setSortOrder("ASC");
+                setSort([newSortColumn, "ASC"]);
             }
             else
             {
-                setSortOrder("DESC");
+                setSort([newSortColumn, "DESC"]);
             }
         }
         else
         {
-            setSortColumn(newSortColumn);
-            setSortOrder("DESC");
+            //setSortColumn(newSortColumn);
+            setSort([newSortColumn, "DESC"]);
         }
     }
     if(complaintType === ComplaintType.HWCR_COMPLAINT)
     {
         return <>
             <div className="comp-sub-header">Complaints</div>
-            <div><HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sortColumn={sortColumn} sortOrder={sortOrder}/></div>
+            <div><HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}/></div>
         </>;
     }
     else if(complaintType === ComplaintType.ALLEGATION_COMPLAINT)
     {
         return <>
             <div className="comp-sub-header">Complaints</div>
-            <div><AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sortColumn={sortColumn} sortOrder={sortOrder}/></div>
+            <div><AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}/></div>
         </>;
     }
     else

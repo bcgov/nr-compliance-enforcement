@@ -6,11 +6,10 @@ import ComplaintType from "../../../../constants/complaint-types";
 type Props = {
     handleChange: Function,
     handleSort: Function,
-    sortColumn: string,
-    sortOrder: string,
+    sort: string[],
 }
 
-export const AllegationComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sortColumn, sortOrder }) => {
+export const AllegationComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort }) => {
     return <><div className="comp-div-tab"><ul className="nav nav-tabs comp-tab">
         <li className="nav-item comp-tab-inactive">
             <a className="nav-link" href="#" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)} >Human Wildlife Conflicts</a>
@@ -21,6 +20,6 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({ handleChange, hand
         </ul>
     </div>
     <AllegationComplaintTableHeader handleSort={handleSort}/>
-    <AllegationComplaintTable sortColumn={sortColumn} sortOrder={sortOrder}/></>
+    <AllegationComplaintTable sortColumn={sort[0]} sortOrder={sort[1]}/></>
     ;
 }

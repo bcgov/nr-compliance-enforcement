@@ -6,7 +6,7 @@ type Props = {
     handleSort: Function,
 }
 
-export const AllegationComplaintTableHeader: FC<Props>  = ({ handleSort}) => {
+export const AllegationComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
 
     return (
     <Table className="comp-table-header">
@@ -17,7 +17,7 @@ export const AllegationComplaintTableHeader: FC<Props>  = ({ handleSort}) => {
                         Incident#
                     </div>
                     <div className="comp-header-caret">
-                        <img src={carets} alt="sort"  onClick={handleSort("complaint_identifer")}/>
+                        <img src={carets} alt="sort"  onClick={handleSort("complaint_identifier")}/>
                     </div>
                 </th>
                 <th className="comp-small-cell comp-header-cell">

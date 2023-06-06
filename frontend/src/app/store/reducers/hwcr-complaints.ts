@@ -3,7 +3,7 @@ import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
-import { HwcrComplaintState } from "../../types/complaints/hrcr-complaint-state";
+import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
 
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
@@ -37,8 +37,7 @@ export const getHwcrComplaints = (sortColumn: string, sortOrder: string): AppThu
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        
-    const response = await axios.get('${config.API_BASE_URL}/v1/hwcr-complaint?sortColumn=' + sortColumn + 'sortOrder=' + sortOrder);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
     dispatch(
       setHwcrComplaints({
         hwcrComplaints: response.data
