@@ -64,6 +64,10 @@
   }
 }
 
+.fixed-sidebar .comp-side-bar {
+  position: fixed;
+}
+
 .comp-side-bar {
   background-color: $grey-110;
   position: absolute;
@@ -88,8 +92,10 @@
   }
 }
 
+
 .comp-main-content {
   margin-left: 254px;
+  margin-top: 72px;
   padding: 24px;
 
   -webkit-transition: all 0.1s ease-in-out;
