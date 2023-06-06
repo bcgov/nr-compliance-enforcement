@@ -55,9 +55,6 @@ export const HwcrComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
                     <div className="comp-header-label">
                         Location/Address
                     </div>
-                    <div className="comp-header-caret" onClick={() => handleSort("location_summary_text")} >
-                        <img src={carets} alt="sort"/>
-                    </div>
                 </th>
                 <th className="comp-medium-cell comp-header-cell">
                     <div className="comp-header-label">
