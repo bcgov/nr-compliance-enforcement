@@ -164,6 +164,7 @@ describe("AllegationComplaintService", () => {
 
   const complaintRepositoryMockFactory = () => ({
     // mock repository functions for testing
+    findAll: jest.fn(),
     find: jest.fn(),
     findOneOrFail: jest.fn(),
     create: jest.fn(),
