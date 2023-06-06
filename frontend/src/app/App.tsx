@@ -1,20 +1,31 @@
 import { FC } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 import Roles from "./constants/roles";
-import RenderOnRole from "./components/routing/render-on-role";
-import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
+import ProtectedRoutes from "./components/routing";
+import NotAuthorized, { NotFound } from "./components/containers/pages";
 
 const App: FC = () => {
   return (
-    <BrowserRouter>
-      <RenderOnRole roles={[Roles.COS_OFFICER]}>
-        <Layout fixedSidebar>
-          <ComplaintContainer initialState={0} />
-        </Layout>
-      </RenderOnRole>
-    </BrowserRouter>
+    <Router>
+    <Routes>
+      <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
+        {/* <!-- temporary route --> */}
+        <Route path="/" element={<ComplaintContainer initialState={0} />} />
+        <Route
+          path="/complaints/:type?"
+          element={<ComplaintContainer initialState={0} />}
+        />
+        {/* <Route
+          path="/complaint/:complaintType/:id"
+          element={<ComplaintDetails />}
+        /> */}
+      </Route>
+      <Route path="/not-authorized" element={<NotAuthorized />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </Router>
   );
 };
 
