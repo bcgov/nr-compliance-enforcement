@@ -18,6 +18,13 @@ describe("AllegationComplaintService", () => {
   let complaintsRepository: Repository<Complaint>;
   let dataSourceMock: MockType<DataSource>
 
+  const createQueryBuilder: any = {
+    select: () => createQueryBuilder,
+    addSelect: () => createQueryBuilder,
+    groupBy: () => createQueryBuilder,
+    where: () => createQueryBuilder
+  };
+
   const oneComplaint = new Complaint(
     "test",
     "Chris",
@@ -154,6 +161,13 @@ describe("AllegationComplaintService", () => {
         }
       },
 
+      createQueryBuilder: jest.fn(() => ({
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        addOrderBy: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue(allegationComplaintArray),
+      })),
+
     // as these do not actually use their return values in our sample
     // we just make sure that their resolve is true to not crash
     //update: jest.fn().mockResolvedValue(true),
@@ -226,17 +240,18 @@ describe("AllegationComplaintService", () => {
   });
 
   it("should successfully add a complaint", async() => {
-    await dataSourceMock.createQueryBuilder;
     await service.create(threeAllegationComplaint);
     expect(dataSourceMock.createQueryRunner).toBeCalled();
   });
 
-    it("should return an array of complaints", async () => {
-      const complaints = await service.findAll('incident_reported_datetime', 'DESC');
-      console.log(complaints);
-      console.log(allegationComplaintArray);
-      expect(complaints).toEqual(allegationComplaintArray);
-    });
+  it("should return an array of complaints", async () => {
+
+
+    const complaints = await service.findAll('incident_reported_datetime', 'DESC');
+    console.log(complaints);
+    console.log(allegationComplaintArray);
+    expect(complaints).toEqual(allegationComplaintArray);
+  });
  
   describe("findOne", () => {
     it("should get a single user", () => {
