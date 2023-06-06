@@ -1,3 +1,33 @@
+.comp-complaint-breadcrumb {
+  background-color: $bc-gov-primary-400;
+  color: $white;
+
+  height: 43px;
+  padding: 8px 37px 8px 32px;
+
+  nav > ol > li:nth-child(2) > a {
+    text-decoration: underline;
+    color: $white;
+  }
+}
+
+.comp-complaint-details {
+  position: absolute;
+  left: 254px;
+  top: 72px;
+  width: 100%;
+}
+
+.comp-details-header {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 34px 0px;
+
+  height: 98px;
+  background: $bc-gov-primary-400;
+
+  color: $white;
+}
 
 .comp-hwcr-table-header {
     display: flex;

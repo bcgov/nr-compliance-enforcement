@@ -7,6 +7,7 @@ import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state
 
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
+  complaint: null,
 };
 
 export const hwcrComplaintSlice = createSlice({
@@ -16,8 +17,14 @@ export const hwcrComplaintSlice = createSlice({
   reducers: {
     setHwcrComplaints: (state, action) => {
       const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
-      return { ...state, hwcrComplaints};
+      const hwcrComplaints: HwcrComplaint[] = payload.hwcrComplaints;
+      return { ...state, hwcrComplaints };
+    },
+
+    setComplaint: (state, action) => {
+      const { payload: complaint } = action;
+
+      return { ...state, complaint };
     },
   },
 
@@ -27,7 +34,7 @@ export const hwcrComplaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setHwcrComplaints } = hwcrComplaintSlice.actions;
+export const { setHwcrComplaints, setComplaint } = hwcrComplaintSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -37,19 +44,42 @@ export const getHwcrComplaints = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`);
+
+    const response = await axios.get(
+      `${config.API_BASE_URL}/v1/hwcr-complaint`
+    );
     dispatch(
       setHwcrComplaints({
-        hwcrComplaints: response.data
+        hwcrComplaints: response.data,
       })
     );
   }
 };
 
-export const hwcrComplaints = (state: RootState) => { 
+export const getHwcrComplaintByComplaintIdentifier =
+  (id: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
+      );
+      const result = response.data;
+
+      dispatch(setComplaint({ ...result }));
+    }
+  };
+
+export const hwcrComplaints = (state: RootState) => {
   const { hwcrComplaints } = state.hwcrComplaint;
   return hwcrComplaints;
-}
+};
+
+export const selectedComplaint = (state: RootState) => {
+  return state.hwcrComplaint.complaint
+};
+
 
 export default hwcrComplaintSlice.reducer;

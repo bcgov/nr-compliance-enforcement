@@ -1,4 +1,4 @@
-import { FC, useEffect, MouseEvent } from "react";
+import { FC, useEffect } from "react";
 import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
@@ -26,10 +26,10 @@ export const HwcrComplaintTable: FC = () => {
     navigate(`/complaint/${ComplaintTypes.HWCR}/${id}`);
   };
 
-  const handleStatusChangeClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    //-- known bug, clicking the button triggers the row click
-  };
+//   const handleStatusChangeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+//     e.preventDefault();
+//     //-- known bug, clicking the button triggers the row click
+//   };
 
     return (
         <Table id="comp-table" className="comp-table">
