@@ -29,7 +29,14 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         }
         else
         {
-            setSort([newSortColumn, "DESC"]);
+            if(newSortColumn === "incident_reported_datetime" || newSortColumn === "update_timestamp")
+            {
+                setSort([newSortColumn, "DESC"]);
+            }
+            else
+            {
+                setSort([newSortColumn, "ASC"]);
+            }
         }
     }
     if(complaintType === ComplaintType.HWCR_COMPLAINT)
