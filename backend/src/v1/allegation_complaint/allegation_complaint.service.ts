@@ -40,8 +40,10 @@ export class AllegationComplaintService {
     return newAllegationComplaint;
   }
 
-  async findAll(): Promise<AllegationComplaint[]> {
-
+  async findAll(sortColumn: string, sortOrder: string): Promise<AllegationComplaint[]> {
+    //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
+    const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
+    const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind') ? 'allegation_complaint.' : 'complaint_identifier.';
     return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
       .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
@@ -49,8 +51,8 @@ export class AllegationComplaintService {
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
-      .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
-      .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
+      .orderBy(sortTable + sortColumn, sortOrderString)
+      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC")
       .getMany();
   }
 

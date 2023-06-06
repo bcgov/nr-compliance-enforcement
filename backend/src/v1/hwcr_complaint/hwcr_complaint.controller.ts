@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Logger } from '@nestjs/common';
 import { HwcrComplaintService } from './hwcr_complaint.service';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
@@ -26,9 +26,9 @@ export class HwcrComplaintController {
 
   @Get()
   @Roles(Role.COS_OFFICER)
-  findAll() {
+  findAll(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string) {
     this.logger.debug("Entering findAll");
-    return this.hwcrComplaintService.findAll();
+    return this.hwcrComplaintService.findAll(sortColumn, sortOrder);
   }
 
   @Get(':id')

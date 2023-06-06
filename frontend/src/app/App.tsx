@@ -5,13 +5,14 @@ import Roles from "./constants/roles";
 import RenderOnRole from "./components/routing/render-on-role";
 import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
+import ComplaintType from "./constants/complaint-types";
 
 const App: FC = () => {
   return (
     <BrowserRouter>
       <RenderOnRole roles={[Roles.COS_OFFICER]}>
-        <Layout fixedSidebar>
-          <ComplaintContainer initialState={0} />
+        <Layout fixedHeader fixedSidebar>
+          <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
         </Layout>
       </RenderOnRole>
     </BrowserRouter>
