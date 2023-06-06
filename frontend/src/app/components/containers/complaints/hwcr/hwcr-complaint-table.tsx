@@ -16,7 +16,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
 
     useEffect(() => {
             dispatch(getHwcrComplaints(sortColumn, sortOrder));
-  }, [dispatch]);
+  }, [dispatch, sortColumn, sortOrder]);
 
 
     return (

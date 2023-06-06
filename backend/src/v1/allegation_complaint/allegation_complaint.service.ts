@@ -43,7 +43,7 @@ export class AllegationComplaintService {
   async findAll(sortColumn: string, sortOrder: string): Promise<AllegationComplaint[]> {
     const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
     var rootTable = 'complaint_identifier.';
-      if(sortColumn in ['complaint_identifier', 'violation_code'])
+      if(sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind')
       {
         rootTable = 'allegation_complaint.';
       }
@@ -55,7 +55,7 @@ export class AllegationComplaintService {
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
       .orderBy(rootTable + sortColumn, sortOrderString)
-      .addOrderBy('complaint_identifier.incident_reported_datetime', 'DESC')
+      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC")
       .getMany();
   }
 

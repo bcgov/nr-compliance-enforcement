@@ -16,7 +16,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
 
     useEffect(() => {
             dispatch(getAllegationComplaints(sortColumn, sortOrder));
-  }, [dispatch])
+  }, [dispatch, sortColumn, sortOrder])
 
 
     return (

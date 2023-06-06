@@ -12,12 +12,10 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     function handleChange(newState: number)
     {
-        console.log("wtf2: " + newState);
         setComplaintType(newState);
     }
     function handleSort(newSortColumn: string)
     {
-        console.log("wtf: " + newSortColumn);
         if(newSortColumn === sort[0])
         {
             if(sort[1] === "DESC")
