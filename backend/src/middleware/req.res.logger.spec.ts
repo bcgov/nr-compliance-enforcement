@@ -35,6 +35,6 @@ describe('HTTPLoggerMiddleware', () => {
     middleware.use(request, response, () => {
     });
 
-    expect(loggerSpy).toHaveBeenCalledWith(`GET /test 200 100 - Test User Agent`);
+    expect(loggerSpy).toHaveBeenCalledWith(`GET /test 200 - Test User Agent`);
   });
 });
