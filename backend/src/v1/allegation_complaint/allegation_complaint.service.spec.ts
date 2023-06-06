@@ -137,6 +137,7 @@ describe("AllegationComplaintService", () => {
 
   const allegationComplaintRepositoryMockFactory = () => ({
     // mock repository functions for testing
+    findAll: jest.fn(() => { return Promise.resolve(allegationComplaintArray)}),
     find: jest.fn(() => { return Promise.resolve(allegationComplaintArray)}),
     findOneOrFail: jest.fn(() => { return Promise.resolve(oneAllegationComplaint)}),
     create: jest.fn(() => { return Promise.resolve(threeAllegationComplaint)}),
@@ -229,9 +230,11 @@ describe("AllegationComplaintService", () => {
     expect(dataSourceMock.createQueryRunner).toBeCalled();
   });
 
-    it("should return an array of users", async () => {
-      const users = await service.findAll('incident_reported_datetime', 'DESC');
-      expect(users).toEqual(allegationComplaintArray);
+    it("should return an array of complaints", async () => {
+      const complaints = await service.findAll('incident_reported_datetime', 'DESC');
+      console.log(complaints);
+      console.log(allegationComplaintArray);
+      expect(complaints).toEqual(allegationComplaintArray);
     });
  
   describe("findOne", () => {
