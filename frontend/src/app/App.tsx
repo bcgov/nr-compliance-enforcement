@@ -11,7 +11,7 @@ const App: FC = () => {
   return (
     <BrowserRouter>
       <RenderOnRole roles={[Roles.COS_OFFICER]}>
-        <Layout fixedSidebar>
+        <Layout fixedHeader fixedSidebar>
           <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
         </Layout>
       </RenderOnRole>

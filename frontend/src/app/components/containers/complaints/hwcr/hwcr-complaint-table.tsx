@@ -46,7 +46,6 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <td className="comp-area-cell comp-cell comp-cell-bottom">{geo_organization_unit_code}</td>
                                 <td className="comp-location-cell comp-cell comp-cell-bottom">{location_summary}</td>
                                 <td className="comp-medium-cell comp-cell comp-cell-bottom">
-                                    Unassigned
                                 </td>
                                 <td className="comp-status-cell comp-cell comp-cell-bottom">
                                     <button type="button" className={statusClass}>{status}</button>
@@ -68,7 +67,6 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <td className="comp-area-cell comp-cell">{geo_organization_unit_code}</td>
                                 <td className="comp-location-cell comp-cell">{location_summary}</td>
                                 <td className="comp-medium-cell comp-cell">
-                                    Unassigned
                                 </td>
                                 <td className="comp-status-cell comp-cell">
                                 <button type="button" className={statusClass}>{status}</button>
