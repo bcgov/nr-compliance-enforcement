@@ -1,11 +1,14 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, MouseEvent } from "react";
 import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
+import { useNavigate } from "react-router-dom";
+import ComplaintTypes from "../../../../types/app/complaint-types";
 
 export const HwcrComplaintTable: FC = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
@@ -13,6 +16,20 @@ export const HwcrComplaintTable: FC = () => {
             dispatch(getHwcrComplaints());
   }, [dispatch])
 
+
+  const handleComplaintClick = (
+    e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
+    id: string
+  ) => {
+    e.preventDefault();
+
+    navigate(`/complaint/${ComplaintTypes.HWCR}/${id}`);
+  };
+
+  const handleStatusChangeClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    //-- known bug, clicking the button triggers the row click
+  };
 
     return (
         <Table id="comp-table" className="comp-table">
@@ -31,7 +48,9 @@ export const HwcrComplaintTable: FC = () => {
                     if(length - 1 === key)
                     {
                         return (
-                            <Row key={key}>
+                            <Row key={key} onClick={(event) =>
+                                handleComplaintClick(event, complaint_identifier)
+                              }>
                                 <td className="comp-small-cell comp-cell comp-cell-bottom comp-cell-left comp-bottom-left">{complaint_identifier}</td>
                                 <td className="comp-small-cell comp-cell-bottom comp-cell">{incident_reported_datetime}</td>
                                 <td className="comp-nature-complaint-cell comp-cell comp-cell-bottom">{hwcr_complaint_nature_code}</td>
@@ -52,7 +71,9 @@ export const HwcrComplaintTable: FC = () => {
                     else
                     {
                         return (
-                            <Row key={key}>
+                            <Row key={key} onClick={(event) =>
+                                handleComplaintClick(event, complaint_identifier)
+                              }>
                                 <td className="comp-small-cell comp-cell comp-cell-left">{complaint_identifier}</td>
                                 <td className="comp-small-cell comp-cell">{incident_reported_datetime}</td>
                                 <td className="comp-nature-complaint-cell comp-cell">{hwcr_complaint_nature_code}</td>

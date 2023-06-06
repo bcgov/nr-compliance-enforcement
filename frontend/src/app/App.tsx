@@ -5,6 +5,7 @@ import Roles from "./constants/roles";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
 import ProtectedRoutes from "./components/routing";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
+import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
 
 const App: FC = () => {
   return (
@@ -17,10 +18,10 @@ const App: FC = () => {
           path="/complaints/:type?"
           element={<ComplaintContainer initialState={0} />}
         />
-        {/* <Route
+        <Route
           path="/complaint/:complaintType/:id"
           element={<ComplaintDetails />}
-        /> */}
+        />
       </Route>
       <Route path="/not-authorized" element={<NotAuthorized />} />
       <Route path="*" element={<NotFound />} />
