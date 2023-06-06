@@ -45,4 +45,10 @@ export class HwcrComplaintController {
   remove(@Param('id') id: UUID) {
     return this.hwcrComplaintService.remove(id);
   }
+
+  @Get('/by-complaint-identifier/:id')
+  @Roles(Role.COS_OFFICER)
+  byId(@Param('id') id: string) {
+    return this.hwcrComplaintService.findByComplaintIdentifier(id);
+  }
 }

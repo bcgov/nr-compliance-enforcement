@@ -109,4 +109,23 @@ export class HwcrComplaintService {
         return { deleted: false, message: err.message };
       }
     }
+
+    async findByComplaintIdentifier(id: any): Promise<HwcrComplaint> {
+      return this.hwcrComplaintsRepository.findOneOrFail({
+        where: {complaint_identifier: id},
+        relations: { 
+          complaint_identifier: {
+            owned_by_agency_code: true,
+            referred_by_agency_code: true,
+            complaint_status_code: true,
+            geo_organization_unit_code: true,
+          } ,
+          species_code: true,
+          hwcr_complaint_nature_code: true,
+          attractant_hwcr_xref: {
+            attractant_code: true,
+          },
+        },
+      });
+    }
 }
