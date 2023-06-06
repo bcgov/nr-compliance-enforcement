@@ -10,7 +10,7 @@ const App: FC = () => {
   return (
     <BrowserRouter>
       <RenderOnRole roles={[Roles.COS_OFFICER]}>
-        <Layout fixedSidebar>
+        <Layout fixedHeader fixedSidebar>
           <ComplaintContainer initialState={0} />
         </Layout>
       </RenderOnRole>
