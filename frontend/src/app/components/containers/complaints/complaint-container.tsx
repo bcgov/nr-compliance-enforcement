@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
-import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
+import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
 
 type Props = {
@@ -8,23 +8,42 @@ type Props = {
 }
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
-    const [value, setValue] = useState(initialState);
+    const [complaintType, setComplaintType] = useState(initialState);
+    const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     function handleChange(newState: number)
     {
-        setValue(newState);
+        setComplaintType(newState);
     }
-    if(value === ComplaintType.HWCR_COMPLAINT)
+    function handleSort(newSortColumn: string)
+    {
+        if(newSortColumn === sort[0])
+        {
+            if(sort[1] === "DESC")
+            {
+                setSort([newSortColumn, "ASC"]);
+            }
+            else
+            {
+                setSort([newSortColumn, "DESC"]);
+            }
+        }
+        else
+        {
+            setSort([newSortColumn, "DESC"]);
+        }
+    }
+    if(complaintType === ComplaintType.HWCR_COMPLAINT)
     {
         return <>
             <div className="comp-sub-header">Complaints</div>
-            <div><HwcrComplaintTabContainer handleChange={handleChange}/></div>
+            <div><HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}/></div>
         </>;
     }
-    else if(value === ComplaintType.ALLEGATION_COMPLAINT)
+    else if(complaintType === ComplaintType.ALLEGATION_COMPLAINT)
     {
         return <>
             <div className="comp-sub-header">Complaints</div>
-            <div><AllegationComplaintTabContainer handleChange={handleChange}/></div>
+            <div><AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}/></div>
         </>;
     }
     else

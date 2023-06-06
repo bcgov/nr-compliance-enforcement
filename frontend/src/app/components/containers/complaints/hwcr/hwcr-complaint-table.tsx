@@ -4,14 +4,19 @@ import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 
-export const HwcrComplaintTable: FC = () => {
+type Props = {
+    sortColumn: string,
+    sortOrder: string,
+}
+
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
 
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
-            dispatch(getHwcrComplaints());
-  }, [dispatch])
+            dispatch(getHwcrComplaints(sortColumn, sortOrder));
+  }, [dispatch, sortColumn, sortOrder]);
 
 
     return (
@@ -32,7 +37,7 @@ export const HwcrComplaintTable: FC = () => {
                     {
                         return (
                             <Row key={key}>
-                                <td className="comp-small-cell comp-cell comp-cell-bottom comp-cell-left comp-bottom-left">{complaint_identifier}</td>
+                                <td id="comp-id-coulmn" className="comp-small-cell comp-cell comp-cell-bottom comp-cell-left comp-bottom-left">{complaint_identifier}</td>
                                 <td className="comp-small-cell comp-cell-bottom comp-cell">{incident_reported_datetime}</td>
                                 <td className="comp-nature-complaint-cell comp-cell comp-cell-bottom">{hwcr_complaint_nature_code}</td>
                                 <td className="comp-medium-cell comp-cell comp-cell-bottom">

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { AllegationComplaintService } from './allegation_complaint.service';
 import { CreateAllegationComplaintDto } from './dto/create-allegation_complaint.dto';
 import { UpdateAllegationComplaintDto } from './dto/update-allegation_complaint.dto';
@@ -24,8 +24,8 @@ export class AllegationComplaintController {
 
   @Get()
   @Roles(Role.COS_OFFICER)
-  findAll() {
-    return this.allegationComplaintService.findAll();
+  findAll(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string) {
+    return this.allegationComplaintService.findAll(sortColumn, sortOrder);
   }
 
   @Get(':id')
