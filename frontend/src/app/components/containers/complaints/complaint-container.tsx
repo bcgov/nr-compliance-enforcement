@@ -29,7 +29,6 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         }
         else
         {
-            //setSortColumn(newSortColumn);
             setSort([newSortColumn, "DESC"]);
         }
     }
