@@ -6,6 +6,7 @@ import { ComplaintContainer } from "./components/containers/complaints/complaint
 import ProtectedRoutes from "./components/routing";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
 import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
+import ColorReference from "./components/reference";
 
 const App: FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: FC = () => {
       </Route>
       <Route path="/not-authorized" element={<NotAuthorized />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/reference" element={<ColorReference />} />
     </Routes>
   </Router>
   );
