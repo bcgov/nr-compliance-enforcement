@@ -12,6 +12,10 @@
   }
 }
 
+.comp-complaint-label {
+  color: $gray-600;
+}
+
 .comp-complaint-details {
   margin: -24px;
 
@@ -136,8 +140,85 @@
   border-color: #e4e4e4;
 }
 
-.comp-status-badge-open { 
+.comp-status-badge-open {
   background-color: $bc-gov-link-blue;
+}
+
+.comp-complaint-call-details-container {
+  margin-left: 24px;
+  margin-right: 24px;
+
+  .comp-complaint-section { 
+    padding-bottom: 16px;
+  }
+
+  .comp-complaint-label { 
+    padding-bottom: 16px;
+  }
+
+  h6 {
+    padding-top: 18px;
+    font-weight: 700;
+  }
+
+  .comp-complaint-call-details {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    border: 1px solid $gray-600;
+    border-radius: 3px;
+    padding: 18px;
+
+    .comp-complaint-incident-time {
+      padding-left: 20px;
+
+      i:first-child {
+        padding-right: 5px;
+      }
+      i:last-child {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    }
+
+    .comp-complaint-attactants {
+      padding-left: 20px;
+      & > .badge {
+        background-color: $grey-110;
+        color: black;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.comp-complaint-caller-information-container {
+  margin-left: 24px;
+  margin-right: 24px;
+
+  .comp-complaint-section { 
+    padding-bottom: 16px;
+  }
+
+  .comp-complaint-label { 
+    padding-bottom: 16px;
+  }
+
+  h6 {
+    padding-top: 18px;
+    font-weight: 700;
+  }
+
+  .comp-complaint-caller-information {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    border: 1px solid $gray-600;
+    border-radius: 3px;
+    padding: 18px;
+
+    .comp-complaint-incident-time {
+      padding-left: 20px;
+    }
+  }
 }
 
 // COMPLAINT DETAILS END

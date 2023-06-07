@@ -6,7 +6,7 @@ import {
   getHwcrComplaintByComplaintIdentifier,
 } from "../../../store/reducers/hwcr-complaints";
 import { Col, Row } from "react-bootstrap";
-import { CallDetails, ComplaintHeader } from "./details";
+import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 
 type TestType = {
   id: string;
@@ -36,6 +36,7 @@ export const ComplaintDetails: FC = () => {
     <div className="comp-complaint-details">
       <ComplaintHeader id={id} complaintType={complaintType} />
       <CallDetails />
+      <CallerInformation />
     </div>
   );
 };

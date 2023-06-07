@@ -3,31 +3,46 @@ import { Row, Col } from "react-bootstrap";
 
 export const CallerInformation: FC = () => {
   return (
-    <div style={{ marginLeft: "24px", marginRight: "24px" }}>
-      Caller Information
-      <div
-        style={{
-          border: "1px solid black",
-          borderRadius: "3px",
-          padding: "18px",
-        }}
-      >
+    <div className="comp-complaint-caller-information-container">
+      <h6>Caller Information</h6>
+      <div className="comp-complaint-caller-information">
         <Row>
           <Col md="6">
-            complaint description
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse ut enim convallis, dapibus diam sed, interdum neque.
-              Nulla vulputate ac felis sit amet varius. Nullam pretium non
-              tortor eu maximus. Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit. Suspendisse ut enim convallis, dapibus diam sed,
-              interdum neque. Nulla vulputate ac felis sit amet varius. Nullam
-              pretium non tortor eu maximus. Lorem ipsum dolor sit amet,
-              consectetur adipiscing elit. Suspendisse ut enim convallis,
-              dapibus diam sed, interdum neque. Nulla vulputate ac
-            </p>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Name</span>
+              <span className="comp-complaint-incident-time">
+                First Name Last Name
+              </span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Primary Phone</span>
+              <span className="comp-complaint-incident-time">250-555-1234</span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Secondary Phone</span>
+              <span className="comp-complaint-incident-time">250-555-1234</span>
+            </div>
           </Col>
-          <Col md="6">complaint location</Col>
+          <Col md="6">
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Address</span>
+              <span className="comp-complaint-incident-time">
+                123 Street Ave, Victoria, British Columbia
+              </span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Email</span>
+              <span className="comp-complaint-incident-time">
+                test@test.com
+              </span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">
+                Referred by / Complaint Agency
+              </span>
+              <span className="comp-complaint-incident-time">Agency Name</span>
+            </div>
+          </Col>
         </Row>
       </div>
     </div>

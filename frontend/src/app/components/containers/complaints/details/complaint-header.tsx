@@ -47,7 +47,6 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
         <div className="comp-complaint-status-column comp-complaint-status-state">
           <div>
             <div className="comp-complaint-status-label">Status</div>
-            {/* <div className="comp-status-badge">Open</div> */}
             <span className="badge comp-status-badge-open">Open</span>
           </div>
         </div>
