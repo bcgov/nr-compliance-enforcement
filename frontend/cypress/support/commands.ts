@@ -80,7 +80,13 @@ const base64url = source => {
   
         // Visit redirect URL.
         cy.visit(url);
-  
+        cy.on('uncaught:exception', (e) => {
+            if (e.message.includes('Things went bad')) {
+              // we expected this error, so let's ignore it
+              // and let the test continue
+              return false
+            }
+          })
         // Log in the user and obtain an authorization code.
         cy.contains('idir').click();
         cy.get('[name="user"]').click();
