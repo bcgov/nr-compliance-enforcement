@@ -2,19 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Office } from './entities/office.entity';
 
 @Injectable()
 export class OfficeService {
-  constructor(
-    @InjectRepository(Office)
-    private officeRepository: Repository<Office>
-  ) {
+  constructor(private dataSource: DataSource) {
   }
+  @InjectRepository(Office)
+  private officeRepository: Repository<Office>;
 
-  create(createOfficeDto: CreateOfficeDto) {
-    return 'This action adds a new office';
+  async create(office: any): Promise<Office> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    var newOfficeString;
+    try
+    {
+      newOfficeString = await this.officeRepository.create(<CreateOfficeDto>office);
+      var newOffice : Office;
+      newOffice = <Office>await queryRunner.manager.save(newOfficeString);
+      await queryRunner.commitTransaction();
+    }
+    catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      newOfficeString = "Error Occured";
+    } finally {
+      await queryRunner.release();
+    }
+    return newOfficeString;
   }
 
   findAll() {
