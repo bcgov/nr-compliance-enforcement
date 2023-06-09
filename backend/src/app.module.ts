@@ -21,7 +21,7 @@ import { HwcrComplaintNatureCodeModule } from './v1/hwcr_complaint_nature_code/h
 import { AttractantCodeModule } from './v1/attractant_code/attractant_code.module';
 import { HwcrComplaintModule } from './v1/hwcr_complaint/hwcr_complaint.module';
 import { AttractantHwcrXrefModule } from './v1/attractant_hwcr_xref/attractant_hwcr_xref.module';
-import { GeographicOrganizationUnitModule } from './geographic-organization-unit/geographic-organization-unit.module';
+import { GeographicOrganizationUnitModule } from './v1/geographic-organization-unit/geographic-organization-unit.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);

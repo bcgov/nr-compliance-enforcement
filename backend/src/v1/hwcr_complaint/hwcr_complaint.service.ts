@@ -120,7 +120,6 @@ export class HwcrComplaintService {
             complaint_status_code: true,
             geo_organization_unit_code: true,
           } ,
-          cos_geo_org_unit_flat_vw: true,
           species_code: true,
           hwcr_complaint_nature_code: true,
           attractant_hwcr_xref: {
