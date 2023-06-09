@@ -12,10 +12,10 @@ type Props = {
 export const AllegationComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort }) => {
     return <><div className="comp-div-tab"><ul className="nav nav-tabs comp-tab">
         <li className="nav-item comp-tab-inactive">
-            <a className="nav-link" href="#" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)} >Human Wildlife Conflicts</a>
+            <button className="nav-link" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)} >Human Wildlife Conflicts</button>
         </li>
         <li className="nav-item comp-tab-active">
-            <a className="nav-link active">Enforcement</a>
+            <button className="nav-link active">Enforcement</button>
         </li>
         </ul>
     </div>
