@@ -90,21 +90,35 @@ const base64url = source => {
           }
         })
 
-
-        cy.origin(
-          Cypress.env('keycloak_login_url'),
-          { args: credentials },
-          ({ username, password, url }) => {
+        // depending on if we're running the cypress tests locally or not, we may or may not ge a CORS error.
+        // If the keycloak login URL is the same as the application URL, then simply visit the URL;
+        // otherwise, will need to use cy.origin to avoid any CORS errors.
+        if (isSameOrigin(Cypress.env('keycloak_login_url'), url)) {
           cy.visit(url);
           // Log in the user and obtain an authorization code.
           cy.get('[name="user"]').click();
-          cy.get('[name="user"]').type(username);
+          cy.get('[name="user"]').type(credentials.username);
           cy.get('[name="password"]').click();
-          cy.get('[name="password"]').type(password, {log: false});
+          cy.get('[name="password"]').type(credentials.password, {log: false});
           cy.get('[name="btnSubmit"]').click();
     
           cy.wait(10000);
-          });
+        } else {
+          cy.origin(
+            Cypress.env('keycloak_login_url'),
+            { args: credentials },
+            ({ username, password, url }) => {
+            cy.visit(url);
+            // Log in the user and obtain an authorization code.
+            cy.get('[name="user"]').click();
+            cy.get('[name="user"]').type(username);
+            cy.get('[name="password"]').click();
+            cy.get('[name="password"]').type(password, {log: false});
+            cy.get('[name="btnSubmit"]').click();
+      
+            cy.wait(10000);
+            });
+        }
       });
     });
   });
@@ -118,6 +132,13 @@ const base64url = source => {
       url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
     });
   });
+
+  function isSameOrigin(url1: string, url2: string): boolean {
+    const origin1 = new URL(url1).origin;
+    const origin2 = new URL(url2).origin;
+  
+    return origin1 === origin2;
+  }
   
   module.exports = {};
   
