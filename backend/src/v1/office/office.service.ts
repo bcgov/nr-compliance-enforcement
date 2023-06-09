@@ -44,8 +44,10 @@ export class OfficeService {
       });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} office`;
+  findOne(geo_organization_unit_cd: any) {
+    return this.officeRepository.findOneOrFail({
+      where: {geo_organization_unit_code: geo_organization_unit_cd},
+    })
   }
 
   update(id: number, updateOfficeDto: UpdateOfficeDto) {

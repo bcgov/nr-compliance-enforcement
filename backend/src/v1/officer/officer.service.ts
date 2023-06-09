@@ -1,19 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateOfficerDto } from './dto/create-officer.dto';
+import { CreatePersonDto } from '../person/dto/create-person.dto';
+import { CreateOfficeDto } from '../office/dto/create-office.dto';
 import { UpdateOfficerDto } from './dto/update-officer.dto';
 import { Officer } from './entities/officer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { PersonService } from '../person/person.service';
+import { OfficeService } from '../office/office.service';
 
 @Injectable()
 export class OfficerService {
-  constructor(
-    @InjectRepository(Officer)
-    private officerRepository: Repository<Officer>
-  ) {
+  constructor(private dataSource: DataSource) {
   }
-  create(createOfficerDto: CreateOfficerDto) {
-    return 'This action adds a new officer';
+  @InjectRepository(Officer)
+  private officerRepository: Repository<Officer>;
+  @Inject(PersonService)
+  protected readonly personService: PersonService;
+  @Inject(OfficeService)
+  protected readonly officeService: OfficeService;
+
+  async create(officer: any): Promise<Officer> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    var newOfficerString;
+    var officeObject;
+    var personObject;
+
+    try
+    {
+
+      //Look for the Office (or throw an error)
+      officeObject = await this.officeService.findOne(officer.geo_organization_unit_code);
+      officer.office_guid = officeObject.office_guid;
+      
+      //Will always insert the person
+      personObject = await this.personService.createInTransaction(<CreatePersonDto>officer, queryRunner);
+      officer.person_guid = personObject.person_guid;
+
+      newOfficerString = await this.officerRepository.create(<CreateOfficerDto>officer);
+      var newOfficer : Officer;
+      newOfficer = <Officer>await queryRunner.manager.save(newOfficerString);
+      await queryRunner.commitTransaction();
+    }
+    catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      newOfficerString = "Error Occured";
+    } finally {
+      await queryRunner.release();
+    }
+    return newOfficerString;
   }
 
   findAll() {

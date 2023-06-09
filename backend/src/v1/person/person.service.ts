@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Person } from './entities/person.entity';
-import { DataSource, Repository } from 'typeorm';
+import { QueryRunner, DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -33,6 +33,12 @@ export class PersonService {
       await queryRunner.release();
     }
     return newPersonString;
+  }
+
+  async createInTransaction(person: CreatePersonDto, queryRunner: QueryRunner): Promise<Person> {
+    const newPerson = await this.personRepository.create(person);
+    await queryRunner.manager.save(newPerson);
+    return newPerson;
   }
 
   findAll() {
