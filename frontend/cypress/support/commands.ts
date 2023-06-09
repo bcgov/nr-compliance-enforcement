@@ -93,7 +93,7 @@ const base64url = source => {
         // depending on if we're running the cypress tests locally or not, we may or may not ge a CORS error.
         // If the keycloak login URL is the same as the application URL, then simply visit the URL;
         // otherwise, will need to use cy.origin to avoid any CORS errors.
-        if (isSameOrigin(Cypress.env('keycloak_login_url'), url)) {
+        if (hasSameTopLevelDomain(Cypress.env('keycloak_login_url'), url)) {
           cy.visit(url);
           // Log in the user and obtain an authorization code.
           cy.get('[name="user"]').click();
@@ -133,11 +133,19 @@ const base64url = source => {
     });
   });
 
-  function isSameOrigin(url1: string, url2: string): boolean {
-    const origin1 = new URL(url1).origin;
-    const origin2 = new URL(url2).origin;
+  function hasSameTopLevelDomain(url1: string, url2: string): boolean {
+    const tld1 = extractTopLevelDomain(url1);
+    const tld2 = extractTopLevelDomain(url2);
   
-    return origin1 === origin2;
+    return tld1 === tld2;
+  }
+  
+  function extractTopLevelDomain(url: string): string {
+    const domain = new URL(url).hostname;
+    const parts = domain.split('.');
+    const tld = parts.slice(-2).join('.');
+  
+    return tld;
   }
   
   module.exports = {};
