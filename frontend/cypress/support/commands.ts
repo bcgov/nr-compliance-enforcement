@@ -81,14 +81,6 @@ const base64url = source => {
           password: Cypress.env('keycloak_password'),
           url: url
         };
-        cy.visit("/");
-        cy.on('uncaught:exception', (e) => {
-          if (e.message.includes('Unexpected')) {
-            // we expected this error, so let's ignore it
-            // and let the test continue
-            return false
-          }
-        })
 
         // depending on if we're running the cypress tests locally or not, we may or may not ge a CORS error.
         // If the keycloak login URL is the same as the application URL, then simply visit the URL;
@@ -104,6 +96,17 @@ const base64url = source => {
     
           cy.wait(10000);
         } else {
+
+          cy.visit("/");
+          cy.on('uncaught:exception', (e) => {
+            if (e.message.includes('Unexpected')) {
+              // we expected this error, so let's ignore it
+              // and let the test continue
+              return false
+            }
+          })
+  
+
           cy.origin(
             Cypress.env('keycloak_login_url'),
             { args: credentials },
