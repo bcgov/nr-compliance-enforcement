@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { HwcrComplaint } from './entities/hwcr_complaint.entity';
@@ -47,7 +47,7 @@ export class HwcrComplaintService {
       catch (err) {
         console.log(err);
         await queryRunner.rollbackTransaction();
-        newHwcrComplaintString = "Error Occured";
+        throw new BadRequestException(err);
       } finally {
         await queryRunner.release();
       }
@@ -58,6 +58,7 @@ export class HwcrComplaintService {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
+      const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
       return this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
@@ -68,7 +69,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
-      .orderBy(sortTable + sortColumn, sortOrderString)
+      .orderBy(sortString, sortOrderString)
       .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC")
       .getMany();
     }

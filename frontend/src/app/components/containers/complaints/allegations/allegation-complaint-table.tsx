@@ -32,7 +32,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const locationSummary = val.complaint_identifier.location_summary_text;
                     const statusButtonClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
                     const status = val.complaint_identifier.complaint_status_code.long_description;
-                    const updateDate = val.complaint_identifier.update_timestamp != null ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : "";
+                    const updateDate = Date.parse(val.complaint_identifier.update_timestamp) >= Date.parse(val.update_timestamp) ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : format(Date.parse(val.update_timestamp), 'yyyy/MM/dd kk:mm:ss');
                     //alternate behaviour for last row for alternate borders and radius'
                     const complaintIdentifierClass = (length - 1 === key) ? "comp-small-cell comp-cell comp-cell-bottom comp-cell-left comp-bottom-left" : "comp-small-cell comp-cell comp-cell-left";
                     const incidentReportedDatetimeClass = (length - 1 === key) ? "comp-small-cell comp-cell-bottom comp-cell" : "comp-small-cell comp-cell";
