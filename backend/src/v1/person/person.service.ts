@@ -17,12 +17,11 @@ export class PersonService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    var newPersonString;
+    let newPersonString;
     try
     {
       newPersonString = await this.personRepository.create(<CreatePersonDto>person);
-      var newPerson : Person;
-      newPerson = <Person>await queryRunner.manager.save(newPersonString);
+      await queryRunner.manager.save(newPersonString);
       await queryRunner.commitTransaction();
     }
     catch (err) {

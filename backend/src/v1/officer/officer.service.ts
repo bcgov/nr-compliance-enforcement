@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateOfficerDto } from './dto/create-officer.dto';
 import { CreatePersonDto } from '../person/dto/create-person.dto';
-import { CreateOfficeDto } from '../office/dto/create-office.dto';
 import { UpdateOfficerDto } from './dto/update-officer.dto';
 import { Officer } from './entities/officer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,9 +24,9 @@ export class OfficerService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    var newOfficerString;
-    var officeObject;
-    var personObject;
+    let newOfficerString;
+    let officeObject;
+    let personObject;
 
     try
     {
@@ -41,8 +40,7 @@ export class OfficerService {
       officer.person_guid = personObject.person_guid;
 
       newOfficerString = await this.officerRepository.create(<CreateOfficerDto>officer);
-      var newOfficer : Officer;
-      newOfficer = <Officer>await queryRunner.manager.save(newOfficerString);
+      await queryRunner.manager.save(newOfficerString);
       await queryRunner.commitTransaction();
     }
     catch (err) {

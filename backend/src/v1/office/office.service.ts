@@ -17,12 +17,11 @@ export class OfficeService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    var newOfficeString;
+    let newOfficeString;
     try
     {
       newOfficeString = await this.officeRepository.create(<CreateOfficeDto>office);
-      var newOffice : Office;
-      newOffice = <Office>await queryRunner.manager.save(newOfficeString);
+      await queryRunner.manager.save(newOfficeString);
       await queryRunner.commitTransaction();
     }
     catch (err) {
