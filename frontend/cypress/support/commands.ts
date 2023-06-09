@@ -35,7 +35,7 @@ const base64url = source => {
   };
   
   Cypress.Commands.add('kcLogin', () => {
-    Cypress.log({ name: 'Login' });
+    Cypress.log({ name: 'Login to Keycloak' });
   
     cy.log('Keyloak Login').then(async () => {
       const authBaseUrl = Cypress.env('auth_base_url');
@@ -88,6 +88,7 @@ const base64url = source => {
         if (hasSameTopLevelDomain(Cypress.env('keycloak_login_url'), Cypress.config().baseUrl)) {
           cy.visit(url);
           // Log in the user and obtain an authorization code.
+          cy.contains("idir").click();
           cy.get('[name="user"]').click();
           cy.get('[name="user"]').type(credentials.username);
           cy.get('[name="password"]').click();
@@ -95,8 +96,7 @@ const base64url = source => {
           cy.get('[name="btnSubmit"]').click();
     
           cy.wait(10000);
-        } else {
-
+        } else { // different origin, so handle CORS errors
           cy.visit("/");
           cy.on('uncaught:exception', (e) => {
             if (e.message.includes('Unexpected')) {
@@ -105,8 +105,6 @@ const base64url = source => {
               return false
             }
           })
-  
-
           cy.origin(
             Cypress.env('keycloak_login_url'),
             { args: credentials },
