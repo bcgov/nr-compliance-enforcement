@@ -91,6 +91,11 @@
     flex-grow: 0;
   }
 
+  .comp-table tbody div:last-child .comp-cell:last-of-type
+  {
+    border-bottom-right-radius: 4px;
+  }
+
   .comp-small-cell {
     width: 95px;
   }
@@ -124,9 +129,14 @@
   }
 
   .comp-nature-complaint-cell {
-    width: 344px;
+    width: 313px;
   }
 
+  .comp-ellipsis-cell {
+    width: 31px;
+    vertical-align: middle;
+    cursor: pointer;
+  }
 
   .comp-header-label
   {
@@ -138,12 +148,6 @@
   {
     float: right;
     cursor: pointer;
-  }
-
-  .comp-cell-bottom
-  {
-    border-style: solid;
-    border-color: #B9B9B9;
   }
 
   .comp-cell-left
@@ -307,4 +311,9 @@
     padding-top : 6px;
     padding-left: 6px;
     float:left;
+  }
+
+  // tbody rows are divs with a class of row.  Use display:table-row so that we can control styles like vertical-align of td elements within the row
+  .row {
+    display:table-row;
   }

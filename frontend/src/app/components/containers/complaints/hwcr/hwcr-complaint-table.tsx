@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Row, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
+import CodeSelect from "../../../codes/code-select";
 
 type Props = {
     sortColumn: string,
@@ -32,49 +33,27 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                     const statusClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
                     const status = val.complaint_identifier.complaint_status_code.long_description;
                     const update_date = val.complaint_identifier.update_timestamp != null ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : "";
-                    //alternate behaviour for last row for alternate borders and radius'
-                    if(length - 1 === key)
-                    {
-                        return (
-                            <Row key={key}>
-                                <td id="comp-id-coulmn" className="comp-small-cell comp-cell comp-cell-bottom comp-cell-left comp-bottom-left">{complaint_identifier}</td>
-                                <td className="comp-small-cell comp-cell-bottom comp-cell">{incident_reported_datetime}</td>
-                                <td className="comp-nature-complaint-cell comp-cell comp-cell-bottom">{hwcr_complaint_nature_code}</td>
-                                <td className="comp-medium-cell comp-cell comp-cell-bottom">
-                                    <button type="button" className="btn btn-primary comp-species-btn">{species}</button>
-                                </td>
-                                <td className="comp-area-cell comp-cell comp-cell-bottom">{geo_organization_unit_code}</td>
-                                <td className="comp-location-cell comp-cell comp-cell-bottom">{location_summary}</td>
-                                <td className="comp-medium-cell comp-cell comp-cell-bottom">
-                                </td>
-                                <td className="comp-status-cell comp-cell comp-cell-bottom">
-                                    <button type="button" className={statusClass}>{status}</button>
-                                </td>
-                                <td className="comp-last-updated-cell comp-cell comp-cell-bottom comp-bottom-right">{update_date}</td>
-                            </Row>
-                        )
-                    }
-                    else
-                    {
-                        return (
-                            <Row key={key}>
-                                <td className="comp-small-cell comp-cell comp-cell-left">{complaint_identifier}</td>
-                                <td className="comp-small-cell comp-cell">{incident_reported_datetime}</td>
-                                <td className="comp-nature-complaint-cell comp-cell">{hwcr_complaint_nature_code}</td>
-                                <td className="comp-medium-cell comp-cell">
-                                    <button type="button" className="btn btn-primary comp-species-btn">{species}</button>
-                                </td>
-                                <td className="comp-area-cell comp-cell">{geo_organization_unit_code}</td>
-                                <td className="comp-location-cell comp-cell">{location_summary}</td>
-                                <td className="comp-medium-cell comp-cell">
-                                </td>
-                                <td className="comp-status-cell comp-cell">
-                                <button type="button" className={statusClass}>{status}</button>
-                                </td>
-                                <td className="comp-last-updated-cell comp-cell">{update_date}</td>
-                            </Row>
-                        )
-                    }
+                    return (
+                        <Row key={key}>
+                            <td className="comp-small-cell comp-cell comp-cell-left">{complaint_identifier}</td>
+                            <td className="comp-small-cell comp-cell">{incident_reported_datetime}</td>
+                            <td className="comp-nature-complaint-cell comp-cell">{hwcr_complaint_nature_code}</td>
+                            <td className="comp-medium-cell comp-cell">
+                                <button type="button" className="btn btn-primary comp-species-btn">{species}</button>
+                            </td>
+                            <td className="comp-area-cell comp-cell">{geo_organization_unit_code}</td>
+                            <td className="comp-location-cell comp-cell">{location_summary}</td>
+                            <td className="comp-medium-cell comp-cell">
+                            </td>
+                            <td className="comp-status-cell comp-cell">
+                            <button type="button" className={statusClass}>{status}</button>
+                            </td>
+                            <td className="comp-last-updated-cell comp-cell">{update_date}</td>
+                            <td className="comp-ellipsis-cell comp-cell">
+                                <i className="bi bi-three-dots-vertical"></i>
+                            </td>
+                        </Row>
+                    )
                     })}
             </tbody>
         </Table>

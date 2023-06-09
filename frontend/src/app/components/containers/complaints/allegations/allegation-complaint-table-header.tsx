@@ -81,6 +81,11 @@ export const AllegationComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
                         <img src={carets} alt="sort"/>
                     </div>
                 </th>
+                <th className="comp-ellipsis-cell comp-header-cell comp-top-right">
+                    <div className="comp-header-label">
+                        <i className="bi bi-three-dots-vertical"></i>
+                    </div>
+                </th>
             </Row>
         </thead>
     </Table>
