@@ -19,11 +19,6 @@ export const ComplaintDetails: FC = () => {
 
   const { id = "", complaintType = "" } = useParams<TestType>();
 
-  const params = useParams();
-  console.log(params["complaintType"])
-  // Extract the parameter keys
-  const parameterKeys = Object.keys(params);
-
   useEffect(() => {
     if (!complaint) {
       if (id) {
@@ -34,9 +29,13 @@ export const ComplaintDetails: FC = () => {
 
   return (
     <div className="comp-complaint-details">
-      <ComplaintHeader id={id} complaintType={complaintType} />
-      <CallDetails />
-      <CallerInformation />
+      {complaint && (
+        <>
+          <ComplaintHeader id={id} complaintType={complaintType} />
+          <CallDetails />
+          <CallerInformation />
+        </>
+      )}
     </div>
   );
 };

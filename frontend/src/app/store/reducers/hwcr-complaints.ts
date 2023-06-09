@@ -78,8 +78,58 @@ export const hwcrComplaints = (state: RootState) => {
 };
 
 export const selectedComplaint = (state: RootState) => {
-  return state.hwcrComplaint.complaint
+  return state.hwcrComplaint.complaint;
 };
 
+export const selectComplaintHeader = (state: RootState) => {
+  let result = {
+    loggedDate: "",
+    createdBy: "",
+    lastUpdated: "",
+    officerAssigned: "",
+    status: "",
+    natureOfComplaint: "",
+    species: "",
+  };
+
+  const {
+    complaint_identifier: ceComplaint,
+    hwcr_complaint_nature_code: ceComplaintNatureCode,
+    species_code: ceSpeciesCode,
+  } = state.hwcrComplaint.complaint;
+
+  if (ceComplaint) {
+    const officerAssigned = "Not Assigned";
+    const {
+      incident_reported_datetime: loggedDate,
+      create_user_id: createdBy,
+      update_timestamp: lastUpdated,
+      complaint_status_code: ceStatusCode,
+    } = ceComplaint;
+
+    const { complaint_status_code: status } = ceStatusCode;
+
+    result = {
+      ...result,
+      loggedDate,
+      createdBy,
+      lastUpdated,
+      officerAssigned,
+      status,
+    };
+
+    if (ceComplaintNatureCode) {
+      const { long_description: natureOfComplaint } = ceComplaintNatureCode;
+      result = { ...result, natureOfComplaint };
+    }
+
+    if (ceSpeciesCode) {
+      const { short_description: species } = ceSpeciesCode;
+      result = { ...result, species };
+    }
+  }
+
+  return result;
+};
 
 export default hwcrComplaintSlice.reducer;

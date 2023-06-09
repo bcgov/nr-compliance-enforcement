@@ -1,12 +1,29 @@
-import { id } from "date-fns/locale";
 import { FC } from "react";
 import { Link } from "react-router-dom";
 import { complaintTypeToName } from "../../../../types/app/complaint-types";
+import { useAppSelector } from "../../../../hooks/hooks";
+import { selectComplaintHeader } from "../../../../store/reducers/hwcr-complaints";
+import {
+  formatDate,
+  formatTime,
+  getAvatarInitials,
+} from "../../../../common/methods";
+import { HwcrComplaintState } from "../../../../types/complaints/hrcr-complaints-state";
 
 export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
   id,
   complaintType,
 }) => {
+  const {
+    loggedDate,
+    createdBy,
+    lastUpdated,
+    officerAssigned,
+    status,
+    natureOfComplaint,
+    species,
+  } = useAppSelector(selectComplaintHeader);
+
   return (
     <>
       {/* <!-- breadcrumb start --> */}
@@ -36,9 +53,9 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           <div className="comp-box-conflict-type">
             {complaintTypeToName(complaintType)}
           </div>
-          <div className="comp-box-species-type">Cougar</div>
+          <div className="comp-box-species-type">{species}</div>
         </div>
-        <div className="comp-nature-of-complaint">Nature of Complaint</div>
+        <div className="comp-nature-of-complaint">{natureOfComplaint}</div>
       </div>
       {/* <!-- complaint info end --> */}
 
@@ -47,7 +64,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
         <div className="comp-complaint-status-column comp-complaint-status-state">
           <div>
             <div className="comp-complaint-status-label">Status</div>
-            <span className="badge comp-status-badge-open">Open</span>
+            <span className="badge comp-status-badge-open">{status}</span>
           </div>
         </div>
         <div className="comp-complaint-status-column comp-complaint-status-updated">
@@ -56,8 +73,10 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
               Date / Time Logged
             </div>
             <div className="comp-complaint-status-content">
-              <i className="bi bi-calendar"></i>08/04/2023{" "}
-              <i className="bi bi-clock"></i>2:01:01
+              <i className="bi bi-calendar"></i>
+              {formatDate(loggedDate)}
+              <i className="bi bi-clock"></i>
+              {formatTime(loggedDate)}
             </div>
           </div>
         </div>
@@ -65,8 +84,15 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           <div>
             <div className="comp-complaint-status-label">Last Updated</div>
             <div>
-              <i className="bi bi-calendar"></i>08/04/2023{" "}
-              <i className="bi bi-clock"></i>12:01:01
+              {lastUpdated && (
+                <>
+                  <i className="bi bi-calendar"></i>
+                  {formatDate(lastUpdated)}
+                  <i className="bi bi-clock"></i>
+                  {formatTime(lastUpdated)}
+                </>
+              )}
+              {!lastUpdated && <>Not Available</>}
             </div>
           </div>
         </div>
@@ -74,7 +100,12 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           <div>
             <div className="comp-complaint-status-label">Officer Assigned</div>
             <div>
-              <div data-initials-sm="TS" className="comp-orange-avatar-sm"><span>T.Sprado</span></div>
+              <div
+                data-initials-sm={getAvatarInitials(officerAssigned)}
+                className="comp-orange-avatar-sm"
+              >
+                <span>{officerAssigned}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -82,7 +113,12 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           <div>
             <div className="comp-complaint-status-label">Created By</div>
             <div>
-              <div data-initials-sm="ND" className="comp-blue-avatar-sm"><span>N.Drew</span></div>
+              <div
+                data-initials-sm={getAvatarInitials(createdBy)}
+                className="comp-blue-avatar-sm"
+              >
+                <span>{createdBy}</span>
+              </div>
             </div>
           </div>
         </div>

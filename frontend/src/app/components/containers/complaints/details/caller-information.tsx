@@ -1,7 +1,11 @@
 import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
+import { useAppSelector } from "../../../../hooks/hooks";
+import { selectedComplaint } from "../../../../store/reducers/hwcr-complaints";
 
 export const CallerInformation: FC = () => {
+  const complaint = useAppSelector(selectedComplaint);
+
   return (
     <div className="comp-complaint-caller-information-container">
       <h6>Caller Information</h6>
