@@ -112,7 +112,7 @@
   }
 
   .comp-violation-cell {
-    width: 333px;
+    width: 302px;
   }
 
   .comp-in-progress-cell {
@@ -310,9 +310,4 @@
     padding-top : 6px;
     padding-left: 6px;
     float:left;
-  }
-
-  // tbody rows are divs with a class of row.  Use display:table-row so that we can control styles like vertical-align of td elements within the row
-  .row {
-    display:table-row;
   }

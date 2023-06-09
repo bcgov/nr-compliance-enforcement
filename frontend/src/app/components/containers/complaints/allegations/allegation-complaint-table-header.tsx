@@ -73,7 +73,7 @@ export const AllegationComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
                         <img src={carets} alt="sort"/>
                     </div>
                 </th>
-                <th className="comp-last-updated-cell comp-header-cell comp-top-right">
+                <th className="comp-last-updated-cell comp-header-cell">
                     <div className="comp-header-label">
                         Last Updated
                     </div>
