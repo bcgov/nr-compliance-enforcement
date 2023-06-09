@@ -35,16 +35,13 @@ const base64url = source => {
   };
   
   Cypress.Commands.add('kcLogin', () => {
-    Cypress.log({ name: 'Login' });
+    Cypress.log({ name: 'Login to Keycloak' });
   
     cy.log('Keyloak Login').then(async () => {
       const authBaseUrl = Cypress.env('auth_base_url');
       const realm = Cypress.env('auth_realm');
       const client_id = Cypress.env('auth_client_id');
       const redirect_uri = Cypress.config('baseUrl') + '/login';
-  
-      const username = Cypress.env('keycloak_user');
-      const password = Cypress.env('keycloak_password');
   
       const scope = 'openid';
       const state = '123456';
@@ -79,17 +76,50 @@ const base64url = source => {
         const url = Array.isArray(redirectUrls) ? redirectUrls[0] : redirectUrls;
   
         // Visit redirect URL.
-        cy.visit(url);
-  
-        // Log in the user and obtain an authorization code.
-        cy.contains('idir').click();
-        cy.get('[name="user"]').click();
-        cy.get('[name="user"]').type(username);
-        cy.get('[name="password"]').click();
-        cy.get('[name="password"]').type(password, {log: false});
-        cy.get('[name="btnSubmit"]').click();
-  
-        cy.wait(10000);
+        const credentials = {
+          username: Cypress.env('keycloak_user'),
+          password: Cypress.env('keycloak_password'),
+          url: url
+        };
+
+        // depending on if we're running the cypress tests locally or not, we may or may not ge a CORS error.
+        // If the keycloak login URL is the same as the application URL, then simply visit the URL;
+        // otherwise, will need to use cy.origin to avoid any CORS errors.
+        if (hasSameTopLevelDomain(Cypress.env('keycloak_login_url'), Cypress.config().baseUrl)) {
+          cy.visit(url);
+          // Log in the user and obtain an authorization code.
+          cy.contains("idir").click();
+          cy.get('[name="user"]').click();
+          cy.get('[name="user"]').type(credentials.username);
+          cy.get('[name="password"]').click();
+          cy.get('[name="password"]').type(credentials.password, {log: false});
+          cy.get('[name="btnSubmit"]').click();
+    
+          cy.wait(10000);
+        } else { // different origin, so handle CORS errors
+          cy.visit("/");
+          cy.on('uncaught:exception', (e) => {
+            if (e.message.includes('Unexpected')) {
+              // we expected this error, so let's ignore it
+              // and let the test continue
+              return false
+            }
+          })
+          cy.origin(
+            Cypress.env('keycloak_login_url'),
+            { args: credentials },
+            ({ username, password, url }) => {
+            cy.visit(url);
+            // Log in the user and obtain an authorization code.
+            cy.get('[name="user"]').click();
+            cy.get('[name="user"]').type(username);
+            cy.get('[name="password"]').click();
+            cy.get('[name="password"]').type(password, {log: false});
+            cy.get('[name="btnSubmit"]').click();
+      
+            cy.wait(10000);
+            });
+        }
       });
     });
   });
@@ -103,6 +133,21 @@ const base64url = source => {
       url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
     });
   });
+
+  function hasSameTopLevelDomain(url1: string, url2: string): boolean {
+    const tld1 = extractTopLevelDomain(url1);
+    const tld2 = extractTopLevelDomain(url2);
+  
+    return tld1 === tld2;
+  }
+  
+  function extractTopLevelDomain(url: string): string {
+    const domain = new URL(url).hostname;
+    const parts = domain.split('.');
+    const tld = parts.slice(-2).join('.');
+  
+    return tld;
+  }
   
   module.exports = {};
   
