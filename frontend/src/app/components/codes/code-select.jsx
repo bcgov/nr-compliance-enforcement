@@ -8,7 +8,7 @@ const CodeSelect = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOptions();
+    fetchOptions().catch(err => console.log(err))
   }, []);
 
   const fetchOptions = async () => {
@@ -18,8 +18,6 @@ const CodeSelect = () => {
       if (token) {
         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
         const response = await axios.get(`${config.API_BASE_URL}/v1/${CodeTable.COMPLAINT_STATUS_CODE}`);
-        console.log("Test");
-        console.log(response.data);
         setOptions(response.data);
         setLoading(false);
       }
