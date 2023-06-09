@@ -42,7 +42,6 @@
     background: rgba(255, 255, 255, 0.0001);
     text-align: left;
     border-collapse: initial;
-    margin-left: 12px;
 
     > :not(caption) > * > * {
       background: rgba(255, 255, 255, 0.0001);
@@ -186,7 +185,7 @@
 
     display: flex;
     flex-direction: row;
-    padding: 4.2px 7.8px;
+    padding: 4px 8px;
 
     pointer-events: none;
     background-color: #2464A4;
@@ -203,7 +202,7 @@
 
     display: flex;
     flex-direction: row;
-    padding: 4.2px 7.8px;
+    padding: 4px 8px;
 
     pointer-events: none;
     background-color: #D8292F;
@@ -220,7 +219,7 @@
 
     display: flex;
     flex-direction: row;
-    padding: 4.2px 7.8px;
+    padding: 4px 8px;
 
     pointer-events: none;
     background-color: #E4E4E4;
@@ -239,7 +238,7 @@
 
     display: flex;
     flex-direction: row;
-    padding: 4.2px 7.8px;
+    padding: 4px 8px;
 
     pointer-events: none;
     

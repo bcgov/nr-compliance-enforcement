@@ -13,6 +13,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     function handleChange(newState: number)
     {
         setComplaintType(newState);
+        setSort(["incident_reported_datetime", "DESC"]);
     }
     function handleSort(newSortColumn: string)
     {
