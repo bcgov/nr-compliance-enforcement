@@ -43,9 +43,6 @@ const base64url = source => {
       const client_id = Cypress.env('auth_client_id');
       const redirect_uri = Cypress.config('baseUrl') + '/login';
   
-      const username = Cypress.env('keycloak_user');
-      const password = Cypress.env('keycloak_password');
-  
       const scope = 'openid';
       const state = '123456';
       const nonce = '7890';
@@ -79,23 +76,35 @@ const base64url = source => {
         const url = Array.isArray(redirectUrls) ? redirectUrls[0] : redirectUrls;
   
         // Visit redirect URL.
-        cy.visit(url);
+        const credentials = {
+          username: Cypress.env('keycloak_user'),
+          password: Cypress.env('keycloak_password'),
+          url: url
+        };
+        cy.visit("/");
         cy.on('uncaught:exception', (e) => {
-            if (e.message.includes('Things went bad')) {
-              // we expected this error, so let's ignore it
-              // and let the test continue
-              return false
-            }
-          })
-        // Log in the user and obtain an authorization code.
-        cy.contains('idir').click();
-        cy.get('[name="user"]').click();
-        cy.get('[name="user"]').type(username);
-        cy.get('[name="password"]').click();
-        cy.get('[name="password"]').type(password, {log: false});
-        cy.get('[name="btnSubmit"]').click();
-  
-        cy.wait(10000);
+          if (e.message.includes('Unexpected')) {
+            // we expected this error, so let's ignore it
+            // and let the test continue
+            return false
+          }
+        })
+
+
+        cy.origin(
+          Cypress.env('keycloak_login_url'),
+          { args: credentials },
+          ({ username, password, url }) => {
+          cy.visit(url);
+          // Log in the user and obtain an authorization code.
+          cy.get('[name="user"]').click();
+          cy.get('[name="user"]').type(username);
+          cy.get('[name="password"]').click();
+          cy.get('[name="password"]').type(password, {log: false});
+          cy.get('[name="btnSubmit"]').click();
+    
+          cy.wait(10000);
+          });
       });
     });
   });
