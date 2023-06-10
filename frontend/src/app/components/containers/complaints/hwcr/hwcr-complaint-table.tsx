@@ -13,12 +13,8 @@ const renderPopover = (id: string) => (
   
     <Popover id={`popover-${id}`}>
         <Popover.Body>
-            <div className="popover-text-container">
               <a className="popover-text" href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
-            </div>
-            <div>
               <a className="popover-text" href={`https://example.com/link2?id=${id}`}>Update Status</a>
-            </div>
         </Popover.Body>
     </Popover>
   );
@@ -67,8 +63,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                               trigger="click"
                               placement="bottom"
                               rootClose
-                              overlay={renderPopover(val.complaint_identifier.complaint_identifier)}
-                            >
+                              overlay={renderPopover(val.complaint_identifier.complaint_identifier)}>
                                 <i className="bi bi-three-dots-vertical"></i>
                             </OverlayTrigger>
                             </td>
