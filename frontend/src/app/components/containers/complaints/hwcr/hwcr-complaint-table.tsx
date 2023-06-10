@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { format } from 'date-fns';
-import { Table } from "react-bootstrap";
+import { OverlayTrigger, Popover, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 
@@ -9,19 +9,17 @@ type Props = {
     sortOrder: string,
 }
 
-const renderPopover = (id: number) => (
+const renderPopover = (id: string) => ( 
+  
     <Popover id={`popover-${id}`}>
-      <Popover.Title as="h3">Links</Popover.Title>
-      <Popover.Content>
         <ul>
           <li>
-            <a href={`https://example.com/link1?id=${id}`}>Link 1</a>
+            <a href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
           </li>
           <li>
-            <a href={`https://example.com/link2?id=${id}`}>Link 2</a>
+            <a href={`https://example.com/link2?id=${id}`}>Update Status</a>
           </li>
         </ul>
-      </Popover.Content>
     </Popover>
   );
 
@@ -65,11 +63,12 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
                             <td className="comp-ellipsis-cell comp-cell">
-                                 <OverlayTrigger
-          trigger="click"
-          placement="left"
-          overlay={renderPopover(val.complaint_identifier.complaint_identifier)}
-        >
+                            <OverlayTrigger
+                              trigger="click"
+                              placement="left"
+                              rootClose
+                              overlay={renderPopover(val.complaint_identifier.complaint_identifier)}
+                            >
                                 <i className="bi bi-three-dots-vertical"></i>
                             </OverlayTrigger>
                             </td>
