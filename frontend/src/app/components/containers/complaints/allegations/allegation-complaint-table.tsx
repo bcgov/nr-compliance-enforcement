@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { format } from 'date-fns';
-import { Table } from "react-bootstrap";
+import { OverlayTrigger, Popover, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
 
@@ -8,6 +8,16 @@ type Props = {
     sortColumn: string,
     sortOrder: string,
 }
+
+const renderPopover = (id: string) => ( 
+  
+    <Popover id={`popover-${id}`}>
+        <Popover.Body>
+              <a className="popover-text" href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
+              <a className="popover-text" href={`https://example.com/link2?id=${id}`}>Update Status</a>
+        </Popover.Body>
+    </Popover>
+  );
 
 export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
@@ -50,7 +60,13 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
                                 <td className="comp-ellipsis-cell comp-cell">
-                                    <i className="bi bi-three-dots-vertical"></i>
+                                    <OverlayTrigger
+                                    trigger="click"
+                                    placement="bottom"
+                                    rootClose
+                                    overlay={renderPopover(val.complaint_identifier.complaint_identifier)}>
+                                        <i className="bi bi-three-dots-vertical"></i>
+                                    </OverlayTrigger>
                                 </td>
                             </tr>
                         )
