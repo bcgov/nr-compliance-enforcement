@@ -314,3 +314,84 @@
     padding-left: 6px;
     float:left;
   }
+
+  .no-bullets {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+  }
+  .popover-body {
+    box-sizing: border-box;
+
+    /* Auto layout */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 0px;
+    
+    width: 162px;
+    height: 82px;
+    
+    /* Gray/White */
+    background: #FFFFFF;
+    
+    /* Components/Dropdowns/Border */
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    z-index: 0;  
+  }
+
+  .popover-text-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 16px;
+    gap: 8px;
+
+    width: 160px;
+    height: 32px;
+
+    /* HitBox
+
+    Hitbox makes whole element selectable when press & hold Ctrl key
+    It also be used in case we want to apply drop shadow effect but still want to keep the transparent background.
+    */
+    background: rgba(255, 255, 255, 1e-06);
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+
+  a.popover-text {
+    text-decoration: inherit;
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+
+    /* identical to box height, or 24px */
+
+    /* Gray/900 */
+    color: #212529;
+
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+
+    /* identical to box height, or 24px */
+
+    /* Gray/900 */
+    color: #212529;
+  }
