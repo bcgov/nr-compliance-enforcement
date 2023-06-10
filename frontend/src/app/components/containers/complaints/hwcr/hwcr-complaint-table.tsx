@@ -9,6 +9,22 @@ type Props = {
     sortOrder: string,
 }
 
+const renderPopover = (id: number) => (
+    <Popover id={`popover-${id}`}>
+      <Popover.Title as="h3">Links</Popover.Title>
+      <Popover.Content>
+        <ul>
+          <li>
+            <a href={`https://example.com/link1?id=${id}`}>Link 1</a>
+          </li>
+          <li>
+            <a href={`https://example.com/link2?id=${id}`}>Link 2</a>
+          </li>
+        </ul>
+      </Popover.Content>
+    </Popover>
+  );
+
 export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
 
@@ -49,7 +65,13 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
                             <td className="comp-ellipsis-cell comp-cell">
+                                 <OverlayTrigger
+          trigger="click"
+          placement="left"
+          overlay={renderPopover(val.complaint_identifier.complaint_identifier)}
+        >
                                 <i className="bi bi-three-dots-vertical"></i>
+                            </OverlayTrigger>
                             </td>
                         </tr>
                     )
