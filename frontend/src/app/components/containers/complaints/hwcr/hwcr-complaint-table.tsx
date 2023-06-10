@@ -12,14 +12,8 @@ type Props = {
 const renderPopover = (id: string) => ( 
   
     <Popover id={`popover-${id}`}>
-        <ul>
-          <li>
-            <a href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
-          </li>
-          <li>
-            <a href={`https://example.com/link2?id=${id}`}>Update Status</a>
-          </li>
-        </ul>
+        <a href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
+        <a href={`https://example.com/link2?id=${id}`}>Update Status</a>
     </Popover>
   );
 
