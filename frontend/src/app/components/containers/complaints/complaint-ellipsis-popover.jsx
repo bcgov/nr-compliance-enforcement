@@ -4,7 +4,7 @@ const ComplaintEllipsisPopover = (id) => {
 
   const renderPopover = () => ( 
   
-    <Popover id={`popover-${id}`}>
+    <Popover>
         <Popover.Body>
               <a className="popover-text" href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
               <a className="popover-text" href={`https://example.com/link2?id=${id}`}>Update Status</a>
@@ -16,7 +16,8 @@ const ComplaintEllipsisPopover = (id) => {
   return (
     <OverlayTrigger
       trigger="click"
-      placement="left"
+      placement="bottom"
+      offset={[-70,0]}
       rootClose
       overlay={renderPopover()}>
       <td className="comp-ellipsis-cell comp-cell">
