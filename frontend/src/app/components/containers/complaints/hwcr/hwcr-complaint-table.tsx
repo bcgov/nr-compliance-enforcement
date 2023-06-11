@@ -3,22 +3,12 @@ import { format } from 'date-fns';
 import { OverlayTrigger, Popover, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
+import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 
 type Props = {
     sortColumn: string,
     sortOrder: string,
 }
-
-const renderPopover = (id: string) => ( 
-  
-    <Popover id={`popover-${id}`}>
-        <Popover.Body>
-              <a className="popover-text" href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
-              <a className="popover-text" href={`https://example.com/link2?id=${id}`}>Update Status</a>
-        </Popover.Body>
-    </Popover>
-  );
-
 export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
 
@@ -58,16 +48,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <OverlayTrigger
-                              trigger="click"
-                              placement="bottom"
-                              rootClose
-                              offset={[-70,0]}
-                              overlay={renderPopover(val.complaint_identifier.complaint_identifier)}>
-                              <td className="comp-ellipsis-cell comp-cell">
-                                  <i className="bi bi-three-dots-vertical"></i>
-                              </td>
-                            </OverlayTrigger>
+                            <ComplaintEllipsisPopover id={val.complaint_identifier.complaint_identifier}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

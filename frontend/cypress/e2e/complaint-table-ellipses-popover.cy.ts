@@ -1,5 +1,5 @@
 /*
-Test to verify that the status and assignment popover displays when clicking the vertical ellipses on both the
+Test to verify that the status and assignment popover displays when clicking the vertical ellipsis on both the
 HWLC and Enforcement list screens
 */
 describe('Complaint Assign and Status Popover spec', () => {
@@ -18,7 +18,7 @@ describe('Complaint Assign and Status Popover spec', () => {
     // This number should change if a complaint is changed from closed to open
     let closedCount = cy.contains('td.comp-status-cell', 'Closed').its.length;
 
-    // Find the first open complaint and click the ellipses
+    // Find the first open complaint and click the ellipsis
     cy.contains('td.comp-status-cell', 'Closed')
       .first()
       .parent()
@@ -42,7 +42,7 @@ describe('Complaint Assign and Status Popover spec', () => {
     // Trigger the popover
     cy.scrollTo('right');//scroll over so we can watch the popover appear
 
-    // Find the first open complaint and click the ellipses
+    // Find the first open complaint and click the ellipsis
     cy.contains('td.comp-status-cell', 'Open')
       .first()
       .parent()
