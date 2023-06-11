@@ -88,7 +88,6 @@ const base64url = source => {
         if (hasSameTopLevelDomain(Cypress.env('keycloak_login_url'), Cypress.config().baseUrl)) {
           cy.visit(url);
           // Log in the user and obtain an authorization code.
-          cy.contains("idir").click();
           cy.get('[name="user"]').click();
           cy.get('[name="user"]').type(credentials.username);
           cy.get('[name="password"]').click();
