@@ -58,15 +58,16 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <td className="comp-ellipsis-cell comp-cell">
                             <OverlayTrigger
                               trigger="click"
                               placement="bottom"
                               rootClose
+                              offset={[-70,0]}
                               overlay={renderPopover(val.complaint_identifier.complaint_identifier)}>
-                                <i className="bi bi-three-dots-vertical"></i>
+                              <td className="comp-ellipsis-cell comp-cell">
+                                  <i className="bi bi-three-dots-vertical"></i>
+                              </td>
                             </OverlayTrigger>
-                            </td>
                         </tr>
                     )
                 })}

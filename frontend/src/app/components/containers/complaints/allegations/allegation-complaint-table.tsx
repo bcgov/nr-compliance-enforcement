@@ -59,15 +59,15 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <td className="comp-ellipsis-cell comp-cell">
-                                    <OverlayTrigger
+                                <OverlayTrigger
                                     trigger="click"
-                                    placement="bottom"
+                                    placement="left"
                                     rootClose
                                     overlay={renderPopover(val.complaint_identifier.complaint_identifier)}>
-                                        <i className="bi bi-three-dots-vertical"></i>
-                                    </OverlayTrigger>
-                                </td>
+                                    <td className="comp-ellipsis-cell comp-cell">
+                                            <i className="bi bi-three-dots-vertical"></i>
+                                    </td>
+                                </OverlayTrigger>
                             </tr>
                         )
                     })}

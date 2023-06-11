@@ -95,7 +95,7 @@ const base64url = source => {
           cy.get('[name="password"]').type(credentials.password, {log: false});
           cy.get('[name="btnSubmit"]').click();
     
-          cy.wait(10000);
+          cy.wait(3000);
         } else { // different origin, so handle CORS errors
           cy.visit("/");
           cy.on('uncaught:exception', (e) => {
@@ -117,7 +117,7 @@ const base64url = source => {
             cy.get('[name="password"]').type(password, {log: false});
             cy.get('[name="btnSubmit"]').click();
       
-            cy.wait(10000);
+            cy.wait(3000);
             });
         }
       });
@@ -128,10 +128,18 @@ const base64url = source => {
     Cypress.log({ name: 'Logout' });
     const authBaseUrl = Cypress.env('auth_base_url');
     const realm = Cypress.env('auth_realm');
-  
-    return cy.request({
+    cy.request({
       url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
     });
+    cy.visit(Cypress.config().baseUrl);
+    cy.on('uncaught:exception', (e) => {
+      if (e.message.includes('Unexpected')) {
+        // we expected this error, so let's ignore it
+        // and let the test continue
+        return false
+      }
+    })
+
   });
 
   function hasSameTopLevelDomain(url1: string, url2: string): boolean {
