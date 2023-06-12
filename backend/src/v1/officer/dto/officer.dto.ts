@@ -65,4 +65,10 @@ export class OfficerDto
       })
       update_timestamp: Date;
 
+      @ApiProperty({
+        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+        description: "The keycloak guid for the officer",
+      })
+      auth_user_guid: UUID;
+
 }
