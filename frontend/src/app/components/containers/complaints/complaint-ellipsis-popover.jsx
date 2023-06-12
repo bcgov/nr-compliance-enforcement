@@ -17,7 +17,7 @@ const ComplaintEllipsisPopover = ( {id} ) => {
     <OverlayTrigger
       trigger="click"
       placement="bottom"
-      offset={[-70,0]}
+      offset={[-70,-5]}
       rootClose
       overlay={renderPopover()}>
       <td className="comp-ellipsis-cell comp-cell">
