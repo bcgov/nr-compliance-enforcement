@@ -1,11 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
+import { Person } from './entities/person.entity';
+import { QueryRunner, DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PersonService {
-  create(createPersonDto: CreatePersonDto) {
-    return 'This action adds a new person';
+  constructor(private dataSource: DataSource) {
+  }
+  @InjectRepository(Person)
+  private personRepository: Repository<Person>;
+
+  async create(person: any): Promise<Person> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let newPersonString;
+    try
+    {
+      newPersonString = await this.personRepository.create(<CreatePersonDto>person);
+      await queryRunner.manager.save(newPersonString);
+      await queryRunner.commitTransaction();
+    }
+    catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      newPersonString = "Error Occured";
+    } finally {
+      await queryRunner.release();
+    }
+    return newPersonString;
+  }
+
+  async createInTransaction(person: CreatePersonDto, queryRunner: QueryRunner): Promise<Person> {
+    const newPerson = await this.personRepository.create(person);
+    await queryRunner.manager.save(newPerson);
+    return newPerson;
   }
 
   findAll() {
