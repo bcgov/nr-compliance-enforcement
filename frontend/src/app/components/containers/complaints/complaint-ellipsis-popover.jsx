@@ -1,6 +1,6 @@
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-const ComplaintEllipsisPopover = (id) => {
+const ComplaintEllipsisPopover = ( {id} ) => {
 
   const renderPopover = () => ( 
   
