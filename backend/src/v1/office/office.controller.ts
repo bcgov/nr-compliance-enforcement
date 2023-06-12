@@ -23,13 +23,13 @@ export class OfficeController {
 
   @Get()
   @Roles(Role.COS_OFFICER)
-  findAll() {
-    return this.officeService.findAll();
+  findByGeoOrgCode(@Param('geo_organization_code') geo_organization_code: string) {
+    return this.officeService.findByGeoOrgCode(+geo_organization_code);
   }
 
   @Get(':id')
   @Roles(Role.COS_OFFICER)
-  findOne(@Param('id') id: string) {
+  findOne(@Param('office_guid') id: string) {
     return this.officeService.findOne(+id);
   }
 

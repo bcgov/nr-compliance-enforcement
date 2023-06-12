@@ -34,8 +34,9 @@ export class OfficeService {
     return newOfficeString;
   }
 
-  findAll() {
+  findByGeoOrgCode (geo_org_code: any) {
     return this.officeRepository.find({
+      where: {geo_organization_unit_code: geo_org_code},
       relations: {
           geo_organization_unit_code: {},
           agency_code: {}
@@ -43,9 +44,9 @@ export class OfficeService {
       });
   }
 
-  findOne(geo_organization_unit_cd: any) {
+  findOne(office_guid: any) {
     return this.officeRepository.findOneOrFail({
-      where: {geo_organization_unit_code: geo_organization_unit_cd},
+      where: {office_guid: office_guid},
     })
   }
 
