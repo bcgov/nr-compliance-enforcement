@@ -10,7 +10,7 @@ export const HwcrComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
     return (
     <Table className="comp-table-header">
         <thead>
-            <Row>
+            <tr className="row">
                 <th className="comp-small-cell comp-header-cell comp-top-left comp-cell-left">
                     <div className="comp-header-label">
                         Incident#
@@ -85,7 +85,7 @@ export const HwcrComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
                         <i className="bi bi-three-dots-vertical"></i>
                     </div>
                 </th>
-            </Row>
+            </tr>
         </thead>
     </Table>
     );

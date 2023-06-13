@@ -154,6 +154,10 @@
   display: inline;
 }
 
+.comp-profile-avatar[data-initials-listview=""] {
+  display: none;
+}
+
 .comp-footer {
   height: 72px;
   background-image: url("../images/layout/ce-footer.svg");

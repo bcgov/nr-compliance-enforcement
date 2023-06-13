@@ -18,3 +18,21 @@
   font-size: 18px;
   text-align: center;
 }
+
+[data-initials-listview]:before {
+  background: $bc-gov-info;
+  color: #313132;
+  opacity: 1;
+  content: attr(data-initials-listview);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  text-align: center;
+  margin-right: 8px;
+  background-color: #E4E4E4;
+}
+

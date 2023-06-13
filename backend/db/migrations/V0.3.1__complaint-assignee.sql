@@ -36,6 +36,23 @@ ADD COLUMN auth_user_guid uuid NULL;
 -- populate code table
 insert into public.person_complaint_xref_code values('ASSIGNEE','Officer Assigned','The person to whom the complaint is assigned to.',1,true, user, null, now(), user, null, now());
 
+-- audit table
+CREATE TABLE person_complaint_xref_h
+(
+  h_person_complaint_xref_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
+  target_row_id uuid NOT NULL,
+  operation_type char(1) NOT NULL,
+  operation_user_id varchar(32) NOT NULL DEFAULT current_user,
+  operation_executed_at timestamp NOT NULL DEFAULT now(),
+  data_after_executed_operation jsonb,
+CONSTRAINT "PK_h_person_complaint_xref_guid" PRIMARY KEY (h_person_complaint_xref_guid)
+);
+
+-- audit trigger
+CREATE or REPLACE TRIGGER person_complaint_xref_trigger
+  BEFORE INSERT OR DELETE OR UPDATE ON person_complaint_xref
+  FOR EACH ROW EXECUTE PROCEDURE audit_history('person_complaint_xref_h', 'person_complaint_xref_guid');
+
 -- comments
 comment on table public.person_complaint_xref_code is 'Used to track the relationship type between person and complaint.  For example: ''ASSIGNEE'' = Assignee';
 comment on column public.person_complaint_xref_code.person_complaint_xref_code is 'A human readable code used to identify a relationship type between a person and a complaint.';
@@ -57,3 +74,11 @@ comment on column public.person_complaint_xref.create_timestamp is 'The timestam
 comment on column public.person_complaint_xref.update_user_id is 'The id of the user that updated the relationship between a person and a complaint .';
 comment on column public.person_complaint_xref.update_timestamp is 'The timestamp when the relationship between a person and a complaint  was updated.  The timestamp is stored in UTC with no Offset.';
 comment on column public.officer.auth_user_guid is 'The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle.';
+
+comment on table public.person_complaint_xref_h is 'History table for person_complaint_xref';
+comment on column public.person_complaint_xref_h.h_person_complaint_xref_guid is 'System generated unique key for person assigned to complaint history. This key should never be exposed to users via any system utilizing the tables.';
+comment on column public.person_complaint_xref_h.target_row_id is 'The unique key for the person and complaint mapping that has been created or modified.';
+comment on column public.person_complaint_xref_h.operation_type is 'The operation performed: I = Insert, U = Update, D = Delete';
+comment on column public.person_complaint_xref_h.operation_user_id is 'The id of the user that created or modified the data in complaint table.  Defaults to the logged in user if not passed in by the application.';
+comment on column public.person_complaint_xref_h.operation_executed_at is 'The timestamp when the data in the table was created or modified.  The timestamp is stored in UTC with no Offset.';
+comment on column public.person_complaint_xref_h.data_after_executed_operation is 'A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.';

@@ -1,12 +1,14 @@
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-const ComplaintEllipsisPopover = ( {id} ) => {
+const ComplaintEllipsisPopover = ( {id, assigned_ind} ) => {
 
+  const assignText = assigned_ind ? 'Reassign Complaint' : 'Assign Complaint';
   const renderPopover = () => ( 
   
+
     <Popover>
         <Popover.Body>
-              <a className="popover-text" href={`https://example.com/link1?id=${id}`}>Reassign Complaint</a>
+              <a className="popover-text" href={`https://example.com/link1?id=${id}`}>{assignText}</a>
               <a className="popover-text" href={`https://example.com/link2?id=${id}`}>Update Status</a>
         </Popover.Body>
     </Popover>
