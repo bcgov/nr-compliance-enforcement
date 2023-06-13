@@ -1,7 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { AttractantCode } from "../../attractant_code/entities/attractant_code.entity";
-import { HwcrComplaint } from "../../hwcr_complaint/entities/hwcr_complaint.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { Person } from "src/v1/person/entities/person.entity";
 import { Complaint } from "src/v1/complaint/entities/complaint.entity";
@@ -85,5 +83,5 @@ export class PersonComplaintXref {
 
     @ApiProperty({ example: "True", description: "A boolean indicator to determine if the cross reference is active." })
     @Column()
-    active_ind: boolean;
+    public active_ind: boolean;
 }

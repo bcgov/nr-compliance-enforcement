@@ -1,7 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { AttractantCode } from "../../attractant_code/entities/attractant_code.entity";
-import { HwcrComplaint } from "../../hwcr_complaint/entities/hwcr_complaint.entity";
 import { Person } from "src/v1/person/entities/person.entity";
 import { Complaint } from "src/v1/complaint/entities/complaint.entity";
 import { PersonComplaintXrefCode } from "src/v1/person_complaint_xref_code/entities/person_complaint_xref_code.entity";
@@ -69,5 +67,5 @@ export class PersonComplaintXrefDto
   public person_complaint_xref_code: PersonComplaintXrefCode;
 
   @ApiProperty({ example: "True", description: "A boolean indicator to determine if the person and a complaint is active." })
-  active_ind: boolean;
+  public active_ind: boolean;
 }
