@@ -32,7 +32,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                     const statusButtonClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
                     const status = val.complaint_identifier.complaint_status_code.long_description;
                     const updateDate = Date.parse(val.complaint_identifier.update_timestamp) >= Date.parse(val.update_timestamp) ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : format(Date.parse(val.update_timestamp), 'yyyy/MM/dd kk:mm:ss');
-                    
+                    const assignee = val.complaint_identifier.person_complaint_xref;
                     return (
                         <tr key={"hwcrComplaint" + key.toString()}>
                             <td className="comp-small-cell comp-cell comp-cell-left">{complaintIdentifier}</td>

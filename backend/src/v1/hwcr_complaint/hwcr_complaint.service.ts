@@ -84,7 +84,10 @@ export class HwcrComplaintService {
             referred_by_agency_code: true,
             complaint_status_code: true,
             geo_organization_unit_code: true,
-            person_complaint_xref: true
+            person_complaint_xref: {
+              complaint_identifier: true,
+              person_guid: true
+            }
           } ,
           species_code: true,
           hwcr_complaint_nature_code: true,
