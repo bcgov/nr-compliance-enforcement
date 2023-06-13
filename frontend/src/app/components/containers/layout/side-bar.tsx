@@ -29,6 +29,9 @@ export const SideBar: FC = () => {
           title: "modal title",
           description: "modal description"
         },
+        callback: () => { 
+          console.log("derp callback")
+        }
       })
     );
   };

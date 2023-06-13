@@ -96,6 +96,11 @@ export const selectCallback = (state: RootState): any => {
   return app.callback;
 };
 
+export const selectClosingCallback = (state: RootState): any => {
+    const { app } = state;
+    return app.hideCallback;
+  };
+
 //-- thunks
 export const getTokenProfile = (): AppThunk => (dispatch) => {
   const token = localStorage.getItem("user");

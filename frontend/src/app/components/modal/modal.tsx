@@ -1,10 +1,11 @@
-import { FC, createContext } from "react";
+import { FC } from "react";
 import { Modal } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import {
   closeModal,
   selectCallback,
+  selectClosingCallback,
   selectModalData,
   selectModalOpenState,
   selectModalSize,
@@ -22,14 +23,22 @@ export const ModalComponent: FC = () => {
   const modalType = useAppSelector(selectModalType);
   const modalData = useAppSelector(selectModalData);
   const callback = useAppSelector(selectCallback);
+  const closingCallback = useAppSelector(selectClosingCallback)
 
   const Content = MODAL_COMPONENTS[modalType];
 
   const submitModal = (data: any) => {
+    debugger
+    if(callback){
+      callback()
+    }
     dispatch(closeModal());
   };
 
   const handleCloseModal = () => {
+    if(closingCallback){
+      closingCallback()
+    }
     dispatch(closeModal());
   };
 
