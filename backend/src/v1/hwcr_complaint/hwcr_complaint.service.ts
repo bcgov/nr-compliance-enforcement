@@ -69,6 +69,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
+      .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref')
       .orderBy(sortString, sortOrderString)
       .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC")
       .getMany();
@@ -83,6 +84,7 @@ export class HwcrComplaintService {
             referred_by_agency_code: true,
             complaint_status_code: true,
             geo_organization_unit_code: true,
+            person_complaint_xref: true
           } ,
           species_code: true,
           hwcr_complaint_nature_code: true,

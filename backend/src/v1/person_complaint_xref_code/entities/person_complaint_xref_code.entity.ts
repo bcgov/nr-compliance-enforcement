@@ -1,76 +1,55 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { PersonComplaintXref } from "src/v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { Column, Entity, Index, OneToMany } from "typeorm";
 
-@Entity()
+@Index("PK_person_complaint_xref_code", ["person_complaint_xref_code"], {
+  unique: true,
+})
+@Entity("person_complaint_xref_code", { schema: "public" })
 export class PersonComplaintXrefCode {
-    @ApiProperty({
-        example: "ASSIGNEE",
-        description: "A human readable code used to identify a relationship type between a person and a complaint.",
-    })
-    
-    @PrimaryColumn({length: 10})
-    person_complaint_xref_code: string;
+  @Column("character varying", {
+    primary: true,
+    name: "person_complaint_xref_code",
+    length: 10,
+  })
+  person_complaint_xref_code: string;
 
-    @ApiProperty({ example: "Human injury/death", description: "The short description of the relationship type between a person and a complaint." })
-    @Column({length: 50})
-    short_description: string;
+  @Column("character varying", { name: "short_description", length: 50 })
+  short_description: string;
 
-    @ApiProperty({ example: "Human injury/death", description: "The long description of the relationship type between a person and a complaint." })
-    @Column({length: 250, nullable: true })
-    long_description: string;
+  @Column("character varying", {
+    name: "long_description",
+    nullable: true,
+    length: 250,
+  })
+  long_description: string | null;
 
-    @ApiProperty({ example: "1", description: "The order in which the values of the relationship type between a person and a complaint code table should be displayed when presented to a user in a list." })
-    @Column()
-    display_order: number;
+  @Column("integer", { name: "display_order" })
+  display_order: number;
 
-    @ApiProperty({ example: "True", description: "A boolean indicator to determine if the relationship type between a person and a complaint code is active." })
-    @Column()
-    active_ind: boolean;
+  @Column("boolean", { name: "active_ind" })
+  active_ind: boolean;
 
-    @ApiProperty({
-    example: "IDIR\mburns",
-    description: "The id of the user that created the relationship type between a person and a complaint.",
-    })
-    @Column({length: 32})
-    create_user_id: string;
+  @Column("character varying", { name: "create_user_id", length: 32 })
+  create_user_id: string;
 
-    @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The unique guid of the user that created the cross reference.",
-    })
-    @Column({type: "uuid"})
-    create_user_guid: UUID;
+  @Column("uuid", { name: "create_user_guid", nullable: true })
+  create_user_guid: string | null;
 
-    @ApiProperty({
-    example: "2003-04-12 04:05:06",
-    description: "The timestamp when the relationship type between a person and a complaint was created.  The timestamp is stored in UTC with no Offset.",
-    })
-    @Column()
-    create_timestamp: Date;
+  @Column("timestamp without time zone", { name: "create_timestamp" })
+  create_timestamp: Date;
 
-    @ApiProperty({
-    example: "IDIR\mburns",
-    description: "The id of the user that updated the relationship type between a person and a complaint.",
-    })
-    @Column({length: 32})
-    update_user_id: string;
+  @Column("character varying", { name: "update_user_id", length: 32 })
+  update_user_id: string;
 
-    @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The unique guid of the user that updated the cross reference.",
-    })
-    @Column({type: "uuid"})
-    update_user_guid: UUID;
+  @Column("uuid", { name: "update_user_guid", nullable: true })
+  update_user_guid: string | null;
 
-    @ApiProperty({
-    example: "2003-04-12 04:05:06",
-    description: "The timestamp when the relationship type between a person and a complaint was updated.  The timestamp is stored in UTC with no Offset.",
-    })
-    @Column()
-    update_timestamp: Date;
+  @Column("timestamp without time zone", { name: "update_timestamp" })
+  update_timestamp: Date;
 
-    constructor(person_complaint_xref_code?:string) {
-    this.person_complaint_xref_code = person_complaint_xref_code;
-    }
-    }
+  @OneToMany(
+    () => PersonComplaintXref,
+    (personComplaintXref) => personComplaintXref.person_complaint_xref_code
+  )
+  personComplaintXrefs: PersonComplaintXref[];
+}

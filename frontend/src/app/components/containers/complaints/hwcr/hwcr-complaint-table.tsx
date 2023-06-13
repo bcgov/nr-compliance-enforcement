@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { format } from 'date-fns';
-import { OverlayTrigger, Popover, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
@@ -32,6 +32,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                     const statusButtonClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
                     const status = val.complaint_identifier.complaint_status_code.long_description;
                     const updateDate = Date.parse(val.complaint_identifier.update_timestamp) >= Date.parse(val.update_timestamp) ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : format(Date.parse(val.update_timestamp), 'yyyy/MM/dd kk:mm:ss');
+                    
                     return (
                         <tr key={"hwcrComplaint" + key.toString()}>
                             <td className="comp-small-cell comp-cell comp-cell-left">{complaintIdentifier}</td>
