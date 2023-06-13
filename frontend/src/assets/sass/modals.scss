@@ -42,6 +42,7 @@ $modal-content-border-radius: "5px";
 // scss-docs-end modal-variables
 
 .modal-dialog {
+    background-color: $white;
 }
 
 @import "../../../node_modules/bootstrap/scss/variables";
