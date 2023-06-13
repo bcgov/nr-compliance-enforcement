@@ -53,9 +53,9 @@ export class HwcrComplaintService {
       }
       return newHwcrComplaintString;
     }
-  
-    async findAll(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 
-      speciesCode?: string, violationType?: string, incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<HwcrComplaint[]> {
+
+    async search(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 
+      speciesCode?: string, incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<HwcrComplaint[]> {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
@@ -71,44 +71,73 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
-      //.leftJoinAndSelect('person_complaint_xref.complaint_identifier', 'person_complaint_xref')
+      //.leftJoinAndSelect('cos_geo_org_unit_flat_vw.area_code', 'geo_organization_unit_code')
+      //.leftJoinAndSelect('person_complaint_xref.person_complaint_xref_id', 'person_complaint_xref')
       .orderBy(sortString, sortOrderString)
       .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
 
-      if(community !== null)
+      if(community !== undefined)
       {
-        queryBuilder.andWhere('complaint.geo_organization_unit_code = :Community', { Community: community});
+        queryBuilder.andWhere('complaint_identifier.geo_organization_unit_code = :Community', { Community: community });
       }
       /*
       if(zone !== null)
       {
-        queryBuilder.andWhere('cos.geo_org_unit_flat_vw.zone_code = :Zone', { Zone: zone});
+        queryBuilder.andWhere('cos.geo_org_unit_flat_vw.zone_code = :Zone', { Zone: zone });
       }
       if(region !== null)
       {
-        queryBuilder.andWhere('cos.geo_org_unit_flat_vw.region_code = :Region', { Region: region});
+        queryBuilder.andWhere('cos.geo_org_unit_flat_vw.region_code = :Region', { Region: region });
       }
       if(officerAssigned !== null)
       {
-        queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE'});
-        queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned});
+        queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
+        queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned });
       }*/
-      if(natureOfComplaint !== null)
+      if(natureOfComplaint !== undefined)
       {
         queryBuilder.andWhere('hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint', { NatureOfComplaint:natureOfComplaint });
       }
-      if(speciesCode !== null)
+      if(speciesCode !== undefined)
       {
         queryBuilder.andWhere('hwcr_complaint.species_code = :SpeciesCode', { SpeciesCode:speciesCode });
       }
-      if(incidentReportedStart !== null)
+      if(incidentReportedStart !== undefined)
       {
-        queryBuilder.andWhere('complaint.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart:incidentReportedStart });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart:incidentReportedStart });
       }
-      if(incidentReportedEnd !== null)
+      if(incidentReportedEnd !== undefined)
       {
-        queryBuilder.andWhere('complaint.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd:incidentReportedEnd });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd:incidentReportedEnd });
       }
+      if(status !== undefined)
+      {
+        queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
+      }
+
+      return queryBuilder.getMany();
+    }
+  
+    async findAll(sortColumn: string, sortOrder: string): Promise<HwcrComplaint[]> {
+      //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
+      const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
+      const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
+      const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
+
+      const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+      .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
+      .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
+      .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
+      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+      .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+      .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
+      //.leftJoinAndSelect('cos_geo_org_unit_flat_vw.area_code', 'geo_organization_unit_code')
+      //.leftJoinAndSelect('person_complaint_xref.complaint_identifier', 'person_complaint_xref')
+      .orderBy(sortString, sortOrderString)
+      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
 
       return queryBuilder.getMany();
     }
