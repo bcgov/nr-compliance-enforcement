@@ -2,23 +2,41 @@ import { Injectable } from '@nestjs/common';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Office } from './entities/office.entity';
 
 @Injectable()
 export class OfficeService {
-  constructor(
-    @InjectRepository(Office)
-    private officeRepository: Repository<Office>
-  ) {
+  constructor(private dataSource: DataSource) {
+  }
+  @InjectRepository(Office)
+  private officeRepository: Repository<Office>;
+
+  async create(office: any): Promise<Office> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let newOfficeString;
+    try
+    {
+      newOfficeString = await this.officeRepository.create(<CreateOfficeDto>office);
+      await queryRunner.manager.save(newOfficeString);
+      await queryRunner.commitTransaction();
+    }
+    catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      newOfficeString = "Error Occured";
+    } finally {
+      await queryRunner.release();
+    }
+    return newOfficeString;
   }
 
-  create(createOfficeDto: CreateOfficeDto) {
-    return 'This action adds a new office';
-  }
-
-  findAll() {
+  findByGeoOrgCode (geo_org_code: any) {
     return this.officeRepository.find({
+      where: {geo_organization_unit_code: geo_org_code},
       relations: {
           geo_organization_unit_code: {},
           agency_code: {}
@@ -26,8 +44,10 @@ export class OfficeService {
       });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} office`;
+  findOne(office_guid: any) {
+    return this.officeRepository.findOneOrFail({
+      where: {office_guid: office_guid},
+    })
   }
 
   update(id: number, updateOfficeDto: UpdateOfficeDto) {
