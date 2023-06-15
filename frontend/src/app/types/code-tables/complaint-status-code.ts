@@ -1,7 +1,6 @@
-
-export interface HwcrNatureOfComplaintCode
+export interface ComplaintStatusCode
 {
-        nature_of_complaint_code: string,
+        complaint_status_code: string,
         short_description: string,
         long_description: string,
         display_order: string,
