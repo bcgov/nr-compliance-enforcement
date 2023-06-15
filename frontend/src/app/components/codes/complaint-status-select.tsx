@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import config from '../../../config';
 import { CodeTable } from '../../../enum/code-table.enum';
@@ -11,11 +11,12 @@ interface Option {
 type Props = {
   width?: string;
   height?: string;
+  onSelectChange: (selectedValue: string) => void;
 };
 
-const ComplaintStatusSelect: React.FC<Props> = ({ width, height }) => {
+const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange }) => {
   const [options, setOptions] = useState<Option[]>([]);
-  const [selectedOption, setSelectedOption] = useState<string>('');
+  const [selectedValue, setSelectedValue] = useState('');
 
   useEffect(() => {
     // Fetch data using Axios
@@ -31,13 +32,15 @@ const ComplaintStatusSelect: React.FC<Props> = ({ width, height }) => {
       });
   }}, []);
 
-  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedOption(event.target.value);
+  const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedValue(value);
+    onSelectChange(value); // Invoking the callback function with the selected value
   };
 
   return (
     <div>
-      <select id="dropdown" value={selectedOption} style={{'width': width, 'height': height}} onChange={handleOptionChange}>
+      <select id="dropdown" value={selectedValue} style={{'width': width, 'height': height}} onChange={handleSelectChange}>
         <option value="">Select</option>
         {options.map(option => (
           <option key={option.complaint_status_code} value={option.complaint_status_code}>{option.long_description}</option>

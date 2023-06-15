@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
 
@@ -11,8 +11,20 @@ type AssignOfficerModalProps = {
 
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-
   const { title, description } = modalData;
+  
+  const dispatch = useAppDispatch();
+  let [status, setStatus] = useState('');
+  let selectedStatus = '';
+
+  const handleSelectChange = (selectedValue: string) => {
+    alert("meep");
+    console.log('Selected value:', selectedValue);
+    selectedStatus = selectedValue;
+    // Do something with the selected value in the parent component
+    console.log('Selected value:', selectedValue);
+    // Do something with the selected value in the parent component
+  };
 
   return (
     <>
@@ -29,7 +41,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
         </Row>
         <Row>
           <Col>
-            <ComplaintStatusSelect width={"458px"} height={"38px"}/>
+            <ComplaintStatusSelect width={"458px"} height={"38px"}  onSelectChange={handleSelectChange}/>
           </Col>
         </Row>
       </Modal.Body>

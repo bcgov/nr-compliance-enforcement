@@ -8,6 +8,7 @@ import { Complaint } from "../../types/complaints/complaint";
 
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
+  selectedComplaintIdentifier: "",
 };
 
 export const hwcrComplaintSlice = createSlice({
@@ -20,6 +21,16 @@ export const hwcrComplaintSlice = createSlice({
       const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
       return { ...state, hwcrComplaints};
     },
+    updateHwcrComplaintStatus: (state, action) => {
+      const { payload } = action;
+      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
+      return { ...state, hwcrComplaints};
+    },
+    setSelectedComplaintIdentifier: (state, action) => {
+      const { payload } = action;
+      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
+      return { ...state, hwcrComplaints};
+    }
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -55,12 +66,13 @@ export const updateComplaintStatus = (complaint_identifier: string, newStatus: s
     
     let updatedComplaint = complaintResponse.data;
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
-    const response = await axios.patch(`${config.API_BASE_URL}/v1/complaint`, { params: { complaint_identifier: complaint_identifier, updatedComplaint: updatedComplaint}});
-    //dispatch(
-    //  setHwcrComplaints({
-    //    hwcrComplaints: response.data
-    //  })
-    //);
+    await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
+    dispatch(
+      setHwcrComplaints({
+        hwcrComplaints: response.data
+      })
+    );
   }
 };
 

@@ -18,7 +18,6 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
             dispatch(getHwcrComplaints(sortColumn, sortOrder));
   }, [dispatch, sortColumn, sortOrder]);
 
-
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
@@ -48,7 +47,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} hwcr_complaint={val}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

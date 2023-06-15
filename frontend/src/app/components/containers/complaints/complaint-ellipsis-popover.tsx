@@ -3,12 +3,16 @@ import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
 import { AssignOfficer, ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
+import { HwcrComplaint } from '../../../types/complaints/hwcr-complaint';
+import { AllegationComplaint } from '../../../types/complaints/allegation-complaint';
 
 type Props= {
   complaint_identifier: string;
+  hwcr_complaint?: HwcrComplaint;
+  allegatation_complaint?: AllegationComplaint
 }
 
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, hwcr_complaint }) => {
   const dispatch = useAppDispatch();
 
   const renderPopover = () => ( 
@@ -29,7 +33,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier }) =>
         data: {
           title: "Update status?",
           description: "Status",
-          
+          complaint: hwcr_complaint
         },
         callback: () => { 
           console.log("derp callback")
