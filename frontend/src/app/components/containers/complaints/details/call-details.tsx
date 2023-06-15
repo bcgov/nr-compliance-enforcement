@@ -1,10 +1,31 @@
 import { FC } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, NavItem } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectedComplaint } from "../../../../store/reducers/hwcr-complaints";
+import {
+  selectComplaintDetails,
+  selectedComplaint,
+} from "../../../../store/reducers/hwcr-complaints";
+import {
+  formatDate,
+  formatTime,
+  parseCoordinates,
+} from "../../../../common/methods";
+import { Coordinates } from "../../../../types/app/coordinate-type";
+import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
 
 export const CallDetails: FC = () => {
-  const complaint = useAppSelector(selectedComplaint);
+  const {
+    details,
+    location,
+    locationDescription,
+    incidentDateTime,
+    coordinates,
+    area,
+    region,
+    zone,
+    office,
+    attractants,
+  } = useAppSelector(selectComplaintDetails);
 
   return (
     <div className="comp-complaint-call-details-container">
@@ -13,29 +34,28 @@ export const CallDetails: FC = () => {
         <Row>
           <Col md="6" style={{ paddingRight: "28px" }}>
             <div className="comp-complaint-label">Complaint Description</div>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse ut enim convallis, dapibus diam sed, interdum neque.
-              Nulla vulputate ac felis sit amet varius. Nullam pretium non
-              tortor eu maximus. Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit. Suspendisse ut enim convallis, dapibus diam sed,
-              interdum neque. Nulla vulputate ac felis sit amet varius. Nullam
-              pretium non tortor eu maximus. Lorem ipsum dolor sit amet,
-              consectetur adipiscing elit. Suspendisse ut enim convallis,
-              dapibus diam sed, interdum neque. Nulla vulputate ac
-            </p>
+            <p>{details}</p>
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">Incident Time</span>
               <span className="comp-complaint-incident-time">
-                <i className="bi bi-calendar"></i>08/04/2023{" "}
-                <i className="bi bi-clock"></i>2:01:01
+                <i className="bi bi-calendar"></i>
+                {formatDate(incidentDateTime)}
+                <i className="bi bi-clock"></i>
+                {formatTime(incidentDateTime)}
               </span>
             </div>
 
             <div>
               <span className="comp-complaint-label">Attractants</span>
               <span className="comp-complaint-attactants">
-                <span className="badge comp-attactant-badge">Open</span>
+                {!attractants ||
+                  attractants.map(({key, description}: ComplaintDetailsAttractant) => {
+                    return (
+                      <span className="badge comp-attactant-badge" key={key}>
+                        {description}
+                      </span>
+                    );
+                  })}
               </span>
             </div>
           </Col>
@@ -43,38 +63,40 @@ export const CallDetails: FC = () => {
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">Complaint Location</span>
               <span className="comp-complaint-incident-time">
-                123 Street Ave, Victoria, British Columbia
+                {location}
               </span>
             </div>
             <div className="comp-complaint-label">Location Description</div>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse ut enim convallis, dapibus diam sed, interdum neque.
-              Nulla vulputate
-            </p>
+            <p>{locationDescription}</p>
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">X Coordinate</span>
-              <span className="comp-complaint-incident-time">12.345678</span>
-              <span className="comp-complaint-label">Y Coordinate</span>
-              <span className="comp-complaint-incident-time">12.345678</span>
-            </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Area / Community</span>
-              <span className="comp-complaint-incident-time">Kelowna</span>
-            </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Office</span>
-              <span className="comp-complaint-incident-time">Kelowna</span>
-            </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Zone</span>
               <span className="comp-complaint-incident-time">
-                Central Okanagan
+                {parseCoordinates(coordinates, Coordinates.Latitude)}
+              </span>
+              <span className="comp-complaint-label">Y Coordinate</span>
+              <span className="comp-complaint-incident-time">
+                {parseCoordinates(coordinates, Coordinates.Latitude)}
               </span>
             </div>
             <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Area / Community</span>
+              <span className="comp-complaint-incident-time">{area}</span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Office</span>
+              <span className="comp-complaint-incident-time">
+                {office}
+              </span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Zone</span>
+              <span className="comp-complaint-incident-time">{zone}</span>
+            </div>
+            <div className="comp-complaint-section">
               <span className="comp-complaint-label">Region</span>
-              <span className="comp-complaint-incident-time">Okanagan</span>
+              <span className="comp-complaint-incident-time">
+                {region}
+              </span>
             </div>
           </Col>
         </Row>

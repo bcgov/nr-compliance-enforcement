@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ViewEntity, Column, PrimaryColumn, JoinColumn } from "typeorm";
+import { ViewEntity, Column, PrimaryColumn } from "typeorm";
 
 @ViewEntity("cos_geo_org_unit_flat_vw")
 export class CosGeoOrgUnit {

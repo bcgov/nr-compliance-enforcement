@@ -1,4 +1,5 @@
 import format from "date-fns/format";
+import { Coordinates } from "../types/app/coordinate-type";
 
 export const getAvatarInitials = (input: string): string => {
   const tokens = input.split(" ");
@@ -14,10 +15,31 @@ export const getAvatarInitials = (input: string): string => {
   }
 };
 
-export const formatDate = (input: string): string => {
+export const formatDate = (input: string | undefined): string => {
+  if (!input) {
+    return "";
+  }
+
   return format(Date.parse(input), "MM/dd/yyyy");
 };
 
-export const formatTime = (input: string): string => {
+export const formatTime = (input: string | undefined): string => {
+  if (!input) {
+    return "";
+  }
+
   return format(Date.parse(input), "kk:mm:ss");
+};
+
+export const parseCoordinates = (
+  coordinates: number[] | string[] | undefined,
+  coordinateType: Coordinates
+): number | string => {
+  if (!coordinates) {
+    return 0;
+  }
+
+  return coordinateType === Coordinates.Latitude
+    ? coordinates[0]
+    : coordinates[1];
 };

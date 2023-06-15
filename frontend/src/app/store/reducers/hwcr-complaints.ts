@@ -4,6 +4,9 @@ import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
+import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
+import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
+import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
 
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
@@ -128,6 +131,78 @@ export const selectComplaintHeader = (state: RootState) => {
       result = { ...result, species };
     }
   }
+
+  return result;
+};
+
+export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
+  let result: ComplaintDetails = {};
+
+  const { complaint_identifier, attractant_hwcr_xref } =
+    state.hwcrComplaint.complaint;
+  const {
+    detail_text,
+    location_summary_text,
+    location_detailed_text,
+    incident_datetime,
+    location_geometry_point: { coordinates },
+    cos_geo_org_unit: {
+      area_name,
+      region_name,
+      zone_name,
+      office_location_name,
+    },
+  } = complaint_identifier;
+
+  const attractants = attractant_hwcr_xref.map(
+    ({
+      attractant_hwcr_xref_guid: key,
+      attractant_code: { short_description: description },
+    }: any): ComplaintDetailsAttractant => {
+      return { key, description };
+    }
+  );
+
+  return {
+    details: detail_text,
+    location: location_summary_text,
+    locationDescription: location_detailed_text,
+    incidentDateTime: incident_datetime,
+    coordinates,
+    area: area_name,
+    region: region_name,
+    zone: zone_name,
+    office: office_location_name,
+    attractants
+  };
+};
+
+export const selectComplaintCallerInformation = (
+  state: RootState
+): ComplaintCallerInformation => {
+  let result: ComplaintCallerInformation = {};
+
+  const { complaint_identifier } = state.hwcrComplaint.complaint;
+  const {
+    caller_name,
+    caller_phone_1,
+    caller_phone_2,
+    caller_address,
+    caller_email,
+    referred_by_agency_code: {
+      agency_code: agencyCode,
+      long_description: description,
+    },
+  } = complaint_identifier;
+
+  result = {
+    name: caller_name,
+    primaryPhone: caller_phone_1,
+    secondaryPhone: caller_phone_2,
+    address: caller_address,
+    email: caller_email,
+    referredByAgencyCode: description,
+  };
 
   return result;
 };

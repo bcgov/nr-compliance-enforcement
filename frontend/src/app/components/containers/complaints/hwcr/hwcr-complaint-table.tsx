@@ -26,11 +26,6 @@ export const HwcrComplaintTable: FC = () => {
     navigate(`/complaint/${ComplaintTypes.HWCR}/${id}`);
   };
 
-//   const handleStatusChangeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-//     e.preventDefault();
-//     //-- known bug, clicking the button triggers the row click
-//   };
-
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>

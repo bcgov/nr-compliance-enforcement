@@ -14,6 +14,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
   id,
   complaintType,
 }) => {
+
   const {
     loggedDate,
     createdBy,

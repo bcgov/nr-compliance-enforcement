@@ -20,20 +20,20 @@ export const ComplaintDetails: FC = () => {
   const { id = "", complaintType = "" } = useParams<TestType>();
 
   useEffect(() => {
-    if (!complaint) {
+    if (!complaint || complaint.complaint_identifier.complaint_identifier !== id) {
       if (id) {
         dispatch(getHwcrComplaintByComplaintIdentifier(id));
       }
     }
-  });
+  }, [complaint]);
 
   return (
     <div className="comp-complaint-details">
       {complaint && (
         <>
-          <ComplaintHeader id={id} complaintType={complaintType} />
+          {/* <ComplaintHeader id={id} complaintType={complaintType} /> */}
           <CallDetails />
-          <CallerInformation />
+          {/* <CallerInformation /> */}
         </>
       )}
     </div>
