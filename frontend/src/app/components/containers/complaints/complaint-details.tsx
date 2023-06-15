@@ -31,9 +31,9 @@ export const ComplaintDetails: FC = () => {
     <div className="comp-complaint-details">
       {complaint && (
         <>
-          {/* <ComplaintHeader id={id} complaintType={complaintType} /> */}
+          <ComplaintHeader id={id} complaintType={complaintType} />
           <CallDetails />
-          {/* <CallerInformation /> */}
+          <CallerInformation />
         </>
       )}
     </div>
