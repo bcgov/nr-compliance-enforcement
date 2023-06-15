@@ -349,8 +349,7 @@
     z-index: 0;  
   }
 
-  a.popover-text {
-    text-decoration: inherit;
+  .popover-text {
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
@@ -363,18 +362,5 @@
     padding: 4px 16px;
     gap: 8px;
     height: 32px;
-    
-    /* HitBox
-    
-    Hitbox makes whole element selectable when press & hold Ctrl key
-    It also be used in case we want to apply drop shadow effect but still want to keep the transparent background.
-    */
-    background: rgba(255, 255, 255, 1e-06);
-    
-    /* Inside auto layout */
-    
-    flex: none;
-    order: 1;
-    align-self: stretch;
-    flex-grow: 0;
+    cursor: pointer;
   }

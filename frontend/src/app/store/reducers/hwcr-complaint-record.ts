@@ -1,3 +1,4 @@
+/*
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
@@ -5,21 +6,22 @@ import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
 import { Complaint } from "../../types/complaints/complaint";
+import { HwcrComplaintRecordState } from "../../types/complaints/hrcr-complaint-record-state";
 
-const initialState: HwcrComplaintState = {
-  hwcrComplaints: [],
+const initialState: HwcrComplaintRecordState = {
+  selectedHwcfComplaint: hwcHwcrComplaintrComplaint
 };
 
-export const hwcrComplaintSlice = createSlice({
-  name: "hwcrComplaints",
+export const selectedHwcrComplaintSlice = createSlice({
+  name: "selectedHwcfComplaint",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setHwcrComplaints: (state, action) => {
+    setSelectedHwcfComplaint: (state, action) => {
       const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
-      return { ...state, hwcrComplaints};
-    },
+      const hwcrComplaint:HwcrComplaint = payload.hwcrComplaint;
+      return { ...state, hwcrComplaint};
+    }
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -28,20 +30,20 @@ export const hwcrComplaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setHwcrComplaints } = hwcrComplaintSlice.actions;
+export const { setSelectedHwcfComplaint } = selectedHwcrComplaintSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getHwcrComplaints = (sortColumn: string, sortOrder: string): AppThunk => async (dispatch) => {
+export const getHwcrComplaint = (sortColumn: string, sortOrder: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
     dispatch(
-      setHwcrComplaints({
-        hwcrComplaints: response.data
+      setSelectedHwcfComplaint({
+        selectedHwcfComplaint: response.data
       })
     );
   }
@@ -64,10 +66,9 @@ export const updateComplaintStatus = (complaint_identifier: string, newStatus: s
   }
 };
 
-
-export const hwcrComplaints = (state: RootState) => { 
-  const { hwcrComplaints } = state.hwcrComplaint;
-  return hwcrComplaints;
+export const selectedHwcfComplaint = (state: RootState) => { 
+//  const { hwcrComplaint } = state.hwcrComplaint;
+  return selectedHwcfComplaint;
 }
 
-export default hwcrComplaintSlice.reducer;
+export default selectedHwcrComplaintSlice.reducer;*/

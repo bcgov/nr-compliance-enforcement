@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { format } from 'date-fns';
-import { OverlayTrigger, Popover, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
@@ -48,7 +48,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <ComplaintEllipsisPopover id={complaintIdentifier}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}
