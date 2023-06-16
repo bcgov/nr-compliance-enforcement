@@ -8,7 +8,6 @@ import {
   formatTime,
   getAvatarInitials,
 } from "../../../../common/methods";
-import { HwcrComplaintState } from "../../../../types/complaints/hrcr-complaints-state";
 
 export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
   id,
