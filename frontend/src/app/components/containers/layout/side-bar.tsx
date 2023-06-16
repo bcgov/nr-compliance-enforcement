@@ -18,26 +18,6 @@ export const SideBar: FC = () => {
     { name: "Complaints", icon: "bi bi-file-earmark-medical" },
   ];
 
-  //-- sample modal
-
-  const openSampleModal = () => {
-    dispatch(
-      openModal({
-        modalSize: "sm",
-        modalType: Sample,
-        data: {
-          title: "modal title",
-          description: "modal description"
-        },
-        callback: () => { 
-          console.log("derp callback")
-        }
-      })
-    );
-  };
-
-  //-- end sample modal
-
   return (
     <div
       className={`d-flex flex-column flex-shrink-0 comp-side-bar  ${(!isOpen
