@@ -30,7 +30,7 @@ export class AgencyCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.agencyCodeService.findOne(+id);
+    return this.agencyCodeService.findOne({where: {agency_code: id}});
   }
 
   @Patch(':id')

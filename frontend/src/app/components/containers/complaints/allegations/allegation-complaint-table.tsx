@@ -4,12 +4,12 @@ import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
+import ComplaintType from "../../../../constants/complaint-types";
 
 type Props = {
     sortColumn: string,
     sortOrder: string,
 }
-
 export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
 
@@ -58,7 +58,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <ComplaintEllipsisPopover id={complaintIdentifier} assigned_ind={assigned_ind}></ComplaintEllipsisPopover>
+                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} assigned_ind={assigned_ind}></ComplaintEllipsisPopover>
                             </tr>
                         )
                     })}

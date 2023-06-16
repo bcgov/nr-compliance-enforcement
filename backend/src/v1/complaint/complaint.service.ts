@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
 import { Complaint } from './entities/complaint.entity';
@@ -7,8 +7,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ComplaintService {
+
+  private readonly logger = new Logger(ComplaintService.name);
+
   constructor(
   ) {}
+
 
   @InjectRepository(Complaint)
   private complaintsRepository: Repository<Complaint>;
@@ -31,19 +35,14 @@ export class ComplaintService {
   }
 
   async findOne(id: any): Promise<Complaint> {
-    return this.complaintsRepository.findOneOrFail({
-      where: {complaint_identifier: id},
+    return this.complaintsRepository.findOneOrFail({where: {complaint_identifier: id},
       relations: { 
-        referred_by_agency_code: true,
-        owned_by_agency_code: true,
-        complaint_status_code: true,
-        geo_organization_unit_code: true,
-      },
-    });
+        complaint_status_code: true
+      }});
   }
 
   async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {
-    await this.complaintsRepository.update({ complaint_identifier }, updateComplaintDto);
+    await this.complaintsRepository.update(complaint_identifier, updateComplaintDto);
     return this.findOne(complaint_identifier);
   }
 

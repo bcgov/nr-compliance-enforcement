@@ -5,6 +5,7 @@ HWLC and Enforcement list screens
 describe('Complaint Assign and Status Popover spec', () => {
 
   beforeEach(function() {
+    cy.viewport(1536, 960);
     cy.kcLogout().kcLogin();
   });
 
@@ -12,45 +13,53 @@ describe('Complaint Assign and Status Popover spec', () => {
     cy.visit("/");
     cy.get('.popover').should('not.exist');
     // Trigger the popover
-    cy.scrollTo('right');//scroll over so we can watch the popover appear
-
+    
     // Find the number of closed complaints
     // This number should change if a complaint is changed from closed to open
-    let closedCount = cy.contains('td.comp-status-cell', 'Closed').its.length;
+    cy.get('table tr').filter(':contains("Closed")').as('closedRows');
+    cy.get('table tr').filter(':contains("Open")').as('openRows');
+    cy.get('@closedRows').its('length').as('initialClosedRowCount');
 
-    // Find the first open complaint and click the ellipsis
-    cy.contains('td.comp-status-cell', 'Closed')
+    // Find the first closed complaint and click the ellipsis
+    cy.get("@closedRows")
       .first()
-      .parent()
       .within(($tr) => { // filters just that row
         cy.get('td.comp-ellipsis-cell') // finds the buttons cell of that row
           .click({force: true});
       });
     cy.get('.popover').should('exist');
-    //cy.get('.popover').contains('Update Status').click();
+    cy.get('.popover').get('div#update_status_link').click();
 
-    let closedCountAfterStatusChange = cy.contains('td.comp-status-cell', 'Closed').its.length;
+    cy.get('#complaint_status_dropdown').select('OPEN');
 
-    // the count of closed items should have changed
-    // todo change this to not.equal
-    expect(closedCount).to.equal(closedCountAfterStatusChange);
-  });
-
-  it('Changes status of open complaint to closed', () => {
-    cy.visit("/");
-    cy.get('.popover').should('not.exist');
-    // Trigger the popover
-    cy.scrollTo('right');//scroll over so we can watch the popover appear
+    cy.get('#update_complaint_status_button').click();
+    cy.wait(5000);
 
     // Find the first open complaint and click the ellipsis
-    cy.contains('td.comp-status-cell', 'Open')
+    cy.get("@openRows")
       .first()
-      .parent()
       .within(($tr) => { // filters just that row
         cy.get('td.comp-ellipsis-cell') // finds the buttons cell of that row
           .click({force: true});
       });
     cy.get('.popover').should('exist');
-    cy.get('.popover').contains('Update Status').should('exist');    
+    cy.get('.popover').get('div#update_status_link').click();
+
+    cy.get('#complaint_status_dropdown').select('CLOSED');
+
+    cy.get('#update_complaint_status_button').click();
+    cy.wait(5000);
+
+
+    cy.get('table tr').filter(':contains("Closed")').its('length').as('modifiedClosedRowCount');
+
+    // Verify that the number of rows where the status is closed has not changed
+    cy.get('@modifiedClosedRowCount').then((modifiedCount) => {
+      cy.get('@initialClosedRowCount').then((initialCount) => {
+        expect(modifiedCount).to.equal(initialCount)
+      })
+    })
   });
+
+
 })

@@ -2,12 +2,10 @@ import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
   isSidebarOpen,
-  openModal,
   toggleSidebar,
 } from "../../../store/reducers/app";
 import logo from "../../../../assets/images/icons/ce-cos-icon.svg";
 import MenuItem from "../../../types/app/menu-item";
-import { Sample } from "../../../types/modal/modal-types";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -17,26 +15,6 @@ export const SideBar: FC = () => {
   const menueItems: Array<MenuItem> = [
     { name: "Complaints", icon: "bi bi-file-earmark-medical" },
   ];
-
-  //-- sample modal
-
-  const openSampleModal = () => {
-    dispatch(
-      openModal({
-        modalSize: "sm",
-        modalType: Sample,
-        data: {
-          title: "modal title",
-          description: "modal description"
-        },
-        callback: () => { 
-          console.log("derp callback")
-        }
-      })
-    );
-  };
-
-  //-- end sample modal
 
   return (
     <div
@@ -65,10 +43,6 @@ export const SideBar: FC = () => {
           );
         })}
       </ul>
-      {/* <!-- sample modal button -->  */}
-      <button className="btn btn-primary" onClick={(evt) => openSampleModal()}>
-        Test Modal
-      </button>
       <div
         className="comp-sidebar-toggle"
         onClick={() => {
