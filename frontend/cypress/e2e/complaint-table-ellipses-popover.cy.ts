@@ -27,13 +27,12 @@ describe('Complaint Assign and Status Popover spec', () => {
           .click({force: true});
       });
     cy.get('.popover').should('exist');
-    //cy.get('.popover').contains('Update Status').click();
+    cy.get('.popover').contains('Update Status').click();
 
     let closedCountAfterStatusChange = cy.contains('td.comp-status-cell', 'Closed').its.length;
 
     // the count of closed items should have changed
-    // todo change this to not.equal
-    expect(closedCount).to.equal(closedCountAfterStatusChange);
+    expect(closedCount).to.not.equal(closedCountAfterStatusChange);
   });
 
   it('Changes status of open complaint to closed', () => {
