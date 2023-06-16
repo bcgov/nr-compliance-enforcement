@@ -3,13 +3,10 @@ import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
 import { ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
-import { HwcrComplaint } from '../../../types/complaints/hwcr-complaint';
-import { AllegationComplaint } from '../../../types/complaints/allegation-complaint';
 
 type Props= {
   complaint_identifier: string;
-  hwcr_complaint?: HwcrComplaint;
-  allegatation_complaint?: AllegationComplaint
+  complaint_type: number
 }
 
 /**
@@ -17,7 +14,7 @@ type Props= {
  * 1. Assign Complaint
  * 2. Update astatus
  */
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type }) => {
   const dispatch = useAppDispatch();
 
   const renderPopover = () => ( 
@@ -38,7 +35,8 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier }) =>
         data: {
           title: "Update status?",
           description: "Status",
-          complaint_identifier: complaint_identifier
+          complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type
         }
       })
     );

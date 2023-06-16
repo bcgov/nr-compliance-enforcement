@@ -52,7 +52,7 @@ export const getHwcrComplaints = (sortColumn: string, sortOrder: string): AppThu
   }
 };
 
-export const updateComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
+export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;

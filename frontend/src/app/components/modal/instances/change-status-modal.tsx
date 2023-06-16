@@ -3,20 +3,24 @@ import { Modal, Row, Col, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
-import { updateComplaintStatus } from "../../../store/reducers/hwcr-complaints";
+import { updateHwlcComplaintStatus } from "../../../store/reducers/hwcr-complaints";
+import { updateAllegationComplaintStatus } from "../../../store/reducers/allegation-complaint";
+
+import ComplaintType from "../../../constants/complaint-types";
 
 
 type ChangeStatusModalProps = {
   close: () => void;
   submit: () => void;
-  complaint_identifier: string
+  complaint_identifier: string;
+  complaint_type: number;
 }
 
 /**
- * A modal dial box that allows users to change the status of a complaint
+ * A modal dialog box that allows users to change the status of a complaint
  * 
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
   const modalData = useAppSelector(selectModalData);
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState('');
@@ -25,7 +29,11 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit })
 
   useEffect(() => {
     if (status.length > 1) {
-      dispatch(updateComplaintStatus(complaint_identifier,status));
+      if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
+        dispatch(updateHwlcComplaintStatus(complaint_identifier,status));
+      } else {
+        dispatch(updateAllegationComplaintStatus(complaint_identifier,status));
+      }
       submit();
     }
   }, [dispatch,status,submit]);

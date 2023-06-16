@@ -4,6 +4,7 @@ import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
+import ComplaintType from "../../../../constants/complaint-types";
 
 type Props = {
     sortColumn: string,
@@ -47,7 +48,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} hwcr_complaint={val}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

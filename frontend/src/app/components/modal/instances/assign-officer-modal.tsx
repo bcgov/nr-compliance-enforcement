@@ -12,13 +12,9 @@ type AssignOfficerModalProps = {
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
   const { title, description } = modalData;
-  
 
   const handleSelectChange = (selectedValue: string) => {
-    console.log('Selected value:', selectedValue);
-    // Do something with the selected value in the parent component
-    console.log('Selected value:', selectedValue);
-    // Do something with the selected value in the parent component
+    // to be filled in on assign-officer story
   };
 
   return (

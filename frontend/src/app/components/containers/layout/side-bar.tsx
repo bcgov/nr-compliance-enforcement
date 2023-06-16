@@ -65,10 +65,6 @@ export const SideBar: FC = () => {
           );
         })}
       </ul>
-      {/* <!-- sample modal button -->  */}
-      <button className="btn btn-primary" onClick={(evt) => openSampleModal()}>
-        Test Modal
-      </button>
       <div
         className="comp-sidebar-toggle"
         onClick={() => {
