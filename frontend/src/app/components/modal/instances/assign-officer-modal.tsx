@@ -24,26 +24,20 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
         </Modal.Header>
       )}
       <Modal.Body>
-        <Row>
-          <Col className="assign_officer_modal_avatar">
-          <div
-                        data-initials="BF"
-                        className="comp-profile-avatar"
-                      ></div>
-          </Col>
-          <Col className="assign_officer_modal_name">
-            <Row><Col>Barrett</Col></Row>
-            <Row><Col>Officer</Col></Row>
-          </Col>
-          <Col>
-            <Button onClick={submit}>Self Assign</Button>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-          
-          </Col>
-        </Row>
+      <div className="assign_officer_modal_profile_card">
+        <div className="assign_officer_modal_profile_card_column">
+          <div className="assign_officer_modal_profile_card_profile-picture">
+            <div data-initials="BF" className="comp-profile-avatar"></div>
+          </div>
+        </div>
+        <div className="assign_officer_modal_profile_card_column">
+          <div className="assign_officer_modal_profile_card_row_1">Fred</div>
+          <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+        </div>
+        <div className="assign_officer_modal_profile_card_column">
+          <Button onClick={submit}>Self Assign</Button>
+        </div>
+      </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>
