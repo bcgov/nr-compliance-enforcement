@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ComplaintService } from './complaint.service';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
-import { Role } from 'src/enum/role.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtRoleGuard)
