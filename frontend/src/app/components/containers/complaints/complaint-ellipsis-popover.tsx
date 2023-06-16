@@ -1,8 +1,9 @@
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
-import { ChangeStatus } from '../../../types/modal/modal-types';
+import { AssignOfficer, ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
+import { AssignOfficerModal } from '../../modal/instances';
 
 type Props= {
   complaint_identifier: string;
@@ -22,7 +23,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
   const renderPopover = () => ( 
     <Popover>
         <Popover.Body>
-              <div id="assign_complaint_link" className="popover-text" onClick={openStatusChangeModal}>{assignText}</div>
+              <div id="assign_complaint_link" className="popover-text" onClick={openAsignOfficerModal}>{assignText}</div>
               <div id="update_status_link" className="popover-text" onClick={openStatusChangeModal}>Update Status</div>
         </Popover.Body>
     </Popover>
@@ -36,6 +37,21 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
         data: {
           title: "Update status?",
           description: "Status",
+          complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type
+        }
+      })
+    );
+  };
+
+  const openAsignOfficerModal = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: AssignOfficer,
+        data: {
+          title: "Assign Complaint",
+          description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type
         }

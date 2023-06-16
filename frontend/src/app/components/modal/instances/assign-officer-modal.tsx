@@ -2,7 +2,6 @@ import { FC } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
 import { useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
-import ComplaintStatusSelect from "../../codes/complaint-status-select";
 
 type AssignOfficerModalProps = {
   close: () => void;
@@ -26,19 +25,29 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
       )}
       <Modal.Body>
         <Row>
+          <Col className="assign_officer_modal_avatar">
+          <div
+                        data-initials="BF"
+                        className="comp-profile-avatar"
+                      ></div>
+          </Col>
+          <Col className="assign_officer_modal_name">
+            <Row><Col>Barrett</Col></Row>
+            <Row><Col>Officer</Col></Row>
+          </Col>
           <Col>
-            <label>{description}</label>
+            <Button onClick={submit}>Self Assign</Button>
           </Col>
         </Row>
         <Row>
           <Col>
-            <ComplaintStatusSelect width={"458px"} height={"38px"}  onSelectChange={handleSelectChange}/>
+          
           </Col>
         </Row>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>
-        <Button onClick={submit}>Update</Button>
+        <Button onClick={submit}>Assign</Button>
       </Modal.Footer>
     </>
   );
