@@ -3,18 +3,23 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 import Roles from "./constants/roles";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
+
 import ProtectedRoutes from "./components/routing";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
 import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
 import ColorReference from "./components/reference";
 
+import ComplaintType from "./constants/complaint-types";
+import { ModalComponent as Modal } from "./components/modal/modal";
+
 const App: FC = () => {
   return (
     <Router>
       <Routes>
+        <Modal />
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
           {/* <!-- temporary route --> */}
-          <Route path="/" element={<ComplaintContainer initialState={0} />} />
+          <Route path="/" element={<ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />} />
           <Route
             path="/complaints/:type?"
             element={<ComplaintContainer initialState={0} />}
