@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
+import { useNavigate } from "react-router-dom";
+import ComplaintTypes from "../../../../types/app/complaint-types";
 
 type Props = {
     sortColumn: string,
@@ -11,6 +13,7 @@ type Props = {
 
 export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate()
 
     const allegationComplaintsJson = useAppSelector(allegationComplaints);
 
@@ -18,6 +21,14 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
             dispatch(getAllegationComplaints(sortColumn, sortOrder));
   }, [dispatch, sortColumn, sortOrder])
 
+  const handleComplaintClick = (
+    e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
+    id: string
+  ) => {
+    e.preventDefault();
+
+    navigate(`/complaint/${ComplaintTypes.ERS}/${id}`);
+  };
 
     return (
         <Table id="comp-table" className="comp-table">
@@ -44,7 +55,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const statusClass = (length - 1 === key) ? "comp-status-cell comp-cell comp-cell-bottom" : "comp-status-cell comp-cell";
                     const updateDateClass = (length - 1 === key) ? "comp-last-updated-cell comp-cell comp-cell-bottom comp-bottom-right" : "comp-last-updated-cell comp-cell";
                         return (
-                            <tr key={"allegationComplaint" + key.toString()}>
+                            <tr key={"allegationComplaint" + key.toString()} onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                 <td className={complaintIdentifierClass}>{complaintIdentifier}</td>
                                 <td className={incidentReportedDatetimeClass}>{incidentReportedDatetime}</td>
                                 <td className={violationCodeClass}>{violationCode}</td>

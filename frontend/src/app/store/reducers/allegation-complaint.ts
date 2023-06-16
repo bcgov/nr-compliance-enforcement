@@ -7,6 +7,7 @@ import { AllegationComplaintState } from "../../types/complaints/allegation-comp
 
 const initialState: AllegationComplaintState = {
   allegationComplaints: [],
+  complaint: null
 };
 
 export const allegationComplaintSlice = createSlice({
@@ -19,6 +20,12 @@ export const allegationComplaintSlice = createSlice({
       const allegationComplaints:AllegationComplaint[] = payload.allegationComplaints;
       return { ...state, allegationComplaints};
     },
+
+    setComplaint: (state, action) => {
+      const { payload: complaint } = action;
+
+      return { ...state, complaint };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -27,7 +34,7 @@ export const allegationComplaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAllegationComplaints } = allegationComplaintSlice.actions;
+export const { setAllegationComplaints, setComplaint } = allegationComplaintSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -51,5 +58,25 @@ export const allegationComplaints = (state: RootState) => {
   const { allegationComplaints } = state.allegationComplaint;
   return allegationComplaints;
 }
+
+export const getEcrComplaintByComplaintIdentifier =
+  (id: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
+      );
+      const result = response.data;
+
+      dispatch(setComplaint({ ...result }));
+    }
+  };
+
+  export const selectedComplaint = (state: RootState) => {
+    return state.allegationComplaint.complaint;
+  };
 
 export default allegationComplaintSlice.reducer;

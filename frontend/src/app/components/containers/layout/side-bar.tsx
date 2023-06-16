@@ -7,7 +7,9 @@ import {
 } from "../../../store/reducers/app";
 import logo from "../../../../assets/images/icons/ce-cos-icon.svg";
 import MenuItem from "../../../types/app/menu-item";
+import { Link } from "react-router-dom";
 import { Sample } from "../../../types/modal/modal-types";
+
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -15,8 +17,25 @@ export const SideBar: FC = () => {
   const isOpen = useAppSelector(isSidebarOpen);
 
   const menueItems: Array<MenuItem> = [
-    { name: "Complaints", icon: "bi bi-file-earmark-medical" },
+    {
+      name: "Complaints",
+      icon: "bi bi-file-earmark-medical",
+      route: "/complaints",
+    },
   ];
+
+
+  const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
+    const { icon, name, route } = item;
+    return (
+      <li key={idx}>
+        <i className={icon}></i>
+        <span className="comp-nav-item-name">
+          {!route ? <>{name}</> : <Link to={route}>{name}</Link>}
+        </span>
+      </li>
+    );
+  };
 
   //-- sample modal
 
@@ -38,6 +57,7 @@ export const SideBar: FC = () => {
 
   //-- end sample modal
 
+
   return (
     <div
       className={`d-flex flex-column flex-shrink-0 comp-side-bar  ${(!isOpen
@@ -56,13 +76,8 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
 
       <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
-        {menueItems.map(({ name, icon, route }, idx) => {
-          return (
-            <li key={idx}>
-              <i className={icon}></i>
-              <span className="comp-nav-item-name">{name}</span>
-            </li>
-          );
+        {menueItems.map((item, idx) => {
+          return renderSideBarMenuItem(idx, item);
         })}
       </ul>
       {/* <!-- sample modal button -->  */}
