@@ -9,12 +9,10 @@ interface Option {
 }
 
 type Props = {
-  width?: string;
-  height?: string;
   onSelectChange: (selectedValue: string) => void;
 };
 
-const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange }) => {
+const ComplaintStatusSelect: React.FC<Props> = ({onSelectChange }) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedValue, setSelectedValue] = useState('');
 
@@ -40,8 +38,8 @@ const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange 
 
   return (
     <div>
-      <select id="complaint_status_dropdown" value={selectedValue} style={{'width': width, 'height': height}} onChange={handleSelectChange}>
-        <option value="">Select</option>
+      <select id="complaint_status_dropdown" value={selectedValue} className='form-select' onChange={handleSelectChange}>
+        <option value="" hidden>Select</option>
         {options.map(option => (
           <option key={option.complaint_status_code} value={option.complaint_status_code}>{option.long_description}</option>
         ))}

@@ -32,7 +32,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
         </Row>
         <Row>
           <Col>
-            <ComplaintStatusSelect width={"458px"} height={"38px"}  onSelectChange={handleSelectChange}/>
+            <ComplaintStatusSelect onSelectChange={handleSelectChange}/>
           </Col>
         </Row>
       </Modal.Body>
