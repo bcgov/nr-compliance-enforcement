@@ -1,10 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne } from "typeorm";
+import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne, OneToOne } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { UUID } from "crypto";
 import { Point } from "geojson";
+import { CosGeoOrgUnit } from "src/v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Entity()
 export class Complaint {
@@ -46,6 +47,15 @@ export class Complaint {
   @ManyToOne(() => GeoOrganizationUnitCode)
   @JoinColumn({name: "geo_organization_unit_code"})
   geo_organization_unit_code: GeoOrganizationUnitCode;
+
+  @ApiProperty({
+    example: "DCC",
+    description:
+      "The geographical organization code of the organization that currently owns the complaint",
+  })
+  @OneToOne(() => CosGeoOrgUnit)
+  @JoinColumn({ name: "geo_organization_unit_code" })
+  cos_geo_org_unit: CosGeoOrgUnit;
 
   @ApiProperty({
     example: "Bear overturning garbage bins",

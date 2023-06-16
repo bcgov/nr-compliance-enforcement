@@ -92,4 +92,19 @@ export class AllegationComplaintService {
       return { deleted: false, message: err.message };
     }
   }
+
+  async findByComplaintIdentifier(id: any): Promise<AllegationComplaint> {
+    return this.allegationComplaintsRepository.findOneOrFail({
+      where: { complaint_identifier: id },
+      relations: { 
+        complaint_identifier: {
+          owned_by_agency_code: true,
+          referred_by_agency_code: true,
+          complaint_status_code: true,
+          cos_geo_org_unit: true,
+        } ,
+        violation_code: false,
+      },
+    });
+  }
 }
