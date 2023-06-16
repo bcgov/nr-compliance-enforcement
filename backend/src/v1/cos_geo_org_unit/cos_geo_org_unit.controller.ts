@@ -1,9 +1,9 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { CosGeoOrgUnitService } from './cos_geo_org_unit.service';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { Roles } from "../../../src/auth/decorators/roles.decorator"
+import { Role } from "../../../src/enum/role.enum";
 import { ApiTags } from '@nestjs/swagger';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../../src/auth/jwtrole.guard';
 
 @ApiTags("cos-geo-org-unit")
 @UseGuards(JwtRoleGuard)
