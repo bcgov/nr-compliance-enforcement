@@ -253,19 +253,18 @@
   flex-grow: 0;
 }
 
-.comp-table {
-  border-spacing: 0px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  margin: 0;
-  width: 1330px;
-  font-style: normal;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.0001);
-  text-align: left;
-  border-collapse: initial;
-  margin-left: 12px;
+  .comp-table {
+    border-spacing: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 0;
+    width: 1330px;
+    font-style: normal;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.0001);
+    text-align: left;
+    border-collapse: initial;
 
   > :not(caption) > * > * {
     background: rgba(255, 255, 255, 0.0001);
@@ -353,9 +352,11 @@
   margin-top: 1px;
 }
 
-.comp-header-caret {
-  float: right;
-}
+  .comp-header-caret
+  {
+    float: right;
+    cursor: pointer;
+  }
 
 .comp-cell-bottom {
   border-style: solid;
@@ -390,9 +391,9 @@
   font-weight: 700;
   font-size: 12px;
 
-  display: flex;
-  flex-direction: row;
-  padding: 4.2px 7.8px;
+    display: flex;
+    flex-direction: row;
+    padding: 4px 8px;
 
   pointer-events: none;
   background-color: #2464a4;
@@ -406,9 +407,9 @@
   font-weight: 700;
   font-size: 12px;
 
-  display: flex;
-  flex-direction: row;
-  padding: 4.2px 7.8px;
+    display: flex;
+    flex-direction: row;
+    padding: 4px 8px;
 
   pointer-events: none;
   background-color: #d8292f;
@@ -422,9 +423,9 @@
   font-weight: 700;
   font-size: 12px;
 
-  display: flex;
-  flex-direction: row;
-  padding: 4.2px 7.8px;
+    display: flex;
+    flex-direction: row;
+    padding: 4px 8px;
 
   pointer-events: none;
   background-color: #e4e4e4;
@@ -440,9 +441,9 @@
   font-weight: 700;
   font-size: 12px;
 
-  display: flex;
-  flex-direction: row;
-  padding: 4.2px 7.8px;
+    display: flex;
+    flex-direction: row;
+    padding: 4px 8px;
 
   pointer-events: none;
 

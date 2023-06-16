@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateAllegationComplaintDto } from './dto/create-allegation_complaint.dto';
 import { UpdateAllegationComplaintDto } from './dto/update-allegation_complaint.dto';
 import { AllegationComplaint } from './entities/allegation_complaint.entity';
@@ -33,15 +33,18 @@ export class AllegationComplaintService {
     catch (err) {
       console.log(err);
       await queryRunner.rollbackTransaction();
-      newAllegationComplaint = "Error Occured";
+      throw new BadRequestException(err);
     } finally {
       await queryRunner.release();
     }
     return newAllegationComplaint;
   }
 
-  async findAll(): Promise<AllegationComplaint[]> {
-
+  async findAll(sortColumn: string, sortOrder: string): Promise<AllegationComplaint[]> {
+    //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
+    const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
+    const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind') ? 'allegation_complaint.' : 'complaint_identifier.';
+    const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)';
     return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
       .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
@@ -49,8 +52,8 @@ export class AllegationComplaintService {
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
-      .orderBy('complaint_identifier.incident_reported_datetime', 'DESC')
-      .addOrderBy('complaint_identifier.complaint_identifier', 'DESC')
+      .orderBy(sortString, sortOrderString)
+      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC")
       .getMany();
   }
 

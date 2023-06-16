@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Logger } from '@nestjs/common';
 import { HwcrComplaintService } from './hwcr_complaint.service';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
@@ -16,6 +16,8 @@ import { UUID } from 'crypto';
 export class HwcrComplaintController {
   constructor(private readonly hwcrComplaintService: HwcrComplaintService) {}
 
+  private readonly logger = new Logger(HwcrComplaintController.name);
+
   @Post()
   @Roles(Role.COS_OFFICER)
   create(@Body() createHwcrComplaintDto: CreateHwcrComplaintDto) {
@@ -24,8 +26,9 @@ export class HwcrComplaintController {
 
   @Get()
   @Roles(Role.COS_OFFICER)
-  findAll() {
-    return this.hwcrComplaintService.findAll();
+  findAll(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string) {
+    this.logger.debug("Entering findAll");
+    return this.hwcrComplaintService.findAll(sortColumn, sortOrder);
   }
 
   @Get(':id')

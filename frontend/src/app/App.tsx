@@ -11,24 +11,24 @@ import ColorReference from "./components/reference";
 const App: FC = () => {
   return (
     <Router>
-    <Routes>
-      <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
-        {/* <!-- temporary route --> */}
-        <Route path="/" element={<ComplaintContainer initialState={0} />} />
-        <Route
-          path="/complaints/:type?"
-          element={<ComplaintContainer initialState={0} />}
-        />
-        <Route
-          path="/complaint/:complaintType/:id"
-          element={<ComplaintDetails />}
-        />
-      </Route>
-      <Route path="/not-authorized" element={<NotAuthorized />} />
-      <Route path="*" element={<NotFound />} />
-      <Route path="/reference" element={<ColorReference />} />
-    </Routes>
-  </Router>
+      <Routes>
+        <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
+          {/* <!-- temporary route --> */}
+          <Route path="/" element={<ComplaintContainer initialState={0} />} />
+          <Route
+            path="/complaints/:type?"
+            element={<ComplaintContainer initialState={0} />}
+          />
+          <Route
+            path="/complaint/:complaintType/:id"
+            element={<ComplaintDetails />}
+          />
+        </Route>
+        <Route path="/not-authorized" element={<NotAuthorized />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/reference" element={<ColorReference />} />
+      </Routes>
+    </Router>
   );
 };
 

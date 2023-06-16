@@ -5,7 +5,6 @@ import {
   selectedComplaint,
   getHwcrComplaintByComplaintIdentifier,
 } from "../../../store/reducers/hwcr-complaints";
-import { Col, Row } from "react-bootstrap";
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 
 type TestType = {

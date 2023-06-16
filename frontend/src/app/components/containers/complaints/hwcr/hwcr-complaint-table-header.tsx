@@ -2,7 +2,11 @@ import { FC } from "react";
 import { Row, Table } from "react-bootstrap";
 import carets from "../../../../../assets/images/table-carets.png";
 
-export const HwcrComplaintTableHeader: FC = () => {
+type Props = {
+    handleSort: Function,
+}
+
+export const HwcrComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
     return (
     <Table className="comp-table-header">
         <thead>
@@ -11,15 +15,15 @@ export const HwcrComplaintTableHeader: FC = () => {
                     <div className="comp-header-label">
                         Incident#
                     </div>
-                    <div className="comp-header-caret">
-                        <img src={carets} alt="sort" />
+                    <div className="comp-header-caret" onClick={() => handleSort("complaint_identifier")}>
+                        <img src={carets} alt="sort"/>
                     </div>
                 </th>
                 <th className="comp-small-cell comp-header-cell">
                     <div className="comp-header-label">
                         Date/Time
                     </div>
-                    <div className="comp-header-caret">
+                    <div className="comp-header-caret" onClick={() => handleSort("incident_reported_datetime")} >
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
@@ -27,15 +31,15 @@ export const HwcrComplaintTableHeader: FC = () => {
                     <div className="comp-header-label">
                         Nature of Complaint
                     </div>
-                    <div className="comp-header-caret">
-                        <img src={carets} alt="sort" />
+                    <div className="comp-header-caret" onClick={() => handleSort("hwcr_complaint_nature_code")}>
+                        <img src={carets} alt="sort"/>
                     </div>
                 </th>
                 <th className="comp-medium-cell comp-header-cell">
                     <div className="comp-header-label">
                         Species
                     </div>
-                    <div className="comp-header-caret">
+                    <div className="comp-header-caret" onClick={() => handleSort("species_code")}>
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
@@ -43,7 +47,7 @@ export const HwcrComplaintTableHeader: FC = () => {
                     <div className="comp-header-label">
                         Community
                     </div>
-                    <div className="comp-header-caret">
+                    <div className="comp-header-caret" onClick={() => handleSort("geo_organization_unit_code")} >
                         <img src={carets} alt="sort" />
                     </div>
                 </th>
@@ -51,32 +55,29 @@ export const HwcrComplaintTableHeader: FC = () => {
                     <div className="comp-header-label">
                         Location/Address
                     </div>
-                    <div className="comp-header-caret">
-                        <img src={carets} alt="sort" />
-                    </div>
                 </th>
                 <th className="comp-medium-cell comp-header-cell">
                     <div className="comp-header-label">
                         Officer Assigned
                     </div>
                     <div className="comp-header-caret">
-                        <img src={carets} alt="sort" />
+                        <img src={carets} alt="sort"/>
                     </div>
                 </th>
                 <th className="comp-status-cell comp-header-cell">
                     <div className="comp-header-label">
                         Status
                     </div>
-                    <div className="comp-header-caret">
-                        <img src={carets} alt="sort" />
+                    <div className="comp-header-caret" onClick={() => handleSort("complaint_status_code")}>
+                        <img src={carets} alt="sort"/>
                     </div>
                 </th>
                 <th className="comp-last-updated-cell comp-header-cell comp-top-right">
                     <div className="comp-header-label">
                         Last Updated
                     </div>
-                    <div className="comp-header-caret">
-                        <img src={carets} alt="sort" />
+                    <div className="comp-header-caret" onClick={() => handleSort("update_timestamp")}>
+                        <img src={carets} alt="sort"/>
                     </div>
                 </th>
             </Row>

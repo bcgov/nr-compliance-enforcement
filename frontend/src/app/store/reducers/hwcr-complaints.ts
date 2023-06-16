@@ -43,14 +43,11 @@ export const { setHwcrComplaints, setComplaint } = hwcrComplaintSlice.actions;
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getHwcrComplaints = (): AppThunk => async (dispatch) => {
+export const getHwcrComplaints = (sortColumn: string, sortOrder: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(
-      `${config.API_BASE_URL}/v1/hwcr-complaint`
-    );
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
     dispatch(
       setHwcrComplaints({
         hwcrComplaints: response.data,
@@ -189,11 +186,11 @@ export const selectComplaintCallerInformation = (
     caller_phone_2,
     caller_address,
     caller_email,
-    referred_by_agency_code: {
-      agency_code: agencyCode,
-      long_description: description,
-    },
+    referred_by_agency_code
   } = complaint_identifier;
+
+const { long_description: description } = referred_by_agency_code || {}
+
 
   result = {
     name: caller_name,
@@ -201,7 +198,7 @@ export const selectComplaintCallerInformation = (
     secondaryPhone: caller_phone_2,
     address: caller_address,
     email: caller_email,
-    referredByAgencyCode: description,
+    referredByAgencyCode: description
   };
 
   return result;
