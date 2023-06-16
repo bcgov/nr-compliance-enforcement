@@ -7,8 +7,7 @@ import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state
 import { Complaint } from "../../types/complaints/complaint";
 
 const initialState: HwcrComplaintState = {
-  hwcrComplaints: [],
-  selectedComplaintIdentifier: "",
+  hwcrComplaints: []
 };
 
 export const hwcrComplaintSlice = createSlice({
@@ -26,11 +25,6 @@ export const hwcrComplaintSlice = createSlice({
       const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
       return { ...state, hwcrComplaints};
     },
-    setSelectedComplaintIdentifier: (state, action) => {
-      const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
-      return { ...state, hwcrComplaints};
-    }
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,

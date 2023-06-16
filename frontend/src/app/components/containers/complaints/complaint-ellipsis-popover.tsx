@@ -1,7 +1,7 @@
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
-import { AssignOfficer, ChangeStatus } from '../../../types/modal/modal-types';
+import { ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
 import { HwcrComplaint } from '../../../types/complaints/hwcr-complaint';
 import { AllegationComplaint } from '../../../types/complaints/allegation-complaint';
@@ -12,7 +12,12 @@ type Props= {
   allegatation_complaint?: AllegationComplaint
 }
 
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, hwcr_complaint }) => {
+/**
+ * Renders a popover that contains the following actions:
+ * 1. Assign Complaint
+ * 2. Update astatus
+ */
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier }) => {
   const dispatch = useAppDispatch();
 
   const renderPopover = () => ( 
@@ -33,15 +38,11 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, hwcr
         data: {
           title: "Update status?",
           description: "Status",
-          complaint: hwcr_complaint
-        },
-        callback: () => { 
-          console.log("derp callback")
+          complaint_identifier: complaint_identifier
         }
       })
     );
   };
-
 
   return (
     <OverlayTrigger

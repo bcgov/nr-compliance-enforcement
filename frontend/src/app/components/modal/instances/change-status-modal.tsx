@@ -1,42 +1,44 @@
 import { FC, useEffect, useState } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { closeModal, selectModalData } from "../../../store/reducers/app";
+import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
-import { hwcrComplaints, updateComplaintStatus } from "../../../store/reducers/hwcr-complaints";
+import { updateComplaintStatus } from "../../../store/reducers/hwcr-complaints";
 
 
 type ChangeStatusModalProps = {
   close: () => void;
   submit: () => void;
-  complaint_identifier: string,
-  complaint_status: string,
+  complaint_identifier: string
 }
 
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_identifier, complaint_status }) => {
+/**
+ * A modal dial box that allows users to change the status of a complaint
+ * 
+ */
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState('');
   let selectedStatus = '';
+  
 
   useEffect(() => {
     if (status.length > 1) {
-      dispatch(updateComplaintStatus('23-000065',status));
+      dispatch(updateComplaintStatus(complaint_identifier,status));
       submit();
     }
   }, [dispatch,status,submit]);
   
 
-  const { title, description } = modalData;
+  const { title, description,complaint_identifier } = modalData;
 
   const handleSelectChange = (selectedValue: string) => {
     selectedStatus = selectedValue;
-    // Do something with the selected value in the parent component
   };
 
   const handleSubmit = () => {
     setStatus(selectedStatus);
-    // Do something with the selected value in the parent component
   };
 
   return (

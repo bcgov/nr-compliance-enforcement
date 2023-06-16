@@ -35,7 +35,7 @@ const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange 
   const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     setSelectedValue(value);
-    onSelectChange(value); // Invoking the callback function with the selected value
+    onSelectChange(value);
   };
 
   return (
