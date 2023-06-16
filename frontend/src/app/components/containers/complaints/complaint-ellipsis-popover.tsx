@@ -21,8 +21,8 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
   
     <Popover>
         <Popover.Body>
-              <div className="popover-text" onClick={openStatusChangeModal}>Reassign Complaint</div>
-              <div className="popover-text" onClick={openStatusChangeModal}>Update Status</div>
+              <div id="assign_complaint_link" className="popover-text" onClick={openStatusChangeModal}>Reassign Complaint</div>
+              <div id="update_status_link" className="popover-text" onClick={openStatusChangeModal}>Update Status</div>
         </Popover.Body>
     </Popover>
   );

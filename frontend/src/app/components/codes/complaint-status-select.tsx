@@ -40,7 +40,7 @@ const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange 
 
   return (
     <div>
-      <select id="dropdown" value={selectedValue} style={{'width': width, 'height': height}} onChange={handleSelectChange}>
+      <select id="complaint_status_dropdown" value={selectedValue} style={{'width': width, 'height': height}} onChange={handleSelectChange}>
         <option value="">Select</option>
         {options.map(option => (
           <option key={option.complaint_status_code} value={option.complaint_status_code}>{option.long_description}</option>
