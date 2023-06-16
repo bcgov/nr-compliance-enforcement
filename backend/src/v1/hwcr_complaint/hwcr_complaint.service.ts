@@ -24,7 +24,7 @@ export class HwcrComplaintService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    var newHwcrComplaintString;
+    let newHwcrComplaintString;
     try {
       await this.complaintService.create(
         <CreateComplaintDto>hwcrComplaint,
@@ -33,7 +33,7 @@ export class HwcrComplaintService {
       newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
         <CreateHwcrComplaintDto>hwcrComplaint
       );
-      var newHwcrComplaint: HwcrComplaint;
+      let newHwcrComplaint: HwcrComplaint;
       newHwcrComplaint = <HwcrComplaint>(
         await queryRunner.manager.save(newHwcrComplaintString)
       );
@@ -134,7 +134,7 @@ export class HwcrComplaintService {
 
   async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
     try {
-      var complaint_identifier = (
+      let complaint_identifier = (
         await this.hwcrComplaintsRepository.findOneOrFail({
           where: { hwcr_complaint_guid: id },
           relations: {

@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { ComplaintDetailsBreadcrumb } from "./breadcrumb";
 import { complaintTypeToName } from "../../../../types/app/complaint-types";
-import { Col, Row } from "react-bootstrap";
 
 export const ComplaintDetailsHeader: FC<{
   id: string | undefined;

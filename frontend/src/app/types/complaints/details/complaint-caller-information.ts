@@ -1,8 +1,8 @@
 export interface ComplaintCallerInformation {
-  name?: string | undefined;
-  address?: string | undefined;
-  email?: string | undefined;
-  primaryPhone?: string | undefined;
-  secondaryPhone?: string | undefined;
-  referredByAgencyCode?: string | undefined;
+  name?: string;
+  address?: string;
+  email?: string;
+  primaryPhone?: string;
+  secondaryPhone?: string;
+  referredByAgencyCode?: string;
 }

@@ -1,10 +1,7 @@
 import { FC } from "react";
-import { Row, Col, NavItem } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import {
-  selectComplaintDetails,
-  selectedComplaint,
-} from "../../../../store/reducers/hwcr-complaints";
+import { selectComplaintDetails } from "../../../../store/reducers/hwcr-complaints";
 import {
   formatDate,
   formatTime,
@@ -49,22 +46,22 @@ export const CallDetails: FC = () => {
               <span className="comp-complaint-label">Attractants</span>
               <span className="comp-complaint-attactants">
                 {!attractants ||
-                  attractants.map(({key, description}: ComplaintDetailsAttractant) => {
-                    return (
-                      <span className="badge comp-attactant-badge" key={key}>
-                        {description}
-                      </span>
-                    );
-                  })}
+                  attractants.map(
+                    ({ key, description }: ComplaintDetailsAttractant) => {
+                      return (
+                        <span className="badge comp-attactant-badge" key={key}>
+                          {description}
+                        </span>
+                      );
+                    }
+                  )}
               </span>
             </div>
           </Col>
           <Col md="6" style={{ paddingLeft: "28px" }}>
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">Complaint Location</span>
-              <span className="comp-complaint-incident-time">
-                {location}
-              </span>
+              <span className="comp-complaint-incident-time">{location}</span>
             </div>
             <div className="comp-complaint-label">Location Description</div>
             <p>{locationDescription}</p>
@@ -84,9 +81,7 @@ export const CallDetails: FC = () => {
             </div>
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">Office</span>
-              <span className="comp-complaint-incident-time">
-                {office}
-              </span>
+              <span className="comp-complaint-incident-time">{office}</span>
             </div>
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">Zone</span>
@@ -94,9 +89,7 @@ export const CallDetails: FC = () => {
             </div>
             <div className="comp-complaint-section">
               <span className="comp-complaint-label">Region</span>
-              <span className="comp-complaint-incident-time">
-                {region}
-              </span>
+              <span className="comp-complaint-incident-time">{region}</span>
             </div>
           </Col>
         </Row>

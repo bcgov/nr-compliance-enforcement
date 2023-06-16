@@ -15,11 +15,16 @@ import { ModalComponent as Modal } from "./components/modal/modal";
 const App: FC = () => {
   return (
     <Router>
+      <Modal />
       <Routes>
-        <Modal />
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
           {/* <!-- temporary route --> */}
-          <Route path="/" element={<ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />} />
+          <Route
+            path="/"
+            element={
+              <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
+            }
+          />
           <Route
             path="/complaints/:type?"
             element={<ComplaintContainer initialState={0} />}
