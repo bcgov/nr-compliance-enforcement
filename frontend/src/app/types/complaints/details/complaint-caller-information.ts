@@ -4,5 +4,6 @@ export interface ComplaintCallerInformation {
   email?: string;
   primaryPhone?: string;
   secondaryPhone?: string;
+  alternatePhone?: string;
   referredByAgencyCode?: string;
 }

@@ -72,7 +72,7 @@ export const CallDetails: FC = () => {
               </span>
               <span className="comp-complaint-label">Y Coordinate</span>
               <span className="comp-complaint-incident-time">
-                {parseCoordinates(coordinates, Coordinates.Latitude)}
+                {parseCoordinates(coordinates, Coordinates.Longitude)}
               </span>
             </div>
             <div className="comp-complaint-section">

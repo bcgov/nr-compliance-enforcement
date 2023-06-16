@@ -8,6 +8,7 @@ export const CallerInformation: FC = () => {
     name,
     primaryPhone,
     secondaryPhone,
+    alternatePhone,
     address,
     email,
     referredByAgencyCode,
@@ -30,9 +31,15 @@ export const CallerInformation: FC = () => {
               </span>
             </div>
             <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Secondary Phone</span>
+              <span className="comp-complaint-label">Alternate 1 Phone</span>
               <span className="comp-complaint-incident-time">
                 {secondaryPhone}
+              </span>
+            </div>
+            <div className="comp-complaint-section">
+              <span className="comp-complaint-label">Alternate 2 Phone</span>
+              <span className="comp-complaint-incident-time">
+                {alternatePhone}
               </span>
             </div>
           </Col>

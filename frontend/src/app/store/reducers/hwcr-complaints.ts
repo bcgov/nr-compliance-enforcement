@@ -184,6 +184,7 @@ export const selectComplaintCallerInformation = (
     caller_name,
     caller_phone_1,
     caller_phone_2,
+    caller_phone_3,
     caller_address,
     caller_email,
     referred_by_agency_code
@@ -196,6 +197,7 @@ const { long_description: description } = referred_by_agency_code || {}
     name: caller_name,
     primaryPhone: caller_phone_1,
     secondaryPhone: caller_phone_2,
+    alternatePhone: caller_phone_3,
     address: caller_address,
     email: caller_email,
     referredByAgencyCode: description
