@@ -30,9 +30,15 @@ describe('Complaint Assign and Status Popover spec', () => {
     cy.get('.popover').should('exist');
     cy.get('.popover').get('div#update_status_link').click();
 
-    cy.get('#complaint_status_dropdown').select('OPEN');
+    cy.get('#complaint_status_dropdown').click();
+
+    // Select the option with value "OPEN"
+    cy.get('.react-select__option')
+      .contains('Open')
+      .click()
 
     cy.get('#update_complaint_status_button').click();
+
     cy.wait(5000);
 
     // Find the first open complaint and click the ellipsis
@@ -45,7 +51,12 @@ describe('Complaint Assign and Status Popover spec', () => {
     cy.get('.popover').should('exist');
     cy.get('.popover').get('div#update_status_link').click();
 
-    cy.get('#complaint_status_dropdown').select('CLOSED');
+    cy.get('#complaint_status_dropdown').click()
+
+    // Select the option with value "OPEN"
+    cy.get('.react-select__option')
+      .contains('Closed')
+      .click()
 
     cy.get('#update_complaint_status_button').click();
     cy.wait(5000);

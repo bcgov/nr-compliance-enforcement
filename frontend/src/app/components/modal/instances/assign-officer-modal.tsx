@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
 import { useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
+import ComplaintStatusSelect from "../../codes/complaint-status-select";
 
 type AssignOfficerModalProps = {
   close: () => void;

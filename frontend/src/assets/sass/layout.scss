@@ -191,6 +191,12 @@
   flex-direction: column;
 }
 
+.modal_description_label {
+  padding: 0px 0px 8px;
+  gap: 4px;
+  width: 458px;
+  height: 32px;
+}
 .assign_officer_modal_profile_card {
   display: flex;
   justify-content: flex-start;
@@ -221,7 +227,6 @@
   font-size: 16px;
   color: #ADB5BD;
 }
-
 
 .assign_officer_modal_profile_card_column:last-child {
   width: 150px;

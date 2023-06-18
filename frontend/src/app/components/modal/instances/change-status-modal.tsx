@@ -52,19 +52,19 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   return (
     <>
       {title && (
-        <Modal.Header closeButton={true}>
+        <Modal.Header closeButton={true} className="border-0">
           <Modal.Title style={{ fontSize: '20px' }}>{title}</Modal.Title>
         </Modal.Header>
       )}
       <Modal.Body>
         <Row>
           <Col>
-            <label>{description}</label>
+            <label className="modal_description_label">{description}</label>
           </Col>
         </Row>
         <Row>
           <Col>
-            <ComplaintStatusSelect width={"458px"} height={"38px"} onSelectChange={handleSelectChange}/>
+            <ComplaintStatusSelect onSelectChange={handleSelectChange}/>
           </Col>
         </Row>
       </Modal.Body>

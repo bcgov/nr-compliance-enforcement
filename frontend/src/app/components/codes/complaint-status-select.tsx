@@ -1,22 +1,21 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../../../config';
 import { CodeTable } from '../../../enum/code-table.enum';
+import Select from 'react-select'
 
 interface Option {
-  complaint_status_code: string;
-  long_description: string;
+  value: string | undefined;
+  label: string | undefined;
 }
 
 type Props = {
-  width?: string;
-  height?: string;
   onSelectChange: (selectedValue: string) => void;
 };
 
-const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange }) => {
+const ComplaintStatusSelect: React.FC<Props> = ({onSelectChange }) => {
   const [options, setOptions] = useState<Option[]>([]);
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
   useEffect(() => {
     // Fetch data using Axios
@@ -25,27 +24,35 @@ const ComplaintStatusSelect: React.FC<Props> = ({ width, height, onSelectChange 
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
       axios.get(`${config.API_BASE_URL}/v1/${CodeTable.COMPLAINT_STATUS_CODE}`)
       .then(response => {
-        setOptions(response.data);
+        const data = response.data; // Assuming the response is an array of JSON elements
+
+        // Transform the response data into an array of options
+        const transformedOptions: Option[] = data.map((item: any) => ({
+          value: item.complaint_status_code, // Assuming each item has an 'id' property
+          label: item.long_description, // Assuming each item has a 'name' property
+        }));
+        setOptions(transformedOptions);
       })
       .catch(error => {
         console.error('Error fetching options:', error);
       });
   }}, []);
 
-  const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    setSelectedValue(value);
-    onSelectChange(value);
-  };
+  const handleChange = (selectedOption: Option | null) => {
+    setSelectedOption(selectedOption);
+    onSelectChange(selectedOption?.value ? selectedOption.value : "");
+  }; 
 
   return (
     <div>
-      <select id="complaint_status_dropdown" value={selectedValue} style={{'width': width, 'height': height}} onChange={handleSelectChange}>
-        <option value="">Select</option>
-        {options.map(option => (
-          <option key={option.complaint_status_code} value={option.complaint_status_code}>{option.long_description}</option>
-        ))}
-      </select>
+
+      <Select id="complaint_status_dropdown"
+        options={options}
+        value={selectedOption}
+        onChange={handleChange}
+        classNamePrefix="react-select"
+        placeholder="Select"
+      />
     </div>
   );
 };

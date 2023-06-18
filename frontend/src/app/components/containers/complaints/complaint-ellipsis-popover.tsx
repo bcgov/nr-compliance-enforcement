@@ -1,14 +1,12 @@
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
-import { AssignOfficer, ChangeStatus } from '../../../types/modal/modal-types';
+import { ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
-import { AssignOfficerModal } from '../../modal/instances';
 
 type Props= {
   complaint_identifier: string;
-  complaint_type: number;
-  assigned_ind: boolean;
+  complaint_type: number
 }
 
 /**

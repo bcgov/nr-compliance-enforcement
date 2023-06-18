@@ -19,7 +19,6 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
             dispatch(getHwcrComplaints(sortColumn, sortOrder));
   }, [dispatch, sortColumn, sortOrder]);
 
-
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
