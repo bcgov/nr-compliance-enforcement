@@ -84,6 +84,21 @@ export class OfficerService {
       });
   }
 
+  findByOffice(office_guid: any) : Promise<Officer[]> {
+    return this.officerRepository.find({
+      where: { office_guid: office_guid },
+      relations: {
+        office_guid: {
+          geo_organization_unit_code: true
+        },
+        person_guid: {
+
+        }
+      } ,
+
+    });
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} officer`;
   }

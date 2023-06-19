@@ -3,6 +3,7 @@ import { AppThunk, RootState } from "../store";
 import { SsoToken } from "../../types/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "../../types/app/profile";
+import { UUID } from "crypto";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -64,6 +65,16 @@ export const profileInitials = (state: RootState) => {
   )}`;
 };
 
+export const profileDisplayName = (state: RootState) => {
+  const { profile } = state.app;
+  return `${profile.givenName} ${profile.surName}`;
+};
+
+export const profileIdir = (state: RootState): UUID => {
+  const { profile } = state.app;
+  return `${profile.idir}`;
+};
+
 export const selectModalOpenState = (state: RootState): boolean => {
   const { app } = state;
   return app.modalIsOpen;
@@ -107,12 +118,13 @@ export const getTokenProfile = (): AppThunk => (dispatch) => {
   if (token) {
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
     const { given_name, family_name, email, idir_user_guid } = decoded;
-
+    let idir_user_guid_transformed: UUID;
+    idir_user_guid_transformed = idir_user_guid as UUID;
     const profile: Profile = {
       givenName: given_name,
       surName: family_name,
       email: email,
-      idir: idir_user_guid,
+      idir: idir_user_guid_transformed,
     };
 
     dispatch(setTokenProfile(profile));
@@ -122,7 +134,7 @@ export const getTokenProfile = (): AppThunk => (dispatch) => {
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
-  profile: { givenName: "", surName: "", email: "", idir: "" },
+  profile: { givenName: "", surName: "", email: "", idir: "" as UUID },
   isSidebarOpen: true,
 
   modalIsOpen: false,
@@ -131,7 +143,7 @@ const initialState: AppState = {
   modalData: undefined,
   modalType: "",
   callback: null,
-  hideCallback: null,
+  hideCallback: null
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {

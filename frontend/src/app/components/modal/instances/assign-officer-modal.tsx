@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
-import { selectModalData } from "../../../store/reducers/app";
-import ComplaintStatusSelect from "../../codes/complaint-status-select";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { profileDisplayName, profileIdir, profileInitials, selectModalData } from "../../../store/reducers/app";
+import { getOfficersInZone, officersInZone } from "../../../store/reducers/assign-officers";
 
 type AssignOfficerModalProps = {
   close: () => void;
@@ -10,35 +10,69 @@ type AssignOfficerModalProps = {
 };
 
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit }) => {
+  const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, description } = modalData;
+  const { title } = modalData;
+  const initials = useAppSelector(profileInitials);
+  const displayName = useAppSelector(profileDisplayName);
+  const idir = useAppSelector(profileIdir);
 
-  const handleSelectChange = (selectedValue: string) => {
-    // to be filled in on assign-officer story
-  };
+  const officersJson = useAppSelector(officersInZone);
+
+  useEffect(() => {
+    dispatch(getOfficersInZone(idir));
+  }, [dispatch, idir]);
 
   return (
     <>
       {title && (
-        <Modal.Header closeButton={true}>
+        <Modal.Header closeButton={true} className="border-0">
           <Modal.Title style={{ fontSize: '20px' }}>{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body>
+      <Modal.Body className="">
       <div className="assign_officer_modal_profile_card">
         <div className="assign_officer_modal_profile_card_column">
           <div className="assign_officer_modal_profile_card_profile-picture">
-            <div data-initials="BF" className="comp-profile-avatar"></div>
+            <div data-initials-modal={initials} className="comp-profile-avatar"></div>
           </div>
         </div>
         <div className="assign_officer_modal_profile_card_column">
-          <div className="assign_officer_modal_profile_card_row_1">Fred</div>
+          <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
           <div className="assign_officer_modal_profile_card_row_2">Officer</div>
         </div>
         <div className="assign_officer_modal_profile_card_column">
           <Button onClick={submit}>Self Assign</Button>
         </div>
       </div>
+      <hr></hr>
+      <div className="assign_officer_modal_subtitle">
+        <span>In Your Zone</span>
+      </div>
+      {officersJson.map((val, key) => {
+
+        const firstName = val.person_guid.first_name;
+        const lastName = val.person_guid.last_name;
+        const displayName = firstName + " " + lastName;
+        const officerInitials = firstName?.substring(0,1) + lastName?.substring(0,1);
+
+
+        return(
+        <div className="assign_officer_modal_profile_card" key={key}>
+          <div className="assign_officer_modal_profile_card_column">
+            <div className="assign_officer_modal_profile_card_profile-picture">
+              <div data-initials-modal={officerInitials}></div>
+            </div>
+          </div>
+          <div className="assign_officer_modal_profile_card_column">
+            <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
+            <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+          </div>
+          <div className="assign_officer_modal_profile_card_column">
+          </div>
+      </div>
+
+        );})}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>

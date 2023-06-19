@@ -197,9 +197,16 @@
   width: 458px;
   height: 32px;
 }
+
 .assign_officer_modal_profile_card {
   display: flex;
   justify-content: flex-start;
+  padding: 0px 0px 15px 0px;
+  cursor: pointer;
+}
+
+.assign_officer_modal_profile_card .selected {
+  background-color: #F1F1F1;
 }
 
 .assign_officer_modal_profile_card_column {
@@ -208,8 +215,34 @@
 }
 
 .assign_officer_modal_profile_card_profile-picture {
+  margin-top: 5px;
   width: 58px;
   height: 58px;
+}
+
+.assign_officer_modal_subtitle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px 0px 24px 0px;
+  font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 150%;
+/* identical to box height, or 24px */
+
+
+/* Gray/500 */
+
+color: #ADB5BD;
+
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+flex-grow: 0;
 }
 
 .assign_officer_modal_profile_card_row_1 {

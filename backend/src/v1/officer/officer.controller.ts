@@ -33,6 +33,12 @@ export class OfficerController {
     return this.officerService.findOne(+id);
   }
 
+  @Get("/find-by-office/:office_guid")
+  @Roles(Role.COS_OFFICER)
+  findByOffice(@Param('office_guid') office_guid: string) {
+    return this.officerService.findByOffice(office_guid);
+  }
+
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateOfficerDto: UpdateOfficerDto) {

@@ -36,6 +36,22 @@
   background-color: #E4E4E4;
 }
 
+[data-initials-modal]:before {
+  background: #FECBA1;
+  color: #CA6510;
+  opacity: 1;
+  content: attr(data-initials-modal);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 16px;
+  text-align: center;
+  margin-right: 8px;
+}
+
 .bs-popover-bottom > .popover-arrow {
   margin-top:1px;
 }
