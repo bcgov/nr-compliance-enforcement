@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileDisplayName, profileIdir, profileInitials, selectModalData } from "../../../store/reducers/app";
@@ -16,8 +16,18 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
   const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
   const idir = useAppSelector(profileIdir);
+  const [selectedAssignee, setSelectedAssignee] = useState(-1);
 
   const officersJson = useAppSelector(officersInZone);
+
+  const handleAssigneeClick = (index: number) => {
+    setSelectedAssignee(index);
+  };
+
+  const handleSubmit = () => {
+    alert(selectedAssignee);
+  };
+
 
   useEffect(() => {
     dispatch(getOfficersInZone(idir));
@@ -58,7 +68,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
 
 
         return(
-        <div className="assign_officer_modal_profile_card" key={key}>
+        <div className={`assign_officer_modal_profile_card ${selectedAssignee === key ? 'selected' : ''}`} key={key} onClick={() => handleAssigneeClick(key)}>
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_profile-picture">
               <div data-initials-modal={officerInitials}></div>
@@ -76,7 +86,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit 
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>
-        <Button onClick={submit}>Assign</Button>
+        <Button onClick={handleSubmit}>Assign</Button>
       </Modal.Footer>
     </>
   );

@@ -10,6 +10,7 @@ type Props = {
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [complaintType, setComplaintType] = useState(initialState);
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
+    
     function handleChange(newState: number)
     {
         setComplaintType(newState);
