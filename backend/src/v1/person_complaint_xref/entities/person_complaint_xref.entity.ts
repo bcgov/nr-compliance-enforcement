@@ -2,18 +2,20 @@ import { Complaint } from "src/v1/complaint/entities/complaint.entity";
 import { Person } from "src/v1/person/entities/person.entity";
 import { PersonComplaintXrefCode } from "src/v1/person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { UUID } from 'crypto';
 
 @Index("PK_person_complaint_xref_guid", ["personComplaintXrefGuid"], {
   unique: true,
 })
 @Entity("person_complaint_xref", { schema: "public" })
 export class PersonComplaintXref {
+  
   @Column("uuid", {
     primary: true,
     name: "person_complaint_xref_guid",
     default: () => "uuid_generate_v4()",
   })
-  personComplaintXrefGuid: string;
+  personComplaintXrefGuid: UUID;
 
   @Column("character varying", { name: "create_user_id", length: 32 })
   create_user_id: string;
@@ -32,6 +34,9 @@ export class PersonComplaintXref {
 
   @Column("timestamp without time zone", { name: "update_timestamp" })
   update_timestamp: Date;
+
+  @Column("boolean", { name: "active_ind" })
+  active_ind: boolean;
 
   @ManyToOne(() => Complaint, (complaint) => complaint.person_complaint_xref)
   @JoinColumn([

@@ -99,8 +99,14 @@ export class OfficerService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} officer`;
+  async findOne(officer_guid: any) : Promise<Officer> {
+    return await this.officerRepository.findOneOrFail({
+      where: {officer_guid:officer_guid},
+      relations: {
+        person_guid: true,
+        office_guid: true
+      }
+    });
   }
 
   update(id: number, updateOfficerDto: UpdateOfficerDto) {

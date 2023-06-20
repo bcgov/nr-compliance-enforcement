@@ -4,6 +4,7 @@ import { UpdatePersonComplaintXrefDto } from './dto/update-person_complaint_xref
 import { PersonComplaintXref } from './entities/person_complaint_xref.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -14,27 +15,51 @@ export class PersonComplaintXrefService {
   ) {}
 
 
-  create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto) {
-    return 'This action adds a new personComplaintXref';
+  async create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
+    const newPersonComplaintXref = this.personComplaintXrefRepository.create(createPersonComplaintXrefDto);
+    await this.personComplaintXrefRepository.save(createPersonComplaintXrefDto);
+    return newPersonComplaintXref;
+
   }
 
-  findAll(): Promise<PersonComplaintXref[]> {
+  async findAll(): Promise<PersonComplaintXref[]> {
     return this.personComplaintXrefRepository.find({
       relations: { 
-
+        person_guid: true,
+        complaint_identifier: true
       }
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} personComplaintXref`;
+  async findOne(person_complaint_xref_guid: any): Promise<PersonComplaintXref> {
+    return this.personComplaintXrefRepository.findOne({
+      where: {personComplaintXrefGuid:person_complaint_xref_guid},
+      relations: {
+        person_guid: true,
+        complaint_identifier: true
+      }    
+    });
   }
 
-  update(id: number, updatePersonComplaintXrefDto: UpdatePersonComplaintXrefDto) {
-    return `This action updates a #${id} personComplaintXref`;
+  async findByComplaint(complaint_identifier: any) : Promise<PersonComplaintXref[]> {
+    return this.personComplaintXrefRepository.find({
+      where: { complaint_identifier: complaint_identifier,
+      active_ind: true },
+      relations: {
+        person_guid: true,
+        complaint_identifier: true
+      } ,
+
+    });
   }
 
-  remove(id: number) {
+
+  async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto) : Promise<PersonComplaintXref> {
+    await this.personComplaintXrefRepository.update(person_complaint_xref_guid, updatePersonComplaintXrefDto);
+    return this.findOne(person_complaint_xref_guid);
+  }
+
+  remove(id: string) {
     return `This action removes a #${id} personComplaintXref`;
   }
 }

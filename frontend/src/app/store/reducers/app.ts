@@ -65,6 +65,11 @@ export const profileInitials = (state: RootState) => {
   )}`;
 };
 
+export const userGuid = (state: RootState) => {
+  const { profile } = state.app;
+  return profile.idir;
+};
+
 export const profileDisplayName = (state: RootState) => {
   const { profile } = state.app;
   return `${profile.givenName} ${profile.surName}`;

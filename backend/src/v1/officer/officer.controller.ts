@@ -30,7 +30,7 @@ export class OfficerController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.officerService.findOne(+id);
+    return this.officerService.findOne(id);
   }
 
   @Get("/find-by-office/:office_guid")

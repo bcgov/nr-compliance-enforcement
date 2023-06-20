@@ -4,6 +4,9 @@ import { CreatePersonComplaintXrefDto } from './dto/create-person_complaint_xref
 import { UpdatePersonComplaintXrefDto } from './dto/update-person_complaint_xref.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/enum/role.enum';
+import { UUID } from 'crypto';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags('person-complaint-xref')
@@ -14,27 +17,37 @@ export class PersonComplaintXrefController {
   constructor(private readonly personComplaintXrefService: PersonComplaintXrefService) {}
 
   @Post()
+  @Roles(Role.COS_OFFICER)
   create(@Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto) {
     return this.personComplaintXrefService.create(createPersonComplaintXrefDto);
   }
 
   @Get()
+  @Roles(Role.COS_OFFICER)
   findAll() {
     return this.personComplaintXrefService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.personComplaintXrefService.findOne(+id);
+  @Roles(Role.COS_OFFICER)
+  findOne(@Param('id') id: UUID) {
+    return this.personComplaintXrefService.findOne(id);
+  }
+
+  @Get('/find-by-complaint/:id')
+  @Roles(Role.COS_OFFICER)
+  findOneByComplaint(@Param('id') id: string) {
+    return this.personComplaintXrefService.findByComplaint(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePersonComplaintXrefDto: UpdatePersonComplaintXrefDto) {
-    return this.personComplaintXrefService.update(+id, updatePersonComplaintXrefDto);
+  @Roles(Role.COS_OFFICER)
+  update(@Param('id') id: UUID, @Body() updatePersonComplaintXrefDto: UpdatePersonComplaintXrefDto) {
+    return this.personComplaintXrefService.update(id, updatePersonComplaintXrefDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.personComplaintXrefService.remove(+id);
+  remove(@Param('id') id: UUID) {
+    return this.personComplaintXrefService.remove(id);
   }
 }
