@@ -53,7 +53,10 @@ export const CallDetails: FC = () => {
                   attractants.map(
                     ({ key, description }: ComplaintDetailsAttractant) => {
                       return (
-                        <span className="badge comp-attactant-badge comp-margin-left-xxs" key={key}>
+                        <span
+                          className="badge comp-attactant-badge comp-margin-left-xxs"
+                          key={key}
+                        >
                           {description}
                         </span>
                       );
@@ -63,29 +66,39 @@ export const CallDetails: FC = () => {
             </div>
           </Col>
           <Col md="6" className="comp-padding-left-28">
-            <div className="comp-details-content-label ">
-              Complaint Location
+            <div>
+              <div className="comp-details-content-label ">
+                Complaint Location
+              </div>
+              <div className="comp-details-content">{location}</div>
             </div>
-            <div className="comp-details-content">{location}</div>
-            <div className="comp-details-content-label ">
-              Location Description
+            <div>
+              <div className="comp-details-content-label ">
+                Location Description
+              </div>
+              <p>{locationDescription}</p>
             </div>
-            <p>{locationDescription}</p>
-            <div className="comp-details-content-label ">X Coordinate</div>
-            <div className="comp-details-content comp-padding-right-25">
-              {parseCoordinates(coordinates, Coordinates.Latitude)}
-            </div>
+            <div>
+              <div className="comp-details-content-label ">X Coordinate</div>
+              <div className="comp-details-content comp-padding-right-25">
+                {parseCoordinates(coordinates, Coordinates.Latitude)}
+              </div>
 
-            <div className="comp-details-content-label ">Y Coordinate</div>
-            <div className="comp-details-content">
-              {parseCoordinates(coordinates, Coordinates.Longitude)}
+              <div className="comp-details-content-label ">Y Coordinate</div>
+              <div className="comp-details-content">
+                {parseCoordinates(coordinates, Coordinates.Longitude)}
+              </div>
             </div>
-            <span className="comp-details-content-label ">
-              Area / Community
-            </span>
-            <span className="comp-details-content">{area}</span>
-            <span className="comp-details-content-label ">Office</span>
-            <span className="comp-details-content">{office}</span>
+            <div>
+              <span className="comp-details-content-label ">
+                Area / Community
+              </span>
+              <span className="comp-details-content">{area}</span>
+            </div>
+            <div>
+              <span className="comp-details-content-label ">Office</span>
+              <span className="comp-details-content">{office}</span>
+            </div>
 
             <div className="comp-complaint-section">
               <span className="comp-details-content-label ">Zone</span>
