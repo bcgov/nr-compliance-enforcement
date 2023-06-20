@@ -1,4 +1,20 @@
 // COMPLAINT DETAILS START
+.comp-complaint-details {
+  margin: -24px;
+
+  .comp-details-content-label {
+    color: $gray-500;
+  }
+
+  .comp-details-content {
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
 .comp-complaint-breadcrumb {
   background-color: $bc-gov-primary-400;
   color: $white;
@@ -13,36 +29,24 @@
 }
 
 .comp-complaint-label {
-  color: $gray-600;
+  color: $gray-500;
 }
 
-.comp-complaint-details {
-  margin: -24px;
+.comp-details-status {
+  display: flex;
+  justify-content: space-between;
+  margin: 24px;
 
-  .comp-complaint-status {
-    display: flex;
-    justify-content: space-between;
-    margin: 24px;
-  }
-
-  .comp-complaint-status-label {
-    color: $gray-600;
-  }
-
-  .comp-complaint-status-content {
-    color: $gray-900;
-
-    .comp-profile-avatar-sm {
-      background: #003366;
-    }
-  }
-
-  .comp-complaint-status-column {
-    width: 10%;
+  .comp-details-header-column {
+    width: 20%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 16px;
+
+    .comp-details-content-label + div {
+      margin-top: 15px;
+    }
 
     i:first-child {
       padding-right: 5px;
@@ -53,23 +57,23 @@
     }
   }
 
-  .comp-complaint-status-state {
+  .comp-details-status-width {
     width: 190px;
   }
 
-  .comp-complaint-status-created {
-    width: 190px;
-  }
-
-  .comp-complaint-status-last-updated {
+  .comp-complaint-created-width {
     width: 250px;
   }
 
-  .comp-complaint-status-assigned {
+  .comp-complaint-last-updated-width {
     width: 250px;
   }
 
-  .comp-complaint-status-updated {
+  .comp-complaint-assigned-width {
+    width: 250px;
+  }
+
+  .comp-complaint-created-by-width {
     width: 250px;
   }
 }
@@ -97,21 +101,23 @@
     .comp-box-conflict-type {
       margin: 0px 12px;
       padding: 4px 12px;
-      background: green;
+      background: $bc-standard-03;
       border-radius: 60px;
       font-size: 12px;
+      font-weight: bold;
       line-height: 16px;
       display: flex;
     }
 
     .comp-box-species-type {
       padding: 4px 12px;
-      background: grey;
+      background: $gray-200;
       border-radius: 60px;
       font-size: 12px;
+      font-weight: bold;
       line-height: 16px;
       display: flex;
-      color: black;
+      color: $black;
     }
   }
 
@@ -144,17 +150,9 @@
   background-color: $bc-gov-link-blue;
 }
 
-.comp-complaint-call-details-container {
+.comp-complaint-details-block {
   margin-left: 24px;
   margin-right: 24px;
-
-  .comp-complaint-section { 
-    padding-bottom: 16px;
-  }
-
-  .comp-complaint-label { 
-    padding-bottom: 16px;
-  }
 
   h6 {
     padding-top: 18px;
@@ -164,62 +162,119 @@
   .comp-complaint-call-details {
     margin-top: 18px;
     margin-bottom: 18px;
-    border: 1px solid $gray-600;
+    border: 1px solid $gray-500;
     border-radius: 3px;
     padding: 18px;
-
-    .comp-complaint-incident-time {
-      padding-left: 20px;
-
-      i:first-child {
-        padding-right: 5px;
-      }
-      i:last-child {
-        padding-left: 5px;
-        padding-right: 5px;
-      }
-    }
-
-    .comp-complaint-attactants {
-      padding-left: 20px;
-      & > .badge {
-        background-color: $grey-110;
-        color: black;
-        font-weight: 700;
-      }
-    }
-  }
-}
-
-.comp-complaint-caller-information-container {
-  margin-left: 24px;
-  margin-right: 24px;
-
-  .comp-complaint-section { 
-    padding-bottom: 16px;
   }
 
-  .comp-complaint-label { 
-    padding-bottom: 16px;
-  }
-
-  h6 {
-    padding-top: 18px;
-    font-weight: 700;
-  }
-
-  .comp-complaint-caller-information {
+  .comp-complaint-call-information {
     margin-top: 18px;
     margin-bottom: 18px;
-    border: 1px solid $gray-600;
+    border: 1px solid $gray-500;
     border-radius: 3px;
     padding: 18px;
+  }
 
-    .comp-complaint-incident-time {
-      padding-left: 20px;
+  .comp-details-content-label {
+    padding-right: 25px;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .comp-details-content {
+    margin-bottom: 16px;
+    display: inline-block;
+
+    i:first-child {
+      padding-right: 5px;
+    }
+    i:last-child {
+      padding-left: 5px;
+      padding-right: 5px;
     }
   }
+  .comp-attactant-badge {
+    background-color: $grey-110;
+    color: $black;
+  }
 }
+
+// .comp-complaint-call-details-container {
+//   margin-left: 24px;
+//   margin-right: 24px;
+
+//   .comp-complaint-section {
+//     padding-bottom: 16px;
+//   }
+
+//   .comp-complaint-label {
+//     padding-bottom: 16px;
+//   }
+
+//   h6 {
+//     padding-top: 18px;
+//     font-weight: 700;
+//   }
+
+//   .comp-complaint-call-details {
+//     margin-top: 18px;
+//     margin-bottom: 18px;
+//     border: 1px solid $gray-500;
+//     border-radius: 3px;
+//     padding: 18px;
+
+//     .comp-complaint-incident-time {
+//       padding-left: 20px;
+
+//       i:first-child {
+//         padding-right: 5px;
+//       }
+//       i:last-child {
+//         padding-left: 5px;
+//         padding-right: 5px;
+//       }
+//     } //#root > div > div.comp-main-content > div > div.comp-complaint-status > div:nth-child(2) > div > div.comp-complaint-status-content > i.bi.bi-calendar
+
+//     .comp-complaint-attactants {
+//       padding-left: 20px;
+//       & > .badge {
+//         background-color: $grey-110;
+//         color: $black;
+//         font-weight: 700;
+//       }
+//     }
+//   }
+// }
+
+// .comp-complaint-caller-information-container {
+//   margin-left: 24px;
+//   margin-right: 24px;
+
+//   .comp-complaint-section {
+//     padding-bottom: 16px;
+//   }
+
+//   .comp-complaint-label {
+//     padding-bottom: 16px;
+//   }
+
+//   h6 {
+//     padding-top: 18px;
+//     font-weight: 700;
+//   }
+
+//   .comp-complaint-caller-information {
+//     margin-top: 18px;
+//     margin-bottom: 18px;
+//     border: 1px solid $gray-500;
+//     border-radius: 3px;
+//     padding: 18px;
+
+//     .comp-complaint-incident-time {
+//       padding-left: 20px;
+//     }
+//   }
+// }
 
 // COMPLAINT DETAILS END
 
@@ -253,18 +308,18 @@
   flex-grow: 0;
 }
 
-  .comp-table {
-    border-spacing: 0px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    margin: 0;
-    width: 1330px;
-    font-style: normal;
-    font-size: 12px;
-    background: rgba(255, 255, 255, 0.0001);
-    text-align: left;
-    border-collapse: initial;
+.comp-table {
+  border-spacing: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin: 0;
+  width: 1330px;
+  font-style: normal;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.0001);
+  text-align: left;
+  border-collapse: initial;
 
   > :not(caption) > * > * {
     background: rgba(255, 255, 255, 0.0001);
@@ -352,11 +407,10 @@
   margin-top: 1px;
 }
 
-  .comp-header-caret
-  {
-    float: right;
-    cursor: pointer;
-  }
+.comp-header-caret {
+  float: right;
+  cursor: pointer;
+}
 
 .comp-cell-bottom {
   border-style: solid;
@@ -391,9 +445,9 @@
   font-weight: 700;
   font-size: 12px;
 
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
 
   pointer-events: none;
   background-color: #2464a4;
@@ -407,9 +461,9 @@
   font-weight: 700;
   font-size: 12px;
 
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
 
   pointer-events: none;
   background-color: #d8292f;
@@ -423,9 +477,9 @@
   font-weight: 700;
   font-size: 12px;
 
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
 
   pointer-events: none;
   background-color: #e4e4e4;
@@ -441,9 +495,9 @@
   font-weight: 700;
   font-size: 12px;
 
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
 
   pointer-events: none;
 

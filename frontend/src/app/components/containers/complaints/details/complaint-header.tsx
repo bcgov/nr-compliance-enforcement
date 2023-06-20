@@ -13,7 +13,6 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
   id,
   complaintType,
 }) => {
-
   const {
     loggedDate,
     createdBy,
@@ -60,35 +59,35 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
       {/* <!-- complaint info end --> */}
 
       {/* <!-- complaint status details start --> */}
-      <div className="comp-complaint-status">
-        <div className="comp-complaint-status-column comp-complaint-status-state">
+      <div className="comp-details-status">
+        <div className="comp-details-header-column comp-details-status-width">
           <div>
-            <div className="comp-complaint-status-label">Status</div>
-            <span className="badge comp-status-badge-open">{status}</span>
+            <div className="comp-details-content-label">Status</div>
+            <div className="badge comp-status-badge-open">{status}</div>
           </div>
         </div>
-        <div className="comp-complaint-status-column comp-complaint-status-updated">
-          <div>
-            <div className="comp-complaint-status-label">
-              Date / Time Logged
-            </div>
-            <div className="comp-complaint-status-content">
-              <i className="bi bi-calendar"></i>
+
+        <div className="comp-details-header-column">
+          <div className="comp-complaint-created-width">
+            <div className="comp-details-content-label">Date / Time Logged</div>
+            <div className="comp-details-content">
+              <i className="bi bi-calendar comp-margin-right-xxs"></i>
               {formatDate(loggedDate)}
-              <i className="bi bi-clock"></i>
+              <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
               {formatTime(loggedDate)}
             </div>
           </div>
         </div>
-        <div className="comp-complaint-status-column comp-complaint-status-last-updated">
-          <div>
-            <div className="comp-complaint-status-label">Last Updated</div>
-            <div>
+
+        <div className="comp-details-header-column">
+          <div className="comp-complaint-last-updated-width">
+            <div className="comp-details-content-label">Last Updated</div>
+            <div className="comp-details-content">
               {lastUpdated && (
                 <>
-                  <i className="bi bi-calendar"></i>
+                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
                   {formatDate(lastUpdated)}
-                  <i className="bi bi-clock"></i>
+                  <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                   {formatTime(lastUpdated)}
                 </>
               )}
@@ -96,28 +95,30 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
             </div>
           </div>
         </div>
-        <div className="comp-complaint-status-column comp-complaint-status-assigned">
-          <div>
-            <div className="comp-complaint-status-label">Officer Assigned</div>
-            <div>
+
+        <div className="comp-details-header-column">
+          <div className="comp-complaint-assigned-width">
+            <div className="comp-details-content-label">Officer Assigned</div>
+            <div className="comp-details-content">
               <div
                 data-initials-sm={getAvatarInitials(officerAssigned)}
                 className="comp-orange-avatar-sm"
               >
-                <span>{officerAssigned}</span>
+                <span className="comp-padding-left-xs">{officerAssigned}</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="comp-complaint-status-column comp-complaint-status-updated">
-          <div>
-            <div className="comp-complaint-status-label">Created By</div>
+
+        <div className="comp-details-header-column">
+          <div className="comp-complaint-created-by-width">
+            <div className="comp-details-content-label">Created By</div>
             <div>
               <div
                 data-initials-sm={getAvatarInitials(createdBy)}
                 className="comp-blue-avatar-sm"
               >
-                <span>{createdBy}</span>
+                <span className="comp-padding-left-xs">{createdBy}</span>
               </div>
             </div>
           </div>

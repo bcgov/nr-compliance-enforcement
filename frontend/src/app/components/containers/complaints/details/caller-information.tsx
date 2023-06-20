@@ -15,50 +15,46 @@ export const CallerInformation: FC = () => {
   } = useAppSelector(selectComplaintCallerInformation);
 
   return (
-    <div className="comp-complaint-caller-information-container">
+    <div className="comp-complaint-details-block">
       <h6>Caller Information</h6>
-      <div className="comp-complaint-caller-information">
+      <div className="comp-complaint-call-information">
         <Row>
           <Col md="6">
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Name</span>
-              <span className="comp-complaint-incident-time">{name}</span>
+            <div>
+              <div className="comp-details-content-label">Name</div>
+              <div className="comp-details-content">{name}</div>
             </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Primary Phone</span>
-              <span className="comp-complaint-incident-time">
-                {primaryPhone}
-              </span>
+            <div>
+              <div className="comp-details-content-label">Primary Phone</div>
+              <div className="comp-details-content">{primaryPhone}</div>
             </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Alternate 1 Phone</span>
-              <span className="comp-complaint-incident-time">
-                {secondaryPhone}
-              </span>
+            <div>
+              <div className="comp-details-content-label">
+                Alternate 1 Phone
+              </div>
+              <div className="comp-details-content">{secondaryPhone}</div>
             </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Alternate 2 Phone</span>
-              <span className="comp-complaint-incident-time">
-                {alternatePhone}
-              </span>
+            <div>
+              <div className="comp-details-content-label">
+                Alternate 2 Phone
+              </div>
+              <div className="comp-details-content">{alternatePhone}</div>
             </div>
           </Col>
           <Col md="6">
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Address</span>
-              <span className="comp-complaint-incident-time">{address}</span>
+            <div>
+              <div className="comp-details-content-label">Address</div>
+              <div className="comp-details-content">{address}</div>
             </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">Email</span>
-              <span className="comp-complaint-incident-time">{email}</span>
+            <div>
+              <div className="comp-details-content-label">Email</div>
+              <div className="comp-details-content">{email}</div>
             </div>
-            <div className="comp-complaint-section">
-              <span className="comp-complaint-label">
+            <div>
+              <div className="comp-details-content-label">
                 Referred by / Complaint Agency
-              </span>
-              <span className="comp-complaint-incident-time">
-                {referredByAgencyCode}
-              </span>
+              </div>
+              <div className="comp-details-content">{referredByAgencyCode}</div>
             </div>
           </Col>
         </Row>
