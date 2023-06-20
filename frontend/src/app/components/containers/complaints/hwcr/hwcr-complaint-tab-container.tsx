@@ -7,14 +7,14 @@ type Props = {
     handleChange: Function,
     handleSort: Function,
     sort: string[],
-    natureOfComplaintFilter: string,
-    speciesCodeFilter: string,
-    startDateFilter: string,
-    endDateFilter: string,
-    statusFilter: string,
+    natureOfComplaintFilter: Option | null,
+    speciesCodeFilter: Option | null,
+    startDateFilter: Date | undefined,
+    endDateFilter: Date | undefined,
+    complaintStatusFilter: Option | null,
 }
 
-export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, statusFilter }) => {
+export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
     return <><div className="comp-div-tab"><ul className="nav nav-tabs comp-tab">
         <li className="nav-item comp-tab-active">
             <button className="nav-link active">Human Wildlife Conflicts</button>
@@ -25,6 +25,6 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
         </ul>
     </div>
     <HwcrComplaintTableHeader handleSort={handleSort}/>
-    <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} statusFilter={statusFilter} /></>
+    <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} /></>
     ;
 }

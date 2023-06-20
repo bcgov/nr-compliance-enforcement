@@ -307,3 +307,9 @@
     padding-left: 6px;
     float:left;
   }
+
+  //override for horizontal dual month display
+  .react-datepicker__month-container
+  {
+    float:left
+  }

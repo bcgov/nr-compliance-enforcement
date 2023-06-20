@@ -7,22 +7,21 @@ import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hw
 type Props = {
     sortColumn: string,
     sortOrder: string,
-    speciesCodeFilter: string,
-    natureOfComplaintFilter: string,
-    startDateFilter: string,
-    endDateFilter: string,
-    statusFilter: string,
+    speciesCodeFilter: Option | null,
+    natureOfComplaintFilter: Option | null,
+    startDateFilter: Date | undefined,
+    endDateFilter: Date | undefined,
+    complaintStatusFilter: Option | null,
 }
 
-export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, statusFilter }) => {
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
     const dispatch = useAppDispatch();
 
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
-        console.log("speciesCodeFilter: " + speciesCodeFilter);
-            dispatch(getHwcrComplaints(sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, statusFilter));
-  }, [dispatch, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, statusFilter]);
+            dispatch(getHwcrComplaints(sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+  }, [dispatch, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
 
 
     return (

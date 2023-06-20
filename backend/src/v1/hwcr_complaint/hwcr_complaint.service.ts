@@ -56,12 +56,14 @@ export class HwcrComplaintService {
     }
 
     async search(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 
-      speciesCode?: string, incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<HwcrComplaint[]> {
+      speciesCode?: string, incidentReportedStart?: Date, incidentReportedEnd?: Date, status?: string): Promise<HwcrComplaint[]> {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
       const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
-        console.log("qwerty");
+        console.log("natureOfComplaint: " + natureOfComplaint);
+        console.log("speciesCode: " + speciesCode);
+        console.log("status: " + status);
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
@@ -77,11 +79,10 @@ export class HwcrComplaintService {
       .orderBy(sortString, sortOrderString)
       .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
 
-      if(community !== null && community !== '')
+      /*if(community !== null && community !== '')
       {
         queryBuilder.andWhere('complaint_identifier.geo_organization_unit_code = :Community', { Community: community });
       }
-      /*
       if(zone !== null)
       {
         queryBuilder.andWhere('cos.geo_org_unit_flat_vw.zone_code = :Zone', { Zone: zone });
@@ -95,33 +96,30 @@ export class HwcrComplaintService {
         queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
         queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned });
       }*/
-      if(natureOfComplaint !== null && natureOfComplaint !== '')
+      console.log("natureOfComplaint backend: " + natureOfComplaint);
+      console.log("SpceciesCode backend: " + speciesCode);
+      console.log("status backend: " + status);
+      if(natureOfComplaint !== null && natureOfComplaint !== undefined && natureOfComplaint !== "")
       {
         queryBuilder.andWhere('hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint', { NatureOfComplaint:natureOfComplaint });
       }
-      if(speciesCode !== null && speciesCode !== '')
+      if(speciesCode !== null && speciesCode !== undefined && speciesCode !== "")
       {
         queryBuilder.andWhere('hwcr_complaint.species_code = :SpeciesCode', { SpeciesCode:speciesCode });
       }
-      if(incidentReportedStart !== null && incidentReportedStart !== '')
+      if(incidentReportedStart !== null && incidentReportedStart !== undefined)
       {
-        const splitDate = incidentReportedStart.split('-');
-        // -1 because months are zero based
-        const incidentReportedStartTimestamp = format(new Date(+splitDate[0], (+splitDate[1] - 1), +splitDate[2], 0, 0, 0), 'yyyy-MM-dd kk:mm:ss');
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStartTimestamp });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
       }
-      if(incidentReportedEnd !== null && incidentReportedEnd !== '')
+      if(incidentReportedEnd !== null && incidentReportedEnd !== undefined)
       {
-        const splitDate = incidentReportedEnd.split('-');
-        // -1 because months are zero based
-        const incidentReportedEndTimestamp = format(new Date(+splitDate[0], (+splitDate[1] - 1), +splitDate[2], 0, 0, 0), 'yyyy-MM-dd kk:mm:ss')
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEndTimestamp  });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
       }
-      if(status !== null && status !== '')
+      if(status !== null && status !== undefined && status !== "")
       {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
-
+      console.log(queryBuilder.getSql());
       return queryBuilder.getMany();
     }
   

@@ -33,7 +33,7 @@ export const { setHwcrComplaints } = hwcrComplaintSlice.actions;
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getHwcrComplaints = (sortColumn: string, sortOrder: string, natureOfComplaintFilter?:string, speciesCodeFilter?: string, startDateFilter?: string, endDateFilter?: string, statusFilter?:string): AppThunk => async (dispatch) => {
+export const getHwcrComplaints = (sortColumn: string, sortOrder: string, natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | null, endDateFilter?: Date | null, statusFilter?:Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;

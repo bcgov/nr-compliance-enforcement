@@ -34,7 +34,7 @@ export class HwcrComplaintController {
   @Roles(Role.COS_OFFICER)
   search(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string, @Query('community') community: string, @Query('zone') zone: string,
    @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('natureOfComplaint') natureOfComplaint: string, 
-   @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: string, @Query('incidentReportedEnd') incidentReportedEnd: string, @Query('status') status) {
+   @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status) {
     return this.hwcrComplaintService.search(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status);
   }
 
