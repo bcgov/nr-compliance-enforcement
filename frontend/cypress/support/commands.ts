@@ -88,7 +88,6 @@ const base64url = source => {
         if (hasSameTopLevelDomain(Cypress.env('keycloak_login_url'), Cypress.config().baseUrl)) {
           cy.visit(url);
           // Log in the user and obtain an authorization code.
-          cy.contains("idir").click();
           cy.get('[name="user"]').click();
           cy.get('[name="user"]').type(credentials.username);
           cy.get('[name="password"]').click();
@@ -128,10 +127,18 @@ const base64url = source => {
     Cypress.log({ name: 'Logout' });
     const authBaseUrl = Cypress.env('auth_base_url');
     const realm = Cypress.env('auth_realm');
-  
-    return cy.request({
+    cy.request({
       url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
     });
+    cy.visit(Cypress.config().baseUrl);
+    cy.on('uncaught:exception', (e) => {
+      if (e.message.includes('Unexpected')) {
+        // we expected this error, so let's ignore it
+        // and let the test continue
+        return false
+      }
+    })
+
   });
 
   function hasSameTopLevelDomain(url1: string, url2: string): boolean {

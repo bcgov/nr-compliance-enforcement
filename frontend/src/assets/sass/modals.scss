@@ -1,5 +1,6 @@
 // scss-docs-start modal-variables
 // $modal-inner-padding:               $spacer !default;
+//$modal-inner-padding: 16px 16px 16px 16px;
 
 // $modal-footer-margin-between:       .5rem !default;
 
@@ -25,13 +26,16 @@ $modal-content-border-radius: "5px";
 // $modal-header-padding-y:            $modal-inner-padding !default;
 // $modal-header-padding-x:            $modal-inner-padding !default;
 // $modal-header-padding:              $modal-header-padding-y $modal-header-padding-x !default; // Keep this for backwards compatibility
+$modal-header-padding: 16px 16px 2px 16px;
+
+
 
 // $modal-footer-bg:                   null !default;
 // $modal-footer-border-color:         $modal-header-border-color !default;
 // $modal-footer-border-width:         $modal-header-border-width !default;
 
 // $modal-sm:                          300px !default;
-// $modal-md:                          500px !default;
+ $modal-md:                          508px !default;
 // $modal-lg:                          800px !default;
 // $modal-xl:                          1140px !default;
 
@@ -40,9 +44,5 @@ $modal-content-border-radius: "5px";
 // $modal-transition:                  transform .3s ease-out !default;
 // $modal-scale-transform:             scale(1.02) !default;
 // scss-docs-end modal-variables
-
-.modal-dialog {
-    background-color: $white;
-}
 
 @import "../../../node_modules/bootstrap/scss/variables";
