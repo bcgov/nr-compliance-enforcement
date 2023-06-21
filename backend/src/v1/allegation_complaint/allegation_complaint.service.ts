@@ -78,6 +78,20 @@ export class AllegationComplaintService {
     });
   }
 
+  async findComplaintWithActiveAssignee(id: any): Promise<AllegationComplaint> {
+    return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
+      .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
+      .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
+      .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+      .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+      .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+      .where("allegation_complaint_guid = :id", {id})
+      .getOne();
+  }
+
   async update(allegation_complaint_guid: UUID, updateAllegationComplaint: UpdateAllegationComplaintDto): Promise<AllegationComplaint> {
     await this.allegationComplaintsRepository.update({ allegation_complaint_guid }, updateAllegationComplaint);
     return this.findOne(allegation_complaint_guid);

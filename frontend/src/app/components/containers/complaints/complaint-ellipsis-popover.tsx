@@ -54,7 +54,8 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           title: "Assign Complaint",
           description: "",
           complaint_identifier: complaint_identifier,
-          complaint_type: complaint_type
+          complaint_type: complaint_type,
+          complaint_guid: complaint_guid
         }
       })
     );

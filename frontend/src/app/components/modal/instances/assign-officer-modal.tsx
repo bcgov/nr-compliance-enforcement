@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileDisplayName, profileIdir, profileInitials, selectModalData } from "../../../store/reducers/app";
-import { assigneCurrentUserToComplaint, getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/assign-officers";
+import { assignCurrentUserToComplaint, getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/assign-officers";
 import { UUID } from "crypto";
 
 type AssignOfficerModalProps = {
@@ -10,13 +10,14 @@ type AssignOfficerModalProps = {
   submit: () => void;
   complaint_identifier: string;
   complaint_type: number;
+  complaint_guid: string;
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, complaint_identifier } = modalData;
+  const { title, complaint_identifier, complaint_guid } = modalData;
   const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
   const idir = useAppSelector(profileIdir);
@@ -36,13 +37,15 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   // assigns the selected officer to a complaint
   const handleSubmit = () => {
     setNewAssignee(selectedAssignee);
-    dispatch(updateComplaintAssignee(selectedAssignee as UUID, complaint_identifier, complaint_type));
-    submit();
+    if (selectedAssignee !== "") {
+      dispatch(updateComplaintAssignee(selectedAssignee as UUID, complaint_identifier, complaint_type, complaint_guid));
+      submit();
+    }
   };
 
   // assigns the logged in user to a complaint
   const handleSelfAssign = () => {
-    dispatch(assigneCurrentUserToComplaint(idir, complaint_identifier, complaint_type));
+    dispatch(assignCurrentUserToComplaint(idir, complaint_identifier, complaint_type, complaint_guid));
     submit();
   }
 
