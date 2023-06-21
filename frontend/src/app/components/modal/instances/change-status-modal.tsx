@@ -57,6 +57,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
         </Modal.Header>
       )}
       <Modal.Body>
+        <div  className="change_status_modal">
         <Row>
           <Col>
             <label className="modal_description_label">{description}</label>
@@ -67,6 +68,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
             <ComplaintStatusSelect onSelectChange={handleSelectChange}/>
           </Col>
         </Row>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>

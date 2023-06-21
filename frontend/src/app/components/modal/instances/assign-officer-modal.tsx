@@ -87,7 +87,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           <Button onClick={handleSelfAssign}>Self Assign</Button>
         </div>
       </div>
-      <hr></hr>
+      <hr className="modal_hr"/>
       <div className="assign_officer_modal_subtitle">
         <span>In Your Zone</span>
       </div>
@@ -99,6 +99,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         const officerInitials = firstName?.substring(0,1) + lastName?.substring(0,1);
         const person_guid = val.person_guid.person_guid;
 
+        // don't display the current user in the list since we already have the current user at the top of the modal
         if (!compareUuidToString(val.auth_user_guid,idir)) {
         return(
         <div className={`assign_officer_modal_profile_card ${selectedAssigneeIndex === key ? 'selected' : ''}`} key={key} onClick={() => handleAssigneeClick(key, person_guid)}>
