@@ -9,6 +9,8 @@ import { ComplaintHeader } from "../../types/complaints/details/complaint-header
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
+import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
+import { ComplaintSuspectWitness } from "../../types/complaints/details/complaint-suspect-witness-details";
 
 const initialState: ComplaintState = {
   complaints: [],
@@ -232,20 +234,20 @@ export const selectComplaintDeails =
       }
     }
 
-    if(complaint){
+    if (complaint) {
       switch (complaintType) {
         case COMPLAINT_TYPES.ERS: {
           const {
             in_progress_ind: violationInProgress,
             observed_ind: violationObserved,
           }: any = complaint;
-  
+
           results = { ...results, violationInProgress, violationObserved };
           break;
         }
         case COMPLAINT_TYPES.HWCR: {
           const { attractant_hwcr_xref }: any = complaint;
-  
+
           const attractants = attractant_hwcr_xref.map(
             ({
               attractant_hwcr_xref_guid: key,
@@ -254,7 +256,7 @@ export const selectComplaintDeails =
               return { key, description };
             }
           );
-  
+
           results = { ...results, attractants };
           break;
         }
@@ -263,4 +265,56 @@ export const selectComplaintDeails =
 
     return results;
   };
+
+export const selectComplaintCallerInformation = (
+  state: RootState
+): ComplaintCallerInformation => {
+  let results = {} as ComplaintCallerInformation;
+
+  const { complaint } = state.complaints;
+
+  if (complaint) {
+    const { complaint_identifier: ceComplaint } = complaint;
+
+    const {
+      caller_name,
+      caller_phone_1,
+      caller_phone_2,
+      caller_address,
+      caller_email,
+      referred_by_agency_code,
+    }: any = ceComplaint;
+
+    const { long_description: description } = referred_by_agency_code || {};
+
+    results = {
+      ...results,
+      name: caller_name,
+      primaryPhone: caller_phone_1,
+      secondaryPhone: caller_phone_2,
+      address: caller_address,
+      email: caller_email,
+      referredByAgencyCode: description,
+    };
+  }
+
+  return results;
+};
+
+export const selectComplaintSuspectWitnessDetails = (
+  state: RootState
+): ComplaintSuspectWitness => {
+  let results = {} as ComplaintSuspectWitness;
+
+  const { complaint } = state.complaints;
+
+  if (complaint) {
+    const { suspect_witnesss_dtl_text: details }: any = complaint;
+
+    results = { ...results, details };
+  }
+
+  return results;
+};
+
 export default complaintSlice.reducer;

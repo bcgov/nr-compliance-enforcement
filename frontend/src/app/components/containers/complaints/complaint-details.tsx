@@ -9,6 +9,10 @@ import {
   selectComplaint,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import { SuspectDetails } from "./details/suspect-details";
+import { Row, Col } from "react-bootstrap";
+import { WitnessDetails } from "./details/witness-details";
+import { SuspectWitnessDetails } from "./details/suspect-witness-details";
 
 type ComplaintParams = {
   id: string;
@@ -42,7 +46,16 @@ export const ComplaintDetails: FC = () => {
   return (
     <div className="comp-complaint-details">
       <ComplaintHeader id={id} complaintType={complaintType} />
-      <CallDetails complaintType={complaintType}/>
+      <CallDetails complaintType={complaintType} />
+      <CallerInformation />
+      {complaintType === COMPLAINT_TYPES.ERS && (
+        <SuspectWitnessDetails />
+        //-- use this for when we have the ability to split and display suspect and witness data seaperatly
+        // <Row>
+        //   <Col md={6}><SuspectDetails /></Col>
+        //   <Col md={6}><WitnessDetails /></Col>
+        // </Row>
+      )}
     </div>
   );
 };
