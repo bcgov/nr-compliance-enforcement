@@ -101,12 +101,19 @@
     .comp-box-conflict-type {
       margin: 0px 12px;
       padding: 4px 12px;
-      background: $bc-standard-03;
+
       border-radius: 60px;
       font-size: 12px;
       font-weight: bold;
       line-height: 16px;
       display: flex;
+    }
+
+    .hwcr-conflict-type {
+      background: $bc-standard-03;
+    }
+    .allegation-conflict-type {
+      background: $bc-standard-05;
     }
 
     .comp-box-species-type {

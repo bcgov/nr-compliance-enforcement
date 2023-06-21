@@ -1,8 +1,10 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import { complaintTypeToName } from "../../../../types/app/complaint-types";
+import COMPLAINT_TYPES, {
+  complaintTypeToName,
+} from "../../../../types/app/complaint-types";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintHeader } from "../../../../store/reducers/hwcr-complaints";
+import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import {
   formatDate,
   formatTime,
@@ -20,8 +22,9 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     officerAssigned,
     status,
     natureOfComplaint,
+    violationType,
     species,
-  } = useAppSelector(selectComplaintHeader);
+  } = useAppSelector(selectComplaintHeader(complaintType));
 
   return (
     <>
@@ -49,12 +52,24 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
       <div className="comp-details-header">
         <div className="comp-complaint-info">
           <div className="comp-box-complaint-id">Complaint #{id}</div>
-          <div className="comp-box-conflict-type">
+          <div
+            className={`comp-box-conflict-type ${
+              complaintType !== COMPLAINT_TYPES.ERS
+                ? "hwcr-conflict-type"
+                : "allegation-conflict-type"
+            }`}
+          >
             {complaintTypeToName(complaintType)}
           </div>
-          <div className="comp-box-species-type">{species}</div>
+          {species && complaintType !== COMPLAINT_TYPES.ERS && (
+            <div className="comp-box-species-type">{species}</div>
+          )}
         </div>
-        <div className="comp-nature-of-complaint">{natureOfComplaint}</div>
+        <div className="comp-nature-of-complaint">
+          {complaintType !== COMPLAINT_TYPES.ERS
+            ? natureOfComplaint
+            : violationType}
+        </div>
       </div>
       {/* <!-- complaint info end --> */}
 

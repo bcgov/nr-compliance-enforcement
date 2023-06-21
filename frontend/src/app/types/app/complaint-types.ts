@@ -6,7 +6,7 @@ const COMPLAINT_TYPES = {
 export const complaintTypeToName = (complaintType: string | undefined | null) => {
   switch (complaintType) {
     case COMPLAINT_TYPES.ERS:
-      return "ERS";
+      return "Enforcement";
     case COMPLAINT_TYPES.HWCR:
       return "Human Wildlife Conflict";
     default:

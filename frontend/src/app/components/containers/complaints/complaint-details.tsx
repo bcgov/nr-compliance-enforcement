@@ -1,40 +1,48 @@
 import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { useParams } from "react-router-dom";
-import {
-  selectedComplaint,
-  getHwcrComplaintByComplaintIdentifier,
-} from "../../../store/reducers/hwcr-complaints";
-import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 
-type TestType = {
+import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
+import {
+  getErsComplaintByComplaintIdentifier,
+  getHwcrComplaintByComplaintIdentifier,
+  selectComplaint,
+} from "../../../store/reducers/complaints";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+
+type ComplaintParams = {
   id: string;
   complaintType: string;
 };
 
 export const ComplaintDetails: FC = () => {
   const dispatch = useAppDispatch();
-  const complaint = useAppSelector(selectedComplaint);
+  const complaint = useAppSelector(selectComplaint);
 
-  const { id = "", complaintType = "" } = useParams<TestType>();
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   useEffect(() => {
-    if (!complaint || complaint.complaint_identifier.complaint_identifier !== id) {
+    if (
+      !complaint ||
+      complaint.complaint_identifier.complaint_identifier !== id
+    ) {
       if (id) {
-        dispatch(getHwcrComplaintByComplaintIdentifier(id));
+        switch (complaintType) {
+          case COMPLAINT_TYPES.ERS:
+            dispatch(getErsComplaintByComplaintIdentifier(id));
+            break;
+          case COMPLAINT_TYPES.HWCR:
+            dispatch(getHwcrComplaintByComplaintIdentifier(id));
+            break;
+        }
       }
     }
-  }, [complaint]);
+  }, [id, complaintType, dispatch]);
 
   return (
     <div className="comp-complaint-details">
-      {complaint && (
-        <>
-          <ComplaintHeader id={id} complaintType={complaintType} />
-          <CallDetails />
-          <CallerInformation />
-        </>
-      )}
+      <ComplaintHeader id={id} complaintType={complaintType} />
+      <CallDetails complaintType={complaintType}/>
     </div>
   );
 };

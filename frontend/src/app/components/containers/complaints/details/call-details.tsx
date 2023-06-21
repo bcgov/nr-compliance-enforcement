@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintDetails } from "../../../../store/reducers/hwcr-complaints";
 import {
   formatDate,
   formatTime,
@@ -9,8 +8,12 @@ import {
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
+import { selectComplaintDeails } from "../../../../store/reducers/complaints";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
-export const CallDetails: FC = () => {
+export const CallDetails: FC<{ complaintType: string }> = ({
+  complaintType,
+}) => {
   const {
     details,
     location,
@@ -22,7 +25,9 @@ export const CallDetails: FC = () => {
     zone,
     office,
     attractants,
-  } = useAppSelector(selectComplaintDetails);
+    violationInProgress,
+    violationObserved,
+  } = useAppSelector(selectComplaintDeails(complaintType));
 
   return (
     <div className="comp-complaint-details-block">
@@ -46,24 +51,49 @@ export const CallDetails: FC = () => {
               </div>
             </div>
 
-            <div>
-              <div className="comp-details-content-label ">Attractants</div>
-              <span className="comp-complaint-attactants">
-                {!attractants ||
-                  attractants.map(
-                    ({ key, description }: ComplaintDetailsAttractant) => {
-                      return (
-                        <span
-                          className="badge comp-attactant-badge comp-margin-left-xxs"
-                          key={key}
-                        >
-                          {description}
-                        </span>
-                      );
-                    }
-                  )}
-              </span>
-            </div>
+            {complaintType === COMPLAINT_TYPES.HWCR && (
+              <div>
+                <div className="comp-details-content-label ">
+                  Violation in Progress
+                </div>
+                <span className="comp-complaint-attactants">
+                  {!attractants ||
+                    attractants.map(
+                      ({ key, description }: ComplaintDetailsAttractant) => {
+                        return (
+                          <span
+                            className="badge comp-attactant-badge comp-margin-left-xxs"
+                            key={key}
+                          >
+                            {description}
+                          </span>
+                        );
+                      }
+                    )}
+                </span>
+              </div>
+            )}
+
+            {complaintType === COMPLAINT_TYPES.ERS && (
+              <>
+                <div>
+                  <span className="comp-details-content-label ">
+                    Violation In Progress
+                  </span>
+                  <span className="comp-details-content">
+                    {violationInProgress ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div>
+                  <span className="comp-details-content-label ">
+                    Violation Observed
+                  </span>
+                  <span className="comp-details-content">
+                    {violationObserved ? "Yes" : "No"}
+                  </span>
+                </div>
+              </>
+            )}
           </Col>
           <Col md="6" className="comp-padding-left-28">
             <div>
