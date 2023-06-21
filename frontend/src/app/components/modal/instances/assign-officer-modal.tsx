@@ -1,9 +1,8 @@
 import { FC, useEffect, useState } from "react";
-import { Modal, Row, Col, Button } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileDisplayName, profileIdir, profileInitials, selectModalData } from "../../../store/reducers/app";
-import { getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/assign-officers";
-import ComplaintType from "../../../constants/complaint-types";
+import { assigneCurrentUserToComplaint, getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/assign-officers";
 import { UUID } from "crypto";
 
 type AssignOfficerModalProps = {
@@ -13,6 +12,7 @@ type AssignOfficerModalProps = {
   complaint_type: number;
 };
 
+// A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
@@ -27,21 +27,26 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
 
   const officersJson = useAppSelector(officersInZone);
 
+  // stores the state of the officer that was clicked
   const handleAssigneeClick = (index: number, person_guid: string) => {
     setSelectedAssigneeIndex(index);
     setSelectedAssignee(person_guid);
   };
 
+  // assigns the selected officer to a complaint
   const handleSubmit = () => {
     setNewAssignee(selectedAssignee);
+    dispatch(updateComplaintAssignee(selectedAssignee as UUID, complaint_identifier, complaint_type));
+    submit();
   };
 
+  // assigns the logged in user to a complaint
+  const handleSelfAssign = () => {
+    dispatch(assigneCurrentUserToComplaint(idir, complaint_identifier, complaint_type));
+    submit();
+  }
 
   useEffect(() => {
-    if (selectedAssigneeIndex >= 0) {
-      dispatch(updateComplaintAssignee(selectedAssignee as UUID, complaint_identifier, complaint_type));
-      submit();
-    }
     dispatch(getOfficersInZone(idir));
   }, [dispatch, newAssignee, idir]);
 
@@ -64,7 +69,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           <div className="assign_officer_modal_profile_card_row_2">Officer</div>
         </div>
         <div className="assign_officer_modal_profile_card_column">
-          <Button onClick={submit}>Self Assign</Button>
+          <Button onClick={handleSelfAssign}>Self Assign</Button>
         </div>
       </div>
       <hr></hr>
@@ -77,10 +82,10 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         const lastName = val.person_guid.last_name;
         const displayName = firstName + " " + lastName;
         const officerInitials = firstName?.substring(0,1) + lastName?.substring(0,1);
-
+        const person_guid = val.person_guid.person_guid;
 
         return(
-        <div className={`assign_officer_modal_profile_card ${selectedAssigneeIndex === key ? 'selected' : ''}`} key={key} onClick={() => handleAssigneeClick(key, val.person_guid.person_guid)}>
+        <div className={`assign_officer_modal_profile_card ${selectedAssigneeIndex === key ? 'selected' : ''}`} key={key} onClick={() => handleAssigneeClick(key, person_guid)}>
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_profile-picture">
               <div data-initials-modal={officerInitials}></div>

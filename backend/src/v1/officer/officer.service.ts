@@ -84,7 +84,7 @@ export class OfficerService {
       });
   }
 
-  findByOffice(office_guid: any) : Promise<Officer[]> {
+  async findByOffice(office_guid: any) : Promise<Officer[]> {
     return this.officerRepository.find({
       where: { office_guid: office_guid },
       relations: {
@@ -99,6 +99,20 @@ export class OfficerService {
     });
   }
 
+  async findByAuthUserGuid(auth_user_guid: any) : Promise<Officer> {
+    return this.officerRepository.findOne({
+      where: { auth_user_guid: auth_user_guid },
+      relations: {
+        office_guid: {
+          geo_organization_unit_code: true
+        },
+        person_guid: {
+
+        }
+      } ,
+
+    });
+  }
   async findOne(officer_guid: any) : Promise<Officer> {
     return await this.officerRepository.findOneOrFail({
       where: {officer_guid:officer_guid},

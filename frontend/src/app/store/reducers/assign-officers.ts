@@ -38,12 +38,18 @@ export const { setOfficersInZone } = assignOfficersSlice.actions;
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getOfficersInZone = (office_guid: UUID): AppThunk => async (dispatch) => {
+export const getOfficersInZone = (userGuid: UUID): AppThunk => async (dispatch) => {
+
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     
-    const response = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-office/4060f406-fb58-4df5-bfea-fd23bf9b9bed`);
+    // find an officer based on the logged in user's guid.  This is used to determine the user's office, which will eventually
+    // be used to find the officers in the user's office
+    const officerResponse = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
+    const currentUserOffice = officerResponse.data.office_guid.office_guid;
+
+    const response = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-office/${currentUserOffice}`);
     dispatch(
         setOfficersInZone({
         officersInZone: response.data
@@ -52,7 +58,19 @@ export const getOfficersInZone = (office_guid: UUID): AppThunk => async (dispatc
   }
 };
 
+// Assigns the current user to an office
+export const assigneCurrentUserToComplaint = (userGuid: UUID, complaint_identifier: string, complaint_type: number): AppThunk => async (dispatch) => {
+  const token = localStorage.getItem("user");
+  if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    const officerResponse = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
+    dispatch(updateComplaintAssignee(officerResponse.data.person_guid.person_guid, complaint_identifier, complaint_type));
+  }
+}
+
+// creates a new cross reference for a person and office.  Assigns a person to an office.
 export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier: string, complaint_type: number): AppThunk => async (dispatch) => {
+  alert(person_guid);
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -80,43 +98,29 @@ export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier:
             "person_complaint_xref_code": "ASSIGNEE",
             "create_user_id": "bfalk",
       };
-      console.log(newRecord);
+    console.log(newRecord);
 
-      // add new person complaint record
-      await axios.post<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/`,newRecord);
+    // add new person complaint record
+    await axios.post<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/`,newRecord);
 
-      // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
-      if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
-        dispatch(
-          setHwcrComplaints({
-            hwcrComplaints: response.data
-          })
-        );
-      } else {
-        const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
-        dispatch(
-          setAllegationComplaints({
-            allegationComplaints: response.data
-          })
-        );
-      }
-
+    // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
+    if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
+      const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
+      dispatch(
+        setHwcrComplaints({
+          hwcrComplaints: response.data
+        })
+      );
+    } else {
+      const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
+      dispatch(
+        setAllegationComplaints({
+          allegationComplaints: response.data
+        })
+      );
     }
-
-    
-
-    }
-    //const personComplaintXrefGuidResponse = await axios.get<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/find-by-complaint/${complaint_identifier}`);
-    //const personComplaintXrefGuid = personComplaintXrefGuidResponse.data.personComplaintXrefGuid;
-
-//    dispatch(
-  //      setOfficersInZone({
-    //    officersInZone: response.data
-      //})
-    //);
- // }
-
+  }
+}
 
 export const officersInZone = (state: RootState) => { 
   const { officersInZone } = state.officersInZone;
