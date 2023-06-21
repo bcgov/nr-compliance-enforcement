@@ -121,7 +121,7 @@ export const CallDetails: FC<{ complaintType: string }> = ({
             </div>
             <div>
               <span className="comp-details-content-label ">
-                Area / Community
+                Community
               </span>
               <span className="comp-details-content">{area}</span>
             </div>
