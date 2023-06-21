@@ -1,1 +1,3 @@
-export class CreateCosGeoOrgUnitDto {}
+export class CreateCosGeoOrgUnitDto {
+    //-- comment
+}

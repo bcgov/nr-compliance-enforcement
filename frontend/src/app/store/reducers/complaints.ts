@@ -248,16 +248,18 @@ export const selectComplaintDeails =
         case COMPLAINT_TYPES.HWCR: {
           const { attractant_hwcr_xref }: any = complaint;
 
-          const attractants = attractant_hwcr_xref.map(
-            ({
-              attractant_hwcr_xref_guid: key,
-              attractant_code: { short_description: description },
-            }: any): ComplaintDetailsAttractant => {
-              return { key, description };
-            }
-          );
+          if (attractant_hwcr_xref) {
+            const attractants = attractant_hwcr_xref.map(
+              ({
+                attractant_hwcr_xref_guid: key,
+                attractant_code: { short_description: description },
+              }: any): ComplaintDetailsAttractant => {
+                return { key, description };
+              }
+            );
 
-          results = { ...results, attractants };
+            results = { ...results, attractants };
+          }
           break;
         }
       }
