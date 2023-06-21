@@ -14,6 +14,7 @@ type ChangeStatusModalProps = {
   submit: () => void;
   complaint_identifier: string;
   complaint_type: number;
+  complaint_guid: string;
 }
 
 /**
@@ -30,16 +31,16 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   useEffect(() => {
     if (status.length > 1) {
       if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier,status));
+        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, complaint_guid));
       } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier,status));
+        dispatch(updateAllegationComplaintStatus(complaint_identifier,status, complaint_guid));
       }
       submit();
     }
   }, [dispatch,status,submit]);
   
 
-  const { title, description,complaint_identifier } = modalData;
+  const { title, description,complaint_identifier, complaint_guid } = modalData;
 
   const handleSelectChange = (selectedValue: string) => {
     selectedStatus = selectedValue;

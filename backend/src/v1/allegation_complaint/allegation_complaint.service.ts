@@ -68,8 +68,12 @@ export class AllegationComplaintService {
           referred_by_agency_code: true,
           complaint_status_code: true,
           geo_organization_unit_code: true,
+          person_complaint_xref: {
+            complaint_identifier: true,
+            person_guid: true
+          }
         } ,
-        violation_code: false,
+        violation_code: true,
       },
     });
   }

@@ -39,6 +39,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                     const lastInitial = lastName?.length > 0 ? lastName.substring(0,1) : "";
                     const initials = firstInitial + lastInitial;
                     const displayName = firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
+                    const guid = val.hwcr_complaint_guid;
                     return (
                         <tr key={"hwcrComplaint" + key.toString()}>
                             <td className="comp-small-cell comp-cell comp-cell-left">{complaintIdentifier}</td>
@@ -56,7 +57,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT} assigned_ind={assigned_ind}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

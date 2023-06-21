@@ -106,9 +106,7 @@ export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier:
     if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
       const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
       dispatch(
-        setHwcrComplaints({
-          hwcrComplaints: response.data
-        })
+        setHwcrComplaints(response.data)
       );
     } else {
       const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});

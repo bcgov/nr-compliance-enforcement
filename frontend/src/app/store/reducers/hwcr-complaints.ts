@@ -1,12 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
-import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
+import { HwcrComplaintsState } from "../../types/complaints/hrcr-complaints-state";
 import { Complaint } from "../../types/complaints/complaint";
 
-const initialState: HwcrComplaintState = {
+const initialState: HwcrComplaintsState = {
   hwcrComplaints: []
 };
 
@@ -15,15 +15,17 @@ export const hwcrComplaintSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setHwcrComplaints: (state, action) => {
+    setHwcrComplaints: (state, action: PayloadAction<HwcrComplaint[]>) => {
       const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
+      const hwcrComplaints:HwcrComplaint[] = payload;
       return { ...state, hwcrComplaints};
     },
-    updateHwcrComplaintStatus: (state, action) => {
-      const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
-      return { ...state, hwcrComplaints};
+    updateHwcrComplaintRow: (state, action: PayloadAction<HwcrComplaint>) => {
+      const updatedComplaint = action.payload;
+      const index = state.hwcrComplaints.findIndex(row => row.hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid);
+      if (index !== -1) {
+        state.hwcrComplaints[index] = updatedComplaint;
+      }
     },
   },
 
@@ -33,7 +35,7 @@ export const hwcrComplaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setHwcrComplaints } = hwcrComplaintSlice.actions;
+export const { setHwcrComplaints, updateHwcrComplaintRow } = hwcrComplaintSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -43,33 +45,32 @@ export const getHwcrComplaints = (sortColumn: string, sortOrder: string): AppThu
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
+    const response = await axios.get<HwcrComplaint[]>(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
     dispatch(
-      setHwcrComplaints({
-        hwcrComplaints: response.data
-      })
+      setHwcrComplaints(response.data)
     );
   }
 };
 
-export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
+// Update the complaint status and dispatch this change so that the affected row is updated in the state
+export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string, hwcr_guid: string ): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const complaintResponse = await axios.get<Complaint>(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`);
     
+    // first update the complaint status
     let updatedComplaint = complaintResponse.data;
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
+    
+    // now get that hwcr complaint row and update the state
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/${hwcr_guid}`);
     dispatch(
-      setHwcrComplaints({
-        hwcrComplaints: response.data
-      })
+      updateHwcrComplaintRow(response.data)
     );
   }
 };
-
 
 export const hwcrComplaints = (state: RootState) => { 
   const { hwcrComplaints } = state.hwcrComplaint;

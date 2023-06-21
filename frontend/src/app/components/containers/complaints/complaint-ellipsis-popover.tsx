@@ -8,6 +8,7 @@ type Props= {
   complaint_identifier: string;
   complaint_type: number
   assigned_ind: boolean;
+  complaint_guid: string;
 }
 
 /**
@@ -15,7 +16,7 @@ type Props= {
  * 1. Assign Complaint
  * 2. Update astatus
  */
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, assigned_ind }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, assigned_ind, complaint_guid }) => {
   const dispatch = useAppDispatch();
   const assignText = assigned_ind ? 'Reassign Complaint' : 'Assign Complaint';
   
@@ -37,7 +38,8 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           title: "Update status?",
           description: "Status",
           complaint_identifier: complaint_identifier,
-          complaint_type: complaint_type
+          complaint_type: complaint_type,
+          complaint_guid: complaint_guid
         }
       })
     );
