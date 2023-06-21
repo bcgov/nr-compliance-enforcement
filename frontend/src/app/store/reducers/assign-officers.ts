@@ -70,7 +70,6 @@ export const assigneCurrentUserToComplaint = (userGuid: UUID, complaint_identifi
 
 // creates a new cross reference for a person and office.  Assigns a person to an office.
 export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier: string, complaint_type: number): AppThunk => async (dispatch) => {
-  alert(person_guid);
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
