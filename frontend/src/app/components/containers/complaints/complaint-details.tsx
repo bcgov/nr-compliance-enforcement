@@ -9,9 +9,6 @@ import {
   selectComplaint,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
-import { SuspectDetails } from "./details/suspect-details";
-import { Row, Col } from "react-bootstrap";
-import { WitnessDetails } from "./details/witness-details";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
 
 type ComplaintParams = {
@@ -41,7 +38,7 @@ export const ComplaintDetails: FC = () => {
         }
       }
     }
-  }, [id, complaintType, dispatch]);
+  }, [id, complaintType, complaint, dispatch]);
 
   return (
     <div className="comp-complaint-details">

@@ -57,7 +57,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const statusClass = (length - 1 === key) ? "comp-status-cell comp-cell comp-cell-bottom" : "comp-status-cell comp-cell";
                     const updateDateClass = (length - 1 === key) ? "comp-last-updated-cell comp-cell comp-cell-bottom comp-bottom-right" : "comp-last-updated-cell comp-cell";
                         return (
-                            <tr key={`allegation-complaint-${key}`} onClick={event => handleComplaintClick(event, complaintIdentifier)}>
+                            <tr key={`allegation-complaint-${complaintIdentifier}`} onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                 <td className={complaintIdentifierClass}>{complaintIdentifier}</td>
                                 <td className={incidentReportedDatetimeClass}>{incidentReportedDatetime}</td>
                                 <td className={violationCodeClass}>{violationCode}</td>
