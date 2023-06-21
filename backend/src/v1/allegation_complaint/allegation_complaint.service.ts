@@ -21,7 +21,7 @@ export class AllegationComplaintService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    var newAllegationComplaint;
+    let newAllegationComplaint;
     try {
       await this.complaintService.create(
         <CreateComplaintDto>allegationComplaint,
@@ -120,7 +120,7 @@ export class AllegationComplaintService {
 
   async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
     try {
-      var complaint_identifier = (
+      let complaint_identifier = (
         await this.allegationComplaintsRepository.findOneOrFail({
           where: { allegation_complaint_guid: id },
           relations: {
