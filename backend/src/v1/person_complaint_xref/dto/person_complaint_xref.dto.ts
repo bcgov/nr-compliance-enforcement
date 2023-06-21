@@ -13,7 +13,7 @@ export class PersonComplaintXrefDto
   public person_complaint_xref_guid: UUID
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "mburns",
     description: "The id of the user that created the cross reference.",
   })
   create_user_id: string;
@@ -31,7 +31,7 @@ export class PersonComplaintXrefDto
   create_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "mburns",
     description: "The id of the user that updated the cross reference.",
   })
   update_user_id: string;

@@ -22,7 +22,7 @@ export class PersonComplaintXrefCodeDto
   active_ind: boolean;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "mburns",
     description: "The id of the user that created the code.",
   })
   create_user_id: string;
@@ -40,7 +40,7 @@ export class PersonComplaintXrefCodeDto
   create_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "mburns",
     description: "The id of the user that updated the code.",
   })
   update_user_id: string;

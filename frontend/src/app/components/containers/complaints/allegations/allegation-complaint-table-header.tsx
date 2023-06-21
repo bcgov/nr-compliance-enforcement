@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Row, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import carets from "../../../../../assets/images/table-carets.png";
 
 type Props = {

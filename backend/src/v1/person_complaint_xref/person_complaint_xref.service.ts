@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePersonComplaintXrefDto } from './dto/create-person_complaint_xref.dto';
-import { UpdatePersonComplaintXrefDto } from './dto/update-person_complaint_xref.dto';
 import { PersonComplaintXref } from './entities/person_complaint_xref.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UUID } from 'crypto';
 
 @Injectable()
 export class PersonComplaintXrefService {
