@@ -65,31 +65,12 @@ export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatu
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
     
     // now get that hwcr complaint row and update the state
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/${hwcr_guid}`);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/with-active-assignee/${hwcr_guid}`);
     dispatch(
       updateHwcrComplaintRow(response.data)
     );
   }
 };
-
-export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const complaintResponse = await axios.get<Complaint>(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`);
-    
-    let updatedComplaint = complaintResponse.data;
-    updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
-    await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
-    dispatch(
-      setHwcrComplaints({
-        hwcrComplaints: response.data
-      })
-    );
-  }
-};
-
 
 export const hwcrComplaints = (state: RootState) => { 
   const { hwcrComplaints } = state.hwcrComplaint;
