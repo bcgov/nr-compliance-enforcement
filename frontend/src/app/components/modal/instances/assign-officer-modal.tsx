@@ -50,6 +50,21 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     dispatch(getOfficersInZone(idir));
   }, [dispatch, newAssignee, idir]);
 
+  function compareUuidToString(uuid: string, str: string): boolean {
+
+    if (uuid === null || str === null) {
+      return false;
+    }
+    // Remove any hyphens from the UUID and convert to lowercase
+    const cleanUuid = uuid.replace(/-/g, "").toLowerCase();
+    
+    // Convert the input string to lowercase
+    const cleanStr = str.toLowerCase();
+    
+    // Compare the cleaned UUID to the cleaned string
+    return cleanUuid === cleanStr;
+  }
+
   return (
     <>
       {title && (
@@ -84,6 +99,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         const officerInitials = firstName?.substring(0,1) + lastName?.substring(0,1);
         const person_guid = val.person_guid.person_guid;
 
+        if (!compareUuidToString(val.auth_user_guid,idir)) {
         return(
         <div className={`assign_officer_modal_profile_card ${selectedAssigneeIndex === key ? 'selected' : ''}`} key={key} onClick={() => handleAssigneeClick(key, person_guid)}>
           <div className="assign_officer_modal_profile_card_column">
@@ -99,7 +115,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           </div>
       </div>
 
-        );})}
+        );}})}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>
