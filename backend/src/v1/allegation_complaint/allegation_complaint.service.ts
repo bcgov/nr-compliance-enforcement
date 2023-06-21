@@ -58,10 +58,12 @@ export class AllegationComplaintService {
   }
 
   async search(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, violationCode?: string, 
-    inProgressInd?: string, incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<AllegationComplaint[]> {
+    incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<AllegationComplaint[]> {
+      
+      console.log("violationFilterBackend: " + violationCode);
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
     const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-    const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'allegation_complaint_nature_code') ? 'allegation_complaint.' : 'complaint_identifier.';
+    const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind') ? 'allegation_complaint.' : 'complaint_identifier.';
     const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)';
 
     const queryBuilder = this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
@@ -75,12 +77,12 @@ export class AllegationComplaintService {
     //.leftJoinAndSelect('person_complaint_xref.person_complaint_xref_id', 'person_complaint_xref')
     .orderBy(sortString, sortOrderString)
     .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
-
+    /*
     if(community !== undefined)
     {
       queryBuilder.andWhere('complaint_identifier.geo_organization_unit_code = :Community', { Community: community });
     }
-    /*
+
     if(zone !== null)
     {
       queryBuilder.andWhere('cos.geo_org_unit_flat_vw.zone_code = :Zone', { Zone: zone });
@@ -94,27 +96,22 @@ export class AllegationComplaintService {
       queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
       queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned });
     }*/
-    if(violationCode !== undefined)
+    if(violationCode !== null && violationCode !== undefined && violationCode !== "")
     {
       queryBuilder.andWhere('allegation_complaint.violation_code = :ViolationCode', { ViolationCode:violationCode });
     }
-    if(inProgressInd !== undefined)
-    {
-      queryBuilder.andWhere('allegation_complaint.in_progress_ind = :InProgressInd', { InProgressInd:inProgressInd });
-    }
-    if(incidentReportedStart !== undefined)
+    if(incidentReportedStart !== null && incidentReportedStart !== undefined && incidentReportedStart !== "")
     {
       queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart:incidentReportedStart });
     }
-    if(incidentReportedEnd !== undefined)
+    if(incidentReportedEnd !== null && incidentReportedEnd !== undefined && incidentReportedEnd !== "")
     {
       queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd:incidentReportedEnd });
     }
-    if(status !== undefined)
+    if(status !== null && status !== undefined && status !== "")
     {
       queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
     }
-
     return queryBuilder.getMany();
   }
 

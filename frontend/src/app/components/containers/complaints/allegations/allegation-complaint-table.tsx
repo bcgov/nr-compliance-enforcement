@@ -7,16 +7,22 @@ import { getAllegationComplaints, allegationComplaints } from "../../../../store
 type Props = {
     sortColumn: string,
     sortOrder: string,
+    violationFilter: Option | null,
+    startDateFilter: Date | undefined,
+    endDateFilter: Date | undefined,
+    complaintStatusFilter: Option | null,
 }
 
-export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
+export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
     const dispatch = useAppDispatch();
 
     const allegationComplaintsJson = useAppSelector(allegationComplaints);
 
+
     useEffect(() => {
-            dispatch(getAllegationComplaints(sortColumn, sortOrder));
-  }, [dispatch, sortColumn, sortOrder])
+        console.log("violationFilter: " + violationFilter);
+            dispatch(getAllegationComplaints(sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+  }, [dispatch, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
 
 
     return (

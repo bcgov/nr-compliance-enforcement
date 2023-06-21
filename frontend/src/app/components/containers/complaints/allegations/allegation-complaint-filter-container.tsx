@@ -9,8 +9,7 @@ import "../../../../../../node_modules/react-datepicker/dist/react-datepicker-cs
 type Props = {
     getCollapseProps: Function;
     isExpanded: boolean;
-    setNatureOfComplaintFilter: Function,
-    setSpeciesCodeFilter: Function,
+    setViolationFilter: Function,
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     setStartDateFilter: Function,
@@ -19,9 +18,8 @@ type Props = {
 }
 
 
-export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, setNatureOfComplaintFilter, setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, setComplaintStatusFilter}) => {
-    const [hwcrNatureOfComplaintCodes, setHwcrNatureOfComplaintCodes] = useState<Option[]>([] as Array<Option>);
-    const [speciesCodes, setSpeciesCodes] = useState<Option[]>([] as Array<Option>);
+export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, setViolationFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, setComplaintStatusFilter}) => {
+    const [violationCodes, setViolationCodes] = useState<Option[]>([] as Array<Option>);
     const [complaintStatusCodes, setComplaintStatusCodes] = useState<Option[]>([] as Array<Option>);
     const handleDateFilter = (dates: [any, any]) => {
         const [start, end] = dates;
@@ -35,21 +33,13 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
             const token = localStorage.getItem("user");
             if (token) {
                     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-                    await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code`).then((response) => {
+                    await axios.get(`${config.API_BASE_URL}/v1/violation-code`).then((response) => {
                         const transformedOptions: Option[] = response.data.map((item: any) => ({
-                            value: item.hwcr_complaint_nature_code, // Assuming each item has an 'id' property
+                            value: item.violation_code, // Assuming each item has an 'id' property
                             label: item.long_description, // Assuming each item has a 'name' property
                           }));
                         transformedOptions.unshift({value: "", label: ""});
-                        setHwcrNatureOfComplaintCodes(transformedOptions);
-                    });
-                    await axios.get(`${config.API_BASE_URL}/v1/species-code`).then((response) => {
-                        const transformedOptions: Option[] = response.data.map((item: any) => ({
-                            value: item.species_code, // Assuming each item has an 'id' property
-                            label: item.long_description, // Assuming each item has a 'name' property
-                          }));
-                        transformedOptions.unshift({value: "", label: ""});
-                        setSpeciesCodes(transformedOptions);
+                        setViolationCodes(transformedOptions);
                     });
                     await axios.get(`${config.API_BASE_URL}/v1/complaint-status-code`).then((response) => {
                         const transformedOptions: Option[] = response.data.map((item: any) => ({
@@ -64,11 +54,8 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
         fetchCodes()
         .catch(err => console.log(err));
       }, []);
-      const handleNatureOfComplaintFilter = (selectedOption: Option | null) => {
-        setNatureOfComplaintFilter(selectedOption?.value);
-      }; 
-      const handleSpeciesCodesFilter = (selectedOption: Option | null) => {
-        setSpeciesCodeFilter(selectedOption?.value);
+      const handleViolationFilter = (selectedOption: Option | null) => {
+        setViolationFilter(selectedOption?.value);
       }; 
       const handleComplaintStatusCodes = (selectedOption: Option | null) => {
         setComplaintStatusFilter(selectedOption?.value);
@@ -83,18 +70,10 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
         <div style={{clear:'left'}}></div>
         <div style={{float:'left'}}>
           <div>
-              Nature of Complaint
+              Violation Type
           </div>
           <div>
-              <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select"/>
-          </div>
-        </div>
-        <div style={{float:'left'}}>
-          <div>
-              Species
-          </div>
-          <div> 
-              <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select" />
+              <Select options={violationCodes} onChange={handleViolationFilter} placeholder="Select"/>
           </div>
         </div>
         <div style={{float:'left'}}>

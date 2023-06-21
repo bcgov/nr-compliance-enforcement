@@ -20,6 +20,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, natureOf
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
+        console.log("natureOfComplaintFilter: " + natureOfComplaintFilter);
             dispatch(getHwcrComplaints(sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
   }, [dispatch, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
 

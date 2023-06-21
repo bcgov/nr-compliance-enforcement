@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
-import { HwcrComplaintFilterContainer } from "./hwcr/hwcr-complaint-filter-container";
 
 type Props = {
     initialState: number;
@@ -13,6 +12,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [natureOfComplaintFilter, setNatureOfComplaintFilter] = useState<Option | null>(null);
     const [speicesCodeFilter, setSpeicesCodeFilter] = useState<Option | null>(null);
+    const [violationFilter, setViolationFilter] = useState<Option | null>(null);
     const [startDateFilter, setStartDateFilter] = useState<Date>();
     const [endDateFilter, setEndDateFilter] = useState<Date>();
     const [complaintStatusFilter, setComplaintStatusFilter] = useState<Option | null>(null)
@@ -51,15 +51,22 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     {
         return <>
             <div className="comp-sub-header">Complaints</div>
-            <div><HwcrComplaintFilterContainer setNatureOfComplaintFilter={setNatureOfComplaintFilter} setSpeciesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} setComplaintStatusFilter={setComplaintStatusFilter} /></div>
-            <div><HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speicesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}/></div>
+            <div>
+                <HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter}
+                    speciesCodeFilter={speicesCodeFilter} setSpeicesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
+                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
+            </div>
         </>;
     }
     else if(complaintType === ComplaintType.ALLEGATION_COMPLAINT)
     {
         return <>
             <div className="comp-sub-header">Complaints</div>
-            <div><AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}/></div>
+            <div>
+                <AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}
+                    violationFilter={violationFilter} setViolationFilter={setViolationFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
+                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
+            </div>
         </>;
     }
     else

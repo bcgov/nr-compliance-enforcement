@@ -61,9 +61,6 @@ export class HwcrComplaintService {
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
       const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
-        console.log("natureOfComplaint: " + natureOfComplaint);
-        console.log("speciesCode: " + speciesCode);
-        console.log("status: " + status);
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
@@ -96,9 +93,6 @@ export class HwcrComplaintService {
         queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
         queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned });
       }*/
-      console.log("natureOfComplaint backend: " + natureOfComplaint);
-      console.log("SpceciesCode backend: " + speciesCode);
-      console.log("status backend: " + status);
       if(natureOfComplaint !== null && natureOfComplaint !== undefined && natureOfComplaint !== "")
       {
         queryBuilder.andWhere('hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint', { NatureOfComplaint:natureOfComplaint });
@@ -119,7 +113,6 @@ export class HwcrComplaintService {
       {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
-      console.log(queryBuilder.getSql());
       return queryBuilder.getMany();
     }
   

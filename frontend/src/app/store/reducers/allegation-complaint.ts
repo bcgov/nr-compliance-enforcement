@@ -33,12 +33,13 @@ export const { setAllegationComplaints } = allegationComplaintSlice.actions;
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getAllegationComplaints = (sortColumn: string, sortOrder: string): AppThunk => async (dispatch) => {
+export const getAllegationComplaints = (sortColumn: string, sortOrder: string, violationFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?: Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
+    console.log("violationFilter: " + violationFilter);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
+    officerAssigned: "", violationCode: violationFilter, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter}});
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data
