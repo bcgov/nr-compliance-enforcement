@@ -11,10 +11,11 @@ type AssignOfficerModalProps = {
   complaint_identifier: string;
   complaint_type: number;
   complaint_guid: string;
+  zone: string;
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
-export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type }) => {
+export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type, zone }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const { title, complaint_identifier, complaint_guid } = modalData;
@@ -50,7 +51,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   }
 
   useEffect(() => {
-    dispatch(getOfficersInZone(idir));
+    dispatch(getOfficersInZone(zone));
   }, [dispatch, newAssignee, idir]);
 
   function compareUuidToString(uuid: string, str: string): boolean {
@@ -96,14 +97,15 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
       </div>
       {officersJson.map((val, key) => {
 
-        const firstName = val.person_guid.first_name;
-        const lastName = val.person_guid.last_name;
+        const firstName = val.first_name;
+        const lastName = val.last_name;
         const displayName = firstName + " " + lastName;
         const officerInitials = firstName?.substring(0,1) + lastName?.substring(0,1);
-        const person_guid = val.person_guid.person_guid;
+        const person_guid = val.person_guid;
+        const auth_user_guid = val.officer.auth_user_guid;
 
         // don't display the current user in the list since we already have the current user at the top of the modal
-        if (!compareUuidToString(val.auth_user_guid,idir)) {
+        if (auth_user_guid === undefined || !compareUuidToString(auth_user_guid,idir)) {
         return(
         <div className={`assign_officer_modal_profile_card ${selectedAssigneeIndex === key ? 'selected' : ''}`} key={key} onClick={() => handleAssigneeClick(key, person_guid)}>
           <div className="assign_officer_modal_profile_card_column">

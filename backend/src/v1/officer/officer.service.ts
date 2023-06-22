@@ -103,9 +103,6 @@ export class OfficerService {
     return this.officerRepository.findOne({
       where: { auth_user_guid: auth_user_guid },
       relations: {
-        office_guid: {
-          geo_organization_unit_code: true
-        },
         person_guid: {
 
         }

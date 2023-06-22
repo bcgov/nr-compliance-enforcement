@@ -35,10 +35,15 @@ export class ComplaintService {
   }
 
   async findOne(id: any): Promise<Complaint> {
-    return this.complaintsRepository.findOneOrFail({where: {complaint_identifier: id},
+    return this.complaintsRepository.findOneOrFail({
+      where: {complaint_identifier: id},
       relations: { 
-        complaint_status_code: true
-      }});
+        referred_by_agency_code: true,
+        owned_by_agency_code: true,
+        complaint_status_code: true,
+        geo_organization_unit_code: true,
+      },
+    });
   }
 
   async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {

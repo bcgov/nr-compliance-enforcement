@@ -1,11 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne, OneToMany } from "typeorm";
+import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { UUID } from "crypto";
 import { Point } from "geojson";
 import { PersonComplaintXref } from "src/v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { CosGeoOrgUnit } from "src/v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Entity()
 export class Complaint {
@@ -42,11 +43,21 @@ export class Complaint {
 
   @ApiProperty({
     example: "DCC",
-    description: "The geographical organization code of the organization that currently owns the complaint",
+    description:
+      "The geographical organization code of the organization that currently owns the complaint",
   })
   @ManyToOne(() => GeoOrganizationUnitCode)
-  @JoinColumn({name: "geo_organization_unit_code"})
+  @JoinColumn({ name: "geo_organization_unit_code" })
   geo_organization_unit_code: GeoOrganizationUnitCode;
+
+  @ApiProperty({
+    example: "DCC",
+    description:
+      "The geographical organization code of the organization that currently owns the complaint",
+  })
+  @OneToOne(() => CosGeoOrgUnit)
+  @JoinColumn({ name: "geo_organization_unit_code" })
+  cos_geo_org_unit: CosGeoOrgUnit;
 
   @ApiProperty({
     example: "DCC",
@@ -120,12 +131,6 @@ export class Complaint {
   srid: 4326
   })
   location_geometry_point: Point;
-
-
-  /*
- @Column()
- location_geometry_point: string;
- */
 
   @ApiProperty({
     example: "Near Golden",
@@ -206,7 +211,7 @@ export class Complaint {
 
   constructor(detail_text?:string, caller_name?:string, caller_address?:string, caller_email?:string, caller_phone_1?:string, caller_phone_2?:string, caller_phone_3?:string, location_geometry_point?:Point,
     location_summary_text?:string, location_detailed_text?:string, incident_datetime?:Date, incident_reported_datetime?:Date, referred_by_agency_other_text?:string, create_user_id?:string, create_user_guid?:UUID, create_timestamp?:Date,
-    update_user_id?:string, update_user_guid?:UUID, update_timestamp?:Date, complaint_identifier?:string, referred_by_agency_code?:AgencyCode, owned_by_agency_code?:AgencyCode, complaint_status_code?:ComplaintStatusCode, geo_organization_unit_code?:GeoOrganizationUnitCode) 
+    update_user_id?:string, update_user_guid?:UUID, update_timestamp?:Date, complaint_identifier?:string, referred_by_agency_code?:AgencyCode, owned_by_agency_code?:AgencyCode, complaint_status_code?:ComplaintStatusCode, geo_organization_unit_code?:GeoOrganizationUnitCode,cos_geo_org_unit?: CosGeoOrgUnit) 
   {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -232,6 +237,7 @@ export class Complaint {
     this.owned_by_agency_code = owned_by_agency_code;
     this.complaint_status_code = complaint_status_code;
     this.geo_organization_unit_code = geo_organization_unit_code;
+    this.cos_geo_org_unit = cos_geo_org_unit;
   }
 
 }

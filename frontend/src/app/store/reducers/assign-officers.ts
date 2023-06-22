@@ -3,12 +3,12 @@ import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { AssignOfficersState } from "../../types/complaints/officers-in-zone-state";
-import { Person } from "../../types/person/person";
+import { Officer, Person } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/personComplaintXref";
-import { setHwcrComplaints, updateHwcrComplaintRow } from "./hwcr-complaints";
+import { updateHwcrComplaintRow } from "./hwcr-complaints";
 import ComplaintType from "../../constants/complaint-types";
-import { setAllegationComplaints, updateAllegationComplaintRow } from "./allegation-complaint";
+import { updateAllegationComplaintRow } from "./allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 
@@ -36,22 +36,14 @@ export const assignOfficersSlice = createSlice({
 // export the actions/reducers
 export const { setOfficersInZone } = assignOfficersSlice.actions;
 
-// The function below is called a thunk and allows us to perform async logic. It
-// can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
-// will call the thunk with the `dispatch` function as the first argument. Async
-// code can then be executed and other actions can be dispatched
-export const getOfficersInZone = (userGuid: UUID): AppThunk => async (dispatch) => {
+// Given a zone, returns a list of persons in that zone.
+export const getOfficersInZone = (zone: string): AppThunk => async (dispatch) => {
 
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     
-    // find an officer based on the logged in user's guid.  This is used to determine the user's office, which will eventually
-    // be used to find the officers in the user's office
-    const officerResponse = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
-    const currentUserOffice = officerResponse.data.office_guid.office_guid;
-
-    const response = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-office/${currentUserOffice}`);
+    const response = await axios.get<Person>(`${config.API_BASE_URL}/v1/person/find-by-zone/${zone}`);
     dispatch(
         setOfficersInZone({
         officersInZone: response.data
@@ -65,8 +57,8 @@ export const assignCurrentUserToComplaint = (userGuid: UUID, complaint_identifie
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const officerResponse = await axios.get(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
-    dispatch(updateComplaintAssignee(officerResponse.data.person_guid.person_guid, complaint_identifier, complaint_type, complaint_guid));
+    const officerResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
+    dispatch(updateComplaintAssignee(officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type, complaint_guid));
   }
 }
 

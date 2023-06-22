@@ -42,6 +42,8 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const initials = firstInitial + lastInitial;
                     const displayName = firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
                     const guid = val.allegation_complaint_guid;
+                    const zone = val.complaint_identifier.cos_geo_org_unit.zone_code;
+
                         return (
                             <tr key={"allegationComplaint" + key.toString()}>
                                 <td className="comp-small-cell comp-cell comp-cell-left">{complaintIdentifier}</td>
@@ -59,7 +61,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid}></ComplaintEllipsisPopover>
+                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid} zone={zone}></ComplaintEllipsisPopover>
                             </tr>
                         )
                     })}

@@ -51,7 +51,11 @@ export class AllegationComplaintService {
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
-      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'geo_organization_unit_code')
+      .leftJoinAndSelect(
+        'complaint_identifier.cos_geo_org_unit',
+        'area_code'
+      )      
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
@@ -85,7 +89,11 @@ export class AllegationComplaintService {
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
-      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'geo_organization_unit_code')
+      .leftJoinAndSelect(
+        "complaint_identifier.cos_geo_org_unit",
+        "area_code"
+      )      
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .where("allegation_complaint_guid = :id", {id})

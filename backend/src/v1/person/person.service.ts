@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Person } from './entities/person.entity';
 import { QueryRunner, DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { OfficerService } from '../officer/officer.service';
 
 @Injectable()
 export class PersonService {
@@ -54,5 +55,14 @@ export class PersonService {
 
   remove(id: number) {
     return `This action removes a #${id} person`;
+  }
+
+  async findByZone(zone_code: any) : Promise<Person[]> {
+    return this.personRepository.createQueryBuilder('person')
+    .leftJoinAndSelect('person.officer', 'officer')
+    .leftJoinAndSelect('officer.office_guid','office')
+    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit_flat_vw')
+    .where("cos_geo_org_unit_flat_vw.zone_code = :zone_code", {zone_code})
+    .getMany();
   }
 }
