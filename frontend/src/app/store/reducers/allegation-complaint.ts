@@ -37,7 +37,6 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string, v
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    console.log("violationFilter: " + violationFilter);
     const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
     officerAssigned: "", violationCode: violationFilter, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter}});
     dispatch(

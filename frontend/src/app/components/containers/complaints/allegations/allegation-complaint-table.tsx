@@ -20,7 +20,6 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, vi
 
 
     useEffect(() => {
-        console.log("violationFilter: " + violationFilter);
             dispatch(getAllegationComplaints(sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
   }, [dispatch, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
 

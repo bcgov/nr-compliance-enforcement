@@ -59,8 +59,7 @@ export class AllegationComplaintService {
 
   async search(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, violationCode?: string, 
     incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<AllegationComplaint[]> {
-      
-      console.log("violationFilterBackend: " + violationCode);
+
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
     const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
     const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind') ? 'allegation_complaint.' : 'complaint_identifier.';

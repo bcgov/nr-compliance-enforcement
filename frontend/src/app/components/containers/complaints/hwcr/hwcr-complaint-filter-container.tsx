@@ -81,27 +81,27 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           test float
         </div>
         <div style={{clear:'left'}}></div>
-        <div style={{float:'left'}}>
+        <div style={{float:'left', width: '298px'}}>
           <div>
               Nature of Complaint
           </div>
-          <div>
+          <div style={{padding: '6px, 12px, 6px, 12px'}}>
               <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select"/>
           </div>
         </div>
-        <div style={{float:'left'}}>
+        <div style={{float:'left', width: '298px', margin:'0px 0px 0px 43px'}}>
           <div>
               Species
           </div>
-          <div> 
+          <div style={{padding: '6px, 12px, 6px, 12px'}}> 
               <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select" />
           </div>
         </div>
-        <div style={{float:'left'}}>
+        <div style={{float:'left', width: '298px', margin:'0px 0px 0px 43px'}}>
           <div>
               Date Logged
           </div>
-          <div>
+          <div style={{padding: '6px, 12px, 6px, 12px'}}>
           <DatePicker
               showIcon={true}
               renderCustomHeader={({
@@ -110,7 +110,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                   decreaseMonth,
                   increaseMonth,
                 }) => (
-                  <div>
+                  <div style={{width: '298px'}}>
                     <button
                       aria-label="Previous Month"
                       className={
@@ -162,11 +162,11 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               />
           </div>
         </div>
-        <div style={{float:'left'}}>
+        <div style={{float:'left', width: '298px', margin:'0px 0px 0px 43px'}}>
           <div>
               Status
           </div>
-          <div> 
+          <div style={{padding: '6px, 12px, 6px, 12px'}}> 
               <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" />
           </div>
         </div>
