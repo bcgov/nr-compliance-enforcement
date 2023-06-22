@@ -54,7 +54,7 @@ export const CallDetails: FC<{ complaintType: string }> = ({
             {complaintType === COMPLAINT_TYPES.HWCR && (
               <div>
                 <div className="comp-details-content-label ">
-                  Violation in Progress
+                  Attractants
                 </div>
                 <span className="comp-complaint-attactants">
                   {!attractants ||
