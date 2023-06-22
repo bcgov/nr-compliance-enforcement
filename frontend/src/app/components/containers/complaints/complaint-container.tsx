@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";

@@ -1,7 +1,6 @@
 import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
-// import { URLPattern } from "urlpattern-polyfill";
 
 export const getAvatarInitials = (input: string): string => {
   const tokens = input.split(" ");
@@ -51,10 +50,8 @@ export const getComplaintTypeFromUrl = (): number => {
   let r = p.exec(window.location.href);
 
   if (r) {
-    console.log("type: ", COMPLAINT_TYPES.HWCR ? 0 : 1)
     return r.pathname.groups.type === COMPLAINT_TYPES.HWCR ? 0 : 1;
   }
 
-  console.log("type: ",-1)
   return -1;
 };
