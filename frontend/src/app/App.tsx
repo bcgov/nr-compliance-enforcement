@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
 import Roles from "./constants/roles";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";

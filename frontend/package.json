@@ -48,6 +48,7 @@
     "react-transition-group": "^4.4.5",
     "typescript": "*",
     "uncontrollable": "^8.0.2",
+    "urlpattern-polyfill": "^9.0.0",
     "warning": "^4.0.3",
     "web-vitals": "^3.0.0"
   },
