@@ -23,7 +23,7 @@ const callerInformation = {
     referred: ""
 }
 
-describe("COMPENF-35 Display HWCR Details", () => {
+describe("COMPENF-37 Display ECR Details", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
@@ -70,7 +70,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.visit("/");
 
     //-- click on HWCR tab
-    cy.get("#hwcr-tab").click({ force: true });
+    cy.get("#ers-tab").click({ force: true });
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
@@ -79,7 +79,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(12)").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(9)").click({ force: true });
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(1) > p").contains(callDetails.description)
@@ -94,5 +94,6 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(6) > span.comp-details-content").contains(callDetails.zone)
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(7) > span.comp-details-content").contains(callDetails.region)
   });
+
 
 });
