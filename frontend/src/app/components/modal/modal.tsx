@@ -9,7 +9,6 @@ import {
   selectModalData,
   selectModalOpenState,
   selectModalSize,
-  selectModalStaticState,
   selectModalType,
 } from "../../store/reducers/app";
 import { MODAL_COMPONENTS } from "./model-components";
@@ -19,7 +18,6 @@ export const ModalComponent: FC = () => {
 
   const isOpen = useAppSelector(selectModalOpenState);
   const modalSize = useAppSelector(selectModalSize);
-  const isStatic = useAppSelector(selectModalStaticState);
   const modalType = useAppSelector(selectModalType);
   const modalData = useAppSelector(selectModalData);
   const callback = useAppSelector(selectCallback);
@@ -46,7 +44,7 @@ export const ModalComponent: FC = () => {
       size={modalSize}
       show={isOpen}
       onHide={handleCloseModal}
-      backdrop={isStatic}
+      centered
     >
       {modalType && (
         <Content

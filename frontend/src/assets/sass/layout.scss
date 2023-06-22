@@ -191,3 +191,46 @@
   flex: 1;
   flex-direction: column;
 }
+
+.modal_description_label {
+  padding: 0px 0px 8px;
+  gap: 4px;
+  width: 458px;
+  height: 32px;
+}
+
+.assign_officer_modal_profile_card {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.assign_officer_modal_profile_card_column {
+  display: flex;
+  flex-direction: column;
+}
+
+.assign_officer_modal_profile_card_profile-picture {
+  width: 58px;
+  height: 58px;
+}
+
+.assign_officer_modal_profile_card_row_1 {
+  height: 24px;
+  width: 300px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #313132;
+}
+
+.assign_officer_modal_profile_card_row_2 {
+  height: 24px;
+  width: 300px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #ADB5BD;
+}
+
+.assign_officer_modal_profile_card_column:last-child {
+  width: 150px;
+  text-align: right;
+}

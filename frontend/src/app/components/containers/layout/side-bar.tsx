@@ -2,14 +2,13 @@ import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
   isSidebarOpen,
-  openModal,
   toggleSidebar,
 } from "../../../store/reducers/app";
 import logo from "../../../../assets/images/icons/ce-cos-icon.svg";
 import MenuItem from "../../../types/app/menu-item";
+
 import { Link } from "react-router-dom";
 import { Sample } from "../../../types/modal/modal-types";
-
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +23,6 @@ export const SideBar: FC = () => {
     },
   ];
 
-
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
     const { icon, name, route } = item;
     return (
@@ -36,27 +34,6 @@ export const SideBar: FC = () => {
       </li>
     );
   };
-
-  //-- sample modal
-
-  const openSampleModal = () => {
-    dispatch(
-      openModal({
-        modalSize: "sm",
-        modalType: Sample,
-        data: {
-          title: "modal title",
-          description: "modal description"
-        },
-        callback: () => { 
-          console.log("derp callback")
-        }
-      })
-    );
-  };
-
-  //-- end sample modal
-
 
   return (
     <div
@@ -80,10 +57,6 @@ export const SideBar: FC = () => {
           return renderSideBarMenuItem(idx, item);
         })}
       </ul>
-      {/* <!-- sample modal button -->  */}
-      <button className="btn btn-primary" onClick={(evt) => openSampleModal()}>
-        Test Modal
-      </button>
       <div
         className="comp-sidebar-toggle"
         onClick={() => {

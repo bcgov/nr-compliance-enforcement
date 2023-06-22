@@ -4,6 +4,7 @@ import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
+import { Complaint } from "../../types/complaints/complaint";
 import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
@@ -11,7 +12,7 @@ import { ComplaintDetailsAttractant } from "../../types/complaints/details/compl
 const initialState: HwcrComplaintState = {
   hwcrComplaints: [],
   complaint: null,
-};
+}
 
 export const hwcrComplaintSlice = createSlice({
   name: "hwcrComplaints",
@@ -28,6 +29,11 @@ export const hwcrComplaintSlice = createSlice({
       const { payload: complaint } = action;
 
       return { ...state, complaint };
+    },
+    updateHwcrComplaintStatus: (state, action) => {
+      const { payload } = action;
+      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
+      return { ...state, hwcrComplaints};
     },
   },
 
@@ -72,7 +78,25 @@ export const getHwcrComplaintByComplaintIdentifier =
     }
   };
 
-export const hwcrComplaints = (state: RootState) => {
+export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
+  const token = localStorage.getItem("user");
+  if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    const complaintResponse = await axios.get<Complaint>(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`);
+    
+    let updatedComplaint = complaintResponse.data;
+    updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
+    await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
+    dispatch(
+      setHwcrComplaints({
+        hwcrComplaints: response.data
+      })
+    );
+  }
+};
+
+export const hwcrComplaints = (state: RootState) => { 
   const { hwcrComplaints } = state.hwcrComplaint;
   return hwcrComplaints;
 };

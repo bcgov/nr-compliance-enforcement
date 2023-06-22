@@ -22,7 +22,7 @@ export const toggleSidebar = () => ({
 });
 
 type ModalProperties = {
-  modalSize: "sm" | "lg" | "xl";
+  modalSize: "sm" | "md" | "lg" | "xl";
   modalIsOpen?: boolean;
   modalIsStatic?: boolean;
   data?: any;

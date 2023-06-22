@@ -51,17 +51,20 @@
   margin-right: 5px;
 }
 
-.comp-blue-avatar-sm { 
-  span { 
+.comp-blue-avatar-sm {
+  span {
     position: relative;
     top: 3px;
   }
 }
 
-
-.comp-orange-avatar-sm { 
-  span { 
+.comp-orange-avatar-sm {
+  span {
     position: relative;
     top: 3px;
   }
+}
+
+.bs-popover-bottom > .popover-arrow {
+  margin-top: 1px;
 }
