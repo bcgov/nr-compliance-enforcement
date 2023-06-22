@@ -47,11 +47,6 @@ export const ComplaintDetails: FC = () => {
       <CallerInformation />
       {complaintType === COMPLAINT_TYPES.ERS && (
         <SuspectWitnessDetails />
-        //-- use this for when we have the ability to split and display suspect and witness data seaperatly
-        // <Row>
-        //   <Col md={6}><SuspectDetails /></Col>
-        //   <Col md={6}><WitnessDetails /></Col>
-        // </Row>
       )}
     </div>
   );

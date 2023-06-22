@@ -6,9 +6,8 @@ import {
 } from "../../../store/reducers/app";
 import logo from "../../../../assets/images/icons/ce-cos-icon.svg";
 import MenuItem from "../../../types/app/menu-item";
-
 import { Link } from "react-router-dom";
-import { Sample } from "../../../types/modal/modal-types";
+
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
