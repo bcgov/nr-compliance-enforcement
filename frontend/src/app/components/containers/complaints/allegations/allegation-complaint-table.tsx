@@ -29,7 +29,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const violationCode = val.violation_code != null ? val.violation_code.long_description : "";
                     const inProgressButtonClass = (String)(val.in_progress_ind) === 'true' ? "btn btn-primary comp-in-progress-btn" : "btn btn-primary comp-in-progress-btn btn-hidden";
                     const inProgressInd = (String)(val.in_progress_ind) === 'true' ? "In Progress" : "";
-                    const geoOrganizationUnitCode = val.complaint_identifier.geo_organization_unit_code ? val.complaint_identifier.geo_organization_unit_code.short_description : "";
+                    const geoOrganizationUnitCode = val.complaint_identifier.cos_geo_org_unit ? val.complaint_identifier.cos_geo_org_unit.area_name : "";
                     const locationSummary = val.complaint_identifier.location_summary_text;
                     const statusButtonClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
                     const status = val.complaint_identifier.complaint_status_code.long_description;

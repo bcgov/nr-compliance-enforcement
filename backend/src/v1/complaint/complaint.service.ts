@@ -29,7 +29,6 @@ export class ComplaintService {
         referred_by_agency_code: true,
         owned_by_agency_code: true,
         complaint_status_code: true,
-        geo_organization_unit_code: true,
       },
     });
   }
@@ -41,7 +40,6 @@ export class ComplaintService {
         referred_by_agency_code: true,
         owned_by_agency_code: true,
         complaint_status_code: true,
-        geo_organization_unit_code: true,
       },
     });
   }
