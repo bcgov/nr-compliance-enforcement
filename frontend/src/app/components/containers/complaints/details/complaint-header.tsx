@@ -26,6 +26,18 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     species,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
+  const applyStatusClass = (state: string): string => {
+
+    switch (state.toLowerCase()) {
+      case "open":
+        return "comp-status-badge-open";
+        case "closed": 
+        return "comp-status-badge-closed";
+      default: 
+      return "";
+    }
+  };
+
   return (
     <>
       {/* <!-- breadcrumb start --> */}
@@ -78,7 +90,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
         <div className="comp-details-header-column comp-details-status-width">
           <div>
             <div className="comp-details-content-label">Status</div>
-            <div className="badge comp-status-badge-open">{status}</div>
+            <div className={`badge ${applyStatusClass(status)}`}>{status}</div>
           </div>
         </div>
 
