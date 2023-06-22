@@ -53,11 +53,25 @@ export const getOfficersInZone = (zone: string): AppThunk => async (dispatch) =>
 };
 
 // Assigns the current user to an office
-export const assignCurrentUserToComplaint = (userGuid: UUID, complaint_identifier: string, complaint_type: number, complaint_guid: string): AppThunk => async (dispatch) => {
+export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: number, complaint_guid: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const officerResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
+    let officerResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
+
+    // user doesn't have an authid, so patch the officer with the same username
+    if (officerResponse.data.auth_user_guid === undefined) {
+      let officerByUseridResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`);
+      const newUserAuthIdGuid = officerByUseridResponse.data.officer_guid;
+
+      let data = 
+      {
+        "auth_user_guid": userGuid
+      }; 
+
+      officerResponse = await axios.patch<Officer>(`${config.API_BASE_URL}/v1/officer/${newUserAuthIdGuid}`, data);
+    }
+
     dispatch(updateComplaintAssignee(officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type, complaint_guid));
   }
 }

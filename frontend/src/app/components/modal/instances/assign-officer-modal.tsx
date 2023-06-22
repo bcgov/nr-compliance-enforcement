@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { profileDisplayName, profileIdir, profileInitials, selectModalData } from "../../../store/reducers/app";
+import { profileDisplayName, profileIdir, profileInitials, selectModalData, userId } from "../../../store/reducers/app";
 import { assignCurrentUserToComplaint, getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/assign-officers";
 import { UUID } from "crypto";
 
@@ -22,6 +22,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
   const idir = useAppSelector(profileIdir);
+  const userid = useAppSelector(userId);
   const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
 
@@ -45,14 +46,14 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   };
 
   // assigns the logged in user to a complaint
-  const handleSelfAssign = () => {
-    dispatch(assignCurrentUserToComplaint(idir, complaint_identifier, complaint_type, complaint_guid));
+  const handleSelfAssign = () => {  
+    dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type, complaint_guid));
     submit();
   }
 
   useEffect(() => {
     dispatch(getOfficersInZone(zone));
-  }, [dispatch, newAssignee, idir]);
+  }, [dispatch, newAssignee, idir, zone]);
 
   function compareUuidToString(uuid: string, str: string): boolean {
 
@@ -93,7 +94,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
       </div>
       <hr className="modal_hr"/>
       <div className="assign_officer_modal_subtitle">
-        <span>In Your Zone</span>
+        <span>Suggested Officers</span>
       </div>
       {officersJson.map((val, key) => {
 

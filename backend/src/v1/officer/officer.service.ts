@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PersonService } from '../person/person.service';
 import { OfficeService } from '../office/office.service';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class OfficerService {
@@ -107,7 +108,18 @@ export class OfficerService {
 
         }
       } ,
+    });
+  }
 
+  async findByUserId(userid: string) : Promise<Officer> {
+    userid = userid.toUpperCase();
+    return this.officerRepository.findOne({
+      where: { user_id: userid },
+      relations: {
+        person_guid: {
+
+        }
+      } ,
     });
   }
   async findOne(officer_guid: any) : Promise<Officer> {
@@ -120,8 +132,9 @@ export class OfficerService {
     });
   }
 
-  update(id: number, updateOfficerDto: UpdateOfficerDto) {
-    return `This action updates a #${id} officer`;
+  async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
+    await this.officerRepository.update({ officer_guid }, updateOfficerDto);
+    return this.findOne(officer_guid);
   }
 
   remove(id: number) {

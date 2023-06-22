@@ -5,4 +5,5 @@ export default interface Profile {
     surName: string,
     email: string,
     idir: UUID,
+    idir_username: string
 }
