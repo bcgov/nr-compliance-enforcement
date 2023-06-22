@@ -4,6 +4,7 @@ import config from "../../../config";
 import axios from "axios";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import { AllegationComplaintState } from "../../types/complaints/allegation-complaints-state";
+import { Complaint } from "../../types/complaints/complaint";
 
 const initialState: AllegationComplaintState = {
   allegationComplaints: [],
@@ -17,6 +18,11 @@ export const allegationComplaintSlice = createSlice({
     setAllegationComplaints: (state, action) => {
       const { payload } = action;
       const allegationComplaints:AllegationComplaint[] = payload.allegationComplaints;
+      return { ...state, allegationComplaints};
+    },
+    updateAllegationComplaintStatus: (state, action) => {
+      const { payload } = action;
+      const allegationComplaints:AllegationComplaint[] = payload.allegationComplaint;
       return { ...state, allegationComplaints};
     },
   },
@@ -40,6 +46,24 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string, v
     console.log("violationFilter: " + violationFilter);
     const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
     officerAssigned: "", violationCode: violationFilter, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter}});
+    dispatch(
+      setAllegationComplaints({
+        allegationComplaints: response.data
+      }),
+    );
+  }
+};
+
+export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
+  const token = localStorage.getItem("user");
+  if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    const complaintResponse = await axios.get<Complaint>(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`);
+    
+    let updatedComplaint = complaintResponse.data;
+    updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
+    await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data

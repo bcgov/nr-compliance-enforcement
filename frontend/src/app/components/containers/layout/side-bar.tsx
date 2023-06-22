@@ -1,6 +1,9 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { isSidebarOpen, toggleSidebar } from "../../../store/reducers/app";
+import {
+  isSidebarOpen,
+  toggleSidebar,
+} from "../../../store/reducers/app";
 import logo from "../../../../assets/images/icons/ce-cos-icon.svg";
 import MenuItem from "../../../types/app/menu-item";
 
@@ -40,7 +43,6 @@ export const SideBar: FC = () => {
           );
         })}
       </ul>
-
       <div
         className="comp-sidebar-toggle"
         onClick={() => {
