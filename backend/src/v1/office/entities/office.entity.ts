@@ -29,7 +29,7 @@ export class Office
           "The geographical organization code of the organization that currently owns the complaint",
       })
       @OneToOne(() => CosGeoOrgUnit)
-      @JoinColumn({ name: "geo_organization_unit_code" })
+      @JoinColumn({ name: "geo_organization_unit_code", referencedColumnName: "office_location_code" })
       cos_geo_org_unit: CosGeoOrgUnit;    
 
       @ApiProperty({

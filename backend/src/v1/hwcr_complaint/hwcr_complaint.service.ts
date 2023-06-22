@@ -86,7 +86,6 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
-      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
       .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
@@ -96,26 +95,20 @@ export class HwcrComplaintService {
     }
   
     async findOne(id: any): Promise<HwcrComplaint> {
-      return this.hwcrComplaintsRepository.findOneOrFail({
-        where: {hwcr_complaint_guid: id},
-        relations: { 
-          complaint_identifier: {
-            owned_by_agency_code: true,
-            referred_by_agency_code: true,
-            complaint_status_code: true,
-            geo_organization_unit_code: true,
-            person_complaint_xref: {
-              complaint_identifier: true,
-              person_guid: true
-            }
-          } ,
-          species_code: true,
-          hwcr_complaint_nature_code: true,
-          attractant_hwcr_xref: {
-            attractant_code: true,
-          },
-        },
-      });
+      return this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+      .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
+      .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
+      .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
+      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+      .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+      .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+      .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
+      .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+      .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+      .where('hwcr_complaint_guid :id', {id})
+      .getOne();
     }
   
     async update(hwcr_complaint_guid: UUID, updateHwcrComplaint: UpdateHwcrComplaintDto): Promise<HwcrComplaint> {
