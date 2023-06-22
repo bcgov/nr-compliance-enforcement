@@ -71,5 +71,10 @@ describe('Complaint Assign and Status Popover spec', () => {
     })
   });
 
+  it('Changes status of closed complaint to open', () => {
+    cy.visit("/");
+    cy.get('.popover').should('not.exist');
+  }
+
 
 })

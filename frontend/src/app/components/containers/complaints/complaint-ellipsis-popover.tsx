@@ -31,6 +31,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
   );
 
   const openStatusChangeModal = () => {
+    document.body.click();
     dispatch(
       openModal({
         modalSize: "md",
@@ -47,6 +48,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
   };
 
   const openAsignOfficerModal = () => {
+    document.body.click();
     dispatch(
       openModal({
         modalSize: "md",
@@ -68,7 +70,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
       trigger="click"
       placement="bottom"
       offset={[-70,-5]}
-      rootClose
+      rootClose={true}
       overlay={renderPopover()}>
       <td className="comp-ellipsis-cell comp-cell">
               <i className="bi bi-three-dots-vertical"></i>
