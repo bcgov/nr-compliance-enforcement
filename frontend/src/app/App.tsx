@@ -6,12 +6,14 @@ import RenderOnRole from "./components/routing/render-on-role";
 import Layout from "./components/containers/layout";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
 import ComplaintType from "./constants/complaint-types";
+import { ModalComponent as Modal } from "./components/modal/modal";
 
 const App: FC = () => {
   return (
     <BrowserRouter>
       <RenderOnRole roles={[Roles.COS_OFFICER]}>
         <Layout fixedHeader fixedSidebar>
+          <Modal />
           <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
         </Layout>
       </RenderOnRole>

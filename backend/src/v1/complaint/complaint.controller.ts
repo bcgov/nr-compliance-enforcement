@@ -1,26 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ComplaintService } from './complaint.service';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('complaint')
+@UseGuards(JwtRoleGuard)
+@ApiTags("complaint")
+@Controller({
+  path: 'complaint',
+  version: '1'})
 export class ComplaintController {
   constructor(private readonly complaintService: ComplaintService) {}
 
-  create(createGeoOrgUnitStructureDto: CreateComplaintDto) {
+  create(createComplaintDto: CreateComplaintDto) {
     return 'This action adds a new geoOrgUnitStructure';
   }
 
+  @Get()
+  @Roles(Role.COS_OFFICER)
   findAll() {
-    return `This action returns all geoOrgUnitStructure`;
+    return this.complaintService.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} geoOrgUnitStructure`;
+  @Get(':id')
+  @Roles(Role.COS_OFFICER)
+  findOne(@Param('id') id: string) {
+    return this.complaintService.findOne(id);
   }
 
-  update(id: number, updateGeoOrgUnitStructureDto: UpdateComplaintDto) {
-    return `This action updates a #${id} geoOrgUnitStructure`;
+  @Patch(':id')
+  @Roles(Role.COS_OFFICER)
+  update(@Param('id') id: string, @Body() updateComplaintDto: UpdateComplaintDto) {
+    return this.complaintService.update(id, updateComplaintDto);
   }
 
   remove(id: number) {

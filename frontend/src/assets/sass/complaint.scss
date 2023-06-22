@@ -90,6 +90,11 @@
     flex-grow: 0;
   }
 
+  .comp-table tbody div:last-child .comp-cell:last-of-type
+  {
+    border-bottom-right-radius: 4px;
+  }
+
   .comp-small-cell {
     width: 95px;
   }
@@ -107,7 +112,7 @@
   }
 
   .comp-violation-cell {
-    width: 333px;
+    width: 302px;
   }
 
   .comp-in-progress-cell {
@@ -123,9 +128,19 @@
   }
 
   .comp-nature-complaint-cell {
-    width: 344px;
+    width: 313px;
   }
 
+  .comp-ellipsis-cell {
+    width: 31px;
+    vertical-align: middle;
+    color: #6C757D;
+    font-size: 14px;
+  }
+
+  td.comp-ellipsis-cell {
+    cursor: pointer;
+  }
 
   .comp-header-label
   {
@@ -137,12 +152,6 @@
   {
     float: right;
     cursor: pointer;
-  }
-
-  .comp-cell-bottom
-  {
-    border-style: solid;
-    border-color: #B9B9B9;
   }
 
   .comp-cell-left
@@ -332,3 +341,51 @@
     border-width: 1px;
     box-sizing: border-box;
 }
+
+  .no-bullets {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+  }
+
+  .popover-body {
+    box-sizing: border-box;
+
+    /* Auto layout */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 0px;
+    
+    width: 190px;
+    height: 82px;
+    
+    /* Gray/White */
+    background: #FFFFFF;
+    
+    /* Components/Dropdowns/Border */
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    z-index: 0;  
+  }
+
+  .popover-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+    /* Gray/900 */
+    color: #212529;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 16px;
+    gap: 8px;
+    height: 32px;
+    cursor: pointer;
+  }

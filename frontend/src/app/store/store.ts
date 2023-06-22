@@ -7,7 +7,7 @@ export const store = configureStore({
   reducer: {
     app: appReducer,
     allegationComplaint: allegationComplaintsReducer,
-    hwcrComplaint: hwcrComplaintsReducer,
+    hwcrComplaint: hwcrComplaintsReducer
   },
 });
 

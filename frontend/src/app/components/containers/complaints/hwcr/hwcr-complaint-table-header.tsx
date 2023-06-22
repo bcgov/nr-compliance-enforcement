@@ -72,12 +72,17 @@ export const HwcrComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
                         <img src={carets} alt="sort"/>
                     </div>
                 </th>
-                <th className="comp-last-updated-cell comp-header-cell comp-top-right">
+                <th className="comp-last-updated-cell comp-header-cell">
                     <div className="comp-header-label">
                         Last Updated
                     </div>
                     <div className="comp-header-caret" onClick={() => handleSort("update_timestamp")}>
                         <img src={carets} alt="sort"/>
+                    </div>
+                </th>
+                <th className="comp-ellipsis-cell comp-header-cell comp-top-right">
+                    <div className="comp-header-label">
+                        <i className="bi bi-three-dots-vertical"></i>
                     </div>
                 </th>
             </Row>
