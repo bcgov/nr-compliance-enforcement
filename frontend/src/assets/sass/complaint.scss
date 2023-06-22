@@ -32,10 +32,6 @@
   border-bottom-right-radius: 4px;
 }
 
-.comp-small-cell {
-  width: 95px;
-}
-
 .comp-complaint-label {
   color: $gray-500;
 }
@@ -86,14 +82,6 @@
   }
 }
 
-.comp-violation-cell {
-  width: 302px;
-}
-
-.comp-nature-complaint-cell {
-  width: 313px;
-}
-
 .comp-ellipsis-cell {
   width: 31px;
   vertical-align: middle;
@@ -103,12 +91,6 @@
 
 td.comp-ellipsis-cell {
   cursor: pointer;
-}
-
-.comp-cell-left {
-  border-style: solid;
-  border-color: #b9b9b9;
-  border-width: 0px 1px 0px 1px;
 }
 
 .comp-details-header {
