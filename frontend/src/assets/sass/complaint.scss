@@ -314,6 +314,11 @@ td.comp-ellipsis-cell {
   flex-grow: 0;
 }
 
+  .comp-table tbody div:last-child .comp-cell:last-of-type
+  {
+    border-bottom-right-radius: 4px;
+  }
+
 .comp-small-cell {
   width: 95px;
 }
@@ -330,9 +335,9 @@ td.comp-ellipsis-cell {
   width: 170px;
 }
 
-.comp-violation-cell {
-  width: 333px;
-}
+  .comp-violation-cell {
+    width: 302px;
+  }
 
 .comp-in-progress-cell {
   width: 153px;
@@ -346,10 +351,20 @@ td.comp-ellipsis-cell {
   width: 110px;
 }
 
-.comp-nature-complaint-cell {
-  width: 344px;
-}
+  .comp-nature-complaint-cell {
+    width: 313px;
+  }
 
+  .comp-ellipsis-cell {
+    width: 31px;
+    vertical-align: middle;
+    color: #6C757D;
+    font-size: 14px;
+  }
+
+  td.comp-ellipsis-cell {
+    cursor: pointer;
+  }
 .comp-header-label {
   float: left;
   margin-top: 1px;
