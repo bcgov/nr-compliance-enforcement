@@ -233,6 +233,35 @@
     border-color: #E4E4E4;
   }
 
+  .comp-filter-btn
+  {
+    width: auto;
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+
+    display: flex;
+    flex-direction: row;
+    padding: 4px 5px 4px 10px;
+
+    pointer-events: none;
+    background-color: #38598A;
+    color: white;
+    border-radius: 100px;
+    border-color: #38598A;
+  }
+
+  .btn-close {
+    box-sizing: content-box;
+    width: 0.15em;
+    height: 0.15em;
+    padding: 0.2em 0.7em;
+    border: 0;
+    border-radius: 0.2rem;
+    opacity: 0.5;
+    margin-top: 6px;
+}
   .comp-in-progress-btn
   {
     width: auto;
@@ -274,6 +303,34 @@
   .comp-tab-inactive
   {
     color: #1A5A96;
+  }
+
+  .comp-filter-label
+  {
+    padding: 0px 0px 8px;
+    gap: 4px;
+
+    width: 298px;
+    height: 32px;
+  }
+
+  .comp-filter-left
+  {
+    float: left;
+    width: 298px;
+  }
+
+  .comp-filter
+  {
+    float: left;
+    width: 298px;
+    margin:0px 0px 0px 43px;
+  }
+
+  .comp-filter-pill
+  {
+    float: right;
+    margin: 0px 0px 0px 5px;
   }
 
   .comp-sub-header
@@ -388,4 +445,9 @@
     gap: 8px;
     height: 32px;
     cursor: pointer;
+  }
+
+  .hidden
+  {
+    display: none;
   }

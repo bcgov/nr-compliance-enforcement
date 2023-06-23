@@ -5,6 +5,7 @@ import ComplaintType from "../../../../constants/complaint-types";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from 'react-collapsed';
 import { AllegationComplaintFilterContainer } from "./allegation-complaint-filter-container";
+import Option from "../../../../types/app/option";
 
 type Props = {
     handleChange: Function,
@@ -37,8 +38,8 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, han
             </Nav.Item>
         </Nav>
     </Navbar>
-    <AllegationComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} setViolationFilter={setViolationFilter} 
-        startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
+    <AllegationComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} violationFilter={violationFilter} setViolationFilter={setViolationFilter} 
+        startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
     <AllegationComplaintTableHeader handleSort={handleSort}/>
     <AllegationComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} violationFilter={violationFilter} startDateFilter={startDateFilter} 
         endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} />

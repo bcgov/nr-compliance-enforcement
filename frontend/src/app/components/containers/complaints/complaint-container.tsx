@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
+import Option from "../../../types/app/option";
 
 type Props = {
     initialState: number;
@@ -15,12 +16,13 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [violationFilter, setViolationFilter] = useState<Option | null>(null);
     const [startDateFilter, setStartDateFilter] = useState<Date>();
     const [endDateFilter, setEndDateFilter] = useState<Date>();
-    const [complaintStatusFilter, setComplaintStatusFilter] = useState<Option | null>(null)
+    const [complaintStatusFilter, setComplaintStatusFilter] = useState<Option | null>({value: 'OPEN', label: 'Open'});
 
     function handleChange(newState: number)
     {
         setComplaintType(newState);
         setSort(["incident_reported_datetime", "DESC"]);
+        setComplaintStatusFilter({value: 'OPEN', label: 'Open'});
     }
     function handleSort(newSortColumn: string)
     {

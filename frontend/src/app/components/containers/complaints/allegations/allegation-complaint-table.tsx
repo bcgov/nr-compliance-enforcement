@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import ComplaintType from "../../../../constants/complaint-types";
+import Option from "../../../../types/app/option";
 
 type Props = {
     sortColumn: string,
@@ -56,7 +57,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, vi
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT}></ComplaintEllipsisPopover>
+                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={null} speciesCodeFilter={null} violationFilter={violationFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
                             </tr>
                         )
                     })}

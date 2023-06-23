@@ -3,10 +3,19 @@ import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
 import { ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
+import Option from "../../../types/app/option";
 
 type Props= {
-  complaint_identifier: string;
-  complaint_type: number
+  complaint_identifier: string,
+  complaint_type: number,
+  sortColumn: string,
+  sortOrder: string,
+  natureOfComplaintFilter: Option | null,
+  speciesCodeFilter: Option | null,
+  startDateFilter: Date | undefined,
+  endDateFilter: Date | undefined,
+  complaintStatusFilter: Option | null,
+  violationFilter: Option | null,
 }
 
 /**
@@ -14,7 +23,7 @@ type Props= {
  * 1. Assign Complaint
  * 2. Update astatus
  */
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
   const dispatch = useAppDispatch();
 
   const renderPopover = () => ( 
@@ -36,7 +45,14 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           title: "Update status?",
           description: "Status",
           complaint_identifier: complaint_identifier,
-          complaint_type: complaint_type
+          complaint_type: complaint_type,
+          sortColumn: sortColumn,
+          sortOrder: sortOrder,
+          natureOfComplaintFilter: natureOfComplaintFilter,
+          speciesCodeFilter: speciesCodeFilter,
+          startDateFilter: startDateFilter,
+          endDateFilter: endDateFilter,
+          complaintStatusFilter: complaintStatusFilter,
         }
       })
     );

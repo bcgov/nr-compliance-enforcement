@@ -5,20 +5,23 @@ import config from "../../../../../config";
 import DatePicker from "react-datepicker";
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
+import Option from "../../../../types/app/option";
 
 type Props = {
     getCollapseProps: Function;
     isExpanded: boolean;
+    violationFilter: Option | null,
     setViolationFilter: Function,
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     setStartDateFilter: Function,
     setEndDateFilter: Function
+    complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
 }
 
 
-export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, setViolationFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, setComplaintStatusFilter}) => {
+export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, violationFilter, setViolationFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
     const [violationCodes, setViolationCodes] = useState<Option[]>([] as Array<Option>);
     const [complaintStatusCodes, setComplaintStatusCodes] = useState<Option[]>([] as Array<Option>);
     const handleDateFilter = (dates: [any, any]) => {
@@ -55,29 +58,32 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         .catch(err => console.log(err));
       }, []);
       const handleViolationFilter = (selectedOption: Option | null) => {
-        setViolationFilter(selectedOption?.value);
+        setViolationFilter(selectedOption);
       }; 
       const handleComplaintStatusCodes = (selectedOption: Option | null) => {
-        setComplaintStatusFilter(selectedOption?.value);
+        setComplaintStatusFilter(selectedOption);
       }; 
+      const complaintStatusClass =  (complaintStatusFilter === null || complaintStatusFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const dateStatusClass = (startDateFilter === null || startDateFilter === undefined) ? 'hidden' : 'comp-filter-pill';
+      const violationClass =  (violationFilter === null || violationFilter.value === '') ? 'hidden' : 'comp-filter-pill';
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
-      <div className="content" style={{margin: '0px 0px 20px 0px'}}>
+      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
         <div style={{float:'left'}}>
           test float
         </div>
         <div style={{clear:'left'}}></div>
-        <div style={{float:'left'}}>
-          <div>
+        <div className="comp-filter-left">
+          <div className="comp-filter-label">
               Violation Type
           </div>
           <div>
-              <Select options={violationCodes} onChange={handleViolationFilter} placeholder="Select"/>
+              <Select options={violationCodes} onChange={handleViolationFilter} placeholder="Select" value={violationFilter}/>
           </div>
         </div>
-        <div style={{float:'left'}}>
-          <div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
               Date Logged
           </div>
           <div>
@@ -141,17 +147,34 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               />
           </div>
         </div>
-        <div style={{float:'left'}}>
-          <div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
               Status
           </div>
           <div> 
-              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" />
+              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter}/>
+          </div>
+      </div>
+      <div style={{clear:'left'}}></div>
+      </div>
+      </div>
+      <div style={{width: '1330px', height:'29px', margin:'0px 0px 20px 0px'}}>
+        <div className={complaintStatusClass} style={{float:'right', margin:'0px 0px 0px 0px'}}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => setComplaintStatusFilter(null)}></button>
+            </button>
+          </div>
+          <div className={dateStatusClass} style={{float:'right', margin:'5px 0px 0px 0px'}}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{(startDateFilter === undefined && endDateFilter === undefined ) ? "" : (startDateFilter !== undefined && endDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " + endDateFilter?.toLocaleDateString() : (startDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " : (endDateFilter !== undefined) ? " - " + endDateFilter?.toLocaleDateString() : ""}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => {setStartDateFilter();setEndDateFilter();}}></button>
+            </button>
+          </div>
+          <div className={violationClass} style={{float:'right', margin:'5px 0px 0px 0px'}}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{violationFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => {setViolationFilter(null)}}></button>
+            </button>
           </div>
         </div>
-        <div style={{clear:'left'}}></div>
-      </div>
-      </div>
-      </div>
+        </div>
     </>)
 }

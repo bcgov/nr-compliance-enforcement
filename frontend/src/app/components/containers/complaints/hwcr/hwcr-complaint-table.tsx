@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import ComplaintType from "../../../../constants/complaint-types";
+import Option from "../../../../types/app/option";
 
 type Props = {
     sortColumn: string,
@@ -54,7 +55,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, natureOf
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} violationFilter={null} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

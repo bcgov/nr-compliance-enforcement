@@ -7,20 +7,29 @@ import { updateHwlcComplaintStatus } from "../../../store/reducers/hwcr-complain
 import { updateAllegationComplaintStatus } from "../../../store/reducers/allegation-complaint";
 
 import ComplaintType from "../../../constants/complaint-types";
+import Option from "../../../types/app/option";
 
 
 type ChangeStatusModalProps = {
-  close: () => void;
-  submit: () => void;
-  complaint_identifier: string;
-  complaint_type: number;
+  close: () => void,
+  submit: () => void,
+  sortColumn: string,
+  sortOrder: string,
+  complaint_identifier: string,
+  complaint_type: number,
+  natureOfComplaintFilter: Option | null,
+  speciesCodeFilter: Option | null,
+  startDateFilter: Date | undefined,
+  endDateFilter: Date | undefined,
+  complaintStatusFilter: Option | null,
+  violationFilter: Option | null,
 }
 
 /**
  * A modal dialog box that allows users to change the status of a complaint
  * 
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
   const modalData = useAppSelector(selectModalData);
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState('');
@@ -30,9 +39,9 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   useEffect(() => {
     if (status.length > 1) {
       if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier,status));
+        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
       } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier,status));
+        dispatch(updateAllegationComplaintStatus(complaint_identifier ,status, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
       }
       submit();
     }

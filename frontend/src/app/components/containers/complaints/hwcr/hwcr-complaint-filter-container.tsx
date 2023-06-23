@@ -5,21 +5,26 @@ import config from "../../../../../config";
 import DatePicker from "react-datepicker";
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
+import Option from "../../../../types/app/option";
 
 type Props = {
     getCollapseProps: Function;
     isExpanded: boolean;
+    natureOfComplaintFilter: Option | null,
     setNatureOfComplaintFilter: Function,
+    speciesCodeFilter: Option | null,
     setSpeciesCodeFilter: Function,
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     setStartDateFilter: Function,
-    setEndDateFilter: Function
+    setEndDateFilter: Function,
+    complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
 }
 
 
-export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, setNatureOfComplaintFilter, setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, setComplaintStatusFilter}) => {
+export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter,
+      setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
     const [hwcrNatureOfComplaintCodes, setHwcrNatureOfComplaintCodes] = useState<Option[]>([] as Array<Option>);
     const [speciesCodes, setSpeciesCodes] = useState<Option[]>([] as Array<Option>);
     const [complaintStatusCodes, setComplaintStatusCodes] = useState<Option[]>([] as Array<Option>);
@@ -63,42 +68,47 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
         }
         fetchCodes()
         .catch(err => console.log(err));
-      }, []);
+      }, [natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter]);
       const handleNatureOfComplaintFilter = (selectedOption: Option | null) => {
-        setNatureOfComplaintFilter(selectedOption?.value);
+        setNatureOfComplaintFilter(selectedOption);
       }; 
       const handleSpeciesCodesFilter = (selectedOption: Option | null) => {
-        setSpeciesCodeFilter(selectedOption?.value);
+        setSpeciesCodeFilter(selectedOption);
       }; 
       const handleComplaintStatusCodes = (selectedOption: Option | null) => {
-        setComplaintStatusFilter(selectedOption?.value);
+        setComplaintStatusFilter(selectedOption);
       }; 
+      const complaintStatusClass =  (complaintStatusFilter === null || complaintStatusFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const dateStatusClass = (startDateFilter === null || startDateFilter === undefined) ? 'hidden' : 'comp-filter-pill';
+      const speciesClass =  (speciesCodeFilter === null || speciesCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const natureOfComplaintClass =  (natureOfComplaintFilter === null || natureOfComplaintFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      console.log(startDateFilter + " " + endDateFilter);
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
-      <div className="content" style={{margin: '0px 0px 20px 0px'}}>
+      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
         <div style={{float:'left'}}>
           test float
         </div>
         <div style={{clear:'left'}}></div>
-        <div style={{float:'left', width: '298px'}}>
-          <div>
+        <div className="comp-filter-left">
+          <div className="comp-filter-label">
               Nature of Complaint
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}>
-              <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select"/>
+              <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
           </div>
         </div>
         <div style={{float:'left', width: '298px', margin:'0px 0px 0px 43px'}}>
-          <div>
+          <div className="comp-filter-label">
               Species
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}> 
-              <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select" />
+              <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select"  value={speciesCodeFilter}/>
           </div>
         </div>
-        <div style={{float:'left', width: '298px', margin:'0px 0px 0px 43px'}}>
-          <div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
               Date Logged
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}>
@@ -162,17 +172,39 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               />
           </div>
         </div>
-        <div style={{float:'left', width: '298px', margin:'0px 0px 0px 43px'}}>
-          <div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
               Status
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}> 
-              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" />
+              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter} />
           </div>
         </div>
         <div style={{clear:'left'}}></div>
       </div>
       </div>
       </div>
+      <div style={{width: '1330px', height:'29px', margin:'0px 0px 20px 0px'}}>
+        <div className={complaintStatusClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => setComplaintStatusFilter(null)}></button>
+            </button>
+          </div>
+          <div className={dateStatusClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{(startDateFilter === undefined && endDateFilter === undefined ) ? "" : (startDateFilter !== undefined && endDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " + endDateFilter?.toLocaleDateString() : (startDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " : (endDateFilter !== undefined) ? " - " + endDateFilter?.toLocaleDateString() : ""}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => {setStartDateFilter();setEndDateFilter();}}></button>
+            </button>
+          </div>
+          <div className={speciesClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{speciesCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => {setSpeciesCodeFilter(null)}}></button>
+            </button>
+          </div>
+          <div className={natureOfComplaintClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{natureOfComplaintFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setNatureOfComplaintFilter(null)}></button>
+            </button>
+          </div>
+        </div>
     </>)
 }

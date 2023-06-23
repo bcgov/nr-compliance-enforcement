@@ -5,6 +5,7 @@ import ComplaintType from "../../../../constants/complaint-types";
 import { HwcrComplaintFilterContainer } from "./hwcr-complaint-filter-container";
 import { useCollapse } from 'react-collapsed';
 import { Nav, Navbar } from "react-bootstrap";
+import Option from "../../../../types/app/option";
 
 type Props = {
     handleChange: Function,
@@ -39,8 +40,8 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
             </Nav.Item>
         </Nav>
     </Navbar>
-    <HwcrComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} setNatureOfComplaintFilter={setNatureOfComplaintFilter} setSpeciesCodeFilter={setSpeicesCodeFilter} 
-        startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
+    <HwcrComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter}
+        setSpeciesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
     <HwcrComplaintTableHeader handleSort={handleSort}/>
     <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} 
         endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} />

@@ -5,6 +5,7 @@ import axios from "axios";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import { AllegationComplaintState } from "../../types/complaints/allegation-complaints-state";
 import { Complaint } from "../../types/complaints/complaint";
+import Option from "../../types/app/option";
 
 const initialState: AllegationComplaintState = {
   allegationComplaints: [],
@@ -44,7 +45,7 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string, v
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
-    officerAssigned: "", violationCode: violationFilter, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter}});
+    officerAssigned: "", violationCode: violationFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data
@@ -53,7 +54,7 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string, v
   }
 };
 
-export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
+export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string , sortColumn: string, sortOrder: string, violationFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?:Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -62,7 +63,8 @@ export const updateAllegationComplaintStatus = (complaint_identifier: string, ne
     let updatedComplaint = complaintResponse.data;
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: 'incident_reported_datetime', sortOrder: 'DESC'}});
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
+    officerAssigned: "", violationCode: violationFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data

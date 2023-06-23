@@ -1365,6 +1365,8 @@
   "integrity" "sha512-vX1WVAdPjZg9DkDkC+zEx/tKtnST6/qcNpwcjeBgco3XRNHz5PUA+ivi/yr6G3o0kMR60uKBJcfOdfzOFI7PMQ=="
   "resolved" "https://registry.npmjs.org/@floating-ui/core/-/core-1.3.0.tgz"
   "version" "1.3.0"
+  dependencies:
+    "@floating-ui/core" "^1.3.0"
 
 "@floating-ui/dom@^1.0.1":
   "integrity" "sha512-qIAwejE3r6NeA107u4ELDKkH8+VtgRKdXqtSPaKflL2S2V+doyN+Wt9s5oHKXPDo4E8TaVXaHT3+6BbagH31xw=="
