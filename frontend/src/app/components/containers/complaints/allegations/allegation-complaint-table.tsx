@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
+import ComplaintTypes from "../../../../types/app/complaint-types";
+import { useNavigate } from "react-router-dom";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import ComplaintType from "../../../../constants/complaint-types";
 
@@ -12,12 +14,23 @@ type Props = {
 }
 export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const allegationComplaintsJson = useAppSelector(allegationComplaints);
 
     useEffect(() => {
             dispatch(getAllegationComplaints(sortColumn, sortOrder));
   }, [dispatch, sortColumn, sortOrder])
+
+
+  const handleComplaintClick = (
+    e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
+    id: string
+  ) => {
+    e.preventDefault();
+
+    navigate(`/complaint/${ComplaintTypes.ERS}/${id}`);
+  };
 
 
     return (
@@ -35,21 +48,21 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const status = val.complaint_identifier.complaint_status_code.long_description;
                     const updateDate = Date.parse(val.complaint_identifier.update_timestamp) >= Date.parse(val.update_timestamp) ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : format(Date.parse(val.update_timestamp), 'yyyy/MM/dd kk:mm:ss');
                         return (
-                            <tr key={"allegationComplaint" + key.toString()}>
-                                <td className="comp-small-cell comp-cell comp-cell-left">{complaintIdentifier}</td>
-                                <td className="comp-small-cell comp-cell">{incidentReportedDatetime}</td>
-                                <td className="comp-violation-cell comp-cell">{violationCode}</td>
-                                <td className="comp-in-progress-cell comp-cell">
+                            <tr key={`allegation-complaint-${complaintIdentifier}`}>
+                                <td className="comp-small-cell comp-cell comp-cell-left" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{complaintIdentifier}</td>
+                                <td className="comp-small-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{incidentReportedDatetime}</td>
+                                <td className="comp-violation-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{violationCode}</td>
+                                <td className="comp-in-progress-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                     <button type="button" className={inProgressButtonClass}>{inProgressInd}</button>
                                 </td>
-                                <td className="comp-area-cell comp-cell">{geoOrganizationUnitCode}</td>
-                                <td className="comp-location-cell comp-cell">{locationSummary}</td>
-                                <td className="comp-medium-cell comp-cell">
+                                <td className="comp-area-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{geoOrganizationUnitCode}</td>
+                                <td className="comp-location-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{locationSummary}</td>
+                                <td className="comp-medium-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                 </td>
-                                <td className="comp-status-cell comp-cell">
+                                <td className="comp-status-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
-                                <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
+                                <td className="comp-last-updated-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{updateDate}</td>
                                 <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT}></ComplaintEllipsisPopover>
                             </tr>
                         )

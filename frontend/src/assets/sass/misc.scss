@@ -19,6 +19,52 @@
   text-align: center;
 }
 
+.comp-orange-avatar-sm::before {
+  color: $orange-600;
+  background: $orange-200;
+  opacity: 1;
+  content: attr(data-initials-sm);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 16px;
+  text-align: center;
+  margin-right: 5px;
+}
+
+.comp-blue-avatar-sm::before {
+  color: $blue-600;
+  background: $blue-200;
+  opacity: 1;
+  content: attr(data-initials-sm);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 16px;
+  text-align: center;
+  margin-right: 5px;
+}
+
+.comp-blue-avatar-sm {
+  span {
+    position: relative;
+    top: 3px;
+  }
+}
+
+.comp-orange-avatar-sm {
+  span {
+    position: relative;
+    top: 3px;
+  }
+}
+
 .bs-popover-bottom > .popover-arrow {
-  margin-top:1px;
+  margin-top: 1px;
 }

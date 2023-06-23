@@ -26,7 +26,6 @@ export const ModalComponent: FC = () => {
   const Content = MODAL_COMPONENTS[modalType];
 
   const submitModal = (data: any) => {
-    debugger
     if(callback){
       callback()
     }

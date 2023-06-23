@@ -48,4 +48,10 @@ export class AllegationComplaintController {
   remove(@Param('id') id: UUID) {
     return this.allegationComplaintService.remove(id);
   }
+
+  @Get('/by-complaint-identifier/:id')
+  @Roles(Role.COS_OFFICER)
+  byId(@Param('id') id: string) {
+    return this.allegationComplaintService.findByComplaintIdentifier(id);
+  }
 }

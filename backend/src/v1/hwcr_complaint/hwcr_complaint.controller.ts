@@ -34,7 +34,7 @@ export class HwcrComplaintController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.hwcrComplaintService.findOne(+id);
+    return this.hwcrComplaintService.findOne(id);
   }
 
   @Patch(':id')
@@ -47,5 +47,11 @@ export class HwcrComplaintController {
   @Roles(Role.COS_OFFICER)
   remove(@Param('id') id: UUID) {
     return this.hwcrComplaintService.remove(id);
+  }
+
+  @Get('/by-complaint-identifier/:id')
+  @Roles(Role.COS_OFFICER)
+  byId(@Param('id') id: string) {
+    return this.hwcrComplaintService.findByComplaintIdentifier(id);
   }
 }

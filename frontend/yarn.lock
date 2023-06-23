@@ -11258,6 +11258,11 @@
     "querystringify" "^2.1.1"
     "requires-port" "^1.0.0"
 
+"urlpattern-polyfill@^9.0.0":
+  "integrity" "sha512-WHN8KDQblxd32odxeIgo83rdVDE2bvdkb86it7bMhYZwWKJz0+O0RK/eZiHYnM+zgt/U7hAHOlCQGfjjvSkw2g=="
+  "resolved" "https://registry.npmjs.org/urlpattern-polyfill/-/urlpattern-polyfill-9.0.0.tgz"
+  "version" "9.0.0"
+
 "use-isomorphic-layout-effect@^1.1.2":
   "integrity" "sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA=="
   "resolved" "https://registry.npmjs.org/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.2.tgz"
