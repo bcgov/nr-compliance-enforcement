@@ -1,4 +1,4 @@
-import { PersonComplaintXref } from "src/v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { Column, Entity, Index, OneToMany } from "typeorm";
 
 @Index("PK_person_complaint_xref_code", ["person_complaint_xref_code"], {

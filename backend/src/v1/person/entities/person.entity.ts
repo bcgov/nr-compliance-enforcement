@@ -1,5 +1,5 @@
-import { Officer } from "src/v1/officer/entities/officer.entity";
-import { PersonComplaintXref } from "src/v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { Officer } from "../../officer/entities/officer.entity";
+import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { Column, Entity, Index, OneToMany, OneToOne } from "typeorm";
 
 @Index("PK_person", ["person_guid"], { unique: true })

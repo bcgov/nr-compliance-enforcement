@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Person } from "src/v1/person/entities/person.entity";
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
-import { PersonComplaintXrefCode } from "src/v1/person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { Person } from "../../person/entities/person.entity";
+import { Complaint } from "../../complaint/entities/complaint.entity";
+import { PersonComplaintXrefCode } from "../../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 
 export class PersonComplaintXrefDto
 {

@@ -1,5 +1,5 @@
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
-import { Person } from "src/v1/person/entities/person.entity";
+import { Complaint } from "../../complaint/entities/complaint.entity";
+import { Person } from "../..//person/entities/person.entity";
 import { PersonComplaintXrefCode } from "src/v1/person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { UUID } from 'crypto';
