@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { PersonComplaintXrefCodeService } from './person_complaint_xref_code.service';
 import { CreatePersonComplaintXrefCodeDto } from './dto/create-person_complaint_xref_code.dto';
 import { UpdatePersonComplaintXrefCodeDto } from './dto/update-person_complaint_xref_code.dto';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
 
 @ApiTags("person-complaint-xref-code")
 @UseGuards(JwtRoleGuard)

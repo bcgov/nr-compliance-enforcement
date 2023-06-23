@@ -147,6 +147,7 @@ describe("AllegationComplaintService", () => {
     findAll: jest.fn(() => { return Promise.resolve(allegationComplaintArray)}),
     find: jest.fn(() => { return Promise.resolve(allegationComplaintArray)}),
     findOneOrFail: jest.fn(() => { return Promise.resolve(oneAllegationComplaint)}),
+    findOne: jest.fn(() => { return Promise.resolve(oneAllegationComplaint)}),
     create: jest.fn(() => { return Promise.resolve(threeAllegationComplaint)}),
     save: jest.fn(),
     queryRunner:
@@ -165,6 +166,8 @@ describe("AllegationComplaintService", () => {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         addOrderBy: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnValue(`allegation_complaint_guid = :id, ${oneAllegationComplaint.allegation_complaint_guid}`),
+        getOne: jest.fn().mockResolvedValue(oneAllegationComplaint),
         getMany: jest.fn().mockResolvedValue(allegationComplaintArray),
       })),
 
@@ -245,19 +248,10 @@ describe("AllegationComplaintService", () => {
   });
 
   it("should return an array of complaints", async () => {
-
-
     const complaints = await service.findAll('incident_reported_datetime', 'DESC');
     console.log(complaints);
     console.log(allegationComplaintArray);
     expect(complaints).toEqual(allegationComplaintArray);
-  });
- 
-  describe("findOne", () => {
-    it("should get a single user", () => {
-      jest.spyOn(repo, "findOneOrFail");
-      expect(service.findOne(oneAllegationComplaint.allegation_complaint_guid)).resolves.toEqual(oneAllegationComplaint);
-    });
   });
 
   describe("remove", () => {

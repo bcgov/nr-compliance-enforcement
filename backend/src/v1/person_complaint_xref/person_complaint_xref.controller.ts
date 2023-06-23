@@ -3,9 +3,9 @@ import { PersonComplaintXrefService } from './person_complaint_xref.service';
 import { CreatePersonComplaintXrefDto } from './dto/create-person_complaint_xref.dto';
 import { UpdatePersonComplaintXrefDto } from './dto/update-person_complaint_xref.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../enum/role.enum';
 import { UUID } from 'crypto';
 
 @UseGuards(JwtRoleGuard)
