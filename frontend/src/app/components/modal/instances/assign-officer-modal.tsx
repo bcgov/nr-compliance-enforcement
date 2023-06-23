@@ -94,7 +94,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
       </div>
       <hr className="modal_hr"/>
       <div className="assign_officer_modal_subtitle">
-        <span>Suggested Officers</span>
+        Suggested Officers
       </div>
       {officersJson.map((val, key) => {
 
@@ -125,7 +125,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         );}})}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary" onClick={close}>Cancel</Button>
+        <Button variant="outline-primary" onClick={close} className="modal-buttons">Cancel</Button>
         <Button onClick={handleSubmit}>Assign</Button>
       </Modal.Footer>
     </>
