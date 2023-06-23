@@ -48,42 +48,22 @@ export class AllegationComplaintService {
   ): Promise<AllegationComplaint[]> {
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
     const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-    const sortTable =
-      sortColumn === "complaint_identifier" ||
-      sortColumn === "violation_code" ||
-      sortColumn === "in_progress_ind"
-        ? "allegation_complaint."
-        : "complaint_identifier.";
-    const sortString =
-      sortColumn !== "update_timestamp"
-        ? sortTable + sortColumn
-        : "GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)";
-    return this.allegationComplaintsRepository
-      .createQueryBuilder("allegation_complaint")
+    const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind') ? 'allegation_complaint.' : 'complaint_identifier.';
+    const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)';
+    return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
+      .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
+      .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
+      .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+      .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+      .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'geo_organization_unit_code')
       .leftJoinAndSelect(
-        "allegation_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect(
-        "allegation_complaint.violation_code",
-        "violation_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.cos_geo_org_unit",
-        "area_code"
-      )
+        'complaint_identifier.cos_geo_org_unit',
+        'area_code'
+      )      
+      .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+      .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+
       .orderBy(sortString, sortOrderString)
       .addOrderBy(
         "complaint_identifier.incident_reported_datetime",
@@ -93,18 +73,21 @@ export class AllegationComplaintService {
   }
 
   async findOne(id: any): Promise<AllegationComplaint> {
-    return this.allegationComplaintsRepository.findOneOrFail({
-      where: { allegation_complaint_guid: id },
-      relations: {
-        complaint_identifier: {
-          owned_by_agency_code: true,
-          referred_by_agency_code: true,
-          complaint_status_code: true,
-          cos_geo_org_unit: true,
-        },
-        violation_code: false,
-      },
-    });
+    return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
+    .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
+    .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
+    .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+    .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+    .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+    .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'geo_organization_unit_code')
+    .leftJoinAndSelect(
+      "complaint_identifier.cos_geo_org_unit",
+      "area_code"
+    )      
+    .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+    .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+    .where("allegation_complaint_guid = :id", {id})
+    .getOne();
   }
 
   async update(

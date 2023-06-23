@@ -5,6 +5,5 @@ import { ChangeStatusModal } from "./change-status-modal";
 export { 
     SampleModal,
     AssignOfficerModal,
-    ChangeStatusModal
-    
+    ChangeStatusModal   
 }

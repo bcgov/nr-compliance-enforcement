@@ -159,6 +159,10 @@
   display: inline;
 }
 
+.comp-profile-avatar[data-initials-listview=""] {
+  display: none;
+}
+
 .comp-footer {
   height: 72px;
   background-image: url("../images/layout/ce-footer.svg");
@@ -199,9 +203,34 @@
   height: 32px;
 }
 
+div.modal-footer {
+  padding: 12px 12px 12px 0px;
+}
+
+button.modal-buttons {
+  margin-right: 8px !important;
+}
+
 .assign_officer_modal_profile_card {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 16px 24px;
+  gap: 24px;
+  
+  width: 498px;
+  height: 88px;
+
+  flex: none;
+  order: 4;
+  align-self: stretch;
+  flex-grow: 0;
+  cursor: pointer;
+
+}
+
+.selected {
+  background-color: #F1F1F1;
 }
 
 .assign_officer_modal_profile_card_column {
@@ -210,27 +239,88 @@
 }
 
 .assign_officer_modal_profile_card_profile-picture {
-  width: 58px;
-  height: 58px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 7px 8px 9px 8px;
+  gap: 8px;
+  
+  width: 56px;
+  height: 56px;
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  
+}
+.change_status_modal {
+  padding: 0px 16px 16px 16px;
+}
+
+.assign_officer_modal_subtitle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 14px 10px 10px 24px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+
+  color: #ADB5BD;
+
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
 }
 
 .assign_officer_modal_profile_card_row_1 {
-  height: 24px;
-  width: 300px;
+  width: 220px;
   font-weight: 700;
   font-size: 16px;
   color: #313132;
 }
 
 .assign_officer_modal_profile_card_row_2 {
-  height: 24px;
-  width: 300px;
+  width: 220px;
   font-weight: 400;
   font-size: 16px;
   color: #ADB5BD;
 }
 
 .assign_officer_modal_profile_card_column:last-child {
-  width: 150px;
+  width: 110px;
   text-align: right;
+}
+
+.modal_hr {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+
+  width: 498px;
+  height: 0px;
+
+  /* HitBox
+
+  Hitbox makes whole element selectable when press & hold Ctrl key
+  It also be used in case we want to apply drop shadow effect but still want to keep the transparent background.
+  */
+  background: rgba(255, 255, 255, 1e-06);
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 2;
+  align-self: stretch;
+  flex-grow: 0;
 }

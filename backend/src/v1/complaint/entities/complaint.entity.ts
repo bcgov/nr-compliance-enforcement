@@ -7,12 +7,14 @@ import {
   Index,
   ManyToOne,
   OneToOne,
+  OneToMany,
 } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { UUID } from "crypto";
 import { Point } from "geojson";
+import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Entity()
@@ -67,6 +69,16 @@ export class Complaint {
   @OneToOne(() => CosGeoOrgUnit)
   @JoinColumn({ name: "geo_organization_unit_code" })
   cos_geo_org_unit: CosGeoOrgUnit;
+
+  @ApiProperty({
+    example: "DCC",
+    description: "The geographical organization code of the organization that currently owns the complaint",
+  })
+  @OneToMany(
+    () => PersonComplaintXref,
+    (person_complaint_xref) => person_complaint_xref.complaint_identifier
+  )
+  person_complaint_xref: PersonComplaintXref[];
 
   @ApiProperty({
     example: "Bear overturning garbage bins",
@@ -133,7 +145,6 @@ export class Complaint {
  @Column()
  location_geometry_point: string;
  */
-
   @ApiProperty({
     example: "Near Golden",
     description: "The summary text for the location of the complaint",

@@ -29,21 +29,22 @@ export class ComplaintService {
         referred_by_agency_code: true,
         owned_by_agency_code: true,
         complaint_status_code: true,
-        geo_organization_unit_code: true,
       },
     });
   }
 
   async findOne(id: any): Promise<Complaint> {
-    return this.complaintsRepository.findOneOrFail({where: {complaint_identifier: id},
+    return this.complaintsRepository.findOneOrFail({
+      where: {complaint_identifier: id},
       relations: { 
-        complaint_status_code: true
-      }});
+        referred_by_agency_code: true,
+        owned_by_agency_code: true,
+        complaint_status_code: true,
+      },
+    });
   }
 
   async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {
-    this.logger.error(`Status code: ${updateComplaintDto.complaint_status_code}`);
-    this.logger.error(`Complaint ID: ${complaint_identifier}`);
     await this.complaintsRepository.update(complaint_identifier, updateComplaintDto);
     return this.findOne(complaint_identifier);
   }

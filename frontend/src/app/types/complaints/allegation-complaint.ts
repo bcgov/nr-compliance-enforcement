@@ -5,6 +5,11 @@ export interface AllegationComplaint {
   complaint_identifier: {
     complaint_identifier: string;
     geo_organization_unit_code: { short_description: string };
+    cos_geo_org_unit: {
+      zone_code: string;
+      office_location_name: string;
+      area_name: string;
+    },
     incident_datetime: string;
     incident_reported_datetime: string;
     location_summary_text: string;
@@ -13,10 +18,11 @@ export interface AllegationComplaint {
     update_user_id: string;
     update_timestamp: string;
     complaint_status_code: ComplaintStatusCode;
-  };
+    person_complaint_xref: [{person_guid: {first_name: string, last_name: string},active_ind: boolean}]},
   violation_code: ViolationCode;
   in_progress_ind: string | boolean;
   observed_ind: boolean;
   suspect_witnesss_dtl_text?: string
   update_timestamp: string;
+  allegation_complaint_guid: string
 }

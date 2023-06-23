@@ -1,12 +1,15 @@
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { useAppDispatch } from '../../../hooks/hooks';
 import { openModal } from '../../../store/reducers/app';
-import { ChangeStatus } from '../../../types/modal/modal-types';
+import { AssignOfficer, ChangeStatus } from '../../../types/modal/modal-types';
 import { FC } from 'react';
 
 type Props= {
   complaint_identifier: string;
   complaint_type: number
+  assigned_ind: boolean;
+  complaint_guid: string;
+  zone: string;
 }
 
 /**
@@ -14,20 +17,21 @@ type Props= {
  * 1. Assign Complaint
  * 2. Update astatus
  */
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, assigned_ind, complaint_guid, zone }) => {
   const dispatch = useAppDispatch();
-
-  const renderPopover = () => ( 
+  const assignText = assigned_ind ? 'Reassign Complaint' : 'Assign Complaint';
   
+  const renderPopover = () => ( 
     <Popover>
         <Popover.Body>
-              <div id="assign_complaint_link" className="popover-text" onClick={openStatusChangeModal}>Reassign Complaint</div>
+              <div id="assign_complaint_link" className="popover-text" onClick={openAsignOfficerModal}>{assignText}</div>
               <div id="update_status_link" className="popover-text" onClick={openStatusChangeModal}>Update Status</div>
         </Popover.Body>
     </Popover>
   );
 
   const openStatusChangeModal = () => {
+    document.body.click();
     dispatch(
       openModal({
         modalSize: "md",
@@ -36,7 +40,26 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           title: "Update status?",
           description: "Status",
           complaint_identifier: complaint_identifier,
-          complaint_type: complaint_type
+          complaint_type: complaint_type,
+          complaint_guid: complaint_guid
+        }
+      })
+    );
+  };
+
+  const openAsignOfficerModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: AssignOfficer,
+        data: {
+          title: "Assign Complaint",
+          description: "",
+          complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type,
+          complaint_guid: complaint_guid,
+          zone: zone
         }
       })
     );
@@ -47,7 +70,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
       trigger="click"
       placement="bottom"
       offset={[-70,-5]}
-      rootClose
+      rootClose={true}
       overlay={renderPopover()}>
       <td className="comp-ellipsis-cell comp-cell">
               <i className="bi bi-three-dots-vertical"></i>

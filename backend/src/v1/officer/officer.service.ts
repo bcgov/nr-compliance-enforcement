@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PersonService } from '../person/person.service';
 import { OfficeService } from '../office/office.service';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class OfficerService {
@@ -32,7 +33,6 @@ export class OfficerService {
 
     try
     {
-
       //Look for the Office
       officeObject = await this.officeService.findByGeoOrgCode(officer.geo_organization_unit_code);
       if(officeObject.length === 0) { // insertOffice
@@ -84,12 +84,56 @@ export class OfficerService {
       });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} officer`;
+  async findByOffice(office_guid: any) : Promise<Officer[]> {
+    return this.officerRepository.find({
+      where: { office_guid: office_guid },
+      relations: {
+        office_guid: {
+          geo_organization_unit_code: true
+        },
+        person_guid: {
+
+        }
+      } ,
+
+    });
   }
 
-  update(id: number, updateOfficerDto: UpdateOfficerDto) {
-    return `This action updates a #${id} officer`;
+  async findByAuthUserGuid(auth_user_guid: any) : Promise<Officer> {
+    return this.officerRepository.findOne({
+      where: { auth_user_guid: auth_user_guid },
+      relations: {
+        person_guid: {
+
+        }
+      } ,
+    });
+  }
+
+  async findByUserId(userid: string) : Promise<Officer> {
+    userid = userid.toUpperCase();
+    return this.officerRepository.findOne({
+      where: { user_id: userid },
+      relations: {
+        person_guid: {
+
+        }
+      } ,
+    });
+  }
+  async findOne(officer_guid: any) : Promise<Officer> {
+    return await this.officerRepository.findOneOrFail({
+      where: {officer_guid:officer_guid},
+      relations: {
+        person_guid: true,
+        office_guid: true
+      }
+    });
+  }
+
+  async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
+    await this.officerRepository.update({ officer_guid }, updateOfficerDto);
+    return this.findOne(officer_guid);
   }
 
   remove(id: number) {

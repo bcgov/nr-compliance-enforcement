@@ -14,8 +14,14 @@ export interface HwcrComplaint {
     update_user_id: string;
     update_timestamp: string;
     complaint_status_code: ComplaintStatusCode;
-  };
+    cos_geo_org_unit: {
+            zone_code: string;
+            office_location_name: string;
+            area_name: string;
+    },
+    person_complaint_xref: [{person_guid: {first_name: string, last_name: string}, active_ind: boolean}]};
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
   species_code: SpeciesCode
   update_timestamp: string;
+  hwcr_complaint_guid: string;
 }

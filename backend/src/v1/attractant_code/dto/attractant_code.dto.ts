@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
+import { AttractantHwcrXref } from "../../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
 export class AttractantCodeDto 
 {

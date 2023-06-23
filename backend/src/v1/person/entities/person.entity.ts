@@ -1,88 +1,61 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Officer } from "../../officer/entities/officer.entity";
+import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
+import { Column, Entity, Index, OneToMany, OneToOne } from "typeorm";
 
-@Entity()
-export class Person 
-{
-    @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The guid for this person",
-      })
-      @PrimaryGeneratedColumn("uuid")
-      person_guid: UUID;
-      
-      @ApiProperty({
-        example: "Charles",
-        description: "The first name of this person",
-      })
-      @Column({length: 32})
-      first_name: string;
+@Index("PK_person", ["person_guid"], { unique: true })
+@Entity("person", { schema: "public" })
+export class Person {
+  @Column("uuid", {
+    primary: true,
+    name: "person_guid",
+    default: () => "uuid_generate_v4()",
+  })
+  person_guid: string;
 
-      @ApiProperty({
-        example: "Montgumry",
-        description: "The first middle name of this person",
-      })
-      @Column({length: 32, nullable: true })
-      middle_name_1: string;
+  @Column("character varying", { name: "first_name", length: 32 })
+  first_name: string;
 
-      @ApiProperty({
-        example: "Patrick",
-        description: "The second middle name of this person",
-      })
-      @Column({length: 32, nullable: true })
-      middle_name_2: string;
+  @Column("character varying", {
+    name: "middle_name_1",
+    nullable: true,
+    length: 32,
+  })
+  middle_name_1: string | null;
 
-      @ApiProperty({
-        example: "Burns",
-        description: "The last name of this person",
-      })
-      @Column({length: 32})
-      last_name: string;
-    
-      @ApiProperty({
-        example: "IDIR\mburns",
-        description: "The id of the user that created the person",
-      })
-      @Column({length: 32})
-      create_user_id: string;
-    
-      @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the person",
-      })
-      @Column({type: "uuid"})
-      create_user_guid: UUID;
-    
-      @ApiProperty({
-        example: "2003-04-12 04:05:06",
-        description: "The timestamp when the person was created",
-      })
-      @Column()
-      create_timestamp: Date;
-    
-      @ApiProperty({
-        example: "IDIR\mburns",
-        description: "The id of the user that last updated the person",
-      })
-      @Column({length: 32})
-      update_user_id: string;
-    
-      @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that last updated the person",
-      })
-      @Column({type: "uuid"})
-      update_user_guid: UUID;
-    
-      @ApiProperty({
-        example: "2003-04-12 04:05:06",
-        description: "The timestamp when the person was last updated",
-      })
-      @Column()
-      update_timestamp: Date;
-    
-      constructor() {
-    
-      }
+  @Column("character varying", {
+    name: "middle_name_2",
+    nullable: true,
+    length: 32,
+  })
+  middle_name_2: string | null;
+
+  @Column("character varying", { name: "last_name", length: 32 })
+  last_name: string;
+
+  @Column("character varying", { name: "create_user_id", length: 32 })
+  create_user_id: string;
+
+  @Column("uuid", { name: "create_user_guid", nullable: true })
+  create_user_guid: string | null;
+
+  @Column("timestamp without time zone", { name: "create_timestamp" })
+  create_timestamp: Date;
+
+  @Column("character varying", { name: "update_user_id", length: 32 })
+  update_user_id: string;
+
+  @Column("uuid", { name: "update_user_guid", nullable: true })
+  update_user_guid: string | null;
+
+  @Column("timestamp without time zone", { name: "update_timestamp" })
+  updateTimestamp: Date;
+
+  @OneToOne(() => Officer, (officer) => officer.person_guid)
+  officer: Officer;
+
+  @OneToMany(
+    () => PersonComplaintXref,
+    (personComplaintXref) => personComplaintXref.person_guid
+  )
+  personComplaintXrefs: PersonComplaintXref[];
 }

@@ -19,6 +19,39 @@
   text-align: center;
 }
 
+[data-initials-listview]:before {
+  background: $bc-gov-info;
+  color: #313132;
+  opacity: 1;
+  content: attr(data-initials-listview);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  text-align: center;
+  margin-right: 8px;
+  background-color: #E4E4E4;
+}
+
+[data-initials-modal]:before {
+  background: #FECBA1;
+  color: #CA6510;
+  opacity: 1;
+  content: attr(data-initials-modal);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  font-size: 16px;
+  text-align: center;
+  margin-right: 8px;
+}
+
 .comp-orange-avatar-sm::before {
   color: $orange-600;
   background: $orange-200;
