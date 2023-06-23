@@ -52,7 +52,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                     const initials = firstInitial + lastInitial;
                     const displayName = firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
                     const guid = val.hwcr_complaint_guid;
-                    const zone = val.complaint_identifier.cos_geo_org_unit.zone_code;
+                    const zone = val.complaint_identifier.cos_geo_org_unit?.zone_code;
                     return (
                          <tr key={`hwcr-complaint-${complaintIdentifier}`} >
                             <td className="comp-small-cell comp-cell comp-cell-left" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{complaintIdentifier}</td>

@@ -7,6 +7,7 @@ import {
   Index,
   ManyToOne,
   OneToOne,
+  OneToMany,
 } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";

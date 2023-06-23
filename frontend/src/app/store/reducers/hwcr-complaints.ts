@@ -9,7 +9,7 @@ import { ComplaintCallerInformation } from "../../types/complaints/details/compl
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
 
-const initialState: HwcrComplaintState = {
+const initialState: HwcrComplaintsState = {
   hwcrComplaints: [],
   complaint: null,
 }
@@ -21,7 +21,7 @@ export const hwcrComplaintSlice = createSlice({
   reducers: {
     setHwcrComplaints: (state, action: PayloadAction<HwcrComplaint[]>) => {
       const { payload } = action;
-      const hwcrComplaints: HwcrComplaint[] = payload.hwcrComplaints;
+      const hwcrComplaints: HwcrComplaint[] = payload;
       return { ...state, hwcrComplaints };
     },
 
@@ -57,9 +57,7 @@ export const getHwcrComplaints = (sortColumn: string, sortOrder: string): AppThu
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const response = await axios.get<HwcrComplaint[]>(`${config.API_BASE_URL}/v1/hwcr-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
     dispatch(
-      setHwcrComplaints({
-        hwcrComplaints: response.data,
-      })
+      setHwcrComplaints(response.data)
     );
   }
 };

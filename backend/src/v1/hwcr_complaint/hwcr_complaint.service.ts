@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { CreateHwcrComplaintDto } from "./dto/create-hwcr_complaint.dto";
 import { UpdateHwcrComplaintDto } from "./dto/update-hwcr_complaint.dto";
 import { HwcrComplaint } from "./entities/hwcr_complaint.entity";
@@ -50,10 +50,11 @@ export class HwcrComplaintService {
           );
         }
       }
-      catch (err) {
-        console.log(err);
-        await queryRunner.rollbackTransaction();
-        throw new BadRequestException(err);
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      newHwcrComplaintString = "Error Occured";
       } finally {
         await queryRunner.release();
       }
@@ -99,16 +100,23 @@ export class HwcrComplaintService {
       .getOne();
     }
   
-    async update(hwcr_complaint_guid: UUID, updateHwcrComplaint: UpdateHwcrComplaintDto): Promise<HwcrComplaint> {
-      await this.hwcrComplaintsRepository.update({ hwcr_complaint_guid }, updateHwcrComplaint);
+  async update(
+    hwcr_complaint_guid: UUID,
+    updateHwcrComplaint: UpdateHwcrComplaintDto
+  ): Promise<HwcrComplaint> {
+    await this.hwcrComplaintsRepository.update(
+      { hwcr_complaint_guid },
+      updateHwcrComplaint
+    );
       return this.findOne(hwcr_complaint_guid);
     }
   
     async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
       try {
-        var complaint_identifier = (await this.hwcrComplaintsRepository.findOneOrFail({
-          where: {hwcr_complaint_guid: id},
-          relations: { 
+      let complaint_identifier = (
+        await this.hwcrComplaintsRepository.findOneOrFail({
+          where: { hwcr_complaint_guid: id },
+          relations: {
             complaint_identifier: true,
           },
         })

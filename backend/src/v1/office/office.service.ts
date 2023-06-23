@@ -38,9 +38,8 @@ export class OfficeService {
     return this.officeRepository.find({
       where: {geo_organization_unit_code: geo_org_code},
       relations: {
-          geo_organization_unit_code: {},
-          agency_code: {}
-        } ,
+
+      } ,
       });
   }
 

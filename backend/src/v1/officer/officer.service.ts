@@ -33,7 +33,6 @@ export class OfficerService {
 
     try
     {
-
       //Look for the Office
       officeObject = await this.officeService.findByGeoOrgCode(officer.geo_organization_unit_code);
       if(officeObject.length === 0) { // insertOffice

@@ -18,10 +18,10 @@ export interface HwcrComplaint {
             zone_code: string;
             office_location_name: string;
             area_name: string;
-    }
-    person_complaint_xref: [{person_guid: {first_name: string, last_name: string}, active_ind: boolean}],complaint_identifier: string, geo_organization_unit_code:{short_description: string}, incident_datetime: string, incident_reported_datetime: string, location_summary_text:string, update_user_id:string, update_timestamp:string, complaint_status_code:{long_description:string}};
-  };
+    },
+    person_complaint_xref: [{person_guid: {first_name: string, last_name: string}, active_ind: boolean}]};
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
   species_code: SpeciesCode
   update_timestamp: string;
+  hwcr_complaint_guid: string;
 }

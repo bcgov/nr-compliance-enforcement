@@ -65,8 +65,8 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                                 <td className="comp-in-progress-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                     <button type="button" className={inProgressButtonClass}>{inProgressInd}</button>
                                 </td>
-                                <td className="comp-area-cell comp-cell">{geoOrganizationUnitCode} onClick={event => handleComplaintClick(event, complaintIdentifier)}</td>
-                                <td className="comp-location-cell comp-cell">{locationSummary} onClick={event => handleComplaintClick(event, complaintIdentifier)}</td>
+                                <td className="comp-area-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{geoOrganizationUnitCode} </td>
+                                <td className="comp-location-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{locationSummary} </td>
                                 <td className="comp-medium-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
                                     <div data-initials-listview={initials} className="comp-profile-avatar"></div> {displayName}
                                 </td>
