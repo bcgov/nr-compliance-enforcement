@@ -10,7 +10,7 @@ export const SuspectWitnessDetails: FC = () => {
 
   return (
     <div className="comp-complaint-details-block">
-      <h6>Suspect / Witness Details</h6>
+      <h6>Subject of Complaint / Witness Details</h6>
       <div className="comp-complaint-call-information">
         <div>
           <div className="comp-details-content-label">
