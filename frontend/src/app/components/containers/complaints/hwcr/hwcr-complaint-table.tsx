@@ -51,7 +51,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                             </td>
                             <td className="comp-area-cell comp-cell">{geoOrganizationUnitCode}</td>
                             <td className="comp-location-cell comp-cell">{locationSummary}</td>
-                            <td className="comp-medium-cell comp-cell">
+                            <td className="comp-medium-cell comp-cell comp-cell-assignee">
                                 <div data-initials-listview={initials} className="comp-profile-avatar"></div> {displayName}
                             </td>
                             <td className="comp-status-cell comp-cell">

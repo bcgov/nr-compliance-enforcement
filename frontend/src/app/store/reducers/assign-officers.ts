@@ -62,14 +62,14 @@ export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, com
     // user doesn't have an authid, so patch the officer with the same username
     if (officerResponse.data.auth_user_guid === undefined) {
       let officerByUseridResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`);
-      const newUserAuthIdGuid = officerByUseridResponse.data.officer_guid;
+      const officerGuid = officerByUseridResponse.data.officer_guid;
 
       let data = 
       {
         "auth_user_guid": userGuid
       }; 
 
-      officerResponse = await axios.patch<Officer>(`${config.API_BASE_URL}/v1/officer/${newUserAuthIdGuid}`, data);
+      officerResponse = await axios.patch<Officer>(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, data);
     }
 
     dispatch(updateComplaintAssignee(officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type, complaint_guid));
