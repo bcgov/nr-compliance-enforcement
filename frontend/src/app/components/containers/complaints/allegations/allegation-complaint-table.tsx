@@ -47,7 +47,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const statusButtonClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
                     const status = val.complaint_identifier.complaint_status_code.long_description;
                     const updateDate = Date.parse(val.complaint_identifier.update_timestamp) >= Date.parse(val.update_timestamp) ? format(Date.parse(val.complaint_identifier.update_timestamp), 'yyyy/MM/dd kk:mm:ss') : format(Date.parse(val.update_timestamp), 'yyyy/MM/dd kk:mm:ss');
-                    const assigned_ind = false;
+                    const assigned_ind = val.complaint_identifier.person_complaint_xref.length > 0 && val.complaint_identifier.person_complaint_xref[0].active_ind;
                     const firstName = val.complaint_identifier.person_complaint_xref[0]?.person_guid?.first_name;
                     const lastName = val.complaint_identifier.person_complaint_xref[0]?.person_guid?.last_name;
                     const firstInitial = firstName?.length > 0 ? firstName.substring(0,1) : "";

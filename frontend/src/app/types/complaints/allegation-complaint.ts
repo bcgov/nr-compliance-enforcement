@@ -18,7 +18,7 @@ export interface AllegationComplaint {
     update_user_id: string;
     update_timestamp: string;
     complaint_status_code: ComplaintStatusCode;
-    person_complaint_xref: [{person_guid: {first_name: string, last_name: string}}]},
+    person_complaint_xref: [{person_guid: {first_name: string, last_name: string},active_ind: boolean}]},
   violation_code: ViolationCode;
   in_progress_ind: string | boolean;
   observed_ind: boolean;
