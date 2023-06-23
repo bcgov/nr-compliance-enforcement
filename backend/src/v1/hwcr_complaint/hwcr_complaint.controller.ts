@@ -37,12 +37,6 @@ export class HwcrComplaintController {
     return this.hwcrComplaintService.findOne(id);
   }
 
-  @Get('/with-active-assignee/:id')
-  @Roles(Role.COS_OFFICER)
-  findComplaintWithActiveAssignee(@Param('id') id: UUID) {
-    return this.hwcrComplaintService.findComplaintWithActiveAssignee(id);
-  }
-
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: UUID, @Body() updateHwcrComplaintDto: UpdateHwcrComplaintDto) {

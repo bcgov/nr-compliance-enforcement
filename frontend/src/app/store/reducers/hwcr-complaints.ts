@@ -65,7 +65,7 @@ export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatu
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
     
     // now get that hwcr complaint row and update the state
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/with-active-assignee/${hwcr_guid}`);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/${hwcr_guid}`);
     dispatch(
       updateHwcrComplaintRow(response.data)
     );

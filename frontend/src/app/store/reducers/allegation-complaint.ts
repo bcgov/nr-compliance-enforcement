@@ -67,7 +67,7 @@ export const updateAllegationComplaintStatus = (complaint_identifier: string, ne
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
     
     // now get that allegation complaint row and update the state
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/with-active-assignee/${allegation_guid}`);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/${allegation_guid}`);
     dispatch(
       updateAllegationComplaintRow(response.data)
     );

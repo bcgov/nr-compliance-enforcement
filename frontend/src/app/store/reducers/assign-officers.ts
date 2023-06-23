@@ -111,12 +111,12 @@ export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier:
 
     // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
     if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-      const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/with-active-assignee/${complaint_guid}`);
+      const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/${complaint_guid}`);
       dispatch(
         updateHwcrComplaintRow(response.data)
       );
     } else {
-      const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/with-active-assignee/${complaint_guid}`);
+      const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/${complaint_guid}`);
       dispatch(
         updateAllegationComplaintRow(response.data)
       );
