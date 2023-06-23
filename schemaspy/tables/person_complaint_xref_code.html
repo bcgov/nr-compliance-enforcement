@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>complaint_status_code - postgres.public</title>
+        <title>person_complaint_xref_code - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>complaint_status_code</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>person_complaint_xref_code</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed.</p>
+                            <p>Used to track the relationship type between person and complaint.  For example: &lsquo;ASSIGNEE&rsquo; = Assignee</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_status_code">complaint_status_code</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="person_complaint_xref_code">person_complaint_xref_code</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title=''></td>
@@ -131,8 +131,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_complaint_compntstscd"><a href='complaint.html'>complaint</a><span class='relatedKey'>.complaint_status_code</span></td>
-                                                <td class="constraint detail">FK_complaint_compntstscd</td>
+                                                <td title="person_complaint_xref.person_complaint_xref_code references person_complaint_xref_code.person_complaint_xref_code via FK_person_complaint_xref__person_complaint_xref_code"><a href='person_complaint_xref.html'>person_complaint_xref</a><span class='relatedKey'>.person_complaint_xref_code</span></td>
+                                                <td class="constraint detail">FK_person_complaint_xref__person_complaint_xref_code</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -141,7 +141,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A human readable code used to identify a complaint status.</p></td>
+                                    <td><p>A human readable code used to identify a relationship type between a person and a complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="short_description">short_description</span></td>
@@ -158,7 +158,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The short description of the complaint status code.</p></td>
+                                    <td><p>The short description of the relationship type between a person and a complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="long_description">long_description</span></td>
@@ -175,7 +175,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The long description of the complaint status code.</p></td>
+                                    <td><p>The long description of the relationship type between a person and a complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="display_order">display_order</span></td>
@@ -192,24 +192,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The order in which the values of the complaint status code table should be displayed when presented to a user in a list.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="active_ind">active_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>A boolean indicator to determine if the complaint status code is active.</p></td>
+                                    <td><p>The order in which the values of the relationship type between a person and a complaint code table should be displayed when presented to a user in a list.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -226,7 +209,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the complaint status code.</p></td>
+                                    <td><p>The id of the user that created the relationship type between a person and a complaint.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_guid">create_user_guid</span></td>
@@ -243,7 +226,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The unique guid of the user that created the complaint status code.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_timestamp">create_timestamp</span></td>
@@ -260,7 +243,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the relationship type between a person and a complaint  was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -277,7 +260,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the complaint status code.</p></td>
+                                    <td><p>The id of the user that updated the relationship type between a person and a complaint .</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_guid">update_user_guid</span></td>
@@ -294,7 +277,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The unique guid of the user that updated the complaint status code.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_timestamp">update_timestamp</span></td>
@@ -311,7 +294,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the relationship type between a person and a complaint  was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -344,10 +327,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_cmpntstscd</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_person_complaint_xref_code</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>complaint_status_code</td>
+                                    <td>person_complaint_xref_code</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -372,22 +355,19 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="415,5,708,269">
-<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,91,371,483">
+<area shape="rect" id="node1" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="459,5,733,240">
+<area shape="rect" id="node2" href="person_complaint_xref_code.html" target="_top" title="person_complaint_xref_code" alt="" coords="5,91,415,453">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint_status_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/person_complaint_xref_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="759,5,1006,93">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="415,108,708,372">
-<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,219,371,611">
-<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="39,628,337,716">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="98,113,278,201">
-<area shape="rect" id="node6" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="779,111,986,199">
-<area shape="rect" id="node7" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="752,216,1013,304">
+<area shape="rect" id="node1" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="459,49,733,284">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="130,111,290,199">
+<area shape="rect" id="node3" href="person_complaint_xref_code.html" target="_top" title="person_complaint_xref_code" alt="" coords="5,216,415,579">
+<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="143,5,277,93">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint_status_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/person_complaint_xref_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

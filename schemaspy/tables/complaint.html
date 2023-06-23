@@ -140,6 +140,11 @@
                                                 <td class="constraint detail">FK_hwcrcmplnt_complaint</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
+                                            <tr>
+                                                <td title="person_complaint_xref.complaint_identifier references complaint.complaint_identifier via FK_person_complaint_xref__complaint_identifier"><a href='person_complaint_xref.html'>person_complaint_xref</a><span class='relatedKey'>.complaint_identifier</span></td>
+                                                <td class="constraint detail">FK_person_complaint_xref__complaint_identifier</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -625,11 +630,12 @@
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
 <area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="867,5,1124,181">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,128,811,901">
-<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,784,285,901">
-<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,919,304,1065">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,649,255,767">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,225,811,999">
+<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,881,285,999">
+<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,1016,304,1163">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="55,747,255,864">
 <area shape="rect" id="node6" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="855,199,1136,404">
+<area shape="rect" id="node7" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="858,421,1133,656">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -648,6 +654,9 @@
 <area shape="rect" id="node10" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,952,272,1040">
 <area shape="rect" id="node9" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="759,901,1021,989">
 <area shape="rect" id="node13" href="office.html" target="_top" title="office" alt="" coords="828,1007,952,1095">
+<area shape="rect" id="node14" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1169,1291,1443,1525">
+<area shape="rect" id="node15" href="person_complaint_xref_code.html" target="_top" title="person_complaint_xref_code" alt="" coords="737,1428,1043,1516">
+<area shape="rect" id="node16" href="person.html" target="_top" title="person" alt="" coords="823,1323,957,1411">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

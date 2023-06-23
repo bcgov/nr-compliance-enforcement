@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>complaint_status_code - postgres.public</title>
+        <title>person_complaint_xref_h - postgres.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>complaint_status_code</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>person_complaint_xref_h</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed.</p>
+                            <p>History table for person_complaint_xref</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,31 +122,26 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_status_code">complaint_status_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="h_person_complaint_xref_guid">h_person_complaint_xref_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="complaint.complaint_status_code references complaint_status_code.complaint_status_code via FK_complaint_compntstscd"><a href='complaint.html'>complaint</a><span class='relatedKey'>.complaint_status_code</span></td>
-                                                <td class="constraint detail">FK_complaint_compntstscd</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A human readable code used to identify a complaint status.</p></td>
+                                    <td><p>System generated unique key for person assigned to complaint history. This key should never be exposed to users via any system utilizing the tables.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="short_description">short_description</span></td>
-                                    <td>varchar</td>
-                                    <td>50</td>
+                                    <td><span id="target_row_id">target_row_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -158,45 +153,11 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The short description of the complaint status code.</p></td>
+                                    <td><p>The unique key for the person and complaint mapping that has been created or modified.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="long_description">long_description</span></td>
-                                    <td>varchar</td>
-                                    <td>250</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The long description of the complaint status code.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="display_order">display_order</span></td>
-                                    <td>int4</td>
-                                    <td>10</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The order in which the values of the complaint status code table should be displayed when presented to a user in a list.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="active_ind">active_ind</span></td>
-                                    <td>bool</td>
+                                    <td><span id="operation_type">operation_type</span></td>
+                                    <td>bpchar</td>
                                     <td>1</td>
                                     <td title=''></td>
                                     <td title=''></td>
@@ -209,15 +170,15 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A boolean indicator to determine if the complaint status code is active.</p></td>
+                                    <td><p>The operation performed: I = Insert, U = Update, D = Delete</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="create_user_id">create_user_id</span></td>
+                                    <td><span id="operation_user_id">operation_user_id</span></td>
                                     <td>varchar</td>
                                     <td>32</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>CURRENT_USER</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -226,11 +187,28 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the complaint status code.</p></td>
+                                    <td><p>The id of the user that created or modified the data in complaint table.  Defaults to the logged in user if not passed in by the application.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="create_user_guid">create_user_guid</span></td>
-                                    <td>uuid</td>
+                                    <td><span id="operation_executed_at">operation_executed_at</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>now()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the data in the table was created or modified.  The timestamp is stored in UTC with no Offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="data_after_executed_operation">data_after_executed_operation</span></td>
+                                    <td>jsonb</td>
                                     <td>2147483647</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
@@ -243,75 +221,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The unique guid of the user that created the complaint status code.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="create_timestamp">create_timestamp</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_user_id">update_user_id</span></td>
-                                    <td>varchar</td>
-                                    <td>32</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The id of the user that updated the complaint status code.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_user_guid">update_user_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The unique guid of the user that updated the complaint status code.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_timestamp">update_timestamp</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -344,10 +254,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_cmpntstscd</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_h_person_complaint_xref_guid</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>complaint_status_code</td>
+                                    <td>h_person_complaint_xref_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -367,27 +277,13 @@
                                 <h5>Close relationships within degrees of separation</h5>
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
-                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="415,5,708,269">
-<area shape="rect" id="node2" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,91,371,483">
+<area shape="rect" id="node1" href="person_complaint_xref_h.html" target="_top" title="person_complaint_xref_h" alt="" coords="5,5,444,251">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint_status_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
-                                    </div>
-                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
-                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="759,5,1006,93">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="415,108,708,372">
-<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="5,219,371,611">
-<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="39,628,337,716">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="98,113,278,201">
-<area shape="rect" id="node6" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="779,111,986,199">
-<area shape="rect" id="node7" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="752,216,1013,304">
-</map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint_status_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/person_complaint_xref_h.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

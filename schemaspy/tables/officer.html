@@ -301,6 +301,23 @@
                                     </td>
                                     <td><p>System generated unique key for an office. The primary office an officer is assigned to.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="auth_user_guid">auth_user_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -366,7 +383,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="officer.html" target="_top" title="officer" alt="" coords="317,5,652,368">
+<area shape="rect" id="node1" href="officer.html" target="_top" title="officer" alt="" coords="317,5,652,397">
 <area shape="rect" id="node2" href="office.html" target="_top" title="office" alt="" coords="5,324,273,471">
 <area shape="rect" id="node3" href="person.html" target="_top" title="person" alt="" coords="39,189,239,307">
 </map>
@@ -374,10 +391,11 @@
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="office.html" target="_top" title="office" alt="" coords="348,324,616,471">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,356,304,444">
-<area shape="rect" id="node3" href="officer.html" target="_top" title="officer" alt="" coords="660,5,995,368">
-<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="382,189,582,307">
+<area shape="rect" id="node1" href="office.html" target="_top" title="office" alt="" coords="348,377,616,524">
+<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,409,304,497">
+<area shape="rect" id="node3" href="officer.html" target="_top" title="officer" alt="" coords="660,111,995,503">
+<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="382,123,582,240">
+<area shape="rect" id="node5" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="697,5,958,93">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/officer.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

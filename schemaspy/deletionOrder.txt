@@ -1,4 +1,5 @@
 person_h
+person_complaint_xref_h
 officer_h
 office_h
 hwcr_complaint_h
@@ -7,6 +8,7 @@ flyway_schema_history
 complaint_h
 attractant_hwcr_xref_h
 allegation_complaint_h
+person_complaint_xref
 geo_org_unit_structure
 officer
 attractant_hwcr_xref
@@ -17,10 +19,11 @@ complaint
 geo_organization_unit_code
 violation_code
 species_code
-person
+person_complaint_xref_code
 hwcr_complaint_nature_code
 geo_org_unit_type_code
 complaint_status_code
 attractant_code
 spatial_ref_sys
+person
 agency_code

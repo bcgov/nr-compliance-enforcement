@@ -1,10 +1,11 @@
 agency_code
+person
 spatial_ref_sys
 attractant_code
 complaint_status_code
 geo_org_unit_type_code
 hwcr_complaint_nature_code
-person
+person_complaint_xref_code
 species_code
 violation_code
 geo_organization_unit_code
@@ -15,6 +16,7 @@ allegation_complaint
 attractant_hwcr_xref
 officer
 geo_org_unit_structure
+person_complaint_xref
 allegation_complaint_h
 attractant_hwcr_xref_h
 complaint_h
@@ -23,4 +25,5 @@ geo_org_unit_structure_h
 hwcr_complaint_h
 office_h
 officer_h
+person_complaint_xref_h
 person_h

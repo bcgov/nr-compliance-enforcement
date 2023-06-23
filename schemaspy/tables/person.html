@@ -135,6 +135,11 @@
                                                 <td class="constraint detail">FK_officer_person</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
+                                            <tr>
+                                                <td title="person_complaint_xref.person_guid references person.person_guid via FK_person_complaint_xref__person_guid"><a href='person_complaint_xref.html'>person_complaint_xref</a><span class='relatedKey'>.person_guid</span></td>
+                                                <td class="constraint detail">FK_person_complaint_xref__person_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -372,16 +377,20 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="officer.html" target="_top" title="officer" alt="" coords="384,5,584,181">
-<area shape="rect" id="node2" href="person.html" target="_top" title="person" alt="" coords="5,32,340,424">
+<area shape="rect" id="node1" href="officer.html" target="_top" title="officer" alt="" coords="421,5,621,181">
+<area shape="rect" id="node2" href="person.html" target="_top" title="person" alt="" coords="5,128,340,520">
+<area shape="rect" id="node3" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="384,199,659,433">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/person.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="officer.html" target="_top" title="officer" alt="" coords="384,167,584,343">
-<area shape="rect" id="node2" href="office.html" target="_top" title="office" alt="" coords="111,415,235,503">
-<area shape="rect" id="node3" href="person.html" target="_top" title="person" alt="" coords="5,5,340,397">
+<area shape="rect" id="node1" href="officer.html" target="_top" title="officer" alt="" coords="421,15,621,191">
+<area shape="rect" id="node2" href="office.html" target="_top" title="office" alt="" coords="111,5,235,93">
+<area shape="rect" id="node3" href="person.html" target="_top" title="person" alt="" coords="5,111,340,503">
+<area shape="rect" id="node4" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="384,459,659,693">
+<area shape="rect" id="node5" href="complaint.html" target="_top" title="complaint" alt="" coords="93,520,253,608">
+<area shape="rect" id="node6" href="person_complaint_xref_code.html" target="_top" title="person_complaint_xref_code" alt="" coords="20,625,325,713">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/person.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
