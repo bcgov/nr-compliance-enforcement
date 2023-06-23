@@ -130,6 +130,11 @@
 
 .comp-nav-item-name {
   color: $bc-gov-primary;
+  
+  a {
+    text-decoration: none;
+    color: $bc-gov-primary;
+  }
 }
 
 .comp-side-bar.collapsed > ul > li > span.comp-nav-item-name {

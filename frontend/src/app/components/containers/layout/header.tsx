@@ -8,7 +8,7 @@ import {
   getTokenProfile,
   profileInitials,
 } from "../../../store/reducers/app";
-
+import { Link } from "react-router-dom";
 
 export const Header: FC = () => {
   const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ export const Header: FC = () => {
     if (!initials) {
       dispatch(getTokenProfile());
     }
-  }, [initials, dispatch]); 
+  }, [initials, dispatch]);
 
   const renderBadge = (): JSX.Element => {
     return (
@@ -33,7 +33,9 @@ export const Header: FC = () => {
   return (
     <div className="comp-header">
       <div className="comp-header-logo">
-        <img className="logo-src" src={logo} alt="logo" />
+        <Link to="/">
+          <img className="logo-src" src={logo} alt="logo" />
+        </Link>
       </div>
 
       <div className="comp-header-content">

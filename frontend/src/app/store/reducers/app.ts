@@ -173,7 +173,6 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       return { ...state, profile };
     }
     case ActionTypes.TOGGLE_SIDEBAR: {
-        debugger
       const { isSidebarOpen: isOpen } = state;
       return { ...state, isSidebarOpen: !isOpen };
     }

@@ -1,186 +1,202 @@
 //-- generate color documentation classes
 
 @each $name, $entity in $grays {
-    .doc-bg-gray-#{$name} {
-      background-color: var(--bs-gray-#{$name});
-    }
+  .doc-bg-gray-#{$name} {
+    background-color: var(--bs-gray-#{$name});
   }
-  
-  @each $weight, $value in $primaryVariants {
-    .doc-bg-bc-gov-primary-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $primaryVariants {
+  .doc-bg-bc-gov-primary-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $secondaryVariants {
-    .doc-bg-bc-gov-secondary-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $secondaryVariants {
+  .doc-bg-bc-gov-secondary-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $successVariants {
-    .doc-bg-bc-gov-success-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $successVariants {
+  .doc-bg-bc-gov-success-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $dangerVariants {
-    .doc-bg-bc-gov-danger-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $dangerVariants {
+  .doc-bg-bc-gov-danger-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $warningVariants {
-    .doc-bg-bc-gov-warning-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $warningVariants {
+  .doc-bg-bc-gov-warning-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $neutralVariants {
-    .doc-bg-bc-gov-neutral-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $neutralVariants {
+  .doc-bg-bc-gov-neutral-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $shadeVariants {
-    .doc-bg-bc-gov-shade-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $shadeVariants {
+  .doc-bg-bc-gov-shade-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-01-variants {
-    .doc-bg-bc-standard-01-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-01-variants {
+  .doc-bg-bc-standard-01-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-02-variants {
-    .doc-bg-bc-standard-02-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-02-variants {
+  .doc-bg-bc-standard-02-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-03-variants {
-    .doc-bg-bc-standard-03-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-03-variants {
+  .doc-bg-bc-standard-03-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-04-variants {
-    .doc-bg-bc-standard-04-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-04-variants {
+  .doc-bg-bc-standard-04-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-05-variants {
-    .doc-bg-bc-standard-05-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-05-variants {
+  .doc-bg-bc-standard-05-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-06-variants {
-    .doc-bg-bc-standard-06-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-06-variants {
+  .doc-bg-bc-standard-06-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-07-variants {
-    .doc-bg-bc-standard-07-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-07-variants {
+  .doc-bg-bc-standard-07-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-08-variants {
-    .doc-bg-bc-standard-08-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-08-variants {
+  .doc-bg-bc-standard-08-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-09-variants {
-    .doc-bg-bc-standard-09-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-09-variants {
+  .doc-bg-bc-standard-09-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-10-variants {
-    .doc-bg-bc-standard-10-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-10-variants {
+  .doc-bg-bc-standard-10-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-11-variants {
-    .doc-bg-bc-standard-11-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-11-variants {
+  .doc-bg-bc-standard-11-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-12-variants {
-    .doc-bg-bc-standard-12-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-12-variants {
+  .doc-bg-bc-standard-12-#{$weight} {
+    background-color: #{$value};
   }
-  
-  @each $weight, $value in $bc-standard-13-variants {
-    .doc-bg-bc-standard-13-#{$weight} {
-      background-color: #{$value};
-    }
+}
+
+@each $weight, $value in $bc-standard-13-variants {
+  .doc-bg-bc-standard-13-#{$weight} {
+    background-color: #{$value};
   }
-  
-  //-- Generate margins, negative margins and padding
-  @each $side in $orientation {
-    @each $unit, $size in $space-units {
-      .comp-padding-#{$side}-#{$unit} {
-        padding-#{$side}: #{$size}px;
-      }
-    }
-  }
-  
-  @each $side in $orientation {
-    @each $unit, $size in $space-units {
-      .comp-margin-#{$side}-#{$unit} {
-        margin-#{$side}: #{$size}px;
-      }
-    }
-  }
-  
-  @each $side in $orientation {
-    @each $unit, $size in $space-units {
-      .comp-nmargin-#{$side}-#{$unit} {
-        margin-#{$side}: -#{$size}px;
-      }
-    }
-  }
-  
+}
+
+//-- Generate margins, negative margins and padding
+@each $side in $orientation {
   @each $unit, $size in $space-units {
-    .comp-padding-#{$unit} {
-      padding: #{$size}px #{$size}px;
+    .comp-padding-#{$side}-#{$unit} {
+      padding-#{$side}: #{$size}px;
     }
   }
-  
+}
+
+@each $side in $orientation {
   @each $unit, $size in $space-units {
-    .comp-margin-#{$unit} {
-      margin: #{$size}px #{$size}px;
+    .comp-margin-#{$side}-#{$unit} {
+      margin-#{$side}: #{$size}px;
     }
   }
-  
+}
+
+@each $side in $orientation {
   @each $unit, $size in $space-units {
-    .comp-nmargin-#{$unit} {
-      margin: -#{$size}px -#{$size}px;
+    .comp-nmargin-#{$side}-#{$unit} {
+      margin-#{$side}: -#{$size}px;
     }
   }
-  
-  //-- borders
-  @each $side in $orientation {
-    @each $unit, $size in $border-units {
-      .comp-border-#{$side}-#{$unit} {
-        border-#{$side}: #{$size}px solid;
-      }
-    }
+}
+
+@each $unit, $size in $space-units {
+  .comp-padding-#{$unit} {
+    padding: #{$size}px #{$size}px;
   }
-  
+}
+
+@each $unit, $size in $space-units {
+  .comp-margin-#{$unit} {
+    margin: #{$size}px #{$size}px;
+  }
+}
+
+@each $unit, $size in $space-units {
+  .comp-nmargin-#{$unit} {
+    margin: -#{$size}px -#{$size}px;
+  }
+}
+
+//-- borders
+@each $side in $orientation {
   @each $unit, $size in $border-units {
-    .comp-border-#{$unit} {
-      border: #{$size}px solid;
+    .comp-border-#{$side}-#{$unit} {
+      border-#{$side}: #{$size}px solid;
     }
   }
-  
+}
+
+@each $unit, $size in $border-units {
+  .comp-border-#{$unit} {
+    border: #{$size}px solid;
+  }
+}
+
+//-- suplimental margin / padding mixins
+@each $side in $orientation {
+  @each $space in $suplimental-space-units {
+    .comp-margin-#{$side}-#{$space} {
+      margin-#{$side}: #{$space}px !important;
+    }
+  }
+}
+
+@each $side in $orientation {
+  @each $space in $suplimental-space-units {
+    .comp-padding-#{$side}-#{$space} {
+      padding-#{$side}: #{$space}px !important;
+    }
+  }
+}

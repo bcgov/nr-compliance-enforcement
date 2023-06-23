@@ -1,48 +1,54 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
-import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
-import { HwcrComplaint } from './entities/hwcr_complaint.entity';
-import { ComplaintService } from '../complaint/complaint.service';
-import { DataSource, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UUID } from 'crypto';
-import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
-import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
+import { Inject, Injectable } from "@nestjs/common";
+import { CreateHwcrComplaintDto } from "./dto/create-hwcr_complaint.dto";
+import { UpdateHwcrComplaintDto } from "./dto/update-hwcr_complaint.dto";
+import { HwcrComplaint } from "./entities/hwcr_complaint.entity";
+import { ComplaintService } from "../complaint/complaint.service";
+import { DataSource, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UUID } from "crypto";
+import { CreateComplaintDto } from "../complaint/dto/create-complaint.dto";
+import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 
 @Injectable()
 export class HwcrComplaintService {
-  constructor(private dataSource: DataSource) {
-    }
-    @InjectRepository(HwcrComplaint)
-    private hwcrComplaintsRepository: Repository<HwcrComplaint>;
-    @Inject(ComplaintService)
-    protected readonly complaintService: ComplaintService;
-    @Inject(AttractantHwcrXrefService)
-    protected readonly attractantHwcrXrefService: AttractantHwcrXrefService;
-  
-    
-    async create(hwcrComplaint: any): Promise<HwcrComplaint> {
-      const queryRunner = this.dataSource.createQueryRunner();
+  constructor(private dataSource: DataSource) {}
+  @InjectRepository(HwcrComplaint)
+  private hwcrComplaintsRepository: Repository<HwcrComplaint>;
+  @Inject(ComplaintService)
+  protected readonly complaintService: ComplaintService;
+  @Inject(AttractantHwcrXrefService)
+  protected readonly attractantHwcrXrefService: AttractantHwcrXrefService;
 
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-      var newHwcrComplaintString;
-      try
-      {
-        await this.complaintService.create(<CreateComplaintDto>hwcrComplaint, queryRunner);
-        newHwcrComplaintString = await this.hwcrComplaintsRepository.create(<CreateHwcrComplaintDto>hwcrComplaint);
-        var newHwcrComplaint : HwcrComplaint;
-        newHwcrComplaint = <HwcrComplaint>await queryRunner.manager.save(newHwcrComplaintString);
-        if(newHwcrComplaint.attractant_hwcr_xref != null)
-        {
-          for (let i=0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
-              const blankHwcrComplaint = new HwcrComplaint();
-              blankHwcrComplaint.hwcr_complaint_guid = newHwcrComplaint.hwcr_complaint_guid;
-              newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint = blankHwcrComplaint;
-              await this.attractantHwcrXrefService.create(newHwcrComplaint.attractant_hwcr_xref[i], queryRunner);
-          }
+  async create(hwcrComplaint: any): Promise<HwcrComplaint> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let newHwcrComplaintString;
+    try {
+      await this.complaintService.create(
+        <CreateComplaintDto>hwcrComplaint,
+        queryRunner
+      );
+      newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
+        <CreateHwcrComplaintDto>hwcrComplaint
+      );
+      let newHwcrComplaint: HwcrComplaint;
+      newHwcrComplaint = <HwcrComplaint>(
+        await queryRunner.manager.save(newHwcrComplaintString)
+      );
+      if (newHwcrComplaint.attractant_hwcr_xref != null) {
+        for (let i = 0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
+          const blankHwcrComplaint = new HwcrComplaint();
+          blankHwcrComplaint.hwcr_complaint_guid =
+            newHwcrComplaint.hwcr_complaint_guid;
+          newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint =
+            blankHwcrComplaint;
+          await this.attractantHwcrXrefService.create(
+            newHwcrComplaint.attractant_hwcr_xref[i],
+            queryRunner
+          );
         }
-        await queryRunner.commitTransaction();
       }
       catch (err) {
         console.log(err);
@@ -105,12 +111,32 @@ export class HwcrComplaintService {
           relations: { 
             complaint_identifier: true,
           },
-        })).complaint_identifier.complaint_identifier;
-        await this.hwcrComplaintsRepository.delete(id);
-        await this.complaintService.remove(complaint_identifier);
-        return { deleted: true };
-      } catch (err) {
-        return { deleted: false, message: err.message };
-      }
+        })
+      ).complaint_identifier.complaint_identifier;
+      await this.hwcrComplaintsRepository.delete(id);
+      await this.complaintService.remove(complaint_identifier);
+      return { deleted: true };
+    } catch (err) {
+      return { deleted: false, message: err.message };
     }
+  }
+
+  async findByComplaintIdentifier(id: any): Promise<HwcrComplaint> {
+    return this.hwcrComplaintsRepository.findOneOrFail({
+      where: { complaint_identifier: id },
+      relations: {
+        complaint_identifier: {
+          owned_by_agency_code: true,
+          referred_by_agency_code: true,
+          complaint_status_code: true,
+          cos_geo_org_unit: true
+        },
+        species_code: true,
+        hwcr_complaint_nature_code: true,
+        attractant_hwcr_xref: {
+          attractant_code: true,
+        },
+      },
+    });
+  }
 }

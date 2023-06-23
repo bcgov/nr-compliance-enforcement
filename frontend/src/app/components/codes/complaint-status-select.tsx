@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../../../config';
 import { CodeTable } from '../../../enum/code-table.enum';
-import Select from 'react-select'
+import Select from 'react-select';
 
 interface Option {
   value: string | undefined;
