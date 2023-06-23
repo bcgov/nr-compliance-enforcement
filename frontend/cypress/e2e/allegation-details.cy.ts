@@ -58,7 +58,7 @@ describe("COMPENF-37 Display ECR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(9)").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(9) td.comp-violation-cell.comp-cell").click({ force: true });
 
     //-- verify the right complaint identifier is selected and the animal type
     cy.get(".comp-box-complaint-id").contains("23-006884")
@@ -79,7 +79,7 @@ describe("COMPENF-37 Display ECR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(9)").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(9) td.comp-violation-cell.comp-cell").click({ force: true });
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(1) > p").contains(callDetails.description)

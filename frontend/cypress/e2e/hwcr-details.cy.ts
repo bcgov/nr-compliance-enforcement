@@ -56,7 +56,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(12)").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(12) td.comp-location-cell.comp-cell").click({ force: true });
 
     //-- verify the right complaint identifier is selected and the animal type
     cy.get(".comp-box-complaint-id").contains("23-000076")
@@ -77,7 +77,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(12)").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(12) > td:nth-child(4)").click({ force: true });
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(1) > p").contains(callDetails.description)
@@ -105,7 +105,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(12)").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(12)  > td.comp-nature-complaint-cell.comp-cell").click({ force: true });
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(1) > div:nth-child(1) > div.comp-details-content").contains(callerInformation.name)
@@ -124,3 +124,6 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(2) > div:nth-child(3) > div.comp-details-content").contains(callerInformation.referred)
   });
 });
+
+
+//#comp-table > tbody > tr:nth-child(5) > td.comp-nature-complaint-cell.comp-cell
