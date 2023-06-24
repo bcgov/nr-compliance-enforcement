@@ -36,7 +36,7 @@ export class OfficeService {
 
   findByGeoOrgCode (geo_org_code: any) {
     return this.officeRepository.find({
-      where: {geo_organization_unit_code: geo_org_code},
+      where: {cos_geo_org_unit: geo_org_code},
       relations: {
 
       } ,

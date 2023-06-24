@@ -17,14 +17,6 @@ export class Office
 
       @ApiProperty({
         example: "DCC",
-        description: "The geo organization code for the office",
-      })
-      @ManyToOne(() => GeoOrganizationUnitCode, { nullable: true })
-      @JoinColumn({name: "geo_organization_unit_code"})
-      geo_organization_unit_code: GeoOrganizationUnitCode;
-      
-      @ApiProperty({
-        example: "DCC",
         description:
           "The geographical organization code of the organization that currently owns the complaint",
       })

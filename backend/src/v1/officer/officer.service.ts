@@ -41,7 +41,7 @@ export class OfficerService {
         let officeObject = new Office ();
         
         officeObject.agency_code = agencyObject;
-        officeObject.geo_organization_unit_code = officer.geo_organization_unit_code;
+        officeObject.cos_geo_org_unit = officer.geo_organization_unit_code;
         officeObject.create_user_id = officer.create_user_id;
         officeObject.create_timestamp = officer.create_timestamp;
         officeObject.update_user_id = officer.update_user_id;
@@ -75,7 +75,7 @@ export class OfficerService {
     return this.officerRepository.find({
       relations: {
         office_guid: {
-          geo_organization_unit_code: true
+          cos_geo_org_unit: true
         },
         person_guid: {
 
@@ -89,7 +89,7 @@ export class OfficerService {
       where: { office_guid: office_guid },
       relations: {
         office_guid: {
-          geo_organization_unit_code: true
+          cos_geo_org_unit: true
         },
         person_guid: {
 
