@@ -120,17 +120,21 @@ export class AllegationComplaintService {
   }
 
   async findByComplaintIdentifier(id: any): Promise<AllegationComplaint> {
-    return this.allegationComplaintsRepository.findOneOrFail({
-      where: { complaint_identifier: id },
-      relations: {
-        complaint_identifier: {
-          owned_by_agency_code: true,
-          referred_by_agency_code: true,
-          complaint_status_code: true,
-          cos_geo_org_unit: true,
-        },
-        violation_code: true,
-      },
-    });
+    return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
+    .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
+    .leftJoinAndSelect('allegation_complaint.violation_code','violation_code')
+    .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
+    .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+    .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+    .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'geo_organization_unit_code')
+    .leftJoinAndSelect(
+      "complaint_identifier.cos_geo_org_unit",
+      "area_code"
+    )      
+    .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+    .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+    .where("complaint_identifier.complaint_identifier = :id", {id})
+    .getOne();
+
   }
 }

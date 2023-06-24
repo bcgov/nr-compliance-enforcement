@@ -5,15 +5,15 @@ import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
 import { updateHwlcComplaintStatus } from "../../../store/reducers/hwcr-complaints";
 import { updateAllegationComplaintStatus } from "../../../store/reducers/allegation-complaint";
-
-import ComplaintType from "../../../constants/complaint-types";
+import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "../../../store/reducers/complaints";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 
 
 type ChangeStatusModalProps = {
   close: () => void;
   submit: () => void;
   complaint_identifier: string;
-  complaint_type: number;
+  complaint_type: string;
   complaint_guid: string;
 }
 
@@ -30,17 +30,19 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
 
   useEffect(() => {
     if (status.length > 1) {
-      if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, complaint_guid));
+      if (COMPLAINT_TYPES.HWCR === complaint_type) {
+        dispatch(updateHwlcComplaintStatus(complaint_identifier, status));
+        dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
       } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier,status, complaint_guid));
+        dispatch(updateAllegationComplaintStatus(complaint_identifier,status));
+        dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
       }
       submit();
     }
   }, [dispatch,status,submit]);
   
 
-  const { title, description,complaint_identifier, complaint_guid } = modalData;
+  const { title, description,complaint_identifier } = modalData;
 
   const handleSelectChange = (selectedValue: string) => {
     selectedStatus = selectedValue;

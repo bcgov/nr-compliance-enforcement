@@ -55,7 +55,7 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string): 
 };
 
 // Update the complaint status and dispatch this change so that the affected row is updated in the state
-export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string, allegation_guid: string ): AppThunk => async (dispatch) => {
+export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -67,7 +67,7 @@ export const updateAllegationComplaintStatus = (complaint_identifier: string, ne
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
     
     // now get that allegation complaint row and update the state
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/${allegation_guid}`);
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`);
     dispatch(
       updateAllegationComplaintRow(response.data)
     );

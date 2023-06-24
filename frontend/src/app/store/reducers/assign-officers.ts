@@ -11,6 +11,9 @@ import ComplaintType from "../../constants/complaint-types";
 import { updateAllegationComplaintRow } from "./allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
+import { useAppSelector } from "../../hooks/hooks";
+import { userId } from "./app";
+import COMPLAINT_TYPES from "../../types/app/complaint-types";
 
 const initialState: AssignOfficersState = {
     officersInZone: []
@@ -53,7 +56,7 @@ export const getOfficersInZone = (zone: string): AppThunk => async (dispatch) =>
 };
 
 // Assigns the current user to an office
-export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: number, complaint_guid: string): AppThunk => async (dispatch) => {
+export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -72,12 +75,12 @@ export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, com
       officerResponse = await axios.patch<Officer>(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, data);
     }
 
-    dispatch(updateComplaintAssignee(officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type, complaint_guid));
+    dispatch(updateComplaintAssignee(userId, officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type));
   }
 }
 
 // creates a new cross reference for a person and office.  Assigns a person to an office.
-export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier: string, complaint_type: number, complaint_guid: string): AppThunk => async (dispatch) => {
+export const updateComplaintAssignee = (currentUser: string, person_guid: UUID, complaint_identifier: string, complaint_type: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -102,7 +105,7 @@ export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier:
             },
             "complaint_identifier": complaint_identifier,
             "person_complaint_xref_code": "ASSIGNEE",
-            "create_user_id": "bfalk",
+            "create_user_id": currentUser,
       };
     console.log(newRecord);
 
@@ -110,13 +113,13 @@ export const updateComplaintAssignee = (person_guid: UUID, complaint_identifier:
     await axios.post<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/`,newRecord);
 
     // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
-    if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-      const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/${complaint_guid}`);
+    if (COMPLAINT_TYPES.HWCR === complaint_type) {
+      const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`);
       dispatch(
         updateHwcrComplaintRow(response.data)
       );
     } else {
-      const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/${complaint_guid}`);
+      const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`);
       dispatch(
         updateAllegationComplaintRow(response.data)
       );

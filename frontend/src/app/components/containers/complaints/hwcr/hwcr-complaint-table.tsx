@@ -6,7 +6,7 @@ import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hw
 import ComplaintTypes from "../../../../types/app/complaint-types";
 import { useNavigate } from "react-router-dom";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
-import ComplaintType from "../../../../constants/complaint-types";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 type Props = {
     sortColumn: string,
@@ -70,7 +70,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) => {
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{updateDate}</td>
-                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid} zone={zone}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={COMPLAINT_TYPES.HWCR} assigned_ind={assigned_ind} zone={zone}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

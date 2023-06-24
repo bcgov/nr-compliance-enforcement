@@ -112,6 +112,32 @@ td.comp-ellipsis-cell {
       font-size: 24px;
     }
 
+    .comp-box-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      gap: 8px;
+      flex: 1 0 0;
+    }
+
+    .comp-box-actions button {
+      border-radius: 4px;
+      border: 1px solid var(--gray-white, #FFF);
+      background: var(--hit-box, rgba(255, 255, 255, 0.00));
+      color: var(--gray-white, #FFF);;
+      font-size: 14px;
+    }
+
+    .comp-box-actions button span {
+      padding-right: 8px;
+    }
+
+    .comp-box-actions button svg {
+      font-size: 16px;
+      vertical-align: text-top;
+      margin-top: 1px;
+    }
+
     .comp-box-conflict-type {
       margin: 0px 12px;
       padding: 4px 12px;

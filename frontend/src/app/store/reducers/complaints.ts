@@ -24,7 +24,6 @@ export const complaintSlice = createSlice({
   reducers: {
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
-
       return { ...state, complaint };
     },
   },
