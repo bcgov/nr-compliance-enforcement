@@ -22,6 +22,7 @@ export class Office
       })
       @OneToOne(() => CosGeoOrgUnit)
       @JoinColumn({ name: "geo_organization_unit_code", referencedColumnName: "office_location_code" })
+      @Column({name: "geo_organization_unit_code" })
       cos_geo_org_unit: CosGeoOrgUnit;    
 
       @ApiProperty({
