@@ -25,6 +25,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     lastUpdated,
     officerAssigned,
     status,
+    zone,
     natureOfComplaint,
     violationType,
     species,
@@ -71,7 +72,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           description: "Status",
           complaint_identifier: id,
           complaint_type: complaintType,
-          zone: ""
+          zone: zone
         }
       })
     );

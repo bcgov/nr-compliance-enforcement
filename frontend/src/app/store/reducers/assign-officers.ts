@@ -7,13 +7,11 @@ import { Officer, Person } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/personComplaintXref";
 import { updateHwcrComplaintRow } from "./hwcr-complaints";
-import ComplaintType from "../../constants/complaint-types";
 import { updateAllegationComplaintRow } from "./allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
-import { useAppSelector } from "../../hooks/hooks";
-import { userId } from "./app";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
+import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "./complaints";
 
 const initialState: AssignOfficersState = {
     officersInZone: []
@@ -76,6 +74,12 @@ export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, com
     }
 
     dispatch(updateComplaintAssignee(userId, officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type));
+    
+    if (complaint_type === COMPLAINT_TYPES.HWCR) {
+      dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
+    } else {
+      dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
+    }
   }
 }
 
@@ -118,11 +122,14 @@ export const updateComplaintAssignee = (currentUser: string, person_guid: UUID, 
       dispatch(
         updateHwcrComplaintRow(response.data)
       );
+      dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
     } else {
       const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`);
       dispatch(
         updateAllegationComplaintRow(response.data)
       );
+
+      dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
     }
   }
 }
