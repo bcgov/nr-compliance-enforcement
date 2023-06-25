@@ -114,9 +114,7 @@ export const selectComplaintHeader =
             complaint_status_code: ceStatusCode,
             cos_geo_org_unit: {
               zone_code,
-            },  
-            // eslint-disable-next-line no-empty-pattern
-            person_complaint_xref: []
+            },
           } = ceComplaint;
 
           if (ceComplaint.person_complaint_xref.length > 0) {
@@ -178,8 +176,6 @@ export const selectComplaintHeader =
             create_user_id: createdBy,
             update_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
-            // eslint-disable-next-line no-empty-pattern
-            person_complaint_xref: [],
             cos_geo_org_unit: {
               zone_code,
             },    
