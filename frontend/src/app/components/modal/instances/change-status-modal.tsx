@@ -27,19 +27,29 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   let [status, setStatus] = useState('');
   let selectedStatus = '';
   
-
   useEffect(() => {
     if (status.length > 1) {
-      if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier, status));
-        dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
-      } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier,status));
-        dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
-      }
-      submit();
+        updateThunksSequentially();
+        submit();
     }
   }, [dispatch,status,submit]);
+
+  // Since there are different reducers for updating the state of complaints for tables and details, we need to handle both
+  // This will ensure that both are triggered, sequentially.
+  const updateThunksSequentially = async () => {
+    try {
+      if (COMPLAINT_TYPES.HWCR === complaint_type) {
+        await dispatch(updateHwlcComplaintStatus(complaint_identifier, status));
+        dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
+      } else {
+        await dispatch(updateAllegationComplaintStatus(complaint_identifier,status));
+        dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
+      }
+    } catch (error) {
+      // Handle any errors that occurred during the dispatch
+      console.error('Error dispatching thunks:', error);
+    }
+  };
   
 
   const { title, description,complaint_identifier } = modalData;
