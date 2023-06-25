@@ -76,6 +76,7 @@ jobs:
     name: Deploys
     needs:
       - builds
+    environment: dev
     runs-on: ubuntu-22.04
     strategy:
       matrix:
