@@ -7,8 +7,6 @@ import _kc from "../keycloak";
  */
 const initKeycloak = (onAuthenticatedCallback: () => void) => {
   
-  const MIN_TOKEN_VALIDITY_IN_SECONDS = 250
-
   _kc.init({
     onLoad: 'login-required',
     pkceMethod: 'S256',

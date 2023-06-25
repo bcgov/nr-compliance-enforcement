@@ -111,7 +111,6 @@ export const updateComplaintAssignee = (currentUser: string, person_guid: UUID, 
             "person_complaint_xref_code": "ASSIGNEE",
             "create_user_id": currentUser,
       };
-    console.log(newRecord);
 
     // add new person complaint record
     await axios.post<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/`,newRecord);
