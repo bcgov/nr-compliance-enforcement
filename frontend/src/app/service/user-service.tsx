@@ -22,13 +22,9 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     .catch(console.error);
 
   _kc.onTokenExpired = () => {
-    console.log("Token expired");
     _kc.updateToken(5).then((refreshed) => {
       if (refreshed) {
-        console.log("Refreshed token");
         localStorage.setItem('user', `${_kc.token}`);
-      } else {
-        console.log("Did not refresh token");
       }
     });
   }

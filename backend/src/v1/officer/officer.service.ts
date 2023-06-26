@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateOfficerDto } from './dto/create-officer.dto';
 import { CreatePersonDto } from '../person/dto/create-person.dto';
 import { UpdateOfficerDto } from './dto/update-officer.dto';
@@ -13,6 +13,9 @@ import { UUID } from 'crypto';
 
 @Injectable()
 export class OfficerService {
+
+  private readonly logger = new Logger(OfficerService.name);
+
   constructor(private dataSource: DataSource) {
   }
   @InjectRepository(Officer)
@@ -62,7 +65,7 @@ export class OfficerService {
       await queryRunner.commitTransaction();
     }
     catch (err) {
-      console.log(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       newOfficerString = "Error Occured";
     } finally {

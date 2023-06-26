@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, Logger } from "@nestjs/common";
 import { CreateAllegationComplaintDto } from "./dto/create-allegation_complaint.dto";
 import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.dto";
 import { AllegationComplaint } from "./entities/allegation_complaint.entity";
@@ -10,6 +10,9 @@ import { CreateComplaintDto } from "../complaint/dto/create-complaint.dto";
 
 @Injectable()
 export class AllegationComplaintService {
+
+  private readonly logger = new Logger(AllegationComplaintService.name);
+
   constructor(private dataSource: DataSource) {}
   @InjectRepository(AllegationComplaint)
   private allegationComplaintsRepository: Repository<AllegationComplaint>;
@@ -33,7 +36,7 @@ export class AllegationComplaintService {
       await queryRunner.manager.save(newAllegationComplaint);
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.log(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
     } finally {
