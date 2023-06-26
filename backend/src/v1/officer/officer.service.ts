@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateOfficerDto } from './dto/create-officer.dto';
 import { CreatePersonDto } from '../person/dto/create-person.dto';
 import { UpdateOfficerDto } from './dto/update-officer.dto';
@@ -13,6 +13,9 @@ import { UUID } from 'crypto';
 
 @Injectable()
 export class OfficerService {
+
+  private readonly logger = new Logger(OfficerService.name);
+
   constructor(private dataSource: DataSource) {
   }
   @InjectRepository(Officer)
@@ -41,7 +44,7 @@ export class OfficerService {
         let officeObject = new Office ();
         
         officeObject.agency_code = agencyObject;
-        officeObject.geo_organization_unit_code = officer.geo_organization_unit_code;
+        officeObject.cos_geo_org_unit = officer.geo_organization_unit_code;
         officeObject.create_user_id = officer.create_user_id;
         officeObject.create_timestamp = officer.create_timestamp;
         officeObject.update_user_id = officer.update_user_id;
@@ -62,7 +65,7 @@ export class OfficerService {
       await queryRunner.commitTransaction();
     }
     catch (err) {
-      console.log(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       newOfficerString = "Error Occured";
     } finally {
@@ -75,7 +78,7 @@ export class OfficerService {
     return this.officerRepository.find({
       relations: {
         office_guid: {
-          geo_organization_unit_code: true
+          cos_geo_org_unit: true
         },
         person_guid: {
 
@@ -89,7 +92,7 @@ export class OfficerService {
       where: { office_guid: office_guid },
       relations: {
         office_guid: {
-          geo_organization_unit_code: true
+          cos_geo_org_unit: true
         },
         person_guid: {
 

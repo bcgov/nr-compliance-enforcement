@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Person } from './entities/person.entity';
@@ -7,6 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PersonService {
+
+  private readonly logger = new Logger(PersonService.name);
+
   constructor(private dataSource: DataSource) {
   }
   @InjectRepository(Person)
@@ -25,7 +28,7 @@ export class PersonService {
       await queryRunner.commitTransaction();
     }
     catch (err) {
-      console.log(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       newPersonString = "Error Occured";
     } finally {

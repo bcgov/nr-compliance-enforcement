@@ -29,8 +29,7 @@ export const hwcrComplaintSlice = createSlice({
 
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
-
-      return { ...state, complaint };
+      state.complaint = complaint;
     },
     updateHwcrComplaintRow: (state, action: PayloadAction<HwcrComplaint>) => {
       const updatedComplaint = action.payload;
@@ -81,7 +80,8 @@ export const getHwcrComplaintByComplaintIdentifier =
     }
   };
 
-export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string, hwcr_guid: string): AppThunk => async (dispatch) => {
+
+export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -91,11 +91,16 @@ export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatu
     let updatedComplaint = complaintResponse.data;
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
-
-    const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/${hwcr_guid}`);
-      dispatch(
-        updateHwcrComplaintRow(response.data)
-      );
+    
+    // now get that hwcr complaint row and update the state
+    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`);
+    dispatch(
+      updateHwcrComplaintRow(response.data)
+    );
+    const result = response.data;
+    dispatch(
+      setComplaint({ ...result })
+    );
   }
 };
 

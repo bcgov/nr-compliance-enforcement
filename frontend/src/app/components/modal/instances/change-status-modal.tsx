@@ -5,18 +5,15 @@ import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
 import { updateHwlcComplaintStatus } from "../../../store/reducers/hwcr-complaints";
 import { updateAllegationComplaintStatus } from "../../../store/reducers/allegation-complaint";
-
-import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
-
+import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "../../../store/reducers/complaints";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 
 type ChangeStatusModalProps = {
-  close: () => void,
-  submit: () => void,
-  sortColumn: string,
-  sortOrder: string,
-  complaint_identifier: string,
-  complaint_type: number,
+  close: () => void;
+  submit: () => void;
+  complaint_identifier: string;
+  complaint_type: string;
   complaint_guid: string;
   natureOfComplaintFilter: Option | null,
   speciesCodeFilter: Option | null,
@@ -36,20 +33,32 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   let [status, setStatus] = useState('');
   let selectedStatus = '';
   
-
   useEffect(() => {
     if (status.length > 1) {
-      if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, complaint_guid));
+        updateThunksSequentially();
+        submit();
+    }
+  }, [dispatch,status,submit]);
+
+  // Since there are different reducers for updating the state of complaints for tables and details, we need to handle both
+  // This will ensure that both are triggered, sequentially.
+  const updateThunksSequentially = async () => {
+    try {
+      if (COMPLAINT_TYPES.HWCR === complaint_type) {
+        await dispatch(updateHwlcComplaintStatus(complaint_identifier, status));
+        dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
       } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier, status, complaint_guid));
+        await dispatch(updateAllegationComplaintStatus(complaint_identifier, status, complaint_guid));
+        dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
       }
-      submit();
+    } catch (error) {
+      // Handle any errors that occurred during the dispatch
+      console.error('Error dispatching thunks:', error);
     }
   }, [dispatch,status,submit, complaint_type, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter]);
   
 
-  const { title, description,complaint_identifier, complaint_guid } = modalData;
+  const { title, description,complaint_identifier } = modalData;
 
   const handleSelectChange = (selectedValue: string) => {
     selectedStatus = selectedValue;

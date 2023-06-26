@@ -57,7 +57,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           startDateFilter: startDateFilter,
           endDateFilter: endDateFilter,
           complaintStatusFilter: complaintStatusFilter,
-          complaint_guid: complaint_guid
+          complaint_guid: complaint_guid,
         }
       })
     );
@@ -74,7 +74,6 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
-          complaint_guid: complaint_guid,
           zone: zone
         }
       })
