@@ -55,7 +55,7 @@ export const getAllegationComplaints = (sortColumn: string, sortOrder: string, v
   }
 };
 
-export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string, allegation_guid: string, sortColumn: string, sortOrder: string, violationFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?:Option | null): AppThunk => async (dispatch) => {
+export const updateAllegationComplaintStatus = (complaint_identifier: string, newStatus: string, allegationComplaintGuid: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -64,12 +64,14 @@ export const updateAllegationComplaintStatus = (complaint_identifier: string, ne
     // first update the complaint status
     let updatedComplaint = complaintResponse.data;
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
+
+    
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
-    officerAssigned: "", violationCode: violationFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
-    dispatch(
-      updateAllegationComplaintRow(response.data)
-    );
+
+    const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaintGuid}`);
+      dispatch(
+        updateAllegationComplaintRow(response.data)
+      );
   }
 };
 

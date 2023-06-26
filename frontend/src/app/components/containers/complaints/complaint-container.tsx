@@ -10,7 +10,6 @@ type Props = {
 };
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
-    const [complaintType, setComplaintType] = useState(initialState);
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [natureOfComplaintFilter, setNatureOfComplaintFilter] = useState<Option | null>(null);
     const [speicesCodeFilter, setSpeicesCodeFilter] = useState<Option | null>(null);
@@ -19,7 +18,6 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [endDateFilter, setEndDateFilter] = useState<Date>();
     const [complaintStatusFilter, setComplaintStatusFilter] = useState<Option | null>({value: 'OPEN', label: 'Open'});
     const _test = getComplaintTypeFromUrl();
-
     const [complaintType, setComplaintType] = useState<number>(
       _test !== -1 ? _test : initialState
     );

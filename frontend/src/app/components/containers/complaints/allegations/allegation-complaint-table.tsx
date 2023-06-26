@@ -81,7 +81,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, vi
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={null} speciesCodeFilter={null} violationFilter={violationFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
+                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid} zone={zone} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={null} speciesCodeFilter={null} violationFilter={violationFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
 
                             </tr>
                         )

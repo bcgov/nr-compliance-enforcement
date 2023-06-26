@@ -77,24 +77,24 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
-      .leftJoinAndSelect('complaint_identifier.geo_organization_unit_code', 'geo_organization_unit_code')
+      .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'cos_geo_org_unit')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
-      //.leftJoinAndSelect('cos_geo_org_unit_flat_vw.area_code', 'geo_organization_unit_code')
-      //.leftJoinAndSelect('person_complaint_xref.person_complaint_xref_id', 'person_complaint_xref')
+      .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+      .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
       .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
 
       /*if(community !== null && community !== '')
       {
-        queryBuilder.andWhere('complaint_identifier.geo_organization_unit_code = :Community', { Community: community });
+        queryBuilder.andWhere('cos_geo_org_unit.area_code = :Community', { Community: community });
       }
       if(zone !== null)
       {
-        queryBuilder.andWhere('cos.geo_org_unit_flat_vw.zone_code = :Zone', { Zone: zone });
+        queryBuilder.andWhere('cos_geo_org_unit.zone_code = :Zone', { Zone: zone });
       }
       if(region !== null)
       {
-        queryBuilder.andWhere('cos.geo_org_unit_flat_vw.region_code = :Region', { Region: region });
+        queryBuilder.andWhere('cos_geo_org_unit.region_code = :Region', { Region: region });
       }
       if(officerAssigned !== null)
       {
@@ -140,7 +140,6 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
       .leftJoinAndSelect('attractant_hwcr_xref.attractant_code', 'attractant_code')
-      //.leftJoinAndSelect('cos_geo_org_unit_flat_vw.area_code', 'geo_organization_unit_code')
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)

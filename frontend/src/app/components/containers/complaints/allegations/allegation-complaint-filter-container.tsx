@@ -66,6 +66,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
       const complaintStatusClass =  (complaintStatusFilter === null || complaintStatusFilter.value === '') ? 'hidden' : 'comp-filter-pill';
       const dateStatusClass = (startDateFilter === null || startDateFilter === undefined) ? 'hidden' : 'comp-filter-pill';
       const violationClass =  (violationFilter === null || violationFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || violationClass !== 'hidden') ? 'comp-filter-pill-container' : '';
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
@@ -104,7 +105,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                       style={customHeaderCount === 1 ? { visibility: "hidden" } : { visibility: "visible" }}
                       onClick={decreaseMonth}
                     >
-                      <span
+                      <span style={{top: "5px"}}
                         className={
                           "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous"
                         }
@@ -126,7 +127,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                       style={customHeaderCount === 0 ? { visibility: "hidden" } : { visibility: "visible" }}
                       onClick={increaseMonth}
                     >
-                      <span
+                      <span style={{top: "5px"}}
                         className={
                           "react-datepicker__navigation-icon react-datepicker__navigation-icon--next"
                         }
@@ -158,18 +159,18 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
       <div style={{clear:'left'}}></div>
       </div>
       </div>
-      <div style={{width: '1330px', height:'29px', margin:'0px 0px 20px 0px'}}>
-        <div className={complaintStatusClass} style={{float:'right', margin:'0px 0px 0px 0px'}}>
+      <div className={pillContainterStyle}>
+        <div className={complaintStatusClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => setComplaintStatusFilter(null)}></button>
             </button>
           </div>
-          <div className={dateStatusClass} style={{float:'right', margin:'5px 0px 0px 0px'}}>
+          <div className={dateStatusClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{(startDateFilter === undefined && endDateFilter === undefined ) ? "" : (startDateFilter !== undefined && endDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " + endDateFilter?.toLocaleDateString() : (startDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " : (endDateFilter !== undefined) ? " - " + endDateFilter?.toLocaleDateString() : ""}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => {setStartDateFilter();setEndDateFilter();}}></button>
             </button>
           </div>
-          <div className={violationClass} style={{float:'right', margin:'5px 0px 0px 0px'}}>
+          <div className={violationClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{violationFilter?.label}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => {setViolationFilter(null)}}></button>
             </button>

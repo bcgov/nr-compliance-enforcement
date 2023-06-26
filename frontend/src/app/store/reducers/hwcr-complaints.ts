@@ -9,6 +9,7 @@ import Option from "../../types/app/option";
 import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
+import { updateAllegationComplaintRow } from "./allegation-complaint";
 
 const initialState: HwcrComplaintsState = {
   hwcrComplaints: [],
@@ -80,7 +81,7 @@ export const getHwcrComplaintByComplaintIdentifier =
     }
   };
 
-export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string, hwcr_guid: string , sortColumn: string, sortOrder: string, natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?:Option | null): AppThunk => async (dispatch) => {
+export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string, hwcr_guid: string): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -91,13 +92,10 @@ export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatu
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
 
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
-      officerAssigned: "", natureOfComplaint: natureOfComplaintFilter?.value, speciesCode: speciesCodeFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
-    dispatch(
-      setHwrcComplaints({
-        hwcrComplaints: response.data
-      }),
-    );
+    const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/${hwcr_guid}`);
+      dispatch(
+        updateHwcrComplaintRow(response.data)
+      );
   }
 };
 

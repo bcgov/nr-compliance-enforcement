@@ -40,13 +40,13 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   useEffect(() => {
     if (status.length > 1) {
       if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, complaint_guid, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
+        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, complaint_guid));
       } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier, status, complaint_guid, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
+        dispatch(updateAllegationComplaintStatus(complaint_identifier, status, complaint_guid));
       }
       submit();
     }
-  }, [dispatch,status,submit]);
+  }, [dispatch,status,submit, complaint_type, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter]);
   
 
   const { title, description,complaint_identifier, complaint_guid } = modalData;

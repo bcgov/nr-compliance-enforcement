@@ -100,6 +100,84 @@ td.comp-ellipsis-cell {
 
   color: $white;
   flex: 1;
+  }
+  .comp-violation-cell {
+    width: 306px;
+  }
+
+  .comp-in-progress-cell {
+    width: 153px;
+  }
+
+  .comp-status-cell {
+    width: 75px;
+  }
+
+  .comp-last-updated-cell {
+    width: 110px;
+  }
+
+  .comp-nature-complaint-cell {
+    width: 329px;
+  }
+
+  .comp-ellipsis-cell {
+    width: 31px;
+    vertical-align: middle;
+    color: #6C757D;
+    font-size: 14px;
+  }
+
+  td.comp-ellipsis-cell {
+    cursor: pointer;
+  }
+
+  .comp-header-label
+  {
+    float: left;
+    margin-top: 1px;
+  }
+
+  .comp-header-caret
+  {
+    float: right;
+    cursor: pointer;
+  }
+
+  .comp-cell-left
+  {
+    border-style: solid;
+    border-color: #B9B9B9;
+    border-width: 0px 1px 0px 1px;
+  }
+
+  .comp-top-left
+  {
+    border-top-left-radius: 4px;
+    border-width: 1px 1px 0px 1px;
+  }
+  .comp-top-right
+  {
+    border-top-right-radius: 4px;
+  }
+
+  .comp-bottom-left
+  {
+    border-bottom-left-radius: 4px;
+  }
+  .comp-bottom-right
+  {
+    border-bottom-right-radius: 4px;
+  }
+
+  .comp-status-open-btn
+  {
+    width: auto;
+
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+   }
 
   .comp-complaint-info {
     display: flex;
@@ -140,7 +218,6 @@ td.comp-ellipsis-cell {
       display: flex;
       color: $black;
     }
-  }
 
   .comp-nature-of-complaint {
     font-size: 16px;
@@ -260,6 +337,7 @@ td.comp-ellipsis-cell {
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
+  }
 // COMPLAINT DETAILS END
 
 .comp-table-header {
@@ -344,6 +422,13 @@ td.comp-ellipsis-cell {
     height: 32px;
   }
 
+  .comp-filter-pill-container
+  {
+    width: 1330px;
+    height: 29px;
+    margin: 5px 0px 15px 0px;
+  }
+
   .comp-filter-left
   {
     float: left;
@@ -360,7 +445,7 @@ td.comp-ellipsis-cell {
   .comp-filter-pill
   {
     float: right;
-    margin: 0px 0px 0px 5px;
+    margin: 0px 0px 0px 7px;
   }
 
   .comp-sub-header
@@ -394,6 +479,13 @@ td.comp-ellipsis-cell {
 .comp-medium-cell {
   width: 130px;
 }
+  .comp-circle
+  {
+    margin: 2px 2px 2px 2px;
+    width: 24px;
+    height: 24px;
+    float: left;
+  }
 
 .comp-area-cell {
   width: 165px;
@@ -426,11 +518,17 @@ td.comp-ellipsis-cell {
     border-width: 1px;
     box-sizing: border-box;
 }
+//override -- default is one pixel too high
+.react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle {
+  top: 0;
+  margin-top: -7px;
+}
 
   .no-bullets {
     list-style-type: none; /* Remove bullets */
     padding: 0; /* Remove padding */
     margin: 0; /* Remove margins */
+  }
     
   .comp-violation-cell {
     width: 302px;
@@ -451,6 +549,7 @@ td.comp-ellipsis-cell {
   .comp-nature-complaint-cell {
     width: 313px;
   }
+
 
   .hidden
   {
@@ -664,3 +763,4 @@ td.comp-ellipsis-cell {
   height: 32px;
   cursor: pointer;
 }
+  

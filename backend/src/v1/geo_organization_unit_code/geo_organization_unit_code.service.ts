@@ -3,7 +3,7 @@ import { CreateGeoOrganizationUnitCodeDto } from './dto/create-geo_organization_
 import { UpdateGeoOrganizationUnitCodeDto } from './dto/update-geo_organization_unit_code.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GeoOrganizationUnitCode } from './entities/geo_organization_unit_code.entity';
-import { Repository } from 'typeorm';
+import { Any, Repository } from 'typeorm';
 
 @Injectable()
 export class GeoOrganizationUnitCodeService {
@@ -20,6 +20,12 @@ export class GeoOrganizationUnitCodeService {
 
   async findAll(): Promise<GeoOrganizationUnitCode[]> {
     return this.geoOrganizationUnitCodeRepository.find();
+  }
+
+  async findDistinctGeoCodes(geo_org_unit_type_code: any): Promise<GeoOrganizationUnitCode[]> {
+    return this.geoOrganizationUnitCodeRepository.find({
+      where: {geo_org_unit_type_code: geo_org_unit_type_code},
+    });
   }
 
   async findOne(id: any): Promise<GeoOrganizationUnitCode> {

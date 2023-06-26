@@ -6,6 +6,7 @@ import { HwcrComplaintFilterContainer } from "./hwcr-complaint-filter-container"
 import { useCollapse } from 'react-collapsed';
 import { Nav, Navbar } from "react-bootstrap";
 import Option from "../../../../types/app/option";
+import filterIcon from "../../../../../assets/images/filter-icon.png";
 
 type Props = {
     handleChange: Function,
@@ -36,7 +37,13 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
                 <button className="nav-link" onClick={() => handleChange(ComplaintType.ALLEGATION_COMPLAINT)}>Enforcement</button>
             </Nav.Item>
             <Nav.Item className="ms-auto" {...getToggleProps()}>
-                Filters
+                <div style={{float: "left", margin:"0px 5px 0px 0px"}}>
+                    <img src={filterIcon} alt="filter" margin-right="5px"/>
+                </div>
+                <div style={{float: "left"}}>
+                    Filters
+                </div>
+                <div style={{clear: "left"}}></div>
             </Nav.Item>
         </Nav>
     </Navbar>
