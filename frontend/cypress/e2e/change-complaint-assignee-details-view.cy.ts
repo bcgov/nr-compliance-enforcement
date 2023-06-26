@@ -32,8 +32,7 @@ describe('Complaint Change Assignee spec - Details View', () => {
       cy.get('#details_screen_assign_button').click({ force: true });
 
       // self assign the complaint
-      // todo click the self-assign button
-
+      cy.get('#self_assign_button').click();
     });
   }));
 });
