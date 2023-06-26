@@ -1,30 +1,42 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
-import { HwcrComplaintState } from "../../types/complaints/hrcr-complaints-state";
+import { HwcrComplaintsState } from "../../types/complaints/hrcr-complaints-state";
 import { Complaint } from "../../types/complaints/complaint";
 import Option from "../../types/app/option";
+import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
+import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
+import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
 
-const initialState: HwcrComplaintState = {
-  hwcrComplaints: []
-};
+const initialState: HwcrComplaintsState = {
+  hwcrComplaints: [],
+  complaint: null,
+}
 
 export const hwcrComplaintSlice = createSlice({
   name: "hwcrComplaints",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setHwcrComplaints: (state, action) => {
+    setHwcrComplaints: (state, action: PayloadAction<HwcrComplaint[]>) => {
       const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
-      return { ...state, hwcrComplaints};
+      const hwcrComplaints: HwcrComplaint[] = payload;
+      return { ...state, hwcrComplaints };
     },
-    updateHwcrComplaintStatus: (state, action) => {
-      const { payload } = action;
-      const hwcrComplaints:HwcrComplaint[] = payload.hwcrComplaints;
-      return { ...state, hwcrComplaints};
+
+    setComplaint: (state, action) => {
+      const { payload: complaint } = action;
+
+      return { ...state, complaint };
+    },
+    updateHwcrComplaintRow: (state, action: PayloadAction<HwcrComplaint>) => {
+      const updatedComplaint = action.payload;
+      const index = state.hwcrComplaints.findIndex(row => row.hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid);
+      if (index !== -1) {
+        state.hwcrComplaints[index] = updatedComplaint;
+      }
     },
   },
 
@@ -34,7 +46,7 @@ export const hwcrComplaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setHwcrComplaints } = hwcrComplaintSlice.actions;
+export const { setHwcrComplaints, updateHwcrComplaintRow, setComplaint } = hwcrComplaintSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -47,36 +59,180 @@ export const getHwcrComplaints = (sortColumn: string, sortOrder: string, natureO
     const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
       officerAssigned: "", natureOfComplaint: natureOfComplaintFilter?.value, speciesCode: speciesCodeFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
     dispatch(
-      setHwcrComplaints({
-        hwcrComplaints: response.data
-      })
+      setHwcrComplaints(response.data)
     );
   }
 };
 
-export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string, sortColumn: string, sortOrder: string, natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?:Option | null): AppThunk => async (dispatch) => {
+export const getHwcrComplaintByComplaintIdentifier =
+  (id: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
+      );
+      const result = response.data;
+
+      dispatch(setComplaint({ ...result }));
+    }
+  };
+
+export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string, hwcr_guid: string , sortColumn: string, sortOrder: string, natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?:Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const complaintResponse = await axios.get<Complaint>(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`);
     
+    // first update the complaint status
     let updatedComplaint = complaintResponse.data;
     updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
     await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
+
     const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, community: "", zone: "", region: "", 
       officerAssigned: "", natureOfComplaint: natureOfComplaintFilter?.value, speciesCode: speciesCodeFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
     dispatch(
-      setHwcrComplaints({
+      setHwrcComplaints({
         hwcrComplaints: response.data
-      })
+      }),
     );
   }
 };
 
-
 export const hwcrComplaints = (state: RootState) => { 
   const { hwcrComplaints } = state.hwcrComplaint;
   return hwcrComplaints;
-}
+};
+
+export const selectedComplaint = (state: RootState) => {
+  return state.hwcrComplaint.complaint;
+};
+
+export const selectComplaintHeader = (state: RootState) => {
+  let result = {
+    loggedDate: "",
+    createdBy: "",
+    lastUpdated: "",
+    officerAssigned: "",
+    status: "",
+    natureOfComplaint: "",
+    species: "",
+  };
+
+  const {
+    complaint_identifier: ceComplaint,
+    hwcr_complaint_nature_code: ceComplaintNatureCode,
+    species_code: ceSpeciesCode,
+  } = state.hwcrComplaint.complaint;
+
+  if (ceComplaint) {
+    const officerAssigned = "Not Assigned";
+    const {
+      incident_reported_datetime: loggedDate,
+      create_user_id: createdBy,
+      update_timestamp: lastUpdated,
+      complaint_status_code: ceStatusCode,
+    } = ceComplaint;
+
+    const { complaint_status_code: status } = ceStatusCode;
+
+    result = {
+      ...result,
+      loggedDate,
+      createdBy,
+      lastUpdated,
+      officerAssigned,
+      status,
+    };
+
+    if (ceComplaintNatureCode) {
+      const { long_description: natureOfComplaint } = ceComplaintNatureCode;
+      result = { ...result, natureOfComplaint };
+    }
+
+    if (ceSpeciesCode) {
+      const { short_description: species } = ceSpeciesCode;
+      result = { ...result, species };
+    }
+  }
+
+  return result;
+};
+
+export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
+  let result: ComplaintDetails = {};
+
+  const { complaint_identifier, attractant_hwcr_xref } =
+    state.hwcrComplaint.complaint;
+  const {
+    detail_text,
+    location_summary_text,
+    location_detailed_text,
+    incident_datetime,
+    location_geometry_point: { coordinates },
+    cos_geo_org_unit: {
+      area_name,
+      region_name,
+      zone_name,
+      office_location_name,
+    },
+  } = complaint_identifier;
+
+  const attractants = attractant_hwcr_xref.map(
+    ({
+      attractant_hwcr_xref_guid: key,
+      attractant_code: { short_description: description },
+    }: any): ComplaintDetailsAttractant => {
+      return { key, description };
+    }
+  );
+
+  return {
+    details: detail_text,
+    location: location_summary_text,
+    locationDescription: location_detailed_text,
+    incidentDateTime: incident_datetime,
+    coordinates,
+    area: area_name,
+    region: region_name,
+    zone: zone_name,
+    office: office_location_name,
+    attractants
+  };
+};
+
+export const selectComplaintCallerInformation = (
+  state: RootState
+): ComplaintCallerInformation => {
+  let result: ComplaintCallerInformation = {};
+
+  const { complaint_identifier } = state.hwcrComplaint.complaint;
+  const {
+    caller_name,
+    caller_phone_1,
+    caller_phone_2,
+    caller_phone_3,
+    caller_address,
+    caller_email,
+    referred_by_agency_code
+  } = complaint_identifier;
+
+const { long_description: description } = referred_by_agency_code || {}
+
+
+  result = {
+    name: caller_name,
+    primaryPhone: caller_phone_1,
+    secondaryPhone: caller_phone_2,
+    alternatePhone: caller_phone_3,
+    address: caller_address,
+    email: caller_email,
+    referredByAgencyCode: description
+  };
+
+  return result;
+};
 
 export default hwcrComplaintSlice.reducer;

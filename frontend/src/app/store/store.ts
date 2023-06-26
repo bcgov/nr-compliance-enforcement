@@ -1,13 +1,17 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import hwcrComplaintsReducer from "./reducers/hwcr-complaints";
+import officersInZoneReducer from "./reducers/assign-officers";
 import appReducer from "./reducers/app";
 import allegationComplaintsReducer from "./reducers/allegation-complaint";
+import complaints from "./reducers/complaints";
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
     allegationComplaint: allegationComplaintsReducer,
-    hwcrComplaint: hwcrComplaintsReducer
+    hwcrComplaint: hwcrComplaintsReducer,
+    officersInZone: officersInZoneReducer,
+    complaints
   },
 });
 

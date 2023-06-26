@@ -17,6 +17,7 @@ type ChangeStatusModalProps = {
   sortOrder: string,
   complaint_identifier: string,
   complaint_type: number,
+  complaint_guid: string;
   natureOfComplaintFilter: Option | null,
   speciesCodeFilter: Option | null,
   startDateFilter: Date | undefined,
@@ -39,16 +40,16 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   useEffect(() => {
     if (status.length > 1) {
       if (ComplaintType.HWCR_COMPLAINT === complaint_type) {
-        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
+        dispatch(updateHwlcComplaintStatus(complaint_identifier, status, complaint_guid, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
       } else {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier ,status, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
+        dispatch(updateAllegationComplaintStatus(complaint_identifier, status, complaint_guid, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter ));
       }
       submit();
     }
   }, [dispatch,status,submit]);
   
 
-  const { title, description,complaint_identifier } = modalData;
+  const { title, description,complaint_identifier, complaint_guid } = modalData;
 
   const handleSelectChange = (selectedValue: string) => {
     selectedStatus = selectedValue;
@@ -66,6 +67,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
         </Modal.Header>
       )}
       <Modal.Body>
+        <div  className="change_status_modal">
         <Row>
           <Col>
             <label className="modal_description_label">{description}</label>
@@ -76,6 +78,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
             <ComplaintStatusSelect onSelectChange={handleSelectChange}/>
           </Col>
         </Row>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close}>Cancel</Button>

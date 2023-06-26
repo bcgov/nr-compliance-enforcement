@@ -3,10 +3,11 @@ import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
+import { getComplaintTypeFromUrl } from "../../../common/methods";
 
 type Props = {
-    initialState: number;
-}
+  initialState: number;
+};
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [complaintType, setComplaintType] = useState(initialState);
@@ -17,6 +18,11 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [startDateFilter, setStartDateFilter] = useState<Date>();
     const [endDateFilter, setEndDateFilter] = useState<Date>();
     const [complaintStatusFilter, setComplaintStatusFilter] = useState<Option | null>({value: 'OPEN', label: 'Open'});
+    const _test = getComplaintTypeFromUrl();
+
+    const [complaintType, setComplaintType] = useState<number>(
+      _test !== -1 ? _test : initialState
+    );
 
     function handleChange(newState: number)
     {
@@ -24,30 +30,23 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         setSort(["incident_reported_datetime", "DESC"]);
         setComplaintStatusFilter({value: 'OPEN', label: 'Open'});
     }
-    function handleSort(newSortColumn: string)
-    {
-        if(newSortColumn === sort[0])
-        {
-            if(sort[1] === "DESC")
-            {
-                setSort([newSortColumn, "ASC"]);
-            }
-            else
-            {
-                setSort([newSortColumn, "DESC"]);
-            }
+    function handleSort(newSortColumn: string) {
+      if (newSortColumn === sort[0]) {
+        if (sort[1] === "DESC") {
+          setSort([newSortColumn, "ASC"]);
+        } else {
+          setSort([newSortColumn, "DESC"]);
         }
-        else
-        {
-            if(newSortColumn === "incident_reported_datetime" || newSortColumn === "update_timestamp")
-            {
-                setSort([newSortColumn, "DESC"]);
-            }
-            else
-            {
-                setSort([newSortColumn, "ASC"]);
-            }
+      } else {
+        if (
+          newSortColumn === "incident_reported_datetime" ||
+          newSortColumn === "update_timestamp"
+        ) {
+          setSort([newSortColumn, "DESC"]);
+        } else {
+          setSort([newSortColumn, "ASC"]);
         }
+      }
     }
     if(complaintType === ComplaintType.HWCR_COMPLAINT)
     {
@@ -75,4 +74,4 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     {
         return <></>;
     }
-}
+};

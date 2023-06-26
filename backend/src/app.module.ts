@@ -21,7 +21,11 @@ import { HwcrComplaintNatureCodeModule } from './v1/hwcr_complaint_nature_code/h
 import { AttractantCodeModule } from './v1/attractant_code/attractant_code.module';
 import { HwcrComplaintModule } from './v1/hwcr_complaint/hwcr_complaint.module';
 import { AttractantHwcrXrefModule } from './v1/attractant_hwcr_xref/attractant_hwcr_xref.module';
+import { CosGeoOrgUnitModule } from "./v1/cos_geo_org_unit/cos_geo_org_unit.module";
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
+import { PersonComplaintXrefModule } from "./v1/person_complaint_xref/person_complaint_xref.module";
+import { PersonComplaintXrefCodeModule } from "./v1/person_complaint_xref_code/person_complaint_xref_code.module";
+
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -65,6 +69,9 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     AttractantCodeModule,
     HwcrComplaintModule,
     AttractantHwcrXrefModule,
+    CosGeoOrgUnitModule,
+    PersonComplaintXrefModule,
+    PersonComplaintXrefCodeModule
   ],
   controllers: [AppController],
   providers: [AppService],

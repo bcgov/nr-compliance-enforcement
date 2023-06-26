@@ -55,4 +55,13 @@ export class PersonService {
   remove(id: number) {
     return `This action removes a #${id} person`;
   }
+
+  async findByZone(zone_code: any) : Promise<Person[]> {
+    return this.personRepository.createQueryBuilder('person')
+    .leftJoinAndSelect('person.officer', 'officer')
+    .leftJoinAndSelect('officer.office_guid','office')
+    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit_flat_vw')
+    .where("cos_geo_org_unit_flat_vw.zone_code = :zone_code", {zone_code})
+    .getMany();
+  }
 }

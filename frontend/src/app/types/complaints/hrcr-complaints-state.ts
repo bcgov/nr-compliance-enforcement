@@ -1,6 +1,10 @@
 import { HwcrComplaint } from "./hwcr-complaint";
 
-export interface HwcrComplaintState {
+export interface HwcrComplaintsState {
     hwcrComplaints: HwcrComplaint[];
-    
-  }
+    complaint: any
+}
+
+export interface HwcrComplaintRowState {
+  hwcrComplaint: HwcrComplaint;
+}

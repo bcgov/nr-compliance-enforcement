@@ -1,237 +1,228 @@
+// COMPLAINT DETAILS START
+.comp-complaint-details {
+  margin: -24px;
 
-.comp-table-header {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    margin: 0;
-    width: 1330px;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 12px;
+  .comp-details-content-label {
+    color: $gray-500;
+  }
 
-    height: 38px;
-    background: rgba(255, 255, 255, 0.0001);
-    border-spacing: 0px;
-    text-align: left;
-    border-collapse: initial;
-    margin-left: 12px;
+  .comp-details-content {
+    color: $gray-900;
 
-    > :not(caption) > * > * {
-      background: rgba(0, 0, 0, 0.06);
-      background-color: rgba(0, 0, 0, 0.06);
+    i.bi {
+      color: $gray-500;
     }
-  
-
-/* Inside auto layout */
-
-    flex: none;
-    order: 0;
-    align-self: stretch;
-    flex-grow: 0;
   }
+}
 
-  .comp-table {
-    border-spacing: 0px;
+.comp-complaint-breadcrumb {
+  background-color: $bc-gov-primary-400;
+  color: $white;
+
+  height: 43px;
+  padding: 8px 37px 8px 32px;
+
+  nav > ol > li:nth-child(2) > a {
+    text-decoration: underline;
+    color: $white;
+  }
+}
+
+.comp-table tbody div:last-child .comp-cell:last-of-type {
+  border-bottom-right-radius: 4px;
+}
+
+.comp-complaint-label {
+  color: $gray-500;
+}
+
+.comp-details-status {
+  display: flex;
+  justify-content: space-between;
+  margin: 24px;
+
+  .comp-details-header-column {
+    width: 20%;
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    margin: 0;
-    width: 1330px;
-    font-style: normal;
-    font-size: 12px;
-    background: rgba(255, 255, 255, 0.0001);
-    text-align: left;
-    border-collapse: initial;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
 
-    > :not(caption) > * > * {
-      background: rgba(255, 255, 255, 0.0001);
-      background-color: rgba(255, 255, 255, 0.0001);
+    .comp-details-content-label + div {
+      margin-top: 10px;
     }
-    
-    /* Inside auto layout */
 
-    flex: none;
-    order: 0;
-    align-self: stretch;
-    flex-grow: 0;
+    i:first-child {
+      padding-right: 5px;
+    }
+    i:last-child {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
   }
 
-  .comp-header-cell
-  {
-    box-sizing: border-box;
-    padding: 0px 12px 0px 12px;
-    height: 38px;
-
-    border-width: 1px 1px 0px 0px;
-    border-style: solid;
-    border-color: #B9B9B9;
-    background: rgba(0, 0, 0, 0.06);
-    background-color: rgba(0, 0, 0, 0.06);
-    border-bottom-width: 0px;
-
-    flex: none;
-    order: 12;
-    align-self: stretch;
-    flex-grow: 0;
+  .comp-details-status-width {
+    width: 190px;
   }
 
-  .comp-cell
-  {
-    box-sizing: border-box;
-    padding: 12px 12px 12px 12px;
-
-    border-width: 0px 1px 0px 0px;
-    border-style: solid;
-    border-color: #B9B9B9;
-
-    flex: none;
-    order: 12;
-    align-self: stretch;
-    flex-grow: 0;
+  .comp-complaint-created-width {
+    width: 250px;
   }
 
-  .comp-table tbody div:last-child .comp-cell:last-of-type
-  {
-    border-bottom-right-radius: 4px;
+  .comp-complaint-last-updated-width {
+    width: 250px;
   }
 
-  .comp-small-cell {
-    width: 95px;
+  .comp-complaint-assigned-width {
+    width: 250px;
   }
 
-  .comp-medium-cell {
-    width: 130px;
+  .comp-complaint-created-by-width {
+    width: 250px;
   }
+}
 
-  .comp-area-cell {
-    width: 165px;
-  }
+.comp-ellipsis-cell {
+  width: 31px;
+  vertical-align: middle;
+  color: #6c757d;
+  font-size: 14px;
+}
 
-  .comp-location-cell {
-    width: 170px;
-  }
+td.comp-ellipsis-cell {
+  cursor: pointer;
+}
 
-  .comp-violation-cell {
-    width: 302px;
-  }
+.comp-details-header {
+  padding: 8px 34px 0px;
+  height: 98px;
+  background: $bc-gov-primary-400;
 
-  .comp-in-progress-cell {
-    width: 153px;
-  }
+  color: $white;
+  flex: 1;
 
-  .comp-status-cell {
-    width: 75px;
-  }
-
-  .comp-last-updated-cell {
-    width: 110px;
-  }
-
-  .comp-nature-complaint-cell {
-    width: 313px;
-  }
-
-  .comp-ellipsis-cell {
-    width: 31px;
-    vertical-align: middle;
-    color: #6C757D;
-    font-size: 14px;
-  }
-
-  td.comp-ellipsis-cell {
-    cursor: pointer;
-  }
-
-  .comp-header-label
-  {
-    float: left;
-    margin-top: 1px;
-  }
-
-  .comp-header-caret
-  {
-    float: right;
-    cursor: pointer;
-  }
-
-  .comp-cell-left
-  {
-    border-style: solid;
-    border-color: #B9B9B9;
-    border-width: 0px 1px 0px 1px;
-  }
-
-  .comp-top-left
-  {
-    border-top-left-radius: 4px;
-    border-width: 1px 1px 0px 1px;
-  }
-  .comp-top-right
-  {
-    border-top-right-radius: 4px;
-  }
-
-  .comp-bottom-left
-  {
-    border-bottom-left-radius: 4px;
-  }
-  .comp-bottom-right
-  {
-    border-bottom-right-radius: 4px;
-  }
-
-  .comp-status-open-btn
-  {
-    width: auto;
-
-    font-style: normal;
-    font-weight: 700;
-    font-size: 12px;
-
+  .comp-complaint-info {
     display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
+    align-items: center;
 
-    pointer-events: none;
-    background-color: #2464A4;
-    border-color: #2464A4;
+    .comp-box-complaint-id {
+      height: 32px;
+      line-height: 32px;
+      font-weight: 700;
+      font-size: 24px;
+    }
+
+    .comp-box-conflict-type {
+      margin: 0px 12px;
+      padding: 4px 12px;
+
+      border-radius: 60px;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 16px;
+      display: flex;
+    }
+
+    .hwcr-conflict-type {
+      background: $bc-standard-03;
+    }
+    .allegation-conflict-type {
+      background: $bc-standard-05;
+    }
+
+    .comp-box-species-type {
+      padding: 4px 12px;
+      background: $gray-200;
+      border-radius: 60px;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 16px;
+      display: flex;
+      color: $black;
+    }
   }
 
-  .comp-status-closed-btn
-  {
-    width: auto;
-
-    font-style: normal;
+  .comp-nature-of-complaint {
+    font-size: 16px;
     font-weight: 700;
-    font-size: 12px;
-
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
-
-    pointer-events: none;
-    background-color: #D8292F;
-    border-color: #D8292F;
+    margin-top: 10px;
   }
+}
 
-  .comp-species-btn
-  {
-    width: auto;
+.comp-pill {
+  width: auto;
 
-    font-style: normal;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+
+  display: flex;
+  flex-direction: row;
+  padding: 4.2px 7.8px;
+
+  pointer-events: none;
+  background-color: #e4e4e4;
+  color: #313132;
+  border-radius: 100px;
+  border-color: #e4e4e4;
+}
+
+.comp-status-badge-open {
+  background-color: $bc-gov-link-blue;
+}
+
+.comp-status-badge-closed {
+  background-color: $bc-gov-danger;
+}
+
+.comp-complaint-details-block {
+  margin-left: 24px;
+  margin-right: 24px;
+
+  h6 {
+    padding-top: 18px;
     font-weight: 700;
-    font-size: 12px;
-
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
-
-    pointer-events: none;
-    background-color: #E4E4E4;
-    color: #313132;
-    border-radius: 100px;
-    border-color: #E4E4E4;
   }
+
+  .comp-complaint-call-details {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    border: 1px solid $gray-500;
+    border-radius: 3px;
+    padding: 18px;
+  }
+
+  .comp-complaint-call-information {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    border: 1px solid $gray-500;
+    border-radius: 3px;
+    padding: 18px;
+  }
+
+  .comp-details-content-label {
+    padding-right: 25px;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .comp-details-content {
+    margin-bottom: 16px;
+    display: inline-block;
+
+    i:first-child {
+      padding-right: 5px;
+    }
+    i:last-child {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+  .comp-attactant-badge {
+    background-color: $gray-200;
+    color: $black;
+  }
+}
 
   .comp-filter-btn
   {
@@ -269,41 +260,80 @@
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
+// COMPLAINT DETAILS END
 
-    display: flex;
-    flex-direction: row;
-    padding: 4px 8px;
+.comp-table-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin: 0;
+  width: 1330px;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
 
-    pointer-events: none;
-    
-    background: #2E8540;
-    border-color: #2E8540;
-    color: white;
-    border-radius: 4px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.0001);
+  border-spacing: 0px;
+  text-align: left;
+  border-collapse: initial;
+  margin-left: 12px;
+
+  > :not(caption) > * > * {
+    background: rgba(0, 0, 0, 0.06);
+    background-color: rgba(0, 0, 0, 0.06);
   }
 
-  .btn-hidden
-  {
-    display: none;
+  /* Inside auto layout */
+
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.comp-table {
+  border-spacing: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin: 0;
+  width: 1330px;
+  font-style: normal;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.0001);
+  text-align: left;
+  border-collapse: initial;
+
+  > :not(caption) > * > * {
+    background: rgba(255, 255, 255, 0.0001);
+    background-color: rgba(255, 255, 255, 0.0001);
   }
 
-  .comp-tabs
-  {
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
+  /* Inside auto layout */
 
-  }
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
 
-  .comp-tab-active
-  {
-    color: #495057;
-  }
+.comp-header-cell {
+  box-sizing: border-box;
+  padding: 0px 12px 0px 12px;
+  height: 38px;
 
-  .comp-tab-inactive
-  {
-    color: #1A5A96;
-  }
+  border-width: 1px 1px 0px 0px;
+  border-style: solid;
+  border-color: #b9b9b9;
+  background: rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.06);
+  border-bottom-width: 0px;
+  flex: none;
+  order: 12;
+  align-self: stretch;
+  flex-grow: 0;
+   }
 
   .comp-filter-label
   {
@@ -341,39 +371,37 @@
     margin-left: 5px;
     margin-bottom: 25px;
     /* identical to box height, or 133% */
+   }
 
+.comp-cell {
+  box-sizing: border-box;
+  padding: 12px 12px 12px 12px;
 
-    /* BC Primary/Blue */
+  border-width: 0px 1px 0px 0px;
+  border-style: solid;
+  border-color: #b9b9b9;
 
-    color: #003366;
-  }
+  flex: none;
+  order: 12;
+  align-self: stretch;
+  flex-grow: 0;
+}
 
-  .comp-div-tab{
-    margin-bottom: 25px;
-  }
+.comp-small-cell {
+  width: 95px;
+}
 
-  .comp-circle
-  {
-    margin: 2px 2px 2px 2px;
-    width: 24px;
-    height: 24px;
-    float: left;
-    /* Greyscale/10 */
+.comp-medium-cell {
+  width: 130px;
+}
 
-    background: #E4E4E4;
-    border-radius: 100px;
-    text-align: center;
-    //verical align not working hacky fix
-    line-height: 200%;
-  }
+.comp-area-cell {
+  width: 165px;
+}
 
-  .comp-assigned
-  {
-    padding-top : 6px;
-    padding-left: 6px;
-    float:left;
-  }
-
+.comp-location-cell {
+  width: 170px;
+}
   //override for horizontal dual month display
   .react-datepicker__month-container
   {
@@ -403,51 +431,236 @@
     list-style-type: none; /* Remove bullets */
     padding: 0; /* Remove padding */
     margin: 0; /* Remove margins */
+    
+  .comp-violation-cell {
+    width: 302px;
   }
 
-  .popover-body {
-    box-sizing: border-box;
+.comp-in-progress-cell {
+  width: 153px;
+}
 
-    /* Auto layout */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 8px 0px;
-    
-    width: 190px;
-    height: 82px;
-    
-    /* Gray/White */
-    background: #FFFFFF;
-    
-    /* Components/Dropdowns/Border */
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    
-    /* Inside auto layout */
-    flex: none;
-    order: 1;
-    flex-grow: 0;
-    z-index: 0;  
-  }
+.comp-status-cell {
+  width: 75px;
+}
 
-  .popover-text {
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 150%;
-    /* Gray/900 */
-    color: #212529;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 4px 16px;
-    gap: 8px;
-    height: 32px;
-    cursor: pointer;
+.comp-last-updated-cell {
+  width: 110px;
+}
+
+  .comp-nature-complaint-cell {
+    width: 313px;
   }
 
   .hidden
   {
     display: none;
   }
+
+.comp-header-label {
+  float: left;
+  margin-top: 1px;
+}
+
+.comp-header-caret {
+  float: right;
+  cursor: pointer;
+}
+
+.comp-cell-bottom {
+  border-style: solid;
+  border-color: #b9b9b9;
+}
+
+.comp-cell-left {
+  border-style: solid;
+  border-color: #b9b9b9;
+  border-width: 0px 1px 0px 1px;
+}
+
+.comp-top-left {
+  border-top-left-radius: 4px;
+  border-width: 1px 1px 0px 1px;
+}
+.comp-top-right {
+  border-top-right-radius: 4px;
+}
+
+.comp-bottom-left {
+  border-bottom-left-radius: 4px;
+}
+.comp-bottom-right {
+  border-bottom-right-radius: 4px;
+}
+
+.comp-status-open-btn {
+  width: auto;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
+
+  pointer-events: none;
+  background-color: #2464a4;
+  border-color: #2464a4;
+}
+
+.comp-status-closed-btn {
+  width: auto;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
+
+  pointer-events: none;
+  background-color: #d8292f;
+  border-color: #d8292f;
+}
+
+.comp-species-btn {
+  width: auto;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
+
+  pointer-events: none;
+  background-color: #e4e4e4;
+  color: #313132;
+  border-radius: 100px;
+  border-color: #e4e4e4;
+}
+
+.comp-in-progress-btn {
+  width: auto;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
+
+  pointer-events: none;
+
+  background: #2e8540;
+  border-color: #2e8540;
+  color: white;
+  border-radius: 4px;
+}
+
+.btn-hidden {
+  display: none;
+}
+
+.comp-tabs {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.comp-tab-active {
+  color: #495057;
+}
+
+.comp-tab-inactive {
+  color: #1a5a96;
+}
+
+.comp-sub-header {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  margin-left: 5px;
+  margin-bottom: 25px;
+  /* identical to box height, or 133% */
+
+  /* BC Primary/Blue */
+
+  color: #003366;
+}
+
+.comp-div-tab {
+  margin-bottom: 25px;
+}
+
+.comp-circle {
+  margin: 2px 2px 2px 2px;
+  width: 24px;
+  height: 24px;
+  float: left;
+  /* Greyscale/10 */
+
+  background: #e4e4e4;
+  border-radius: 100px;
+  text-align: center;
+  //verical align not working hacky fix
+  line-height: 200%;
+}
+
+.comp-assigned {
+  padding-top: 6px;
+  padding-left: 6px;
+  float: left;
+}
+
+.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
+}
+
+.popover-body {
+  box-sizing: border-box;
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 0px;
+
+  width: 190px;
+  height: 82px;
+
+  /* Gray/White */
+  background: #ffffff;
+
+  /* Components/Dropdowns/Border */
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  z-index: 0;
+}
+
+.popover-text {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  /* Gray/900 */
+  color: #212529;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 16px;
+  gap: 8px;
+  height: 32px;
+  cursor: pointer;
+}

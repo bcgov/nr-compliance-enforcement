@@ -6,6 +6,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../enum/role.enum';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { UUID } from 'crypto';
 
 @ApiTags("officer")
 @UseGuards(JwtRoleGuard)
@@ -30,13 +31,32 @@ export class OfficerController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.officerService.findOne(+id);
+    return this.officerService.findOne(id);
   }
+
+  @Get("/find-by-office/:office_guid")
+  @Roles(Role.COS_OFFICER)
+  findByOffice(@Param('office_guid') office_guid: string) {
+    return this.officerService.findByOffice(office_guid);
+  }
+
+  @Get("/find-by-auth-user-guid/:auth_user_guid")
+  @Roles(Role.COS_OFFICER)
+  findByAuthUserGuid(@Param('auth_user_guid') auth_user_guid: string) {
+    return this.officerService.findByAuthUserGuid(auth_user_guid);
+  }
+
+  @Get("/find-by-userid/:userid")
+  @Roles(Role.COS_OFFICER)
+  findByUserId(@Param('userid') userid: string) {
+    return this.officerService.findByUserId(userid);
+  }
+
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: string, @Body() updateOfficerDto: UpdateOfficerDto) {
-    return this.officerService.update(+id, updateOfficerDto);
+  update(@Param('id') id: UUID, @Body() updateOfficerDto: UpdateOfficerDto) {
+    return this.officerService.update(id, updateOfficerDto);
   }
 
   @Delete(':id')

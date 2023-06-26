@@ -2,7 +2,8 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, JoinColumn, OneToOne, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Entity()
 export class Office 
@@ -22,6 +23,15 @@ export class Office
       @JoinColumn({name: "geo_organization_unit_code"})
       geo_organization_unit_code: GeoOrganizationUnitCode;
       
+      @ApiProperty({
+        example: "DCC",
+        description:
+          "The geographical organization code of the organization that currently owns the complaint",
+      })
+      @OneToOne(() => CosGeoOrgUnit)
+      @JoinColumn({ name: "geo_organization_unit_code", referencedColumnName: "office_location_code" })
+      cos_geo_org_unit: CosGeoOrgUnit;    
+
       @ApiProperty({
         example: "COS",
         description: "The agency code for the office",

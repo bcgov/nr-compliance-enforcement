@@ -5,15 +5,14 @@ HWLC and Enforcement list screens
 describe('Complaint Assign and Status Popover spec', () => {
 
   beforeEach(function() {
-    cy.viewport(1536, 960);
+    cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
   });
 
   it('Changes status of closed complaint to open', () => {
     cy.visit("/");
     cy.get('.popover').should('not.exist');
-    // Trigger the popover
-    
+
     // Find the number of closed complaints
     // This number should change if a complaint is changed from closed to open
     cy.get('table tr').filter(':contains("Closed")').as('closedRows');
@@ -71,6 +70,4 @@ describe('Complaint Assign and Status Popover spec', () => {
       })
     })
   });
-
-
 })

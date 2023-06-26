@@ -20,7 +20,6 @@ type Props = {
     complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
 }
-
 export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, handleSort, sort, violationFilter, setViolationFilter,
     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter }) => {
         const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
