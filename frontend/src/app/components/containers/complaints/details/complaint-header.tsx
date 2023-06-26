@@ -134,7 +134,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
         <div className="comp-details-header-column comp-details-status-width">
           <div>
             <div className="comp-details-content-label">Status</div>
-            <div className={`badge ${applyStatusClass(status)}`}>{status}</div>
+            <div id="comp-details-status-text-id" className={`badge ${applyStatusClass(status)}`}>{status}</div>
           </div>
         </div>
 
@@ -175,7 +175,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
                 data-initials-sm={getAvatarInitials(officerAssigned)}
                 className="comp-orange-avatar-sm"
               >
-                <span className="comp-padding-left-xs">{officerAssigned}</span>
+                <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">{officerAssigned}</span>
               </div>
             </div>
           </div>
