@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,9 @@ import { Office } from './entities/office.entity';
 
 @Injectable()
 export class OfficeService {
+
+  private readonly logger = new Logger(OfficeService.name);
+
   constructor(private dataSource: DataSource) {
   }
   @InjectRepository(Office)
@@ -25,7 +28,7 @@ export class OfficeService {
       await queryRunner.commitTransaction();
     }
     catch (err) {
-      console.log(err);
+      this.logger.error(err);
       await queryRunner.rollbackTransaction();
       newOfficeString = "Error Occured";
     } finally {
@@ -36,7 +39,7 @@ export class OfficeService {
 
   findByGeoOrgCode (geo_org_code: any) {
     return this.officeRepository.find({
-      where: {geo_organization_unit_code: geo_org_code},
+      where: {cos_geo_org_unit: geo_org_code},
       relations: {
 
       } ,

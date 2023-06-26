@@ -9,7 +9,7 @@ type AssignOfficerModalProps = {
   close: () => void;
   submit: () => void;
   complaint_identifier: string;
-  complaint_type: number;
+  complaint_type: string;
   complaint_guid: string;
   zone: string;
 };
@@ -18,7 +18,7 @@ type AssignOfficerModalProps = {
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type, zone }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, complaint_identifier, complaint_guid } = modalData;
+  const { title, complaint_identifier } = modalData;
   const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
   const idir = useAppSelector(profileIdir);
@@ -40,14 +40,14 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const handleSubmit = () => {
     setNewAssignee(selectedAssignee);
     if (selectedAssignee !== "") {
-      dispatch(updateComplaintAssignee(selectedAssignee as UUID, complaint_identifier, complaint_type, complaint_guid));
+      dispatch(updateComplaintAssignee(userid, selectedAssignee as UUID, complaint_identifier, complaint_type));
       submit();
     }
   };
 
   // assigns the logged in user to a complaint
   const handleSelfAssign = () => {  
-    dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type, complaint_guid));
+    dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type));
     submit();
   }
 
@@ -55,6 +55,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     dispatch(getOfficersInZone(zone));
   }, [dispatch, newAssignee, idir, zone]);
 
+  // the user guid returned from keycloak isn't properly formatted, so we
+  // this function removes dashes from guids so that guids can be
+  // compared to the keycloak guid
   function compareUuidToString(uuid: string, str: string): boolean {
 
     if (uuid === null || str === null) {

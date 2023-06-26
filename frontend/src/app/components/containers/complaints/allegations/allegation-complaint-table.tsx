@@ -3,10 +3,9 @@ import { format } from 'date-fns';
 import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
-import ComplaintTypes from "../../../../types/app/complaint-types";
 import { useNavigate } from "react-router-dom";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
-import ComplaintType from "../../../../constants/complaint-types";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 type Props = {
     sortColumn: string,
@@ -29,7 +28,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
   ) => {
     e.preventDefault();
 
-    navigate(`/complaint/${ComplaintTypes.ERS}/${id}`);
+    navigate(`/complaint/${COMPLAINT_TYPES.ERS}/${id}`);
   };
 
 
@@ -54,7 +53,6 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                     const lastInitial = lastName?.length > 0 ? lastName.substring(0,1) : "";
                     const initials = firstInitial + lastInitial;
                     const displayName = firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
-                    const guid = val.allegation_complaint_guid;
                     const zone = val.complaint_identifier.cos_geo_org_unit.zone_code;
 
                         return (
@@ -74,7 +72,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder }) 
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{updateDate}</td>
-                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ALLEGATION_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid} zone={zone}></ComplaintEllipsisPopover>
+                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={COMPLAINT_TYPES.ERS} assigned_ind={assigned_ind} zone={zone}></ComplaintEllipsisPopover>
                             </tr>
                         )
                     })}

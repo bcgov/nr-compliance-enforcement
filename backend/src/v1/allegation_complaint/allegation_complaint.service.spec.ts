@@ -249,8 +249,6 @@ describe("AllegationComplaintService", () => {
 
   it("should return an array of complaints", async () => {
     const complaints = await service.findAll('incident_reported_datetime', 'DESC');
-    console.log(complaints);
-    console.log(allegationComplaintArray);
     expect(complaints).toEqual(allegationComplaintArray);
   });
 

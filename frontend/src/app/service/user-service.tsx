@@ -6,7 +6,7 @@ import _kc from "../keycloak";
  * @param onAuthenticatedCallback
  */
 const initKeycloak = (onAuthenticatedCallback: () => void) => {
-    
+  
   _kc.init({
     onLoad: 'login-required',
     pkceMethod: 'S256',
@@ -15,11 +15,19 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
       if (!authenticated) {
         console.log('User is not authenticated.');
       } else {
-        localStorage.setItem("user", `${_kc.token}`);
+        localStorage.setItem('user', `${_kc.token}`);
       }
       onAuthenticatedCallback();
     })
     .catch(console.error);
+
+  _kc.onTokenExpired = () => {
+    _kc.updateToken(5).then((refreshed) => {
+      if (refreshed) {
+        localStorage.setItem('user', `${_kc.token}`);
+      }
+    });
+  }
 };
 
 const doLogin = _kc.login;

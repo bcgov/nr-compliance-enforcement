@@ -3,13 +3,17 @@ import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../../types/app/complaint-types";
-import { useAppSelector } from "../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import {
   formatDate,
   formatTime,
   getAvatarInitials,
 } from "../../../../common/methods";
+import { Button } from "react-bootstrap";
+import { BsPersonPlus } from 'react-icons/bs';
+import { openModal } from "../../../../store/reducers/app";
+import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
 
 export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
   id,
@@ -21,10 +25,13 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     lastUpdated,
     officerAssigned,
     status,
+    zone,
     natureOfComplaint,
     violationType,
     species,
   } = useAppSelector(selectComplaintHeader(complaintType));
+
+  const dispatch = useAppDispatch();
 
   const applyStatusClass = (state: string): string => {
 
@@ -36,6 +43,39 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
       default: 
       return "";
     }
+  };
+
+  const openStatusChangeModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: ChangeStatus,
+        data: {
+          title: "Update status?",
+          description: "Status",
+          complaint_identifier: id,
+          complaint_type: complaintType
+        }
+      })
+    );
+  };
+
+  const openAsignOfficerModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: AssignOfficer,
+        data: {
+          title: "Update status?",
+          description: "Status",
+          complaint_identifier: id,
+          complaint_type: complaintType,
+          zone: zone
+        }
+      })
+    );
   };
 
   return (
@@ -76,6 +116,10 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           {species && complaintType !== COMPLAINT_TYPES.ERS && (
             <div className="comp-box-species-type">{species}</div>
           )}
+          <div className="comp-box-actions">
+            <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>Assign</span><BsPersonPlus/></Button>
+            <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
+          </div>
         </div>
         <div className="comp-nature-of-complaint">
           {complaintType !== COMPLAINT_TYPES.ERS
@@ -90,7 +134,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
         <div className="comp-details-header-column comp-details-status-width">
           <div>
             <div className="comp-details-content-label">Status</div>
-            <div className={`badge ${applyStatusClass(status)}`}>{status}</div>
+            <div id="comp-details-status-text-id" className={`badge ${applyStatusClass(status)}`}>{status}</div>
           </div>
         </div>
 
@@ -131,7 +175,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
                 data-initials-sm={getAvatarInitials(officerAssigned)}
                 className="comp-orange-avatar-sm"
               >
-                <span className="comp-padding-left-xs">{officerAssigned}</span>
+                <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">{officerAssigned}</span>
               </div>
             </div>
           </div>

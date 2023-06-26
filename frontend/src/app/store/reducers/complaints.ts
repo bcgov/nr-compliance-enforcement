@@ -24,7 +24,6 @@ export const complaintSlice = createSlice({
   reducers: {
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
-
       return { ...state, complaint };
     },
   },
@@ -92,6 +91,9 @@ export const selectComplaintHeader =
         status: "",
         natureOfComplaint: "", //-- needs to be violation as well
         species: "", //-- not available for ers
+        zone: "",
+        firstName: "",
+        lastName: "",
       };
 
       const { complaint } = state.complaints;
@@ -104,13 +106,22 @@ export const selectComplaintHeader =
         } = complaint as HwcrComplaint;
 
         if (ceComplaint) {
-          const officerAssigned = "Not Assigned";
+          let officerAssigned = "Not Assigned";
           const {
             incident_reported_datetime: loggedDate,
             create_user_id: createdBy,
             update_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
+            cos_geo_org_unit: {
+              zone_code,
+            },
           } = ceComplaint;
+
+          if (ceComplaint.person_complaint_xref.length > 0) {
+            const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
+            const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
+            officerAssigned = `${firstName} ${lastName}`;
+          }
 
           const { complaint_status_code: status } = ceStatusCode;
 
@@ -119,8 +130,9 @@ export const selectComplaintHeader =
             loggedDate,
             createdBy,
             lastUpdated,
-            officerAssigned,
+            officerAssigned: officerAssigned,
             status,
+            zone: zone_code,
           };
 
           if (ceComplaintNatureCode) {
@@ -145,6 +157,7 @@ export const selectComplaintHeader =
         lastUpdated: "",
         officerAssigned: "",
         status: "",
+        zone: "",
         violationType: "", //-- needs to be violation as well
       };
 
@@ -157,13 +170,22 @@ export const selectComplaintHeader =
         } = complaint as AllegationComplaint;
 
         if (ceComplaint) {
-          const officerAssigned = "Not Assigned";
+          let officerAssigned = "Not Assigned";
           const {
             incident_reported_datetime: loggedDate,
             create_user_id: createdBy,
             update_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
+            cos_geo_org_unit: {
+              zone_code,
+            },    
           } = ceComplaint;
+
+          if (ceComplaint.person_complaint_xref.length > 0) {
+            const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
+            const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
+            officerAssigned = `${firstName} ${lastName}`;
+          }
 
           const { complaint_status_code: status } = ceStatusCode;
 
@@ -174,6 +196,7 @@ export const selectComplaintHeader =
             lastUpdated,
             officerAssigned,
             status,
+            zone: zone_code,
           };
         }
 
