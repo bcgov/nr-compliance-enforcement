@@ -7,14 +7,21 @@ import { updateHwlcComplaintStatus } from "../../../store/reducers/hwcr-complain
 import { updateAllegationComplaintStatus } from "../../../store/reducers/allegation-complaint";
 import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import Option from "../../../types/app/option";
 
 
 type ChangeStatusModalProps = {
-  close: () => void;
-  submit: () => void;
-  complaint_identifier: string;
-  complaint_type: string;
-  complaint_guid: string;
+  close: () => void,
+  submit: () => void,
+  sortColumn: string,
+  sortOrder: string,
+  complaint_identifier: string,
+  complaint_type: string,
+  natureOfComplaintFilter: Option | null,
+  speciesCodeFilter: Option | null,
+  startDateFilter: Date | undefined,
+  endDateFilter: Date | undefined,
+  complaintStatusFilter: Option | null,
 }
 
 /**

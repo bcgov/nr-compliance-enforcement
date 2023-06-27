@@ -5,6 +5,7 @@ import axios from "axios";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import { AllegationComplaintState } from "../../types/complaints/allegation-complaints-state";
 import { Complaint } from "../../types/complaints/complaint";
+import Option from "../../types/app/option";
 
 const initialState: AllegationComplaintState = {
   allegationComplaints: [],
@@ -40,12 +41,12 @@ export const { setAllegationComplaints, updateAllegationComplaintRow } = allegat
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getAllegationComplaints = (sortColumn: string, sortOrder: string): AppThunk => async (dispatch) => {
+export const getAllegationComplaints = (sortColumn: string, sortOrder: string, regionCodeFilter?:Option | null, zoneCodeFilter?:Option | null, areaCodeFilter?:Option | null, officerFilter?:Option | null, violationFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?: Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        
-    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint`, { params: { sortColumn: sortColumn, sortOrder: sortOrder}});
+    const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, region: regionCodeFilter?.value, zone: zoneCodeFilter?.value, community: areaCodeFilter?.value, 
+      officerAssigned: officerFilter?.value, violationCode: violationFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data
