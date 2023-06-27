@@ -7,7 +7,7 @@ import Option from "../../../types/app/option";
 
 type Props= {
   complaint_identifier: string,
-  complaint_type: number,
+  complaint_type: string,
   sortColumn: string,
   sortOrder: string,
   natureOfComplaintFilter: Option | null,
@@ -17,7 +17,6 @@ type Props= {
   complaintStatusFilter: Option | null,
   violationFilter: Option | null,
   assigned_ind: boolean,
-  complaint_guid: string,
   zone: string,
 }
 
@@ -26,7 +25,7 @@ type Props= {
  * 1. Assign Complaint
  * 2. Update astatus
  */
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, assigned_ind, complaint_guid, zone, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, assigned_ind, zone, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
   const dispatch = useAppDispatch();
   const assignText = assigned_ind ? 'Reassign Complaint' : 'Assign Complaint';
   
@@ -57,7 +56,6 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           startDateFilter: startDateFilter,
           endDateFilter: endDateFilter,
           complaintStatusFilter: complaintStatusFilter,
-          complaint_guid: complaint_guid,
         }
       })
     );

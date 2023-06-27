@@ -11,22 +11,26 @@ import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 type Props = {
     sortColumn: string,
     sortOrder: string,
-    speciesCodeFilter: Option | null,
+    regionCodeFilter: Option | null,
+    zoneCodeFilter: Option | null,
+    areaCodeFilter: Option | null,
+    officerFilter: Option | null,
     natureOfComplaintFilter: Option | null,
+    speciesCodeFilter: Option | null,
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
 }
 
-export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
-            dispatch(getHwcrComplaints(sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
-  }, [dispatch, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
+            dispatch(getHwcrComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+  }, [dispatch, sortColumn, sortOrder,, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
@@ -75,7 +79,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, natureOf
                                 <button type="button" className={statusButtonClass}>{status}</button>
                             </td>
                             <td className="comp-last-updated-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{updateDate}</td>
-                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.HWCR_COMPLAINT} assigned_ind={assigned_ind} complaint_guid={guid} zone={zone} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} violationFilter={null} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
+                            <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={COMPLAINT_TYPES.HWCR} assigned_ind={assigned_ind} zone={zone} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} violationFilter={null} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
                         </tr>
                     )
                 })}

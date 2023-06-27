@@ -11,12 +11,16 @@ import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 type Props = {
     sortColumn: string,
     sortOrder: string,
+    regionCodeFilter: Option | null,
+    zoneCodeFilter: Option | null,
+    areaCodeFilter: Option | null,
+    officerFilter: Option | null,
     violationFilter: Option | null,
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
 }
-export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -25,8 +29,8 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, vi
 
 
     useEffect(() => {
-            dispatch(getAllegationComplaints(sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
-  }, [dispatch, sortColumn, sortOrder, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
+            dispatch(getAllegationComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+  }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
 
 
   const handleComplaintClick = (
@@ -79,7 +83,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, vi
                                     <button type="button" className={statusButtonClass}>{status}</button>
                                 </td>
                                 <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={ComplaintType.ERS} assigned_ind={assigned_ind} complaint_guid={guid} zone={zone} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={null} speciesCodeFilter={null} violationFilter={violationFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
+                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={COMPLAINT_TYPES.ERS} assigned_ind={assigned_ind} zone={zone} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={null} speciesCodeFilter={null} violationFilter={violationFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
                             </tr>
                         )
                     })}

@@ -11,6 +11,10 @@ type Props = {
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
+    const [regionCodeFilter, setRegionCodeFilter] = useState<Option | null>(null);
+    const [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>(null);
+    const [areaCodeFilter, setAreaCodeFilter] = useState<Option | null>(null);
+    const [officerFilter, setOfficerFilter] = useState<Option | null>(null);
     const [natureOfComplaintFilter, setNatureOfComplaintFilter] = useState<Option | null>(null);
     const [speicesCodeFilter, setSpeicesCodeFilter] = useState<Option | null>(null);
     const [violationFilter, setViolationFilter] = useState<Option | null>(null);
@@ -51,7 +55,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         return <>
             <div className="comp-sub-header">Complaints</div>
             <div>
-                <HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter}
+                <HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter}
                     speciesCodeFilter={speicesCodeFilter} setSpeicesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
                     setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
             </div>
@@ -62,7 +66,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         return <>
             <div className="comp-sub-header">Complaints</div>
             <div>
-                <AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort}
+                <AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter}
                     violationFilter={violationFilter} setViolationFilter={setViolationFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
                     setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
             </div>

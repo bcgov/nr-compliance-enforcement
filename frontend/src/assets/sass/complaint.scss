@@ -556,26 +556,6 @@ td.comp-ellipsis-cell {
     margin: 0; /* Remove margins */
   }
     
-  .comp-violation-cell {
-    width: 302px;
-  }
-
-.comp-in-progress-cell {
-  width: 153px;
-}
-
-.comp-status-cell {
-  width: 75px;
-}
-
-.comp-last-updated-cell {
-  width: 110px;
-}
-
-  .comp-nature-complaint-cell {
-    width: 313px;
-  }
-
 
   .hidden
   {
@@ -719,7 +699,7 @@ td.comp-ellipsis-cell {
 }
 
 .comp-div-tab {
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 }
 
 .comp-circle {

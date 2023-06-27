@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { HwcrComplaint } from './entities/hwcr_complaint.entity';
@@ -85,24 +85,29 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
       .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
+      
 
-      /*if(community !== null && community !== '')
+      if(community !== null && community !== undefined && community !== '')
       {
         queryBuilder.andWhere('cos_geo_org_unit.area_code = :Community', { Community: community });
       }
-      if(zone !== null)
+      if(zone !== null && zone !== undefined && zone !== '')
       {
         queryBuilder.andWhere('cos_geo_org_unit.zone_code = :Zone', { Zone: zone });
       }
-      if(region !== null)
+      if(region !== null && region !== undefined && region !== '')
       {
         queryBuilder.andWhere('cos_geo_org_unit.region_code = :Region', { Region: region });
       }
-      if(officerAssigned !== null)
+      if(officerAssigned !== null && officerAssigned !== undefined && officerAssigned !== '' && officerAssigned !== 'null')
       {
         queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
         queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned });
-      }*/
+      }
+      else if(officerAssigned === 'null')
+      {
+        queryBuilder.andWhere('person_complaint_xref.person_guid IS NULL');
+      }
       if(natureOfComplaint !== null && natureOfComplaint !== undefined && natureOfComplaint !== "")
       {
         queryBuilder.andWhere('hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint', { NatureOfComplaint:natureOfComplaint });

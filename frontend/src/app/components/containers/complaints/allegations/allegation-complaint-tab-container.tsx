@@ -12,6 +12,14 @@ type Props = {
     handleChange: Function,
     handleSort: Function,
     sort: string[],
+    regionCodeFilter: Option | null,
+    setRegionCodeFilter: Function,
+    zoneCodeFilter: Option | null,
+    setZoneCodeFilter: Function,
+    areaCodeFilter: Option | null,
+    setAreaCodeFilter: Function,
+    officerFilter: Option | null,
+    setOfficerFilter: Function,
     violationFilter: Option | null,
     setViolationFilter: Function,
     startDateFilter: Date | undefined,
@@ -21,11 +29,11 @@ type Props = {
     complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
 }
-export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, handleSort, sort, violationFilter, setViolationFilter,
+export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, handleSort, sort, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, violationFilter, setViolationFilter,
     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter }) => {
         const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
     return <>
-    <Navbar className="comp-div-tab basic-navbar-nav" style={{width: "1330px"}}>
+    <Navbar className="basic-navbar-nav" style={{width: "1330px"}}>
         <Nav className="nav nav-tabs comp-tab container-fluid">
             <Nav.Item className="nav-item comp-tab-inactive">
                 <button className="nav-link" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)}>Human Wildlife Conflicts</button>
@@ -44,10 +52,10 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, han
             </Nav.Item>
         </Nav>
     </Navbar>
-    <AllegationComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} violationFilter={violationFilter} setViolationFilter={setViolationFilter} 
+    <AllegationComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter}  violationFilter={violationFilter} setViolationFilter={setViolationFilter} 
         startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
     <AllegationComplaintTableHeader handleSort={handleSort}/>
-    <AllegationComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} violationFilter={violationFilter} startDateFilter={startDateFilter} 
+    <AllegationComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} regionCodeFilter={regionCodeFilter} zoneCodeFilter={zoneCodeFilter} areaCodeFilter={areaCodeFilter} officerFilter={officerFilter} violationFilter={violationFilter} startDateFilter={startDateFilter} 
         endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} />
     </>;
 }

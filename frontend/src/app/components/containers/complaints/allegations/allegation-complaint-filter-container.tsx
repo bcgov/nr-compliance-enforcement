@@ -10,6 +10,14 @@ import Option from "../../../../types/app/option";
 type Props = {
     getCollapseProps: Function;
     isExpanded: boolean;
+    regionCodeFilter: Option | null,
+    setRegionCodeFilter: Function,
+    zoneCodeFilter: Option | null,
+    setZoneCodeFilter: Function,
+    areaCodeFilter: Option | null,
+    setAreaCodeFilter: Function,
+    officerFilter: Option | null,
+    setOfficerFilter: Function,
     violationFilter: Option | null,
     setViolationFilter: Function,
     startDateFilter: Date | undefined,
@@ -21,7 +29,11 @@ type Props = {
 }
 
 
-export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, violationFilter, setViolationFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
+export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, violationFilter, setViolationFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
+    const [regionCodes, setRegionCodes] = useState<Option[]>([] as Array<Option>);
+    const [zoneCodes, setZoneCodes] = useState<Option[]>([] as Array<Option>);
+    const [areaCodes, setAreaCodes] = useState<Option[]>([] as Array<Option>);
+    const [officers, setOfficers] = useState<Option[]>([] as Array<Option>);
     const [violationCodes, setViolationCodes] = useState<Option[]>([] as Array<Option>);
     const [complaintStatusCodes, setComplaintStatusCodes] = useState<Option[]>([] as Array<Option>);
     const handleDateFilter = (dates: [any, any]) => {
@@ -36,12 +48,43 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
             const token = localStorage.getItem("user");
             if (token) {
                     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+                    await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`).then((response) => {
+                        const transformedOptions: Option[] = response.data.map((item: any) => ({
+                            value: item.geo_organization_unit_code, // Assuming each item has an 'id' property
+                            label: item.short_description, // Assuming each item has a 'name' property
+                          }));
+                          setRegionCodes(transformedOptions);
+                    });
+    
+                    await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-zones`).then((response) => {
+                      const transformedOptions: Option[] = response.data.map((item: any) => ({
+                          value: item.geo_organization_unit_code, // Assuming each item has an 'id' property
+                          label: item.short_description, // Assuming each item has a 'name' property
+                        }));
+                        setZoneCodes(transformedOptions);
+                  });
+    
+                  await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-areas`).then((response) => {
+                    const transformedOptions: Option[] = response.data.map((item: any) => ({
+                        value: item.geo_organization_unit_code, // Assuming each item has an 'id' property
+                        label: item.short_description, // Assuming each item has a 'name' property
+                      }));
+                      setAreaCodes(transformedOptions);
+                });
+                await axios.get(`${config.API_BASE_URL}/v1/officer`).then((response) => {
+                  console.log("response data: " + response);
+                  const transformedOptions: Option[] = response.data.map((item: any) => ({
+                      value: item.person_guid.person_guid, // Assuming each item has an 'id' property
+                      label: item.person_guid.first_name.substring(0,1) + ". " + item.person_guid.last_name, // Assuming each item has a 'name' property
+                    }));
+                    transformedOptions.unshift({value: "null", label: ""});
+                    setOfficers(transformedOptions);
+              });
                     await axios.get(`${config.API_BASE_URL}/v1/violation-code`).then((response) => {
                         const transformedOptions: Option[] = response.data.map((item: any) => ({
                             value: item.violation_code, // Assuming each item has an 'id' property
                             label: item.long_description, // Assuming each item has a 'name' property
                           }));
-                        transformedOptions.unshift({value: "", label: ""});
                         setViolationCodes(transformedOptions);
                     });
                     await axios.get(`${config.API_BASE_URL}/v1/complaint-status-code`).then((response) => {
@@ -49,7 +92,6 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                             value: item.complaint_status_code, // Assuming each item has an 'id' property
                             label: item.long_description, // Assuming each item has a 'name' property
                           }));
-                          transformedOptions.unshift({value: "", label: ""});
                           setComplaintStatusCodes(transformedOptions);
                     });
             }
@@ -57,6 +99,18 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         fetchCodes()
         .catch(err => console.log(err));
       }, []);
+      const handleRegionFilter = (selectedOption: Option | null) => {
+        setRegionCodeFilter(selectedOption);
+      }; 
+      const handleZoneFilter = (selectedOption: Option | null) => {
+        setZoneCodeFilter(selectedOption);
+      }; 
+      const handleAreaFilter = (selectedOption: Option | null) => {
+        setAreaCodeFilter(selectedOption);
+      }; 
+      const handleOfficerFilter = (selectedOption: Option | null) => {
+        setOfficerFilter(selectedOption);
+      }; 
       const handleViolationFilter = (selectedOption: Option | null) => {
         setViolationFilter(selectedOption);
       }; 
@@ -66,15 +120,50 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
       const complaintStatusClass =  (complaintStatusFilter === null || complaintStatusFilter.value === '') ? 'hidden' : 'comp-filter-pill';
       const dateStatusClass = (startDateFilter === null || startDateFilter === undefined) ? 'hidden' : 'comp-filter-pill';
       const violationClass =  (violationFilter === null || violationFilter.value === '') ? 'hidden' : 'comp-filter-pill';
-      const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || violationClass !== 'hidden') ? 'comp-filter-pill-container' : '';
+      const officerClass =  (officerFilter === null || officerFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const areaClass =  (areaCodeFilter === null || areaCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const zoneClass =  (zoneCodeFilter === null || zoneCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const regionClass =  (regionCodeFilter === null || regionCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || violationClass !== 'hidden' || officerClass !== 'hidden' || areaClass !== 'hidden' || zoneClass !== 'hidden' || regionClass !== 'hidden') ? 'comp-filter-pill-container' : '';
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
       <div className="content" style={{margin: '0px 0px 10px 0px'}}>
-        <div style={{float:'left'}}>
-          test float
+        <div className="comp-filter-left">
+          <div className="comp-filter-label">
+              Region
+          </div>
+          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+              <Select options={regionCodes} onChange={handleRegionFilter} placeholder="Select" value={regionCodeFilter}/>
+          </div>
+        </div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
+              Zone
+          </div>
+          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+              <Select options={zoneCodes} onChange={handleZoneFilter} placeholder="Select" value={zoneCodeFilter}/>
+          </div>
+        </div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
+              Community
+          </div>
+          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+              <Select options={areaCodes} onChange={handleAreaFilter} placeholder="Select" value={areaCodeFilter}/>
+          </div>
+        </div>
+        <div className="comp-filter">
+          <div className="comp-filter-label">
+              Officer Assigned
+          </div>
+          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}/>
+          </div>
         </div>
         <div style={{clear:'left'}}></div>
+      </div>
+      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Violation Type
@@ -173,6 +262,26 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
           <div className={violationClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{violationFilter?.label}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => {setViolationFilter(null)}}></button>
+            </button>
+          </div>
+          <div className={officerClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{(officerFilter?.label === "" ? "Unassigned" : officerFilter?.label)}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setOfficerFilter(null)}></button>
+            </button>
+          </div>
+          <div className={areaClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{areaCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setAreaCodeFilter(null)}></button>
+            </button>
+          </div>
+          <div className={zoneClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{zoneCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setZoneCodeFilter(null)}></button>
+            </button>
+          </div>
+          <div className={regionClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{regionCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setRegionCodeFilter(null)}></button>
             </button>
           </div>
         </div>

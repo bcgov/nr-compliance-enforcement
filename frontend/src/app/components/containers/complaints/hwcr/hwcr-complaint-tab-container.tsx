@@ -12,6 +12,14 @@ type Props = {
     handleChange: Function,
     handleSort: Function,
     sort: string[],
+    regionCodeFilter: Option | null,
+    setRegionCodeFilter: Function,
+    zoneCodeFilter: Option | null,
+    setZoneCodeFilter: Function,
+    areaCodeFilter: Option | null,
+    setAreaCodeFilter: Function,
+    officerFilter: Option | null,
+    setOfficerFilter: Function,
     natureOfComplaintFilter: Option | null,
     setNatureOfComplaintFilter: Function,
     speciesCodeFilter: Option | null,
@@ -24,11 +32,11 @@ type Props = {
     setComplaintStatusFilter: Function,
 }
 
-export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter, setSpeicesCodeFilter,
+export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter, setSpeicesCodeFilter,
      startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter }) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
     return <>
-    <Navbar className="comp-div-tab basic-navbar-nav" style={{width: "1330px"}}>
+    <Navbar className="basic-navbar-nav" style={{width: "1330px"}}>
         <Nav className="nav nav-tabs comp-tab container-fluid">
             <Nav.Item className="nav-item comp-tab-active">
                 <button className="nav-link active">Human Wildlife Conflicts</button>
@@ -47,10 +55,10 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
             </Nav.Item>
         </Nav>
     </Navbar>
-    <HwcrComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter}
+    <HwcrComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter}
         setSpeciesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
     <HwcrComplaintTableHeader handleSort={handleSort}/>
-    <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} 
+    <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} regionCodeFilter={regionCodeFilter} zoneCodeFilter={zoneCodeFilter} areaCodeFilter={areaCodeFilter} officerFilter={officerFilter} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} 
         endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} />
     </>;
 }

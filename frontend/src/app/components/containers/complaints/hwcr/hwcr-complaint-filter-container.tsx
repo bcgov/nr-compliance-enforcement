@@ -8,8 +8,16 @@ import "../../../../../../node_modules/react-datepicker/dist/react-datepicker-cs
 import Option from "../../../../types/app/option";
 
 type Props = {
-    getCollapseProps: Function;
-    isExpanded: boolean;
+    getCollapseProps: Function,
+    isExpanded: boolean,
+    regionCodeFilter: Option | null,
+    setRegionCodeFilter: Function,
+    zoneCodeFilter: Option | null,
+    setZoneCodeFilter: Function,
+    areaCodeFilter: Option | null,
+    setAreaCodeFilter: Function,
+    officerFilter: Option | null,
+    setOfficerFilter: Function,
     natureOfComplaintFilter: Option | null,
     setNatureOfComplaintFilter: Function,
     speciesCodeFilter: Option | null,
@@ -23,7 +31,7 @@ type Props = {
 }
 
 
-export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter,
+export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter,
       setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
     const [regionCodes, setRegionCodes] = useState<Option[]>([] as Array<Option>);
     const [zoneCodes, setZoneCodes] = useState<Option[]>([] as Array<Option>);
@@ -45,8 +53,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
             if (token) {
               axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-                  await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`).then((response) => {
-                    console.log(response.data);
+                await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`).then((response) => {
                     const transformedOptions: Option[] = response.data.map((item: any) => ({
                         value: item.geo_organization_unit_code, // Assuming each item has an 'id' property
                         label: item.short_description, // Assuming each item has a 'name' property
@@ -55,7 +62,6 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 });
 
                 await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-zones`).then((response) => {
-                  console.log(response.data);
                   const transformedOptions: Option[] = response.data.map((item: any) => ({
                       value: item.geo_organization_unit_code, // Assuming each item has an 'id' property
                       label: item.short_description, // Assuming each item has a 'name' property
@@ -64,7 +70,6 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               });
 
               await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-areas`).then((response) => {
-                console.log(response.data);
                 const transformedOptions: Option[] = response.data.map((item: any) => ({
                     value: item.geo_organization_unit_code, // Assuming each item has an 'id' property
                     label: item.short_description, // Assuming each item has a 'name' property
@@ -72,10 +77,10 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                   setAreaCodes(transformedOptions);
             });
             await axios.get(`${config.API_BASE_URL}/v1/officer`).then((response) => {
-              console.log(response.data);
+              console.log("response data: " + response);
               const transformedOptions: Option[] = response.data.map((item: any) => ({
-                  value: item.first_name + " " + item.last_name, // Assuming each item has an 'id' property
-                  label: item.person_guid, // Assuming each item has a 'name' property
+                  value: item.person_guid.person_guid, // Assuming each item has an 'id' property
+                  label: item.person_guid.first_name.substring(0,1) + ". " + item.person_guid.last_name, // Assuming each item has a 'name' property
                 }));
                 transformedOptions.unshift({value: "null", label: ""});
                 setOfficers(transformedOptions);
@@ -106,7 +111,19 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
         }
         fetchCodes()
         .catch(err => console.log(err));
-      }, [natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter]);
+      }, [regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter]);
+      const handleRegionCodeFilter = (selectedOption: Option | null) => {
+        setRegionCodeFilter(selectedOption);
+      }; 
+      const handleZoneCodeFilter = (selectedOption: Option | null) => {
+        setZoneCodeFilter(selectedOption);
+      }; 
+      const handleAreaCodeFilter = (selectedOption: Option | null) => {
+        setAreaCodeFilter(selectedOption);
+      }; 
+      const handleOfficerFilter = (selectedOption: Option | null) => {
+        setOfficerFilter(selectedOption);
+      }; 
       const handleNatureOfComplaintFilter = (selectedOption: Option | null) => {
         setNatureOfComplaintFilter(selectedOption);
       }; 
@@ -120,7 +137,11 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       const dateStatusClass = (startDateFilter === null || startDateFilter === undefined) ? 'hidden' : 'comp-filter-pill';
       const speciesClass =  (speciesCodeFilter === null || speciesCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
       const natureOfComplaintClass =  (natureOfComplaintFilter === null || natureOfComplaintFilter.value === '') ? 'hidden' : 'comp-filter-pill';
-      const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || speciesClass !== 'hidden' || natureOfComplaintClass !== 'hidden') ? 'comp-filter-pill-container' : '';
+      const officerClass =  (officerFilter === null || officerFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const areaClass =  (areaCodeFilter === null || areaCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const zoneClass =  (zoneCodeFilter === null || zoneCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const regionClass =  (regionCodeFilter === null || regionCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
+      const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || speciesClass !== 'hidden' || natureOfComplaintClass !== 'hidden' || officerClass !== 'hidden' || areaClass !== 'hidden' || zoneClass !== 'hidden' || regionClass !== 'hidden') ? 'comp-filter-pill-container' : '';
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
@@ -130,7 +151,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Region
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}>
-              <Select options={regionCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
+              <Select options={regionCodes} onChange={handleRegionCodeFilter} placeholder="Select" value={regionCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter">
@@ -138,7 +159,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Zone
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}>
-              <Select options={zoneCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
+              <Select options={zoneCodes} onChange={handleZoneCodeFilter} placeholder="Select" value={zoneCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter">
@@ -146,7 +167,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Community
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}>
-              <Select options={areaCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
+              <Select options={areaCodes} onChange={handleAreaCodeFilter} placeholder="Select" value={areaCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter">
@@ -154,10 +175,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Officer Assigned
           </div>
           <div style={{padding: '6px, 12px, 6px, 12px'}}>
-              <Select options={officers} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
+              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}/>
           </div>
         </div>
         <div style={{clear:'left'}}></div>
+      </div>
+      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Nature of Complaint
@@ -252,7 +275,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       </div>
       </div>
       <div className={pillContainterStyle}>
-        <div className={complaintStatusClass}>
+          <div className={complaintStatusClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => setComplaintStatusFilter(null)}></button>
             </button>
@@ -270,6 +293,26 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className={natureOfComplaintClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{natureOfComplaintFilter?.label}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setNatureOfComplaintFilter(null)}></button>
+            </button>
+          </div>
+          <div className={officerClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{(officerFilter?.label === "" ? "Unassigned" : officerFilter?.label)}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setOfficerFilter(null)}></button>
+            </button>
+          </div>
+          <div className={areaClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{areaCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setAreaCodeFilter(null)}></button>
+            </button>
+          </div>
+          <div className={zoneClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{zoneCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setZoneCodeFilter(null)}></button>
+            </button>
+          </div>
+          <div className={regionClass}>
+            <button type="button" className="btn btn-primary comp-filter-btn">{regionCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setRegionCodeFilter(null)}></button>
             </button>
           </div>
         </div>

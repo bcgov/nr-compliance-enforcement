@@ -74,7 +74,7 @@ export class OfficerService {
     return newOfficerString;
   }
 
-  findAll() {
+  async findAll(): Promise<Officer[]> {
     return this.officerRepository.find({
       relations: {
         office_guid: {
