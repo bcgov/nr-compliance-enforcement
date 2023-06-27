@@ -12,6 +12,7 @@ import {
   selectModalType,
 } from "../../store/reducers/app";
 import { MODAL_COMPONENTS } from "./model-components";
+import { setOfficersInZone } from "../../store/reducers/assign-officers";
 
 export const ModalComponent: FC = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +34,7 @@ export const ModalComponent: FC = () => {
   };
 
   const handleCloseModal = () => {
+    dispatch(setOfficersInZone({}));
     if(closingCallback){
       closingCallback()
     }
