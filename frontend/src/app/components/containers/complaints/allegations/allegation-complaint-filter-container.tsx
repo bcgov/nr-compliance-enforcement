@@ -72,7 +72,6 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                       setAreaCodes(transformedOptions);
                 });
                 await axios.get(`${config.API_BASE_URL}/v1/officer`).then((response) => {
-                  console.log("response data: " + response);
                   const transformedOptions: Option[] = response.data.map((item: any) => ({
                       value: item.person_guid.person_guid, // Assuming each item has an 'id' property
                       label: item.person_guid.first_name.substring(0,1) + ". " + item.person_guid.last_name, // Assuming each item has a 'name' property
