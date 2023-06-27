@@ -75,16 +75,13 @@ export class OfficerService {
   }
 
   async findAll(): Promise<Officer[]> {
-    return this.officerRepository.find({
-      relations: {
-        office_guid: {
-          cos_geo_org_unit: true
-        },
-        person_guid: {
-
-        }
-      } ,
-      });
+  
+    return this.officerRepository.createQueryBuilder('officer')
+    .leftJoinAndSelect('officer.office_guid', 'office')
+    .leftJoinAndSelect('officer.person_guid','person')
+    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit')
+    .orderBy("person.last_name", "ASC")
+    .getMany();
   }
 
   async findByOffice(office_guid: any) : Promise<Officer[]> {

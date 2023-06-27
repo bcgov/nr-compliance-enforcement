@@ -187,7 +187,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Officer Assigned
           </div>
           <div className="filter-select-padding">
-              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}/>
+              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter} classNamePrefix="input-field-select"/>
           </div>
         </div>
         <div className="clear-left-float"></div>

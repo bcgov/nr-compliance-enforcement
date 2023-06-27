@@ -76,7 +76,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                       value: item.person_guid.person_guid, // Assuming each item has an 'id' property
                       label: item.person_guid.first_name.substring(0,1) + ". " + item.person_guid.last_name, // Assuming each item has a 'name' property
                     }));
-                    transformedOptions.unshift({value: "null", label: " "});
+                    transformedOptions.unshift({value: "null", label: ""});
                     setOfficers(transformedOptions);
               });
                     await axios.get(`${config.API_BASE_URL}/v1/violation-code`).then((response) => {
@@ -170,7 +170,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Officer Assigned
           </div>
           <div className="filter-select-padding">
-              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}/>
+              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}  classNamePrefix="input-field-select"/>
           </div>
         </div>
         <div className="clear-left-float"></div>
