@@ -11,4 +11,4 @@ COPY --from=build /app/build /app/dist
 
 EXPOSE 3000 3001
 USER 1001
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:30001/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3001/health || exit 1
