@@ -141,10 +141,6 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
       {
         datePillText = " - " + endDateFilter?.toLocaleDateString()
       }
-      else
-      {
-        datePillText = "";
-      }
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>

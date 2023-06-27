@@ -158,10 +158,6 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       {
         datePillText = " - " + endDateFilter?.toLocaleDateString()
       }
-      else
-      {
-        datePillText = "";
-      }
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
