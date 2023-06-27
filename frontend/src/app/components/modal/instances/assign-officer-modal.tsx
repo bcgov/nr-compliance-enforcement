@@ -100,7 +100,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
       <div className="assign_officer_modal_subtitle">
         Suggested Officers
       </div>
-      {officersJson.map((val, key) => {
+      {officersJson?.map((val, key) => {
 
         const firstName = val.first_name;
         const lastName = val.last_name;

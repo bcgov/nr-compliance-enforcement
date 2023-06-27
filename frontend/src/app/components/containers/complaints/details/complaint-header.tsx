@@ -32,6 +32,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const dispatch = useAppDispatch();
+  const assignText = officerAssigned === 'Not Assigned' ? 'Assign' : 'Reassign';
 
   const applyStatusClass = (state: string): string => {
 
@@ -68,8 +69,8 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
         modalSize: "md",
         modalType: AssignOfficer,
         data: {
-          title: "Update status?",
-          description: "Status",
+          title: "Assign Complaint",
+          description: "Suggested Officers",
           complaint_identifier: id,
           complaint_type: complaintType,
           zone: zone
@@ -117,7 +118,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
             <div className="comp-box-species-type">{species}</div>
           )}
           <div className="comp-box-actions">
-            <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>Assign</span><BsPersonPlus/></Button>
+            <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>{assignText}</span><BsPersonPlus/></Button>
             <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
           </div>
         </div>
