@@ -125,11 +125,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
       const regionClass =  (regionCodeFilter === null || regionCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
       const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || violationClass !== 'hidden' || officerClass !== 'hidden' || areaClass !== 'hidden' || zoneClass !== 'hidden' || regionClass !== 'hidden') ? 'comp-filter-pill-container' : '';
       let datePillText = "";
-      if(startDateFilter === undefined && endDateFilter === undefined )
-      { 
-        datePillText = "";
-      }
-      else if(startDateFilter !== undefined && endDateFilter !== undefined)
+      if(startDateFilter !== undefined && endDateFilter !== undefined)
       {
         datePillText = startDateFilter?.toLocaleDateString() + " - " + endDateFilter?.toLocaleDateString()
       } 
