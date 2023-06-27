@@ -36,7 +36,7 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
      startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter }) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
     return <>
-    <Navbar className="basic-navbar-nav" style={{width: "1330px"}}>
+    <Navbar className="basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
             <Nav.Item className="nav-item comp-tab-active">
                 <button className="nav-link active">Human Wildlife Conflicts</button>
@@ -45,13 +45,13 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
                 <button className="nav-link" onClick={() => handleChange(ComplaintType.ALLEGATION_COMPLAINT)}>Enforcement</button>
             </Nav.Item>
             <Nav.Item className="ms-auto" {...getToggleProps()}>
-                <div style={{float: "left", margin:"0px 5px 0px 0px"}}>
-                    <img src={filterIcon} alt="filter" margin-right="5px"/>
+                <div className="complaint-filter-image-container">
+                    <img src={filterIcon} alt="filter" className="filter-image-spacing"/>
                 </div>
-                <div style={{float: "left"}}>
+                <div className="left-float">
                     Filters
                 </div>
-                <div style={{clear: "left"}}></div>
+                <div className="clear-left-float"></div>
             </Nav.Item>
         </Nav>
     </Navbar>

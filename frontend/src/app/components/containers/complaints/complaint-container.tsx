@@ -31,6 +31,15 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         setComplaintType(newState);
         setSort(["incident_reported_datetime", "DESC"]);
         setComplaintStatusFilter({value: 'OPEN', label: 'Open'});
+        setRegionCodeFilter(null);
+        setZoneCodeFilter(null);
+        setAreaCodeFilter(null);
+        setOfficerFilter(null);
+        setNatureOfComplaintFilter(null);
+        setSpeicesCodeFilter(null);
+        setViolationFilter(null);
+        setStartDateFilter(undefined);
+        setEndDateFilter(undefined);
     }
     function handleSort(newSortColumn: string) {
       if (newSortColumn === sort[0]) {

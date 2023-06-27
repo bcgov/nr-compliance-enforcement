@@ -132,19 +132,6 @@
     float: right;
     cursor: pointer;
   }
-
-  .comp-cell-left
-  {
-    border-style: solid;
-    border-color: #B9B9B9;
-    border-width: 0px 1px 0px 1px;
-  }
-
-  .comp-top-left
-  {
-    border-top-left-radius: 4px;
-    border-width: 1px 1px 0px 1px;
-  }
   .comp-top-right
   {
     border-top-right-radius: 4px;
@@ -469,6 +456,20 @@
   flex-grow: 0;
 }
 
+
+.comp-cell-left
+{
+  border-style: solid;
+  border-color: #B9B9B9;
+  border-width: 0px 1px 0px 1px;
+}
+
+.comp-top-left
+{
+  border-top-left-radius: 4px;
+  border-width: 1px 1px 0px 1px;
+}
+
 .comp-small-cell {
   width: 95px;
 }
@@ -680,4 +681,39 @@
   height: 32px;
   cursor: pointer;
 }
-  
+
+.filter-container
+{
+  margin: 0px 0px 10px 0px;
+}
+
+.filter-select-padding
+{
+  padding: 6px, 12px, 6px, 12px;
+}
+
+.clear-left-float
+{
+  clear: left;
+}
+
+.left-float
+{
+  float: left;
+}
+
+.complaint-tab-container-width
+{
+  width: 1330px;
+}
+
+.complaint-filter-image-container
+{
+  float: left;
+  margin:0px 5px 0px 0px;
+}
+
+.filter-image-spacing
+{
+  margin-right: 5px;
+}

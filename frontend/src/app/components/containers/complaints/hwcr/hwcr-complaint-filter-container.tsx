@@ -157,12 +157,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
-      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
+      <div className="content filter-container">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Region
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={regionCodes} onChange={handleRegionCodeFilter} placeholder="Select" value={regionCodeFilter}/>
           </div>
         </div>
@@ -170,7 +170,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className="comp-filter-label">
               Zone
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={zoneCodes} onChange={handleZoneCodeFilter} placeholder="Select" value={zoneCodeFilter}/>
           </div>
         </div>
@@ -178,7 +178,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className="comp-filter-label">
               Community
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={areaCodes} onChange={handleAreaCodeFilter} placeholder="Select" value={areaCodeFilter}/>
           </div>
         </div>
@@ -186,18 +186,18 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className="comp-filter-label">
               Officer Assigned
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}/>
           </div>
         </div>
-        <div style={{clear:'left'}}></div>
+        <div className="clear-left-float"></div>
       </div>
-      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
+      <div className="content filter-container">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Nature of Complaint
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
           </div>
         </div>
@@ -205,7 +205,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className="comp-filter-label">
               Species
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}> 
+          <div className="filter-select-padding"> 
               <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select"  value={speciesCodeFilter}/>
           </div>
         </div>
@@ -213,7 +213,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className="comp-filter-label">
               Date Logged
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
           <DatePicker
               showIcon={true}
               renderCustomHeader={({
@@ -278,11 +278,11 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           <div className="comp-filter-label">
               Status
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}> 
+          <div className="filter-select-padding"> 
               <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter} />
           </div>
         </div>
-        <div style={{clear:'left'}}></div>
+        <div className="clear-left-float"></div>
       </div>
       </div>
       </div>

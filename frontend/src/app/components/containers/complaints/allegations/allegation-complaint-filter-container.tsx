@@ -76,7 +76,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                       value: item.person_guid.person_guid, // Assuming each item has an 'id' property
                       label: item.person_guid.first_name.substring(0,1) + ". " + item.person_guid.last_name, // Assuming each item has a 'name' property
                     }));
-                    transformedOptions.unshift({value: "null", label: ""});
+                    transformedOptions.unshift({value: "null", label: " "});
                     setOfficers(transformedOptions);
               });
                     await axios.get(`${config.API_BASE_URL}/v1/violation-code`).then((response) => {
@@ -140,12 +140,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
-      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
+      <div className="content filter-container">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Region
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={regionCodes} onChange={handleRegionFilter} placeholder="Select" value={regionCodeFilter}/>
           </div>
         </div>
@@ -153,7 +153,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
           <div className="comp-filter-label">
               Zone
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={zoneCodes} onChange={handleZoneFilter} placeholder="Select" value={zoneCodeFilter}/>
           </div>
         </div>
@@ -161,7 +161,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
           <div className="comp-filter-label">
               Community
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={areaCodes} onChange={handleAreaFilter} placeholder="Select" value={areaCodeFilter}/>
           </div>
         </div>
@@ -169,13 +169,13 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
           <div className="comp-filter-label">
               Officer Assigned
           </div>
-          <div style={{padding: '6px, 12px, 6px, 12px'}}>
+          <div className="filter-select-padding">
               <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}/>
           </div>
         </div>
-        <div style={{clear:'left'}}></div>
+        <div className="clear-left-float"></div>
       </div>
-      <div className="content" style={{margin: '0px 0px 10px 0px'}}>
+      <div className="content filter-container">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Violation Type
@@ -257,7 +257,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter}/>
           </div>
       </div>
-      <div style={{clear:'left'}}></div>
+      <div className="clear-left-float"></div>
       </div>
       </div>
       <div className={pillContainterStyle}>

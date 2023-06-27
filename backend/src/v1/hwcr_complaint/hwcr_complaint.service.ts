@@ -127,6 +127,7 @@ export class HwcrComplaintService {
       {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
+      process.stdout.write(queryBuilder.getQueryAndParameters().toLocaleString() + '\n');
       return queryBuilder.getMany();
     }
   
