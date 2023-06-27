@@ -39,6 +39,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   // assigns the selected officer to a complaint
   const handleSubmit = () => {
     setNewAssignee(selectedAssignee);
+
     if (selectedAssignee !== "") {
       dispatch(updateComplaintAssignee(userid, selectedAssignee as UUID, complaint_identifier, complaint_type));
       submit();
@@ -80,7 +81,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           <Modal.Title style={{ fontSize: '20px' }}>{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body className="">
+      <Modal.Body>
       <div className="assign_officer_modal_profile_card">
         <div className="assign_officer_modal_profile_card_column">
           <div className="assign_officer_modal_profile_card_profile-picture">
@@ -99,7 +100,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
       <div className="assign_officer_modal_subtitle">
         Suggested Officers
       </div>
-      {officersJson.map((val, key) => {
+      {officersJson?.map((val, key) => {
 
         const firstName = val.first_name;
         const lastName = val.last_name;
