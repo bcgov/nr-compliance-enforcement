@@ -30,7 +30,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
 
     useEffect(() => {
             dispatch(getHwcrComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
-  }, [dispatch, sortColumn, sortOrder,, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
+  }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>

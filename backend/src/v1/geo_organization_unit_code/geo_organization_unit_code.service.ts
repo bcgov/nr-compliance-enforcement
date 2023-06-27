@@ -3,7 +3,7 @@ import { CreateGeoOrganizationUnitCodeDto } from './dto/create-geo_organization_
 import { UpdateGeoOrganizationUnitCodeDto } from './dto/update-geo_organization_unit_code.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GeoOrganizationUnitCode } from './entities/geo_organization_unit_code.entity';
-import { Any, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class GeoOrganizationUnitCodeService {

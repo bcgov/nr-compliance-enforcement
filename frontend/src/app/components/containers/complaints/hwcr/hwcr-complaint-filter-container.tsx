@@ -142,6 +142,27 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       const zoneClass =  (zoneCodeFilter === null || zoneCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
       const regionClass =  (regionCodeFilter === null || regionCodeFilter.value === '') ? 'hidden' : 'comp-filter-pill';
       const pillContainterStyle = (complaintStatusClass !== 'hidden' || dateStatusClass !== 'hidden' || speciesClass !== 'hidden' || natureOfComplaintClass !== 'hidden' || officerClass !== 'hidden' || areaClass !== 'hidden' || zoneClass !== 'hidden' || regionClass !== 'hidden') ? 'comp-filter-pill-container' : '';
+      let datePillText = "";
+      if(startDateFilter === undefined && endDateFilter === undefined )
+      { 
+        datePillText = "";
+      }
+      else if(startDateFilter !== undefined && endDateFilter !== undefined)
+      {
+        datePillText = startDateFilter?.toLocaleDateString() + " - " + endDateFilter?.toLocaleDateString()
+      } 
+      else if(startDateFilter !== undefined)
+      { 
+        datePillText = startDateFilter?.toLocaleDateString() + " - "
+      } 
+      else if(endDateFilter !== undefined)
+      {
+        datePillText = " - " + endDateFilter?.toLocaleDateString()
+      }
+      else
+      {
+        datePillText = "";
+      }
     return( <>
       <div className="collapsible">
       <div {...getCollapseProps()}>
@@ -281,7 +302,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
             </button>
           </div>
           <div className={dateStatusClass}>
-            <button type="button" className="btn btn-primary comp-filter-btn">{(startDateFilter === undefined && endDateFilter === undefined ) ? "" : (startDateFilter !== undefined && endDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " + endDateFilter?.toLocaleDateString() : (startDateFilter !== undefined) ? startDateFilter?.toLocaleDateString() + " - " : (endDateFilter !== undefined) ? " - " + endDateFilter?.toLocaleDateString() : ""}
+            <button type="button" className="btn btn-primary comp-filter-btn">{datePillText}
               <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => {setStartDateFilter();setEndDateFilter();}}></button>
             </button>
           </div>

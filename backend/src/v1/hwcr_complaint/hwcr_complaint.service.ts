@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { HwcrComplaint } from './entities/hwcr_complaint.entity';
@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
-import { format } from 'date-fns';
 
 @Injectable()
 export class HwcrComplaintService {

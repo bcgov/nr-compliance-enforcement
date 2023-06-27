@@ -9,7 +9,6 @@ import Option from "../../types/app/option";
 import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
-import { updateAllegationComplaintRow } from "./allegation-complaint";
 
 const initialState: HwcrComplaintsState = {
   hwcrComplaints: [],
