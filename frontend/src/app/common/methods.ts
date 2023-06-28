@@ -1,6 +1,7 @@
-import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
+import { format, parseISO } from "date-fns";
+import { zonedTimeToUtc } from 'date-fns-tz'
 
 export const getAvatarInitials = (input: string): string => {
   const tokens = input.split(" ");
@@ -28,8 +29,10 @@ export const formatTime = (input: string | undefined): string => {
   if (!input) {
     return "";
   }
-
-  return format(Date.parse(input), "kk:mm:ss");
+  // console.log(`input: ${input} parsed: ${parseISO(input)} converted: ${new Date(input)} formated: ${format(parseISO(input), "HH:mm:ss")}`)
+  const timeZone = 'America/Vancouver'
+  console.log(`input: ${input} parsed: ${zonedTimeToUtc(input, timeZone)}`)
+  return format(Date.parse(input), "hh:mm:ss");
 };
 
 export const parseCoordinates = (
