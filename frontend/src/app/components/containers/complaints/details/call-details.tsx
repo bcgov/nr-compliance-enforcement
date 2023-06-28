@@ -29,6 +29,12 @@ export const CallDetails: FC<{ complaintType: string }> = ({
     violationObserved,
   } = useAppSelector(selectComplaintDeails(complaintType));
 
+  const renderCoordinates = (coordinates: any): JSX.Element => {
+    const result = parseCoordinates(coordinates, Coordinates.Latitude);
+
+    return result === 0 ? <i>Not Provided</i> : <>{result}</>;
+  };
+
   return (
     <div className="comp-complaint-details-block">
       <h6>Call Details</h6>
@@ -53,9 +59,7 @@ export const CallDetails: FC<{ complaintType: string }> = ({
 
             {complaintType === COMPLAINT_TYPES.HWCR && (
               <div>
-                <div className="comp-details-content-label ">
-                  Attractants
-                </div>
+                <div className="comp-details-content-label ">Attractants</div>
                 <span className="comp-complaint-attactants">
                   {!attractants ||
                     attractants.map(
@@ -111,7 +115,7 @@ export const CallDetails: FC<{ complaintType: string }> = ({
             <div>
               <div className="comp-details-content-label ">X Coordinate</div>
               <div className="comp-details-content comp-padding-right-25">
-                {parseCoordinates(coordinates, Coordinates.Latitude)}
+                {renderCoordinates(coordinates)}
               </div>
 
               <div className="comp-details-content-label ">Y Coordinate</div>
@@ -120,9 +124,7 @@ export const CallDetails: FC<{ complaintType: string }> = ({
               </div>
             </div>
             <div>
-              <span className="comp-details-content-label ">
-                Community
-              </span>
+              <span className="comp-details-content-label ">Community</span>
               <span className="comp-details-content">{area}</span>
             </div>
             <div>
