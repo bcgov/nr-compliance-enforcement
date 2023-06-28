@@ -27,6 +27,24 @@ export class GeoOrganizationUnitCodeController {
     return this.geoOrganizationUnitCodeService.findAll();
   }
 
+  @Get('/find-all-regions/')
+  @Roles(Role.COS_OFFICER)
+  findRegions() {
+    return this.geoOrganizationUnitCodeService.findDistinctGeoCodes("REGION");
+  }
+
+  @Get('/find-all-zones/')
+  @Roles(Role.COS_OFFICER)
+  findZones() {
+    return this.geoOrganizationUnitCodeService.findDistinctGeoCodes("ZONE");
+  }
+
+  @Get('/find-all-areas/')
+  @Roles(Role.COS_OFFICER)
+  findAreas() {
+    return this.geoOrganizationUnitCodeService.findDistinctGeoCodes("AREA");
+  }
+
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {

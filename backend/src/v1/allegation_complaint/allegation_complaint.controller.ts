@@ -27,8 +27,15 @@ export class AllegationComplaintController {
   @Get()
   @Roles(Role.COS_OFFICER)
   findAll(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string) {
-    this.logger.debug("Entering findAll");
     return this.allegationComplaintService.findAll(sortColumn, sortOrder);
+  }
+
+  @Get('search')
+  @Roles(Role.COS_OFFICER)
+  search(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string, @Query('community') community: string, @Query('zone') zone: string,
+   @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('violationCode') violationCode: string, 
+   @Query('incidentReportedStart') incidentReportedStart: string, @Query('incidentReportedEnd') incidentReportedEnd: string, @Query('status') status) {
+    return this.allegationComplaintService.search(sortColumn, sortOrder, community, zone, region, officerAssigned, violationCode, incidentReportedStart, incidentReportedEnd, status);
   }
 
   @Get(':id')

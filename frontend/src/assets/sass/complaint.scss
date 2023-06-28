@@ -82,17 +82,6 @@
   }
 }
 
-.comp-ellipsis-cell {
-  width: 31px;
-  vertical-align: middle;
-  color: #6c757d;
-  font-size: 14px;
-}
-
-td.comp-ellipsis-cell {
-  cursor: pointer;
-}
-
 .comp-details-header {
   padding: 8px 34px 0px;
   height: 98px;
@@ -100,6 +89,71 @@ td.comp-ellipsis-cell {
 
   color: $white;
   flex: 1;
+  }
+  .comp-violation-cell {
+    width: 306px;
+  }
+
+  .comp-in-progress-cell {
+    width: 153px;
+  }
+
+  .comp-status-cell {
+    width: 75px;
+  }
+
+  .comp-last-updated-cell {
+    width: 110px;
+  }
+
+  .comp-nature-complaint-cell {
+    width: 329px;
+  }
+
+  .comp-ellipsis-cell {
+    width: 31px;
+    vertical-align: middle;
+    color: #6C757D;
+    font-size: 14px;
+  }
+
+  td.comp-ellipsis-cell {
+    cursor: pointer;
+  }
+
+  .comp-header-label
+  {
+    float: left;
+    margin-top: 1px;
+  }
+
+  .comp-header-caret
+  {
+    float: right;
+    cursor: pointer;
+  }
+  .comp-top-right
+  {
+    border-top-right-radius: 4px;
+  }
+
+  .comp-bottom-left
+  {
+    border-bottom-left-radius: 4px;
+  }
+  .comp-bottom-right
+  {
+    border-bottom-right-radius: 4px;
+  }
+
+  .comp-status-open-btn
+  {
+    width: auto;
+
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+   }
 
   .comp-complaint-info {
     display: flex;
@@ -166,7 +220,6 @@ td.comp-ellipsis-cell {
       display: flex;
       color: $black;
     }
-  }
 
   .comp-nature-of-complaint {
     font-size: 16px;
@@ -250,6 +303,35 @@ td.comp-ellipsis-cell {
   }
 }
 
+  .comp-filter-btn
+  {
+    width: auto;
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+
+    display: flex;
+    flex-direction: row;
+    padding: 4px 5px 4px 10px;
+
+    pointer-events: none;
+    background-color: #38598A;
+    color: white;
+    border-radius: 100px;
+    border-color: #38598A;
+  }
+
+  .btn-close {
+    box-sizing: content-box;
+    width: 0.15em;
+    height: 0.15em;
+    padding: 0.2em 0.7em;
+    border: 0;
+    border-radius: 0.2rem;
+    opacity: 0.5;
+    margin-top: 6px;
+}
 // COMPLAINT DETAILS END
 
 .comp-table-header {
@@ -319,12 +401,46 @@ td.comp-ellipsis-cell {
   background: rgba(0, 0, 0, 0.06);
   background-color: rgba(0, 0, 0, 0.06);
   border-bottom-width: 0px;
-
   flex: none;
   order: 12;
   align-self: stretch;
   flex-grow: 0;
-}
+   }
+
+  .comp-filter-label
+  {
+    padding: 0px 0px 8px;
+    gap: 4px;
+
+    width: 298px;
+    height: 32px;
+  }
+
+  .comp-filter-pill-container
+  {
+    width: 1330px;
+    height: 29px;
+    margin: 5px 0px 15px 0px;
+  }
+
+  .comp-filter-left
+  {
+    float: left;
+    width: 298px;
+  }
+
+  .comp-filter
+  {
+    float: left;
+    width: 298px;
+    margin:0px 0px 0px 43px;
+  }
+
+  .comp-filter-pill
+  {
+    float: right;
+    margin: 0px 0px 0px 7px;
+  }
 
 .comp-cell {
   box-sizing: border-box;
@@ -338,6 +454,20 @@ td.comp-ellipsis-cell {
   order: 12;
   align-self: stretch;
   flex-grow: 0;
+}
+
+
+.comp-cell-left
+{
+  border-style: solid;
+  border-color: #B9B9B9;
+  border-width: 0px 1px 0px 1px;
+}
+
+.comp-top-left
+{
+  border-top-left-radius: 4px;
+  border-width: 1px 1px 0px 1px;
 }
 
 .comp-small-cell {
@@ -355,77 +485,51 @@ td.comp-ellipsis-cell {
 .comp-location-cell {
   width: 170px;
 }
-
-  .comp-violation-cell {
-    width: 302px;
+  //override for horizontal dual month display
+  .react-datepicker__month-container
+  {
+    float:left
   }
 
-.comp-in-progress-cell {
-  width: 153px;
+.collapsible .content {
+    padding: 6px;
+}
+.collapsible .header {
+    padding: 6px;
+    cursor: pointer;
 }
 
-.comp-status-cell {
-  width: 75px;
+.react-datepicker__view-calendar-icon input {
+    padding: 6px 10px 5px 25px;
+    width: 298px;
+    background-color: hsl(0, 0%, 100%);
+    border-color: hsl(0, 0%, 80%);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+}
+//override -- default is one pixel too high
+.react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle {
+  top: 0;
+  margin-top: -7px;
 }
 
-.comp-last-updated-cell {
-  width: 110px;
-}
-
-  .comp-nature-complaint-cell {
-    width: 313px;
+  .no-bullets {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
   }
+    
 
-.comp-header-label {
-  float: left;
-  margin-top: 1px;
-}
-
-.comp-header-caret {
-  float: right;
-  cursor: pointer;
-}
+  .hidden
+  {
+    display: none;
+  }
 
 .comp-cell-bottom {
   border-style: solid;
   border-color: #b9b9b9;
-}
-
-.comp-cell-left {
-  border-style: solid;
-  border-color: #b9b9b9;
-  border-width: 0px 1px 0px 1px;
-}
-
-.comp-top-left {
-  border-top-left-radius: 4px;
-  border-width: 1px 1px 0px 1px;
-}
-.comp-top-right {
-  border-top-right-radius: 4px;
-}
-
-.comp-bottom-left {
-  border-bottom-left-radius: 4px;
-}
-.comp-bottom-right {
-  border-bottom-right-radius: 4px;
-}
-
-.comp-status-open-btn {
-  width: auto;
-
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-
-  display: flex;
-  flex-direction: row;
-  padding: 4px 8px;
-
-  pointer-events: none;
-  background-color: #2464a4;
-  border-color: #2464a4;
 }
 
 .comp-status-closed-btn {
@@ -513,7 +617,7 @@ td.comp-ellipsis-cell {
 }
 
 .comp-div-tab {
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 }
 
 .comp-circle {
@@ -534,12 +638,6 @@ td.comp-ellipsis-cell {
   padding-top: 6px;
   padding-left: 6px;
   float: left;
-}
-
-.no-bullets {
-  list-style-type: none; /* Remove bullets */
-  padding: 0; /* Remove padding */
-  margin: 0; /* Remove margins */
 }
 
 .popover-body {
@@ -582,4 +680,44 @@ td.comp-ellipsis-cell {
   gap: 8px;
   height: 32px;
   cursor: pointer;
+}
+
+.filter-container
+{
+  margin: 0px 0px 10px 0px;
+}
+
+.filter-select-padding
+{
+  padding: 6px, 12px, 6px, 12px;
+}
+
+.clear-left-float
+{
+  clear: left;
+}
+
+.left-float
+{
+  float: left;
+}
+
+.complaint-tab-container-width
+{
+  width: 1330px;
+}
+
+.complaint-filter-image-container
+{
+  float: left;
+  margin:0px 5px 0px 0px;
+}
+
+.filter-image-spacing
+{
+  margin-right: 5px;
+}
+
+.input-field-select__option {
+  min-height: 35px;
 }

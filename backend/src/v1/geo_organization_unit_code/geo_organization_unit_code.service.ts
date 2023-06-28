@@ -22,6 +22,12 @@ export class GeoOrganizationUnitCodeService {
     return this.geoOrganizationUnitCodeRepository.find();
   }
 
+  async findDistinctGeoCodes(geo_org_unit_type_code: any): Promise<GeoOrganizationUnitCode[]> {
+    return this.geoOrganizationUnitCodeRepository.find({
+      where: {geo_org_unit_type_code: geo_org_unit_type_code},
+    });
+  }
+
   async findOne(id: any): Promise<GeoOrganizationUnitCode> {
     return this.geoOrganizationUnitCodeRepository.findOneOrFail(id);
   }
