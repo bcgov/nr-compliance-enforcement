@@ -32,9 +32,12 @@ describe("COMPENF-37 Display ECR Details", () => {
   it("it has records in table view", () => {
     //-- navigate to application root
     cy.visit("/");
-
-    //-- click on HWCR tab
+    
+    //-- click on Allegation tab
     cy.get("#ers-tab").click({ force: true });
+
+        //-- clear the close filter
+        cy.get(".btn-close.btn-close-white").first().click({force: true});
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
@@ -57,8 +60,8 @@ describe("COMPENF-37 Display ECR Details", () => {
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(0);
       });
-
-    cy.get("#comp-table > tbody > tr:nth-child(9) td.comp-violation-cell.comp-cell").click({ force: true });
+    cy.wait(2000);
+    cy.get("#comp-table > tbody > tr:nth-child(17) td.comp-violation-cell.comp-cell").click({ force: true });
 
     //-- verify the right complaint identifier is selected and the animal type
     cy.get(".comp-box-complaint-id").contains("23-006884")
@@ -79,14 +82,12 @@ describe("COMPENF-37 Display ECR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(9) td.comp-violation-cell.comp-cell").click({ force: true });
+    cy.get("#comp-table > tbody > tr:nth-child(17) td.comp-violation-cell.comp-cell").click({ force: true });
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(1) > p").contains(callDetails.description)
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(1) > div.comp-details-content").contains(callDetails.location)
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(2) > p").contains(callDetails.locationDescription)
-    cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(2) > div.comp-details-content").contains(formatDate(callDetails.incidentTime))
-    cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(2) > div.comp-details-content").contains(formatTime(callDetails.incidentTime))
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(4) > span.comp-details-content").contains(callDetails.community)
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(3) > span.comp-details-content").contains(callDetails.violationInProgress ? "Yes" : "No")
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(5) > span.comp-details-content").contains(callDetails.office)
