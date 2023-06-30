@@ -36,7 +36,7 @@ describe('Complaint Assign and Status Popover spec', () => {
       cy.get('.popover').get('div#update_status_link').click();
 
       cy.get('#complaint_status_dropdown').click();
-
+      cy.wait(2000);
       // Select the option with value "Closed"
       cy.get('.react-select__option')
         .contains('Closed')
@@ -64,7 +64,7 @@ describe('Complaint Assign and Status Popover spec', () => {
       cy.get('.popover').get('div#update_status_link').click();
 
       cy.get('#complaint_status_dropdown').click()
-
+      cy.wait(2000);
       // Select the option with value "OPEN"
       cy.get('.react-select__option')
         .contains('Open')

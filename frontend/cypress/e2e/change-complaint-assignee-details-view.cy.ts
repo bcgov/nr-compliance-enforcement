@@ -25,12 +25,12 @@ describe('Complaint Change Assignee spec - Details View', () => {
       cy.wait(5000);
 
       cy.get("#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell").click({ force: true });
-      cy.wait(2000);
+      cy.wait(5000);
       cy.get('#details_screen_assign_button').click({ force: true });
-
+      cy.wait(1000);
       // self assign the complaint
       cy.get('#self_assign_button').click();
-      cy.wait(2000);
+      cy.wait(5000);
       cy.get('#comp-details-assigned-officer-name-text-id').contains('ENV TestAcct').should('exist');
     });
   }));
