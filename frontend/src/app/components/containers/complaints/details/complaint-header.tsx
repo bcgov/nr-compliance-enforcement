@@ -11,7 +11,7 @@ import {
   getAvatarInitials,
 } from "../../../../common/methods";
 import { Button } from "react-bootstrap";
-import { BsPersonPlus } from 'react-icons/bs';
+import { BsPersonPlus, BsPencil } from 'react-icons/bs';
 import { openModal } from "../../../../store/reducers/app";
 import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
 
@@ -45,6 +45,10 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
       return "";
     }
   };
+
+  const enableEdit = () => {
+    
+  }
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -120,6 +124,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           <div className="comp-box-actions">
             <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>{assignText}</span><BsPersonPlus/></Button>
             <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
+            <Button id="details_screen_edit_button" title="Edit Complaint" variant="outline-primary"  onClick={enableEdit}><span>Edit</span><BsPencil/></Button>
           </div>
         </div>
         <div className="comp-nature-of-complaint">
