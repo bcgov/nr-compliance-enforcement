@@ -1,7 +1,7 @@
 ---
 data_management_roles:
-  data_custodian: TBD
-  product_owner: Steve Kot
+  data_custodian: Stephen Kot
+  product_owner: Stephen Kot
 product_external_dependencies:
   identity_authorization:
     - BCGov-SSO-Keycloak
@@ -12,6 +12,7 @@ product_information:
     - Compliance and Enforcement
   ministry:
     - Environment and Climate Change Strategy
+    - Water, Land and Resource Stewardship
   product_acronym: TBD
   product_description: >-
     Manages public complaints as well as investigative case files for multiple
@@ -21,7 +22,7 @@ product_information:
   product_urls:
     - >-
       https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
-  program_area: Conservation Officer Service
+  program_area: Conservation and Recreation Division
 product_technology_information:
   backend_frameworks:
     - name: NestJS
