@@ -49,6 +49,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
+    cy.wait(5000);
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
@@ -70,6 +71,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
+    cy.wait(5000);
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
@@ -96,6 +98,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
+    cy.wait(5000);
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
