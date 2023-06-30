@@ -1,0 +1,46 @@
+---
+data_management_roles:
+  data_custodian: TBD
+  product_owner: Steve Kot
+product_external_dependencies:
+  identity_authorization:
+    - BCGov-SSO-Keycloak
+  notification_standard: []
+product_information:
+  api_specifications: []
+  business_capabilities_standard:
+    - Compliance and Enforcement
+  ministry:
+    - Environment and Climate Change Strategy
+  product_acronym: TBD
+  product_description: >-
+    Manages public complaints as well as investigative case files for multiple
+    Compliance and Enforcement divisions across the natural resource sector.
+  product_name: TBD
+  product_status: maturing
+  product_urls:
+    - >-
+      https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
+  program_area: Conservation Officer Service
+product_technology_information:
+  backend_frameworks:
+    - name: NestJS
+      version: 9.2.1
+  backend_languages_version:
+    - name: TypeScript
+      version: 4.9.4
+  ci_cd_tools:
+    - GitHub-Actions
+    - OpenShift-Templates
+  data_storage_platforms:
+    - Postgis
+    - Postgresql
+  frontend_frameworks:
+    - name: React
+      version: 18.2.0
+  frontend_languages:
+    - name: TypeScript
+      version: 4.9.4
+  hosting_platforms:
+    - Private-Cloud-Openshift
+version: 1
