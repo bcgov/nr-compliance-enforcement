@@ -138,10 +138,10 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         datePillText = " - " + endDateFilter?.toLocaleDateString()
       }
     return( <>
-      <div className="collapsible">
+      <div className="collapsible" id="collapsible-complaints-list-filter-id">
       <div {...getCollapseProps()}>
       <div className="content filter-container">
-        <div className="comp-filter-left">
+        <div className="comp-filter-left" id="comp-filter-region-id">
           <div className="comp-filter-label">
               Region
           </div>
@@ -149,7 +149,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={regionCodes} onChange={handleRegionFilter} placeholder="Select" value={regionCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-zone-id">
           <div className="comp-filter-label">
               Zone
           </div>
@@ -157,7 +157,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={zoneCodes} onChange={handleZoneFilter} placeholder="Select" value={zoneCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-community-id">
           <div className="comp-filter-label">
               Community
           </div>
@@ -165,7 +165,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={areaCodes} onChange={handleAreaFilter} placeholder="Select" value={areaCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-officer-id">
           <div className="comp-filter-label">
               Officer Assigned
           </div>
@@ -175,7 +175,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         </div>
         <div className="clear-left-float"></div>
       </div>
-      <div className="content filter-container">
+      <div className="content filter-container" id="comp-filter-violation-id">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Violation Type
@@ -184,7 +184,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={violationCodes} onChange={handleViolationFilter} placeholder="Select" value={violationFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-date-id">
           <div className="comp-filter-label">
               Date Logged
           </div>
@@ -201,14 +201,13 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                     <button
                       aria-label="Previous Month"
                       className={
-                        "react-datepicker__navigation react-datepicker__navigation--previous"
+                        `react-datepicker__navigation react-datepicker__navigation--previous ${customHeaderCount === 1 ? 'datepicker-nav-hidden' : 'datepicker-nav-visible'}`
                       }
-                      style={customHeaderCount === 1 ? { visibility: "hidden" } : { visibility: "visible" }}
                       onClick={decreaseMonth}
                     >
-                      <span style={{top: "5px"}}
+                      <span
                         className={
-                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous"
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous datepicker-nav-icon"
                         }
                       >
                         {"<"}
@@ -223,14 +222,13 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                     <button
                       aria-label="Next Month"
                       className={
-                        "react-datepicker__navigation react-datepicker__navigation--next"
+                        `react-datepicker__navigation react-datepicker__navigation--next ${customHeaderCount === 1 ? 'datepicker-nav-hidden' : 'datepicker-nav-visible'}`
                       }
-                      style={customHeaderCount === 0 ? { visibility: "hidden" } : { visibility: "visible" }}
                       onClick={increaseMonth}
                     >
-                      <span style={{top: "5px"}}
+                      <span
                         className={
-                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--next"
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--next datepicker-nav-icon"
                         }
                       >
                         {">"}
@@ -249,7 +247,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               />
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-status-id">
           <div className="comp-filter-label">
               Status
           </div>
@@ -263,37 +261,37 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
       <div className={pillContainterStyle}>
         <div className={complaintStatusClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => setComplaintStatusFilter(null)}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setComplaintStatusFilter(null)}></button>
             </button>
           </div>
           <div className={dateStatusClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{datePillText}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}} onClick={() => {setStartDateFilter();setEndDateFilter();}}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => {setStartDateFilter();setEndDateFilter();}}></button>
             </button>
           </div>
           <div className={violationClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{violationFilter?.label}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => {setViolationFilter(null)}}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => {setViolationFilter(null)}}></button>
             </button>
           </div>
           <div className={officerClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{(officerFilter?.label === "" ? "Unassigned" : officerFilter?.label)}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setOfficerFilter(null)}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setOfficerFilter(null)}></button>
             </button>
           </div>
           <div className={areaClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{areaCodeFilter?.label}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setAreaCodeFilter(null)}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setAreaCodeFilter(null)}></button>
             </button>
           </div>
           <div className={zoneClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{zoneCodeFilter?.label}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setZoneCodeFilter(null)}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setZoneCodeFilter(null)}></button>
             </button>
           </div>
           <div className={regionClass}>
             <button type="button" className="btn btn-primary comp-filter-btn">{regionCodeFilter?.label}
-              <button type="button" className="btn-close btn-close-white" aria-label="Close" style={{pointerEvents: "auto"}}  onClick={() => setRegionCodeFilter(null)}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setRegionCodeFilter(null)}></button>
             </button>
           </div>
         </div>
