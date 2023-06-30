@@ -1,5 +1,5 @@
-import { formatDate, formatTime } from '../../src/app/common/methods';
-const callDetails = { 
+describe("COMPENF-35 Display HWCR Details", () => {
+  const callDetails = { 
     description: "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves",
     location: "644 Pine Street",
     locationDescription: "", 
@@ -9,19 +9,18 @@ const callDetails = {
     office: "Kamloops",
     zone: "Thompson Nicola",
     region: "Thompson Cariboo"
-}
+  }
 
-const callerInformation = { 
-    name: "Phoebe",
-    phone: "250-556-1234",
-    cell: "",
-    alternate: "",
-    address: "437 Fake St",
-    email: "tester@gmail.com",
-    referred: "Conservation Officer Service"
-}
+  const callerInformation = { 
+      name: "Phoebe",
+      phone: "250-556-1234",
+      cell: "",
+      alternate: "",
+      address: "437 Fake St",
+      email: "tester@gmail.com",
+      referred: "Conservation Officer Service"
+  }
 
-describe("COMPENF-35 Display HWCR Details", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();

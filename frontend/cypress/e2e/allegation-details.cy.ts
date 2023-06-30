@@ -1,6 +1,6 @@
-import { formatDate, formatTime } from "../../src/app/common/methods";
+describe("COMPENF-37 Display ECR Details", () => {
 
-const callDetails = { 
+  const callDetails = { 
     description: "Caller reporting potential dumping of skidder loader tires. Caller advised that a guy showed up to dump some tires and was upset at the price and told the caller he would dump them over the road embankment. Caller advised last seen at location noted below.",
     location: "Crystal Lake Rec Site",
     locationDescription: "tester call description 4", 
@@ -11,19 +11,8 @@ const callDetails = {
     region: "Thompson Cariboo",
     violationInProgress: true,
     violationObserved: false
-}
+  }
 
-const callerInformation = { 
-    name: "Anurupa",
-    phone: "555-555-5561",
-    cell: "",
-    alternate: "",
-    address: "131 fake st",
-    email: "",
-    referred: ""
-}
-
-describe("COMPENF-37 Display ECR Details", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
