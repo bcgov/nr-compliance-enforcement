@@ -138,10 +138,10 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         datePillText = " - " + endDateFilter?.toLocaleDateString()
       }
     return( <>
-      <div className="collapsible">
+      <div className="collapsible" id="collapsible-complaints-list-filter-id">
       <div {...getCollapseProps()}>
       <div className="content filter-container">
-        <div className="comp-filter-left">
+        <div className="comp-filter-left" id="comp-filter-region-id">
           <div className="comp-filter-label">
               Region
           </div>
@@ -149,7 +149,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={regionCodes} onChange={handleRegionFilter} placeholder="Select" value={regionCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-zone-id">
           <div className="comp-filter-label">
               Zone
           </div>
@@ -157,7 +157,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={zoneCodes} onChange={handleZoneFilter} placeholder="Select" value={zoneCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-community-id">
           <div className="comp-filter-label">
               Community
           </div>
@@ -165,7 +165,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={areaCodes} onChange={handleAreaFilter} placeholder="Select" value={areaCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-officer-id">
           <div className="comp-filter-label">
               Officer Assigned
           </div>
@@ -175,7 +175,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         </div>
         <div className="clear-left-float"></div>
       </div>
-      <div className="content filter-container">
+      <div className="content filter-container" id="comp-filter-violation-id">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Violation Type
@@ -184,7 +184,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               <Select options={violationCodes} onChange={handleViolationFilter} placeholder="Select" value={violationFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-date-id">
           <div className="comp-filter-label">
               Date Logged
           </div>
@@ -249,7 +249,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               />
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-status-id">
           <div className="comp-filter-label">
               Status
           </div>
