@@ -27,8 +27,15 @@ export class HwcrComplaintController {
   @Get()
   @Roles(Role.COS_OFFICER)
   findAll(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string) {
-    this.logger.debug("Entering findAll");
     return this.hwcrComplaintService.findAll(sortColumn, sortOrder);
+  }
+
+  @Get('search')
+  @Roles(Role.COS_OFFICER)
+  search(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string, @Query('community') community: string, @Query('zone') zone: string,
+   @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('natureOfComplaint') natureOfComplaint: string, 
+   @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status) {
+    return this.hwcrComplaintService.search(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status);
   }
 
   @Get(':id')
