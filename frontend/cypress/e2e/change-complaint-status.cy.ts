@@ -16,6 +16,8 @@ describe('Complaint Assign and Status Popover spec', () => {
     it('Changes status of open complaint to closed and back to open', () => {
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
+
+      cy.wait(5000);
       cy.get('.popover').should('not.exist');
 
 

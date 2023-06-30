@@ -20,6 +20,8 @@ describe('Complaint Change Status spec - Details View', () => {
       //-- click on HWCR tab
       cy.get(complaintTypes[index]).click({ force: true });
 
+      cy.wait(5000);
+
       //-- check to make sure there are items in the table
       cy.get("#comp-table")
         .find("tr")

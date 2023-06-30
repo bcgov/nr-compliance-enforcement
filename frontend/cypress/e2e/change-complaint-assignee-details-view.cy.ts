@@ -22,6 +22,8 @@ describe('Complaint Change Assignee spec - Details View', () => {
       //-- click on Tab tab
       cy.get(complaintTypes[index]).click({ force: true });
 
+      cy.wait(5000);
+
       cy.get("#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell").click({ force: true });
       cy.wait(2000);
       cy.get('#details_screen_assign_button').click({ force: true });
