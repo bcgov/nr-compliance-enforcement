@@ -101,3 +101,19 @@
 .bs-popover-bottom > .popover-arrow {
   margin-top: 1px;
 }
+
+.datepicker-nav-icon {
+  top: 5px;
+}
+
+.datepicker-nav-icon-hidden {
+  visibility: hidden;
+}
+
+.datepicker-nav-icon-visible {
+  visibility: visible;
+}
+
+.filter-pill-close {
+  pointer-events: auto;
+}
