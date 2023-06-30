@@ -16,23 +16,22 @@ describe('Complaint Change Assignee spec - Details View', () => {
   Cypress._.times(complaintTypes.length, ((index) => {
 
     it('Changes assignee of a complaint', () => {
+      //-- navigate to application root
       cy.visit("/");
+
+      //-- click on Tab tab
       cy.get(complaintTypes[index]).click({ force: true });
-      //-- check to make sure there are items in the table
-      cy.get("#comp-table")
-      .find("tr")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.gt(0);
-      });
-    
-      cy.get("#comp-table > tbody > tr:nth-child(2)  > td.comp-last-updated-cell.comp-cell").click({ force: true });
 
-      cy.window().scrollTo('top')
-      cy.wait(2000);
+      cy.wait(7000);
+
+      cy.get("#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell").click({ force: true });
+      cy.wait(5000);
       cy.get('#details_screen_assign_button').click({ force: true });
-
+      cy.wait(1000);
       // self assign the complaint
       cy.get('#self_assign_button').click();
+      cy.wait(5000);
+      cy.get('#comp-details-assigned-officer-name-text-id').contains('ENV TestAcct').should('exist');
     });
   }));
 });

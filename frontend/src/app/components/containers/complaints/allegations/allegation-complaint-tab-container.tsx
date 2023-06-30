@@ -36,13 +36,13 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, han
     <Navbar className="basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
             <Nav.Item className="nav-item comp-tab-inactive">
-                <button className="nav-link" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)}>Human Wildlife Conflicts</button>
+                <button className="nav-link" id="hwcr-tab" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)}>Human Wildlife Conflicts</button>
             </Nav.Item>
             <Nav.Item className="nav-item comp-tab-active">
-                <button className="nav-link active">Enforcement</button>
+                <button className="nav-link active" id="ers-tab">Enforcement</button>
             </Nav.Item>
             <Nav.Item className="ms-auto" {...getToggleProps()}>
-                <div className="complaint-filter-image-container">
+                <div className="complaint-filter-image-container" id="complaint-filter-image-id">
                     <img src={filterIcon} alt="filter" className="filter-image-spacing"/>
                 </div>
                 <div className="left-float">

@@ -155,18 +155,18 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
         datePillText = " - " + endDateFilter?.toLocaleDateString()
       }
     return( <>
-      <div className="collapsible">
+      <div className="collapsible" id="collapsible-complaints-list-filter-id">
       <div {...getCollapseProps()}>
       <div className="content filter-container">
         <div className="comp-filter-left">
-          <div className="comp-filter-label">
+          <div className="comp-filter-label" id="comp-filter-region-id">
               Region
           </div>
           <div className="filter-select-padding">
               <Select options={regionCodes} onChange={handleRegionCodeFilter} placeholder="Select" value={regionCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-zone-id">
           <div className="comp-filter-label">
               Zone
           </div>
@@ -174,7 +174,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               <Select options={zoneCodes} onChange={handleZoneCodeFilter} placeholder="Select" value={zoneCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-community-id">
           <div className="comp-filter-label">
               Community
           </div>
@@ -182,7 +182,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               <Select options={areaCodes} onChange={handleAreaCodeFilter} placeholder="Select" value={areaCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-officer-id">
           <div className="comp-filter-label">
               Officer Assigned
           </div>
@@ -192,7 +192,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
         </div>
         <div className="clear-left-float"></div>
       </div>
-      <div className="content filter-container">
+      <div className="content filter-container" id="comp-filter-nature-id">
         <div className="comp-filter-left">
           <div className="comp-filter-label">
               Nature of Complaint
@@ -201,7 +201,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter"id="comp-filter-species-id">
           <div className="comp-filter-label">
               Species
           </div>
@@ -209,7 +209,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select"  value={speciesCodeFilter}/>
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter"id="comp-filter-date-id">
           <div className="comp-filter-label">
               Date Logged
           </div>
@@ -272,7 +272,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               />
           </div>
         </div>
-        <div className="comp-filter">
+        <div className="comp-filter" id="comp-filter-status-id">
           <div className="comp-filter-label">
               Status
           </div>
