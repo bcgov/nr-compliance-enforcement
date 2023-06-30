@@ -63,7 +63,7 @@ describe("COMPENF-37 Display ECR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#ers-tab").click({ force: true });
-    cy.wait(5000);
+    cy.wait(7000);
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
