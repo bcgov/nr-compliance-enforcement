@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
@@ -33,6 +33,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === 'Not Assigned' ? 'Assign' : 'Reassign';
+  const [readOnly, setReadOnly] = useState(true);
 
   const applyStatusClass = (state: string): string => {
 
@@ -46,8 +47,12 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     }
   };
 
-  const enableEdit = () => {
-    
+  const editButtonClick = () => {
+    setReadOnly(false);
+  }
+
+  const cancelEditButtonClick = () => {
+    setReadOnly(true);
   }
 
   const openStatusChangeModal = () => {
@@ -121,16 +126,23 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           {species && complaintType !== COMPLAINT_TYPES.ERS && (
             <div className="comp-box-species-type">{species}</div>
           )}
-          <div className="comp-box-actions">
-            <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>{assignText}</span><BsPersonPlus/></Button>
-            <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
-            <Button id="details_screen_edit_button" title="Edit Complaint" variant="outline-primary"  onClick={enableEdit}><span>Edit</span><BsPencil/></Button>
-          </div>
+          { readOnly &&
+            <div className="comp-box-actions">
+              <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>{assignText}</span><BsPersonPlus/></Button>
+              <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
+              <Button id="details_screen_edit_button" title="Edit Complaint" variant="outline-primary"  onClick={editButtonClick}><span>Edit</span><BsPencil/></Button>
+            </div>
+          }
+          { !readOnly && 
+            <div className="comp-box-actions">
+              <Button id="details_screen_cancel_edit_button_top" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelEditButtonClick}><span>Cancel</span></Button>
+            </div>
+          }
         </div>
         <div className="comp-nature-of-complaint">
-          {complaintType !== COMPLAINT_TYPES.ERS
+          { readOnly && complaintType !== COMPLAINT_TYPES.ERS
             ? natureOfComplaint
-            : violationType}
+            : violationType}            
         </div>
       </div>
       {/* <!-- complaint info end --> */}
