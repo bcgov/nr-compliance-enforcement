@@ -4,6 +4,7 @@ import officersInZoneReducer from "./reducers/assign-officers";
 import appReducer from "./reducers/app";
 import allegationComplaintsReducer from "./reducers/allegation-complaint";
 import complaints from "./reducers/complaints";
+import dropdowns from "./reducers/code-tables";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     allegationComplaint: allegationComplaintsReducer,
     hwcrComplaint: hwcrComplaintsReducer,
     officersInZone: officersInZoneReducer,
-    complaints
+    complaints,
+    dropdowns,
   },
 });
 

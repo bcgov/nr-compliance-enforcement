@@ -303,6 +303,55 @@
   }
 }
 
+.comp-complaint-header-edit-block {
+  margin-left: 24px;
+  margin-right: 24px;
+
+  h6 {
+    padding-top: 18px;
+    font-weight: 700;
+  }
+
+  .comp-complaint-header-edit-details {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    border: 1px solid $gray-500;
+    border-radius: 3px;
+    padding: 18px;
+    display: 'flex';
+  }
+
+  .comp-details-edit-label {
+    max-width: 191px;
+    height: 38px;
+    padding-top: 7px;
+    padding-bottom: 24px;
+    margin-bottom: 16px;
+
+  }
+
+  .comp-details-edit-content {
+    max-width: 332px;
+    height: 38px;
+    padding-top: 7px;
+    padding-bottom: 24px;
+    margin-bottom: 16px;
+
+
+    i:first-child {
+      padding-right: 5px;
+    }
+    i:last-child {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+  .comp-attactant-badge {
+    background-color: $gray-200;
+    color: $black;
+  }
+}
+
   .comp-filter-btn
   {
     width: auto;

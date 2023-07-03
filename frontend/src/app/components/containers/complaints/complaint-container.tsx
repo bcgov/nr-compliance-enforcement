@@ -1,9 +1,11 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
 import { getComplaintTypeFromUrl } from "../../../common/methods";
+import { fetchDropdownOptionsAsync } from "../../../store/reducers/code-tables";
+import { useAppDispatch } from "../../../hooks/hooks";
 
 type Props = {
   initialState: number;
@@ -25,6 +27,13 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [complaintType, setComplaintType] = useState<number>(
       _test !== -1 ? _test : initialState
     );
+
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+      dispatch(fetchDropdownOptionsAsync());
+    }, [dispatch]);
+    
 
     function handleChange(newState: number)
     {
