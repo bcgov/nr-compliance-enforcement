@@ -10,6 +10,7 @@ import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
 import { selectComplaintDeails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
+import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 
 export const CallDetails: FC<{ complaintType: string }> = ({
   complaintType,
@@ -27,7 +28,16 @@ export const CallDetails: FC<{ complaintType: string }> = ({
     attractants,
     violationInProgress,
     violationObserved,
-  } = useAppSelector(selectComplaintDeails(complaintType));
+  } = useAppSelector(selectComplaintDeails(complaintType)) as ComplaintDetails;
+
+  const renderCoordinates = (
+    coordinates: number[] | string[] | undefined,
+    coordinateType: Coordinates
+  ): JSX.Element => {
+    const result = parseCoordinates(coordinates, coordinateType);
+
+    return result === 0 ? <>Not Provided</> : <>{result}</>;
+  };
 
   return (
     <div className="comp-complaint-details-block">
@@ -53,9 +63,7 @@ export const CallDetails: FC<{ complaintType: string }> = ({
 
             {complaintType === COMPLAINT_TYPES.HWCR && (
               <div>
-                <div className="comp-details-content-label ">
-                  Attractants
-                </div>
+                <div className="comp-details-content-label ">Attractants</div>
                 <span className="comp-complaint-attactants">
                   {!attractants ||
                     attractants.map(
@@ -111,18 +119,16 @@ export const CallDetails: FC<{ complaintType: string }> = ({
             <div>
               <div className="comp-details-content-label ">X Coordinate</div>
               <div className="comp-details-content comp-padding-right-25">
-                {parseCoordinates(coordinates, Coordinates.Latitude)}
+                {renderCoordinates(coordinates, Coordinates.Latitude)}
               </div>
 
               <div className="comp-details-content-label ">Y Coordinate</div>
               <div className="comp-details-content">
-                {parseCoordinates(coordinates, Coordinates.Longitude)}
+                {renderCoordinates(coordinates, Coordinates.Longitude)}
               </div>
             </div>
             <div>
-              <span className="comp-details-content-label ">
-                Community
-              </span>
+              <span className="comp-details-content-label ">Community</span>
               <span className="comp-details-content">{area}</span>
             </div>
             <div>

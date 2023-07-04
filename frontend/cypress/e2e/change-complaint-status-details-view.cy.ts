@@ -13,17 +13,23 @@ describe('Complaint Change Status spec - Details View', () => {
 
   Cypress._.times(complaintTypes.length, ((index) => {
 
-    it('Changes status of closed complaint to open', () => {
+    it('Changes status of complaint to open, closed, and back to open', () => {
+      
       cy.visit("/");
+
+      //-- click on HWCR tab
       cy.get(complaintTypes[index]).click({ force: true });
+
+      cy.wait(5000);
+
       //-- check to make sure there are items in the table
       cy.get("#comp-table")
-      .find("tr")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.gt(0);
-      });
-    
-      cy.get("#comp-table > tbody > tr:nth-child(2)  > td.comp-last-updated-cell.comp-cell").click({ force: true });
+        .find("tr")
+        .then(({ length }) => {
+          expect(length, "rows N").to.be.gt(0);
+        });
+      cy.wait(2000);
+      cy.get("#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell").click({ force: true });
 
       cy.window().scrollTo('top')
 
@@ -31,30 +37,30 @@ describe('Complaint Change Status spec - Details View', () => {
 
       cy.get('#complaint_status_dropdown').click();
 
-      // Select the option with value "OPEN"
-      cy.get('.react-select__option')
-        .contains('Open')
-        .click()
-
-      cy.get('#update_complaint_status_button').click();
-
-      cy.wait(5000);
-
-      cy.get('#comp-details-status-text-id').contains('OPEN').should('exist');
-
-      cy.get('#details_screen_update_status_button').click({ force: true });
-
-      cy.get('#complaint_status_dropdown').click()
-
-      // Select the option with value "CLOSED"
+      // Select the option with value "Closed"
       cy.get('.react-select__option')
         .contains('Closed')
         .click()
 
       cy.get('#update_complaint_status_button').click();
+
       cy.wait(5000);
 
       cy.get('#comp-details-status-text-id').contains('CLOSED').should('exist');
+
+      cy.get('#details_screen_update_status_button').click({ force: true });
+
+      cy.get('#complaint_status_dropdown').click()
+
+      // Select the option with value "Opened"
+      cy.get('.react-select__option')
+        .contains('Open')
+        .click()
+
+      cy.get('#update_complaint_status_button').click();
+      cy.wait(5000);
+
+      cy.get('#comp-details-status-text-id').contains('OPEN').should('exist');
 
     });
   }));
