@@ -21,6 +21,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [startDateFilter, setStartDateFilter] = useState<Date>();
     const [endDateFilter, setEndDateFilter] = useState<Date>();
     const [complaintStatusFilter, setComplaintStatusFilter] = useState<Option | null>({value: 'OPEN', label: 'Open'});
+    const [numberOfComplaints, setNumberOfComplaints] = useState<number>(0);
     const _test = getComplaintTypeFromUrl();
     const [complaintType, setComplaintType] = useState<number>(
       _test !== -1 ? _test : initialState
@@ -66,7 +67,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
             <div>
                 <HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter}
                     speciesCodeFilter={speicesCodeFilter} setSpeicesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
-                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
+                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} numberOfComplaints={numberOfComplaints} setNumberOfComplaints={setNumberOfComplaints} />
             </div>
         </>;
     }
@@ -77,7 +78,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
             <div>
                 <AllegationComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter}
                     violationFilter={violationFilter} setViolationFilter={setViolationFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
-                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
+                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} numberOfComplaints={numberOfComplaints} setNumberOfComplaints={setNumberOfComplaints} />
             </div>
         </>;
     }

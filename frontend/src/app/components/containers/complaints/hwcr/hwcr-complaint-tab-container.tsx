@@ -30,16 +30,18 @@ type Props = {
     setEndDateFilter: Function,
     complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
+    numberOfComplaints: number,
+    setNumberOfComplaints: Function,
 }
 
 export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter, setSpeicesCodeFilter,
-     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter }) => {
+     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter,  numberOfComplaints, setNumberOfComplaints}) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
     return <>
     <Navbar className="basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
             <Nav.Item className="nav-item comp-tab-active">
-                <button className="nav-link active">Human Wildlife Conflicts</button>
+                <button className="nav-link active">Human Wildlife Conflicts ({numberOfComplaints})</button>
             </Nav.Item>
             <Nav.Item className="nav-item comp-tab-inactive">
                 <button className="nav-link" onClick={() => handleChange(ComplaintType.ALLEGATION_COMPLAINT)}>Enforcement</button>
@@ -59,6 +61,6 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
         setSpeciesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
     <HwcrComplaintTableHeader handleSort={handleSort}/>
     <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} regionCodeFilter={regionCodeFilter} zoneCodeFilter={zoneCodeFilter} areaCodeFilter={areaCodeFilter} officerFilter={officerFilter} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} 
-        endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} />
+        endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} setNumberOfComplaints={setNumberOfComplaints} />
     </>;
 }

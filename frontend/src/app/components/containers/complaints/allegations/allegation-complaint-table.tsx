@@ -19,8 +19,9 @@ type Props = {
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
+    setNumberOfComplaints: Function,
 }
-export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter, setNumberOfComplaints }) => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
 
 
     useEffect(() => {
-            dispatch(getAllegationComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+            dispatch(getAllegationComplaints(sortColumn, sortOrder, setNumberOfComplaints, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
   }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
 
 
@@ -46,7 +47,8 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
-                {allegationComplaintsJson.map((val, key, {length}) => {
+                {
+                allegationComplaintsJson.map((val, key, {length}) => {
                     const complaintIdentifier = val.complaint_identifier.complaint_identifier;
                     const incidentReportedDatetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
                     const violationCode = val.violation_code != null ? val.violation_code.long_description : "";

@@ -28,9 +28,11 @@ type Props = {
     setEndDateFilter: Function,
     complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
+    numberOfComplaints: number,
+    setNumberOfComplaints: Function,
 }
 export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, handleSort, sort, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, violationFilter, setViolationFilter,
-    startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter }) => {
+    startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter, numberOfComplaints, setNumberOfComplaints }) => {
         const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
     return <>
     <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -39,7 +41,7 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, han
                 <button className="nav-link" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)}>Human Wildlife Conflicts</button>
             </Nav.Item>
             <Nav.Item className="nav-item comp-tab-active">
-                <button className="nav-link active">Enforcement</button>
+                <button className="nav-link active">Enforcement ({numberOfComplaints})</button>
             </Nav.Item>
             <Nav.Item className="ms-auto" {...getToggleProps()}>
                 <div className="complaint-filter-image-container">
@@ -56,6 +58,6 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, han
         startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} />
     <AllegationComplaintTableHeader handleSort={handleSort}/>
     <AllegationComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} regionCodeFilter={regionCodeFilter} zoneCodeFilter={zoneCodeFilter} areaCodeFilter={areaCodeFilter} officerFilter={officerFilter} violationFilter={violationFilter} startDateFilter={startDateFilter} 
-        endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} />
+        endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} setNumberOfComplaints={setNumberOfComplaints} />
     </>;
 }
