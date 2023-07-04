@@ -233,20 +233,20 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       }
       {/*Editable aspects of the header when in edit mode */}
       { !readOnly &&
-      <div className="comp-complaint-header-edit-blockcom">
-        <div className="comp-complaint-header-edit-details">
+      <div className="comp-complaint-details-block">
+        <div className="comp-complaint-call-details">
           <Row>
-            <Col className="comp-details-edit-label">
-              <label id="nature_of_complaint_select_label_id" className="col-auto">Nature of Complaint</label>
+            <Col className="comp-details-content-label">
+              <label id="nature_of_complaint_select_label_id">Nature of Complaint</label>
             </Col>
-            <Col className="comp-details-edit-content">
-              <Select options={hwcrNatureOfComplaintCodes} value={selectedNatureOfComplaint} className="col-auto" placeholder="Select" />
+            <Col className="comp-details-content-content">
+              <Select options={hwcrNatureOfComplaintCodes} value={selectedNatureOfComplaint} placeholder="Select" />
             </Col>
-            <Col className="comp-details-edit-label">
+            <Col className="comp-details-content-label">
               <label>Date / Time Logged</label>
             </Col>
-            <Col className="comp-details-edit-content">
-              <span className="col-auto">
+            <Col className="comp-details-content-content">
+              <span>
                   <i className="bi bi-calendar comp-margin-right-xxs"></i>
                   {formatDate(loggedDate)}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
@@ -255,17 +255,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             </Col>
         </Row>
         <Row>
-            <Col className="comp-details-edit-label">
-              <label id="nature_of_complaint_select_label_id" className="col-auto">Species</label>
+            <Col className="comp-details-content-label">
+              <label id="nature_of_complaint_select_label_id">Species</label>
             </Col>
-            <Col className="comp-details-edit-content">
-              <Select options={speciesCodes} value={selectedSpecies} className="col-auto" placeholder="Select" />
+            <Col className="comp-details-content-content">
+              <Select options={speciesCodes} value={selectedSpecies} placeholder="Select" />
             </Col>
-            <Col className="comp-details-edit-label">
+            <Col className="comp-details-content-label">
               <label>Last Updated</label>
             </Col>
-            <Col className="comp-details-edit-content">
-              <span className="col-auto">
+            <Col className="comp-details-content-content">
+              <span>
                   <i className="bi bi-calendar comp-margin-right-xxs"></i>
                   {formatDate(lastUpdated)}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
@@ -274,25 +274,25 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             </Col>
         </Row>
         <Row>
-            <Col className="comp-details-edit-label">
-              <label id="nature_of_complaint_select_label_id" className="col-auto">Status</label>
+            <Col className="comp-details-content-label">
+              <label id="nature_of_complaint_select_label_id">Status</label>
             </Col>
-            <Col className="comp-details-edit-content">
-              <Select options={complaintStatusCodes} value={selectedStatus} className="col-auto" placeholder="Select" />
+            <Col className="comp-details-content-content">
+              <Select options={complaintStatusCodes} value={selectedStatus} placeholder="Select" />
             </Col>
-            <Col className="comp-details-edit-label">
+            <Col className="comp-details-content-label">
               <label>Created By</label>
             </Col>
-            <Col className="comp-details-edit-content">
+            <Col className="comp-details-content-content">
               <span className="comp-padding-left-xs">{createdBy}</span>
             </Col>
         </Row>
         <Row>
-            <Col className="comp-details-edit-label">
-              <label id="nature_of_complaint_select_label_id" className="col-auto">Officer Assigned</label>
+            <Col className="comp-details-content-label">
+              <label id="nature_of_complaint_select_label_id">Officer Assigned</label>
             </Col>
-            <Col className="comp-details-edit-content">
-              <Select options={hwcrNatureOfComplaintCodes} className="col-auto" placeholder="Select" />
+            <Col className="comp-details-content-content">
+              <Select options={hwcrNatureOfComplaintCodes} placeholder="Select" />
             </Col>
         </Row>
       </div>
