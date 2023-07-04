@@ -60,22 +60,13 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
                 <p>{details}</p>
               </div>
               <div>
-                <div className="comp-details-content-label ">Attractants</div>
-                <span className="comp-complaint-attactants">
-                  {!attractants ||
-                    attractants.map(
-                      ({ key, description }: ComplaintDetailsAttractant) => {
-                        return (
-                          <span
-                            className="badge comp-attactant-badge comp-margin-left-xxs"
-                            key={key}
-                          >
-                            {description}
-                          </span>
-                        );
-                      }
-                    )}
-                </span>
+                <div className="comp-details-content-label ">Incident Time</div>
+                <div className="comp-details-content">
+                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
+                  {formatDate(incidentDateTime)}
+                  <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
+                  {formatTime(incidentDateTime)}
+                </div>
               </div>
 
               {complaintType === COMPLAINT_TYPES.HWCR && (
