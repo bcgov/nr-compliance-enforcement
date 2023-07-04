@@ -41,13 +41,12 @@ export const { setAllegationComplaints, updateAllegationComplaintRow } = allegat
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getAllegationComplaints = (sortColumn: string, sortOrder: string, setNumberOfComplaints: Function, regionCodeFilter?:Option | null, zoneCodeFilter?:Option | null, areaCodeFilter?:Option | null, officerFilter?:Option | null, violationFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?: Option | null): AppThunk => async (dispatch) => {
+export const getAllegationComplaints = (sortColumn: string, sortOrder: string, regionCodeFilter?:Option | null, zoneCodeFilter?:Option | null, areaCodeFilter?:Option | null, officerFilter?:Option | null, violationFilter?: Option | null, startDateFilter?: Date | undefined, endDateFilter?: Date | undefined, statusFilter?: Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const response = await axios.get(`${config.API_BASE_URL}/v1/allegation-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, region: regionCodeFilter?.value, zone: zoneCodeFilter?.value, community: areaCodeFilter?.value, 
       officerAssigned: officerFilter?.value, violationCode: violationFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
-      setNumberOfComplaints((<AllegationComplaint[]>(response.data)).length);
     dispatch(
       setAllegationComplaints({
         allegationComplaints: response.data

@@ -19,9 +19,8 @@ type Props = {
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
-    setNumberOfComplaints: Function,
 }
-export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter, setNumberOfComplaints }) => {
+export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -30,7 +29,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
 
 
     useEffect(() => {
-            dispatch(getAllegationComplaints(sortColumn, sortOrder, setNumberOfComplaints, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+            dispatch(getAllegationComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
   }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
 
 

@@ -51,13 +51,12 @@ export const { setHwcrComplaints, updateHwcrComplaintRow, setComplaint } = hwcrC
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getHwcrComplaints = (sortColumn: string, sortOrder: string, setNumberOfComplaints: Function, regionCodeFilter?:Option | null, zoneCodeFilter?:Option | null, areaCodeFilter?:Option | null, officerFilter?:Option | null, natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | null, endDateFilter?: Date | null, statusFilter?:Option | null): AppThunk => async (dispatch) => {
+export const getHwcrComplaints = (sortColumn: string, sortOrder: string, regionCodeFilter?:Option | null, zoneCodeFilter?:Option | null, areaCodeFilter?:Option | null, officerFilter?:Option | null, natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | null, endDateFilter?: Date | null, statusFilter?:Option | null): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, region: regionCodeFilter?.value, zone: zoneCodeFilter?.value, community: areaCodeFilter?.value, 
       officerAssigned: officerFilter?.value, natureOfComplaint: natureOfComplaintFilter?.value, speciesCode: speciesCodeFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
-    setNumberOfComplaints((<HwcrComplaint[]>(response.data)).length);
     dispatch(
       setHwcrComplaints(response.data)
     );

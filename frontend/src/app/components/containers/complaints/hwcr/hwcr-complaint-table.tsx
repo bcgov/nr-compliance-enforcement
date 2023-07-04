@@ -20,17 +20,16 @@ type Props = {
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
-    setNumberOfComplaints: Function,
 }
 
-export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter, setNumberOfComplaints }) => {
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
-            dispatch(getHwcrComplaints(sortColumn, sortOrder, setNumberOfComplaints, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
+            dispatch(getHwcrComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
   }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
 
   const handleComplaintClick = (
