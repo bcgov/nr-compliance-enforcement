@@ -1,15 +1,15 @@
 describe("COMPENF-37 Display ECR Details", () => {
 
   const callDetails = { 
-    description: "Caller reporting potential dumping of skidder loader tires. Caller advised that a guy showed up to dump some tires and was upset at the price and told the caller he would dump them over the road embankment. Caller advised last seen at location noted below.",
-    location: "Crystal Lake Rec Site",
-    locationDescription: "tester call description 4", 
-    incidentTime: "2023-04-07T07:24:00.000Z",
-    community: "Crystal Lake",
-    office: "Clearwater",
+    description: "Caller advised dealing with on going coyote problem from last year. Caller believes someone is feeding the coyotes again. *** Caller is requesting a CO callback ***",
+    location: "Turnoff to Underwood Rd",
+    locationDescription: "tester call description 10", 
+    incidentTime: "2023-04-13T07:24:00.000Z",
+    community: "108 Mile Ranch",
+    office: "100 Mile House",
     zone: "Cariboo Thompson",
     region: "Thompson Cariboo",
-    violationInProgress: true,
+    violationInProgress: false,
     violationObserved: false
   }
 
@@ -50,11 +50,11 @@ describe("COMPENF-37 Display ECR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
     cy.wait(2000);
-    cy.get("#comp-table > tbody > tr:nth-child(17) td.comp-violation-cell.comp-cell").click({ force: true });
+    cy.get("#comp-table > tbody > tr > td.comp-small-cell").contains("23-007890").click({ force: true });
 
     //-- verify the right complaint identifier is selected and the animal type
-    cy.get(".comp-box-complaint-id").contains("23-006884")
-    cy.get("#root > div > div.comp-main-content > div > div.comp-details-header > div.comp-nature-of-complaint").contains("Recreation sites/ trails")
+    cy.get(".comp-box-complaint-id").contains("23-007890")
+    cy.get("#root > div > div.comp-main-content > div > div.comp-details-header > div.comp-nature-of-complaint").contains("Wildlife")
   });
 
   it("it has correct call details", () => {
@@ -72,7 +72,7 @@ describe("COMPENF-37 Display ECR Details", () => {
         expect(length, "rows N").to.be.gt(0);
       });
 
-    cy.get("#comp-table > tbody > tr:nth-child(17) td.comp-violation-cell.comp-cell").click({ force: true });
+      cy.get("#comp-table > tbody > tr > td.comp-small-cell").contains("23-007890").click({ force: true });
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(1) > p").contains(callDetails.description)
