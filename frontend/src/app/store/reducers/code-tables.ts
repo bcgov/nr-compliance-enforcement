@@ -10,11 +10,11 @@ import { HwcrNatureOfComplaintCode } from '../../types/code-tables/hwcr-nature-o
 
 // Define an interface for the dropdown state
 interface DropdownState {
-  agencyCodes: AgencyCode[];
-  complaintStatusCodes: ComplaintStatusCode[];
-  violationCodes: ViolationCode[];
-  speciesCodes: SpeciesCode[];
-  hwcrNatureOfComplaintCodes: HwcrNatureOfComplaintCode[];
+  agencyCodes: DropdownOption[];
+  complaintStatusCodes: DropdownOption[];
+  violationCodes: DropdownOption[];
+  speciesCodes: DropdownOption[];
+  hwcrNatureOfComplaintCodes: DropdownOption[];
   loading: boolean;
   error: string | null;
 }

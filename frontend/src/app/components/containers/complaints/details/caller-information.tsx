@@ -3,7 +3,12 @@ import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 
-export const CallerInformation: FC = () => {
+
+interface ComplaintHeaderProps {
+  readOnly: boolean;
+}
+
+export const CallerInformation: FC<ComplaintHeaderProps> = (readonly) => {
   const {
     name,
     primaryPhone,

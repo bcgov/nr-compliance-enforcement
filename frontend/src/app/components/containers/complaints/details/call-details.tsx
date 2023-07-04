@@ -11,8 +11,14 @@ import { ComplaintDetailsAttractant } from "../../../../types/complaints/details
 import { selectComplaintDeails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
-export const CallDetails: FC<{ complaintType: string }> = ({
+interface ComplaintHeaderProps {
+  complaintType: string;
+  readOnly: boolean;
+}
+
+export const CallDetails: FC<ComplaintHeaderProps> = ({
   complaintType,
+  readOnly,
 }) => {
   const {
     details,
@@ -32,115 +38,143 @@ export const CallDetails: FC<{ complaintType: string }> = ({
   return (
     <div className="comp-complaint-details-block">
       <h6>Call Details</h6>
-      <div className="comp-complaint-call-details">
-        <Row>
-          <Col md="6" className="comp-padding-right-28">
-            <div>
-              <div className="comp-details-content-label">
-                Complaint Description
+      { /* readonly call details section */}
+      { readOnly &&
+        <div className="comp-complaint-call-details">
+          <Row>
+            <Col md="6" className="comp-padding-right-28">
+              <div>
+                <div className="comp-details-content-label">
+                  Complaint Description
+                </div>
+                <p>{details}</p>
               </div>
-              <p>{details}</p>
-            </div>
-            <div>
-              <div className="comp-details-content-label ">Incident Time</div>
-              <div className="comp-details-content">
-                <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                {formatDate(incidentDateTime)}
-                <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(incidentDateTime)}
+              <div>
+                <div className="comp-details-content-label ">Incident Time</div>
+                <div className="comp-details-content">
+                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
+                  {formatDate(incidentDateTime)}
+                  <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
+                  {formatTime(incidentDateTime)}
+                </div>
               </div>
-            </div>
 
-            {complaintType === COMPLAINT_TYPES.HWCR && (
+              {complaintType === COMPLAINT_TYPES.HWCR && (
+                <div>
+                  <div className="comp-details-content-label ">
+                    Attractants
+                  </div>
+                  <span className="comp-complaint-attactants">
+                    {!attractants ||
+                      attractants.map(
+                        ({ key, description }: ComplaintDetailsAttractant) => {
+                          return (
+                            <span
+                              className="badge comp-attactant-badge comp-margin-left-xxs"
+                              key={key}
+                            >
+                              {description}
+                            </span>
+                          );
+                        }
+                      )}
+                  </span>
+                </div>
+              )}
+
+              {complaintType === COMPLAINT_TYPES.ERS && (
+                <>
+                  <div>
+                    <span className="comp-details-content-label ">
+                      Violation In Progress
+                    </span>
+                    <span className="comp-details-content">
+                      {violationInProgress ? "Yes" : "No"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="comp-details-content-label ">
+                      Violation Observed
+                    </span>
+                    <span className="comp-details-content">
+                      {violationObserved ? "Yes" : "No"}
+                    </span>
+                  </div>
+                </>
+              )}
+            </Col>
+            <Col md="6" className="comp-padding-left-28">
               <div>
                 <div className="comp-details-content-label ">
-                  Attractants
+                  Complaint Location
                 </div>
-                <span className="comp-complaint-attactants">
-                  {!attractants ||
-                    attractants.map(
-                      ({ key, description }: ComplaintDetailsAttractant) => {
-                        return (
-                          <span
-                            className="badge comp-attactant-badge comp-margin-left-xxs"
-                            key={key}
-                          >
-                            {description}
-                          </span>
-                        );
-                      }
-                    )}
+                <div className="comp-details-content">{location}</div>
+              </div>
+              <div>
+                <div className="comp-details-content-label ">
+                  Location Description
+                </div>
+                <p>{locationDescription}</p>
+              </div>
+              <div>
+                <div className="comp-details-content-label ">X Coordinate</div>
+                <div className="comp-details-content comp-padding-right-25">
+                  {parseCoordinates(coordinates, Coordinates.Latitude)}
+                </div>
+
+                <div className="comp-details-content-label ">Y Coordinate</div>
+                <div className="comp-details-content">
+                  {parseCoordinates(coordinates, Coordinates.Longitude)}
+                </div>
+              </div>
+              <div>
+                <span className="comp-details-content-label ">
+                  Community
                 </span>
+                <span className="comp-details-content">{area}</span>
               </div>
-            )}
-
-            {complaintType === COMPLAINT_TYPES.ERS && (
-              <>
-                <div>
-                  <span className="comp-details-content-label ">
-                    Violation In Progress
-                  </span>
-                  <span className="comp-details-content">
-                    {violationInProgress ? "Yes" : "No"}
-                  </span>
-                </div>
-                <div>
-                  <span className="comp-details-content-label ">
-                    Violation Observed
-                  </span>
-                  <span className="comp-details-content">
-                    {violationObserved ? "Yes" : "No"}
-                  </span>
-                </div>
-              </>
-            )}
-          </Col>
-          <Col md="6" className="comp-padding-left-28">
-            <div>
-              <div className="comp-details-content-label ">
-                Complaint Location
-              </div>
-              <div className="comp-details-content">{location}</div>
-            </div>
-            <div>
-              <div className="comp-details-content-label ">
-                Location Description
-              </div>
-              <p>{locationDescription}</p>
-            </div>
-            <div>
-              <div className="comp-details-content-label ">X Coordinate</div>
-              <div className="comp-details-content comp-padding-right-25">
-                {parseCoordinates(coordinates, Coordinates.Latitude)}
+              <div>
+                <span className="comp-details-content-label ">Office</span>
+                <span className="comp-details-content">{office}</span>
               </div>
 
-              <div className="comp-details-content-label ">Y Coordinate</div>
-              <div className="comp-details-content">
-                {parseCoordinates(coordinates, Coordinates.Longitude)}
+              <div className="comp-complaint-section">
+                <span className="comp-details-content-label ">Zone</span>
+                <span className="comp-details-content">{zone}</span>
               </div>
-            </div>
-            <div>
-              <span className="comp-details-content-label ">
-                Community
-              </span>
-              <span className="comp-details-content">{area}</span>
-            </div>
-            <div>
-              <span className="comp-details-content-label ">Office</span>
-              <span className="comp-details-content">{office}</span>
-            </div>
+              <div className="comp-complaint-section">
+                <span className="comp-details-content-label ">Region</span>
+                <span className="comp-details-content">{region}</span>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      }
+      { /** edit call details section */}
+      { /* readonly call details section */}
+      { !readOnly &&
+        <div className="comp-complaint-call-details">
+                <Row>
+                  <Col className="comp-details-edit-label">
+                    <label id="complaint_description_edit_label_id" className="col-auto">Complaint Description</label>
+                  </Col>
+                  <Col className="comp-details-edit-content">
+                    <textarea
+                      className="form-control"
+                      id="complaint_description_textarea_id"
+                      value={details}
+                      rows={5}
+                    />
+                  </Col>
+                  <Col className="comp-details-edit-label">
+                    <label>Complaint Location</label>
+                  </Col>
+                  <Col className="comp-details-edit-content">
 
-            <div className="comp-complaint-section">
-              <span className="comp-details-content-label ">Zone</span>
-              <span className="comp-details-content">{zone}</span>
+                  </Col>
+              </Row>
             </div>
-            <div className="comp-complaint-section">
-              <span className="comp-details-content-label ">Region</span>
-              <span className="comp-details-content">{region}</span>
-            </div>
-          </Col>
-        </Row>
-      </div>
+      }
     </div>
   );
 };

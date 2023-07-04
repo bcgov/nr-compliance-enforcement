@@ -491,6 +491,38 @@
     margin: 0px 0px 0px 7px;
   }
 
+.comp-box-footer {
+  margin-right: 24px;
+  height: 100px;
+
+  .comp-box-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 0 0;
+  }
+
+  .comp-box-footer-actions button {
+    border-radius: 4px;
+    
+    
+    
+    font-size: 14px;
+  }
+
+  .comp-box-footer-actions button span {
+    padding-right: 8px;
+  }
+
+  .comp-box-footer-actions button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+  }
+
+}
+
 .comp-cell {
   box-sizing: border-box;
   padding: 12px 12px 12px 12px;

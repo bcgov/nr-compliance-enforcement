@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
@@ -18,9 +18,22 @@ import Select from "react-select";
 import { selectComplaintStatusCodes, selectSpeciesCodes, selectedHwcrNatureOfComplaintCodes } from "../../../../store/reducers/code-tables";
 import { useSelector } from "react-redux";
 
-export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
+interface ComplaintHeaderProps {
+  id: string;
+  complaintType: string;
+  readOnly: boolean;
+  editButtonClick: () => void;
+  cancelButtonClick: () => void;
+  saveButtonClick: () => void;
+}
+
+export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   id,
   complaintType,
+  readOnly,
+  editButtonClick,
+  cancelButtonClick,
+  saveButtonClick
 }) => {
   const {
     loggedDate,
@@ -31,17 +44,15 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     zone,
     natureOfComplaint,
     violationType,
-    species,
+    species
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === 'Not Assigned' ? 'Assign' : 'Reassign';
-  const [readOnly, setReadOnly] = useState(true);
   const complaintStatusCodes = useSelector(selectComplaintStatusCodes);
   const speciesCodes = useSelector(selectSpeciesCodes);
   const hwcrNatureOfComplaintCodes = useSelector(selectedHwcrNatureOfComplaintCodes);
   const applyStatusClass = (state: string): string => {
-
     switch (state.toLowerCase()) {
       case "open":
         return "comp-status-badge-open";
@@ -51,14 +62,6 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
       return "";
     }
   };
-
-  const editButtonClick = () => {
-    setReadOnly(false);
-  }
-
-  const cancelEditButtonClick = () => {
-    setReadOnly(true);
-  }
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -93,6 +96,13 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     );
   };
 
+  speciesCodes.forEach((element) => {
+    //alert(`${species} blablabla ${ element.label}`);
+  })
+
+  const selectedStatus = complaintStatusCodes.find(option => option.value === status);
+  const selectedSpecies = speciesCodes.find(option => option.label === species);
+  const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find(option => option.label === natureOfComplaint);
   return (
     <>
       {/* <!-- breadcrumb start --> */}
@@ -140,8 +150,8 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           }
           { !readOnly && 
             <div className="comp-box-actions">
-              <Button id="details_screen_cancel_edit_button_top" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelEditButtonClick}><span>Cancel</span></Button>
-              <Button id="details_screen_cancel_save_button_top" title="Save Complaint" variant="outline-primary" onClick={cancelEditButtonClick}><span>Save Changes</span></Button>
+              <Button id="details_screen_cancel_edit_button_top" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}><span>Cancel</span></Button>
+              <Button id="details_screen_cancel_save_button_top" title="Save Complaint" variant="outline-primary" onClick={saveButtonClick}><span>Save Changes</span></Button>
             </div>
           }
         </div>
@@ -223,14 +233,14 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
       }
       {/*Editable aspects of the header when in edit mode */}
       { !readOnly &&
-      <div className="comp-complaint-header-edit-block">
+      <div className="comp-complaint-header-edit-blockcom">
         <div className="comp-complaint-header-edit-details">
           <Row>
             <Col className="comp-details-edit-label">
               <label id="nature_of_complaint_select_label_id" className="col-auto">Nature of Complaint</label>
             </Col>
             <Col className="comp-details-edit-content">
-              <Select options={hwcrNatureOfComplaintCodes} className="col-auto" placeholder="Select" />
+              <Select options={hwcrNatureOfComplaintCodes} value={selectedNatureOfComplaint} className="col-auto" placeholder="Select" />
             </Col>
             <Col className="comp-details-edit-label">
               <label>Date / Time Logged</label>
@@ -249,7 +259,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
               <label id="nature_of_complaint_select_label_id" className="col-auto">Species</label>
             </Col>
             <Col className="comp-details-edit-content">
-              <Select options={speciesCodes} className="col-auto" placeholder="Select" />
+              <Select options={speciesCodes} value={selectedSpecies} className="col-auto" placeholder="Select" />
             </Col>
             <Col className="comp-details-edit-label">
               <label>Last Updated</label>
@@ -268,7 +278,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
               <label id="nature_of_complaint_select_label_id" className="col-auto">Status</label>
             </Col>
             <Col className="comp-details-edit-content">
-              <Select options={complaintStatusCodes} className="col-auto" placeholder="Select" />
+              <Select options={complaintStatusCodes} value={selectedStatus} className="col-auto" placeholder="Select" />
             </Col>
             <Col className="comp-details-edit-label">
               <label>Created By</label>
@@ -282,7 +292,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
               <label id="nature_of_complaint_select_label_id" className="col-auto">Officer Assigned</label>
             </Col>
             <Col className="comp-details-edit-content">
-              <Select options={complaintStatusCodes} className="col-auto" placeholder="Select" />
+              <Select options={hwcrNatureOfComplaintCodes} className="col-auto" placeholder="Select" />
             </Col>
         </Row>
       </div>
