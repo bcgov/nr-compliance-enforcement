@@ -7,6 +7,7 @@ import {
   alertCount,
   getTokenProfile,
   profileInitials,
+  profileZone,
 } from "../../../store/reducers/app";
 import { Link } from "react-router-dom";
 
