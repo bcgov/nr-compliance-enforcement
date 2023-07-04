@@ -7,6 +7,7 @@ import config from '../../../config';
 import { SpeciesCode } from '../../types/code-tables/species-code';
 import { ViolationCode } from '../../types/code-tables/violation-code';
 import { HwcrNatureOfComplaintCode } from '../../types/code-tables/hwcr-nature-of-complaint-code';
+import { DropdownOption } from '../../types/code-tables/option';
 
 // Define an interface for the dropdown state
 interface DropdownState {

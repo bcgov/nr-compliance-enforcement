@@ -96,13 +96,11 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
-  speciesCodes.forEach((element) => {
-    //alert(`${species} blablabla ${ element.label}`);
-  })
-
+  // Used to set selected dropdowns
   const selectedStatus = complaintStatusCodes.find(option => option.value === status);
   const selectedSpecies = speciesCodes.find(option => option.label === species);
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find(option => option.label === natureOfComplaint);
+
   return (
     <>
       {/* <!-- breadcrumb start --> */}
