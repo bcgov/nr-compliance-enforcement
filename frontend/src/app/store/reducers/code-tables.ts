@@ -8,6 +8,8 @@ import { SpeciesCode } from '../../types/code-tables/species-code';
 import { ViolationCode } from '../../types/code-tables/violation-code';
 import { HwcrNatureOfComplaintCode } from '../../types/code-tables/hwcr-nature-of-complaint-code';
 import { DropdownOption } from '../../types/code-tables/option';
+import { CosGeoOrgUnit } from '../../types/person/person';
+import { AttractantCode } from '../../types/code-tables/attractant-code';
 
 // Define an interface for the dropdown state
 interface DropdownState {
@@ -16,18 +18,20 @@ interface DropdownState {
   violationCodes: DropdownOption[];
   speciesCodes: DropdownOption[];
   hwcrNatureOfComplaintCodes: DropdownOption[];
+  areaCodes: DropdownOption[];
+  attractantCodes: DropdownOption[];
   loading: boolean;
   error: string | null;
 }
 
 // Async thunk to fetch dropdown options
-export const fetchDropdownOptionsAsync = createAsyncThunk<
+export const fetchCodeTablesAsync = createAsyncThunk<
   DropdownState,
   undefined,
   { rejectValue: string }
->('dropdown/fetchDropdownOptions', async (_, { rejectWithValue }) => {
+>('dropdown/fetchCodeTables', async (_, { rejectWithValue }) => {
   try {
-
+    
     const token = localStorage.getItem("user");
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
@@ -47,6 +51,12 @@ export const fetchDropdownOptionsAsync = createAsyncThunk<
 
     const hwcrNatureOfComplaintCodeResponse = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code`);
     const hwcrNatureOfComplaintCodes = await hwcrNatureOfComplaintCodeResponse.data;
+
+    const areaCodesResponse = await axios.get(`${config.API_BASE_URL}/v1/cos-geo-org-unit`);
+    const areaCodes = await areaCodesResponse.data;
+
+    const attractantCodesResponse = await axios.get(`${config.API_BASE_URL}/v1/attractant-code`);
+    const attractantCodes = await attractantCodesResponse.data;
 
     // Transform the fetched data into the DropdownOption type
     const transformedAgencyCodes = agencyCodes.map((agencyCode: AgencyCode) => ({
@@ -71,6 +81,17 @@ export const fetchDropdownOptionsAsync = createAsyncThunk<
       value: hwcrNatureOfComplaintCode.hwcr_complaint_nature_code,
       label: hwcrNatureOfComplaintCode.long_description,
     }));
+
+    const transformedAreaCodes = areaCodes.map((areaCode: CosGeoOrgUnit) => ({
+      value: areaCode.area_code,
+      label: areaCode.area_name,
+    }));
+
+    const transformedAttractantCodes = attractantCodes.map((attractantCode: AttractantCode) => ({
+      value: attractantCode.attractant_code,
+      label: attractantCode.long_description,
+    }));
+
     // Return the fetched dropdown options
     return {
       agencyCodes: transformedAgencyCodes,
@@ -78,6 +99,8 @@ export const fetchDropdownOptionsAsync = createAsyncThunk<
       speciesCodes: transformedSpeciesCodes,
       violationCodes: transformedViolationCodes,
       hwcrNatureOfComplaintCodes: transformedHwcrNatureOfComplaintCodes,
+      areaCodes: transformedAreaCodes,
+      attractantCodes: transformedAttractantCodes,
       loading: false,
       error: null,
     };
@@ -93,6 +116,8 @@ const initialState: DropdownState = {
   speciesCodes: [],
   violationCodes: [],
   hwcrNatureOfComplaintCodes: [],
+  areaCodes: [],
+  attractantCodes: [],
   loading: false,
   error: null,
 };
@@ -103,20 +128,22 @@ const dropdownSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDropdownOptionsAsync.pending, (state) => {
+      .addCase(fetchCodeTablesAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchDropdownOptionsAsync.fulfilled, (state, action) => {
+      .addCase(fetchCodeTablesAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.agencyCodes = action.payload.agencyCodes;
         state.complaintStatusCodes = action.payload.complaintStatusCodes;
         state.speciesCodes = action.payload.speciesCodes;
         state.violationCodes = action.payload.violationCodes;
         state.hwcrNatureOfComplaintCodes = action.payload.hwcrNatureOfComplaintCodes;
+        state.areaCodes = action.payload.areaCodes;
+        state.attractantCodes = action.payload.attractantCodes;
         
       })
-      .addCase(fetchDropdownOptionsAsync.rejected, (state, action) => {
+      .addCase(fetchCodeTablesAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
@@ -128,5 +155,7 @@ export const selectComplaintStatusCodes = (state: RootState) => state.dropdowns.
 export const selectSpeciesCodes = (state: RootState) => state.dropdowns.speciesCodes;
 export const selectViolationCodes = (state: RootState) => state.dropdowns.violationCodes;
 export const selectedHwcrNatureOfComplaintCodes = (state: RootState) => state.dropdowns.hwcrNatureOfComplaintCodes;
+export const selectedAreaCodes = (state: RootState) => state.dropdowns.areaCodes;
+export const selectedAttractantCodes = (state: RootState) => state.dropdowns.attractantCodes;
 
 export default dropdownSlice.reducer;
