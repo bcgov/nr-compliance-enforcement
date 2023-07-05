@@ -4,6 +4,9 @@ import { SsoToken } from "../../types/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "../../types/app/profile";
 import { UUID } from "crypto";
+import axios from "axios";
+import { Officer } from "../../types/person/person";
+import config from "../../../config";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -86,6 +89,11 @@ export const profileIdir = (state: RootState): UUID => {
   return `${profile.idir}`;
 };
 
+export const profileZone = (state: RootState): string => {
+  const { profile } = state.app;
+  return `${profile.zone}`;
+};
+
 export const selectModalOpenState = (state: RootState): boolean => {
   const { app } = state;
   return app.modalIsOpen;
@@ -124,19 +132,37 @@ export const selectClosingCallback = (state: RootState): any => {
   };
 
 //-- thunks
-export const getTokenProfile = (): AppThunk => (dispatch) => {
+export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
     const { given_name, family_name, email, idir_user_guid, idir_username } = decoded;
     let idir_user_guid_transformed: UUID;
     idir_user_guid_transformed = idir_user_guid as UUID;
+
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    const response = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
+    
+    let office = "";
+    let region = "";
+    let zone = "";
+
+    if(response.data.office_guid !== null)
+    {
+      const { office_guid: { cos_geo_org_unit: unit} } = response.data;
+      office = unit.office_location_code;
+      region = unit.region_code;
+      zone = unit.zone_code;
+    } 
     const profile: Profile = {
       givenName: given_name,
       surName: family_name,
       email: email,
       idir: idir_user_guid_transformed,
-      idir_username: idir_username
+      idir_username: idir_username,
+      office: office,
+      region: region,
+      zone: zone,
     };
 
     dispatch(setTokenProfile(profile));
@@ -146,7 +172,7 @@ export const getTokenProfile = (): AppThunk => (dispatch) => {
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
-  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "" },
+  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "" },
   isSidebarOpen: true,
 
   modalIsOpen: false,
@@ -168,7 +194,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         surName: payload.surName,
         email: payload.email,
         idir: payload.idir,
-        idir_username: payload.idir_username
+        idir_username: payload.idir_username,
+        office: payload.office,
+        region: payload.region,
+        zone: payload.zone
       };
       return { ...state, profile };
     }

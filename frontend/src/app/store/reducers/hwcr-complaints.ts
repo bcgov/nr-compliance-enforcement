@@ -163,7 +163,6 @@ export const selectComplaintHeader = (state: RootState) => {
 };
 
 export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
-  let result: ComplaintDetails = {};
 
   const { complaint_identifier, attractant_hwcr_xref } =
     state.hwcrComplaint.complaint;
