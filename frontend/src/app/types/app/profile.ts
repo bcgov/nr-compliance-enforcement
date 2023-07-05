@@ -5,5 +5,8 @@ export default interface Profile {
     surName: string,
     email: string,
     idir: UUID,
-    idir_username: string
+    idir_username: string,
+    office: string,
+    region: string,
+    zone: string,
 }
