@@ -65,12 +65,6 @@ export class PersonService {
     .leftJoinAndSelect('officer.office_guid','office')
     .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit_flat_vw')
     .where("cos_geo_org_unit_flat_vw.zone_code = :zone_code", {zone_code});
-    process.stdout.write(queryBuilder.getQueryAndParameters().toLocaleString());
-    return this.personRepository.createQueryBuilder('person')
-    .leftJoinAndSelect('person.officer', 'officer')
-    .leftJoinAndSelect('officer.office_guid','office')
-    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit_flat_vw')
-    .where("cos_geo_org_unit_flat_vw.zone_code = :zone_code", {zone_code})
-    .getMany();
+    return queryBuilder.getMany();
   }
 }
