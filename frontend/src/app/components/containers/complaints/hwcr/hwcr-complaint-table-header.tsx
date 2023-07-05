@@ -60,7 +60,7 @@ export const HwcrComplaintTableHeader: FC<Props>  = ({ handleSort }) => {
                     <div className="comp-header-label">
                         Officer Assigned
                     </div>
-                    <div className="comp-header-caret">
+                    <div className="comp-header-caret" onClick={() => handleSort("last_name")}>
                         <img src={carets} alt="sort"/>
                     </div>
                 </th>
