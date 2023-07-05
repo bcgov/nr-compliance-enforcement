@@ -46,15 +46,4 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
     cy.wait(500);
     cy.get("#root > div > div.comp-main-content > div.comp-sub-header").contains("Complaints")
   });
-
-
-  // it("it can load zone at a glance", () => {
-  //   //-- navigate to application root
-  //   cy.visit("/");
-
-  //   //-- click on HWCR tab
-  //   cy.get("#hwcr-tab").click({ force: true });
-  //   cy.wait(5000);
-
-  // });
 });
