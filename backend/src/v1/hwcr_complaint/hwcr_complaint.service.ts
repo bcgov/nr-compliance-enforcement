@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { HwcrComplaint } from './entities/hwcr_complaint.entity';
@@ -57,7 +57,7 @@ export class HwcrComplaintService {
     } catch (err) {
       this.logger.error(err);
       await queryRunner.rollbackTransaction();
-      newHwcrComplaintString = "Error Occured";
+      throw new BadRequestException(err);
       } finally {
         await queryRunner.release();
       }

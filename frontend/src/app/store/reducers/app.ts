@@ -142,15 +142,29 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const response = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
+    
+    let office = "";
+    let region = "";
+    let zone = "";
+    
+    console.log("empty response data: " + response.data);
+
+    if(JSON.stringify(response.data) !== "\"\"") //no result returns a "" -- weird
+    {
+      const { office_guid: { cos_geo_org_unit: unit} } = response.data;
+      office = unit.office_location_code;
+      region = unit.region_code;
+      zone = unit.zone_code;
+    } 
     const profile: Profile = {
       givenName: given_name,
       surName: family_name,
       email: email,
       idir: idir_user_guid_transformed,
       idir_username: idir_username,
-      office: response.data.office_guid.cos_geo_org_unit.office_location_code,
-      region: response.data.office_guid.cos_geo_org_unit.region_code,
-      zone: response.data.office_guid.cos_geo_org_unit.zone_code,
+      office: office,
+      region: region,
+      zone: zone,
     };
 
     dispatch(setTokenProfile(profile));
