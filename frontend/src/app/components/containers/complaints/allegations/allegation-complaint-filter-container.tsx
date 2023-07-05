@@ -6,6 +6,8 @@ import DatePicker from "react-datepicker";
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
 import Option from "../../../../types/app/option";
+import { useAppSelector } from "../../../../hooks/hooks";
+import { profileInitials } from "../../../../store/reducers/app";
 
 type Props = {
     getCollapseProps: Function;
@@ -41,6 +43,8 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
         setStartDateFilter(start);
         setEndDateFilter(end);
       };
+
+    const defaultZone = useAppSelector(profileInitials);
 
     useEffect(() => {
         async function fetchCodes()
