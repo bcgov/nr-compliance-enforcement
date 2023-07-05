@@ -306,48 +306,50 @@
 .comp-complaint-header-edit-block {
   margin-left: 24px;
   margin-right: 24px;
+  padding: 18px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  border: 1px solid $gray-500;
+  border-radius: 3px;
+  padding: 18px;
 
   h6 {
     padding-top: 18px;
     font-weight: 700;
   }
 
-  .comp-complaint-header-edit-details {
-    margin-top: 18px;
-    margin-bottom: 18px;
-    border: 1px solid $gray-500;
-    border-radius: 3px;
-    padding: 18px;
-    display: 'flex';
-  }
+  .comp-details-content {
+    color: $gray-900;
 
+    i.bi {
+      color: $gray-500;
+      padding: 4px;
+    }
+  }
+}
+
+.comp-details-edit-row {
+  display: flex;
+  flex-wrap: wrap;
+  
+  gap: 16px;
+  padding: 7px 24px 7px 0px;
+  
   .comp-details-edit-label {
-    max-width: 191px;
     height: 38px;
-    padding-top: 7px;
-    padding-bottom: 24px;
-    margin-bottom: 16px;
+    width: 200px;
+    padding: 7px 24px 7px 0px;
+    color: $gray-500;
   }
 
-  .comp-details-edit-content {
-    max-width: 332px;
-    height: 38px;
-    padding-top: 7px;
-    padding-bottom: 24px;
-    margin-bottom: 16px;
-
-
-    i:first-child {
-      padding-right: 5px;
-    }
-    i:last-child {
-      padding-left: 5px;
-      padding-right: 5px;
-    }
+  .comp-details-edit-input {
+    width: 332px;
+    height: 54px;
+    padding: 0px 32px 16px 0px; 
   }
-  .comp-attactant-badge {
-    background-color: $gray-200;
-    color: $black;
+
+  .comp-details-content {
+    padding-top: 7px;
   }
 }
 

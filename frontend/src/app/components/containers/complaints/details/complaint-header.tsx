@@ -10,11 +10,10 @@ import {
   formatTime,
   getAvatarInitials,
 } from "../../../../common/methods";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button,  } from "react-bootstrap";
 import { BsPersonPlus, BsPencil } from 'react-icons/bs';
 import { openModal } from "../../../../store/reducers/app";
 import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
-import Select from "react-select";
 import { selectComplaintStatusCodes, selectSpeciesCodes, selectedHwcrNatureOfComplaintCodes } from "../../../../store/reducers/code-tables";
 import { useSelector } from "react-redux";
 
@@ -95,11 +94,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       })
     );
   };
-
-  // Used to set selected dropdowns
-  const selectedStatus = complaintStatusCodes.find(option => option.value === status);
-  const selectedSpecies = speciesCodes.find(option => option.label === species);
-  const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find(option => option.label === natureOfComplaint);
 
   return (
     <>
@@ -229,74 +223,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </div>
       </div>
       }
-      {/*Editable aspects of the header when in edit mode */}
-      { !readOnly &&
-      <div className="comp-complaint-details-block">
-        <div className="comp-complaint-call-details">
-          <Row>
-            <Col className="comp-details-content-label">
-              <label id="nature_of_complaint_select_label_id">Nature of Complaint</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <Select options={hwcrNatureOfComplaintCodes} value={selectedNatureOfComplaint} placeholder="Select" />
-            </Col>
-            <Col className="comp-details-content-label">
-              <label>Date / Time Logged</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <span>
-                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                  {formatDate(loggedDate)}
-                  <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                  {formatTime(loggedDate)}
-              </span>
-            </Col>
-        </Row>
-        <Row>
-            <Col className="comp-details-content-label">
-              <label id="nature_of_complaint_select_label_id">Species</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <Select options={speciesCodes} value={selectedSpecies} placeholder="Select" />
-            </Col>
-            <Col className="comp-details-content-label">
-              <label>Last Updated</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <span>
-                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                  {formatDate(lastUpdated)}
-                  <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                  {formatTime(lastUpdated)}
-              </span>
-            </Col>
-        </Row>
-        <Row>
-            <Col className="comp-details-content-label">
-              <label id="nature_of_complaint_select_label_id">Status</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <Select options={complaintStatusCodes} value={selectedStatus} placeholder="Select" />
-            </Col>
-            <Col className="comp-details-content-label">
-              <label>Created By</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <span className="comp-padding-left-xs">{createdBy}</span>
-            </Col>
-        </Row>
-        <Row>
-            <Col className="comp-details-content-label">
-              <label id="nature_of_complaint_select_label_id">Officer Assigned</label>
-            </Col>
-            <Col className="comp-details-content-content">
-              <Select options={hwcrNatureOfComplaintCodes} placeholder="Select" />
-            </Col>
-        </Row>
-      </div>
-      </div>
-      }
-
       {/* <!-- complaint status details end --> */}
     </>
   );

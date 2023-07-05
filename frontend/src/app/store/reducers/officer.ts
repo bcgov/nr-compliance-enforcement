@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
@@ -12,10 +12,17 @@ import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "./complaints";
+import { DropdownOption } from "../../types/code-tables/option";
 
 const initialState: AssignOfficersState = {
     officersInZone: []
 };
+
+interface DropdownState {
+  officersInZoneOptions: DropdownOption[];
+  loading: boolean;
+  error: string | null;
+}
 
 export const assignOfficersSlice = createSlice({
   name: "assignOfficers",
@@ -52,6 +59,37 @@ export const getOfficersInZone = (zone: string): AppThunk => async (dispatch) =>
     );
   }
 };
+
+// Given a zone, returns a list of persons in that zone.
+export const fetchDropdownOptionsAsync = createAsyncThunk<
+  DropdownState,
+  undefined,
+  { rejectValue: string }
+>('dropdown/fetchOfficerOptions', async (zone, { rejectWithValue }) => {
+
+
+  const token = localStorage.getItem("user");
+  try {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    
+    const response = await axios.get<Person[]>(`${config.API_BASE_URL}/v1/person/find-by-zone/${zone}`);
+
+    // Transform the fetched data into the DropdownOption type
+    const transformOfficers = response.data.map((person: Person) => ({
+      value: person.person_guid,
+      label: `${person.first_name} ${person.last_name}` ,
+    }));
+   // Return the fetched dropdown options
+   return {
+    officersInZoneOptions: transformOfficers,
+    loading: false,
+    error: null,
+    };
+  } catch (error) {
+    // Handle API request errors
+    return rejectWithValue('Failed to fetch dropdown options.');
+  }
+});
 
 // Assigns the current user to an office
 export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string): AppThunk => async (dispatch) => {

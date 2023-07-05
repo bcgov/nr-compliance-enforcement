@@ -14,12 +14,10 @@ import { ComplaintDetails } from "../../../../types/complaints/details/complaint
 
 interface ComplaintHeaderProps {
   complaintType: string;
-  readOnly: boolean;
 }
 
 export const CallDetails: FC<ComplaintHeaderProps> = ({
   complaintType,
-  readOnly,
 }) => {
   const {
     details,
@@ -49,7 +47,6 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
     <div className="comp-complaint-details-block">
       <h6>Call Details</h6>
       { /* readonly call details section */}
-      { readOnly &&
         <div className="comp-complaint-call-details">
           <Row>
             <Col md="6" className="comp-padding-right-28">
@@ -157,31 +154,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
             </Col>
           </Row>
         </div>
-      }
-      { /** edit call details section */}
-      { /* readonly call details section */}
-      { !readOnly &&
-        <div className="comp-complaint-call-details">
-                <Row>
-                  <Col className="comp-details-edit-label">
-                    <label id="complaint_description_edit_label_id" className="col-auto">Complaint Description</label>
-                  </Col>
-                  <Col className="comp-details-edit-content">
-                    <textarea
-                      className="form-control"
-                      id="complaint_description_textarea_id"
-                      value={details}
-                      rows={5}
-                    />
-                  </Col>
-                  <Col className="comp-details-edit-label">
-                    <label>Complaint Location</label>
-                  </Col>
-                  <Col className="comp-details-edit-content">
-                  </Col>
-              </Row>
-            </div>
-      }
+
     </div>
   );
 };

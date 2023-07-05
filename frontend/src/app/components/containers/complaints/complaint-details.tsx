@@ -11,8 +11,7 @@ import {
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
 import { Button } from "react-bootstrap";
-import { fetchDropdownOptionsAsync } from "../../../store/reducers/code-tables";
-
+import { ComplaintDetailsEdit } from "./details/complaint-details-edit";
 
 type ComplaintParams = {
   id: string;
@@ -56,30 +55,32 @@ export const ComplaintDetails: FC = () => {
     }
   }, [id, complaintType, complaint, dispatch]);
 
-  useEffect(() => {
-    dispatch(fetchDropdownOptionsAsync());
-  }, [dispatch]);
-
-
   return (
+
     <div className="comp-complaint-details">
       <ComplaintHeader id={id} complaintType={complaintType} readOnly={readOnly} editButtonClick={editButtonClick} cancelButtonClick={cancelButtonClick} saveButtonClick={saveButtonClick} />
-      <CallDetails complaintType={complaintType} readOnly={readOnly} />
-      <CallerInformation  readOnly={readOnly} />
-      {complaintType === COMPLAINT_TYPES.ERS && (
+      { readOnly &&
+       <CallDetails complaintType={complaintType}/>
+      }
+      { readOnly &&
+      <CallerInformation/>
+      }
+      { readOnly && complaintType === COMPLAINT_TYPES.ERS && (
         <SuspectWitnessDetails />
       )}
-
-          { !readOnly && 
-            <div className="comp-box-footer">
-              <div className="comp-box-footer-actions">
-                <Button id="details_screen_cancel_edit_button_footer" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}><span>Cancel</span></Button>
-                <Button id="details_screen_cancel_save_button_footer" title="Save Complaint" variant="primary" onClick={saveButtonClick}><span>Save Changes</span></Button>
-              </div>
-            </div>
-          }
+      { !readOnly &&
+        <ComplaintDetailsEdit complaintType={complaintType}/>
+      }
+      { !readOnly && 
+        <div className="comp-box-footer">
+          <div className="comp-box-footer-actions">
+            <Button id="details_screen_cancel_edit_button_footer" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}><span>Cancel</span></Button>
+            <Button id="details_screen_cancel_save_button_footer" title="Save Complaint" variant="primary" onClick={saveButtonClick}><span>Save Changes</span></Button>
+          </div>
+        </div>
+      }
 
 
     </div>
-  );
-};
+
+)};

@@ -4,11 +4,7 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 
 
-interface ComplaintHeaderProps {
-  readOnly: boolean;
-}
-
-export const CallerInformation: FC<ComplaintHeaderProps> = (readonly) => {
+export const CallerInformation: FC = () => {
   const {
     name,
     primaryPhone,

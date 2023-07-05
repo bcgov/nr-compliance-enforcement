@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileDisplayName, profileIdir, profileInitials, selectModalData, userId } from "../../../store/reducers/app";
-import { assignCurrentUserToComplaint, getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/assign-officers";
+import { assignCurrentUserToComplaint, getOfficersInZone, officersInZone, updateComplaintAssignee } from "../../../store/reducers/officer";
 import { UUID } from "crypto";
 
 type AssignOfficerModalProps = {

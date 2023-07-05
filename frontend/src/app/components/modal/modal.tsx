@@ -12,7 +12,7 @@ import {
   selectModalType,
 } from "../../store/reducers/app";
 import { MODAL_COMPONENTS } from "./model-components";
-import { setOfficersInZone } from "../../store/reducers/assign-officers";
+import { setOfficersInZone } from "../../store/reducers/officer";
 
 export const ModalComponent: FC = () => {
   const dispatch = useAppDispatch();
