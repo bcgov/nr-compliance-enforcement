@@ -149,7 +149,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     
     console.log("empty response data: " + response.data);
 
-    if(JSON.stringify(response.data) !== "\"\"") //no result returns a "" -- weird
+    if(response.data.office_guid !== null)
     {
       const { office_guid: { cos_geo_org_unit: unit} } = response.data;
       office = unit.office_location_code;
