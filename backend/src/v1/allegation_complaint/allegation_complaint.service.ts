@@ -79,7 +79,15 @@ export class AllegationComplaintService {
 
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
     const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-    const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind') ? 'allegation_complaint.' : 'complaint_identifier.';
+    let sortTable = 'complaint_identifier.';
+    if (sortColumn === 'complaint_identifier' || sortColumn === 'violation_code' || sortColumn === 'in_progress_ind')
+    {
+      sortTable ='allegation_complaint.';
+    }
+    else if(sortColumn === 'last_name')
+    {
+      sortTable ='person.';
+    }
     const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)';
 
     const queryBuilder = this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')

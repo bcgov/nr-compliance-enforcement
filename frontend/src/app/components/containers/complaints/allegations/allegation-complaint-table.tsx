@@ -46,7 +46,8 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
-                {allegationComplaintsJson.map((val, key, {length}) => {
+                {
+                allegationComplaintsJson.map((val, key, {length}) => {
                     const complaintIdentifier = val.complaint_identifier.complaint_identifier;
                     const incidentReportedDatetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
                     const violationCode = val.violation_code != null ? val.violation_code.long_description : "";
