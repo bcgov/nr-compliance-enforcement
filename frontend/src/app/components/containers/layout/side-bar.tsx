@@ -20,6 +20,11 @@ export const SideBar: FC = () => {
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
     },
+    {
+      name: "Zone at a Glance",
+      icon: "bi bi-buildings",
+      route: "/zone/at-a-glance",
+    },
   ];
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {

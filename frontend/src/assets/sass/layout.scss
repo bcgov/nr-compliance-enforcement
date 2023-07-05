@@ -78,9 +78,14 @@
   padding: 16px;
   z-index: 8;
   overflow: hidden;
-  // -webkit-transition: all 0.1s ease-in-out;
-  // -moz-transition: all 0.1s ease-in-out;
-  // transition: all 0.1s ease-in-out;
+  
+  ul > li:first-child { 
+    margin-top: 0px;
+  }
+
+  ul > li:last-child { 
+    margin-bottom: 0px;
+  }
 
   &.collapsed {
     width: 72px;
@@ -91,7 +96,6 @@
     cursor: pointer;
   }
 }
-
 
 .comp-main-content {
   margin-left: 254px;
@@ -152,6 +156,11 @@
   li > i.bi {
     padding-right: 8px;
     color: $bc-gov-primary;
+  }
+
+  li { 
+    margin-top: 12px;
+    margin-bottom: 12px;
   }
 }
 
