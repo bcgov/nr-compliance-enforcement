@@ -146,8 +146,6 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     let office = "";
     let region = "";
     let zone = "";
-    
-    console.log("empty response data: " + response.data);
 
     if(response.data.office_guid !== null)
     {
