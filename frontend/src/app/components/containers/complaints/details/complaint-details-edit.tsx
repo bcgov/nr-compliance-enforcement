@@ -22,6 +22,7 @@ import {
   selectedAttractantCodes,
 } from "../../../../store/reducers/code-tables";
 import { useSelector } from "react-redux";
+import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -55,6 +56,16 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     violationType,
     species,
   } = useAppSelector(selectComplaintHeader(complaintType));
+
+  const {
+    name,
+    primaryPhone,
+    secondaryPhone,
+    alternatePhone,
+    address,
+    email,
+    referredByAgencyCode,
+  } = useAppSelector(selectComplaintCallerInformation);
 
   const dispatch = useAppDispatch();
 
@@ -102,7 +113,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
 
-  const selectedAttractants = attractantCodes.filter((attractantCode) => attractants?.some((attractant) => attractant.description === attractantCode.label));
+  const selectedAttractants = attractantCodes.filter((attractantCode) =>
+    attractants?.some(
+      (attractant) => attractant.description === attractantCode.label
+    )
+  );
 
   const handleIncidentDateTimeChange = (date: Date | null) => {
     //setSelectedIncidentDateTime(date);
@@ -110,310 +125,277 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
 
   return (
     <div>
-      { /* edit header block */ }
+      {/* edit header block */}
       <div className="comp-complaint-header-edit-block">
-        <div className="comp-details-edit-row">
-          <div className="comp-details-edit-label">
-            <label id="nature_of_complaint_select_label_id">
-              Nature of Complaint
-            </label>
-          </div>
-          <div className="comp-details-edit-input">
-            <Select
-              options={hwcrNatureOfComplaintCodes}
-              value={selectedNatureOfComplaint}
-              placeholder="Select"
-            />
-          </div>
-          <div className="comp-details-edit-label">
-            <label>Date / Time Logged</label>
-          </div>
-          <div className="comp-details-content">
-            <i className="bi bi-calendar comp-margin-right-xxs"></i>
-            {formatDate(loggedDate)}
-            <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-            {formatTime(loggedDate)}
-          </div>
-        </div>
-        <div className="comp-details-edit-row">
-          <div className="comp-details-edit-label">
-            <label id="nature_of_complaint_select_label_id">Species</label>
-          </div>
-          <div className="comp-details-edit-input">
-            <Select
-              options={speciesCodes}
-              value={selectedSpecies}
-              placeholder="Select"
-            />
-          </div>
-          <div className="comp-details-edit-label">
-            <label>Last Updated</label>
-          </div>
-          <div className="comp-details-content">
-            <i className="bi bi-calendar comp-margin-right-xxs"></i>
-            {formatDate(lastUpdated)}
-            <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-            {formatTime(lastUpdated)}
-          </div>
-        </div>
-        <div className="comp-details-edit-row">
-          <div className="comp-details-edit-label">
-            <label id="nature_of_complaint_select_label_id">Status</label>
-          </div>
-          <div className="comp-details-edit-input">
-            <Select
-              options={complaintStatusCodes}
-              value={selectedStatus}
-              placeholder="Select"
-            />
-          </div>
-          <div className="comp-details-edit-label">
-            <label>Created By</label>
-          </div>
-          <div className="comp-details-edit-input">
-            <div className="comp-padding-left-xs comp-padding-top-xs">
-              {createdBy}
+        <div className="comp-details-edit-container">
+          <div className="comp-details-edit-column">
+            <div className="comp-details-label-input-pair">
+              <label id="nature_of_complaint_select_label_id">
+                Nature of Complaint
+              </label>
+              <Select
+                className="comp-details-input"
+                options={hwcrNatureOfComplaintCodes}
+                value={selectedNatureOfComplaint}
+                placeholder="Select"
+              />
+            </div>
+
+            <div className="comp-details-label-input-pair">
+              <label id="nature_of_complaint_select_label_id">Species</label>
+              <Select
+                className="comp-details-input"
+                options={speciesCodes}
+                value={selectedSpecies}
+                placeholder="Select"
+              />
+            </div>
+            <div className="comp-details-label-input-pair">
+              <label id="nature_of_complaint_select_label_id">Status</label>
+              <Select
+                className="comp-details-input"
+                options={complaintStatusCodes}
+                value={selectedStatus}
+                placeholder="Select"
+              />
+            </div>
+
+            <div className="comp-details-label-input-pair">
+              <label id="nature_of_complaint_select_label_id">
+                Officer Assigned
+              </label>
+              <Select
+                className="comp-details-input"
+                options={hwcrNatureOfComplaintCodes}
+                placeholder="Select"
+              />
             </div>
           </div>
-        </div>
-        <div className="comp-details-edit-row">
-          <div className="comp-details-edit-label">
-            <label id="nature_of_complaint_select_label_id">
-              Officer Assigned
-            </label>
-          </div>
-          <div className="comp-details-edit-input">
-            <Select options={hwcrNatureOfComplaintCodes} placeholder="Select" />
+          <div className="comp-details-edit-column">
+            <div className="comp-details-label-input-pair">
+              <label>Date / Time Logged</label>
+              <div className="comp-details-input">
+                <i className="bi bi-calendar comp-margin-right-xs"></i>
+                {formatDate(loggedDate)}
+                <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
+                {formatTime(loggedDate)}
+              </div>
+            </div>
+            <div className="comp-details-label-input-pair">
+              <label>Last Updated</label>
+              <div className="comp-details-input">
+                <i className="bi bi-calendar comp-margin-right-xs"></i>
+                {formatDate(lastUpdated)}
+                <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
+                {formatTime(lastUpdated)}
+              </div>
+            </div>
+            <div className="comp-details-label-input-pair">
+              <label>Created By</label>
+              <div className="comp-padding-left-xs comp-padding-top-xs">
+                {createdBy}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      { /* edit details block */ }
+      {/* edit details block */}
       <div className="comp-complaint-details-block">
         <h6>Call Details</h6>
-        <div className="comp-complaint-call-details">
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label
-                id="complaint_description_edit_label_id"
-                className="col-auto"
-              >
-                Complaint Description
-              </label>
+        <div className="comp-complaint-call-information">
+          <div className="comp-details-edit-container">
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-input-pair">
+                <label
+                  id="complaint_description_edit_label_id"
+                  className="col-auto"
+                >
+                  Complaint Description
+                </label>
+                <textarea
+                  className="form-control"
+                  id="complaint_description_textarea_id"
+                  value={details}
+                  rows={4}
+                />
+              </div>
+              <div className="comp-details-label-input-pair comp-margin-top-80">
+                <label>Incident Time</label>
+                <div className="comp-details-edit-input">
+                  <DatePicker
+                    className="form-control"
+                    showIcon={true}
+                    showTimeSelect
+                    onChange={handleIncidentDateTimeChange}
+                    selected={selectedIncidentDateTime}
+                  />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Attractants</label>
+                <div className="comp-details-edit-input">
+                <Select
+                  options={attractantCodes}
+                  value={selectedAttractants}
+                  placeholder="Select"
+                />
+                </div>
+              </div>
             </div>
-            <div className="comp-details-edit-input">
-              <textarea
-                className="form-control"
-                id="complaint_description_textarea_id"
-                value={details}
-                rows={4}
-              />
-            </div>
-            <div className="comp-details-edit-label">
-              <label>Complaint Location</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="complaint_description_edit_label_id"
-                className="form-control"
-                value={location}
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-            <div className="comp-details-edit-label">
-              <label>Location Description</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <textarea
-                className="form-control"
-                id="complaint_location_description_textarea_id"
-                value={locationDescription}
-                rows={4}
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label>Incident Time</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <DatePicker
-                className="form-control"
-                showIcon={true}
-                showTimeSelect
-                onChange={handleIncidentDateTimeChange}
-                selected={selectedIncidentDateTime}
-              />
-            </div>
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label>Attractants</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <Select options={attractantCodes} value={selectedAttractants} placeholder="Select" />
-            </div>
-            <div className="comp-details-edit-label">
-              <label>X Coordinate</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="comp-details-edit-x-coordinate-input"
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-            <div className="comp-details-edit-label">
-              <label>Y Coordinate</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="comp-details-edit-x-coordinate-input"
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-            <div className="comp-details-edit-label">
-              <label>Area/Community</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <Select options={areaCodes} value={selectedAreaCode} />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-            <div className="comp-details-edit-label">
-              <label>Office</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="office-edit-readonly-id"
-                className="form-control"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-            <div className="comp-details-edit-label">
-              <label>Zone</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="zone-edit-readonly-id"
-                className="form-control"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label" />
-            <div className="comp-details-edit-input" />
-            <div className="comp-details-edit-label">
-              <label>Region</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="region-edit-readonly-id"
-                className="form-control"
-                disabled
-              />
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-input-pair">
+                <label>Complaint Location</label>
+                <input
+                  type="text"
+                  id="complaint_description_edit_label_id"
+                  className="form-control"
+                  value={location}
+                />
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Location Description</label>
+                <textarea
+                  className="form-control"
+                  id="complaint_location_description_textarea_id"
+                  value={locationDescription}
+                  rows={4}
+                />
+              </div>
+              <div className="comp-details-label-input-pair comp-margin-top-80">
+                <label>X Coordinate</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="comp-details-edit-x-coordinate-input"
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Y Coordinate</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="comp-details-edit-x-coordinate-input"
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Area/Community</label>
+                <div className="comp-details-edit-input">
+                  <Select options={areaCodes} value={selectedAreaCode} />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Office</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="office-edit-readonly-id"
+                    className="form-control"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Zone</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="zone-edit-readonly-id"
+                    className="form-control"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Region</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="region-edit-readonly-id"
+                    className="form-control"
+                    disabled
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      { /* edit caller info block */ }
+      {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>
         <div className="comp-complaint-call-information">
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label
-                id="complaint-caller-info-name-label-id"
-                className="col-auto"
-              >
-                Name
-              </label>
+          <div className="comp-details-edit-container">
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-input-pair">
+                <label
+                  id="complaint-caller-info-name-label-id"
+                  className="col-auto"
+                >
+                  Name
+                </label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" value={name} />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label
+                  id="complaint-caller-info-primary-phone-label-id"
+                  className="col-auto"
+                >
+                  Primary Phone
+                </label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" value={primaryPhone} />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label
+                  id="complaint-caller-info-alternate1-phone-label-id"
+                  className="col-auto"
+                >
+                  Alternate 1 Phone
+                </label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" value={alternatePhone} />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label
+                  id="complaint-caller-info-alternate2-phone-label-id"
+                  className="col-auto"
+                >
+                  Alternate 2 Phone
+                </label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" value={secondaryPhone} />
+                </div>
+              </div>
             </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />
-            </div>
-            <div className="comp-details-edit-label">
-              <label>Address</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />  
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label
-                id="complaint-caller-info-primary-phone-label-id"
-                className="col-auto"
-              >
-                Primary Phone
-              </label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />
-            </div>
-            <div className="comp-details-edit-label">
-              <label>Email</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />  
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label
-                id="complaint-caller-info-alternate1-phone-label-id"
-                className="col-auto"
-              >
-                Alternate 1 Phone
-              </label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />
-            </div>
-            <div className="comp-details-edit-label">
-              <label>Reffered by / Complaint Agency</label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />  
-            </div>
-          </div>
-          <div className="comp-details-edit-row">
-            <div className="comp-details-edit-label">
-              <label
-                id="complaint-caller-info-alternate2-phone-label-id"
-                className="col-auto"
-              >
-                Alternate 2 Phone
-              </label>
-            </div>
-            <div className="comp-details-edit-input">
-              <input type="text" className="form-control" />
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-input-pair">
+                <label>Address</label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" value={address} />
+                </div>
+              </div>
+
+              <div className="comp-details-label-input-pair">
+                <label>Email</label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" value={email} />
+                </div>
+              </div>
+              <div className="comp-details-label-input-pair">
+                <label>Referred by / Complaint Agency</label>
+                <div className="comp-details-edit-input">
+                  <input type="text" className="form-control" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
