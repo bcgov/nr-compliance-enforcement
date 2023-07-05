@@ -68,8 +68,19 @@ export class HwcrComplaintService {
       speciesCode?: string, incidentReportedStart?: Date, incidentReportedEnd?: Date, status?: string): Promise<HwcrComplaint[]> {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-      const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
+      let sortTable = 'complaint_identifier.';
+      if(sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code')
+      {
+        sortTable = 'hwcr_complaint.';
+      }
+      else if(sortColumn === 'last_name')
+      {
+        sortTable ='person.';
+      }
+
       const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
+      
+
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')

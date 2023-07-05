@@ -15,6 +15,8 @@ describe('Complaint Change Status spec - Details View', () => {
 
     it('Verifies filters are available', () => {
       cy.visit("/");
+      cy.wait(5000);
+      
       cy.get(complaintTypes[index]).click({ force: true });
       
       cy.wait(5000);
