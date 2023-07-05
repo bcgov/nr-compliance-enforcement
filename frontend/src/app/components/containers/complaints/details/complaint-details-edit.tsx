@@ -20,9 +20,13 @@ import {
   selectedHwcrNatureOfComplaintCodes,
   selectedAreaCodes,
   selectedAttractantCodes,
+  selectAgencyCodes,
 } from "../../../../store/reducers/code-tables";
 import { useSelector } from "react-redux";
 import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
+import { getOfficersInZone, officersInZone } from "../../../../store/reducers/officer";
+import { Person } from "../../../../types/person/person";
+import ReactDOMServer from 'react-dom/server';
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -38,8 +42,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     incidentDateTime,
     coordinates,
     area,
-    region,
+    region, 
     zone,
+    zone_code,
     office,
     attractants,
     violationInProgress,
@@ -50,7 +55,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     loggedDate,
     createdBy,
     lastUpdated,
-    officerAssigned,
+    personGuid,
     status,
     natureOfComplaint,
     violationType,
@@ -73,6 +78,19 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     dispatch(fetchCodeTablesAsync());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(getOfficersInZone(zone_code));
+  }, [dispatch, zone_code]);
+
+  const officersInZoneList = useAppSelector(officersInZone);
+
+      // Transform the fetched data into the DropdownOption type
+      const transformedOfficerCodeList = officersInZoneList.map((officer: Person) => ({
+        value: officer.person_guid,
+        label: `${officer.first_name} ${officer.last_name}`,
+      }));
+  
+
   const renderCoordinates = (
     coordinates: number[] | string[] | undefined,
     coordinateType: Coordinates
@@ -81,6 +99,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
 
     return result === 0 ? <>Not Provided</> : <>{result}</>;
   };
+
+  const xCoordinate = ReactDOMServer.renderToString(renderCoordinates(coordinates, Coordinates.Latitude));
+  const yCoordinate = ReactDOMServer.renderToString(renderCoordinates(coordinates, Coordinates.Longitude));
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] =
     useState<Date | null>(null);
@@ -100,6 +121,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   );
   const areaCodes = useSelector(selectedAreaCodes);
   const attractantCodes = useSelector(selectedAttractantCodes);
+  const referredByAgencyCodes = useSelector(selectAgencyCodes);
 
   // Used to set selected dropdowns
   const selectedStatus = complaintStatusCodes.find(
@@ -112,7 +134,8 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     (option) => option.label === natureOfComplaint
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-
+  const selectedAssignedOfficer = transformedOfficerCodeList.find((option) => option.value === personGuid);
+  const selectedAgencyCode = referredByAgencyCodes.find((option) => option.value === (referredByAgencyCode === undefined ? "" : referredByAgencyCode));
   const selectedAttractants = attractantCodes.filter((attractantCode) =>
     attractants?.some(
       (attractant) => attractant.description === attractantCode.label
@@ -136,7 +159,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <Select
                 className="comp-details-input"
                 options={hwcrNatureOfComplaintCodes}
-                value={selectedNatureOfComplaint}
+                defaultValue={selectedNatureOfComplaint}
                 placeholder="Select"
               />
             </div>
@@ -146,7 +169,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <Select
                 className="comp-details-input"
                 options={speciesCodes}
-                value={selectedSpecies}
+                defaultValue={selectedSpecies}
                 placeholder="Select"
               />
             </div>
@@ -155,7 +178,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <Select
                 className="comp-details-input"
                 options={complaintStatusCodes}
-                value={selectedStatus}
+                defaultValue={selectedStatus}
                 placeholder="Select"
               />
             </div>
@@ -166,8 +189,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </label>
               <Select
                 className="comp-details-input"
-                options={hwcrNatureOfComplaintCodes}
+                options={transformedOfficerCodeList}
                 placeholder="Select"
+                defaultValue={selectedAssignedOfficer}
               />
             </div>
           </div>
@@ -237,7 +261,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                 <Select
                   options={attractantCodes}
-                  value={selectedAttractants}
+                  defaultValue={selectedAttractants}
                   placeholder="Select"
                 />
                 </div>
@@ -269,6 +293,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     id="comp-details-edit-x-coordinate-input"
                     className="form-control"
+                    value={xCoordinate}
                   />
                 </div>
               </div>
@@ -279,13 +304,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     id="comp-details-edit-x-coordinate-input"
                     className="form-control"
+                    value={yCoordinate}
                   />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
                 <label>Area/Community</label>
                 <div className="comp-details-edit-input">
-                  <Select options={areaCodes} value={selectedAreaCode} />
+                  <Select options={areaCodes} defaultValue={selectedAreaCode} />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
@@ -296,6 +322,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="office-edit-readonly-id"
                     className="form-control"
                     disabled
+                    value={office}
                   />
                 </div>
               </div>
@@ -307,6 +334,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="zone-edit-readonly-id"
                     className="form-control"
                     disabled
+                    value={zone}
                   />
                 </div>
               </div>
@@ -318,6 +346,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="region-edit-readonly-id"
                     className="form-control"
                     disabled
+                    value={region}
                   />
                 </div>
               </div>
@@ -393,7 +422,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <div className="comp-details-label-input-pair">
                 <label>Referred by / Complaint Agency</label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" />
+                  <Select placeholder="Select" options={referredByAgencyCodes} defaultValue={selectedAgencyCode}/>
                 </div>
               </div>
             </div>

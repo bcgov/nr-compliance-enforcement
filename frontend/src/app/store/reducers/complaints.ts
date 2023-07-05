@@ -88,6 +88,7 @@ export const selectComplaintHeader =
         createdBy: "",
         lastUpdated: "",
         officerAssigned: "",
+        personGuid: "",
         status: "",
         natureOfComplaint: "", //-- needs to be violation as well
         species: "", //-- not available for ers
@@ -107,6 +108,7 @@ export const selectComplaintHeader =
 
         if (ceComplaint) {
           let officerAssigned = "Not Assigned";
+          let personGuid = "";
           const {
             incident_reported_datetime: loggedDate,
             create_user_id: createdBy,
@@ -121,6 +123,7 @@ export const selectComplaintHeader =
             const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
             const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
             officerAssigned = `${firstName} ${lastName}`;
+            personGuid = ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
           const { complaint_status_code: status } = ceStatusCode;
@@ -133,6 +136,7 @@ export const selectComplaintHeader =
             officerAssigned: officerAssigned,
             status,
             zone: zone_code,
+            personGuid,
           };
 
           if (ceComplaintNatureCode) {
@@ -238,6 +242,7 @@ export const selectComplaintDeails =
             area_name,
             region_name,
             zone_name,
+            zone_code,
             office_location_name,
           },
         } = ceComplaint;
@@ -252,6 +257,7 @@ export const selectComplaintDeails =
           area: area_name,
           region: region_name,
           zone: zone_name,
+          zone_code: zone_code,
           office: office_location_name,
         };
       }
