@@ -115,7 +115,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
       incidentDateTime === undefined ? "" : incidentDateTime
     );
   
-  const [selectedIncidentDateTime] = useState(incidentDateTimeObject);
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(incidentDateTimeObject);
 
 
   const complaintStatusCodes = useSelector(selectComplaintStatusCodes);
@@ -152,8 +152,8 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     )
   );
 
-  const handleIncidentDateTimeChange = (date: Date | null) => {
-    //setSelectedIncidentDateTime(date);
+  const handleIncidentDateTimeChange = (date: Date) => {
+    setSelectedIncidentDateTime(date);
   };
 
   return (
