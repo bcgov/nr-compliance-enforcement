@@ -49,6 +49,7 @@
     "react-select": "^5.7.3",
     "react-test-renderer": "^18.2.0",
     "react-transition-group": "^4.4.5",
+    "redux-persist": "^6.0.0",
     "typescript": "*",
     "uncontrollable": "^8.0.2",
     "urlpattern-polyfill": "^9.0.0",
