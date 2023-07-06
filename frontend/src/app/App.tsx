@@ -11,6 +11,7 @@ import ColorReference from "./components/reference";
 
 import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
+import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 
 const App: FC = () => {
   return (
@@ -32,6 +33,10 @@ const App: FC = () => {
           <Route
             path="/complaint/:complaintType/:id"
             element={<ComplaintDetails />}
+          />
+          <Route
+            path="/zone/at-a-glance"
+            element={<ZoneAtAGlance />}
           />
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />

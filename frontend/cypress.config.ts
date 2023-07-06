@@ -7,6 +7,13 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
     setupNodeEvents(on, config) {
       // implement node event listeners here
+      on('task', {
+        log(message) {
+          console.log(message)
+
+          return null
+        },
+      })
     },
     experimentalStudio: true,
     experimentalWebKitSupport: true,
@@ -18,5 +25,6 @@ export default defineConfig({
       keycloak_password: process.env.CYPRESS_KEYCLOAK_PASSWORD,
       keycloak_login_url: 'https://logontest7.gov.bc.ca'
     },
+    
   },
 });
