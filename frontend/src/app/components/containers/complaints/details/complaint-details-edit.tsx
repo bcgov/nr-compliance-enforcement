@@ -24,9 +24,13 @@ import {
 } from "../../../../store/reducers/code-tables";
 import { useSelector } from "react-redux";
 import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
-import { getOfficersInZone, officersInZone } from "../../../../store/reducers/officer";
+import {
+  getOfficersInZone,
+  officersInZone,
+} from "../../../../store/reducers/officer";
 import { Person } from "../../../../types/person/person";
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer from "react-dom/server";
+import { BsCalendar2Check } from 'react-icons/bs';
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -42,13 +46,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     incidentDateTime,
     coordinates,
     area,
-    region, 
+    region,
     zone,
     zone_code,
     office,
     attractants,
-    violationInProgress,
-    violationObserved,
   } = useAppSelector(selectComplaintDeails(complaintType)) as ComplaintDetails;
 
   const {
@@ -58,7 +60,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     personGuid,
     status,
     natureOfComplaint,
-    violationType,
     species,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
@@ -84,12 +85,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
 
   const officersInZoneList = useAppSelector(officersInZone);
 
-      // Transform the fetched data into the DropdownOption type
-      const transformedOfficerCodeList = officersInZoneList.map((officer: Person) => ({
-        value: officer.person_guid,
-        label: `${officer.first_name} ${officer.last_name}`,
-      }));
-  
+  // Transform the fetched data into the DropdownOption type
+  const transformedOfficerCodeList = officersInZoneList.map(
+    (officer: Person) => ({
+      value: officer.person_guid,
+      label: `${officer.first_name} ${officer.last_name}`,
+    })
+  );
 
   const renderCoordinates = (
     coordinates: number[] | string[] | undefined,
@@ -100,19 +102,21 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     return result === 0 ? <>Not Provided</> : <>{result}</>;
   };
 
-  const xCoordinate = ReactDOMServer.renderToString(renderCoordinates(coordinates, Coordinates.Latitude));
-  const yCoordinate = ReactDOMServer.renderToString(renderCoordinates(coordinates, Coordinates.Longitude));
+  const xCoordinate = ReactDOMServer.renderToString(
+    renderCoordinates(coordinates, Coordinates.Latitude)
+  );
+  const yCoordinate = ReactDOMServer.renderToString(
+    renderCoordinates(coordinates, Coordinates.Longitude)
+  );
 
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] =
-    useState<Date | null>(null);
 
   // Parse the string to a Date object
-  if (incidentDateTime) {
-    const incidentDateTimeObject = new Date(
+  const incidentDateTimeObject = new Date(
       incidentDateTime === undefined ? "" : incidentDateTime
     );
-    //setSelectedIncidentDateTime(incidentDateTimeObject);
-  }
+  
+  const [selectedIncidentDateTime] = useState(incidentDateTimeObject);
+
 
   const complaintStatusCodes = useSelector(selectComplaintStatusCodes);
   const speciesCodes = useSelector(selectSpeciesCodes);
@@ -134,8 +138,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     (option) => option.label === natureOfComplaint
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-  const selectedAssignedOfficer = transformedOfficerCodeList.find((option) => option.value === personGuid);
-  const selectedAgencyCode = referredByAgencyCodes.find((option) => option.value === (referredByAgencyCode === undefined ? "" : referredByAgencyCode));
+  const selectedAssignedOfficer = transformedOfficerCodeList.find(
+    (option) => option.value === personGuid
+  );
+  const selectedAgencyCode = referredByAgencyCodes.find(
+    (option) =>
+      option.value ===
+      (referredByAgencyCode === undefined ? "" : referredByAgencyCode)
+  );
   const selectedAttractants = attractantCodes.filter((attractantCode) =>
     attractants?.some(
       (attractant) => attractant.description === attractantCode.label
@@ -248,22 +258,25 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label>Incident Time</label>
                 <div className="comp-details-edit-input">
                   <DatePicker
-                    className="form-control"
                     showIcon={true}
                     showTimeSelect
                     onChange={handleIncidentDateTimeChange}
                     selected={selectedIncidentDateTime}
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
                   />
+                  <div className="calendar-icon"><BsCalendar2Check/></div>
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
                 <label>Attractants</label>
                 <div className="comp-details-edit-input">
-                <Select
-                  options={attractantCodes}
-                  defaultValue={selectedAttractants}
-                  placeholder="Select"
-                />
+                  <Select
+                    options={attractantCodes}
+                    defaultValue={selectedAttractants}
+                    placeholder="Select"
+                  />
                 </div>
               </div>
             </div>
@@ -379,7 +392,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Primary Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" value={primaryPhone} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={primaryPhone}
+                  />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
@@ -390,7 +407,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Alternate 1 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" value={alternatePhone} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={alternatePhone}
+                  />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
@@ -401,7 +422,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Alternate 2 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" value={secondaryPhone} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={secondaryPhone}
+                  />
                 </div>
               </div>
             </div>
@@ -422,7 +447,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <div className="comp-details-label-input-pair">
                 <label>Referred by / Complaint Agency</label>
                 <div className="comp-details-edit-input">
-                  <Select placeholder="Select" options={referredByAgencyCodes} defaultValue={selectedAgencyCode}/>
+                  <Select
+                    placeholder="Select"
+                    options={referredByAgencyCodes}
+                    defaultValue={selectedAgencyCode}
+                  />
                 </div>
               </div>
             </div>

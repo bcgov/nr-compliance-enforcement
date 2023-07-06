@@ -12,6 +12,8 @@ import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
 import { Button } from "react-bootstrap";
 import { ComplaintDetailsEdit } from "./details/complaint-details-edit";
+import { openModal } from "../../../store/reducers/app";
+import { CancelConfirm } from "../../../types/modal/modal-types";
 
 type ComplaintParams = {
   id: string;
@@ -27,9 +29,23 @@ export const ComplaintDetails: FC = () => {
     setReadOnly(false);
   }
 
-  const cancelButtonClick = () => {
+  const cancelConfirmed = () => {
     setReadOnly(true);
   }
+
+  const cancelButtonClick = () => {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: CancelConfirm,
+          data: {
+            title: "Cancel Changes?",
+            description: "Your changes will be lost.",
+            cancelConfirmed,
+          }
+        })
+      );
+    };
 
   const saveButtonClick = () => {
     setReadOnly(true);

@@ -14,8 +14,6 @@ import { Button,  } from "react-bootstrap";
 import { BsPersonPlus, BsPencil } from 'react-icons/bs';
 import { openModal } from "../../../../store/reducers/app";
 import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
-import { selectComplaintStatusCodes, selectSpeciesCodes, selectedHwcrNatureOfComplaintCodes } from "../../../../store/reducers/code-tables";
-import { useSelector } from "react-redux";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -48,9 +46,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === 'Not Assigned' ? 'Assign' : 'Reassign';
-  const complaintStatusCodes = useSelector(selectComplaintStatusCodes);
-  const speciesCodes = useSelector(selectSpeciesCodes);
-  const hwcrNatureOfComplaintCodes = useSelector(selectedHwcrNatureOfComplaintCodes);
   const applyStatusClass = (state: string): string => {
     switch (state.toLowerCase()) {
       case "open":
@@ -135,15 +130,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           )}
           { readOnly &&
             <div className="comp-box-actions">
-              <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>{assignText}</span><BsPersonPlus/></Button>
+              <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal} className=""><span>{assignText}</span><BsPersonPlus/></Button>
               <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
               <Button id="details_screen_edit_button" title="Edit Complaint" variant="outline-primary"  onClick={editButtonClick}><span>Edit</span><BsPencil/></Button>
             </div>
           }
           { !readOnly && 
             <div className="comp-box-actions">
-              <Button id="details_screen_cancel_edit_button_top" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}><span>Cancel</span></Button>
-              <Button id="details_screen_cancel_save_button_top" title="Save Complaint" variant="outline-primary" onClick={saveButtonClick}><span>Save Changes</span></Button>
+              <Button id="details_screen_cancel_edit_button_top" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}>Cancel</Button>
+              <Button id="details_screen_cancel_save_button_top" title="Save Complaint" variant="outline-primary" onClick={saveButtonClick}>Save Changes</Button>
             </div>
           }
         </div>

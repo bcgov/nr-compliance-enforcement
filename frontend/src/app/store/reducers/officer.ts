@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
@@ -12,17 +12,10 @@ import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "./complaints";
-import { DropdownOption } from "../../types/code-tables/option";
 
 const initialState: AssignOfficersState = {
     officersInZone: []
 };
-
-interface DropdownState {
-  officersInZoneOptions: DropdownOption[];
-  loading: boolean;
-  error: string | null;
-}
 
 export const assignOfficersSlice = createSlice({
   name: "assignOfficers",
