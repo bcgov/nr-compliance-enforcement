@@ -256,17 +256,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
               <div className="comp-details-label-input-pair comp-margin-top-80">
                 <label>Incident Time</label>
-                <div className="comp-details-edit-input">
+                <div className="comp-details-edit-calendar-input">
                   <DatePicker
-                    showIcon={true}
-                    showTimeSelect
+                    showIcon
+                    timeInputLabel="Time:"
                     onChange={handleIncidentDateTimeChange}
                     selected={selectedIncidentDateTime}
                     dateFormat="yyyy-MM-dd HH:mm"
-                    timeFormat="HH:mm"
-                    timeIntervals={15}
+                    showTimeInput
                   />
-                  <div className="calendar-icon"><BsCalendar2Check/></div>
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
