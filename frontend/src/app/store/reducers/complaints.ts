@@ -91,7 +91,9 @@ export const selectComplaintHeader =
         personGuid: "",
         status: "",
         natureOfComplaint: "", //-- needs to be violation as well
+        natureOfComplaintCode: "",
         species: "", //-- not available for ers
+        speciesCode: "",
         zone: "",
         firstName: "",
         lastName: "",
@@ -140,14 +142,15 @@ export const selectComplaintHeader =
           };
 
           if (ceComplaintNatureCode) {
-            const { long_description: natureOfComplaint } =
+            const { long_description: natureOfComplaint,
+                    hwcr_complaint_nature_code: natureOfComplaintCode } =
               ceComplaintNatureCode;
-            result = { ...result, natureOfComplaint };
+            result = { ...result, natureOfComplaint, natureOfComplaintCode };
           }
 
           if (ceSpeciesCode) {
-            const { short_description: species } = ceSpeciesCode;
-            result = { ...result, species };
+            const { short_description: species, species_code: speciesCode } = ceSpeciesCode;
+            result = { ...result, species, speciesCode };
           }
         }
       }

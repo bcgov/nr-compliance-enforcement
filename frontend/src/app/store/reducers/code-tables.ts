@@ -35,7 +35,6 @@ export const fetchCodeTablesAsync = createAsyncThunk<
     const token = localStorage.getItem("user");
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-
     // Perform the API requests to fetch dropdown options from REST endpoints
     const agencyCodeResponse = await axios.get(`${config.API_BASE_URL}/v1/agency-code`);
     const agencyCodes = await agencyCodeResponse.data;
@@ -141,7 +140,6 @@ const dropdownSlice = createSlice({
         state.hwcrNatureOfComplaintCodes = action.payload.hwcrNatureOfComplaintCodes;
         state.areaCodes = action.payload.areaCodes;
         state.attractantCodes = action.payload.attractantCodes;
-        
       })
       .addCase(fetchCodeTablesAsync.rejected, (state, action) => {
         state.loading = false;

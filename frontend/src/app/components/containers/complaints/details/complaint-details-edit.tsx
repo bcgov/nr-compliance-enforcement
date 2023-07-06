@@ -9,12 +9,12 @@ import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   selectComplaintDeails,
   selectComplaintHeader,
+  selectComplaintCallerInformation,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
-  fetchCodeTablesAsync,
   selectComplaintStatusCodes,
   selectSpeciesCodes,
   selectedHwcrNatureOfComplaintCodes,
@@ -23,14 +23,12 @@ import {
   selectAgencyCodes,
 } from "../../../../store/reducers/code-tables";
 import { useSelector } from "react-redux";
-import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 import {
   getOfficersInZone,
   officersInZone,
 } from "../../../../store/reducers/officer";
 import { Person } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
-import { BsCalendar2Check } from 'react-icons/bs';
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -59,8 +57,8 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     lastUpdated,
     personGuid,
     status,
-    natureOfComplaint,
-    species,
+    natureOfComplaintCode,
+    speciesCode
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const {
@@ -74,10 +72,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   } = useAppSelector(selectComplaintCallerInformation);
 
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchCodeTablesAsync());
-  }, [dispatch]);
 
   useEffect(() => {
     dispatch(getOfficersInZone(zone_code));
@@ -109,15 +103,16 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     renderCoordinates(coordinates, Coordinates.Longitude)
   );
 
-
   // Parse the string to a Date object
   const incidentDateTimeObject = new Date(
-      incidentDateTime === undefined ? "" : incidentDateTime
-    );
-  
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(incidentDateTimeObject);
+    incidentDateTime ?? ""
+  );
 
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
+    incidentDateTimeObject
+  );
 
+  // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(selectComplaintStatusCodes);
   const speciesCodes = useSelector(selectSpeciesCodes);
   const hwcrNatureOfComplaintCodes = useSelector(
@@ -127,15 +122,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   const attractantCodes = useSelector(selectedAttractantCodes);
   const referredByAgencyCodes = useSelector(selectAgencyCodes);
 
-  // Used to set selected dropdowns
+  // Used to set selected values in the dropdowns
   const selectedStatus = complaintStatusCodes.find(
     (option) => option.value === status
   );
   const selectedSpecies = speciesCodes.find(
-    (option) => option.label === species
+    (option) => option.value === speciesCode
   );
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find(
-    (option) => option.label === natureOfComplaint
+    (option) => option.value === natureOfComplaintCode
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
   const selectedAssignedOfficer = transformedOfficerCodeList.find(
@@ -146,9 +141,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
       option.value ===
       (referredByAgencyCode === undefined ? "" : referredByAgencyCode)
   );
-  const selectedAttractants = attractantCodes.filter((attractantCode) =>
+  const selectedAttractants = attractantCodes.filter((option) =>
     attractants?.some(
-      (attractant) => attractant.description === attractantCode.label
+      (attractant) => attractant.description === option.value
     )
   );
 
@@ -171,30 +166,33 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 options={hwcrNatureOfComplaintCodes}
                 defaultValue={selectedNatureOfComplaint}
                 placeholder="Select"
+                id="nature_of_complaint_select_id"
               />
             </div>
 
             <div className="comp-details-label-input-pair">
-              <label id="nature_of_complaint_select_label_id">Species</label>
+              <label id="species_select_label_id">Species</label>
               <Select
                 className="comp-details-input"
                 options={speciesCodes}
                 defaultValue={selectedSpecies}
                 placeholder="Select"
+                id="species_select_id"
               />
             </div>
             <div className="comp-details-label-input-pair">
-              <label id="nature_of_complaint_select_label_id">Status</label>
+              <label id="status_select_label_id">Status</label>
               <Select
                 className="comp-details-input"
                 options={complaintStatusCodes}
                 defaultValue={selectedStatus}
                 placeholder="Select"
+                id="status_select_id"
               />
             </div>
 
             <div className="comp-details-label-input-pair">
-              <label id="nature_of_complaint_select_label_id">
+              <label id="officer_assigned_select_label_id">
                 Officer Assigned
               </label>
               <Select
@@ -202,6 +200,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 options={transformedOfficerCodeList}
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
+                id="officer_assigned_select_id"
               />
             </div>
           </div>
@@ -262,8 +261,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     timeInputLabel="Time:"
                     onChange={handleIncidentDateTimeChange}
                     selected={selectedIncidentDateTime}
-                    dateFormat="yyyy-MM-dd HH:mm"
                     showTimeInput
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    timeFormat="HH:mm"
                   />
                 </div>
               </div>
@@ -274,6 +274,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={attractantCodes}
                     defaultValue={selectedAttractants}
                     placeholder="Select"
+                    id="attractants_select_id"
                   />
                 </div>
               </div>
@@ -283,7 +284,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label>Complaint Location</label>
                 <input
                   type="text"
-                  id="complaint_description_edit_label_id"
+                  id="complaint_location_edit_id"
                   className="form-control"
                   value={location}
                 />
@@ -313,7 +314,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    id="comp-details-edit-x-coordinate-input"
+                    id="comp-details-edit-y-coordinate-input"
                     className="form-control"
                     value={yCoordinate}
                   />
@@ -322,7 +323,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <div className="comp-details-label-input-pair">
                 <label>Area/Community</label>
                 <div className="comp-details-edit-input">
-                  <Select options={areaCodes} defaultValue={selectedAreaCode} />
+                  <Select
+                    options={areaCodes}
+                    defaultValue={selectedAreaCode}
+                    id="area_select_id"
+                  />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
@@ -379,7 +384,12 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Name
                 </label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" value={name} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={name}
+                    id="caller_name_id"
+                  />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
@@ -394,6 +404,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     className="form-control"
                     value={primaryPhone}
+                    id="caller_primary_phone_id"
                   />
                 </div>
               </div>
@@ -409,6 +420,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     className="form-control"
                     value={alternatePhone}
+                    id="caller-info-alternate-1-phone-id"
                   />
                 </div>
               </div>
@@ -424,6 +436,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     className="form-control"
                     value={secondaryPhone}
+                    id="caller-info-alternate-2-phone-id"
                   />
                 </div>
               </div>
@@ -432,14 +445,24 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <div className="comp-details-label-input-pair">
                 <label>Address</label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" value={address} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={address}
+                    id="comlaint-address-id"
+                  />
                 </div>
               </div>
 
               <div className="comp-details-label-input-pair">
                 <label>Email</label>
                 <div className="comp-details-edit-input">
-                  <input type="text" className="form-control" value={email} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={email}
+                    id="complaint-email-id"
+                  />
                 </div>
               </div>
               <div className="comp-details-label-input-pair">
@@ -449,6 +472,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     placeholder="Select"
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
+                    id="referred_select_id"
                   />
                 </div>
               </div>
