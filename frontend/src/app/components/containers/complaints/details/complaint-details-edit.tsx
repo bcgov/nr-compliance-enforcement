@@ -158,7 +158,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair">
-              <label id="nature_of_complaint_select_label_id">
+              <label id="nature-of-complaint-label-id">
                 Nature of Complaint
               </label>
               <Select
@@ -171,7 +171,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
             </div>
 
             <div className="comp-details-label-input-pair">
-              <label id="species_select_label_id">Species</label>
+              <label id="species-label-id">Species</label>
               <Select
                 className="comp-details-input"
                 options={speciesCodes}
@@ -181,7 +181,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               />
             </div>
             <div className="comp-details-label-input-pair">
-              <label id="status_select_label_id">Status</label>
+              <label id="status-label-id">Status</label>
               <Select
                 className="comp-details-input"
                 options={complaintStatusCodes}
@@ -206,7 +206,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
           </div>
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair">
-              <label>Date / Time Logged</label>
+              <label id="date-time-logged-label-id">Date / Time Logged</label>
               <div className="comp-details-input">
                 <i className="bi bi-calendar comp-margin-right-xs"></i>
                 {formatDate(loggedDate)}
@@ -215,7 +215,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
             </div>
             <div className="comp-details-label-input-pair">
-              <label>Last Updated</label>
+              <label id="last-updated-label-id">Last Updated</label>
               <div className="comp-details-input">
                 <i className="bi bi-calendar comp-margin-right-xs"></i>
                 {formatDate(lastUpdated)}
@@ -224,7 +224,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
             </div>
             <div className="comp-details-label-input-pair">
-              <label>Created By</label>
+              <label id="created-by-label-id">Created By</label>
               <div className="comp-padding-left-xs comp-padding-top-xs">
                 {createdBy}
               </div>
@@ -281,7 +281,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
             </div>
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
-                <label>Complaint Location</label>
+                <label id="complaint-location-label-id">Complaint Location</label>
                 <input
                   type="text"
                   id="complaint_location_edit_id"
