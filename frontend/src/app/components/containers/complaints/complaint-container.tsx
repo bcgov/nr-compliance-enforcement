@@ -1,18 +1,31 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
 import { getComplaintTypeFromUrl } from "../../../common/methods";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { getTokenProfile, profileZone } from "../../../store/reducers/app";
 
 type Props = {
   initialState: number;
 };
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
+  const dispatch = useAppDispatch();
+
+  let defaultZone = useAppSelector(profileZone);
+  useEffect(() => {
+    if (!defaultZone || defaultZone === "") {
+      dispatch(getTokenProfile(setLoading));
+    }
+  }, [defaultZone, dispatch]);
+
+
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [regionCodeFilter, setRegionCodeFilter] = useState<Option | null>(null);
-    const [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>(null);
+    let [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>({value: defaultZone, label: 'Cariboo Chilcotin'});
+    console.log("topLevelZoneCodeFilter: " + zoneCodeFilter?.value);
     const [areaCodeFilter, setAreaCodeFilter] = useState<Option | null>(null);
     const [officerFilter, setOfficerFilter] = useState<Option | null>(null);
     const [natureOfComplaintFilter, setNatureOfComplaintFilter] = useState<Option | null>(null);
@@ -25,6 +38,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [complaintType, setComplaintType] = useState<number>(
       _test !== -1 ? _test : initialState
     );
+    const [loading, setLoading] = useState(true);
 
     function handleChange(newState: number)
     {
@@ -32,7 +46,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         setSort(["incident_reported_datetime", "DESC"]);
         setComplaintStatusFilter({value: 'OPEN', label: 'Open'});
         setRegionCodeFilter(null);
-        setZoneCodeFilter(null);
+        setZoneCodeFilter({value: defaultZone, label: 'Cariboo Chilcotin'});
         setAreaCodeFilter(null);
         setOfficerFilter(null);
         setNatureOfComplaintFilter(null);
@@ -59,6 +73,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         }
       }
     }
+    console.log("topLevelZoneCodeFilter2: " + zoneCodeFilter?.value);
     if(complaintType === ComplaintType.HWCR_COMPLAINT)
     {
         return <>
@@ -66,7 +81,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
             <div>
                 <HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter}
                     speciesCodeFilter={speicesCodeFilter} setSpeicesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
-                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
+                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} loading={loading} setLoading={setLoading}/>
             </div>
         </>;
     }

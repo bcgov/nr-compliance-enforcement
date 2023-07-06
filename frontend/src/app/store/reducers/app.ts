@@ -132,9 +132,15 @@ export const selectClosingCallback = (state: RootState): any => {
   };
 
 //-- thunks
-export const getTokenProfile = (): AppThunk => async (dispatch) => {
+export const getTokenProfile =  (setLoading?: Function): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
+    console.log("loading function: " + setLoading);
+    if(setLoading !== undefined)
+    {
+      console.log("setLoading to true");
+      setLoading(true);
+    }
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
     const { given_name, family_name, email, idir_user_guid, idir_username } = decoded;
     let idir_user_guid_transformed: UUID;
@@ -166,6 +172,11 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     };
 
     dispatch(setTokenProfile(profile));
+    if(setLoading !== undefined)
+    {
+      console.log("setLoading to false");
+      setLoading(false);
+    }
   }
 };
 

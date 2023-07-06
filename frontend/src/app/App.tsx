@@ -11,6 +11,7 @@ import ColorReference from "./components/reference";
 
 import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
+import Delayed from "./components/delayed";
 
 const App: FC = () => {
   return (
@@ -22,7 +23,7 @@ const App: FC = () => {
           <Route
             path="/"
             element={
-              <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
+                <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
             }
           />
           <Route
