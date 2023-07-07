@@ -33,7 +33,7 @@ describe('Complaint Change Status spec - Details View', () => {
 
       cy.window().scrollTo('top')
 
-      cy.get('#details_screen_update_status_button').click({ force: true });
+      cy.get('#details-screen-update-status-button').click({ force: true });
 
       cy.get('#complaint_status_dropdown').click();
 
@@ -48,7 +48,7 @@ describe('Complaint Change Status spec - Details View', () => {
 
       cy.get('#comp-details-status-text-id').contains('CLOSED').should('exist');
 
-      cy.get('#details_screen_update_status_button').click({ force: true });
+      cy.get('#details-screen-update-status-button').click({ force: true });
 
       cy.get('#complaint_status_dropdown').click()
 

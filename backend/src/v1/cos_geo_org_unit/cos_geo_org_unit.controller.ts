@@ -21,6 +21,12 @@ import { Role } from '../../enum/role.enum';
 export class CosGeoOrgUnitController {
   constructor(private readonly cosGeoOrgUnitService: CosGeoOrgUnitService) {}
 
+  @Get()
+  @Roles(Role.COS_OFFICER)
+  findAll() {
+    return this.cosGeoOrgUnitService.findAll();
+  }
+
   @Get('/by-region-code/:code')
   @Roles(Role.COS_OFFICER)
   byRegionCode(@Param('code') code: string) {
