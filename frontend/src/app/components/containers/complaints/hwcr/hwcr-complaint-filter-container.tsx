@@ -279,7 +279,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Status
           </div>
           <div className="filter-select-padding"> 
-              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter} />
+              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter}/>
           </div>
         </div>
         <div className="clear-left-float"></div>
@@ -288,7 +288,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       </div>
       <div className={pillContainterStyle}>
           <div className={complaintStatusClass}>
-            <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
+            <button type="button" className="btn btn-primary comp-filter-btn" id="comp-status-filter">{complaintStatusFilter?.label}
               <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setComplaintStatusFilter(null)}></button>
             </button>
           </div>
@@ -318,8 +318,8 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
             </button>
           </div>
           <div className={zoneClass}>
-            <button type="button" className="btn btn-primary comp-filter-btn">{zoneCodeFilter?.label}
-              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setZoneCodeFilter(null)}></button>
+            <button type="button" className="btn btn-primary comp-filter-btn"  id="comp-zone-filter">{zoneCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" id="comp-zone-close" onClick={() => setZoneCodeFilter(null)}></button>
             </button>
           </div>
           <div className={regionClass}>

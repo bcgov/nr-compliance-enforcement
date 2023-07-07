@@ -138,6 +138,7 @@ export class HwcrComplaintService {
       {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
+
       return queryBuilder.getMany();
     }
   

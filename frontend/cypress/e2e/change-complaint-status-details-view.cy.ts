@@ -29,7 +29,7 @@ describe('Complaint Change Status spec - Details View', () => {
           expect(length, "rows N").to.be.gt(0);
         });
       cy.wait(2000);
-      cy.get("#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell").click({ force: true });
+      cy.get("#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
 
       cy.window().scrollTo('top')
 

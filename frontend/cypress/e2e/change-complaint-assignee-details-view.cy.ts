@@ -24,7 +24,7 @@ describe('Complaint Change Assignee spec - Details View', () => {
 
       cy.wait(7000);
 
-      cy.get("#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell").click({ force: true });
+      cy.get("#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
       cy.wait(5000);
       cy.get('#details_screen_assign_button').click({ force: true });
       cy.wait(1000);
