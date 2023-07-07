@@ -132,15 +132,9 @@ export const selectClosingCallback = (state: RootState): any => {
   };
 
 //-- thunks
-export const getTokenProfile =  (setLoading?: Function): AppThunk => async (dispatch) => {
+export const getTokenProfile =  (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
-    console.log("loading function: " + setLoading);
-    if(setLoading !== undefined)
-    {
-      console.log("setLoading to true");
-      setLoading(true);
-    }
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
     const { given_name, family_name, email, idir_user_guid, idir_username } = decoded;
     let idir_user_guid_transformed: UUID;
@@ -172,18 +166,13 @@ export const getTokenProfile =  (setLoading?: Function): AppThunk => async (disp
     };
 
     dispatch(setTokenProfile(profile));
-    if(setLoading !== undefined)
-    {
-      console.log("setLoading to false");
-      setLoading(false);
-    }
   }
 };
 
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
-  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "" },
+  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "", },
   isSidebarOpen: true,
 
   modalIsOpen: false,
@@ -208,7 +197,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         idir_username: payload.idir_username,
         office: payload.office,
         region: payload.region,
-        zone: payload.zone
+        zone: payload.zone,
       };
       return { ...state, profile };
     }

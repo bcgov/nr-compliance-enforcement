@@ -20,15 +20,11 @@ type Props = {
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
-    loading: Boolean,
-    setLoading: Function,
 }
 
-export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter, loading, setLoading}) => {
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter}) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    console.log("zoneCodeFilterTable: " + zoneCodeFilter?.value);
-    console.log("loadingTable: " + loading);
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {
@@ -47,7 +43,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
-                {loading ? (<div>Loading...</div>) : hwcrComplaintsJson.map((val, key) => {
+                {hwcrComplaintsJson.map((val, key) => {
                     const complaintIdentifier = val.complaint_identifier.complaint_identifier;
                     const incidentReportedDatetime = val.complaint_identifier.incident_reported_datetime != null ? format(Date.parse(val.complaint_identifier.incident_reported_datetime), 'yyyy/MM/dd kk:mm:ss') : "";
                     const hwcrComplaintNatureCode = val.hwcr_complaint_nature_code != null ? val.hwcr_complaint_nature_code.long_description : "";

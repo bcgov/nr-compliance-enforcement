@@ -11,7 +11,6 @@ import ColorReference from "./components/reference";
 
 import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
-import Delayed from "./components/delayed";
 
 const App: FC = () => {
   return (

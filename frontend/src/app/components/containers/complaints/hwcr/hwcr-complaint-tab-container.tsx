@@ -32,15 +32,11 @@ type Props = {
     setEndDateFilter: Function,
     complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
-    loading: Boolean,
-    setLoading: Function,
 }
 
 export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort, sort, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter, setSpeicesCodeFilter,
-     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter, loading, setLoading}) => {
+     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
-        console.log("zoneCodeFilterTabContainer: " + zoneCodeFilter?.value);
-        console.log("loadingTabContainer: " + loading);
     const hwcrComplaintsArray = useAppSelector(hwcrComplaints);
     return <>
     <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -64,9 +60,9 @@ export const HwcrComplaintTabContainer: FC<Props>  = ({ handleChange, handleSort
     </Navbar>
     <HwcrComplaintFilterContainer getCollapseProps={getCollapseProps} isExpanded={isExpanded} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter}
         setSpeciesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} setStartDateFilter={setStartDateFilter} setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} 
-        setComplaintStatusFilter={setComplaintStatusFilter} loading={loading}/>
+        setComplaintStatusFilter={setComplaintStatusFilter}/>
     <HwcrComplaintTableHeader handleSort={handleSort}/>
     <HwcrComplaintTable sortColumn={sort[0]} sortOrder={sort[1]} regionCodeFilter={regionCodeFilter} zoneCodeFilter={zoneCodeFilter} areaCodeFilter={areaCodeFilter} officerFilter={officerFilter} natureOfComplaintFilter={natureOfComplaintFilter} speciesCodeFilter={speciesCodeFilter} startDateFilter={startDateFilter} 
-        endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter} loading={loading} setLoading={setLoading}/>
+        endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}/>
     </>;
 }

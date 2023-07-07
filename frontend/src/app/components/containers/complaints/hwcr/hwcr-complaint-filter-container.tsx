@@ -28,12 +28,12 @@ type Props = {
     setEndDateFilter: Function,
     complaintStatusFilter: Option | null,
     setComplaintStatusFilter: Function,
-    loading: Boolean,
 }
 
 
 export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter,
-      setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter, loading}) => {
+      setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
+
     const [regionCodes, setRegionCodes] = useState<Option[]>([] as Array<Option>);
     const [zoneCodes, setZoneCodes] = useState<Option[]>([] as Array<Option>);
     const [areaCodes, setAreaCodes] = useState<Option[]>([] as Array<Option>);
@@ -41,12 +41,13 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
     const [hwcrNatureOfComplaintCodes, setHwcrNatureOfComplaintCodes] = useState<Option[]>([] as Array<Option>);
     const [speciesCodes, setSpeciesCodes] = useState<Option[]>([] as Array<Option>);
     const [complaintStatusCodes, setComplaintStatusCodes] = useState<Option[]>([] as Array<Option>);
+
     const handleDateFilter = (dates: [any, any]) => {
         const [start, end] = dates;
         setStartDateFilter(start);
         setEndDateFilter(end);
       };
-      
+
     useEffect(() => {
         async function fetchCodes()
         {
@@ -155,8 +156,6 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       {
         datePillText = " - " + endDateFilter?.toLocaleDateString()
       }
-      if(!loading)
-      {
     return( <>
       <div className="collapsible" id="collapsible-complaints-list-filter-id">
       <div {...getCollapseProps()}>
@@ -330,9 +329,4 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
           </div>
         </div>
     </>)
-      }
-      else
-      {
-        return( <></> );
-      }
 }

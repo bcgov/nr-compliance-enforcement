@@ -13,19 +13,19 @@ type Props = {
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
   const dispatch = useAppDispatch();
+  const defaultZone = useAppSelector(profileZone);
 
-  let defaultZone = useAppSelector(profileZone);
   useEffect(() => {
     if (!defaultZone || defaultZone === "") {
-      dispatch(getTokenProfile(setLoading));
+      dispatch(getTokenProfile());
+    } else {
+      setZoneCodeFilter({value: defaultZone, label: 'Cariboo Chilcotin'});
     }
-  }, [defaultZone, dispatch]);
-
+  }, [dispatch, defaultZone]);
 
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [regionCodeFilter, setRegionCodeFilter] = useState<Option | null>(null);
-    let [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>({value: defaultZone, label: 'Cariboo Chilcotin'});
-    console.log("topLevelZoneCodeFilter: " + zoneCodeFilter?.value);
+    const [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>(null);
     const [areaCodeFilter, setAreaCodeFilter] = useState<Option | null>(null);
     const [officerFilter, setOfficerFilter] = useState<Option | null>(null);
     const [natureOfComplaintFilter, setNatureOfComplaintFilter] = useState<Option | null>(null);
@@ -38,7 +38,6 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const [complaintType, setComplaintType] = useState<number>(
       _test !== -1 ? _test : initialState
     );
-    const [loading, setLoading] = useState(true);
 
     function handleChange(newState: number)
     {
@@ -81,7 +80,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
             <div>
                 <HwcrComplaintTabContainer handleSort={handleSort} handleChange={handleChange} sort={sort} regionCodeFilter={regionCodeFilter} setRegionCodeFilter={setRegionCodeFilter} zoneCodeFilter={zoneCodeFilter} setZoneCodeFilter={setZoneCodeFilter} areaCodeFilter={areaCodeFilter} setAreaCodeFilter={setAreaCodeFilter} officerFilter={officerFilter} setOfficerFilter={setOfficerFilter} natureOfComplaintFilter={natureOfComplaintFilter} setNatureOfComplaintFilter={setNatureOfComplaintFilter}
                     speciesCodeFilter={speicesCodeFilter} setSpeicesCodeFilter={setSpeicesCodeFilter} startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter} endDateFilter={endDateFilter} 
-                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter} loading={loading} setLoading={setLoading}/>
+                    setEndDateFilter={setEndDateFilter} complaintStatusFilter={complaintStatusFilter} setComplaintStatusFilter={setComplaintStatusFilter}/>
             </div>
         </>;
     }
