@@ -327,6 +327,15 @@
   }
 }
 
+.ceds-select__control {
+  border: 1px solid #a1a1a1 !important;
+}
+
+.ceds-select__control:focus-within {
+  border: 1px solid #90b6F8 !important;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
+}
+
 .comp-details-edit-container {
   display: flex;  
 }

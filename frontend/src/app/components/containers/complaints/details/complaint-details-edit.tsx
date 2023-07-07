@@ -29,7 +29,6 @@ import {
 } from "../../../../store/reducers/officer";
 import { Person } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
-import { customSelectStyles } from "../../../../common/custom-select-styles";
 import { DropdownOption } from "../../../../types/code-tables/option";
 
 interface ComplaintHeaderProps {
@@ -159,7 +158,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 options={hwcrNatureOfComplaintCodes}
                 defaultValue={selectedNatureOfComplaint}
                 placeholder="Select"
-                styles={customSelectStyles}
+                classNamePrefix='ceds-select'
                 id="nature-of-complaint-select-id"
               />
             </div>
@@ -172,7 +171,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedSpecies}
                 placeholder="Select"
                 id="species-select-id"
-                styles={customSelectStyles}
+                classNamePrefix='ceds-select'
               />
             </div>
             <div className="comp-details-label-input-pair" id="status-pair-id">
@@ -183,7 +182,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                styles={customSelectStyles}
+                classNamePrefix='ceds-select'
               />
             </div>
 
@@ -197,7 +196,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
-                styles={customSelectStyles}
+                classNamePrefix='ceds-select'
               />
             </div>
           </div>
@@ -271,7 +270,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     defaultValue={selectedAttractants}
                     placeholder="Select"
                     id="attractants-select-id"
-                    styles={customSelectStyles}
+                    classNamePrefix='ceds-select'
                     isMulti
                   />
                 </div>
@@ -325,7 +324,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={areaCodes}
                     defaultValue={selectedAreaCode}
                     id="area-select-id"
-                    styles={customSelectStyles}
+                    classNamePrefix='ceds-select'
                   />
                 </div>
               </div>
@@ -472,7 +471,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
-                    styles={customSelectStyles}
+                    classNamePrefix='ceds-select'
                   />
                 </div>
               </div>
