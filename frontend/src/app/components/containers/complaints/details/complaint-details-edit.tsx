@@ -29,7 +29,7 @@ import {
 } from "../../../../store/reducers/officer";
 import { Person } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
-import { customStyles } from "../../../../common/custom-styles";
+import { customSelectStyles } from "../../../../common/custom-select-styles";
 import { DropdownOption } from "../../../../types/code-tables/option";
 
 interface ComplaintHeaderProps {
@@ -159,7 +159,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 options={hwcrNatureOfComplaintCodes}
                 defaultValue={selectedNatureOfComplaint}
                 placeholder="Select"
-                styles={customStyles}
+                styles={customSelectStyles}
                 id="nature-of-complaint-select-id"
               />
             </div>
@@ -172,7 +172,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedSpecies}
                 placeholder="Select"
                 id="species-select-id"
-                styles={customStyles}
+                styles={customSelectStyles}
               />
             </div>
             <div className="comp-details-label-input-pair" id="status-pair-id">
@@ -183,7 +183,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                styles={customStyles}
+                styles={customSelectStyles}
               />
             </div>
 
@@ -197,7 +197,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
-                styles={customStyles}
+                styles={customSelectStyles}
               />
             </div>
           </div>
@@ -271,7 +271,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     defaultValue={selectedAttractants}
                     placeholder="Select"
                     id="attractants-select-id"
-                    styles={customStyles}
+                    styles={customSelectStyles}
                     isMulti
                   />
                 </div>
@@ -325,7 +325,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={areaCodes}
                     defaultValue={selectedAreaCode}
                     id="area-select-id"
-                    styles={customStyles}
+                    styles={customSelectStyles}
                   />
                 </div>
               </div>
@@ -472,7 +472,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
-                    styles={customStyles}
+                    styles={customSelectStyles}
                   />
                 </div>
               </div>
