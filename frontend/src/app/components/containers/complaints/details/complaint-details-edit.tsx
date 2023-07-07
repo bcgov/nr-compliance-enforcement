@@ -191,7 +191,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   options={hwcrNatureOfComplaintCodes}
                   defaultValue={selectedNatureOfComplaint}
                   placeholder="Select"
-                  styles={customStyles}
+                  classNamePrefix='ceds-select'
                   id="nature-of-complaint-select-id"
                 />
               </div>
@@ -210,7 +210,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
-                  styles={customStyles}
+                  classNamePrefix='ceds-select'
                 />
               </div>
             )}
@@ -228,7 +228,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   defaultValue={selectedViolationTypeCode}
                   placeholder="Select"
                   id="violation-type-select-id"
-                  styles={customStyles}
+                  classNamePrefix='ceds-select'
                 />
               </div>
             )}
@@ -352,7 +352,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
-                      styles={customStyles}
+                      classNamePrefix='ceds-select'
                       isMulti
                     />
                   </div>
@@ -370,7 +370,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                       defaultValue={selectedViolationInProgress}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      styles={customStyles}
+                      classNamePrefix='ceds-select'
                     />
                   </div>
                 </div>
@@ -387,7 +387,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                       defaultValue={selectedViolationObserved}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      styles={customStyles}
+                      classNamePrefix='ceds-select'
                     />
                   </div>
                 </div>
