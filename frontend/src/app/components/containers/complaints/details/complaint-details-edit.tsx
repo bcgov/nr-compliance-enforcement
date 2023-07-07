@@ -151,7 +151,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
               <label id="nature-of-complaint-label-id">
-                Nature of Complaint
+                Nature of Complaint<span className="required-ind">*</span>
               </label>
               <Select
                 className="comp-details-input"
@@ -164,7 +164,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
             </div>
 
             <div className="comp-details-label-input-pair" id="species-pair-id">
-              <label id="species-label-id">Species</label>
+              <label id="species-label-id">Species<span className="required-ind">*</span></label>
               <Select
                 className="comp-details-input"
                 options={speciesCodes}
@@ -175,7 +175,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               />
             </div>
             <div className="comp-details-label-input-pair" id="status-pair-id">
-              <label id="status-label-id">Status</label>
+              <label id="status-label-id">Status<span className="required-ind">*</span></label>
               <Select
                 className="comp-details-input"
                 options={complaintStatusCodes}
@@ -240,7 +240,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   id="complaint-description-edit-label-id"
                   className="col-auto"
                 >
-                  Complaint Description
+                  Complaint Description<span className="required-ind">*</span>
                 </label>
                 <textarea
                   className="form-control"
@@ -318,7 +318,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="area-community-pair-id">
-                <label>Area/Community</label>
+                <label>Area/Community<span className="required-ind">*</span></label>
                 <div className="comp-details-edit-input">
                   <Select
                     options={areaCodes}
