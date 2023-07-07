@@ -350,7 +350,7 @@
 .comp-details-label-input-pair {
   display: flex;
   align-items: baseline;
-  height: 70px;
+  min-height: 70px;
   
 
   label {
@@ -378,6 +378,7 @@
 
 .comp-details-label-input-pair > textarea {
   z-index: 500;
+  flex: 1;
 }
 
   .comp-details-edit-label {
