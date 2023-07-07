@@ -1258,7 +1258,7 @@ VALUES('b6b6ac3d-e188-4696-ac8a-816253d94088'::uuid, 'BBQ', 'ae6e0dc4-b960-4b37-
 ON CONFLICT DO NOTHING;
 INSERT INTO public.attractant_hwcr_xref
 (attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
-VALUES('b271ac24-07b2-4d33-828e-1f08bafae90b'::uuid, 'PETS', 'ae6e0dc4-b960-4b37-9dc9-ce303733a69d'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.748', 'POSTMAN', NULL, '2023-06-23 18:29:54.748');
+VALUES('b271ac24-07b2-4d33-828e-1f08bafae90b'::uuid, 'PETS', 'ae6e0dc4-b960-4b37-9dc9-ce303733a69d'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.748', 'POSTMAN', NULL, '2023-06-23 18:29:54.748')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.attractant_hwcr_xref
 (attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
