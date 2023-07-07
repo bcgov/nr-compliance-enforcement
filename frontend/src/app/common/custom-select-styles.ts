@@ -1,6 +1,6 @@
 import { StylesConfig } from "react-select";
 
-export const customStyles: StylesConfig = {
+export const customSelectStyles: StylesConfig = {
     control: (provided: Record<string, unknown>, state: any) => ({
       ...provided,
       border: state.isFocused ? "1px solid #90b6F8" : "1px solid #a1a1a1",
