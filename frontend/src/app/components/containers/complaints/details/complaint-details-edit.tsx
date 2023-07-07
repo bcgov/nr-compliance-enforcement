@@ -260,16 +260,16 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
               <div className="comp-details-label-input-pair comp-margin-top-80">
                 <label>Incident Time</label>
-                  <DatePicker
-                    showIcon
-                    timeInputLabel="Time:"
-                    onChange={handleIncidentDateTimeChange}
-                    selected={selectedIncidentDateTime}
-                    showTimeInput
-                    dateFormat="yyyy-MM-dd HH:mm"
-                    timeFormat="HH:mm"
-                    wrapperClassName="comp-details-edit-calendar-input"
-                  />
+                <DatePicker
+                  showIcon
+                  timeInputLabel="Time:"
+                  onChange={handleIncidentDateTimeChange}
+                  selected={selectedIncidentDateTime}
+                  showTimeInput
+                  dateFormat="yyyy-MM-dd HH:mm"
+                  timeFormat="HH:mm"
+                  wrapperClassName="comp-details-edit-calendar-input"
+                />
               </div>
               <div className="comp-details-label-input-pair">
                 <label>Attractants</label>
