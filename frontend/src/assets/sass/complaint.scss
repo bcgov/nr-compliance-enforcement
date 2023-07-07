@@ -331,6 +331,11 @@
   display: flex;  
 }
 
+.comp-suspect-witness-edit-container {
+  display: flex;  
+  height: 150px;
+}
+
 .comp-details-edit-column {
   flex: 1;
   display: flex;
@@ -358,6 +363,13 @@
         color: $gray-500;
       }
   }
+}
+
+.required-ind {
+  color: $bc-gov-danger;
+  margin-left: 5px;
+  font-weight: 400;
+  font-size: 16px;
 }
 
 .comp-details-label-input-pair > textarea {

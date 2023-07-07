@@ -116,15 +116,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       <div className="comp-details-header">
         <div className="comp-complaint-info">
           <div className="comp-box-complaint-id">Complaint #{id}</div>
-          <div
-            className={`comp-box-conflict-type ${
-              complaintType !== COMPLAINT_TYPES.ERS
-                ? "hwcr-conflict-type"
-                : "allegation-conflict-type"
-            }`}
-          >
-            {complaintTypeToName(complaintType)}
-          </div>
+          { readOnly &&
+            <div
+              className={`comp-box-conflict-type ${
+                complaintType !== COMPLAINT_TYPES.ERS
+                  ? "hwcr-conflict-type"
+                  : "allegation-conflict-type"
+              }`}
+            >
+              {complaintTypeToName(complaintType)}
+            </div>
+          }
           { readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
             <div className="comp-box-species-type">{species}</div>
           )}
@@ -142,11 +144,13 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             </div>
           }
         </div>
-        <div className="comp-nature-of-complaint">
-          { readOnly && complaintType !== COMPLAINT_TYPES.ERS
-            ? natureOfComplaint
-            : violationType}            
-        </div>
+        { readOnly &&
+          <div className="comp-nature-of-complaint">
+            { complaintType !== COMPLAINT_TYPES.ERS
+              ? natureOfComplaint
+              : violationType}            
+          </div>
+        }
       </div>
       {/* <!-- complaint info end --> */}
 
