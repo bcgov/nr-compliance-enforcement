@@ -221,7 +221,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 className="comp-details-label-input-pair"
                 id="violation-type-pair-id"
               >
-                <label id="species-label-id">
+                <label id="violation-label-id">
                   Violation Type<span className="required-ind">*</span>
                 </label>
                 <Select
