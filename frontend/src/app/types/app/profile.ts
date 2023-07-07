@@ -9,4 +9,5 @@ export default interface Profile {
     office: string,
     region: string,
     zone: string,
+    zoneDescription: string,
 }

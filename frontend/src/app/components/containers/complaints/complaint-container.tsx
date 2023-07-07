@@ -5,7 +5,7 @@ import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
 import { getComplaintTypeFromUrl } from "../../../common/methods";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { getTokenProfile, profileZone } from "../../../store/reducers/app";
+import { getTokenProfile, profileZone, profileZoneDescription } from "../../../store/reducers/app";
 
 type Props = {
   initialState: number;
@@ -14,14 +14,15 @@ type Props = {
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
   const dispatch = useAppDispatch();
   const defaultZone = useAppSelector(profileZone);
+  const defaultZoneLabel = useAppSelector(profileZoneDescription);
 
   useEffect(() => {
     if (!defaultZone || defaultZone === "") {
       dispatch(getTokenProfile());
     } else {
-      setZoneCodeFilter({value: defaultZone, label: 'Cariboo Chilcotin'});
+      setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
     }
-  }, [dispatch, defaultZone]);
+  }, [dispatch, defaultZone, defaultZoneLabel]);
 
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [regionCodeFilter, setRegionCodeFilter] = useState<Option | null>(null);
@@ -45,7 +46,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         setSort(["incident_reported_datetime", "DESC"]);
         setComplaintStatusFilter({value: 'OPEN', label: 'Open'});
         setRegionCodeFilter(null);
-        setZoneCodeFilter({value: defaultZone, label: 'Cariboo Chilcotin'});
+        setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
         setAreaCodeFilter(null);
         setOfficerFilter(null);
         setNatureOfComplaintFilter(null);
