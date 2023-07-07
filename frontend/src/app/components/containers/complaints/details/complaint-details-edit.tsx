@@ -280,6 +280,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     placeholder="Select"
                     id="attractants_select_id"
                     styles={customStyles}
+                    isMulti
                   />
                 </div>
               </div>
