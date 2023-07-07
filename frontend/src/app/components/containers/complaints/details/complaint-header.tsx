@@ -125,7 +125,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             >
               {complaintTypeToName(complaintType)}
             </div>
-          }
           { readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
             <div className="comp-box-species-type">{species}</div>
           )}
