@@ -150,7 +150,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
       <div className="comp-complaint-header-edit-block">
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
-            <div className="comp-details-label-input-pair">
+            <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
               <label id="nature-of-complaint-label-id">
                 Nature of Complaint
               </label>
@@ -160,35 +160,35 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedNatureOfComplaint}
                 placeholder="Select"
                 styles={customStyles}
-                id="nature_of_complaint_select_id"
+                id="nature-of-complaint-select-id"
               />
             </div>
 
-            <div className="comp-details-label-input-pair">
+            <div className="comp-details-label-input-pair" id="species-pair-id">
               <label id="species-label-id">Species</label>
               <Select
                 className="comp-details-input"
                 options={speciesCodes}
                 defaultValue={selectedSpecies}
                 placeholder="Select"
-                id="species_select_id"
+                id="species-select-id"
                 styles={customStyles}
               />
             </div>
-            <div className="comp-details-label-input-pair">
+            <div className="comp-details-label-input-pair" id="status-pair-id">
               <label id="status-label-id">Status</label>
               <Select
                 className="comp-details-input"
                 options={complaintStatusCodes}
                 defaultValue={selectedStatus}
                 placeholder="Select"
-                id="status_select_id"
+                id="status-select-id"
                 styles={customStyles}
               />
             </div>
 
-            <div className="comp-details-label-input-pair">
-              <label id="officer_assigned_select_label_id">
+            <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+              <label id="officer-assigned-select-label-id">
                 Officer Assigned
               </label>
               <Select
@@ -196,13 +196,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 options={transformedOfficerCodeList}
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
-                id="officer_assigned_select_id"
+                id="officer-assigned-select-id"
                 styles={customStyles}
               />
             </div>
           </div>
           <div className="comp-details-edit-column">
-            <div className="comp-details-label-input-pair">
+            <div className="comp-details-label-input-pair" id="date-time-pair-id">
               <label id="date-time-logged-label-id">Date / Time Logged</label>
               <div className="comp-details-input">
                 <i className="bi bi-calendar comp-margin-right-xs"></i>
@@ -211,7 +211,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 {formatTime(loggedDate)}
               </div>
             </div>
-            <div className="comp-details-label-input-pair">
+            <div className="comp-details-label-input-pair" id="last-updated-pair-id">
               <label id="last-updated-label-id">Last Updated</label>
               <div className="comp-details-input">
                 <i className="bi bi-calendar comp-margin-right-xs"></i>
@@ -220,7 +220,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 {formatTime(lastUpdated)}
               </div>
             </div>
-            <div className="comp-details-label-input-pair">
+            <div className="comp-details-label-input-pair" id="created-by-pair-id">
               <label id="created-by-label-id">Created By</label>
               <div className="comp-padding-left-xs comp-padding-top-xs">
                 {createdBy}
@@ -236,21 +236,21 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
         <div className="comp-complaint-call-information">
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="complaint-description-pair-id">
                 <label
-                  id="complaint_description_edit_label_id"
+                  id="complaint-description-edit-label-id"
                   className="col-auto"
                 >
                   Complaint Description
                 </label>
                 <textarea
                   className="form-control"
-                  id="complaint_description_textarea_id"
+                  id="complaint-description-textarea-id"
                   defaultValue={details}
                   rows={4}
                 />
               </div>
-              <div className="comp-details-label-input-pair comp-margin-top-80">
+              <div className="comp-details-label-input-pair comp-margin-top-80" id="incident-time-pair-id">
                 <label>Incident Time</label>
                 <DatePicker
                   showIcon
@@ -263,14 +263,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   wrapperClassName="comp-details-edit-calendar-input"
                 />
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="attractants-pair-id">
                 <label>Attractants</label>
                 <div className="comp-details-edit-input">
                   <Select
                     options={attractantCodes}
                     defaultValue={selectedAttractants}
                     placeholder="Select"
-                    id="attractants_select_id"
+                    id="attractants-select-id"
                     styles={customStyles}
                     isMulti
                   />
@@ -278,25 +278,25 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
             </div>
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="complaint-location-pair-id">
                 <label id="complaint-location-label-id">Complaint Location</label>
                 <input
                   type="text"
-                  id="complaint_location_edit_id"
+                  id="complaint-location-edit-id"
                   className="form-control"
                   value={location}
                 />
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="location-description-pair-id">
                 <label>Location Description</label>
                 <textarea
                   className="form-control"
-                  id="complaint_location_description_textarea_id"
+                  id="complaint-location-description-textarea-id"
                   defaultValue={locationDescription}
                   rows={4}
                 />
               </div>
-              <div className="comp-details-label-input-pair comp-margin-top-80">
+              <div className="comp-details-label-input-pair comp-margin-top-80" id="x-coordinate-pair-id">
                 <label>X Coordinate</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -307,7 +307,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="y-coordinate-pair-id">
                 <label>Y Coordinate</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -318,18 +318,18 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="area-community-pair-id">
                 <label>Area/Community</label>
                 <div className="comp-details-edit-input">
                   <Select
                     options={areaCodes}
                     defaultValue={selectedAreaCode}
-                    id="area_select_id"
+                    id="area-select-id"
                     styles={customStyles}
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="office-pair-id">
                 <label>Office</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -341,7 +341,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="zone-pair-id">
                 <label>Zone</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -353,7 +353,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="region-pair-id">
                 <label>Region</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -375,7 +375,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
         <div className="comp-complaint-call-information">
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="name-pair-id">
                 <label
                   id="complaint-caller-info-name-label-id"
                   className="col-auto"
@@ -387,11 +387,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     className="form-control"
                     value={name}
-                    id="caller_name_id"
+                    id="caller-name-id"
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="primary-phone-pair-id">
                 <label
                   id="complaint-caller-info-primary-phone-label-id"
                   className="col-auto"
@@ -403,11 +403,11 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     className="form-control"
                     value={primaryPhone}
-                    id="caller_primary_phone_id"
+                    id="caller-primary-phone-id"
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="alternate-1-phone-pair-id">
                 <label
                   id="complaint-caller-info-alternate1-phone-label-id"
                   className="col-auto"
@@ -423,7 +423,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="alternate-2-phone-pair-id">
                 <label
                   id="complaint-caller-info-alternate2-phone-label-id"
                   className="col-auto"
@@ -441,7 +441,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
             </div>
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="address-pair-id">
                 <label>Address</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -453,7 +453,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 </div>
               </div>
 
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="email-pair-id">
                 <label>Email</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -464,14 +464,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair">
+              <div className="comp-details-label-input-pair" id="referred-pair-id">
                 <label>Referred by / Complaint Agency</label>
                 <div className="comp-details-edit-input">
                   <Select
                     placeholder="Select"
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
-                    id="referred_select_id"
+                    id="referred-select-id"
                     styles={customStyles}
                   />
                 </div>
