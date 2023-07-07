@@ -327,6 +327,15 @@
   }
 }
 
+.ceds-select__control {
+  border: 1px solid #a1a1a1 !important;
+}
+
+.ceds-select__control:focus-within {
+  border: 1px solid #90b6F8 !important;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
+}
+
 .comp-details-edit-container {
   display: flex;  
 }
@@ -345,8 +354,8 @@
 
 .comp-details-label-input-pair {
   display: flex;
-  align-items: center;
-  height: 70px;
+  align-items: baseline;
+  min-height: 70px;
   
 
   label {
@@ -370,11 +379,6 @@
   margin-left: 5px;
   font-weight: 400;
   font-size: 16px;
-}
-
-.comp-details-label-input-pair > textarea {
-  margin-top: 75px;
-  resize: none;
 }
 
   .comp-details-edit-label {

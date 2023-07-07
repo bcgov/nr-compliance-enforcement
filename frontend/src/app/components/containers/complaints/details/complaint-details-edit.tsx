@@ -31,7 +31,6 @@ import {
 } from "../../../../store/reducers/officer";
 import { Person } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
-import { customStyles } from "../../../../common/custom-styles";
 import { DropdownOption } from "../../../../types/code-tables/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
@@ -243,7 +242,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                styles={customStyles}
+                classNamePrefix='ceds-select'
               />
             </div>
 
@@ -260,7 +259,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
-                styles={customStyles}
+                classNamePrefix='ceds-select'
               />
             </div>
           </div>
@@ -461,7 +460,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={areaCodes}
                     defaultValue={selectedAreaCode}
                     id="area-select-id"
-                    styles={customStyles}
+                    classNamePrefix='ceds-select'
                   />
                 </div>
               </div>
@@ -629,7 +628,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
-                    styles={customStyles}
+                    classNamePrefix='ceds-select'
                   />
                 </div>
               </div>
