@@ -107,7 +107,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   );
 
   // Parse the string to a Date object
-  const incidentDateTimeObject = new Date(incidentDateTime ?? "");
+  const incidentDateTimeObject = new Date(
+    incidentDateTime ?? ""
+  );
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
     incidentDateTimeObject
@@ -245,7 +247,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 classNamePrefix='ceds-select'
               />
             </div>
-
             <div
               className="comp-details-label-input-pair"
               id="officer-assigned-pair-id"

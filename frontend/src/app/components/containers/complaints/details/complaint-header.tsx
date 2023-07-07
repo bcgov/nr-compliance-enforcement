@@ -116,7 +116,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       <div className="comp-details-header">
         <div className="comp-complaint-info">
           <div className="comp-box-complaint-id">Complaint #{id}</div>
-          { readOnly &&
             <div
               className={`comp-box-conflict-type ${
                 complaintType !== COMPLAINT_TYPES.ERS
@@ -143,6 +142,11 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               <Button id="details-screen-cancel-save-button-top" title="Save Complaint" variant="outline-primary" onClick={saveButtonClick}>Save Changes</Button>
             </div>
           }
+        </div>
+        <div className="comp-nature-of-complaint">
+          { readOnly && complaintType !== COMPLAINT_TYPES.ERS
+            ? natureOfComplaint
+            : violationType}            
         </div>
         { readOnly &&
           <div className="comp-nature-of-complaint">
