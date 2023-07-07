@@ -4,7 +4,7 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
   formatTime,
-  parseCoordinates,
+  renderCoordinates,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
@@ -33,15 +33,6 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
     violationInProgress,
     violationObserved,
   } = useAppSelector(selectComplaintDeails(complaintType)) as ComplaintDetails;
-
-  const renderCoordinates = (
-    coordinates: number[] | string[] | undefined,
-    coordinateType: Coordinates
-  ): JSX.Element => {
-    const result = parseCoordinates(coordinates, coordinateType);
-
-    return result === 0 ? <>Not Provided</> : <>{result}</>;
-  };
 
   return (
     <div className="comp-complaint-details-block">

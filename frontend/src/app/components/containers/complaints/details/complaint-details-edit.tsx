@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
   formatTime,
-  parseCoordinates,
+  renderCoordinates,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
@@ -30,6 +30,7 @@ import {
 import { Person } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
 import { customStyles } from "../../../../common/custom-styles";
+import { DropdownOption } from "../../../../types/code-tables/option";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -88,15 +89,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     })
   );
 
-  const renderCoordinates = (
-    coordinates: number[] | string[] | undefined,
-    coordinateType: Coordinates
-  ): JSX.Element => {
-    const result = parseCoordinates(coordinates, coordinateType);
-
-    return result === 0 ? <>Not Provided</> : <>{result}</>;
-  };
-
   const xCoordinate = ReactDOMServer.renderToString(
     renderCoordinates(coordinates, Coordinates.Latitude)
   );
@@ -114,14 +106,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   );
 
   // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(selectComplaintStatusCodes);
-  const speciesCodes = useSelector(selectSpeciesCodes);
+  const complaintStatusCodes = useSelector(selectComplaintStatusCodes) as DropdownOption[];
+  const speciesCodes = useSelector(selectSpeciesCodes) as DropdownOption[];
   const hwcrNatureOfComplaintCodes = useSelector(
     selectedHwcrNatureOfComplaintCodes
-  );
-  const areaCodes = useSelector(selectedAreaCodes);
-  const attractantCodes = useSelector(selectedAttractantCodes);
-  const referredByAgencyCodes = useSelector(selectAgencyCodes);
+  ) as DropdownOption[];
+  const areaCodes = useSelector(selectedAreaCodes) as DropdownOption[];
+  const attractantCodes = useSelector(selectedAttractantCodes) as DropdownOption[];
+  const referredByAgencyCodes = useSelector(selectAgencyCodes) as DropdownOption[];
 
   // Used to set selected values in the dropdowns
   const selectedStatus = complaintStatusCodes.find(
