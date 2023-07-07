@@ -254,7 +254,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <textarea
                   className="form-control"
                   id="complaint_description_textarea_id"
-                  value={details}
+                  defaultValue={details}
                   rows={4}
                 />
               </div>
@@ -299,7 +299,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <textarea
                   className="form-control"
                   id="complaint_location_description_textarea_id"
-                  value={locationDescription}
+                  defaultValue={locationDescription}
                   rows={4}
                 />
               </div>
