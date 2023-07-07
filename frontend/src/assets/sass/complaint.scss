@@ -624,6 +624,13 @@
   border-radius: 4px;
   border-style: solid;
   border-width: 1px;
+  border-color: #a1a1a1
+}
+
+.comp-details-edit-calendar-input input:focus {
+  border: 1px solid #90b6F8;
+  outline: none;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25)
 }
 
 //override -- default is one pixel too high

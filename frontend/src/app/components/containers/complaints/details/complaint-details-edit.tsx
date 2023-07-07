@@ -29,6 +29,7 @@ import {
 } from "../../../../store/reducers/officer";
 import { Person } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
+import { customStyles } from "../../../../common/custom-styles";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -166,6 +167,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 options={hwcrNatureOfComplaintCodes}
                 defaultValue={selectedNatureOfComplaint}
                 placeholder="Select"
+                styles={customStyles}
                 id="nature_of_complaint_select_id"
               />
             </div>
@@ -178,6 +180,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedSpecies}
                 placeholder="Select"
                 id="species_select_id"
+                styles={customStyles}
               />
             </div>
             <div className="comp-details-label-input-pair">
@@ -188,6 +191,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status_select_id"
+                styles={customStyles}
               />
             </div>
 
@@ -201,6 +205,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
                 id="officer_assigned_select_id"
+                styles={customStyles}
               />
             </div>
           </div>
@@ -255,7 +260,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               </div>
               <div className="comp-details-label-input-pair comp-margin-top-80">
                 <label>Incident Time</label>
-                <div className="comp-details-edit-calendar-input">
                   <DatePicker
                     showIcon
                     timeInputLabel="Time:"
@@ -264,8 +268,8 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     showTimeInput
                     dateFormat="yyyy-MM-dd HH:mm"
                     timeFormat="HH:mm"
+                    wrapperClassName="comp-details-edit-calendar-input"
                   />
-                </div>
               </div>
               <div className="comp-details-label-input-pair">
                 <label>Attractants</label>
@@ -275,6 +279,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     defaultValue={selectedAttractants}
                     placeholder="Select"
                     id="attractants_select_id"
+                    styles={customStyles}
                   />
                 </div>
               </div>
@@ -327,6 +332,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={areaCodes}
                     defaultValue={selectedAreaCode}
                     id="area_select_id"
+                    styles={customStyles}
                   />
                 </div>
               </div>
@@ -473,6 +479,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
                     id="referred_select_id"
+                    styles={customStyles}
                   />
                 </div>
               </div>
