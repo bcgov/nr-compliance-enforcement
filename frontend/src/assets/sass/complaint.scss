@@ -349,7 +349,7 @@
 
 .comp-details-label-input-pair {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   height: 70px;
   
 
@@ -377,8 +377,7 @@
 }
 
 .comp-details-label-input-pair > textarea {
-  margin-top: 75px;
-  resize: none;
+  z-index: 1000000;
 }
 
   .comp-details-edit-label {
