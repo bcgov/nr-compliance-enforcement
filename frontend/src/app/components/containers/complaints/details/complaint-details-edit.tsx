@@ -326,7 +326,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 />
               </div>
               <div
-                className="comp-details-label-input-pair comp-margin-top-80"
+                className="comp-details-label-input-pair comp-margin-top-30"
                 id="incident-time-pair-id"
               >
                 <label>Incident Time</label>
@@ -422,7 +422,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 />
               </div>
               <div
-                className="comp-details-label-input-pair comp-margin-top-80"
+                className="comp-details-label-input-pair comp-margin-top-30"
                 id="x-coordinate-pair-id"
               >
                 <label>X Coordinate</label>
