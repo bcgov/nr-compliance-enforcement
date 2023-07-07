@@ -142,11 +142,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             </div>
           }
         </div>
-        <div className="comp-nature-of-complaint">
-          { readOnly && complaintType !== COMPLAINT_TYPES.ERS
-            ? natureOfComplaint
-            : violationType}            
-        </div>
         { readOnly &&
           <div className="comp-nature-of-complaint">
             { complaintType !== COMPLAINT_TYPES.ERS
