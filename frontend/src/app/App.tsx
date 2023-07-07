@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 import Roles from "./constants/roles";
@@ -11,9 +11,18 @@ import ColorReference from "./components/reference";
 
 import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
+import { useAppDispatch } from "./hooks/hooks";
+import { fetchCodeTablesAsync } from "./store/reducers/code-tables";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 
 const App: FC = () => {
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCodeTablesAsync());
+  }, [dispatch]);
+
   return (
     <Router>
       <Modal />

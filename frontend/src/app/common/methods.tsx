@@ -55,3 +55,14 @@ export const getComplaintTypeFromUrl = (): number => {
 
   return -1;
 };
+
+export const renderCoordinates = (
+  coordinates: number[] | string[] | undefined,
+  coordinateType: Coordinates
+): JSX.Element => {
+  const result = parseCoordinates(coordinates, coordinateType);
+
+  return result === 0 ? <>{'Not Provided'}</> : <>{result}</>;
+};
+
+

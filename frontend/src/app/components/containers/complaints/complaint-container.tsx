@@ -24,7 +24,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
     const _test = getComplaintTypeFromUrl();
     const [complaintType, setComplaintType] = useState<number>(
       _test !== -1 ? _test : initialState
-    );
+    );    
 
     function handleChange(newState: number)
     {

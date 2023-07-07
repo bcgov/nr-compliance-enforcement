@@ -266,7 +266,7 @@
   .comp-complaint-call-details {
     margin-top: 18px;
     margin-bottom: 18px;
-    border: 1px solid $gray-500;
+    border: 1px solid $gray-300;
     border-radius: 3px;
     padding: 18px;
   }
@@ -274,7 +274,7 @@
   .comp-complaint-call-information {
     margin-top: 18px;
     margin-bottom: 18px;
-    border: 1px solid $gray-500;
+    border: 1px solid $gray-300;
     border-radius: 3px;
     padding: 18px;
   }
@@ -302,6 +302,94 @@
     color: $black;
   }
 }
+
+.comp-complaint-header-edit-block {
+  margin-left: 24px;
+  margin-right: 24px;
+  padding: 18px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  border: 1px solid $gray-300;
+  border-radius: 3px;
+
+  h6 {
+    padding-top: 18px;
+    font-weight: 700;
+  }
+
+  .comp-details-content {
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+      padding: 4px;
+    }
+  }
+}
+
+.ceds-select__control {
+  border: 1px solid #a1a1a1 !important;
+}
+
+.ceds-select__control:focus-within {
+  border: 1px solid #90b6F8 !important;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
+}
+
+.comp-details-edit-container {
+  display: flex;  
+}
+
+.comp-details-edit-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-right: 60px;
+}
+
+.comp-details-label-input-pair {
+  display: flex;
+  align-items: baseline;
+  min-height: 70px;
+  
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .comp-details-input {
+    flex-basis: 100%;
+      color: $gray-900;
+  
+      i.bi {
+        color: $gray-500;
+      }
+  }
+}
+
+.required-ind {
+  color: $bc-gov-danger;
+  margin-left: 5px;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+  .comp-details-edit-label {
+    color: $gray-500;
+    flex: 1;
+  }
+
+  .comp-details-edit-input {
+    flex: 1;
+  }
+  
+
+  .comp-details-content {
+    padding-top: 7px;
+  }
+
 
   .comp-filter-btn
   {
@@ -442,6 +530,31 @@
     margin: 0px 0px 0px 7px;
   }
 
+.comp-box-footer {
+  margin-right: 24px;
+  height: 100px;
+
+  .comp-box-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 0 0;
+  }
+
+  .comp-box-footer-actions button {
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .comp-box-footer-actions button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+  }
+
+}
+
 .comp-cell {
   box-sizing: border-box;
   padding: 12px 12px 12px 12px;
@@ -499,8 +612,15 @@
     cursor: pointer;
 }
 
+.calendar-icon {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+}
+
 .react-datepicker__view-calendar-icon input {
-    padding: 6px 10px 5px 25px;
+    padding: 6px 10px 5px 10px;
     width: 298px;
     background-color: hsl(0, 0%, 100%);
     border-color: hsl(0, 0%, 80%);
@@ -509,6 +629,26 @@
     border-width: 1px;
     box-sizing: border-box;
 }
+
+.comp-details-edit-calendar-input {
+  width: 100%;
+}
+
+.comp-details-edit-calendar-input input {
+  padding: 6px 10px 5px 10px;
+  width: inherit;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #a1a1a1;
+}
+
+.comp-details-edit-calendar-input input:focus {
+  border: 1px solid #90b6F8;
+  outline: none;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25)
+}
+
 //override -- default is one pixel too high
 .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle {
   top: 0;
