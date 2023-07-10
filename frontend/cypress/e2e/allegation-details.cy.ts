@@ -27,9 +27,6 @@ describe("COMPENF-37 Display ECR Details", () => {
 
     cy.wait(5000);
 
-    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
-    cy.wait(5000);
-
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
       .find("tr")
@@ -44,6 +41,9 @@ describe("COMPENF-37 Display ECR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#ers-tab").click({ force: true });
+    cy.wait(5000);
+
+    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
     cy.wait(5000);
 
     //-- check to make sure there are items in the table
@@ -67,6 +67,8 @@ describe("COMPENF-37 Display ECR Details", () => {
     //-- click on HWCR tab
     cy.get("#ers-tab").click({ force: true });
     cy.wait(7000);
+    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.wait(5000);
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
