@@ -286,7 +286,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
           </div>
           <div className={zoneClass}>
             <button type="button" className="btn btn-primary comp-filter-btn" id="comp-zone-filter">{zoneCodeFilter?.label}
-              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setZoneCodeFilter(null)}></button>
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" id="comp-zone-close" onClick={() => setZoneCodeFilter(null)}></button>
             </button>
           </div>
           <div className={regionClass}>
