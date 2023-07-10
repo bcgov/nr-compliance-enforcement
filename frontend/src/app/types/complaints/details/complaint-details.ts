@@ -9,6 +9,7 @@ export interface ComplaintDetails {
   area?: string;
   region?: string;
   zone?: string;
+  zone_code?: string;
   office?: string;
   attractants?: Array<ComplaintDetailsAttractant>;
   violationInProgress?: boolean;

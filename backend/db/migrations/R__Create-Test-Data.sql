@@ -1192,3 +1192,77 @@ INSERT INTO public.allegation_complaint
 (allegation_complaint_guid, in_progress_ind, observed_ind, suspect_witnesss_dtl_text, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp, complaint_identifier, violation_code)
 VALUES('e8f4918d-dc90-4b64-a81e-53971a1bb0b3'::uuid, false, false, NULL, 'FLYWAY', NULL, '2023-06-29 22:16:16.754', 'FLYWAY', NULL, '2023-06-29 22:16:16.754', '23-007892', 'OTHER')
 ON CONFLICT DO NOTHING;
+
+
+-------------------------
+-- INSERT attractant_hwcr_xref records
+-------------------------
+
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('35050109-8d59-4b7a-9ed4-1b88575feb08'::uuid, 'GARBAGE', 'a4d0f312-5b2c-45e7-9c6c-d392c8ea1e7f'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:55.155', 'POSTMAN', NULL, '2023-06-05 18:45:55.155')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('0ec845a6-a580-4af1-b191-026fe97f3b86'::uuid, 'FREEZER', 'a4d0f312-5b2c-45e7-9c6c-d392c8ea1e7f'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:55.155', 'POSTMAN', NULL, '2023-06-05 18:45:55.155')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('51490fed-0d03-4c38-9528-0615efb1e2df'::uuid, 'COMPOST', 'a4d0f312-5b2c-45e7-9c6c-d392c8ea1e7f'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:55.155', 'POSTMAN', NULL, '2023-06-05 18:45:55.155')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('f387647b-a2a8-407f-9335-1c56802233e4'::uuid, 'GARBAGE', '4af9be4a-ab1a-4742-bc70-395d9fb62894'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:56.136', 'POSTMAN', NULL, '2023-06-05 18:45:56.136')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('4a2ad507-dbdc-4898-9841-6089f62ef3cf'::uuid, 'BBQ', '05cb2926-16ad-4526-8bb0-24b0e40b8d64'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:56.483', 'POSTMAN', NULL, '2023-06-05 18:45:56.483')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('a59965ad-f60e-4199-ba66-b3aba2eee7b9'::uuid, 'BBQ', 'd6448826-6442-4fbc-bad7-8725432b52b0'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:56.698', 'POSTMAN', NULL, '2023-06-05 18:45:56.698')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('da00a0e2-f89c-4db4-9af0-e787c568865f'::uuid, 'PETS', 'd6448826-6442-4fbc-bad7-8725432b52b0'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:56.698', 'POSTMAN', NULL, '2023-06-05 18:45:56.698')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('7e537341-169a-4dc8-a7ad-a6ef72102864'::uuid, 'BEEHIVE', 'd6448826-6442-4fbc-bad7-8725432b52b0'::uuid, 'POSTMAN', NULL, '2023-06-05 18:45:56.698', 'POSTMAN', NULL, '2023-06-05 18:45:56.698')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('60e88f15-0af8-4433-a49d-16317eb6f8e4'::uuid, 'GARBAGE', '2854ed44-d7f2-402e-927f-57e54f6da876'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:53.173', 'POSTMAN', NULL, '2023-06-23 18:29:53.173')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('d018b969-ffd3-433b-a36c-752636b7a5f7'::uuid, 'FREEZER', '2854ed44-d7f2-402e-927f-57e54f6da876'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:53.173', 'POSTMAN', NULL, '2023-06-23 18:29:53.173')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('0bc297e8-ed44-4b68-a801-50d11973d82d'::uuid, 'COMPOST', '2854ed44-d7f2-402e-927f-57e54f6da876'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:53.173', 'POSTMAN', NULL, '2023-06-23 18:29:53.173')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('efe3fc4f-9617-44b1-b83b-6ac6942a2b28'::uuid, 'OTHER', 'cfa89ef0-ba61-4d86-b0c2-99d348bbdef4'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:53.437', 'POSTMAN', NULL, '2023-06-23 18:29:53.437')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('571e1580-1731-4dda-9d49-219145638bd7'::uuid, 'GARBAGE', 'e8523a29-3ae4-4371-91cb-bcefd00ce4a4'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.025', 'POSTMAN', NULL, '2023-06-23 18:29:54.025')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('4ccecc0c-c96c-495c-9368-10724ae321b9'::uuid, 'BBQ', '9efc69f9-54c1-4df9-8bee-b1c601786728'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.451', 'POSTMAN', NULL, '2023-06-23 18:29:54.451')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('b6b6ac3d-e188-4696-ac8a-816253d94088'::uuid, 'BBQ', 'ae6e0dc4-b960-4b37-9dc9-ce303733a69d'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.748', 'POSTMAN', NULL, '2023-06-23 18:29:54.748')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('b271ac24-07b2-4d33-828e-1f08bafae90b'::uuid, 'PETS', 'ae6e0dc4-b960-4b37-9dc9-ce303733a69d'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.748', 'POSTMAN', NULL, '2023-06-23 18:29:54.748')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.attractant_hwcr_xref
+(attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
+VALUES('dbf30df9-0b2d-444d-bafa-051f36715710'::uuid, 'BEEHIVE', 'ae6e0dc4-b960-4b37-9dc9-ce303733a69d'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.748', 'POSTMAN', NULL, '2023-06-23 18:29:54.748')
+ON CONFLICT DO NOTHING;

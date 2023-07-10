@@ -16,19 +16,26 @@ export const SideBar: FC = () => {
 
   const menueItems: Array<MenuItem> = [
     {
+      id: "complaints-link",
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
     },
+    {
+      id: "zone-at-a-glance-link",
+      name: "Zone at a Glance",
+      icon: "bi bi-buildings",
+      route: "/zone/at-a-glance",
+    },
   ];
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
-    const { icon, name, route } = item;
+    const { id, icon, name, route } = item;
     return (
       <li key={idx}>
         <i className={icon}></i>
         <span className="comp-nav-item-name">
-          {!route ? <>{name}</> : <Link to={route}>{name}</Link>}
+          {!route ? <>{name}</> : <Link to={route} id={id}>{name}</Link>}
         </span>
       </li>
     );

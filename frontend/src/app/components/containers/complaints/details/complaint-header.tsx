@@ -10,14 +10,27 @@ import {
   formatTime,
   getAvatarInitials,
 } from "../../../../common/methods";
-import { Button } from "react-bootstrap";
-import { BsPersonPlus } from 'react-icons/bs';
+import { Button,  } from "react-bootstrap";
+import { BsPersonPlus, BsPencil } from 'react-icons/bs';
 import { openModal } from "../../../../store/reducers/app";
 import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
 
-export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
+interface ComplaintHeaderProps {
+  id: string;
+  complaintType: string;
+  readOnly: boolean;
+  editButtonClick: () => void;
+  cancelButtonClick: () => void;
+  saveButtonClick: () => void;
+}
+
+export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   id,
   complaintType,
+  readOnly,
+  editButtonClick,
+  cancelButtonClick,
+  saveButtonClick
 }) => {
   const {
     loggedDate,
@@ -28,14 +41,12 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
     zone,
     natureOfComplaint,
     violationType,
-    species,
+    species
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === 'Not Assigned' ? 'Assign' : 'Reassign';
-
   const applyStatusClass = (state: string): string => {
-
     switch (state.toLowerCase()) {
       case "open":
         return "comp-status-badge-open";
@@ -114,23 +125,33 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           >
             {complaintTypeToName(complaintType)}
           </div>
-          {species && complaintType !== COMPLAINT_TYPES.ERS && (
+          { readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
             <div className="comp-box-species-type">{species}</div>
           )}
-          <div className="comp-box-actions">
-            <Button id="details_screen_assign_button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal}><span>{assignText}</span><BsPersonPlus/></Button>
-            <Button id="details_screen_update_status_button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
-          </div>
+          { readOnly &&
+            <div className="comp-box-actions">
+              <Button id="details-screen-assign-button" title="Assign to Officer" variant="outline-primary" onClick={openAsignOfficerModal} className=""><span>{assignText}</span><BsPersonPlus/></Button>
+              <Button id="details-screen-update-status-button" title="Update Status" variant="outline-primary"  onClick={openStatusChangeModal}>Update Status</Button>
+              <Button id="details-screen-edit-button" title="Edit Complaint" variant="outline-primary"  onClick={editButtonClick}><span>Edit</span><BsPencil/></Button>
+            </div>
+          }
+          { !readOnly && 
+            <div className="comp-box-actions">
+              <Button id="details-screen-cancel-edit-button-top" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}>Cancel</Button>
+              <Button id="details-screen-cancel-save-button-top" title="Save Complaint" variant="outline-primary" onClick={saveButtonClick}>Save Changes</Button>
+            </div>
+          }
         </div>
         <div className="comp-nature-of-complaint">
-          {complaintType !== COMPLAINT_TYPES.ERS
+          { readOnly && complaintType !== COMPLAINT_TYPES.ERS
             ? natureOfComplaint
-            : violationType}
+            : violationType}            
         </div>
       </div>
       {/* <!-- complaint info end --> */}
 
       {/* <!-- complaint status details start --> */}
+      { readOnly &&
       <div className="comp-details-status">
         <div className="comp-details-header-column comp-details-status-width">
           <div>
@@ -196,6 +217,7 @@ export const ComplaintHeader: FC<{ id: string; complaintType: string }> = ({
           </div>
         </div>
       </div>
+      }
       {/* <!-- complaint status details end --> */}
     </>
   );
