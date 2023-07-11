@@ -73,7 +73,6 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         }
       }
     }
-    console.log("topLevelZoneCodeFilter2: " + zoneCodeFilter?.value);
     if(complaintType === ComplaintType.HWCR_COMPLAINT)
     {
         return <>
