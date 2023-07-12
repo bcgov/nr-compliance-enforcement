@@ -1,0 +1,69 @@
+.comp-zone-at-a-glance {
+  margin: -24px;
+}
+
+.comp-zag-container {
+  display: flex;
+
+  background-color: $grey-110;
+
+  .comp-zag-banner {
+    width: 355px;
+    height: 176px;
+
+    display: block;
+    flex-grow: 0;
+  }
+
+  .comp-zag-charts {
+    display: block;
+    flex-grow: 1;
+
+    h6 {
+      font-weight: 700;
+    }
+
+    .comp-zag-chart-container {
+      display: flex;
+
+      .comp-zag-open-complaint-chart {
+        flex-grow: 0;
+
+        height: 125px;
+        width: 163px;
+      }
+
+      .comp-zag-legend {
+        flex-grow: 1;
+
+        h6 {
+          margin-top: 10px;
+        }
+
+        & > .row {
+          padding-bottom: 4px;
+        }
+
+        .comp-zag-legend-bar {
+          width: 36px;
+          height: 13px;
+          display: inline-block;
+        }
+
+        .comp-zag-legend-label { 
+            margin-left: -16px;
+            margin-right: 16px;
+        }
+
+        .comp-zag-legend-value { 
+            font-weight: 900;
+        }
+      }
+    }
+
+    .comp-zag-open-compalaints {
+      height: 160px;
+      width: 160px;
+    }
+  }
+}

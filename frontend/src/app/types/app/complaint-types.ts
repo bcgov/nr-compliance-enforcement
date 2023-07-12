@@ -1,4 +1,4 @@
-const COMPLAINT_TYPES = {
+export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
 };

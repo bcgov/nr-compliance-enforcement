@@ -61,4 +61,10 @@ export class HwcrComplaintController {
   byId(@Param('id') id: string) {
     return this.hwcrComplaintService.findByComplaintIdentifier(id);
   }
+
+  @Get("/stats/by-zone/:zone")
+  @Roles(Role.COS_OFFICER)
+  statsByZone(@Param("zone") zone: string) { 
+    return this.hwcrComplaintService.getZoneAtAGlanceStatistics(zone);
+  }
 }
