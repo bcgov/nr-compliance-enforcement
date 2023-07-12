@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
+import { ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
 
 @Injectable()
 export class HwcrComplaintService {
@@ -226,5 +227,27 @@ export class HwcrComplaintService {
     .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
     .where('complaint_identifier.complaint_identifier = :id', {id})
     .getOne();
+  }
+
+  async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> { 
+    let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0 };
+
+    //-- get total complaints for the zone
+    let totalComplaints = await this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+    .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
+    .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+    .where('area_code.zone_code = :zone', { zone })
+    .getCount();
+
+    const totalAssignedComplaints = await this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+    .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
+    .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+    .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+    .where('area_code.zone_code = :zone', { zone })
+    .getCount();
+
+    results = { ...results, total: totalComplaints, assigned: totalAssignedComplaints, unassigned: totalComplaints - totalAssignedComplaints }
+
+    return results
   }
 }
