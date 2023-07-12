@@ -264,7 +264,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               />
             </div>
           </div>
-          <div className="comp-details-edit-column">
+          <div className="comp-details-edit-column comp-details-right-column">
             <div
               className="comp-details-label-input-pair"
               id="date-time-pair-id"
