@@ -1,8 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
-import { Entity, Column, JoinColumn, OneToOne, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, JoinColumn, OneToOne, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { GeoOrganizationUnitCode } from "src/v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
+import { Officer } from "src/v1/officer/entities/officer.entity";
 
 @Entity()
 export class Office 
@@ -13,7 +15,7 @@ export class Office
       })
       @PrimaryGeneratedColumn("uuid")
       office_guid: UUID;
-
+      
       @ApiProperty({
         example: "DCC",
         description:
@@ -22,7 +24,7 @@ export class Office
       @OneToOne(() => CosGeoOrgUnit)
       @JoinColumn({ name: "geo_organization_unit_code", referencedColumnName: "office_location_code" })
       @Column({name: "geo_organization_unit_code" })
-      cos_geo_org_unit: CosGeoOrgUnit;    
+      cos_geo_org_unit: CosGeoOrgUnit;
 
       @ApiProperty({
         example: "COS",
@@ -31,6 +33,13 @@ export class Office
       @ManyToOne(() => AgencyCode)
       @JoinColumn({name: "agency_code"})
       agency_code: AgencyCode;
+
+      @ApiProperty({
+        example: "DCC",
+        description: "The office for this officer",
+      })
+      @OneToMany(() => Officer, (officer) => officer.office_guid)
+      officers: Officer[];
     
       @ApiProperty({
         example: "IDIR\mburns",

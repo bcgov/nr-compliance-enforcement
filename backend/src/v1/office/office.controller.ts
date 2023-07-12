@@ -27,6 +27,13 @@ export class OfficeController {
     return this.officeService.findByGeoOrgCode(+geo_organization_code);
   }
 
+  @Get("/by-zone/:zone_code")
+  @Roles(Role.COS_OFFICER)
+  findOfficesByZone(@Param('zone_code') zone_code: string)
+  {
+    return this.officeService.findOfficesByZone(zone_code);
+  }
+
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('office_guid') id: string) {

@@ -14,7 +14,7 @@ import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "./complaints";
 
 const initialState: AssignOfficersState = {
-    officersInZone: []
+    officersInZone: [],
 };
 
 export const assignOfficersSlice = createSlice({
@@ -27,6 +27,11 @@ export const assignOfficersSlice = createSlice({
       const officersInZone:Person[] = payload.officersInZone;
       return { ...state, officersInZone};
     },
+    setOfficersInOffice: (state, action) => {
+      const { payload } = action;
+      const officersInOffice:Person[] = payload.officersInOffice;
+      return { ...state, officersInOffice};
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -35,7 +40,7 @@ export const assignOfficersSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setOfficersInZone } = assignOfficersSlice.actions;
+export const { setOfficersInZone, setOfficersInOffice } = assignOfficersSlice.actions;
 
 // Given a zone, returns a list of persons in that zone.
 export const getOfficersInZone = (zone?: string): AppThunk => async (dispatch) => {
@@ -48,6 +53,21 @@ export const getOfficersInZone = (zone?: string): AppThunk => async (dispatch) =
     dispatch(
         setOfficersInZone({
         officersInZone: response.data
+      })
+    );
+  }
+};
+
+export const getOfficersInOffice = (office_guid?: string): AppThunk => async (dispatch) => {
+
+  const token = localStorage.getItem("user");
+  if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    
+    const response = await axios.get<Person>(`${config.API_BASE_URL}/v1/person/find-by-office/${office_guid}`);
+    dispatch(
+        setOfficersInOffice({
+        officersInOffice: response.data
       })
     );
   }

@@ -67,4 +67,13 @@ export class PersonService {
     .where("cos_geo_org_unit_flat_vw.zone_code = :zone_code", {zone_code});
     return queryBuilder.getMany();
   }
+
+  async findByOffice(office_guid: any) : Promise<Person[]> {
+    const queryBuilder = this.personRepository.createQueryBuilder('person')
+    .leftJoinAndSelect('person.officer', 'officer')
+    .leftJoinAndSelect('officer.office_guid','office')
+    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit_flat_vw')
+    .where("office.office_guid = :office_guid", {office_guid});
+    return queryBuilder.getMany();
+  }
 }
