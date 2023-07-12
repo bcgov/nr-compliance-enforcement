@@ -91,7 +91,13 @@ export const profileIdir = (state: RootState): UUID => {
 
 export const profileZone = (state: RootState): string => {
   const { profile } = state.app;
-  return `${profile.zone}`;
+  return profile.zone;
+};
+
+
+export const profileZoneDescription = (state: RootState): string => {
+  const { profile } = state.app;
+  return profile.zoneDescription;
 };
 
 export const selectModalOpenState = (state: RootState): boolean => {
@@ -132,7 +138,7 @@ export const selectClosingCallback = (state: RootState): any => {
   };
 
 //-- thunks
-export const getTokenProfile = (): AppThunk => async (dispatch) => {
+export const getTokenProfile =  (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
@@ -146,6 +152,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     let office = "";
     let region = "";
     let zone = "";
+    let zoneDescription = "";
 
     if(response.data.office_guid !== null)
     {
@@ -153,6 +160,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       office = unit.office_location_code;
       region = unit.region_code;
       zone = unit.zone_code;
+      zoneDescription = unit.zone_name;
     } 
     const profile: Profile = {
       givenName: given_name,
@@ -163,6 +171,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       office: office,
       region: region,
       zone: zone,
+      zoneDescription: zoneDescription,
     };
 
     dispatch(setTokenProfile(profile));
@@ -172,7 +181,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
-  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "" },
+  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "", zoneDescription: ""},
   isSidebarOpen: true,
 
   modalIsOpen: false,
@@ -197,7 +206,8 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         idir_username: payload.idir_username,
         office: payload.office,
         region: payload.region,
-        zone: payload.zone
+        zone: payload.zone,
+        zoneDescription: payload.zoneDescription,
       };
       return { ...state, profile };
     }

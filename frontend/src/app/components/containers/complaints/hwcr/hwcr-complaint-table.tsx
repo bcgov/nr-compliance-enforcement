@@ -22,10 +22,9 @@ type Props = {
     complaintStatusFilter: Option | null,
 }
 
-export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter}) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
     const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
 
     useEffect(() => {

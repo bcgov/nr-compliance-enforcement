@@ -24,7 +24,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       });
     cy.wait(2000);
     cy.get(
-      "#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell"
+      "#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell"
     ).click({ force: true });
 
     cy.window().scrollTo("top");
