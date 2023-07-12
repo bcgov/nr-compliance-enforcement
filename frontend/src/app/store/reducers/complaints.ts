@@ -26,6 +26,9 @@ export const complaintSlice = createSlice({
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
+    setZoneAtAGlance: (state, action) => { 
+
+    }
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -34,7 +37,7 @@ export const complaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setComplaint } = complaintSlice.actions;
+export const { setComplaint, setZoneAtAGlance } = complaintSlice.actions;
 
 //--
 export const getHwcrComplaintByComplaintIdentifier =
@@ -66,6 +69,22 @@ export const getErsComplaintByComplaintIdentifier =
       const result = response.data;
 
       dispatch(setComplaint({ ...result }));
+    }
+  };
+
+  export const getZoneAtAGlanceStats =
+  (zone: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/stats/by-zone/${zone}`
+      );
+      const result = response.data;
+
+      dispatch(setZoneAtAGlance({ ...result }));
     }
   };
 

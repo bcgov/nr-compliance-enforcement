@@ -26,8 +26,6 @@
     .comp-zag-chart-container {
       display: flex;
 
-      background-color: #bbdefb;
-
       .comp-zag-open-complaint-chart {
         flex-grow: 0;
 
@@ -35,28 +33,33 @@
         width: 163px;
       }
 
+      .comp-zag-legend {
+        flex-grow: 1;
 
-      .comp-zag-legend { 
+        h6 {
+          margin-top: 10px;
+        }
 
-        .comp-zag-legend-assigned { 
-            width: 36px;
-            height: 13px;
-            display: inline-block;
+        & > .row {
+          padding-bottom: 4px;
+        }
+
+        .comp-zag-legend-bar {
+          width: 36px;
+          height: 13px;
+          display: inline-block;
+        }
+
+        .comp-zag-legend-label { 
+            margin-left: -16px;
+            margin-right: 16px;
+        }
+
+        .comp-zag-legend-value { 
+            font-weight: 900;
         }
       }
-
-      .item2 {
-        /* flex:1 1 auto; */
-        flex-grow: 1;
-        border: 1px solid black;
-      }
-
     }
-
-    .item1 { 
-        /* flex:0 1 auto; */
-        flex-grow:0;
-      }
 
     .comp-zag-open-compalaints {
       height: 160px;

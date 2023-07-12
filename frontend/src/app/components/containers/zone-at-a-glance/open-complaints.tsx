@@ -49,16 +49,28 @@ export const OpenComplaints: FC<Props> = ({
       </div>
       <div className="comp-zag-legend item2">
         <h6>{complaintTypeToName(type)}</h6>
-        {/* <span className="comp-zag-legend-assigned"></span><span>Assigned</span>< */}
         <Row>
           <Col md={2}>
             <span
-              className="comp-zag-legend-assigned"
+              className="comp-zag-legend-bar"
+              style={{ backgroundColor: unassignedColor }}
+            ></span>
+          </Col>
+          <Col md={3} className="comp-zag-legend-label">Unassigned</Col>
+          <Col md={3} className="comp-zag-legend-value">{unassigned}</Col>
+        </Row>
+        <Row>
+          <Col md={2}>
+            <span
+              className="comp-zag-legend-bar"
               style={{ backgroundColor: assignedColor }}
             ></span>
           </Col>
-          <Col md={3} className="comp-nmargin-left-md">Assigned</Col>
-          <Col md={3}>{assigned}</Col>
+          <Col md={3} className="comp-zag-legend-label">Assigned</Col>
+          <Col md={3} className="comp-zag-legend-value">{assigned}</Col>
+        </Row>
+        <Row>
+            <Col>View Complaints</Col>
         </Row>
       </div>
     </div>
