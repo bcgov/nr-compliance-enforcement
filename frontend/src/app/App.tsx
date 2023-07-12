@@ -32,7 +32,7 @@ const App: FC = () => {
           <Route
             path="/"
             element={
-              <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
+                <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
             }
           />
           <Route

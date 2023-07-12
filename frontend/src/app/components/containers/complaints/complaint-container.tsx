@@ -1,15 +1,29 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
 import { getComplaintTypeFromUrl } from "../../../common/methods";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { getTokenProfile, profileZone, profileZoneDescription } from "../../../store/reducers/app";
 
 type Props = {
   initialState: number;
 };
 
 export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
+  const dispatch = useAppDispatch();
+  const defaultZone = useAppSelector(profileZone);
+  const defaultZoneLabel = useAppSelector(profileZoneDescription);
+
+  useEffect(() => {
+    if (!defaultZone || defaultZone === "") {
+      dispatch(getTokenProfile());
+    } else {
+      setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
+    }
+  }, [dispatch, defaultZone, defaultZoneLabel]);
+
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [regionCodeFilter, setRegionCodeFilter] = useState<Option | null>(null);
     const [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>(null);
@@ -32,7 +46,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
         setSort(["incident_reported_datetime", "DESC"]);
         setComplaintStatusFilter({value: 'OPEN', label: 'Open'});
         setRegionCodeFilter(null);
-        setZoneCodeFilter(null);
+        setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
         setAreaCodeFilter(null);
         setOfficerFilter(null);
         setNatureOfComplaintFilter(null);

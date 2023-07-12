@@ -259,24 +259,25 @@
   margin-right: 24px;
 
   h6 {
-    padding-top: 18px;
+    padding-top: 0px;
     font-weight: 700;
+    margin-bottom: 0px;
   }
 
   .comp-complaint-call-details {
-    margin-top: 18px;
-    margin-bottom: 18px;
+    margin-top: 24px;
+    margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
-    padding: 18px;
+    padding: 24px;
   }
 
   .comp-complaint-call-information {
-    margin-top: 18px;
-    margin-bottom: 18px;
+    margin-top: 24px;
+    margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
-    padding: 18px;
+    padding: 24px;
   }
 
   .comp-details-content-label {
@@ -304,17 +305,15 @@
 }
 
 .comp-complaint-header-edit-block {
-  margin-left: 24px;
-  margin-right: 24px;
-  padding: 18px;
-  margin-top: 18px;
-  margin-bottom: 18px;
+  margin: 24px 24px;
+  padding: 24px;
   border: 1px solid $gray-300;
   border-radius: 3px;
 
   h6 {
-    padding-top: 18px;
+    padding-top: 0px;
     font-weight: 700;
+    margin-bottom: 0px;
   }
 
   .comp-details-content {
@@ -340,11 +339,20 @@
   display: flex;  
 }
 
+.comp-suspect-witness-edit-container {
+  display: flex;  
+  height: 150px;
+}
+
 .comp-details-edit-column {
   flex: 1;
   display: flex;
   flex-direction: column;
   margin-right: 60px;
+}
+
+.comp-details-right-column {
+  margin-right: 0px;
 }
 
 .comp-details-label-input-pair {

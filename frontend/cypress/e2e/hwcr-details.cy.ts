@@ -50,7 +50,8 @@ describe("COMPENF-35 Display HWCR Details", () => {
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
     cy.wait(5000);
-
+    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.wait(5000);
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
       .find("tr")
@@ -71,6 +72,8 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
+    cy.wait(5000);
+    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
     cy.wait(5000);
 
     //-- check to make sure there are items in the table
@@ -98,6 +101,8 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
+    cy.wait(5000);
+    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
     cy.wait(5000);
 
     //-- check to make sure there are items in the table

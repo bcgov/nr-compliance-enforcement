@@ -2,7 +2,7 @@
 Test to verify that the user is able to click the edit button
 on the wildlife contacts details page and see all the inputs
 */
-describe("Complaint Edit Page spec - Edit View", () => {
+describe("Complaint Edit Page spec - Edit Allegation View", () => {
   before(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
@@ -11,8 +11,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
   it("Navigate to the Complaint Edit page & check inputs", () => {
     cy.visit("/");
 
-    //-- click on HWCR tab
-    cy.get("#hwcr-tab").click({ force: true });
+    //-- click on Allegation tab
+    cy.get("#ers-tab").click({ force: true });
 
     cy.wait(5000);
 
@@ -24,7 +24,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       });
     cy.wait(2000);
     cy.get(
-      "#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell"
+      "#comp-table > tbody > tr:nth-child(2) td.comp-location-cell.comp-cell"
     ).click({ force: true });
 
     cy.window().scrollTo("top");
@@ -35,11 +35,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs
-    // Nature of Complaint
-    cy.get("#nature-of-complaint-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Nature of Complaint");
-    });
-    cy.get("#nature-of-complaint-pair-id .comp-details-input").should("exist");
+    // Nature of Complaint - not on ERS tab
+    cy.get("#nature-of-complaint-pair-id").should("not.exist");
 
     // Date / Time Logged
     cy.get("#date-time-pair-id label").should(($label) => {
@@ -47,11 +44,15 @@ describe("Complaint Edit Page spec - Edit View", () => {
     });
     cy.get("#date-time-pair-id .comp-details-input").should("exist");
 
-    // Species
-    cy.get("#species-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Species");
+    // Species - not on ERS tab
+    cy.get("#species-pair-id").should("not.exist");
+
+    // Violation Type
+    cy.get("#violation-type-pair-id label").should(($label) => {
+      expect($label).to.contain.text("Violation Type");
     });
-    cy.get("#species-pair-id .comp-details-input").should("exist");
+    cy.get("#violation-type-pair-id .comp-details-input").should("exist");
+    
 
     // Last Updated
     cy.get("#last-updated-pair-id label").should(($label) => {
@@ -96,11 +97,21 @@ describe("Complaint Edit Page spec - Edit View", () => {
     });
     cy.get("#location-description-pair-id textarea").should("exist");
 
-    // Attractants
-    cy.get("#attractants-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Attractants");
+    // Violation In Progress
+    cy.get("#violation-in-progress-pair-id label").should(($label) => {
+      expect($label).to.contain.text("Violation in Progress");
     });
-    cy.get("#attractants-pair-id input").should("exist");
+    cy.get("#violation-in-progress-pair-id div").should("exist");
+
+    // Violation observed
+    cy.get("#violation-observed-pair-id label").should(($label) => {
+      expect($label).to.contain.text("Violation Observed");
+    });
+    cy.get("#violation-observed-pair-id div").should("exist");
+    
+
+    // Attractants - not on ERS
+    cy.get("#attractants-pair-id input").should("not.exist");
 
     // X Coordinate
     cy.get("#x-coordinate-pair-id label").should(($label) => {
@@ -186,5 +197,12 @@ describe("Complaint Edit Page spec - Edit View", () => {
       expect($label).to.contain.text("Referred by / Complaint Agency");
     });
     cy.get("#referred-pair-id input").should("exist");
+
+
+    cy.get("#subject-of-complaint-pair-id label").should(($label) => {
+      expect($label).to.contain.text("Description");
+    });
+    cy.get("#subject-of-complaint-pair-id textarea").should("exist");
+    
   });
 });

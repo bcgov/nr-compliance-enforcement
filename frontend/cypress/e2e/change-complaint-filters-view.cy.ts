@@ -13,7 +13,7 @@ describe('Complaint Change Status spec - Details View', () => {
 
   Cypress._.times(complaintTypes.length, ((index) => {
 
-    it('Verifies filters are available', () => {
+    it('Verifies filters are available and defaults exist', () => {
       cy.visit("/");
       cy.wait(5000);
       
@@ -45,8 +45,13 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get('#comp-filter-date-id').should('exist');
       cy.get('#comp-filter-status-id').should('exist');
 
-      cy.get('#complaint-filter-image-id').click({ force: true });
+      cy.get('#comp-zone-filter').should('exist');
+      cy.get('#comp-status-filter').should('exist');
 
+      cy.get('#comp-zone-filter').contains('Cariboo Thompson'); //assumes cypress user's office roles up to Cariboo Thompson zone
+      cy.get('#comp-status-filter').contains('Open');
+
+      cy.get('#complaint-filter-image-id').click({ force: true });
 
     });
   }));

@@ -33,6 +33,7 @@ type Props = {
 
 export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isExpanded, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, natureOfComplaintFilter, setNatureOfComplaintFilter, speciesCodeFilter,
       setSpeciesCodeFilter, startDateFilter, endDateFilter, setStartDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
+
     const [regionCodes, setRegionCodes] = useState<Option[]>([] as Array<Option>);
     const [zoneCodes, setZoneCodes] = useState<Option[]>([] as Array<Option>);
     const [areaCodes, setAreaCodes] = useState<Option[]>([] as Array<Option>);
@@ -40,6 +41,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
     const [hwcrNatureOfComplaintCodes, setHwcrNatureOfComplaintCodes] = useState<Option[]>([] as Array<Option>);
     const [speciesCodes, setSpeciesCodes] = useState<Option[]>([] as Array<Option>);
     const [complaintStatusCodes, setComplaintStatusCodes] = useState<Option[]>([] as Array<Option>);
+
     const handleDateFilter = (dates: [any, any]) => {
         const [start, end] = dates;
         setStartDateFilter(start);
@@ -277,7 +279,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Status
           </div>
           <div className="filter-select-padding"> 
-              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter} />
+              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter}/>
           </div>
         </div>
         <div className="clear-left-float"></div>
@@ -286,7 +288,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
       </div>
       <div className={pillContainterStyle}>
           <div className={complaintStatusClass}>
-            <button type="button" className="btn btn-primary comp-filter-btn">{complaintStatusFilter?.label}
+            <button type="button" className="btn btn-primary comp-filter-btn" id="comp-status-filter">{complaintStatusFilter?.label}
               <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setComplaintStatusFilter(null)}></button>
             </button>
           </div>
@@ -316,8 +318,8 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
             </button>
           </div>
           <div className={zoneClass}>
-            <button type="button" className="btn btn-primary comp-filter-btn">{zoneCodeFilter?.label}
-              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" onClick={() => setZoneCodeFilter(null)}></button>
+            <button type="button" className="btn btn-primary comp-filter-btn"  id="comp-zone-filter">{zoneCodeFilter?.label}
+              <button type="button" className="btn-close btn-close-white filter-pill-close" aria-label="Close" id="comp-zone-close" onClick={() => setZoneCodeFilter(null)}></button>
             </button>
           </div>
           <div className={regionClass}>
