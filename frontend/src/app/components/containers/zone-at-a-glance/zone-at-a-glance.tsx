@@ -2,6 +2,9 @@ import { FC } from "react";
 import { useAppSelector } from "../../../hooks/hooks";
 import { profileZone } from "../../../store/reducers/app";
 import { getBannerByZone } from "./banner-map";
+import { OpenComplaints } from "./open-complaints";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import { Row, Col } from "react-bootstrap";
 
 export const ZoneAtAGlance: FC = () => {
   const currentZone = useAppSelector<string>(profileZone);
@@ -10,7 +13,34 @@ export const ZoneAtAGlance: FC = () => {
   return (
     <>
       <div className="comp-sub-header">Zone At a Glance</div>
-      <img src={image} />
+
+      <div className="comp-zag-container">
+        <div className="comp-zag-banner">
+          <img src={image} alt="" width="355px" height="176px" />
+        </div>
+        <div className="comp-zag-charts comp-padding-left-md">
+          <h6 className="comp-margin-top-xs">Open Complaints</h6>
+
+          <Row>
+            <Col md="6">
+              <OpenComplaints
+                assigned={23}
+                unassigned={5}
+                background={{assignedColor: "#31ba9a", unassignedColor: "#5EDBBE"}}
+                type={COMPLAINT_TYPES.HWCR}
+              />
+            </Col>
+            <Col md="6">
+              <OpenComplaints
+                assigned={9}
+                unassigned={34}
+                background={{assignedColor: "#C4A417", unassignedColor: "#ECC51D"}}
+                type={COMPLAINT_TYPES.ERS}
+              />
+            </Col>
+          </Row>
+        </div>
+      </div>
     </>
   );
 };

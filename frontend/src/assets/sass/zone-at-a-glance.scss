@@ -1,0 +1,66 @@
+.comp-zone-at-a-glance {
+  margin: -24px;
+}
+
+.comp-zag-container {
+  display: flex;
+
+  background-color: $grey-110;
+
+  .comp-zag-banner {
+    width: 355px;
+    height: 176px;
+
+    display: block;
+    flex-grow: 0;
+  }
+
+  .comp-zag-charts {
+    display: block;
+    flex-grow: 1;
+
+    h6 {
+      font-weight: 700;
+    }
+
+    .comp-zag-chart-container {
+      display: flex;
+
+      background-color: #bbdefb;
+
+      .comp-zag-open-complaint-chart {
+        flex-grow: 0;
+
+        height: 125px;
+        width: 163px;
+      }
+
+
+      .comp-zag-legend { 
+
+        .comp-zag-legend-assigned { 
+            width: 36px;
+            height: 13px;
+            display: inline-block;
+        }
+      }
+
+      .item2 {
+        /* flex:1 1 auto; */
+        flex-grow: 1;
+        border: 1px solid black;
+      }
+
+    }
+
+    .item1 { 
+        /* flex:0 1 auto; */
+        flex-grow:0;
+      }
+
+    .comp-zag-open-compalaints {
+      height: 160px;
+      width: 160px;
+    }
+  }
+}
