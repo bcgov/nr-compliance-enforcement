@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryResult, Repository } from 'typeorm';
 import { Office } from './entities/office.entity';
 
 @Injectable()
@@ -50,6 +50,17 @@ export class OfficeService {
     return this.officeRepository.findOneOrFail({
       where: {office_guid: office_guid},
     })
+  }
+
+  findOfficesByZone (zone_code: string)
+  {
+    const queryBuilder = this.officeRepository.createQueryBuilder('office')
+    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit')
+    .leftJoinAndSelect('office.officers', 'officer')
+    .leftJoinAndSelect('officer.person_guid','person')
+    .where('cos_geo_org_unit.zone_code = :Zone', { Zone: zone_code }).distinctOn(['cos_geo_org_unit.offloc_code', 'officer.officer_guid']);
+    process.stdout.write("backend call" + queryBuilder.getQueryAndParameters().toLocaleString());
+    return queryBuilder.getMany();
   }
 
   update(id: number, updateOfficeDto: UpdateOfficeDto) {
