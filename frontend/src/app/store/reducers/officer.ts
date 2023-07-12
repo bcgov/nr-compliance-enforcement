@@ -38,7 +38,7 @@ export const assignOfficersSlice = createSlice({
 export const { setOfficersInZone } = assignOfficersSlice.actions;
 
 // Given a zone, returns a list of persons in that zone.
-export const getOfficersInZone = (zone: string): AppThunk => async (dispatch) => {
+export const getOfficersInZone = (zone?: string): AppThunk => async (dispatch) => {
 
   const token = localStorage.getItem("user");
   if (token) {
