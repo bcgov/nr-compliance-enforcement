@@ -394,7 +394,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 </div>
               )}
             </div>
-            <div className="comp-details-edit-column">
+            <div className="comp-details-edit-column comp-details-right-column">
               <div
                 className="comp-details-label-input-pair"
                 id="complaint-location-pair-id"
@@ -591,7 +591,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 </div>
               </div>
             </div>
-            <div className="comp-details-edit-column">
+            <div className="comp-details-edit-column comp-details-right-column">
               <div
                 className="comp-details-label-input-pair"
                 id="address-pair-id"
@@ -642,7 +642,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
           <h6>Subject of Complaint/Widness Details</h6>
           <div className="comp-complaint-call-information">
             <div className="comp-suspect-witness-edit-container">
-              <div className="comp-details-edit-column">
+              <div className="comp-details-edit-column comp-details-right-column">
                 <div
                   className="comp-details-label-input-pair"
                   id="subject-of-complaint-pair-id"
