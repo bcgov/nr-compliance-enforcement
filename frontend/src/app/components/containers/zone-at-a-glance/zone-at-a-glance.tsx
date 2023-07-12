@@ -13,7 +13,7 @@ export const ZoneAtAGlance: FC = () => {
   let image = getBannerByZone(currentZone);
 
   useEffect(() => {
-    // dispatch(getZoneAtAGlanceStats(currentZone));
+
   }, [dispatch]);
 
   return (
