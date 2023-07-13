@@ -44,6 +44,15 @@
           padding-bottom: 4px;
         }
 
+        .comp-zag-legend-row { 
+          max-width:190px;
+        }
+
+        .comp-zag-legend-bar-col { 
+          max-width: 55px !important;
+          // padding: 0px;
+        }
+
         .comp-zag-legend-bar {
           width: 36px;
           height: 13px;
@@ -51,12 +60,17 @@
         }
 
         .comp-zag-legend-label { 
-            margin-left: -16px;
-            margin-right: 16px;
+            margin-left: -12px;
+            margin-right: 12px;
+            width: 110px;
+            max-width: 110px;
         }
 
         .comp-zag-legend-value { 
             font-weight: 900;
+            width: 40px;
+            max-width: 40px;
+            padding: 0px;
         }
       }
     }
@@ -67,3 +81,4 @@
     }
   }
 }
+ 
