@@ -61,4 +61,10 @@ export class AllegationComplaintController {
   byId(@Param('id') id: string) {
     return this.allegationComplaintService.findByComplaintIdentifier(id);
   }
+
+  @Get("/stats/by-zone/:zone")
+  @Roles(Role.COS_OFFICER)
+  statsByZone(@Param("zone") zone: string) { 
+    return this.allegationComplaintService.getZoneAtAGlanceStatistics(zone);
+  }
 }

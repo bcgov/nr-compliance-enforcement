@@ -5,16 +5,25 @@ import { getBannerByZone } from "./banner-map";
 import { OpenComplaints } from "./open-complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
-import { getZoneAtAGlanceStats } from "../../../store/reducers/complaints";
+import { getZoneAtAGlanceStats, selectAllegationZagOpenComplaints, selectHwcrZagOpenComplaints } from "../../../store/reducers/complaints";
+import ComplaintType from "../../../constants/complaint-types";
 
 export const ZoneAtAGlance: FC = () => {
   const dispatch = useAppDispatch();
   const currentZone = useAppSelector<string>(profileZone);
+  const hwcrOpenComplaints = useAppSelector(selectHwcrZagOpenComplaints);
+  const allegationOpenComplaints = useAppSelector(selectAllegationZagOpenComplaints);
+
   let image = getBannerByZone(currentZone);
 
   useEffect(() => {
 
-  }, [dispatch]);
+    if (currentZone) {
+      dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT));
+      dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT));
+    }
+  }, [currentZone]);
+
 
   return (
     <>
@@ -30,8 +39,8 @@ export const ZoneAtAGlance: FC = () => {
           <Row>
             <Col md="6">
               <OpenComplaints
-                assigned={23}
-                unassigned={5}
+                assigned={hwcrOpenComplaints.assigned}
+                unassigned={hwcrOpenComplaints.unassigned}
                 background={{
                   assignedColor: "#31ba9a",
                   unassignedColor: "#5EDBBE",
@@ -41,8 +50,8 @@ export const ZoneAtAGlance: FC = () => {
             </Col>
             <Col md="6">
               <OpenComplaints
-                assigned={9}
-                unassigned={34}
+                assigned={allegationOpenComplaints.assigned}
+                unassigned={allegationOpenComplaints.unassigned}
                 background={{
                   assignedColor: "#C4A417",
                   unassignedColor: "#ECC51D",

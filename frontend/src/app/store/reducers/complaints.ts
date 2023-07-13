@@ -11,10 +11,17 @@ import { ComplaintDetails } from "../../types/complaints/details/complaint-detai
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
 import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
 import { ComplaintSuspectWitness } from "../../types/complaints/details/complaint-suspect-witness-details";
+import ComplaintType from '../../constants/complaint-types';
+import { ZoneAtAGlanceStats } from '../../types/complaints/zone-at-a-glance-stats';
+
 
 const initialState: ComplaintState = {
   complaints: [],
   complaint: null,
+  zoneAtGlance: {
+    hwcr: { assigned: 0, unassigned: 0, total: 0 },
+    allegation: { assigned: 0, unassigned: 0, total: 0 },
+  },
 };
 
 export const complaintSlice = createSlice({
@@ -26,9 +33,15 @@ export const complaintSlice = createSlice({
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
-    setZoneAtAGlance: (state, action) => { 
+    setZoneAtAGlance: (state, action) => {
+      const { payload: statistics } = action;
+      const { type, ...rest} = statistics
+      const { zoneAtGlance } = state;      
 
-    }
+      const update = type === ComplaintType.HWCR_COMPLAINT ? { ...zoneAtGlance, hwcr: rest} : { ...zoneAtGlance, allegation: rest};
+
+      return { ...state, zoneAtGlance: update };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -72,19 +85,19 @@ export const getErsComplaintByComplaintIdentifier =
     }
   };
 
-  export const getZoneAtAGlanceStats =
-  (zone: string): AppThunk =>
+export const getZoneAtAGlanceStats =
+  (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
     const token = localStorage.getItem("user");
     if (token) {
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
       const response = await axios.get(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/stats/by-zone/${zone}`
+        `${config.API_BASE_URL}/v1/${type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"}-complaint/stats/by-zone/${zone}`
       );
       const result = response.data;
 
-      dispatch(setZoneAtAGlance({ ...result }));
+      dispatch(setZoneAtAGlance({ ...result, type }));
     }
   };
 
@@ -135,16 +148,17 @@ export const selectComplaintHeader =
             create_user_id: createdBy,
             update_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
-            cos_geo_org_unit: {
-              zone_code,
-            },
+            cos_geo_org_unit: { zone_code },
           } = ceComplaint;
 
           if (ceComplaint.person_complaint_xref.length > 0) {
-            const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
-            const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
+            const firstName =
+              ceComplaint.person_complaint_xref[0].person_guid.first_name;
+            const lastName =
+              ceComplaint.person_complaint_xref[0].person_guid.last_name;
             officerAssigned = `${firstName} ${lastName}`;
-            personGuid = ceComplaint.person_complaint_xref[0].person_guid.person_guid;
+            personGuid =
+              ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
           const { complaint_status_code: status } = ceStatusCode;
@@ -161,14 +175,16 @@ export const selectComplaintHeader =
           };
 
           if (ceComplaintNatureCode) {
-            const { long_description: natureOfComplaint,
-                    hwcr_complaint_nature_code: natureOfComplaintCode } =
-              ceComplaintNatureCode;
+            const {
+              long_description: natureOfComplaint,
+              hwcr_complaint_nature_code: natureOfComplaintCode,
+            } = ceComplaintNatureCode;
             result = { ...result, natureOfComplaint, natureOfComplaintCode };
           }
 
           if (ceSpeciesCode) {
-            const { short_description: species, species_code: speciesCode } = ceSpeciesCode;
+            const { short_description: species, species_code: speciesCode } =
+              ceSpeciesCode;
             result = { ...result, species, speciesCode };
           }
         }
@@ -202,14 +218,14 @@ export const selectComplaintHeader =
             create_user_id: createdBy,
             update_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
-            cos_geo_org_unit: {
-              zone_code,
-            },    
+            cos_geo_org_unit: { zone_code },
           } = ceComplaint;
 
           if (ceComplaint.person_complaint_xref.length > 0) {
-            const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
-            const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
+            const firstName =
+              ceComplaint.person_complaint_xref[0].person_guid.first_name;
+            const lastName =
+              ceComplaint.person_complaint_xref[0].person_guid.last_name;
             officerAssigned = `${firstName} ${lastName}`;
           }
 
@@ -371,5 +387,19 @@ export const selectComplaintSuspectWitnessDetails = (
 
   return results;
 };
+
+export const selectHwcrZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => { 
+  const { complaints } = state;
+  const { zoneAtGlance } = complaints;
+
+  return zoneAtGlance.hwcr
+} 
+
+export const selectAllegationZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => { 
+  const { complaints } = state;
+  const { zoneAtGlance } = complaints;
+
+  return zoneAtGlance.allegation
+} 
 
 export default complaintSlice.reducer;
