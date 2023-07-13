@@ -4,7 +4,7 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
   formatTime,
-  renderCoordinates,
+  renderCoordinates
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
