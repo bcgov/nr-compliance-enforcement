@@ -165,7 +165,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Region
           </div>
           <div className="filter-select-padding">
-              <Select options={regionCodes} onChange={handleRegionCodeFilter} placeholder="Select" value={regionCodeFilter}/>
+              <Select 
+                options={regionCodes} 
+                onChange={handleRegionCodeFilter} 
+                placeholder="Select" 
+                classNamePrefix="ceds-select"
+                value={regionCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-zone-id">
@@ -173,7 +178,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Zone
           </div>
           <div className="filter-select-padding">
-              <Select options={zoneCodes} onChange={handleZoneCodeFilter} placeholder="Select" value={zoneCodeFilter}/>
+              <Select 
+                options={zoneCodes} 
+                onChange={handleZoneCodeFilter} 
+                placeholder="Select" 
+                classNamePrefix="ceds-select"
+                value={zoneCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-community-id">
@@ -181,7 +191,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Community
           </div>
           <div className="filter-select-padding">
-              <Select options={areaCodes} onChange={handleAreaCodeFilter} placeholder="Select" value={areaCodeFilter}/>
+              <Select 
+                options={areaCodes} 
+                onChange={handleAreaCodeFilter} 
+                placeholder="Select"
+                classNamePrefix="ceds-select"
+                value={areaCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-officer-id">
@@ -189,7 +204,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Officer Assigned
           </div>
           <div className="filter-select-padding">
-              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter} classNamePrefix="input-field-select"/>
+              <Select 
+                options={officers}
+                onChange={handleOfficerFilter} 
+                placeholder="Select" 
+                value={officerFilter} 
+                classNamePrefix="ceds-select"/>
           </div>
         </div>
         <div className="clear-left-float"></div>
@@ -200,7 +220,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Nature of Complaint
           </div>
           <div className="filter-select-padding">
-              <Select options={hwcrNatureOfComplaintCodes} onChange={handleNatureOfComplaintFilter} placeholder="Select" value={natureOfComplaintFilter}/>
+              <Select 
+                options={hwcrNatureOfComplaintCodes} 
+                onChange={handleNatureOfComplaintFilter} 
+                placeholder="Select"
+                classNamePrefix="ceds-select"
+                value={natureOfComplaintFilter}/>
           </div>
         </div>
         <div className="comp-filter"id="comp-filter-species-id">
@@ -208,7 +233,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Species
           </div>
           <div className="filter-select-padding"> 
-              <Select options={speciesCodes} onChange={handleSpeciesCodesFilter} placeholder="Select"  value={speciesCodeFilter}/>
+              <Select 
+                options={speciesCodes} 
+                onChange={handleSpeciesCodesFilter} 
+                placeholder="Select"  
+                classNamePrefix="ceds-select"
+                value={speciesCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter"id="comp-filter-date-id">
@@ -270,7 +300,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               monthsShown={2}
               selectsRange={true}
               isClearable={true}
-              
+              wrapperClassName="comp-filter-calendar-input"
               />
           </div>
         </div>
@@ -279,7 +309,12 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               Status
           </div>
           <div className="filter-select-padding"> 
-              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter}/>
+              <Select 
+                options={complaintStatusCodes}
+                onChange={handleComplaintStatusCodes}
+                placeholder="Select"
+                classNamePrefix="ceds-select"
+                value={complaintStatusFilter}/>
           </div>
         </div>
         <div className="clear-left-float"></div>

@@ -326,10 +326,6 @@
   }
 }
 
-.ceds-select__control {
-  border: 1px solid #a1a1a1 !important;
-}
-
 .ceds-select__control:focus-within {
   border: 1px solid #90b6F8 !important;
   box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
@@ -620,38 +616,21 @@
     cursor: pointer;
 }
 
-.calendar-icon {
-  position: absolute;
-  top: 50%;
-  right: 5px;
-  transform: translateY(-50%);
-}
-
-.react-datepicker__view-calendar-icon input {
-    padding: 6px 10px 5px 10px;
-    width: 298px;
-    background-color: hsl(0, 0%, 100%);
-    border-color: hsl(0, 0%, 80%);
-    border-radius: 4px;
-    border-style: solid;
-    border-width: 1px;
-    box-sizing: border-box;
-}
-
 .comp-details-edit-calendar-input {
   width: 100%;
 }
 
 .comp-details-edit-calendar-input input {
-  padding: 6px 10px 5px 10px;
   width: inherit;
-  border-radius: 4px;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #a1a1a1;
 }
 
 .comp-details-edit-calendar-input input:focus {
+  border: 1px solid #90b6F8;
+  outline: none;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25)
+}
+
+.comp-filter-calendar-input input:focus {
   border: 1px solid #90b6F8;
   outline: none;
   box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25)
