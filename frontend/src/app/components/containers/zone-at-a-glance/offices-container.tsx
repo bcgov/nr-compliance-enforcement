@@ -4,6 +4,7 @@ import { getOfficesInZone, officesInZone } from "../../../store/reducers/office"
 import { getTokenProfile, profileZone } from "../../../store/reducers/app";
 import { Office } from "../../../types/office/office";
 import { OfficeUserContainer } from "./office-user-container";
+import { Row, Col } from "react-bootstrap";
 
 export const OfficesContainer: FC = () => {
     const dispatch = useAppDispatch();
@@ -34,9 +35,36 @@ export const OfficesContainer: FC = () => {
         { 
             officeArrayList.map((item) => {
                 return <>
-                    <div>{"ITEM: " + JSON.stringify(item)}</div>
-                    <div>{item.cos_geo_org_unit.office_location_name + " Office " + item.office_guid}</div>
-                    <div><OfficeUserContainer officersInOffice={item.officers}/></div>
+                    <div className="comp-zag-office-container">
+                          <Row className="comp-zag-flex-container">
+                            <Col className="comp-zag-office">
+                              {item.cos_geo_org_unit.office_location_name + " Office"}
+                            </Col>
+                            <Col className="comp-padding-left-md">
+                              <div className="comp-zag-stats-title">
+                                Human Wildlife Conflict
+                              </div>
+                              <div>
+                                Stats
+                              </div>
+                              <div className="comp-zag-stats-view">
+                                View Unassigned Compaints
+                              </div>
+                            </Col>
+                            <Col className="comp-padding-left-md">
+                              <div className="comp-zag-stats-title">
+                                Enforcement
+                              </div>
+                              <div>
+                                Stats
+                              </div>
+                              <div className="comp-zag-stats-view">
+                                View Unassigned Compaints
+                              </div>
+                            </Col>
+                          </Row>
+                      <div><OfficeUserContainer officersInOffice={item.officers}/></div>
+                    </div>
                 </>;
             }) 
         }

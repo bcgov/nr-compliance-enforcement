@@ -67,3 +67,41 @@
     }
   }
 }
+
+.comp-zag-office-container {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  border: 1px solid $gray-200;
+  border-radius: 3px;
+  padding: 24px;
+  font-size: 24px;
+  line-height: 30px;
+
+  .comp-zag-flex-container
+  {
+    display: flex;
+    height: 100px;
+    flex: 1;
+    align-items: center;
+
+    .comp-zag-office {
+      width: 355px;
+      flex: 0 0 355px;
+    }
+    .comp-zag-office-stats {
+      flex: 1;
+    }
+
+    .comp-zag-stats-title {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+    }
+    .comp-zag-stats-view {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 20px;
+      color: #6E6E6E;
+    }
+  }
+}

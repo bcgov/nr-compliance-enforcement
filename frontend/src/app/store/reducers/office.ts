@@ -36,7 +36,6 @@ export const getOfficesInZone = (zone?: string): AppThunk => async (dispatch) =>
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     
     const response = await axios.get<Office>(`${config.API_BASE_URL}/v1/office/by-zone/${zone}`);
-    console.log("response ----------------------- " + JSON.stringify(response));
     dispatch(
         setOfficesInZone({
         officesInZone: response.data
