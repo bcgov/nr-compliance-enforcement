@@ -39,6 +39,12 @@ export class PersonController {
     return this.personService.findByZone(zone_code);
   }
 
+  @Get("/find-by-office/:office_guid")
+  @Roles(Role.COS_OFFICER)
+  findByOffice(@Param('office_guid') office_guid: string) {
+    return this.personService.findByOffice(office_guid);
+  }
+
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updatePersonDto: UpdatePersonDto) {

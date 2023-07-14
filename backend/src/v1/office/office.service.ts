@@ -52,6 +52,19 @@ export class OfficeService {
     })
   }
 
+  findOfficesByZone (zone_code: string)
+  {
+    const queryBuilder = this.officeRepository.createQueryBuilder('office')
+    .leftJoinAndSelect('office.cos_geo_org_unit', 'cos_geo_org_unit')
+    .leftJoinAndSelect('office.officers', 'officer')
+    .leftJoinAndSelect('officer.person_guid','person')
+    .where('cos_geo_org_unit.zone_code = :Zone', { Zone: zone_code })
+    .distinctOn(['cos_geo_org_unit.offloc_code']);
+
+    process.stdout.write("backend call" + queryBuilder.getQueryAndParameters().toLocaleString());
+    return queryBuilder.getMany();
+  }
+
   update(id: number, updateOfficeDto: UpdateOfficeDto) {
     return `This action updates a #${id} office`;
   }

@@ -1,3 +1,5 @@
+
+import { OfficesContainer } from "./offices-container";
 import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileZone } from "../../../store/reducers/app";
@@ -19,7 +21,6 @@ export const ZoneAtAGlance: FC = () => {
   return (
     <>
       <div className="comp-sub-header">Zone At a Glance</div>
-
       <div className="comp-zag-container">
         <div className="comp-zag-banner">
           <img src={image} alt="" width="355px" height="176px" />
@@ -53,6 +54,7 @@ export const ZoneAtAGlance: FC = () => {
           </Row>
         </div>
       </div>
+      <div><OfficesContainer/></div>
     </>
   );
 };

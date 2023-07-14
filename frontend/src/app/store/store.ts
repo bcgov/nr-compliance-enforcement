@@ -1,10 +1,12 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import hwcrComplaintsReducer from "./reducers/hwcr-complaints";
 import officersInZoneReducer from "./reducers/officer";
+import officersInOfficeReducer from "./reducers/officer";
 import appReducer from "./reducers/app";
 import allegationComplaintsReducer from "./reducers/allegation-complaint";
 import complaints from "./reducers/complaints";
 import dropdowns from "./reducers/code-tables";
+import officesInZoneReducer from './reducers/office';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
     allegationComplaint: allegationComplaintsReducer,
     hwcrComplaint: hwcrComplaintsReducer,
     officersInZone: officersInZoneReducer,
+    officersInOffice: officersInOfficeReducer,
+    officesInZone: officesInZoneReducer,
     complaints,
     dropdowns,
   },
