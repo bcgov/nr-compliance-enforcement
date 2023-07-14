@@ -169,7 +169,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 options={regionCodes} 
                 onChange={handleRegionCodeFilter} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={regionCodeFilter}/>
           </div>
         </div>
@@ -182,7 +182,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 options={zoneCodes} 
                 onChange={handleZoneCodeFilter} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={zoneCodeFilter}/>
           </div>
         </div>
@@ -195,7 +195,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 options={areaCodes} 
                 onChange={handleAreaCodeFilter} 
                 placeholder="Select"
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={areaCodeFilter}/>
           </div>
         </div>
@@ -209,7 +209,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 onChange={handleOfficerFilter} 
                 placeholder="Select" 
                 value={officerFilter} 
-                classNamePrefix="ceds-select"/>
+                classNamePrefix="comp-select"/>
           </div>
         </div>
         <div className="clear-left-float"></div>
@@ -224,7 +224,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 options={hwcrNatureOfComplaintCodes} 
                 onChange={handleNatureOfComplaintFilter} 
                 placeholder="Select"
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={natureOfComplaintFilter}/>
           </div>
         </div>
@@ -237,7 +237,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 options={speciesCodes} 
                 onChange={handleSpeciesCodesFilter} 
                 placeholder="Select"  
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={speciesCodeFilter}/>
           </div>
         </div>
@@ -313,7 +313,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
                 options={complaintStatusCodes}
                 onChange={handleComplaintStatusCodes}
                 placeholder="Select"
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={complaintStatusFilter}/>
           </div>
         </div>
