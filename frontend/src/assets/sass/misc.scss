@@ -1,4 +1,4 @@
-.ceds-form-control {
+.comp-form-control {
     display: block;
     width: 100%;
     padding: 0.375rem 0.75rem;
@@ -14,13 +14,13 @@
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.ceds-form-control:focus-visible {
+.comp-form-control:focus-visible {
   outline: none;
   border: 1px solid #90b6F8 !important;
   box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
 }
 
-.ceds-form-control:disabled {
+.comp-form-control:disabled {
   background-color: #e4e4e4;
   opacity: 1;
 }
