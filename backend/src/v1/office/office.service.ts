@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryResult, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Office } from './entities/office.entity';
 
 @Injectable()
