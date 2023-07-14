@@ -2,7 +2,6 @@ import { OfficesContainer } from "./offices-container";
 import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileZone } from "../../../store/reducers/app";
-import { getBannerByZone } from "./banner-map";
 import { OpenComplaints } from "./open-complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
@@ -20,8 +19,6 @@ export const ZoneAtAGlance: FC = () => {
   const allegationOpenComplaints = useAppSelector(
     selectAllegationZagOpenComplaints
   );
-
-  // let image = getBannerByZone(currentZone);
 
   useEffect(() => {
     if (currentZone) {
