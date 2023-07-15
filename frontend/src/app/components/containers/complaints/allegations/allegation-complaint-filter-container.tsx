@@ -146,7 +146,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Region
           </div>
           <div className="filter-select-padding">
-              <Select options={regionCodes} onChange={handleRegionFilter} placeholder="Select" value={regionCodeFilter}/>
+              <Select 
+                options={regionCodes} 
+                onChange={handleRegionFilter} 
+                placeholder="Select" 
+                classNamePrefix="comp-select"
+                value={regionCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-zone-id">
@@ -154,7 +159,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Zone
           </div>
           <div className="filter-select-padding">
-              <Select options={zoneCodes} onChange={handleZoneFilter} placeholder="Select" value={zoneCodeFilter}/>
+              <Select 
+                options={zoneCodes} 
+                onChange={handleZoneFilter} 
+                placeholder="Select" 
+                classNamePrefix="comp-select"
+                value={zoneCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-community-id">
@@ -162,7 +172,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Community
           </div>
           <div className="filter-select-padding">
-              <Select options={areaCodes} onChange={handleAreaFilter} placeholder="Select" value={areaCodeFilter}/>
+              <Select 
+                options={areaCodes} 
+                onChange={handleAreaFilter} 
+                placeholder="Select" 
+                classNamePrefix="comp-select"
+                value={areaCodeFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-officer-id">
@@ -170,7 +185,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Officer Assigned
           </div>
           <div className="filter-select-padding">
-              <Select options={officers} onChange={handleOfficerFilter} placeholder="Select" value={officerFilter}  classNamePrefix="input-field-select"/>
+              <Select 
+                options={officers} 
+                onChange={handleOfficerFilter} 
+                placeholder="Select" 
+                classNamePrefix="comp-select"
+                value={officerFilter} />
           </div>
         </div>
         <div className="clear-left-float"></div>
@@ -181,7 +201,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Violation Type
           </div>
           <div>
-              <Select options={violationCodes} onChange={handleViolationFilter} placeholder="Select" value={violationFilter}/>
+              <Select 
+                options={violationCodes} 
+                onChange={handleViolationFilter} 
+                placeholder="Select"
+                classNamePrefix="comp-select" 
+                value={violationFilter}/>
           </div>
         </div>
         <div className="comp-filter" id="comp-filter-date-id">
@@ -243,7 +268,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               monthsShown={2}
               selectsRange={true}
               isClearable={true}
-              
+              wrapperClassName="comp-filter-calendar-input"
               />
           </div>
         </div>
@@ -252,7 +277,12 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               Status
           </div>
           <div> 
-              <Select options={complaintStatusCodes} onChange={handleComplaintStatusCodes} placeholder="Select" value={complaintStatusFilter}/>
+              <Select 
+                options={complaintStatusCodes} 
+                onChange={handleComplaintStatusCodes} 
+                placeholder="Select" 
+                classNamePrefix="comp-select"
+                value={complaintStatusFilter}/>
           </div>
       </div>
       <div className="clear-left-float"></div>

@@ -193,7 +193,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   options={hwcrNatureOfComplaintCodes}
                   defaultValue={selectedNatureOfComplaint}
                   placeholder="Select"
-                  classNamePrefix='ceds-select'
+                  classNamePrefix='comp-select'
                   id="nature-of-complaint-select-id"
                 />
               </div>
@@ -212,7 +212,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
-                  classNamePrefix='ceds-select'
+                  classNamePrefix='comp-select'
                 />
               </div>
             )}
@@ -230,7 +230,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   defaultValue={selectedViolationTypeCode}
                   placeholder="Select"
                   id="violation-type-select-id"
-                  classNamePrefix='ceds-select'
+                  classNamePrefix='comp-select'
                 />
               </div>
             )}
@@ -244,7 +244,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                classNamePrefix='ceds-select'
+                classNamePrefix='comp-select'
               />
             </div>
             <div
@@ -260,7 +260,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 placeholder="Select"
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
-                classNamePrefix='ceds-select'
+                classNamePrefix='comp-select'
               />
             </div>
           </div>
@@ -319,7 +319,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Complaint Description<span className="required-ind">*</span>
                 </label>
                 <textarea
-                  className="form-control"
+                  className="comp-form-control"
                   id="complaint-description-textarea-id"
                   defaultValue={details}
                   rows={4}
@@ -353,7 +353,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
-                      classNamePrefix='ceds-select'
+                      classNamePrefix='comp-select'
                       isMulti
                     />
                   </div>
@@ -371,7 +371,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                       defaultValue={selectedViolationInProgress}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      classNamePrefix='ceds-select'
+                      classNamePrefix='comp-select'
                     />
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                       defaultValue={selectedViolationObserved}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      classNamePrefix='ceds-select'
+                      classNamePrefix='comp-select'
                     />
                   </div>
                 </div>
@@ -405,7 +405,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <input
                   type="text"
                   id="complaint-location-edit-id"
-                  className="form-control"
+                  className="comp-form-control"
                   value={location}
                 />
               </div>
@@ -415,7 +415,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               >
                 <label>Location Description</label>
                 <textarea
-                  className="form-control"
+                  className="comp-form-control"
                   id="complaint-location-description-textarea-id"
                   defaultValue={locationDescription}
                   rows={4}
@@ -430,7 +430,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     id="comp-details-edit-x-coordinate-input"
-                    className="form-control"
+                    className="comp-form-control"
                     value={xCoordinate}
                   />
                 </div>
@@ -444,7 +444,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     id="comp-details-edit-y-coordinate-input"
-                    className="form-control"
+                    className="comp-form-control"
                     value={yCoordinate}
                   />
                 </div>
@@ -461,7 +461,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={areaCodes}
                     defaultValue={selectedAreaCode}
                     id="area-select-id"
-                    classNamePrefix='ceds-select'
+                    classNamePrefix='comp-select'
                   />
                 </div>
               </div>
@@ -474,7 +474,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     id="office-edit-readonly-id"
-                    className="form-control"
+                    className="comp-form-control"
                     disabled
                     value={office}
                   />
@@ -486,7 +486,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     id="zone-edit-readonly-id"
-                    className="form-control"
+                    className="comp-form-control"
                     disabled
                     value={zone}
                   />
@@ -501,7 +501,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     id="region-edit-readonly-id"
-                    className="form-control"
+                    className="comp-form-control"
                     disabled
                     value={region}
                   />
@@ -527,7 +527,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    className="form-control"
+                    className="comp-form-control"
                     value={name}
                     id="caller-name-id"
                   />
@@ -546,7 +546,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    className="form-control"
+                    className="comp-form-control"
                     value={primaryPhone}
                     id="caller-primary-phone-id"
                   />
@@ -565,7 +565,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    className="form-control"
+                    className="comp-form-control"
                     value={alternatePhone}
                     id="caller-info-alternate-1-phone-id"
                   />
@@ -584,7 +584,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    className="form-control"
+                    className="comp-form-control"
                     value={secondaryPhone}
                     id="caller-info-alternate-2-phone-id"
                   />
@@ -600,7 +600,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    className="form-control"
+                    className="comp-form-control"
                     value={address}
                     id="comlaint-address-id"
                   />
@@ -612,7 +612,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
-                    className="form-control"
+                    className="comp-form-control"
                     value={email}
                     id="complaint-email-id"
                   />
@@ -629,7 +629,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
-                    classNamePrefix='ceds-select'
+                    classNamePrefix='comp-select'
                   />
                 </div>
               </div>
@@ -654,7 +654,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     Description
                   </label>
                     <textarea
-                      className="form-control"
+                      className="comp-form-control"
                       id="complaint-description-textarea-id"
                       defaultValue={complaint_witness_details}
                       rows={4}

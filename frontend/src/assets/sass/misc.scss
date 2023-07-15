@@ -1,3 +1,30 @@
+.comp-form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #1a1a1a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid hsl(0, 0%, 80%);
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.comp-form-control:focus-visible {
+  outline: none;
+  border: 1px solid #90b6F8 !important;
+  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
+}
+
+.comp-form-control:disabled {
+  background-color: #e4e4e4;
+  opacity: 1;
+}
+
 .comp-badge {
   position: relative;
   top: -15px;
@@ -112,6 +139,25 @@
 
 .datepicker-nav-icon-visible {
   visibility: visible;
+}
+
+
+
+.react-datepicker__view-calendar-icon input {
+    padding: 6px 10px 5px 32px;
+    width: 298px;
+    background-color: hsl(0, 0%, 100%);
+    border-color: hsl(0, 0%, 80%);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+}
+
+.react-datepicker__input-container > .react-datepicker__calendar-icon {
+  padding: 0px;
+  margin: 10px;
+  position: absolute;
 }
 
 .filter-pill-close {
