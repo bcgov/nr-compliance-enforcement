@@ -150,7 +150,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                 options={regionCodes} 
                 onChange={handleRegionFilter} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={regionCodeFilter}/>
           </div>
         </div>
@@ -163,7 +163,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                 options={zoneCodes} 
                 onChange={handleZoneFilter} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={zoneCodeFilter}/>
           </div>
         </div>
@@ -176,7 +176,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                 options={areaCodes} 
                 onChange={handleAreaFilter} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={areaCodeFilter}/>
           </div>
         </div>
@@ -189,7 +189,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                 options={officers} 
                 onChange={handleOfficerFilter} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={officerFilter} />
           </div>
         </div>
@@ -205,7 +205,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                 options={violationCodes} 
                 onChange={handleViolationFilter} 
                 placeholder="Select"
-                classNamePrefix="ceds-select" 
+                classNamePrefix="comp-select" 
                 value={violationFilter}/>
           </div>
         </div>
@@ -281,7 +281,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
                 options={complaintStatusCodes} 
                 onChange={handleComplaintStatusCodes} 
                 placeholder="Select" 
-                classNamePrefix="ceds-select"
+                classNamePrefix="comp-select"
                 value={complaintStatusFilter}/>
           </div>
       </div>

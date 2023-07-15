@@ -50,7 +50,7 @@ const ComplaintStatusSelect: React.FC<Props> = ({onSelectChange }) => {
         options={options}
         value={selectedOption}
         onChange={handleChange}
-        classNamePrefix="react-select"
+        classNamePrefix="comp-select"
         placeholder="Select"
       />
     </div>
