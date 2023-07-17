@@ -2,8 +2,8 @@ FROM node:19-bullseye AS build
 
 WORKDIR /app
 COPY . .
-RUN yarn install --frozen-lockfile
-RUN yarn build
+RUN npm ci --omit=dev && \
+    npm run build
 
 FROM caddy:2.6.4-alpine AS deploy
 COPY --from=build /app/Caddyfile /etc/caddy/Caddyfile

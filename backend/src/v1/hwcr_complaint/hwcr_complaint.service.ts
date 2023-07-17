@@ -238,18 +238,36 @@ export class HwcrComplaintService {
     let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0, offices:[] };
 
     //-- get total complaints for the zone
-    let totalComplaints = await this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
-    .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
-    .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-    .where('area_code.zone_code = :zone', { zone })
-    .getCount();
+    let totalComplaints = await this.hwcrComplaintsRepository
+      .createQueryBuilder("hwcr_complaint")
+      .leftJoinAndSelect(
+        "hwcr_complaint.complaint_identifier",
+        "complaint_identifier"
+      )
+      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
+      .where("area_code.zone_code = :zone", { zone })
+      .andWhere("complaint_identifier.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .getCount();
 
-    const totalAssignedComplaints = await this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
-    .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
-    .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-    .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
-    .where('area_code.zone_code = :zone', { zone })
-    .getCount();
+    const totalAssignedComplaints = await this.hwcrComplaintsRepository
+      .createQueryBuilder("hwcr_complaint")
+      .leftJoinAndSelect(
+        "hwcr_complaint.complaint_identifier",
+        "complaint_identifier"
+      )
+      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
+      .innerJoinAndSelect(
+        "complaint_identifier.person_complaint_xref",
+        "person_complaint_xref",
+        "person_complaint_xref.active_ind = true"
+      )
+      .where("area_code.zone_code = :zone", { zone })
+      .andWhere("complaint_identifier.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .getCount();
 
     const officeQuery = await this.cosGeoOrgUnitRepository.createQueryBuilder('cos_geo_org_unit')
     .where('cos_geo_org_unit.zone_code = :zone', { zone })
@@ -292,6 +310,6 @@ export class HwcrComplaintService {
 
     results = { ...results, total: totalComplaints, assigned: totalAssignedComplaints, unassigned: totalComplaints - totalAssignedComplaints, offices: offices }
 
-    return results
+    return results;
   }
 }
