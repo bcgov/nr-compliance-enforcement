@@ -9,7 +9,6 @@ import { UUID } from 'crypto';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
 import { OfficeStats, ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
-import { Office } from '../office/entities/office.entity';
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 
 @Injectable()
@@ -277,7 +276,7 @@ export class HwcrComplaintService {
 
     let offices: OfficeStats[] = [];
  
-    for(var i = 0; i < zoneOffices.length; i++)
+    for(let i = 0; i < zoneOffices.length; i++)
     {
       offices[i] = { name:  zoneOffices[i].office_location_name,
         assigned: 0,

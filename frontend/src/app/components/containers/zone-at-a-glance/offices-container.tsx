@@ -146,7 +146,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                               </div>
                             </Col>
                           </Row>
-                      <div><OfficeUserContainer officersInOffice={item.officers}/></div>
+                      <div><OfficeUserContainer hwcrOfficers={item.officers} allegationOfficers={allegationOpenComplaintsOfficeStats[index].officers}/></div>
                     </div>
                 </>;
             }) 

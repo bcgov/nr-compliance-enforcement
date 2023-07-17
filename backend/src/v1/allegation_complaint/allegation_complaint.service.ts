@@ -253,7 +253,7 @@ export class AllegationComplaintService {
 
       let offices: OfficeStats[] = [];
  
-      for(var i = 0; i < zoneOffices.length; i++)
+      for(let i = 0; i < zoneOffices.length; i++)
       {
         offices[i] = { name: zoneOffices[i].office_location_name,
           assigned: 0,
