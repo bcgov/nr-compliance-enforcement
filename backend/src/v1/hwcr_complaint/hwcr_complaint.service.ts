@@ -308,7 +308,6 @@ export class HwcrComplaintService {
     }
 
     results = { ...results, total: totalComplaints, assigned: totalAssignedComplaints, unassigned: totalComplaints - totalAssignedComplaints, offices: offices }
-
     return results;
   }
 }

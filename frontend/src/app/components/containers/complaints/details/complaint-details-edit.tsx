@@ -158,7 +158,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
       (referredByAgencyCode === undefined ? "" : referredByAgencyCode)
   );
   const selectedAttractants = attractantCodes.filter((option) =>
-    attractants?.some((attractant) => attractant.description === option.value)
+    attractants?.some((attractant) => attractant.code === option.value)
   );
   const selectedViolationTypeCode = violationTypeCodes.find(
     (option) => option.value === violationType
