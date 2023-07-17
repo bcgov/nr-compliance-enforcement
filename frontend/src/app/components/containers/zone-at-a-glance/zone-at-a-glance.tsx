@@ -69,7 +69,7 @@ export const ZoneAtAGlance: FC = () => {
         </div>
       </div>
       <div>
-        <OfficesContainer />
+        <OfficesContainer hwcrOpenComplaintsOfficeStats={hwcrOpenComplaints.offices} allegationOpenComplaintsOfficeStats={allegationOpenComplaints.offices}/>
       </div>
     </>
   );

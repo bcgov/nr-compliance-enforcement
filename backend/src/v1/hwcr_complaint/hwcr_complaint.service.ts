@@ -279,7 +279,7 @@ export class HwcrComplaintService {
  
     for(var i = 0; i < zoneOffices.length; i++)
     {
-      offices[i] = { name: "hwcr_complaint",
+      offices[i] = { name:  zoneOffices[i].office_location_name,
         assigned: 0,
         unassigned: 0,
         officers: [] };
@@ -299,11 +299,10 @@ export class HwcrComplaintService {
       const unAssignedComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('unassigned_hwcr_complaint')
         .leftJoinAndSelect('unassigned_hwcr_complaint.complaint_identifier', 'complaint_identifier')
         .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-        .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref')
-        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
-        .andWhere('person_complaint_xref.active_ind is null');
+        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode });
 
-      offices[i].unassigned = await unAssignedComplaintsQuery.getCount();
+
+      offices[i].unassigned = await unAssignedComplaintsQuery.getCount() - offices[i].assigned;
 
   
     }

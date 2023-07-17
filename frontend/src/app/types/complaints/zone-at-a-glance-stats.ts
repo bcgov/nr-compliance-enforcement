@@ -2,14 +2,14 @@ export interface ZoneAtAGlanceStats  {
     total: number,
     assigned: number,
     unassigned: number,
-    offices?: OfficeStats[]
+    offices: OfficeStats[]
 }
 
 export interface OfficeStats  { 
     name: string,
     assigned: number,
     unassigned: number,
-    officers?: OfficerStats[]
+    officers: OfficerStats[]
 }
 
 export interface OfficerStats  { 

@@ -1,8 +1,9 @@
 import { FC  } from "react";
 import { Officer } from "../../../types/person/person";
+import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
 
 type Props = {
-    officersInOffice: Officer[],
+    officersInOffice: OfficerStats[],
 }
 
 export const OfficeUserContainer: FC<Props> = ({officersInOffice}) => {
@@ -12,7 +13,7 @@ export const OfficeUserContainer: FC<Props> = ({officersInOffice}) => {
         <>
             { 
                     officersInOffice.map((item) => {
-                        return <div className="comp-zag-officer-container">{item.person_guid.first_name + " " + item.person_guid.last_name}</div>;
+                        return <div className="comp-zag-officer-container">{item.name + " " + item.name}</div>;
                     }) 
             }
         </>
