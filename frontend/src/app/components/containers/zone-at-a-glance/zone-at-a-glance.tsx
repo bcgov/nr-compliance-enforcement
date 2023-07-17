@@ -1,29 +1,43 @@
-
 import { OfficesContainer } from "./offices-container";
 import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileZone } from "../../../store/reducers/app";
-import { getBannerByZone } from "./banner-map";
 import { OpenComplaints } from "./open-complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
-import { getZoneAtAGlanceStats } from "../../../store/reducers/complaints";
+import {
+  getZoneAtAGlanceStats,
+  selectAllegationZagOpenComplaints,
+  selectHwcrZagOpenComplaints,
+} from "../../../store/reducers/complaints";
+import ComplaintType from "../../../constants/complaint-types";
 
 export const ZoneAtAGlance: FC = () => {
   const dispatch = useAppDispatch();
   const currentZone = useAppSelector<string>(profileZone);
-  let image = getBannerByZone(currentZone);
+  const hwcrOpenComplaints = useAppSelector(selectHwcrZagOpenComplaints);
+  const allegationOpenComplaints = useAppSelector(
+    selectAllegationZagOpenComplaints
+  );
 
   useEffect(() => {
-    // dispatch(getZoneAtAGlanceStats(currentZone));
-  }, [dispatch]);
+    if (currentZone) {
+      dispatch(
+        getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT)
+      );
+      dispatch(
+        getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT)
+      );
+    }
+  }, [currentZone]);
 
+  const bannerSource = `/images/zone-at-a-glance/zones/${currentZone}.svg`;
   return (
     <>
       <div className="comp-sub-header">Zone At a Glance</div>
       <div className="comp-zag-container">
         <div className="comp-zag-banner">
-          <img src={image} alt="" width="355px" height="176px" />
+          <img src={bannerSource} alt="" width="355px" height="176px" />
         </div>
         <div className="comp-zag-charts comp-padding-left-md">
           <h6 className="comp-margin-top-xs">Open Complaints</h6>
@@ -31,8 +45,8 @@ export const ZoneAtAGlance: FC = () => {
           <Row>
             <Col md="6">
               <OpenComplaints
-                assigned={23}
-                unassigned={5}
+                assigned={hwcrOpenComplaints.assigned}
+                unassigned={hwcrOpenComplaints.unassigned}
                 background={{
                   assignedColor: "#31ba9a",
                   unassignedColor: "#5EDBBE",
@@ -42,8 +56,8 @@ export const ZoneAtAGlance: FC = () => {
             </Col>
             <Col md="6">
               <OpenComplaints
-                assigned={9}
-                unassigned={34}
+                assigned={allegationOpenComplaints.assigned}
+                unassigned={allegationOpenComplaints.unassigned}
                 background={{
                   assignedColor: "#C4A417",
                   unassignedColor: "#ECC51D",
@@ -54,7 +68,9 @@ export const ZoneAtAGlance: FC = () => {
           </Row>
         </div>
       </div>
-      <div><OfficesContainer/></div>
+      <div>
+        <OfficesContainer />
+      </div>
     </>
   );
 };

@@ -1,41 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AllegationComplaintController } from './allegation_complaint.controller';
 import { AllegationComplaintService } from './allegation_complaint.service';
-import { AllegationComplaint } from './entities/allegation_complaint.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { ComplaintService } from '../complaint/complaint.service';
-import { Complaint } from '../complaint/entities/complaint.entity';
-import { DataSource } from 'typeorm';
-import { dataSourceMockFactory } from '../../../test/mocks/datasource';
 
 describe("AllegationComplaintController", () => {
   let controller: AllegationComplaintController;
 
+  const mockService = {
+    getZoneAtAGlanceStatistics: jest.fn(zone => { 
+      return { 
+        total: 0,
+        assigned: 0,
+        unassigned: 0
+      }
+    })
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AllegationComplaintController],
-      providers: [
-        AllegationComplaintService,
-        {
-          provide: getRepositoryToken(AllegationComplaint),
-          useValue: {},
-        },
-        ComplaintService,
-        {
-          provide: getRepositoryToken(Complaint),
-          useValue: {},
-        },
-        {
-          provide: DataSource,
-          useFactory: dataSourceMockFactory
-        }
-      ],
-      
-    }).compile().catch((err) => {
-      // Helps catch ninja like errors from compilation
-      console.error(err);
-      throw err;
-    });;
+      providers: [AllegationComplaintService],
+    })
+      .overrideProvider(AllegationComplaintService)
+      .useValue(mockService)
+      .compile();
 
     controller = module.get<AllegationComplaintController>(AllegationComplaintController);
   });
@@ -43,4 +30,14 @@ describe("AllegationComplaintController", () => {
   it("should be defined", () => {
     expect(controller).toBeDefined();
   });
+
+  it("should return zone at a glance stats", () => { 
+    const userZone = "CLMBAKTNY";
+
+    expect(controller.statsByZone(userZone)).toEqual({
+      total: expect.any(Number),
+      assigned: expect.any(Number),
+      unassigned: expect.any(Number)
+    })
+  })
 });

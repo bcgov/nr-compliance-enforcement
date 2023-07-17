@@ -7,6 +7,7 @@ import { DataSource, Repository } from "typeorm";
 import { UUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
 import { CreateComplaintDto } from "../complaint/dto/create-complaint.dto";
+import { ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
 
 @Injectable()
 export class AllegationComplaintService {
@@ -204,5 +205,50 @@ export class AllegationComplaintService {
     .where("complaint_identifier.complaint_identifier = :id", {id})
     .getOne();
 
+  }
+
+  async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {
+    let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0 };
+
+    //-- get total complaints for the zone
+    let totalComplaints = await this.allegationComplaintsRepository
+      .createQueryBuilder("allegation_complaint")
+      .leftJoinAndSelect(
+        "allegation_complaint.complaint_identifier",
+        "complaint_identifier"
+      )
+      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
+      .where("area_code.zone_code = :zone", { zone })
+      .andWhere("complaint_identifier.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .getCount();
+
+    const totalAssignedComplaints = await this.allegationComplaintsRepository
+      .createQueryBuilder("allegation_complaint")
+      .leftJoinAndSelect(
+        "allegation_complaint.complaint_identifier",
+        "complaint_identifier"
+      )
+      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
+      .innerJoinAndSelect(
+        "complaint_identifier.person_complaint_xref",
+        "person_complaint_xref",
+        "person_complaint_xref.active_ind = true"
+      )
+      .where("area_code.zone_code = :zone", { zone })
+      .andWhere("complaint_identifier.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .getCount();
+
+    results = {
+      ...results,
+      total: totalComplaints,
+      assigned: totalAssignedComplaints,
+      unassigned: totalComplaints - totalAssignedComplaints,
+    };
+
+    return results;
   }
 }
