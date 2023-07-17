@@ -31,12 +31,10 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
               {
                 hwcrUnassigned = item.unassigned;
                 hwcrUnassignedStyle = {width: "94%" };
-                hwcrAssigned = 0;
                 hwcrAssignedStyle = {width: "4%" };
               }
               else if(item.assigned !== 0 && item.unassigned === 0)
               {
-                hwcrUnassigned = 0;
                 hwcrUnassignedStyle = {width: "4%" };
                 hwcrAssigned = item.assigned;
                 hwcrAssignedStyle = {width: "94%" };
@@ -56,12 +54,10 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
               {
                 allegationUnassigned = allegationOpenComplaintsOfficeStats[index].unassigned;
                 allegationUnassignedStyle = {width: "94%" };
-                allegationAssigned = 0;
                 allegationAssignedStyle = {width: "4%" };
               }
               else if(allegationOpenComplaintsOfficeStats[index].assigned !== 0 && allegationOpenComplaintsOfficeStats[index].unassigned === 0)
               {
-                allegationUnassigned = 0;
                 allegationUnassignedStyle = {width: "4%" };
                 allegationAssigned = allegationOpenComplaintsOfficeStats[index].assigned;
                 allegationAssignedStyle = {width: "94%" };
