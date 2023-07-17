@@ -1,5 +1,4 @@
 import { FC  } from "react";
-import { Officer } from "../../../types/person/person";
 import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
 
 type Props = {

@@ -3,7 +3,6 @@ import { UUID } from "crypto";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { Entity, Column, JoinColumn, OneToOne, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { Officer } from "../../officer/entities/officer.entity";
 
 @Entity()

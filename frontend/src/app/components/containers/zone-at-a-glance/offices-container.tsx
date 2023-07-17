@@ -27,14 +27,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                //fear the hackiness -- this should probably be refactored
               if(item !== undefined && item.unassigned !== undefined && allegationOpenComplaintsOfficeStats[index] !== undefined && allegationOpenComplaintsOfficeStats[index].unassigned !== undefined)
               {
-              if(item.assigned === 0 && item.unassigned === 0)
-              {
-                hwcrUnassigned = 0;
-                hwcrUnassignedStyle = {width: "49%" };
-                hwcrAssigned = 0;
-                hwcrAssignedStyle = {width: "49%" };
-              }
-              else if(item.assigned === 0 && item.unassigned !== 0)
+              if(item.assigned === 0 && item.unassigned !== 0)
               {
                 hwcrUnassigned = item.unassigned;
                 hwcrUnassignedStyle = {width: "94%" };
@@ -59,14 +52,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                   width: ( 100 - Math.round(item.assigned/(item.assigned+item.unassigned) * 100) - 1) + "%",
                 };
               }
-              if(allegationOpenComplaintsOfficeStats[index].assigned === 0 && allegationOpenComplaintsOfficeStats[index].unassigned === 0)
-              {
-                allegationUnassigned = 0;
-                allegationUnassignedStyle = {width: "49%" };
-                allegationAssigned = 0;
-                allegationAssignedStyle = {width: "49%" };
-              }
-              else if(allegationOpenComplaintsOfficeStats[index].assigned === 0 && allegationOpenComplaintsOfficeStats[index].unassigned !== 0)
+              if(allegationOpenComplaintsOfficeStats[index].assigned === 0 && allegationOpenComplaintsOfficeStats[index].unassigned !== 0)
               {
                 allegationUnassigned = allegationOpenComplaintsOfficeStats[index].unassigned;
                 allegationUnassignedStyle = {width: "94%" };
