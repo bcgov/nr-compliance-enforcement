@@ -12,7 +12,7 @@ export const OfficeUserContainer: FC<Props> = ({officersInOffice}) => {
         <>
             { 
                     officersInOffice.map((item) => {
-                        return <div>{item.person_guid.first_name + " " + item.person_guid.last_name}</div>;
+                        return <div className="comp-zag-officer-container">{item.person_guid.first_name + " " + item.person_guid.last_name}</div>;
                     }) 
             }
         </>

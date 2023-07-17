@@ -15,6 +15,12 @@ import { ComplaintSuspectWitness } from "../../types/complaints/details/complain
 const initialState: ComplaintState = {
   complaints: [],
   complaint: null,
+  zoneAtAGlanceStats: null,
+};
+
+export const profileZone = (state: RootState): string => {
+  const { profile } = state.app;
+  return profile.zone;
 };
 
 export const complaintSlice = createSlice({
@@ -27,7 +33,8 @@ export const complaintSlice = createSlice({
       return { ...state, complaint };
     },
     setZoneAtAGlance: (state, action) => { 
-
+      const { payload: zoneAtAGlanceStats } = action;
+      return { ...state, zoneAtAGlanceStats };
     }
   },
 
@@ -72,6 +79,11 @@ export const getErsComplaintByComplaintIdentifier =
     }
   };
 
+  export const zoneAtAGlanceStats = (state: RootState) => { 
+    const { zoneAtAGlanceStats } = state.zoneAtAGlanceStats;
+    return zoneAtAGlanceStats;
+  }
+
   export const getZoneAtAGlanceStats =
   (zone: string): AppThunk =>
   async (dispatch) => {
@@ -87,6 +99,7 @@ export const getErsComplaintByComplaintIdentifier =
       dispatch(setZoneAtAGlance({ ...result }));
     }
   };
+  
 
 //-- selectors
 export const selectComplaint = (

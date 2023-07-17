@@ -26,7 +26,7 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
 
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
     const [regionCodeFilter, setRegionCodeFilter] = useState<Option | null>(null);
-    const [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>(null);
+    const [zoneCodeFilter, setZoneCodeFilter] = useState<Option | null>({value: defaultZone, label: defaultZoneLabel});
     const [areaCodeFilter, setAreaCodeFilter] = useState<Option | null>(null);
     const [officerFilter, setOfficerFilter] = useState<Option | null>(null);
     const [natureOfComplaintFilter, setNatureOfComplaintFilter] = useState<Option | null>(null);
