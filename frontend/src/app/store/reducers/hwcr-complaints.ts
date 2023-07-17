@@ -184,9 +184,9 @@ export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
   const attractants = attractant_hwcr_xref.map(
     ({
       attractant_hwcr_xref_guid: key,
-      attractant_code: { short_description: description },
+      attractant_code: { attractant_code: code, short_description: description },
     }: any): ComplaintDetailsAttractant => {
-      return { key, description };
+      return { key, code, description };
     }
   );
 
