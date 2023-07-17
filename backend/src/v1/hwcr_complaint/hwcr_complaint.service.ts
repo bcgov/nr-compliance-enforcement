@@ -270,13 +270,14 @@ export class HwcrComplaintService {
 
     const officeQuery = await this.cosGeoOrgUnitRepository.createQueryBuilder('cos_geo_org_unit')
     .where('cos_geo_org_unit.zone_code = :zone', { zone })
-    .distinctOn(['cos_geo_org_unit.offloc_code']);
+    .distinctOn(['cos_geo_org_unit.offloc_code'])
+    .orderBy('cos_geo_org_unit.offloc_code');
 
     const zoneOffices = await officeQuery.getMany();
 
     let offices: OfficeStats[] = [];
  
-    for(let i = 0; i < zoneOffices.length; i++)
+    for(var i = 0; i < zoneOffices.length; i++)
     {
       offices[i] = { name:  zoneOffices[i].office_location_name,
         assigned: 0,

@@ -13,7 +13,7 @@ export const OfficeUserContainer: FC<Props> = ({hwcrOfficers}) => {
         <>
             { 
                     hwcrOfficers.map((item) => {
-                        return <div className="comp-zag-officer-container">{item.name + " " + item.name}</div>;
+                        return <div key={item.name} className="comp-zag-officer-container">{item.name + " " + item.name}</div>;
                     }) 
             }
         </>

@@ -24,7 +24,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
               let allegationAssigned:number = 0;
               let allegationAssignedStyle:{width: string} = {width: "49%" };
 
-               //fear the hackiness -- this should probably be refactored
+               //fear the hackiness -- this should probably be refactored -- the orderby on the backend should keep these in line, but allegationOpenComplaintsOfficeStats[index] make me feel dirty
               if(item !== undefined && item.unassigned !== undefined && allegationOpenComplaintsOfficeStats[index] !== undefined && allegationOpenComplaintsOfficeStats[index].unassigned !== undefined)
               {
               if(item.assigned === 0 && item.unassigned !== 0)
@@ -39,7 +39,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                 hwcrAssigned = item.assigned;
                 hwcrAssignedStyle = {width: "94%" };
               }
-              else
+              else if(item.assigned !== 0 && item.unassigned !== 0)
               {
                 hwcrAssigned = item.assigned;
                 hwcrAssignedStyle = {
@@ -62,7 +62,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                 allegationAssigned = allegationOpenComplaintsOfficeStats[index].assigned;
                 allegationAssignedStyle = {width: "94%" };
               }
-              else
+              else if(allegationOpenComplaintsOfficeStats[index].assigned !== 0 && allegationOpenComplaintsOfficeStats[index].unassigned !== 0)
               {
                 allegationAssigned = allegationOpenComplaintsOfficeStats[index].assigned;
                 allegationAssignedStyle = {
@@ -128,7 +128,7 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                               </div>
                             </Col>
                           </Row>
-                      <div><OfficeUserContainer hwcrOfficers={item.officers} allegationOfficers={allegationOpenComplaintsOfficeStats[index].officers}/></div>
+                      <div><OfficeUserContainer hwcrOfficers={[]} allegationOfficers={[]}/></div>
                     </div>
                 </>;
             }) 
