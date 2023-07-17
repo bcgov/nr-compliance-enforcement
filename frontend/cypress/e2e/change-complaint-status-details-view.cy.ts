@@ -38,7 +38,7 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get('#complaint_status_dropdown').click();
 
       // Select the option with value "Closed"
-      cy.get('.react-select__option')
+      cy.get('.comp-select__option')
         .contains('Closed')
         .click()
 
@@ -53,7 +53,7 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get('#complaint_status_dropdown').click()
 
       // Select the option with value "Opened"
-      cy.get('.react-select__option')
+      cy.get('.comp-select__option')
         .contains('Open')
         .click()
 
