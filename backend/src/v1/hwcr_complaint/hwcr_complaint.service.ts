@@ -346,8 +346,7 @@ export class HwcrComplaintService {
         .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref')
         .leftJoinAndSelect('person_complaint_xref.person_guid', 'person')
         .leftJoinAndSelect('person.officer', 'officer')
-        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
-        .andWhere('person_complaint_xref.active_ind = true')
+        .where('person_complaint_xref.active_ind = true')
         .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
         .andWhere('officer.officer_guid = :officerGuid', {officerGuid})
         .andWhere("complaint_identifier.complaint_status_code = :status", {

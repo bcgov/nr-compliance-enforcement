@@ -33,8 +33,6 @@ export const ZoneAtAGlance: FC = () => {
 
   const bannerSource = `/images/zone-at-a-glance/zones/${currentZone}.svg`;
 
-  console.log("hwcrOpenComplaints.offices:  " + JSON.stringify(hwcrOpenComplaints.offices));
-  console.log("allegationOpenComplaints.offices:  " + JSON.stringify(allegationOpenComplaints.offices));
   return (
     <>
       <div className="comp-sub-header">Zone At a Glance</div>

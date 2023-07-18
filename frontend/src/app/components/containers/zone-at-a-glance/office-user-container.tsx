@@ -51,7 +51,7 @@ export const OfficeUserContainer: FC<Props> = ({hwcrOfficers, allegationOfficers
                               <div data-initials-zagview-allegation={allegationOfficers[index].allegationAssigned} className="data-initials-zagview-allegation"></div>
                             </div>
                             <div className="comp-zag-float-left">
-                              <div>
+                              <div className="comp-zag-stats-title">
                                 Enforcement
                               </div>
                               <div className="comp-zag-stats-view">
