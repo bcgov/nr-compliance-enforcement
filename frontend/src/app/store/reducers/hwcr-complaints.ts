@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
-import axios from "axios";
+import axios, { CancelTokenSource } from "axios";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { HwcrComplaintsState } from "../../types/complaints/hrcr-complaints-state";
 import { Complaint } from "../../types/complaints/complaint";
@@ -13,7 +13,9 @@ import { ComplaintDetailsAttractant } from "../../types/complaints/details/compl
 const initialState: HwcrComplaintsState = {
   hwcrComplaints: [],
   complaint: null,
-}
+};
+
+let cancelTokenSource: CancelTokenSource | null = null;
 
 export const hwcrComplaintSlice = createSlice({
   name: "hwcrComplaints",
@@ -32,7 +34,10 @@ export const hwcrComplaintSlice = createSlice({
     },
     updateHwcrComplaintRow: (state, action: PayloadAction<HwcrComplaint>) => {
       const updatedComplaint = action.payload;
-      const index = state.hwcrComplaints.findIndex(row => row.hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid);
+      const index = state.hwcrComplaints.findIndex(
+        (row) =>
+          row.hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid
+      );
       if (index !== -1) {
         state.hwcrComplaints[index] = updatedComplaint;
       }
@@ -45,24 +50,62 @@ export const hwcrComplaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setHwcrComplaints, updateHwcrComplaintRow, setComplaint } = hwcrComplaintSlice.actions;
+export const { setHwcrComplaints, updateHwcrComplaintRow, setComplaint } =
+  hwcrComplaintSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
-export const getHwcrComplaints = (sortColumn: string, sortOrder: string, regionCodeFilter?:Option | null, zoneCodeFilter?:Option | null, areaCodeFilter?:Option | null, officerFilter?:Option | null, 
-  natureOfComplaintFilter?:Option | null, speciesCodeFilter?: Option | null, startDateFilter?: Date | null, endDateFilter?: Date | null, statusFilter?:Option | null): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/search`, { params: { sortColumn: sortColumn, sortOrder: sortOrder, region: regionCodeFilter?.value, zone: zoneCodeFilter?.value, community: areaCodeFilter?.value, 
-      officerAssigned: officerFilter?.value, natureOfComplaint: natureOfComplaintFilter?.value, speciesCode: speciesCodeFilter?.value, incidentReportedStart: startDateFilter, incidentReportedEnd: endDateFilter, status: statusFilter?.value}});
-    dispatch(
-      setHwcrComplaints(response.data)
-    );
-  }
-};
+export const getHwcrComplaints =
+  (
+    sortColumn: string,
+    sortOrder: string,
+    regionCodeFilter?: Option | null,
+    zoneCodeFilter?: Option | null,
+    areaCodeFilter?: Option | null,
+    officerFilter?: Option | null,
+    natureOfComplaintFilter?: Option | null,
+    speciesCodeFilter?: Option | null,
+    startDateFilter?: Date | null,
+    endDateFilter?: Date | null,
+    statusFilter?: Option | null
+  ): AppThunk =>
+  async (dispatch) => {
+    try {
+      if (cancelTokenSource) {
+        cancelTokenSource.cancel('Request canceled due to new request');
+      }
+
+      cancelTokenSource = axios.CancelToken.source();
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        const response = await axios.get(
+          `${config.API_BASE_URL}/v1/hwcr-complaint/search`,
+          {
+            cancelToken: cancelTokenSource.token,
+            params: {
+              sortColumn: sortColumn,
+              sortOrder: sortOrder,
+              region: regionCodeFilter?.value,
+              zone: zoneCodeFilter?.value,
+              community: areaCodeFilter?.value,
+              officerAssigned: officerFilter?.value,
+              natureOfComplaint: natureOfComplaintFilter?.value,
+              speciesCode: speciesCodeFilter?.value,
+              incidentReportedStart: startDateFilter,
+              incidentReportedEnd: endDateFilter,
+              status: statusFilter?.value,
+            },
+          }
+        );
+        dispatch(setHwcrComplaints(response.data));
+      }
+    } catch (error) {
+      console.log(`Unable to retrieve HWCR complaints: ${error}`);
+    }
+  };
 
 export const getHwcrComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
@@ -80,30 +123,34 @@ export const getHwcrComplaintByComplaintIdentifier =
     }
   };
 
+export const updateHwlcComplaintStatus =
+  (complaint_identifier: string, newStatus: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const complaintResponse = await axios.get<Complaint>(
+        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`
+      );
 
-export const updateHwlcComplaintStatus = (complaint_identifier: string, newStatus: string ): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const complaintResponse = await axios.get<Complaint>(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`);
-    
-    // first update the complaint status
-    let updatedComplaint = complaintResponse.data;
-    updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
-    await axios.patch(`${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`, {"complaint_status_code": `${newStatus}`});
-    // now get that hwcr complaint row and update the state
-    const response = await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`);
-    dispatch(
-      updateHwcrComplaintRow(response.data)
-    );
-    const result = response.data;
-    dispatch(
-      setComplaint({ ...result })
-    );
-  }
-};
+      // first update the complaint status
+      let updatedComplaint = complaintResponse.data;
+      updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
+      await axios.patch(
+        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`,
+        { complaint_status_code: `${newStatus}` }
+      );
+      // now get that hwcr complaint row and update the state
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+      );
+      dispatch(updateHwcrComplaintRow(response.data));
+      const result = response.data;
+      dispatch(setComplaint({ ...result }));
+    }
+  };
 
-export const hwcrComplaints = (state: RootState) => { 
+export const hwcrComplaints = (state: RootState) => {
   const { hwcrComplaints } = state.hwcrComplaint;
   return hwcrComplaints;
 };
@@ -164,7 +211,6 @@ export const selectComplaintHeader = (state: RootState) => {
 };
 
 export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
-
   const { complaint_identifier, attractant_hwcr_xref } =
     state.hwcrComplaint.complaint;
   const {
@@ -184,7 +230,10 @@ export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
   const attractants = attractant_hwcr_xref.map(
     ({
       attractant_hwcr_xref_guid: key,
-      attractant_code: { attractant_code: code, short_description: description },
+      attractant_code: {
+        attractant_code: code,
+        short_description: description,
+      },
     }: any): ComplaintDetailsAttractant => {
       return { key, code, description };
     }
@@ -200,7 +249,7 @@ export const selectComplaintDetails = (state: RootState): ComplaintDetails => {
     region: region_name,
     zone: zone_name,
     office: office_location_name,
-    attractants
+    attractants,
   };
 };
 
@@ -217,11 +266,10 @@ export const selectComplaintCallerInformation = (
     caller_phone_3,
     caller_address,
     caller_email,
-    referred_by_agency_code
+    referred_by_agency_code,
   } = complaint_identifier;
 
-const { long_description: description } = referred_by_agency_code || {}
-
+  const { long_description: description } = referred_by_agency_code || {};
 
   result = {
     name: caller_name,
@@ -230,7 +278,7 @@ const { long_description: description } = referred_by_agency_code || {}
     alternatePhone: caller_phone_3,
     address: caller_address,
     email: caller_email,
-    referredByAgencyCode: description
+    referredByAgencyCode: description,
   };
 
   return result;
