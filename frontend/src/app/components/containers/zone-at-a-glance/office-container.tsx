@@ -24,52 +24,52 @@
 
               if(hwcrOpenComplaintsOfficeStat?.officers !== undefined && allegationOpenComplaintsOfficeStat?.officers !== undefined)
               {
-              if(hwcrOpenComplaintsOfficeStat.assigned === 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0)
-              {
-                hwcrUnassigned = hwcrOpenComplaintsOfficeStat.unassigned;
-                hwcrUnassignedStyle = {width: "93%" };
-                hwcrAssignedStyle = {width: "5%" };
-              }
-              else if(hwcrOpenComplaintsOfficeStat.assigned !== 0 && hwcrOpenComplaintsOfficeStat.unassigned === 0)
-              {
-                hwcrUnassignedStyle = {width: "5%" };
-                hwcrAssigned = hwcrOpenComplaintsOfficeStat.assigned;
-                hwcrAssignedStyle = {width: "93%" };
-              }
-              else if(hwcrOpenComplaintsOfficeStat.assigned !== 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0)
-              {
-                hwcrAssigned = hwcrOpenComplaintsOfficeStat.assigned;
-                hwcrAssignedStyle = {
-                  width: (Math.round(hwcrOpenComplaintsOfficeStat.assigned/(hwcrOpenComplaintsOfficeStat.assigned+hwcrOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
-                };
-                hwcrUnassigned = 100 - hwcrAssigned;
-                hwcrUnassignedStyle = {
-                  width: ( 100 - Math.round(hwcrOpenComplaintsOfficeStat.assigned/(hwcrOpenComplaintsOfficeStat.assigned+hwcrOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
-                };
-              }
-              if(allegationOpenComplaintsOfficeStat.assigned === 0 && allegationOpenComplaintsOfficeStat.unassigned !== 0)
-              {
-                allegationUnassigned = allegationOpenComplaintsOfficeStat.unassigned;
-                allegationUnassignedStyle = {width: "93%" };
-                allegationAssignedStyle = {width: "5%" };
-              }
-              else if(allegationOpenComplaintsOfficeStat.assigned !== 0 && allegationOpenComplaintsOfficeStat.unassigned === 0)
-              {
-                allegationUnassignedStyle = {width: "5%" };
-                allegationAssigned = allegationOpenComplaintsOfficeStat.assigned;
-                allegationAssignedStyle = {width: "93%" };
-              }
-              else if(allegationOpenComplaintsOfficeStat.assigned !== 0 && allegationOpenComplaintsOfficeStat.unassigned !== 0)
-              {
-                allegationAssigned = allegationOpenComplaintsOfficeStat.assigned;
-                allegationAssignedStyle = {
-                  width: (Math.round(allegationOpenComplaintsOfficeStat.assigned/(allegationOpenComplaintsOfficeStat.assigned+allegationOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
-                };
-                allegationUnassigned = allegationOpenComplaintsOfficeStat.unassigned;
-                allegationUnassignedStyle = {
-                  width: (100 - Math.round(allegationOpenComplaintsOfficeStat.assigned/(allegationOpenComplaintsOfficeStat.assigned+allegationOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
-                };
-              }
+                if(hwcrOpenComplaintsOfficeStat.assigned === 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0)
+                {
+                    hwcrUnassigned = hwcrOpenComplaintsOfficeStat.unassigned;
+                    hwcrUnassignedStyle = {width: "93%" };
+                    hwcrAssignedStyle = {width: "5%" };
+                }
+                else if(hwcrOpenComplaintsOfficeStat.assigned !== 0 && hwcrOpenComplaintsOfficeStat.unassigned === 0)
+                {
+                    hwcrUnassignedStyle = {width: "5%" };
+                    hwcrAssigned = hwcrOpenComplaintsOfficeStat.assigned;
+                    hwcrAssignedStyle = {width: "93%" };
+                }
+                else if(hwcrOpenComplaintsOfficeStat.assigned !== 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0)
+                {
+                    hwcrAssigned = hwcrOpenComplaintsOfficeStat.assigned;
+                    hwcrAssignedStyle = {
+                    width: (Math.round(hwcrOpenComplaintsOfficeStat.assigned/(hwcrOpenComplaintsOfficeStat.assigned+hwcrOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
+                    };
+                    hwcrUnassigned = hwcrOpenComplaintsOfficeStat.unassigned;
+                    hwcrUnassignedStyle = {
+                    width: ( 100 - Math.round(hwcrOpenComplaintsOfficeStat.assigned/(hwcrOpenComplaintsOfficeStat.assigned+hwcrOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
+                    };
+                }
+                if(allegationOpenComplaintsOfficeStat.assigned === 0 && allegationOpenComplaintsOfficeStat.unassigned !== 0)
+                {
+                    allegationUnassigned = allegationOpenComplaintsOfficeStat.unassigned;
+                    allegationUnassignedStyle = {width: "93%" };
+                    allegationAssignedStyle = {width: "5%" };
+                }
+                else if(allegationOpenComplaintsOfficeStat.assigned !== 0 && allegationOpenComplaintsOfficeStat.unassigned === 0)
+                {
+                    allegationUnassignedStyle = {width: "5%" };
+                    allegationAssigned = allegationOpenComplaintsOfficeStat.assigned;
+                    allegationAssignedStyle = {width: "93%" };
+                }
+                else if(allegationOpenComplaintsOfficeStat.assigned !== 0 && allegationOpenComplaintsOfficeStat.unassigned !== 0)
+                {
+                    allegationAssigned = allegationOpenComplaintsOfficeStat.assigned;
+                    allegationAssignedStyle = {
+                    width: (Math.round(allegationOpenComplaintsOfficeStat.assigned/(allegationOpenComplaintsOfficeStat.assigned+allegationOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
+                    };
+                    allegationUnassigned = allegationOpenComplaintsOfficeStat.unassigned;
+                    allegationUnassignedStyle = {
+                    width: (100 - Math.round(allegationOpenComplaintsOfficeStat.assigned/(allegationOpenComplaintsOfficeStat.assigned+allegationOpenComplaintsOfficeStat.unassigned) * 100) - 1) + "%",
+                    };
+                }
             
                 return <>
                     <div className="comp-zag-office-container">
