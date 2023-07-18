@@ -7,8 +7,8 @@
  import chevronUp from "../../../../assets/images/chevron-up.png";
 
  type Props = {
-    hwcrOpenComplaintsOfficeStat?: OfficeStats,
-    allegationOpenComplaintsOfficeStat?: OfficeStats,
+    hwcrOpenComplaintsOfficeStat: OfficeStats,
+    allegationOpenComplaintsOfficeStat: OfficeStats,
   }
   export const OfficeContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStat, allegationOpenComplaintsOfficeStat}) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
@@ -22,7 +22,7 @@
               let allegationAssigned:number = 0;
               let allegationAssignedStyle:{width: string} = {width: "49%" };
 
-              if(hwcrOpenComplaintsOfficeStat !== undefined && hwcrOpenComplaintsOfficeStat.officers !== undefined && allegationOpenComplaintsOfficeStat !== undefined && allegationOpenComplaintsOfficeStat.officers !== undefined)
+              if(hwcrOpenComplaintsOfficeStat?.officers !== undefined && allegationOpenComplaintsOfficeStat?.officers !== undefined)
               {
               if(hwcrOpenComplaintsOfficeStat.assigned === 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0)
               {
