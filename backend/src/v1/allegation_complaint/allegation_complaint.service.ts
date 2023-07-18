@@ -275,7 +275,10 @@ export class AllegationComplaintService {
           .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref',)
           .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
           .andWhere('person_complaint_xref.active_ind = true')
-          .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
+          .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
+          .andWhere("complaint_identifier.complaint_status_code = :status", {
+            status: "OPEN",
+          });
   
           offices[i].assigned = await assignedComplaintsQuery.getCount();
         
@@ -283,7 +286,10 @@ export class AllegationComplaintService {
         const totalComplaintsQuery = await this.allegationComplaintsRepository.createQueryBuilder('unassigned_allegation_complaint')
           .leftJoinAndSelect('unassigned_allegation_complaint.complaint_identifier', 'complaint_identifier')
           .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-          .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode });
+          .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
+          .andWhere("complaint_identifier.complaint_status_code = :status", {
+            status: "OPEN",
+          });
   
 
         offices[i].unassigned = await totalComplaintsQuery.getCount() - offices[i].assigned;
@@ -320,7 +326,10 @@ export class AllegationComplaintService {
         .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
         .andWhere('person_complaint_xref.active_ind = true')
         .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
-        .andWhere('officer.officer_guid = :officerGuid', {officerGuid});
+        .andWhere('officer.officer_guid = :officerGuid', {officerGuid})
+        .andWhere("complaint_identifier.complaint_status_code = :status", {
+          status: "OPEN",
+        });
 
         officers[j].allegationAssigned = await assignedOfficerComplaintsQuery.getCount();
     

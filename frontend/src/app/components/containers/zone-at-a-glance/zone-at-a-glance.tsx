@@ -29,7 +29,7 @@ export const ZoneAtAGlance: FC = () => {
         getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT)
       );
     }
-  }, [currentZone]);
+  }, [dispatch, currentZone]);
 
   const bannerSource = `/images/zone-at-a-glance/zones/${currentZone}.svg`;
 

@@ -298,7 +298,10 @@ export class HwcrComplaintService {
         .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref',)
         .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
         .andWhere('person_complaint_xref.active_ind = true')
-        .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
+        .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
+        .andWhere("complaint_identifier.complaint_status_code = :status", {
+          status: "OPEN",
+        });
 
         offices[i].assigned = await assignedComplaintsQuery.getCount();
       
@@ -306,7 +309,10 @@ export class HwcrComplaintService {
       const totalComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('total_hwcr_complaint')
         .leftJoinAndSelect('total_hwcr_complaint.complaint_identifier', 'complaint_identifier')
         .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode });
+        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
+        .andWhere("complaint_identifier.complaint_status_code = :status", {
+          status: "OPEN",
+        });
 
 
       offices[i].unassigned = await totalComplaintsQuery.getCount() - offices[i].assigned;
@@ -343,7 +349,10 @@ export class HwcrComplaintService {
         .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
         .andWhere('person_complaint_xref.active_ind = true')
         .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
-        .andWhere('officer.officer_guid = :officerGuid', {officerGuid});
+        .andWhere('officer.officer_guid = :officerGuid', {officerGuid})
+        .andWhere("complaint_identifier.complaint_status_code = :status", {
+          status: "OPEN",
+        });
 
         officers[j].hwcrAssigned = await assignedOfficerComplaintsQuery.getCount();    
       }
