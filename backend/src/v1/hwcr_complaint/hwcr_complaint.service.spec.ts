@@ -14,6 +14,8 @@ import { Office } from '../office/entities/office.entity';
 import { OfficeService } from '../office/office.service';
 import { Officer } from '../officer/entities/officer.entity';
 import { OfficerService } from '../officer/officer.service';
+import { PersonService } from '../person/person.service';
+import { Person } from '../person/entities/person.entity';
 
 describe('HwcrComplaintService', () => {
   let service: HwcrComplaintService;
@@ -55,6 +57,11 @@ describe('HwcrComplaintService', () => {
           provide: getRepositoryToken(Officer),
           useValue: {},
         },   
+        PersonService,
+        {
+          provide: getRepositoryToken(Person),
+          useValue: {},
+        },
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory

@@ -16,6 +16,8 @@ import { OfficeService } from '../office/office.service';
 import { Office } from '../office/entities/office.entity';
 import { OfficerService } from '../officer/officer.service';
 import { Officer } from '../officer/entities/officer.entity';
+import { PersonService } from '../person/person.service';
+import { Person } from '../person/entities/person.entity';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
@@ -270,6 +272,11 @@ describe("AllegationComplaintService", () => {
         OfficerService,
         {
           provide: getRepositoryToken(Officer),
+          useValue: {},
+        },
+        PersonService,
+        {
+          provide: getRepositoryToken(Person),
           useValue: {},
         },
       ],
