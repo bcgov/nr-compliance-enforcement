@@ -7,7 +7,8 @@ import { DataSource, Repository } from "typeorm";
 import { UUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
 import { CreateComplaintDto } from "../complaint/dto/create-complaint.dto";
-import { ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
+import { OfficeStats, ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
+import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Injectable()
 export class AllegationComplaintService {
@@ -17,6 +18,8 @@ export class AllegationComplaintService {
   constructor(private dataSource: DataSource) {}
   @InjectRepository(AllegationComplaint)
   private allegationComplaintsRepository: Repository<AllegationComplaint>;
+  @InjectRepository(CosGeoOrgUnit)
+  private cosGeoOrgUnitRepository: Repository<CosGeoOrgUnit>;
   @Inject(ComplaintService)
   protected readonly complaintService: ComplaintService;
 
@@ -242,12 +245,46 @@ export class AllegationComplaintService {
       })
       .getCount();
 
-    results = {
-      ...results,
-      total: totalComplaints,
-      assigned: totalAssignedComplaints,
-      unassigned: totalComplaints - totalAssignedComplaints,
-    };
+    const officeQuery = await this.cosGeoOrgUnitRepository.createQueryBuilder('cos_geo_org_unit')
+      .where('cos_geo_org_unit.zone_code = :zone', { zone })
+      .distinctOn(['cos_geo_org_unit.offloc_code'])
+      .orderBy('cos_geo_org_unit.offloc_code');
+
+    const zoneOffices = await officeQuery.getMany();
+
+      let offices: OfficeStats[] = [];
+ 
+      for(let i = 0; i < zoneOffices.length; i++)
+      {
+        offices[i] = { name: zoneOffices[i].office_location_name,
+          assigned: 0,
+          unassigned: 0,
+          officers: [] };
+        const zoneOfficeCode = zoneOffices[i].office_location_code;
+  
+        const assignedComplaintsQuery = await this.allegationComplaintsRepository.createQueryBuilder('assigned_allegation_complaint')
+          .leftJoinAndSelect('assigned_allegation_complaint.complaint_identifier', 'complaint_identifier')
+          .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+          .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref',)
+          .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
+          .andWhere('person_complaint_xref.active_ind = true')
+          .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
+  
+          offices[i].assigned = await assignedComplaintsQuery.getCount();
+        
+  
+        const totalComplaintsQuery = await this.allegationComplaintsRepository.createQueryBuilder('unassigned_allegation_complaint')
+          .leftJoinAndSelect('unassigned_allegation_complaint.complaint_identifier', 'complaint_identifier')
+          .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+          .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode });
+  
+
+        offices[i].unassigned = await totalComplaintsQuery.getCount() - offices[i].assigned;
+  
+    
+      }
+  
+      results = { ...results, total: totalComplaints, assigned: totalAssignedComplaints, unassigned: totalComplaints - totalAssignedComplaints, offices: offices }
 
     return results;
   }

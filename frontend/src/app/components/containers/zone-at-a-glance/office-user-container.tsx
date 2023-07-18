@@ -1,18 +1,19 @@
 import { FC  } from "react";
-import { Officer } from "../../../types/person/person";
+import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
 
 type Props = {
-    officersInOffice: Officer[],
+  hwcrOfficers: OfficerStats[],
+  allegationOfficers: OfficerStats[],
 }
 
-export const OfficeUserContainer: FC<Props> = ({officersInOffice}) => {
-  if(officersInOffice !== undefined && officersInOffice.length !== 0)
+export const OfficeUserContainer: FC<Props> = ({hwcrOfficers}) => {
+  if(hwcrOfficers !== undefined && hwcrOfficers.length !== 0)
   {
     return (
         <>
             { 
-                    officersInOffice.map((item) => {
-                        return <div>{item.person_guid.first_name + " " + item.person_guid.last_name}</div>;
+                    hwcrOfficers.map((item) => {
+                        return <div key={item.name} className="comp-zag-officer-container">{item.name + " " + item.name}</div>;
                     }) 
             }
         </>

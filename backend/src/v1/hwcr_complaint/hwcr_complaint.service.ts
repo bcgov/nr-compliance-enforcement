@@ -8,7 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
-import { ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
+import { OfficeStats, ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
+import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 
 @Injectable()
 export class HwcrComplaintService {
@@ -18,6 +19,8 @@ export class HwcrComplaintService {
   constructor(private dataSource: DataSource) {}
   @InjectRepository(HwcrComplaint)
   private hwcrComplaintsRepository: Repository<HwcrComplaint>;
+  @InjectRepository(CosGeoOrgUnit)
+  private cosGeoOrgUnitRepository: Repository<CosGeoOrgUnit>;
   @Inject(ComplaintService)
   protected readonly complaintService: ComplaintService;
   @Inject(AttractantHwcrXrefService)
@@ -230,8 +233,8 @@ export class HwcrComplaintService {
     .getOne();
   }
 
-  async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {
-    let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0 };
+  async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> { 
+    let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0, offices:[] };
 
     //-- get total complaints for the zone
     let totalComplaints = await this.hwcrComplaintsRepository
@@ -265,13 +268,46 @@ export class HwcrComplaintService {
       })
       .getCount();
 
-    results = {
-      ...results,
-      total: totalComplaints,
-      assigned: totalAssignedComplaints,
-      unassigned: totalComplaints - totalAssignedComplaints,
-    };
+    const officeQuery = await this.cosGeoOrgUnitRepository.createQueryBuilder('cos_geo_org_unit')
+    .where('cos_geo_org_unit.zone_code = :zone', { zone })
+    .distinctOn(['cos_geo_org_unit.offloc_code'])
+    .orderBy('cos_geo_org_unit.offloc_code');
 
+    const zoneOffices = await officeQuery.getMany();
+
+    let offices: OfficeStats[] = [];
+ 
+    for(let i = 0; i < zoneOffices.length; i++)
+    {
+      offices[i] = { name:  zoneOffices[i].office_location_name,
+        assigned: 0,
+        unassigned: 0,
+        officers: [] };
+      const zoneOfficeCode = zoneOffices[i].office_location_code;
+
+      const assignedComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('assigned_hwcr_complaint')
+        .leftJoinAndSelect('assigned_hwcr_complaint.complaint_identifier', 'complaint_identifier')
+        .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+        .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref',)
+        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
+        .andWhere('person_complaint_xref.active_ind = true')
+        .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
+
+        offices[i].assigned = await assignedComplaintsQuery.getCount();
+      
+
+      const unAssignedComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('unassigned_hwcr_complaint')
+        .leftJoinAndSelect('unassigned_hwcr_complaint.complaint_identifier', 'complaint_identifier')
+        .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
+        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode });
+
+
+      offices[i].unassigned = await unAssignedComplaintsQuery.getCount() - offices[i].assigned;
+
+  
+    }
+
+    results = { ...results, total: totalComplaints, assigned: totalAssignedComplaints, unassigned: totalComplaints - totalAssignedComplaints, offices: offices }
     return results;
   }
 }

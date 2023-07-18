@@ -10,6 +10,7 @@ import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/
 import { ViolationCode } from '../violation_code/entities/violation_code.entity';
 import { ComplaintService } from '../complaint/complaint.service';
 import { MockType, dataSourceMockFactory } from '../../../test/mocks/datasource';
+import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
@@ -204,7 +205,35 @@ describe("AllegationComplaintService", () => {
     // as these do not actually use their return values in our sample
     // we just make sure that their resolve is true to not crash
     delete: jest.fn(() => { return Promise.resolve(true)}),
-  })
+  });
+
+  const cosGeoOrgUnitRepositoryMockFactory = () => ({
+    // mock repository functions for testing
+    findAll: jest.fn(),
+    find: jest.fn(),
+    findOneOrFail: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    queryRunner:
+      {
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        rollbackTransaction: jest.fn(),
+        release: jest.fn(),
+        manager: {
+          save: jest.fn()
+        }
+      },
+
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    //update: jest.fn().mockResolvedValue(true),
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    delete: jest.fn(() => { return Promise.resolve(true)}),
+  });
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -222,6 +251,10 @@ describe("AllegationComplaintService", () => {
         {
           provide: getRepositoryToken(Complaint),
           useFactory: complaintRepositoryMockFactory
+        },
+        {
+          provide: getRepositoryToken(CosGeoOrgUnit),
+          useFactory: cosGeoOrgUnitRepositoryMockFactory
         }
       ],
       

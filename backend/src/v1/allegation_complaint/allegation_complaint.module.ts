@@ -13,10 +13,12 @@ import { GeoOrganizationUnitCodeService } from '../geo_organization_unit_code/ge
 import { ViolationCode } from '../violation_code/entities/violation_code.entity';
 import { AgencyCode } from '../agency_code/entities/agency_code.entity';
 import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
+import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
+import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([ViolationCode]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]) ],
+  imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([ViolationCode]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) ],
   controllers: [AllegationComplaintController],
-  providers: [AllegationComplaintService, ComplaintService, ViolationCodeService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService]
+  providers: [AllegationComplaintService, ComplaintService, ViolationCodeService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, CosGeoOrgUnitService]
 })
 export class AllegationComplaintModule {}

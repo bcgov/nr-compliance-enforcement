@@ -19,10 +19,12 @@ import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hw
 import { AttractantHwcrXref } from '../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity';
 import { AttractantCode } from '../attractant_code/entities/attractant_code.entity';
 import { AttractantCodeService } from '../attractant_code/attractant_code.service';
+import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
+import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HwcrComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([SpeciesCode]), TypeOrmModule.forFeature([HwcrComplaintNatureCode]), TypeOrmModule.forFeature([AttractantHwcrXref]), TypeOrmModule.forFeature([AttractantCode]) ],
+  imports: [TypeOrmModule.forFeature([HwcrComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([SpeciesCode]), TypeOrmModule.forFeature([HwcrComplaintNatureCode]), TypeOrmModule.forFeature([AttractantHwcrXref]), TypeOrmModule.forFeature([AttractantCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) ],
   controllers: [HwcrComplaintController],
-  providers: [HwcrComplaintService, ComplaintService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, SpeciesCodeService, HwcrComplaintNatureCodeService, AttractantHwcrXrefService, AttractantCodeService]
+  providers: [HwcrComplaintService, ComplaintService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, SpeciesCodeService, HwcrComplaintNatureCodeService, AttractantHwcrXrefService, AttractantCodeService, CosGeoOrgUnitService]
 })
 export class HwcrComplaintModule {}
