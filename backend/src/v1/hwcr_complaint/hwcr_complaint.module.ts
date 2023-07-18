@@ -21,10 +21,16 @@ import { AttractantCode } from '../attractant_code/entities/attractant_code.enti
 import { AttractantCodeService } from '../attractant_code/attractant_code.service';
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
+import { Office } from '../office/entities/office.entity';
+import { Officer } from '../officer/entities/officer.entity';
+import { OfficeService } from '../office/office.service';
+import { OfficerService } from '../officer/officer.service';
+import { Person } from '../person/entities/person.entity';
+import { PersonService } from '../person/person.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HwcrComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([SpeciesCode]), TypeOrmModule.forFeature([HwcrComplaintNatureCode]), TypeOrmModule.forFeature([AttractantHwcrXref]), TypeOrmModule.forFeature([AttractantCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) ],
+  imports: [TypeOrmModule.forFeature([HwcrComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([SpeciesCode]), TypeOrmModule.forFeature([HwcrComplaintNatureCode]), TypeOrmModule.forFeature([AttractantHwcrXref]), TypeOrmModule.forFeature([AttractantCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]), TypeOrmModule.forFeature([Office]),TypeOrmModule.forFeature([Officer]), TypeOrmModule.forFeature([Person])],
   controllers: [HwcrComplaintController],
-  providers: [HwcrComplaintService, ComplaintService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, SpeciesCodeService, HwcrComplaintNatureCodeService, AttractantHwcrXrefService, AttractantCodeService, CosGeoOrgUnitService]
+  providers: [HwcrComplaintService, ComplaintService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, SpeciesCodeService, HwcrComplaintNatureCodeService, AttractantHwcrXrefService, AttractantCodeService, CosGeoOrgUnitService, OfficeService, OfficerService, PersonService]
 })
 export class HwcrComplaintModule {}

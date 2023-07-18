@@ -9,7 +9,10 @@ type Props = {
 }
 
 export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, allegationOpenComplaintsOfficeStats}) => {
-
+  console.log("hwcrOpenComplaintsOfficeStats: "  + JSON.stringify(hwcrOpenComplaintsOfficeStats));
+  console.log("allegationOpenComplaintsOfficeStats: "  + JSON.stringify(allegationOpenComplaintsOfficeStats));
+  if(hwcrOpenComplaintsOfficeStats !== undefined && hwcrOpenComplaintsOfficeStats.length !== 0 && allegationOpenComplaintsOfficeStats !== undefined && allegationOpenComplaintsOfficeStats.length !== 0)
+  {
   return (
     <>
         { 
@@ -24,8 +27,8 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
               let allegationAssigned:number = 0;
               let allegationAssignedStyle:{width: string} = {width: "49%" };
 
-               //fear the hackiness -- this should probably be refactored -- the orderby on the backend should keep these in line, but allegationOpenComplaintsOfficeStats[index] make me feel dirty
-              if(item !== undefined && item.unassigned !== undefined && allegationOpenComplaintsOfficeStats[index] !== undefined && allegationOpenComplaintsOfficeStats[index].unassigned !== undefined)
+               //fear the hackiness -- this should probably be refactored -- the orderby on the backend should keep these in line, but allegationOpenComplaintsOfficeStats[index] makes me feel dirty
+              if(item !== undefined && item.officers !== undefined && allegationOpenComplaintsOfficeStats[index] !== undefined && allegationOpenComplaintsOfficeStats[index].officers !== undefined)
               {
               if(item.assigned === 0 && item.unassigned !== 0)
               {
@@ -128,11 +131,16 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                               </div>
                             </Col>
                           </Row>
-                      <div><OfficeUserContainer hwcrOfficers={[]} allegationOfficers={[]}/></div>
+                      <div><OfficeUserContainer hwcrOfficers={item.officers} allegationOfficers={allegationOpenComplaintsOfficeStats[index].officers}/></div>
                     </div>
                 </>;
             }) 
         }
     </>
   );
+      }
+      else
+      {
+        return <></>
+      }
 };

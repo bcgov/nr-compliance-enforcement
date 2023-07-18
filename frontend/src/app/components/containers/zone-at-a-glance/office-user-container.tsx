@@ -6,14 +6,22 @@ type Props = {
   allegationOfficers: OfficerStats[],
 }
 
-export const OfficeUserContainer: FC<Props> = ({hwcrOfficers}) => {
-  if(hwcrOfficers !== undefined && hwcrOfficers.length !== 0)
+export const OfficeUserContainer: FC<Props> = ({hwcrOfficers, allegationOfficers}) => {
+  if(hwcrOfficers !== undefined && hwcrOfficers.length !== 0 && allegationOfficers !== undefined && allegationOfficers.length !== 0)
   {
+    console.log("hwcrOfficers: " + JSON.stringify(hwcrOfficers));
+                      console.log("allegationOfficers: " + JSON.stringify(allegationOfficers));
     return (
         <>
             { 
-                    hwcrOfficers.map((item) => {
-                        return <div key={item.name} className="comp-zag-officer-container">{item.name + " " + item.name}</div>;
+                    hwcrOfficers.map((item, index) => {
+                      console.log("hate you" + JSON.stringify(item));
+                      console.log("hate you 22" + JSON.stringify(allegationOfficers[index]));
+                        return <>
+                        <div className="comp-zag-officer-container">
+                          {item.name} - - {item.hwcrAssigned} - - {allegationOfficers[index].allegationAssigned}
+                        </div>
+                        </>
                     }) 
             }
         </>
