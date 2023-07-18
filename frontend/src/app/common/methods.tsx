@@ -21,7 +21,7 @@ export const formatDate = (input: string | undefined): string => {
     return "";
   }
 
-  return format(Date.parse(input), "MM/dd/yyyy");
+  return format(Date.parse(input), "yyyy-MM-dd");
 };
 
 export const formatTime = (input: string | undefined): string => {
@@ -29,7 +29,15 @@ export const formatTime = (input: string | undefined): string => {
     return "";
   }
 
-  return format(Date.parse(input), "kk:mm:ss");
+  return format(Date.parse(input), "HH:mm");
+};
+
+export const formatDateTime = (input: string | undefined): string => {
+  if (!input) {
+    return "";
+  }
+
+  return format(Date.parse(input), "yyyy-MM-dd HH:mm");
 };
 
 export const parseCoordinates = (
