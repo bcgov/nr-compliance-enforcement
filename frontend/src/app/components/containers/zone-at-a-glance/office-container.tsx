@@ -105,7 +105,7 @@
                                 View Unassigned Compaints
                               </div>
                             </Col>
-                            <Col className="comp-padding-left-md">
+                            <Col className="comp-padding-left-md negative-office-margin">
                               <div className="comp-zag-stats-title">
                                 Enforcement
                               </div>
