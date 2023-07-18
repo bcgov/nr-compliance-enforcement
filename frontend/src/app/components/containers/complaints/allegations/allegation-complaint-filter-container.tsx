@@ -265,6 +265,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
               onChange={handleDateFilter}
               startDate={startDateFilter}
               endDate={endDateFilter}
+              dateFormat="yyyy-MM-dd"
               monthsShown={2}
               selectsRange={true}
               isClearable={true}
