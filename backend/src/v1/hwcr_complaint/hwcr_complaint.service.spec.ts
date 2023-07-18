@@ -9,6 +9,11 @@ import { AttractantHwcrXref } from '../attractant_hwcr_xref/entities/attractant_
 import { DataSource } from 'typeorm';
 import { dataSourceMockFactory } from '../../../test/mocks/datasource';
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
+import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
+import { Office } from '../office/entities/office.entity';
+import { OfficeService } from '../office/office.service';
+import { Officer } from '../officer/entities/officer.entity';
+import { OfficerService } from '../officer/officer.service';
 
 describe('HwcrComplaintService', () => {
   let service: HwcrComplaintService;
@@ -35,10 +40,21 @@ describe('HwcrComplaintService', () => {
           provide: getRepositoryToken(AttractantHwcrXref),
           useValue: {},
         },
+        CosGeoOrgUnitService,
         {
           provide: getRepositoryToken(CosGeoOrgUnit),
           useValue: {},
         },        
+        OfficeService,
+        {
+          provide: getRepositoryToken(Office),
+          useValue: {},
+        },       
+        OfficerService,
+        {
+          provide: getRepositoryToken(Officer),
+          useValue: {},
+        },   
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory

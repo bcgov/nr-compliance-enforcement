@@ -11,6 +11,11 @@ import { ViolationCode } from '../violation_code/entities/violation_code.entity'
 import { ComplaintService } from '../complaint/complaint.service';
 import { MockType, dataSourceMockFactory } from '../../../test/mocks/datasource';
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
+import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
+import { OfficeService } from '../office/office.service';
+import { Office } from '../office/entities/office.entity';
+import { OfficerService } from '../officer/officer.service';
+import { Officer } from '../officer/entities/officer.entity';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
@@ -252,10 +257,21 @@ describe("AllegationComplaintService", () => {
           provide: getRepositoryToken(Complaint),
           useFactory: complaintRepositoryMockFactory
         },
+        CosGeoOrgUnitService,
         {
           provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: cosGeoOrgUnitRepositoryMockFactory
-        }
+          useValue: {},
+        },        
+        OfficeService,
+        {
+          provide: getRepositoryToken(Office),
+          useValue: {},
+        },       
+        OfficerService,
+        {
+          provide: getRepositoryToken(Officer),
+          useValue: {},
+        },
       ],
       
     }).compile().catch((err) => {
