@@ -2,6 +2,10 @@ import { FC } from "react";
 import { OfficeUserContainer } from "./office-user-container";
 import { Row, Col } from "react-bootstrap";
 import { OfficeStats } from "../../../types/complaints/zone-at-a-glance-stats";
+import { useCollapse } from 'react-collapsed';
+import chevronDown from "../../../../assets/images/chevron-down.png";
+import chevronUp from "../../../../assets/images/chevron-up.png";
+
 
 type Props = {
   hwcrOpenComplaintsOfficeStats: OfficeStats[],
@@ -9,8 +13,7 @@ type Props = {
 }
 
 export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, allegationOpenComplaintsOfficeStats}) => {
-  console.log("hwcrOpenComplaintsOfficeStats: "  + JSON.stringify(hwcrOpenComplaintsOfficeStats));
-  console.log("allegationOpenComplaintsOfficeStats: "  + JSON.stringify(allegationOpenComplaintsOfficeStats));
+  const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   if(hwcrOpenComplaintsOfficeStats !== undefined && hwcrOpenComplaintsOfficeStats.length !== 0 && allegationOpenComplaintsOfficeStats !== undefined && allegationOpenComplaintsOfficeStats.length !== 0)
   {
   return (
@@ -33,14 +36,14 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
               if(item.assigned === 0 && item.unassigned !== 0)
               {
                 hwcrUnassigned = item.unassigned;
-                hwcrUnassignedStyle = {width: "94%" };
-                hwcrAssignedStyle = {width: "4%" };
+                hwcrUnassignedStyle = {width: "93%" };
+                hwcrAssignedStyle = {width: "5%" };
               }
               else if(item.assigned !== 0 && item.unassigned === 0)
               {
-                hwcrUnassignedStyle = {width: "4%" };
+                hwcrUnassignedStyle = {width: "5%" };
                 hwcrAssigned = item.assigned;
-                hwcrAssignedStyle = {width: "94%" };
+                hwcrAssignedStyle = {width: "93%" };
               }
               else if(item.assigned !== 0 && item.unassigned !== 0)
               {
@@ -56,14 +59,14 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
               if(allegationOpenComplaintsOfficeStats[index].assigned === 0 && allegationOpenComplaintsOfficeStats[index].unassigned !== 0)
               {
                 allegationUnassigned = allegationOpenComplaintsOfficeStats[index].unassigned;
-                allegationUnassignedStyle = {width: "94%" };
-                allegationAssignedStyle = {width: "4%" };
+                allegationUnassignedStyle = {width: "93%" };
+                allegationAssignedStyle = {width: "5%" };
               }
               else if(allegationOpenComplaintsOfficeStats[index].assigned !== 0 && allegationOpenComplaintsOfficeStats[index].unassigned === 0)
               {
-                allegationUnassignedStyle = {width: "4%" };
+                allegationUnassignedStyle = {width: "5%" };
                 allegationAssigned = allegationOpenComplaintsOfficeStats[index].assigned;
-                allegationAssignedStyle = {width: "94%" };
+                allegationAssignedStyle = {width: "93%" };
               }
               else if(allegationOpenComplaintsOfficeStats[index].assigned !== 0 && allegationOpenComplaintsOfficeStats[index].unassigned !== 0)
               {
@@ -82,7 +85,12 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                     <div className="comp-zag-office-container">
                           <Row className="comp-zag-flex-container">
                             <Col className="comp-zag-office">
-                              {item.name + " Office"}
+                              <div className="ms-auto left-float" {...getToggleProps({id: item.name})}>
+                                <img src={(isExpanded ? chevronDown : chevronUp)} alt="chevron" />
+                              </div>
+                              <div className="left-float comp-padding-left-md">
+                                {item.name + " Office"}
+                              </div>
                             </Col>
                             <Col className="comp-padding-left-md">
                               <div className="comp-zag-stats-title">
@@ -131,7 +139,11 @@ export const OfficesContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStats, alle
                               </div>
                             </Col>
                           </Row>
-                      <div><OfficeUserContainer hwcrOfficers={item.officers} allegationOfficers={allegationOpenComplaintsOfficeStats[index].officers}/></div>
+                          <div className="collapsible">
+                            <div {...getCollapseProps({id: item.name})}>
+                              <OfficeUserContainer hwcrOfficers={item.officers} allegationOfficers={allegationOpenComplaintsOfficeStats[index].officers}/>
+                            </div>
+                          </div>
                     </div>
                 </>;
             }) 

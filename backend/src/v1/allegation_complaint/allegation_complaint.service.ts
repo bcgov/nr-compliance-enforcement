@@ -321,15 +321,10 @@ export class AllegationComplaintService {
         .andWhere('person_complaint_xref.active_ind = true')
         .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
         .andWhere('officer.officer_guid = :officerGuid', {officerGuid});
-        
-        process.stdout.write("COMESFD EFOEIF: " + await assignedOfficerComplaintsQuery.getQueryAndParameters().toLocaleString() + "\n");
 
         officers[j].allegationAssigned = await assignedOfficerComplaintsQuery.getCount();
-
-        console.log("allegationAssigned : " + officers[j].allegationAssigned)
     
       }
-      console.log("fldasfjaskdlfjalskdf : " + JSON.stringify(officers));
       offices[i].officers = officers;
       }
   
