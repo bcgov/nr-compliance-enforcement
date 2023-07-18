@@ -191,11 +191,6 @@ UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' W
 UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '7da19946-4525-43ff-b4b6-d243a2addaaa';
 UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '4b3a8974-1975-4aaf-9e0a-2d3f5d217805';
 
--- Delete extra offices
-
-DELETE FROM public.office WHERE create_user_id != 'nr-compliance-enforcement';
-
-
 -------------------------
 -- Insert PERSON records
 -------------------------
