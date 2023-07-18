@@ -15,10 +15,16 @@ import { AgencyCode } from '../agency_code/entities/agency_code.entity';
 import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
 import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
+import { OfficeService } from '../office/office.service';
+import { OfficerService } from '../officer/officer.service';
+import { Office } from '../office/entities/office.entity';
+import { Officer } from '../officer/entities/officer.entity';
+import { PersonService } from '../person/person.service';
+import { Person } from '../person/entities/person.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([ViolationCode]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) ],
+  imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([ViolationCode]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) , TypeOrmModule.forFeature([Office]),TypeOrmModule.forFeature([Officer]), TypeOrmModule.forFeature([Person])],
   controllers: [AllegationComplaintController],
-  providers: [AllegationComplaintService, ComplaintService, ViolationCodeService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, CosGeoOrgUnitService]
+  providers: [AllegationComplaintService, ComplaintService, ViolationCodeService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, CosGeoOrgUnitService, OfficeService, OfficerService, PersonService]
 })
 export class AllegationComplaintModule {}
