@@ -241,6 +241,87 @@ describe("AllegationComplaintService", () => {
     delete: jest.fn(() => { return Promise.resolve(true)}),
   });
 
+  const officeRepositoryMockFactory = () => ({
+    // mock repository functions for testing
+    findAll: jest.fn(),
+    find: jest.fn(),
+    findOneOrFail: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    queryRunner:
+      {
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        rollbackTransaction: jest.fn(),
+        release: jest.fn(),
+        manager: {
+          save: jest.fn()
+        }
+      },
+
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    //update: jest.fn().mockResolvedValue(true),
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    delete: jest.fn(() => { return Promise.resolve(true)}),
+  });
+
+  const officerRepositoryMockFactory = () => ({
+    // mock repository functions for testing
+    findAll: jest.fn(),
+    find: jest.fn(),
+    findOneOrFail: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    queryRunner:
+      {
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        rollbackTransaction: jest.fn(),
+        release: jest.fn(),
+        manager: {
+          save: jest.fn()
+        }
+      },
+
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    //update: jest.fn().mockResolvedValue(true),
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    delete: jest.fn(() => { return Promise.resolve(true)}),
+  });
+
+  const personRepositoryMockFactory = () => ({
+    // mock repository functions for testing
+    findAll: jest.fn(),
+    find: jest.fn(),
+    findOneOrFail: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    queryRunner:
+      {
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        rollbackTransaction: jest.fn(),
+        release: jest.fn(),
+        manager: {
+          save: jest.fn()
+        }
+      },
+
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    //update: jest.fn().mockResolvedValue(true),
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    delete: jest.fn(() => { return Promise.resolve(true)}),
+  });
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -262,22 +343,22 @@ describe("AllegationComplaintService", () => {
         CosGeoOrgUnitService,
         {
           provide: getRepositoryToken(CosGeoOrgUnit),
-          useValue: {},
+          useFactory: cosGeoOrgUnitRepositoryMockFactory,
         },        
         OfficeService,
         {
           provide: getRepositoryToken(Office),
-          useValue: {},
+          useFactory: officeRepositoryMockFactory,
         },       
         OfficerService,
         {
           provide: getRepositoryToken(Officer),
-          useValue: {},
+          useFactory: officerRepositoryMockFactory,
         },
         PersonService,
         {
           provide: getRepositoryToken(Person),
-          useValue: {},
+          useFactory: personRepositoryMockFactory,
         },
       ],
       
