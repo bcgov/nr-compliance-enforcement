@@ -19,8 +19,8 @@ const initialState: ComplaintState = {
   complaints: [],
   complaint: null,
   zoneAtGlance: {
-    hwcr: { assigned: 0, unassigned: 0, total: 0 },
-    allegation: { assigned: 0, unassigned: 0, total: 0 },
+    hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [], },
+    allegation: { assigned: 0, unassigned: 0, total: 0, offices: [], },
   },
 };
 
@@ -100,6 +100,7 @@ export const getZoneAtAGlanceStats =
       dispatch(setZoneAtAGlance({ ...result, type }));
     }
   };
+  
 
 //-- selectors
 export const selectComplaint = (
