@@ -7,8 +7,8 @@
  import chevronUp from "../../../../assets/images/chevron-up.png";
 
  type Props = {
-    hwcrOpenComplaintsOfficeStat: OfficeStats,
-    allegationOpenComplaintsOfficeStat: OfficeStats,
+    hwcrOpenComplaintsOfficeStat?: OfficeStats,
+    allegationOpenComplaintsOfficeStat?: OfficeStats,
   }
   export const OfficeContainer: FC<Props> = ({hwcrOpenComplaintsOfficeStat, allegationOpenComplaintsOfficeStat}) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
