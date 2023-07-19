@@ -3,8 +3,8 @@ import officersInZoneReducer from "./reducers/officer";
 import officersInOfficeReducer from "./reducers/officer";
 import appReducer from "./reducers/app";
 import complaints from "./reducers/complaints";
-import dropdowns from "./reducers/code-tables";
 import officesInZoneReducer from './reducers/office';
+import codeTables from "./reducers/code-table";
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +13,7 @@ export const store = configureStore({
     officersInOffice: officersInOfficeReducer,
     officesInZone: officesInZoneReducer,
     complaints,
-    dropdowns,
+    codeTables
   },
 });
 

@@ -12,15 +12,15 @@ import ColorReference from "./components/reference";
 import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
-import { fetchCodeTablesAsync } from "./store/reducers/code-tables";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
+import { fetchCodeTables } from "./store/reducers/code-table";
 
 const App: FC = () => {
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCodeTablesAsync());
+    dispatch(fetchCodeTables())
   }, [dispatch]);
 
   return (

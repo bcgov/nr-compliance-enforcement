@@ -15,15 +15,15 @@ import {
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
-import {
-  selectComplaintStatusCodes,
-  selectSpeciesCodes,
-  selectedHwcrNatureOfComplaintCodes,
-  selectedAreaCodes,
-  selectedAttractantCodes,
-  selectAgencyCodes,
-  selectViolationCodes,
-} from "../../../../store/reducers/code-tables";
+import { 
+  selectAgencyDropdown, 
+  selectComplaintStatusCodeDropdown, 
+  selectSpeciesCodeDropdown, 
+  selectViolationCodeDropdown,
+  selectedHwcrNatureOfComplaintCodeDropdown, 
+  selectedAreaCodeDropdown, 
+  selectedAttractantCodeDropdown 
+} from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import {
   getOfficersInZone,
@@ -116,23 +116,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   );
 
   // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(
-    selectComplaintStatusCodes
-  ) as DropdownOption[];
-  const speciesCodes = useSelector(selectSpeciesCodes) as DropdownOption[];
-  const hwcrNatureOfComplaintCodes = useSelector(
-    selectedHwcrNatureOfComplaintCodes
-  ) as DropdownOption[];
-  const areaCodes = useSelector(selectedAreaCodes) as DropdownOption[];
-  const attractantCodes = useSelector(
-    selectedAttractantCodes
-  ) as DropdownOption[];
-  const referredByAgencyCodes = useSelector(
-    selectAgencyCodes
-  ) as DropdownOption[];
-  const violationTypeCodes = useSelector(
-    selectViolationCodes
-  ) as DropdownOption[];
+  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as DropdownOption[];
+  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as DropdownOption[];
+  const hwcrNatureOfComplaintCodes = useSelector(selectedHwcrNatureOfComplaintCodeDropdown) as DropdownOption[];
+  const areaCodes = useSelector(selectedAreaCodeDropdown) as DropdownOption[];
+  const attractantCodes = useSelector(selectedAttractantCodeDropdown) as DropdownOption[];
+  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as DropdownOption[];
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as DropdownOption[];
+
   const yesNoOptions: DropdownOption[] = [
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
