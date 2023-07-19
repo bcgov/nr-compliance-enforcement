@@ -6,12 +6,11 @@ import { AssignOfficersState } from "../../types/complaints/officers-in-zone-sta
 import { Officer, Person } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/personComplaintXref";
-import { updateHwcrComplaintRow } from "./hwcr-complaints";
 import { updateAllegationComplaintRow } from "./allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier } from "./complaints";
+import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier, updateWildlifeComplaintByRow } from "./complaints";
 
 const initialState: AssignOfficersState = {
     officersInZone: [],
@@ -139,7 +138,7 @@ export const updateComplaintAssignee = (currentUser: string, person_guid: UUID, 
     if (COMPLAINT_TYPES.HWCR === complaint_type) {
       const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`);
       dispatch(
-        updateHwcrComplaintRow(response.data)
+        updateWildlifeComplaintByRow(response.data)
       );
       dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
     } else {

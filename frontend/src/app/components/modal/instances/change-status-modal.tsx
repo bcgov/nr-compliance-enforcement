@@ -3,11 +3,11 @@ import { Modal, Row, Col, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
-import { updateHwlcComplaintStatus } from "../../../store/reducers/hwcr-complaints";
 import { updateAllegationComplaintStatus } from "../../../store/reducers/allegation-complaint";
 import {
   getErsComplaintByComplaintIdentifier,
   getHwcrComplaintByComplaintIdentifier,
+  updateWildlifeComplaintStatus,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import Option from "../../../types/app/option";
@@ -52,7 +52,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
   const updateThunksSequentially = async () => {
     try {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        await dispatch(updateHwlcComplaintStatus(complaint_identifier, status));
+        await dispatch(updateWildlifeComplaintStatus(complaint_identifier, status))
         dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
       } else {
         await dispatch(

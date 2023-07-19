@@ -1,8 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
-import axios from "axios";
-import { ComplaintState } from "../../types/state/complaint-state";
+import axios, { CancelTokenSource } from "axios";
+import {
+  ComplaintCollection,
+  ComplaintState,
+} from "../../types/state/complaint-state";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { ComplaintHeader } from "../../types/complaints/details/complaint-header";
@@ -11,36 +14,86 @@ import { ComplaintDetails } from "../../types/complaints/details/complaint-detai
 import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
 import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
 import { ComplaintSuspectWitness } from "../../types/complaints/details/complaint-suspect-witness-details";
-import ComplaintType from '../../constants/complaint-types';
-import { ZoneAtAGlanceStats } from '../../types/complaints/zone-at-a-glance-stats';
+import ComplaintType from "../../constants/complaint-types";
+import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
+import { ComplaintFilters } from "../../types/complaints/complaint-filters";
+import { Complaint } from "../../types/complaints/complaint";
 
+let cancelTokenSource: CancelTokenSource | null = null;
 
 const initialState: ComplaintState = {
-  complaints: [],
+  complaintItems: {
+    wildlife: [],
+    allegations: [],
+  },
   complaint: null,
   zoneAtGlance: {
-    hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [], },
-    allegation: { assigned: 0, unassigned: 0, total: 0, offices: [], },
+    hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [] },
+    allegation: { assigned: 0, unassigned: 0, total: 0, offices: [] },
   },
 };
 
 export const complaintSlice = createSlice({
-  name: "allegationComplaints",
+  name: "complaints",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    setComplaints: (state, action) => {
+      const {
+        payload: { type, data },
+      } = action;
+      const { complaintItems } = state;
+
+      let update: ComplaintCollection = { wildlife: [], allegations: [] };
+
+      switch (type) {
+        case COMPLAINT_TYPES.ERS:
+          update = { ...complaintItems, allegations: data };
+          break;
+        case COMPLAINT_TYPES.HWCR:
+          update = { ...complaintItems, wildlife: data };
+          break;
+      }
+
+      return { ...state, complaintItems: update };
+    },
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
     setZoneAtAGlance: (state, action) => {
       const { payload: statistics } = action;
-      const { type, ...rest} = statistics
-      const { zoneAtGlance } = state;      
+      const { type, ...rest } = statistics;
+      const { zoneAtGlance } = state;
 
-      const update = type === ComplaintType.HWCR_COMPLAINT ? { ...zoneAtGlance, hwcr: rest} : { ...zoneAtGlance, allegation: rest};
+      const update =
+        type === ComplaintType.HWCR_COMPLAINT
+          ? { ...zoneAtGlance, hwcr: rest }
+          : { ...zoneAtGlance, allegation: rest };
 
       return { ...state, zoneAtGlance: update };
+    },
+    updateWildlifeComplaintByRow: (
+      state,
+      action: PayloadAction<HwcrComplaint>
+    ) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = state;
+      const { wildlife } = complaintItems;
+
+      const index = wildlife.findIndex(
+        ({ hwcr_complaint_guid }) =>
+          hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid
+      );
+
+      if (index !== -1) {
+        const update = [...wildlife];
+        update[index] = updatedComplaint;
+
+        const updatedItems = { ...complaintItems, wildlife: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
     },
   },
 
@@ -50,9 +103,70 @@ export const complaintSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setComplaint, setZoneAtAGlance } = complaintSlice.actions;
+export const {
+  setComplaints,
+  setComplaint,
+  setZoneAtAGlance,
+  updateWildlifeComplaintByRow,
+} = complaintSlice.actions;
 
-//--
+//-- redux thunks
+export const getComplaints =
+  (complaintType: string, payload: ComplaintFilters): AppThunk =>
+  async (dispatch) => {
+    const {
+      sortColumn,
+      sortOrder,
+      regionCodeFilter,
+      areaCodeFilter,
+      zoneCodeFilter,
+      officerFilter,
+      natureOfComplaintFilter,
+      speciesCodeFilter,
+      startDateFilter,
+      endDateFilter,
+      statusFilter,
+    } = payload;
+
+    try {
+      const token = localStorage.getItem("user");
+
+      const apiEndpoint = (type: string): string => {
+        switch (type) {
+          case COMPLAINT_TYPES.ERS:
+            return "allegation-complaint";
+          default:
+            return "hwcr-complaint";
+        }
+      };
+
+      if (token) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        const response = await axios.get(
+          `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/search`,
+          {
+            params: {
+              sortColumn: sortColumn,
+              sortOrder: sortOrder,
+              region: regionCodeFilter?.value,
+              zone: zoneCodeFilter?.value,
+              community: areaCodeFilter?.value,
+              officerAssigned: officerFilter?.value,
+              natureOfComplaint: natureOfComplaintFilter?.value,
+              speciesCode: speciesCodeFilter?.value,
+              incidentReportedStart: startDateFilter,
+              incidentReportedEnd: endDateFilter,
+              status: statusFilter?.value,
+            },
+          }
+        );
+        dispatch(setComplaints({ type: complaintType, data: response.data }));
+      }
+    } catch (error) {
+      console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
+    }
+  };
+
 export const getHwcrComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
@@ -93,22 +207,51 @@ export const getZoneAtAGlanceStats =
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
       const response = await axios.get(
-        `${config.API_BASE_URL}/v1/${type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"}-complaint/stats/by-zone/${zone}`
+        `${config.API_BASE_URL}/v1/${
+          type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"
+        }-complaint/stats/by-zone/${zone}`
       );
       const result = response.data;
 
       dispatch(setZoneAtAGlance({ ...result, type }));
     }
   };
-  
+
+export const updateWildlifeComplaintStatus =
+  (complaint_identifier: string, newStatus: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const complaintResponse = await axios.get<Complaint>(
+        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`
+      );
+
+      // first update the complaint status
+      let updatedComplaint = complaintResponse.data;
+      updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
+      await axios.patch(
+        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`,
+        { complaint_status_code: `${newStatus}` }
+      );
+      // now get that hwcr complaint row and update the state
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+      );
+      dispatch(updateWildlifeComplaintByRow(response.data));
+      const result = response.data;
+
+      dispatch(setComplaint({ ...result }));
+    }
+  };
 
 //-- selectors
 export const selectComplaint = (
   state: RootState
 ): HwcrComplaint | AllegationComplaint | undefined | null => {
-  const {
-    complaints: { complaint },
-  } = state;
+  const { complaints: root } = state;
+  const { complaint } = root;
+
   return complaint;
 };
 
@@ -116,6 +259,10 @@ export const selectComplaintHeader =
   (complaintType: string) =>
   (state: RootState): any => {
     const selectHwcrComplaintHeader = (state: RootState): ComplaintHeader => {
+      const {
+        complaints: { complaint },
+      } = state;
+
       let result = {
         loggedDate: "",
         createdBy: "",
@@ -131,8 +278,6 @@ export const selectComplaintHeader =
         firstName: "",
         lastName: "",
       };
-
-      const { complaint } = state.complaints;
 
       if (complaint) {
         const {
@@ -194,6 +339,10 @@ export const selectComplaintHeader =
     };
 
     const selectErsComplaintHeader = (state: RootState): ComplaintHeader => {
+      const {
+        complaints: { complaint },
+      } = state;
+
       let result = {
         loggedDate: "",
         createdBy: "",
@@ -203,8 +352,6 @@ export const selectComplaintHeader =
         zone: "",
         violationType: "", //-- needs to be violation as well
       };
-
-      const { complaint } = state.complaints;
 
       if (complaint) {
         const {
@@ -263,9 +410,11 @@ export const selectComplaintHeader =
 export const selectComplaintDeails =
   (complaintType: string) =>
   (state: RootState): ComplaintDetails => {
-    let results: ComplaintDetails = {};
+    const {
+      complaints: { complaint },
+    } = state;
 
-    const { complaint } = state.complaints;
+    let results: ComplaintDetails = {};
 
     if (complaint) {
       const { complaint_identifier: ceComplaint }: any = complaint;
@@ -320,7 +469,10 @@ export const selectComplaintDeails =
             const attractants = attractant_hwcr_xref.map(
               ({
                 attractant_hwcr_xref_guid: key,
-                attractant_code: {attractant_code: code, short_description: description },
+                attractant_code: {
+                  attractant_code: code,
+                  short_description: description,
+                },
               }: any): ComplaintDetailsAttractant => {
                 return { key, code, description };
               }
@@ -339,9 +491,11 @@ export const selectComplaintDeails =
 export const selectComplaintCallerInformation = (
   state: RootState
 ): ComplaintCallerInformation => {
-  let results = {} as ComplaintCallerInformation;
+  const {
+    complaints: { complaint },
+  } = state;
 
-  const { complaint } = state.complaints;
+  let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
     const { complaint_identifier: ceComplaint } = complaint;
@@ -376,9 +530,11 @@ export const selectComplaintCallerInformation = (
 export const selectComplaintSuspectWitnessDetails = (
   state: RootState
 ): ComplaintSuspectWitness => {
-  let results = {} as ComplaintSuspectWitness;
+  const {
+    complaints: { complaint },
+  } = state;
 
-  const { complaint } = state.complaints;
+  let results = {} as ComplaintSuspectWitness;
 
   if (complaint) {
     const { suspect_witnesss_dtl_text: details }: any = complaint;
@@ -389,18 +545,44 @@ export const selectComplaintSuspectWitnessDetails = (
   return results;
 };
 
-export const selectHwcrZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => { 
-  const { complaints } = state;
-  const { zoneAtGlance } = complaints;
+export const selectHwcrZagOpenComplaints = (
+  state: RootState
+): ZoneAtAGlanceStats => {
+  const {
+    complaints: { zoneAtGlance },
+  } = state;
 
-  return zoneAtGlance.hwcr
-} 
+  return zoneAtGlance.hwcr;
+};
 
-export const selectAllegationZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => { 
-  const { complaints } = state;
-  const { zoneAtGlance } = complaints;
+export const selectAllegationZagOpenComplaints = (
+  state: RootState
+): ZoneAtAGlanceStats => {
+  const {
+    complaints: { zoneAtGlance },
+  } = state;
 
-  return zoneAtGlance.allegation
-} 
+  return zoneAtGlance.allegation;
+};
+
+export const selectWildlifeComplaints = (
+  state: RootState
+): Array<HwcrComplaint> => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { wildlife } = complaintItems;
+
+  return wildlife;
+};
+
+export const selectWildlifeComplaintsCount = (state: RootState): Number => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { wildlife } = complaintItems;
+
+  return wildlife.length;
+};
 
 export default complaintSlice.reducer;

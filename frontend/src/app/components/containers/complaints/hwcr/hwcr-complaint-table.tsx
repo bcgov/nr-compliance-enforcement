@@ -2,11 +2,12 @@ import { FC, useEffect } from "react";
 import { format } from 'date-fns';
 import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { getHwcrComplaints, hwcrComplaints } from "../../../../store/reducers/hwcr-complaints"
 import { useNavigate } from "react-router-dom";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
+import { getComplaints, selectWildlifeComplaints } from "../../../../store/reducers/complaints";
+import { ComplaintFilters } from '../../../../types/complaints/complaint-filters';
 
 type Props = {
     sortColumn: string,
@@ -25,12 +26,39 @@ type Props = {
 export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter}) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const hwcrComplaintsJson = useAppSelector(hwcrComplaints);
+    const hwcrComplaintsJson = useAppSelector(selectWildlifeComplaints);
 
     useEffect(() => {
-            dispatch(getHwcrComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter));
-  }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter,startDateFilter, endDateFilter, complaintStatusFilter]);
-
+        const payload = {
+          sortColumn,
+          sortOrder,
+          regionCodeFilter,
+          zoneCodeFilter,
+          areaCodeFilter,
+          officerFilter,
+          natureOfComplaintFilter,
+          speciesCodeFilter,
+          startDateFilter,
+          endDateFilter,
+          complaintStatusFilter,
+        } as ComplaintFilters;
+    
+        dispatch(getComplaints(COMPLAINT_TYPES.HWCR, payload));
+      }, [
+        dispatch,
+        sortColumn,
+        sortOrder,
+        regionCodeFilter,
+        zoneCodeFilter,
+        areaCodeFilter,
+        officerFilter,
+        natureOfComplaintFilter,
+        speciesCodeFilter,
+        startDateFilter,
+        endDateFilter,
+        complaintStatusFilter,
+      ]);
+    
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
     id: string
