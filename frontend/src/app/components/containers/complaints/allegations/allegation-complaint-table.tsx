@@ -1,12 +1,13 @@
 import { FC, useEffect } from "react";
 import { Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { getAllegationComplaints, allegationComplaints } from "../../../../store/reducers/allegation-complaint"
 import { useNavigate } from "react-router-dom";
 import { formatDateTime } from "../../../../common/methods";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
+import { getComplaints, selectAllegationComplaints } from "../../../../store/reducers/complaints";
+import { ComplaintFilters } from "../../../../types/complaints/complaint-filters";
 
 type Props = {
     sortColumn: string,
@@ -25,13 +26,35 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const allegationComplaintsJson = useAppSelector(allegationComplaints);
-
+    const allegationComplaintsJson = useAppSelector(selectAllegationComplaints);
 
     useEffect(() => {
-            dispatch(getAllegationComplaints(sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter));
-  }, [dispatch, sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter])
-
+        const payload = {
+          sortColumn,
+          sortOrder,
+          regionCodeFilter,
+          zoneCodeFilter,
+          areaCodeFilter,
+          officerFilter,
+          violationFilter,
+          startDateFilter,
+          endDateFilter,
+          complaintStatusFilter,
+        } as ComplaintFilters;
+        dispatch(getComplaints(COMPLAINT_TYPES.ERS, payload));
+      }, [
+        dispatch,
+        sortColumn,
+        sortOrder,
+        regionCodeFilter,
+        zoneCodeFilter,
+        areaCodeFilter,
+        officerFilter,
+        violationFilter,
+        startDateFilter,
+        endDateFilter,
+        complaintStatusFilter,
+      ]);
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>

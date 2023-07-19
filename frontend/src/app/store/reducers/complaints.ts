@@ -95,6 +95,29 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
+    updateAllegationComplaintByRow: (
+      state,
+      action: PayloadAction<AllegationComplaint>
+    ) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = state;
+      const { allegations } = complaintItems;
+
+      const index = allegations.findIndex(
+        ({ allegation_complaint_guid }) =>
+          allegation_complaint_guid ===
+          updatedComplaint.allegation_complaint_guid
+      );
+
+      if (index !== -1) {
+        const update = [...allegations];
+        update[index] = updatedComplaint;
+
+        const updatedItems = { ...complaintItems, allegations: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -108,6 +131,7 @@ export const {
   setComplaint,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
+  updateAllegationComplaintByRow,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -167,7 +191,7 @@ export const getComplaints =
     }
   };
 
-export const getHwcrComplaintByComplaintIdentifier =
+export const getWildlifeComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
     const token = localStorage.getItem("user");
@@ -183,7 +207,7 @@ export const getHwcrComplaintByComplaintIdentifier =
     }
   };
 
-export const getErsComplaintByComplaintIdentifier =
+export const getAllegationComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
     const token = localStorage.getItem("user");
@@ -245,6 +269,35 @@ export const updateWildlifeComplaintStatus =
     }
   };
 
+export const updateAllegationComplaintStatus = (
+  complaint_identifier: string,
+  newStatus: string
+): AppThunk => {
+  return async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const complaintResponse = await axios.get<Complaint>(
+        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`
+      );
+
+      // first update the complaint status
+      let updatedComplaint = complaintResponse.data;
+      updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
+      await axios.patch(
+        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`,
+        { complaint_status_code: `${newStatus}` }
+      );
+
+      // now get that allegation complaint row and update the state
+      const response = await axios.get(
+        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
+      );
+      dispatch(updateAllegationComplaintByRow(response.data));
+    }
+  };
+};
+
 //-- selectors
 export const selectComplaint = (
   state: RootState
@@ -258,7 +311,9 @@ export const selectComplaint = (
 export const selectComplaintHeader =
   (complaintType: string) =>
   (state: RootState): any => {
-    const selectHwcrComplaintHeader = (state: RootState): ComplaintHeader => {
+    const selectWildlifeComplaintHeader = (
+      state: RootState
+    ): ComplaintHeader => {
       const {
         complaints: { complaint },
       } = state;
@@ -338,7 +393,9 @@ export const selectComplaintHeader =
       return result;
     };
 
-    const selectErsComplaintHeader = (state: RootState): ComplaintHeader => {
+    const selectAllegationComplaintHeader = (
+      state: RootState
+    ): ComplaintHeader => {
       const {
         complaints: { complaint },
       } = state;
@@ -401,9 +458,9 @@ export const selectComplaintHeader =
 
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
-        return selectErsComplaintHeader(state);
+        return selectAllegationComplaintHeader(state);
       case COMPLAINT_TYPES.HWCR:
-        return selectHwcrComplaintHeader(state);
+        return selectWildlifeComplaintHeader(state);
     }
   };
 
@@ -545,7 +602,7 @@ export const selectComplaintSuspectWitnessDetails = (
   return results;
 };
 
-export const selectHwcrZagOpenComplaints = (
+export const selectWildlifeZagOpenComplaints = (
   state: RootState
 ): ZoneAtAGlanceStats => {
   const {
@@ -583,6 +640,26 @@ export const selectWildlifeComplaintsCount = (state: RootState): Number => {
   const { wildlife } = complaintItems;
 
   return wildlife.length;
+};
+
+export const selectAllegationComplaints = (
+  state: RootState
+): Array<AllegationComplaint> => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { allegations } = complaintItems;
+
+  return allegations;
+};
+
+export const selectAllegationComplaintsCount = (state: RootState): Number => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { allegations } = complaintItems;
+
+  return allegations.length;
 };
 
 export default complaintSlice.reducer;

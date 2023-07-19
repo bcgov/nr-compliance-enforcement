@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
-  getErsComplaintByComplaintIdentifier,
-  getHwcrComplaintByComplaintIdentifier,
+  getAllegationComplaintByComplaintIdentifier,
+  getWildlifeComplaintByComplaintIdentifier,
   selectComplaint,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -61,10 +61,10 @@ export const ComplaintDetails: FC = () => {
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
-            dispatch(getErsComplaintByComplaintIdentifier(id));
+            dispatch(getAllegationComplaintByComplaintIdentifier(id));
             break;
           case COMPLAINT_TYPES.HWCR:
-            dispatch(getHwcrComplaintByComplaintIdentifier(id));
+            dispatch(getWildlifeComplaintByComplaintIdentifier(id));
             break;
         }
       }

@@ -6,11 +6,10 @@ import { AssignOfficersState } from "../../types/complaints/officers-in-zone-sta
 import { Officer, Person } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/personComplaintXref";
-import { updateAllegationComplaintRow } from "./allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { getErsComplaintByComplaintIdentifier, getHwcrComplaintByComplaintIdentifier, updateWildlifeComplaintByRow } from "./complaints";
+import { getAllegationComplaintByComplaintIdentifier, getWildlifeComplaintByComplaintIdentifier, updateWildlifeComplaintByRow, updateAllegationComplaintByRow } from "./complaints";
 
 const initialState: AssignOfficersState = {
     officersInZone: [],
@@ -95,9 +94,9 @@ export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, com
     dispatch(updateComplaintAssignee(userId, officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type));
     
     if (complaint_type === COMPLAINT_TYPES.HWCR) {
-      dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
+      dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
     } else {
-      dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
+      dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
     }
   }
 }
@@ -140,14 +139,14 @@ export const updateComplaintAssignee = (currentUser: string, person_guid: UUID, 
       dispatch(
         updateWildlifeComplaintByRow(response.data)
       );
-      dispatch(getHwcrComplaintByComplaintIdentifier(complaint_identifier));
+      dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
     } else {
       const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`);
       dispatch(
-        updateAllegationComplaintRow(response.data)
+        updateAllegationComplaintByRow(response.data)
       );
 
-      dispatch(getErsComplaintByComplaintIdentifier(complaint_identifier));
+      dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
     }
   }
 }

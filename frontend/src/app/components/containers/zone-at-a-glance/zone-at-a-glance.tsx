@@ -8,14 +8,14 @@ import { Row, Col } from "react-bootstrap";
 import {
   getZoneAtAGlanceStats,
   selectAllegationZagOpenComplaints,
-  selectHwcrZagOpenComplaints,
+  selectWildlifeZagOpenComplaints,
 } from "../../../store/reducers/complaints";
 import ComplaintType from "../../../constants/complaint-types";
 
 export const ZoneAtAGlance: FC = () => {
   const dispatch = useAppDispatch();
   const currentZone = useAppSelector<string>(profileZone);
-  const hwcrOpenComplaints = useAppSelector(selectHwcrZagOpenComplaints);
+  const hwcrOpenComplaints = useAppSelector(selectWildlifeZagOpenComplaints);
   const allegationOpenComplaints = useAppSelector(
     selectAllegationZagOpenComplaints
   );
