@@ -297,6 +297,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
               onChange={handleDateFilter}
               startDate={startDateFilter}
               endDate={endDateFilter}
+              dateFormat="yyyy-MM-dd"
               monthsShown={2}
               selectsRange={true}
               isClearable={true}
