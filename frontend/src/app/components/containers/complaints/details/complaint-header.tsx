@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
@@ -89,6 +89,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       })
     );
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <>
