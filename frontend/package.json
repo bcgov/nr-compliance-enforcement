@@ -45,6 +45,7 @@
     "react-bootstrap": "^2.7.4",
     "react-chartjs-2": "^5.2.0",
     "react-collapsed": "^4.0.2",
+    "react-collapsible": "^2.10.0",
     "react-datepicker": "^4.14.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.2.0",

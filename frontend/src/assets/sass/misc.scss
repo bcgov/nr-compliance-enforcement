@@ -46,6 +46,54 @@
   text-align: center;
 }
 
+[data-initials-zagview]:before {
+  background-color: #F9DBD0;
+  color: #C1836F;
+  opacity: 1;
+  content: attr(data-initials-zagview);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+[data-initials-zagview-hwcr]:before {
+  background-color: #31BA9A;
+  color: white;
+  opacity: 1;
+  content: attr(data-initials-zagview-hwcr);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+[data-initials-zagview-allegation]:before {
+  background-color: #C4A417;
+  color: white;
+  opacity: 1;
+  content: attr(data-initials-zagview-allegation);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
+  text-align: center;
+  margin-right: 8px;
+}
+
 [data-initials-listview]:before {
   background: $bc-gov-info;
   color: #313132;

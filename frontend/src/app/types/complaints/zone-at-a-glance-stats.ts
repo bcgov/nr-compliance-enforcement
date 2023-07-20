@@ -14,6 +14,6 @@ export interface OfficeStats  {
 
 export interface OfficerStats  { 
     name: string,
-    assignedHwcr: number
-    assignedAllegations: number
+    hwcrAssigned: number
+    allegationAssigned: number
 }
