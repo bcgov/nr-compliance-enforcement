@@ -75,10 +75,10 @@
                     <div className="comp-zag-office-container">
                           <Row className="comp-zag-flex-container">
                             <Col className="comp-zag-office">
-                              <div className="ms-auto left-float" {...getToggleProps({id: hwcrOpenComplaintsOfficeStat.name})}>
+                              <div className="ms-auto left-float" {...getToggleProps({id: hwcrOpenComplaintsOfficeStat.name + " chevron"})}>
                                 <img src={(isExpanded ? chevronDown : chevronUp)} alt="chevron" />
                               </div>
-                              <div className="left-float comp-padding-left-md">
+                              <div id={hwcrOpenComplaintsOfficeStat.name + " Office"} className="left-float comp-padding-left-md">
                                 {hwcrOpenComplaintsOfficeStat.name + " Office"}
                               </div>
                             </Col>
