@@ -15,13 +15,15 @@ import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 import { fetchCodeTables } from "./store/reducers/code-table";
+import { getOfficers } from "./store/reducers/officer";
 
 const App: FC = () => {
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCodeTables())
+    dispatch(fetchCodeTables());
+    dispatch(getOfficers());
   }, [dispatch]);
 
   return (

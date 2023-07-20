@@ -2,33 +2,34 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import axios from "axios";
-import { AssignOfficersState } from "../../types/complaints/officers-in-zone-state";
-import { Officer, Person } from "../../types/person/person";
+import { OfficerState } from "../../types/complaints/officers-state";
+import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/personComplaintXref";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { getAllegationComplaintByComplaintIdentifier, getWildlifeComplaintByComplaintIdentifier, updateWildlifeComplaintByRow, updateAllegationComplaintByRow } from "./complaints";
+import {
+  getAllegationComplaintByComplaintIdentifier,
+  getWildlifeComplaintByComplaintIdentifier,
+  updateWildlifeComplaintByRow,
+  updateAllegationComplaintByRow,
+} from "./complaints";
 
-const initialState: AssignOfficersState = {
-    officersInZone: [],
+const initialState: OfficerState = {
+  officers: [],
 };
 
-export const assignOfficersSlice = createSlice({
-  name: "assignOfficers",
+export const officerSlice = createSlice({
+  name: "officers",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setOfficersInZone: (state, action) => {
-      const { payload } = action;
-      const officersInZone:Person[] = payload.officersInZone;
-      return { ...state, officersInZone};
-    },
-    setOfficersInOffice: (state, action) => {
-      const { payload } = action;
-      const officersInOffice:Person[] = payload.officersInOffice;
-      return { ...state, officersInOffice};
+    setOfficers: (state, action) => {
+      const {
+        payload: { officers },
+      } = action;
+      return { ...state, officers };
     },
   },
 
@@ -38,122 +39,165 @@ export const assignOfficersSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setOfficersInZone, setOfficersInOffice } = assignOfficersSlice.actions;
+export const { setOfficers } = officerSlice.actions;
 
-// Given a zone, returns a list of persons in that zone.
-export const getOfficersInZone = (zone?: string): AppThunk => async (dispatch) => {
+// Get list of the officers and update store
+export const getOfficers =
+  (zone?: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    
-    const response = await axios.get<Person>(`${config.API_BASE_URL}/v1/person/find-by-zone/${zone}`);
-    dispatch(
-        setOfficersInZone({
-        officersInZone: response.data
-      })
-    );
-  }
-};
-
-export const getOfficersInOffice = (office_guid?: string): AppThunk => async (dispatch) => {
-
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    
-    const response = await axios.get<Person>(`${config.API_BASE_URL}/v1/person/find-by-office/${office_guid}`);
-    dispatch(
-        setOfficersInOffice({
-        officersInOffice: response.data
-      })
-    );
-  }
-};
+      const response = await axios.get<Officer>(
+        `${config.API_BASE_URL}/v1/officer/`
+      );
+      dispatch(
+        setOfficers({
+          officers: response.data,
+        })
+      );
+    }
+  };
 
 // Assigns the current user to an office
-export const assignCurrentUserToComplaint = (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    let officerResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
+export const assignCurrentUserToComplaint =
+  (
+    userId: string,
+    userGuid: UUID,
+    complaint_identifier: string,
+    complaint_type: string
+  ): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      let officerResponse = await axios.get<Officer>(
+        `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`
+      );
 
-    // user doesn't have an authid, so patch the officer with the same username
-    if (officerResponse.data.auth_user_guid === undefined) {
-      let officerByUseridResponse = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`);
-      const officerGuid = officerByUseridResponse.data.officer_guid;
+      // user doesn't have an authid, so patch the officer with the same username
+      if (officerResponse.data.auth_user_guid === undefined) {
+        let officerByUseridResponse = await axios.get<Officer>(
+          `${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`
+        );
+        const officerGuid = officerByUseridResponse.data.officer_guid;
 
-      let data = 
-      {
-        "auth_user_guid": userGuid
-      }; 
+        let data = {
+          auth_user_guid: userGuid,
+        };
 
-      officerResponse = await axios.patch<Officer>(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, data);
+        officerResponse = await axios.patch<Officer>(
+          `${config.API_BASE_URL}/v1/officer/${officerGuid}`,
+          data
+        );
+      }
+
+      dispatch(
+        updateComplaintAssignee(
+          userId,
+          officerResponse.data.person_guid.person_guid as UUID,
+          complaint_identifier,
+          complaint_type
+        )
+      );
+
+      if (complaint_type === COMPLAINT_TYPES.HWCR) {
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+        );
+      } else {
+        dispatch(
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+        );
+      }
     }
-
-    dispatch(updateComplaintAssignee(userId, officerResponse.data.person_guid.person_guid as UUID, complaint_identifier, complaint_type));
-    
-    if (complaint_type === COMPLAINT_TYPES.HWCR) {
-      dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
-    } else {
-      dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
-    }
-  }
-}
+  };
 
 // creates a new cross reference for a person and office.  Assigns a person to an office.
-export const updateComplaintAssignee = (currentUser: string, person_guid: UUID, complaint_identifier: string, complaint_type: string): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    
-    // find an active person assigned to the complaint (if there is one)
-    const personComplaintXrefGuidResponse = await axios.get<PersonComplaintXref[]>(`${config.API_BASE_URL}/v1/person-complaint-xref/find-by-complaint/${complaint_identifier}`);
-    if (personComplaintXrefGuidResponse.data.length > 0) {
-      // If there's an active person assigned to a complaint, update it to set it to inactive since we're going to assign someone else to it
-      const personComplaintXrefGuid = personComplaintXrefGuidResponse.data[0].personComplaintXrefGuid;
-      let data = 
-        {
-          "active_ind": false
-        }; 
-      // set person complaint xref to inactive
-      await axios.patch<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/${personComplaintXrefGuid}`,data);
-    }
-    let newRecord = 
-      {
-            "active_ind": true,
-            "person_guid": {
-                "person_guid": person_guid
-            },
-            "complaint_identifier": complaint_identifier,
-            "person_complaint_xref_code": "ASSIGNEE",
-            "create_user_id": currentUser,
+export const updateComplaintAssignee =
+  (
+    currentUser: string,
+    person_guid: UUID,
+    complaint_identifier: string,
+    complaint_type: string
+  ): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("user");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      // find an active person assigned to the complaint (if there is one)
+      const personComplaintXrefGuidResponse = await axios.get<
+        PersonComplaintXref[]
+      >(
+        `${config.API_BASE_URL}/v1/person-complaint-xref/find-by-complaint/${complaint_identifier}`
+      );
+      if (personComplaintXrefGuidResponse.data.length > 0) {
+        // If there's an active person assigned to a complaint, update it to set it to inactive since we're going to assign someone else to it
+        const personComplaintXrefGuid =
+          personComplaintXrefGuidResponse.data[0].personComplaintXrefGuid;
+        let data = {
+          active_ind: false,
+        };
+        // set person complaint xref to inactive
+        await axios.patch<PersonComplaintXref>(
+          `${config.API_BASE_URL}/v1/person-complaint-xref/${personComplaintXrefGuid}`,
+          data
+        );
+      }
+      let newRecord = {
+        active_ind: true,
+        person_guid: {
+          person_guid: person_guid,
+        },
+        complaint_identifier: complaint_identifier,
+        person_complaint_xref_code: "ASSIGNEE",
+        create_user_id: currentUser,
       };
 
-    // add new person complaint record
-    await axios.post<PersonComplaintXref>(`${config.API_BASE_URL}/v1/person-complaint-xref/`,newRecord);
-
-    // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
-    if (COMPLAINT_TYPES.HWCR === complaint_type) {
-      const response = await axios.get<HwcrComplaint>(`${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`);
-      dispatch(
-        updateWildlifeComplaintByRow(response.data)
-      );
-      dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
-    } else {
-      const response = await axios.get<AllegationComplaint>(`${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`);
-      dispatch(
-        updateAllegationComplaintByRow(response.data)
+      // add new person complaint record
+      await axios.post<PersonComplaintXref>(
+        `${config.API_BASE_URL}/v1/person-complaint-xref/`,
+        newRecord
       );
 
-      dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
+      // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
+      if (COMPLAINT_TYPES.HWCR === complaint_type) {
+        const response = await axios.get<HwcrComplaint>(
+          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+        );
+        dispatch(updateWildlifeComplaintByRow(response.data));
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+        );
+      } else {
+        const response = await axios.get<AllegationComplaint>(
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
+        );
+        dispatch(updateAllegationComplaintByRow(response.data));
+
+        dispatch(
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+        );
+      }
     }
-  }
-}
+  };
 
-export const officersInZone = (state: RootState) => { 
-  const { officersInZone } = state.officersInZone;
-  return officersInZone;
-}
+export const selectOfficersByOffice =
+  (officeGuid?: string) =>
+  (state: RootState): Officer[] | null => {
+    return state.officers.officers.filter(
+      (officer) => officer.office_guid.office_guid === officeGuid
+    );
+  };
 
-export default assignOfficersSlice.reducer;
+export const selectOfficersByZone =
+  (zoneCode?: string) =>
+  (state: RootState): Officer[] | null => {
+    return state.officers.officers.filter(
+      (officer) => officer.office_guid.cos_geo_org_unit.zone_code === zoneCode
+    );
+  };
+
+export default officerSlice.reducer;

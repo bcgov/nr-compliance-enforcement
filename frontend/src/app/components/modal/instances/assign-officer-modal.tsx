@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
@@ -10,8 +10,7 @@ import {
 } from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
-  getOfficersInZone,
-  officersInZone,
+  selectOfficersByZone,
   updateComplaintAssignee,
 } from "../../../store/reducers/officer";
 import { UUID } from "crypto";
@@ -42,9 +41,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
 
-  const [newAssignee, setNewAssignee] = useState("");
-
-  const officersJson = useAppSelector(officersInZone);
+  const officersJson = useAppSelector(selectOfficersByZone(zone));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (index: number, person_guid: string) => {
@@ -54,7 +51,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
 
   // assigns the selected officer to a complaint
   const handleSubmit = () => {
-    setNewAssignee(selectedAssignee);
 
     if (selectedAssignee !== "") {
       dispatch(
@@ -81,10 +77,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
     );
     submit();
   };
-
-  useEffect(() => {
-    dispatch(getOfficersInZone(zone));
-  }, [dispatch, newAssignee, idir, zone]);
 
   // the user guid returned from keycloak isn't properly formatted, so we
   // this function removes dashes from guids so that guids can be
@@ -141,13 +133,13 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
         <hr className="modal_hr" />
         <div className="assign_officer_modal_subtitle">Suggested Officers</div>
         {officersJson?.map((val, key) => {
-          const firstName = val.first_name;
-          const lastName = val.last_name;
+          const firstName = val.person_guid.first_name;
+          const lastName = val.person_guid.last_name;
           const displayName = firstName + " " + lastName;
           const officerInitials =
             firstName?.substring(0, 1) + lastName?.substring(0, 1);
-          const person_guid = val.person_guid;
-          const auth_user_guid = val.officer.auth_user_guid;
+          const person_guid = val.person_guid.person_guid;
+          const auth_user_guid = val.auth_user_guid;
 
           // don't display the current user in the list since we already have the current user at the top of the modal
           if (
