@@ -23,7 +23,7 @@ export const OfficeUserContainer: FC<Props> = ({hwcrOfficers, allegationOfficers
                               <div data-initials-zagview={item.name.split(" ")[0].substring(0,1) + item.name.split(" ")[1].substring(0,1)} className="data-initials-zagview"></div>
                             </div>
                             <div className="comp-zag-float-left">
-                              <div className="comp-zag-stats-title">
+                              <div id={"officerName" + item.name} className="comp-zag-stats-title">
                                 {item.name}
                               </div>
                               <div className="comp-zag-stats-view">
