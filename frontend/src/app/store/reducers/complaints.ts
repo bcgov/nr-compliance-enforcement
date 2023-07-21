@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
-import axios, { CancelTokenSource } from "axios";
+import axios from "axios";
 import {
   ComplaintCollection,
   ComplaintState,
@@ -18,8 +18,6 @@ import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
-
-let cancelTokenSource: CancelTokenSource | null = null;
 
 const initialState: ComplaintState = {
   complaintItems: {

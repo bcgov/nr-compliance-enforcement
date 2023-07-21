@@ -1,5 +1,5 @@
-import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
+import { FC, useState } from "react";
+import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
   formatTime,
@@ -25,15 +25,12 @@ import {
   selectedAttractantCodeDropdown 
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
-import {
-  getOfficersInZone,
-  officersInZone,
-} from "../../../../store/reducers/officer";
-import { Person } from "../../../../types/person/person";
+import { Officer } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
 import { DropdownOption } from "../../../../types/code-tables/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
+import { selectOfficersByZone } from "../../../../store/reducers/officer";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -83,19 +80,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     selectComplaintSuspectWitnessDetails
   ) as ComplaintSuspectWitness;
 
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(getOfficersInZone(zone_code));
-  }, [dispatch, zone_code]);
-
-  const officersInZoneList = useAppSelector(officersInZone);
+  const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
   // Transform the fetched data into the DropdownOption type
-  const transformedOfficerCodeList = officersInZoneList.map(
-    (officer: Person) => ({
+  const transformedOfficerCodeList = officersInZoneList?.map(
+    (officer: Officer) => ({
       value: officer.person_guid,
-      label: `${officer.first_name} ${officer.last_name}`,
+      label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
     })
   );
 
@@ -140,7 +131,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     (option) => option.value === natureOfComplaintCode
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-  const selectedAssignedOfficer = transformedOfficerCodeList.find(
+  const selectedAssignedOfficer = transformedOfficerCodeList?.find(
     (option) => option.value === personGuid
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
