@@ -5,6 +5,7 @@ import Roles from "./constants/roles";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
 
 import ProtectedRoutes from "./components/routing";
+import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
 import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
 import ColorReference from "./components/reference";
@@ -25,6 +26,7 @@ const App: FC = () => {
 
   return (
     <Router>
+      <ScrollToTop />
       <Modal />
       <Routes>
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
