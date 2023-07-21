@@ -184,20 +184,26 @@ export const updateComplaintAssignee =
     }
   };
 
-export const selectOfficersByOffice =
-  (officeGuid?: string) =>
-  (state: RootState): Officer[] | null => {
-    return state.officers.officers.filter(
-      (officer) => officer.office_guid.office_guid === officeGuid
-    );
-  };
+//-- selectors
 
+// find officers that have an office in the given zone
 export const selectOfficersByZone =
-  (zoneCode?: string) =>
+  (zone?: string) =>
   (state: RootState): Officer[] | null => {
-    return state.officers.officers.filter(
-      (officer) => officer.office_guid.cos_geo_org_unit.zone_code === zoneCode
-    );
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
+
+    if(zone){
+      return officers.filter(
+        (officer) => {
+          // check for nulls
+          const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
+          return zone === zoneCode;
+        }
+      );
+    }
+
+    return []
   };
 
 export default officerSlice.reducer;
