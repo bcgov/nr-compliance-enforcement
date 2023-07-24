@@ -35,7 +35,7 @@ export const SideBar: FC = () => {
 
     return isOpen ? (
       <li key={`sb-open-${idx}`}>
-          {!route ? <i className={icon}></i> : <Link to={route} id={`icon-open-${id}`}><i className={icon}></i></Link>}
+          {!route ? <i className={`comp-nav-item-icon ${icon}`}></i> : <Link to={route} id={`icon-open-${id}`}><i className={`comp-nav-item-icon ${icon}`}></i></Link>}
           <span className="comp-nav-item-name">
             {!route ? <>{name}</> : <Link to={route} id={`name-open-${id}`}>{name}</Link>}
           </span>
@@ -43,7 +43,7 @@ export const SideBar: FC = () => {
     ) : (
       <OverlayTrigger key={`overlay-${idx}`} placement="right" overlay={<Tooltip id={`tt-${id}`}>{name}</Tooltip>}>
         <li key={`sb-closed-${idx}`}>
-        {!route ? <i className={icon}></i> : <Link to={route} id={`icon-closed-${id}`}><i className={icon}></i></Link>}
+        {!route ? <i className={`comp-nav-item-icon ${icon}`}></i> : <Link to={route} id={`icon-closed-${id}`}><i className={`comp-nav-item-icon ${icon}`}></i></Link>}
           <span className="comp-nav-item-name">
             {!route ? <>{name}</> : <Link to={route} id={`name-closed-${id}`}>{name}</Link>}
           </span>
