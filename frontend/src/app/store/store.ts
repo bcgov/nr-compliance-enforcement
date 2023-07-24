@@ -2,14 +2,14 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import officers from "./reducers/officer";
 import appReducer from "./reducers/app";
 import complaints from "./reducers/complaints";
-import officesInZoneReducer from './reducers/office';
+import offices from './reducers/office';
 import codeTables from "./reducers/code-table";
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
     officers,
-    officesInZone: officesInZoneReducer,
+    offices,
     complaints,
     codeTables
   },

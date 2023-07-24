@@ -1,6 +1,6 @@
 import { Office } from "./office";
 
 
-export interface OfficesInZoneState {
+export interface OfficeState {
     officesInZone: Office[];
   }
