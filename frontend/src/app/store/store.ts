@@ -1,18 +1,18 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import officers from "./reducers/officer";
-import appReducer from "./reducers/app";
-import complaints from "./reducers/complaints";
-import offices from './reducers/office';
-import codeTables from "./reducers/code-table";
+import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { rootReducer } from "./reducers";
+
+const persistConfig = {
+  key: "enforcement",
+  storage,
+  whitelist: ["app", "codeTables"]
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    app: appReducer,
-    officers,
-    offices,
-    complaints,
-    codeTables
-  },
+  reducer: persistedReducer,
 });
 
 export type AppDispatch = typeof store.dispatch;
@@ -24,6 +24,4 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action<string>
 >;
 
-
-
-
+export const persistor = persistStore(store)
