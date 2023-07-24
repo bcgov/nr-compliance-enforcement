@@ -7,7 +7,8 @@ import {
 import logo from "../../../../assets/images/icons/ce-cos-icon.svg";
 import MenuItem from "../../../types/app/menu-item";
 import { Link } from "react-router-dom";
-
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -31,13 +32,23 @@ export const SideBar: FC = () => {
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
     const { id, icon, name, route } = item;
-    return (
-      <li key={idx}>
-        <i className={icon}></i>
-        <span className="comp-nav-item-name">
-          {!route ? <>{name}</> : <Link to={route} id={id}>{name}</Link>}
-        </span>
-      </li>
+
+    return isOpen ? (
+      <li key={`sb-open-${idx}`}>
+          {!route ? <i className={icon}></i> : <Link to={route} id={`icon-open-${id}`}><i className={icon}></i></Link>}
+          <span className="comp-nav-item-name">
+            {!route ? <>{name}</> : <Link to={route} id={`name-open-${id}`}>{name}</Link>}
+          </span>
+        </li>
+    ) : (
+      <OverlayTrigger key={`overlay-${idx}`} placement="right" overlay={<Tooltip id={`tt-${id}`}>{name}</Tooltip>}>
+        <li key={`sb-closed-${idx}`}>
+        {!route ? <i className={icon}></i> : <Link to={route} id={`icon-closed-${id}`}><i className={icon}></i></Link>}
+          <span className="comp-nav-item-name">
+            {!route ? <>{name}</> : <Link to={route} id={`name-closed-${id}`}>{name}</Link>}
+          </span>
+        </li>
+      </OverlayTrigger>      
     );
   };
 
@@ -57,12 +68,11 @@ export const SideBar: FC = () => {
       </span>
 
       {/* <!-- menu items for the organization --> */}
-
-      <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
-        {menueItems.map((item, idx) => {
-          return renderSideBarMenuItem(idx, item);
-        })}
-      </ul>
+        <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
+          {menueItems.map((item, idx) => {
+            return renderSideBarMenuItem(idx, item);
+          })}
+        </ul>
       <div
         className="comp-sidebar-toggle"
         onClick={() => {
