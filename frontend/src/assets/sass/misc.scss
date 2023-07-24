@@ -211,3 +211,23 @@
 .filter-pill-close {
   pointer-events: auto;
 }
+
+.comp-tooltip .tooltip-inner {
+  background-color: $bc-gov-primary;
+}
+
+.comp-tooltip-right .tooltip-arrow::before {
+  border-right-color: $bc-gov-primary !important;
+}
+
+.comp-tooltip-left .tooltip-arrow::before {
+  border-right-color: $bc-gov-primary !important;
+}
+
+.comp-tooltip-top .tooltip-arrow::before {
+  border-right-color: $bc-gov-primary !important;
+}
+
+.comp-tooltip-bottom .tooltip-arrow::before {
+  border-right-color: $bc-gov-primary !important;
+}
