@@ -116,7 +116,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     // Area/Community
     cy.get("#area-community-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Area/Community");
+      expect($label).to.contain.text("Community");
     });
     cy.get("#area-community-pair-id input").should("exist");
 

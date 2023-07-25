@@ -436,7 +436,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 id="area-community-pair-id"
               >
                 <label>
-                  Area/Community<span className="required-ind">*</span>
+                  Community<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
                   <Select
@@ -621,7 +621,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
       </div>
       {complaintType === COMPLAINT_TYPES.ERS &&
         <div className="comp-complaint-details-block">
-          <h6>Subject of Complaint/Widness Details</h6>
+          <h6>Subject of Complaint/Witness Details</h6>
           <div className="comp-complaint-call-information">
             <div className="comp-suspect-witness-edit-container">
               <div className="comp-details-edit-column comp-details-right-column">
