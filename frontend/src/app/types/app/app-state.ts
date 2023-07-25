@@ -1,5 +1,5 @@
+import { LoadingState } from "../state/loading-state";
 import Profile from "./profile";
-import { isLoading } from '../../store/reducers/app';
 
 export interface AppState {
   alerts: number;
