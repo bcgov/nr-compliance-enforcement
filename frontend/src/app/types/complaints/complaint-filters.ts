@@ -1,5 +1,4 @@
 import Option from "../app/option";
-import COMPLAINT_TYPES from '../app/complaint-types';
 
 export interface ComplaintFilters {
   sortColumn: string;

@@ -631,7 +631,7 @@ export const selectWildlifeComplaints = (
   return wildlife;
 };
 
-export const selectWildlifeComplaintsCount = (state: RootState): Number => {
+export const selectWildlifeComplaintsCount = (state: RootState): number => {
   const {
     complaints: { complaintItems },
   } = state;
@@ -651,7 +651,7 @@ export const selectAllegationComplaints = (
   return allegations;
 };
 
-export const selectAllegationComplaintsCount = (state: RootState): Number => {
+export const selectAllegationComplaintsCount = (state: RootState): number => {
   const {
     complaints: { complaintItems },
   } = state;
