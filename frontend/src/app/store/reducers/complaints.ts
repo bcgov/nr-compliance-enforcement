@@ -18,6 +18,7 @@ import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
+import { toggleLoading } from "./app";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -151,6 +152,7 @@ export const getComplaints =
     } = payload;
 
     try {
+      dispatch(toggleLoading(true));
       const token = localStorage.getItem("user");
 
       const apiEndpoint = (type: string): string => {
@@ -186,56 +188,78 @@ export const getComplaints =
       }
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
 export const getWildlifeComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    try {
+      dispatch(toggleLoading(true));
 
-      const response = await axios.get(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-      );
-      const result = response.data;
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-      dispatch(setComplaint({ ...result }));
+        const response = await axios.get(
+          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
+        );
+        const result = response.data;
+
+        dispatch(setComplaint({ ...result }));
+      }
+    } catch (error) {
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
 export const getAllegationComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    try {
+      dispatch(toggleLoading(true));
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-      const response = await axios.get(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
-      );
-      const result = response.data;
+        const response = await axios.get(
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
+        );
+        const result = response.data;
 
-      dispatch(setComplaint({ ...result }));
+        dispatch(setComplaint({ ...result }));
+      }
+    } catch (error) {
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
 export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    try {
+      dispatch(toggleLoading(false));
 
-      const response = await axios.get(
-        `${config.API_BASE_URL}/v1/${
-          type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"
-        }-complaint/stats/by-zone/${zone}`
-      );
-      const result = response.data;
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-      dispatch(setZoneAtAGlance({ ...result, type }));
+        const response = await axios.get(
+          `${config.API_BASE_URL}/v1/${
+            type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"
+          }-complaint/stats/by-zone/${zone}`
+        );
+        const result = response.data;
+
+        dispatch(setZoneAtAGlance({ ...result, type }));
+      }
+    } catch (error) {
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 

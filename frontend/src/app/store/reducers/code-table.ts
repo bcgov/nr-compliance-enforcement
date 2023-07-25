@@ -13,6 +13,7 @@ import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-o
 import { CosGeoOrgUnit } from "../../types/person/person";
 import { AttractantCode } from "../../types/code-tables/attractant-code";
 import { DropdownOption } from "../../types/code-tables/option";
+import { toggleLoading } from "./app";
 
 const initialState: CodeTableState = {
   agencyCodes: [],
@@ -166,32 +167,39 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     },
   } = state;
 
-  if (!from(agencyCodes).any()) {
-    dispatch(fetchAgencyCodes());
-  }
+  dispatch(toggleLoading(true));
 
-  if (!from(complaintStatusCodes).any()) {
-    dispatch(fetchComplaintStatusCodes());
-  }
+  try {
+    if (!from(agencyCodes).any()) {
+      dispatch(fetchAgencyCodes());
+    }
 
-  if (!from(violationCodes).any()) {
-    dispatch(fetchViolationCodes());
-  }
+    if (!from(complaintStatusCodes).any()) {
+      dispatch(fetchComplaintStatusCodes());
+    }
 
-  if (!from(speciesCodes).any()) {
-    dispatch(fetchSpeciesCodes());
-  }
+    if (!from(violationCodes).any()) {
+      dispatch(fetchViolationCodes());
+    }
 
-  if (!from(wildlifeNatureOfComplaintCodes).any()) {
-    dispatch(fetchWildlifeNatureOfComplaintCodes());
-  }
+    if (!from(speciesCodes).any()) {
+      dispatch(fetchSpeciesCodes());
+    }
 
-  if (!from(areaCodes).any()) {
-    dispatch(fetchAreaCodes());
-  }
+    if (!from(wildlifeNatureOfComplaintCodes).any()) {
+      dispatch(fetchWildlifeNatureOfComplaintCodes());
+    }
 
-  if (!from(attractantCodes).any()) {
-    dispatch(fetchAttractantCodes());
+    if (!from(areaCodes).any()) {
+      dispatch(fetchAreaCodes());
+    }
+
+    if (!from(attractantCodes).any()) {
+      dispatch(fetchAttractantCodes());
+    }
+  } catch (error) {
+  } finally {
+    dispatch(toggleLoading(false));
   }
 };
 
@@ -296,68 +304,114 @@ export const fetchAttractantCodes = (): AppThunk => async (dispatch) => {
 };
 
 export const selectAgencyCodes = (state: RootState): Array<CodeTable> => {
-    const { codeTables: { agencyCodes } } = state
-    return agencyCodes
-}
+  const {
+    codeTables: { agencyCodes },
+  } = state;
+  return agencyCodes;
+};
 
-export const selectAgencyDropdown = (state: RootState): Array<DropdownOption> => { 
-    const { codeTables: { agencyCodes } } = state
-    return agencyCodes as Array<DropdownOption>
-}
+export const selectAgencyDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { agencyCodes },
+  } = state;
+  return agencyCodes as Array<DropdownOption>;
+};
 
-export const selectComplaintStatusCodes = (state: RootState): Array<CodeTable> => {
-    const { codeTables: { complaintStatusCodes } } = state
-    return complaintStatusCodes
-}
+export const selectComplaintStatusCodes = (
+  state: RootState
+): Array<CodeTable> => {
+  const {
+    codeTables: { complaintStatusCodes },
+  } = state;
+  return complaintStatusCodes;
+};
 
-export const selectComplaintStatusCodeDropdown = (state: RootState): Array<DropdownOption> => {
-    const { codeTables: { complaintStatusCodes } } = state
-    return complaintStatusCodes
-}
+export const selectComplaintStatusCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { complaintStatusCodes },
+  } = state;
+  return complaintStatusCodes;
+};
 
 export const selectSpeciesCodes = (state: RootState): Array<CodeTable> => {
-    const { codeTables: { speciesCodes } } = state
-    return speciesCodes
+  const {
+    codeTables: { speciesCodes },
+  } = state;
+  return speciesCodes;
 };
-export const selectSpeciesCodeDropdown = (state: RootState): Array<DropdownOption> => {
-    const { codeTables: { speciesCodes } } = state
-    return speciesCodes
-}
+export const selectSpeciesCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { speciesCodes },
+  } = state;
+  return speciesCodes;
+};
 
 export const selectViolationCodes = (state: RootState): Array<CodeTable> => {
-    const { codeTables: { violationCodes } } = state
-    return violationCodes
-}
-export const selectViolationCodeDropdown = (state: RootState): Array<DropdownOption> => {
-    const { codeTables: { violationCodes } } = state
-    return violationCodes
-}
+  const {
+    codeTables: { violationCodes },
+  } = state;
+  return violationCodes;
+};
+export const selectViolationCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { violationCodes },
+  } = state;
+  return violationCodes;
+};
 
-export const selectedHwcrNatureOfComplaintCodes = (state: RootState): Array<CodeTable> => {
-    const { codeTables: { wildlifeNatureOfComplaintCodes } } = state
-    return wildlifeNatureOfComplaintCodes
-}
-export const selectedHwcrNatureOfComplaintCodeDropdown = (state: RootState): Array<DropdownOption> => {
-    const { codeTables: { wildlifeNatureOfComplaintCodes } } = state
-    return wildlifeNatureOfComplaintCodes
-}
+export const selectedHwcrNatureOfComplaintCodes = (
+  state: RootState
+): Array<CodeTable> => {
+  const {
+    codeTables: { wildlifeNatureOfComplaintCodes },
+  } = state;
+  return wildlifeNatureOfComplaintCodes;
+};
+export const selectedHwcrNatureOfComplaintCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { wildlifeNatureOfComplaintCodes },
+  } = state;
+  return wildlifeNatureOfComplaintCodes;
+};
 
-export const selectedAreaCodes = (state: RootState): Array<CodeTable> => { 
-    const { codeTables: { areaCodes } } = state
-    return areaCodes
-}
-export const selectedAreaCodeDropdown = (state: RootState): Array<DropdownOption> => {
-    const { codeTables: { areaCodes } } = state
-    return areaCodes
-}
+export const selectedAreaCodes = (state: RootState): Array<CodeTable> => {
+  const {
+    codeTables: { areaCodes },
+  } = state;
+  return areaCodes;
+};
+export const selectedAreaCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { areaCodes },
+  } = state;
+  return areaCodes;
+};
 
 export const selectedAttractantCodes = (state: RootState): Array<CodeTable> => {
-    const { codeTables: { attractantCodes } } = state
-    return attractantCodes
-}
-export const selectedAttractantCodeDropdown = (state: RootState): Array<DropdownOption> => {
-    const { codeTables: { attractantCodes } } = state
-    return attractantCodes
-}
+  const {
+    codeTables: { attractantCodes },
+  } = state;
+  return attractantCodes;
+};
+export const selectedAttractantCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { attractantCodes },
+  } = state;
+  return attractantCodes;
+};
 
 export default codeTableSlice.reducer;

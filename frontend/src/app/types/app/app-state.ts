@@ -1,4 +1,5 @@
 import Profile from "./profile";
+import { isLoading } from '../../store/reducers/app';
 
 export interface AppState {
   alerts: number;
@@ -6,7 +7,7 @@ export interface AppState {
   isSidebarOpen: boolean;
 
   //-- loading
-  loading: boolean;
+  loading: { isLoading: boolean, count: number };
 
   //-- modal properties
   modalSize?: "sm" | "lg" | "xl";

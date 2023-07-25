@@ -28,7 +28,7 @@ export const toggleSidebar = () => ({
 
 export const toggleLoading = (loading: boolean) => ({
   type: ActionTypes.TOGGLE_PAGE_LOADING,
-  loading,
+  payload: loading,
 });
 
 type ModalProperties = {
@@ -211,7 +211,7 @@ const initialState: AppState = {
   },
   isSidebarOpen: true,
 
-  loading: false,
+  loading: { isLoading: false, count: 0 },
 
   modalIsOpen: false,
   modalSize: undefined,
@@ -278,10 +278,27 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       };
     }
     case ActionTypes.TOGGLE_PAGE_LOADING: {
-      return {
-        ...state,
-        loading: action.loading,
-      };
+      const {
+        loading: { isLoading, count },
+      } = state;
+      const { payload } = action;
+
+      if (payload) {
+        let updateCount = count + 1;
+        return { ...state, loading: { isLoading: true, count: updateCount } };
+      }
+
+      if (!payload) {
+        let updateCount = count !== 0 ? count - 1 : 0;
+        let updateIsLoading = updateCount !== 0 ? true : false;
+
+        return {
+          ...state,
+          loading: { isLoading: updateIsLoading, count: updateCount },
+        };
+      }
+
+      return { ...state };
     }
     default:
       return state;
