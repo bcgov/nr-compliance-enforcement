@@ -7,7 +7,7 @@ export interface AppState {
   isSidebarOpen: boolean;
 
   //-- loading
-  loading: { isLoading: boolean, count: number };
+  loading: LoadingState;
 
   //-- modal properties
   modalSize?: "sm" | "lg" | "xl";
