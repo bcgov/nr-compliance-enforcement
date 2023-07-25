@@ -13,8 +13,9 @@ import ColorReference from "./components/reference";
 import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
-import { fetchCodeTablesAsync } from "./store/reducers/code-tables";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
+import { fetchCodeTables } from "./store/reducers/code-table";
+import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 
 const App: FC = () => {
@@ -22,7 +23,8 @@ const App: FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCodeTablesAsync());
+    dispatch(fetchCodeTables());
+    dispatch(getOfficers());
   }, [dispatch]);
 
   return (

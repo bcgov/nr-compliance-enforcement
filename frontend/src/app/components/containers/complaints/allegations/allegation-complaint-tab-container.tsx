@@ -8,7 +8,7 @@ import { AllegationComplaintFilterContainer } from "./allegation-complaint-filte
 import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { allegationComplaints } from "../../../../store/reducers/allegation-complaint"
+import { selectAllegationComplaintsCount } from "../../../../store/reducers/complaints";
 
 type Props = {
     handleChange: Function,
@@ -34,7 +34,7 @@ type Props = {
 export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, handleSort, sort, regionCodeFilter, setRegionCodeFilter, zoneCodeFilter, setZoneCodeFilter, areaCodeFilter, setAreaCodeFilter, officerFilter, setOfficerFilter, violationFilter, setViolationFilter,
     startDateFilter, setStartDateFilter, endDateFilter, setEndDateFilter, complaintStatusFilter, setComplaintStatusFilter}) => {
         const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
-        const allegationComplaintsArray = useAppSelector(allegationComplaints);
+        const total = useAppSelector(selectAllegationComplaintsCount);
     return <>
     <Navbar className="basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
@@ -42,7 +42,7 @@ export const AllegationComplaintTabContainer: FC<Props>  = ({  handleChange, han
                 <button className="nav-link" id="hwcr-tab" onClick={() => handleChange(ComplaintType.HWCR_COMPLAINT)}>Human Wildlife Conflicts</button>
             </Nav.Item>
             <Nav.Item className="nav-item comp-tab-active">
-                <button className="nav-link active" id="ers-tab">Enforcement ({allegationComplaintsArray.length})</button>
+                <button className="nav-link active" id="ers-tab">Enforcement ({`${total}`})</button>
             </Nav.Item>
             <Nav.Item className="ms-auto" {...getToggleProps()}>
                 <div className="complaint-filter-image-container" id="complaint-filter-image-id">

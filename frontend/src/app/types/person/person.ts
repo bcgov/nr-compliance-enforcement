@@ -1,5 +1,3 @@
-
-    officersInOffice: []
 export interface Person {
     person_guid:      string;
     first_name:       string;
