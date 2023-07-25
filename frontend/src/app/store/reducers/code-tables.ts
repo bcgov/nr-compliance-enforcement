@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AgencyCode } from '../../types/code-tables/agency-code';
 import { ComplaintStatusCode } from '../../types/code-tables/complaint-status-code';
-import { RootState } from '../store';
+import { AppThunk, RootState } from '../store';
 import axios from 'axios';
 import config from '../../../config';
 import { SpeciesCode } from '../../types/code-tables/species-code';

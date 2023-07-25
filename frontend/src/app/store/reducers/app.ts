@@ -13,7 +13,7 @@ enum ActionTypes {
   TOGGLE_SIDEBAR = "app/TOGGLE_SIDEBAR",
   SHOW_MODAL = "app/SHOW_MODAL",
   HIDE_MODAL = "app/HIDE_MODAL",
-  TOGGLE_LOADING = "app/TOGGLE_LOADING",
+  TOGGLE_PAGE_LOADING = "app/TOGGLE_PAGE_LOADING",
 }
 //-- action creators
 
@@ -26,8 +26,9 @@ export const toggleSidebar = () => ({
   type: ActionTypes.TOGGLE_SIDEBAR,
 });
 
-export const toggleLoading = () => ({
-  type: ActionTypes.TOGGLE_LOADING,
+export const toggleLoading = (loading: boolean) => ({
+  type: ActionTypes.TOGGLE_PAGE_LOADING,
+  loading,
 });
 
 type ModalProperties = {
@@ -83,7 +84,6 @@ export const userId = (state: RootState) => {
   return profile.idir_username;
 };
 
-
 export const profileDisplayName = (state: RootState) => {
   const { profile } = state.app;
   return `${profile.givenName} ${profile.surName}`;
@@ -98,7 +98,6 @@ export const profileZone = (state: RootState): string => {
   const { profile } = state.app;
   return profile.zone;
 };
-
 
 export const profileZoneDescription = (state: RootState): string => {
   const { profile } = state.app;
@@ -138,50 +137,61 @@ export const selectCallback = (state: RootState): any => {
 };
 
 export const selectClosingCallback = (state: RootState): any => {
-    const { app } = state;
-    return app.hideCallback;
-  };
+  const { app } = state;
+  return app.hideCallback;
+};
 
-  export const isLoading = (state: RootState) => state.app.loading;
+export const isLoading = (state: RootState) => state.app.loading;
 
 //-- thunks
-export const getTokenProfile =  (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    const decoded: SsoToken = jwtDecode<SsoToken>(token);
-    const { given_name, family_name, email, idir_user_guid, idir_username } = decoded;
-    let idir_user_guid_transformed: UUID;
-    idir_user_guid_transformed = idir_user_guid as UUID;
+export const getTokenProfile = (): AppThunk => async (dispatch) => {
+  dispatch(toggleLoading(true));
 
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const response = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
-    
-    let office = "";
-    let region = "";
-    let zone = "";
-    let zoneDescription = "";
+  try {
+    const token = localStorage.getItem("user");
+    if (token) {
+      const decoded: SsoToken = jwtDecode<SsoToken>(token);
+      const { given_name, family_name, email, idir_user_guid, idir_username } =
+        decoded;
+      let idir_user_guid_transformed: UUID;
+      idir_user_guid_transformed = idir_user_guid as UUID;
 
-    if(response.data.office_guid !== null)
-    {
-      const { office_guid: { cos_geo_org_unit: unit} } = response.data;
-      office = unit.office_location_code;
-      region = unit.region_code;
-      zone = unit.zone_code;
-      zoneDescription = unit.zone_name;
-    } 
-    const profile: Profile = {
-      givenName: given_name,
-      surName: family_name,
-      email: email,
-      idir: idir_user_guid_transformed,
-      idir_username: idir_username,
-      office: office,
-      region: region,
-      zone: zone,
-      zoneDescription: zoneDescription,
-    };
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const response = await axios.get<Officer>(
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+      );
 
-    dispatch(setTokenProfile(profile));
+      let office = "";
+      let region = "";
+      let zone = "";
+      let zoneDescription = "";
+
+      if (response.data.office_guid !== null) {
+        const {
+          office_guid: { cos_geo_org_unit: unit },
+        } = response.data;
+        office = unit.office_location_code;
+        region = unit.region_code;
+        zone = unit.zone_code;
+        zoneDescription = unit.zone_name;
+      }
+      const profile: Profile = {
+        givenName: given_name,
+        surName: family_name,
+        email: email,
+        idir: idir_user_guid_transformed,
+        idir_username: idir_username,
+        office: office,
+        region: region,
+        zone: zone,
+        zoneDescription: zoneDescription,
+      };
+
+      dispatch(setTokenProfile(profile));
+    }
+  } catch (error) {
+  } finally {
+    dispatch(toggleLoading(false));
   }
 };
 
@@ -267,10 +277,11 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         hideCallback: null,
       };
     }
-    case ActionTypes.TOGGLE_LOADING: { 
-      const { loading } = state;
-
-      return { ...state, loading: !loading }
+    case ActionTypes.TOGGLE_PAGE_LOADING: {
+      return {
+        ...state,
+        loading: action.loading,
+      };
     }
     default:
       return state;
