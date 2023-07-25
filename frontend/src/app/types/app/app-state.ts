@@ -5,6 +5,9 @@ export interface AppState {
   profile: Profile;
   isSidebarOpen: boolean;
 
+  //-- loading
+  loading: boolean;
+
   //-- modal properties
   modalSize?: "sm" | "lg" | "xl";
   modalIsOpen: boolean;

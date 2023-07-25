@@ -13,6 +13,7 @@ enum ActionTypes {
   TOGGLE_SIDEBAR = "app/TOGGLE_SIDEBAR",
   SHOW_MODAL = "app/SHOW_MODAL",
   HIDE_MODAL = "app/HIDE_MODAL",
+  TOGGLE_LOADING = "app/TOGGLE_LOADING",
 }
 //-- action creators
 
@@ -23,6 +24,10 @@ export const setTokenProfile = (profile: Profile) => ({
 
 export const toggleSidebar = () => ({
   type: ActionTypes.TOGGLE_SIDEBAR,
+});
+
+export const toggleLoading = () => ({
+  type: ActionTypes.TOGGLE_LOADING,
 });
 
 type ModalProperties = {
@@ -181,8 +186,20 @@ export const getTokenProfile =  (): AppThunk => async (dispatch) => {
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
-  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "", zoneDescription: ""},
+  profile: {
+    givenName: "",
+    surName: "",
+    email: "",
+    idir: "" as UUID,
+    idir_username: "",
+    office: "",
+    region: "",
+    zone: "",
+    zoneDescription: "",
+  },
   isSidebarOpen: true,
+
+  loading: false,
 
   modalIsOpen: false,
   modalSize: undefined,
@@ -190,7 +207,7 @@ const initialState: AppState = {
   modalData: undefined,
   modalType: "",
   callback: null,
-  hideCallback: null
+  hideCallback: null,
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -247,6 +264,11 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         callback: null,
         hideCallback: null,
       };
+    }
+    case ActionTypes.TOGGLE_LOADING: { 
+      const { loading } = state;
+
+      return { ...state, loading: !loading }
     }
     default:
       return state;
