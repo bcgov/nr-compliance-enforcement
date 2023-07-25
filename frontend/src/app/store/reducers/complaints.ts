@@ -242,7 +242,7 @@ export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(false));
+      dispatch(toggleLoading(true));
 
       const token = localStorage.getItem("user");
       if (token) {
