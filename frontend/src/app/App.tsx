@@ -15,6 +15,7 @@ import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { fetchCodeTablesAsync } from "./store/reducers/code-tables";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
+import { PageLoader } from "./components/common/page-loader";
 
 const App: FC = () => {
 
@@ -28,6 +29,7 @@ const App: FC = () => {
     <Router>
       <ScrollToTop />
       <Modal />
+      <PageLoader />
       <Routes>
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
           {/* <!-- temporary route --> */}

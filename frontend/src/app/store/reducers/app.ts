@@ -142,6 +142,8 @@ export const selectClosingCallback = (state: RootState): any => {
     return app.hideCallback;
   };
 
+  export const isLoading = (state: RootState) => state.app.loading;
+
 //-- thunks
 export const getTokenProfile =  (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
