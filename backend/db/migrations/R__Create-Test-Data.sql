@@ -1089,3 +1089,51 @@ INSERT INTO public.attractant_hwcr_xref
 (attractant_hwcr_xref_guid, attractant_code, hwcr_complaint_guid, create_user_id, create_user_guid, create_timestamp, update_user_id, update_user_guid, update_timestamp)
 VALUES('dbf30df9-0b2d-444d-bafa-051f36715710'::uuid, 'BEEHIVE', 'ae6e0dc4-b960-4b37-9dc9-ce303733a69d'::uuid, 'POSTMAN', NULL, '2023-06-23 18:29:54.748', 'POSTMAN', NULL, '2023-06-23 18:29:54.748')
 ON CONFLICT DO NOTHING;
+
+-- set user VYates's office to Prince George
+update public.officer o 
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = '3eac2028-9e13-4a7f-af07-f0b8264f32c4';
+
+-- assign more officers to Prince George
+update public.officer o 
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = '6f3e52b6-97aa-457d-999e-e36392e2eadd';
+
+update public.officer o 
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = '3cd1512d-53db-4cce-82d8-71e57de735df';
+
+update public.officer o 
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = 'c325ec8f-98d6-4720-a339-bf08f21eeb64';
+
+update public.officer o 
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = 'b5053585-cd8e-4392-b0a7-bc9d6ba7a1cd';
+
+update public.officer o 
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = '7c4ad99d-0518-4a83-b12d-984d7c25beeb';
+
+
+-- set user HOLSONs office to Prince George
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = '7fe1cc4e-fc73-412e-9c0e-3f3fec364aac';
+
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = '041430a7-d485-42a9-bda6-7e96b5b71fb3';
+
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = 'eb27498b-4d7f-4873-98ce-4ddafa65c4b7';
+
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = 'af70aeb7-2a6b-45a6-b722-926ebec005b5';
+
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = 'a90768f2-ba0e-4786-a68d-1f8b80368e9f';
