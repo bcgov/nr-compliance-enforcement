@@ -248,7 +248,7 @@ button.modal-buttons {
 }
 
 .selected {
-  background-color: #F1F1F1;
+  background-color: $gray-100;
 }
 
 .assign_officer_modal_profile_card_column {
@@ -293,7 +293,7 @@ button.modal-buttons {
   font-size: 16px;
   line-height: 150%;
 
-  color: #ADB5BD;
+  color: $gray-500;
 
 
   /* Inside auto layout */
@@ -307,14 +307,14 @@ button.modal-buttons {
   width: 220px;
   font-weight: 700;
   font-size: 16px;
-  color: #313132;
+  color: $gray-800;
 }
 
 .assign_officer_modal_profile_card_row_2 {
   width: 220px;
   font-weight: 400;
   font-size: 16px;
-  color: #ADB5BD;
+  color: $gray-500;
 }
 
 .assign_officer_modal_profile_card_column:last-child {

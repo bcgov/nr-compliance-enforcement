@@ -113,7 +113,7 @@
   .comp-ellipsis-cell {
     width: 31px;
     vertical-align: middle;
-    color: #6C757D;
+    color: $gray-600;
     font-size: 14px;
   }
 
@@ -226,24 +226,6 @@
     font-weight: 700;
     margin-top: 10px;
   }
-}
-
-.comp-pill {
-  width: auto;
-
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-
-  display: flex;
-  flex-direction: row;
-  padding: 4.2px 7.8px;
-
-  pointer-events: none;
-  background-color: #e4e4e4;
-  color: #313132;
-  border-radius: 100px;
-  border-color: #e4e4e4;
 }
 
 .comp-status-badge-open {
@@ -408,10 +390,10 @@
     padding: 4px 5px 4px 10px;
 
     pointer-events: none;
-    background-color: #38598A;
+    background-color: $bc-gov-neutral-500;
     color: white;
     border-radius: 100px;
-    border-color: #38598A;
+    border-color: $bc-gov-neutral-500;
   }
 
   .btn-close {
@@ -489,7 +471,7 @@
 
   border-width: 1px 1px 0px 0px;
   border-style: solid;
-  border-color: #b9b9b9;
+  border-color: $gray-310;
   background: rgba(0, 0, 0, 0.06);
   background-color: rgba(0, 0, 0, 0.06);
   border-bottom-width: 0px;
@@ -565,7 +547,7 @@
 
   border-width: 0px 1px 0px 0px;
   border-style: solid;
-  border-color: #b9b9b9;
+  border-color: $gray-310;
 
   flex: none;
   order: 12;
@@ -577,7 +559,7 @@
 .comp-cell-left
 {
   border-style: solid;
-  border-color: #B9B9B9;
+  border-color: $gray-310;
   border-width: 0px 1px 0px 1px;
 }
 
@@ -656,7 +638,7 @@
 
 .comp-cell-bottom {
   border-style: solid;
-  border-color: #b9b9b9;
+  border-color: $gray-310;
 }
 
 .comp-status-closed-btn {
@@ -671,8 +653,8 @@
   padding: 4px 8px;
 
   pointer-events: none;
-  background-color: #d8292f;
-  border-color: #d8292f;
+  background-color: $bc-gov-danger;
+  border-color: $bc-gov-danger;
 }
 
 .comp-species-btn {
@@ -687,10 +669,10 @@
   padding: 4px 8px;
 
   pointer-events: none;
-  background-color: #e4e4e4;
-  color: #313132;
+  background-color: $gray-200;
+  color: $gray-800;
   border-radius: 100px;
-  border-color: #e4e4e4;
+  border-color: $gray-200;
 }
 
 .comp-in-progress-btn {
@@ -706,8 +688,8 @@
 
   pointer-events: none;
 
-  background: #2e8540;
-  border-color: #2e8540;
+  background: $bc-gov-success;
+  border-color: $bc-gov-success;
   color: white;
   border-radius: 4px;
 }
@@ -723,11 +705,11 @@
 }
 
 .comp-tab-active {
-  color: #495057;
+  color: $gray-700;
 }
 
 .comp-tab-inactive {
-  color: #1a5a96;
+  color: $bc-gov-shade-300;
 }
 
 .comp-sub-header {
@@ -740,7 +722,7 @@
 
   /* BC Primary/Blue */
 
-  color: #003366;
+  color: $bc-gov-primary;
 }
 
 .comp-div-tab {
@@ -754,7 +736,7 @@
   float: left;
   /* Greyscale/10 */
 
-  background: #e4e4e4;
+  background: $gray-200;
   border-radius: 100px;
   text-align: center;
   //verical align not working hacky fix
@@ -798,8 +780,7 @@
   font-weight: 400;
   font-size: 16px;
   line-height: 150%;
-  /* Gray/900 */
-  color: #212529;
+  color: $gray-900;
   display: flex;
   flex-direction: row;
   align-items: center;
