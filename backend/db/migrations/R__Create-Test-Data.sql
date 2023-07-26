@@ -1137,3 +1137,7 @@ where officer_guid = 'af70aeb7-2a6b-45a6-b722-926ebec005b5';
 update public.officer o 
 set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
 where officer_guid = 'a90768f2-ba0e-4786-a68d-1f8b80368e9f';
+
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = '54892583-7013-48f5-87c8-90c19f95b395';
