@@ -13,6 +13,7 @@ enum ActionTypes {
   TOGGLE_SIDEBAR = "app/TOGGLE_SIDEBAR",
   SHOW_MODAL = "app/SHOW_MODAL",
   HIDE_MODAL = "app/HIDE_MODAL",
+  TOGGLE_LOADING = "app/TOGGLE_LOADING",
 }
 //-- action creators
 
@@ -23,6 +24,10 @@ export const setTokenProfile = (profile: Profile) => ({
 
 export const toggleSidebar = () => ({
   type: ActionTypes.TOGGLE_SIDEBAR,
+});
+
+export const toggleLoading = () => ({
+    type: ActionTypes.TOGGLE_LOADING,
 });
 
 type ModalProperties = {
@@ -78,7 +83,6 @@ export const userId = (state: RootState) => {
   return profile.idir_username;
 };
 
-
 export const profileDisplayName = (state: RootState) => {
   const { profile } = state.app;
   return `${profile.givenName} ${profile.surName}`;
@@ -93,7 +97,6 @@ export const profileZone = (state: RootState): string => {
   const { profile } = state.app;
   return profile.zone;
 };
-
 
 export const profileZoneDescription = (state: RootState): string => {
   const { profile } = state.app;
@@ -133,35 +136,39 @@ export const selectCallback = (state: RootState): any => {
 };
 
 export const selectClosingCallback = (state: RootState): any => {
-    const { app } = state;
-    return app.hideCallback;
-  };
+  const { app } = state;
+  return app.hideCallback;
+};
 
 //-- thunks
-export const getTokenProfile =  (): AppThunk => async (dispatch) => {
+export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem("user");
   if (token) {
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
-    const { given_name, family_name, email, idir_user_guid, idir_username } = decoded;
+    const { given_name, family_name, email, idir_user_guid, idir_username } =
+      decoded;
     let idir_user_guid_transformed: UUID;
     idir_user_guid_transformed = idir_user_guid as UUID;
 
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const response = await axios.get<Officer>(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
-    
+    const response = await axios.get<Officer>(
+      `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+    );
+
     let office = "";
     let region = "";
     let zone = "";
     let zoneDescription = "";
 
-    if(response.data.office_guid !== null)
-    {
-      const { office_guid: { cos_geo_org_unit: unit} } = response.data;
+    if (response.data.office_guid !== null) {
+      const {
+        office_guid: { cos_geo_org_unit: unit },
+      } = response.data;
       office = unit.office_location_code;
       region = unit.region_code;
       zone = unit.zone_code;
       zoneDescription = unit.zone_name;
-    } 
+    }
     const profile: Profile = {
       givenName: given_name,
       surName: family_name,
@@ -181,8 +188,20 @@ export const getTokenProfile =  (): AppThunk => async (dispatch) => {
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
-  profile: { givenName: "", surName: "", email: "", idir: "" as UUID, idir_username: "", office: "", region: "", zone: "", zoneDescription: ""},
+  profile: {
+    givenName: "",
+    surName: "",
+    email: "",
+    idir: "" as UUID,
+    idir_username: "",
+    office: "",
+    region: "",
+    zone: "",
+    zoneDescription: "",
+  },
   isSidebarOpen: true,
+
+  loading: false,
 
   modalIsOpen: false,
   modalSize: undefined,
@@ -190,7 +209,7 @@ const initialState: AppState = {
   modalData: undefined,
   modalType: "",
   callback: null,
-  hideCallback: null
+  hideCallback: null,
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -247,6 +266,11 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         callback: null,
         hideCallback: null,
       };
+    }
+    case ActionTypes.TOGGLE_LOADING: { 
+      const { loading } = state;
+
+      return { ...state, loading: !loading }
     }
     default:
       return state;

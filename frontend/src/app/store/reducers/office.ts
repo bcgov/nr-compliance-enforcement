@@ -1,16 +1,16 @@
 import axios from "axios";
 import { Office } from "../../types/office/office";
-import { OfficesInZoneState } from "../../types/office/offices-in-zone-state";
+import { OfficeState } from "../../types/office/offices-in-zone-state";
 import { AppThunk, RootState } from "../store";
 import { createSlice } from "@reduxjs/toolkit";
 import config from "../../../config";
 
-const initialState: OfficesInZoneState = {
+const initialState: OfficeState = {
     officesInZone: []
 };
 
-export const officeByZoneSlice = createSlice({
-  name: "officesByZone",
+export const officeSlice = createSlice({
+  name: "offices",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -27,7 +27,7 @@ export const officeByZoneSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setOfficesInZone } = officeByZoneSlice.actions;
+export const { setOfficesInZone } = officeSlice.actions;
 
 // Given a zone, returns a list of persons in that zone.
 export const getOfficesInZone = (zone?: string): AppThunk => async (dispatch) => {
@@ -44,9 +44,10 @@ export const getOfficesInZone = (zone?: string): AppThunk => async (dispatch) =>
   }
 };
 
-export const officesInZone = (state: RootState) => { 
-    const { officesInZone } = state.officesInZone;
+export const selectOfficesInZone = (state: RootState) => { 
+  debugger
+    const { officesInZone } = state.offices;
     return officesInZone;
   }
   
-  export default officeByZoneSlice.reducer;
+  export default officeSlice.reducer;
