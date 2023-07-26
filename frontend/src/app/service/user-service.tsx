@@ -1,5 +1,7 @@
 import _kc from "../keycloak";
 
+export const AUTH_TOKEN = "__auth_token";
+
 /**
  * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
  *
