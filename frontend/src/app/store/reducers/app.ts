@@ -141,7 +141,12 @@ export const selectClosingCallback = (state: RootState): any => {
   return app.hideCallback;
 };
 
-export const isLoading = (state: RootState) => state.app.loading;
+export const isLoading = (state: RootState) => { 
+  const { loading } = state.app;
+  const { isLoading: _isLoading } = loading;
+
+  return _isLoading;
+}
 
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
@@ -279,7 +284,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     }
     case ActionTypes.TOGGLE_PAGE_LOADING: {
       const {
-        loading: { isLoading, count },
+        loading: { count },
       } = state;
       const { payload } = action;
 
