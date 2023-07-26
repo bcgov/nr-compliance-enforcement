@@ -295,7 +295,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
 
       if (!payload) {
         let updateCount = count !== 0 ? count - 1 : 0;
-        let updateIsLoading = updateCount !== 0 ? true : false;
+        let updateIsLoading = updateCount !== 0;
 
         return {
           ...state,
