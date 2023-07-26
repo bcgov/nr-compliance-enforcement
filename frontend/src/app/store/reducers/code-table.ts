@@ -303,11 +303,27 @@ export const fetchAttractantCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const selectAgencyCodes = (state: RootState): Array<CodeTable> => {
-  const {
-    codeTables: { agencyCodes },
-  } = state;
-  return agencyCodes;
+export const selectCodeTable = (
+  state: RootState,
+  table: string
+): Array<CodeTable> => {
+  const { codeTables } = state;
+  const selected = codeTables[table as keyof CodeTableState];
+
+  return selected;
+};
+
+export const selectSortedCodeTable = (
+  state: RootState,
+  table: string,
+  sortBy: string
+): Array<CodeTable> => {
+  const { codeTables } = state;
+  const data = codeTables[table as keyof CodeTableState];
+
+  let sorted = data.sort((a: any, b: any) => a[sortBy].localeCompare(b[sortBy]));
+
+  return sorted;
 };
 
 export const selectAgencyDropdown = (
@@ -319,15 +335,6 @@ export const selectAgencyDropdown = (
   return agencyCodes as Array<DropdownOption>;
 };
 
-export const selectComplaintStatusCodes = (
-  state: RootState
-): Array<CodeTable> => {
-  const {
-    codeTables: { complaintStatusCodes },
-  } = state;
-  return complaintStatusCodes;
-};
-
 export const selectComplaintStatusCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
@@ -337,12 +344,6 @@ export const selectComplaintStatusCodeDropdown = (
   return complaintStatusCodes;
 };
 
-export const selectSpeciesCodes = (state: RootState): Array<CodeTable> => {
-  const {
-    codeTables: { speciesCodes },
-  } = state;
-  return speciesCodes;
-};
 export const selectSpeciesCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
@@ -352,12 +353,6 @@ export const selectSpeciesCodeDropdown = (
   return speciesCodes;
 };
 
-export const selectViolationCodes = (state: RootState): Array<CodeTable> => {
-  const {
-    codeTables: { violationCodes },
-  } = state;
-  return violationCodes;
-};
 export const selectViolationCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
@@ -367,14 +362,6 @@ export const selectViolationCodeDropdown = (
   return violationCodes;
 };
 
-export const selectedHwcrNatureOfComplaintCodes = (
-  state: RootState
-): Array<CodeTable> => {
-  const {
-    codeTables: { wildlifeNatureOfComplaintCodes },
-  } = state;
-  return wildlifeNatureOfComplaintCodes;
-};
 export const selectedHwcrNatureOfComplaintCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
@@ -384,12 +371,6 @@ export const selectedHwcrNatureOfComplaintCodeDropdown = (
   return wildlifeNatureOfComplaintCodes;
 };
 
-export const selectedAreaCodes = (state: RootState): Array<CodeTable> => {
-  const {
-    codeTables: { areaCodes },
-  } = state;
-  return areaCodes;
-};
 export const selectedAreaCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
@@ -399,12 +380,6 @@ export const selectedAreaCodeDropdown = (
   return areaCodes;
 };
 
-export const selectedAttractantCodes = (state: RootState): Array<CodeTable> => {
-  const {
-    codeTables: { attractantCodes },
-  } = state;
-  return attractantCodes;
-};
 export const selectedAttractantCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {

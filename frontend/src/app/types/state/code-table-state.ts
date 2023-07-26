@@ -1,6 +1,8 @@
 import { CodeTable } from "../code-tables/code-table";
 
 export interface CodeTableState {
+  [key: string]: any;
+  
   agencyCodes: Array<CodeTable>;
   complaintStatusCodes: Array<CodeTable>;
   violationCodes: Array<CodeTable>;
