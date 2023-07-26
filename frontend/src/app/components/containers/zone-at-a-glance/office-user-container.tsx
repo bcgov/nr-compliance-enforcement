@@ -16,7 +16,7 @@ export const OfficeUserContainer: FC<Props> = ({hwcrOfficers, allegationOfficers
             { 
                     hwcrOfficers.map((item, index) => {
                         return(
-                        <div key={"officer" + index} className="comp-zag-officer-container">
+                        <div key={"officer " + item.name} className="comp-zag-officer-container">
                         <Row className="comp-zag-flex-container">
                             <Col className="comp-zag-office-user comp-zag-officer">
                             <div style={{float:"left"}}>
