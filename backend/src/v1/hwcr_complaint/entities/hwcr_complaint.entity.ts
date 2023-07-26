@@ -51,13 +51,6 @@ export class HwcrComplaint
       create_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the HWCR complaint.",
-      })
-      @Column({type: "uuid"})
-      create_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.",
       })
@@ -72,13 +65,6 @@ export class HwcrComplaint
       update_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that updated the HWCR complaint.",
-      })
-      @Column({type: "uuid"})
-      update_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.",
       })
@@ -86,17 +72,15 @@ export class HwcrComplaint
       update_timestamp: Date;
    
       constructor(complaint_identifier?: Complaint, species_code?: SpeciesCode, hwcr_complaint_nature_code?: HwcrComplaintNatureCode, attractant_hwcr_xref?: AttractantHwcrXref[], other_attractants_text?: string, 
-        create_user_id?: string, create_user_guid?: UUID, create_timestamp?: Date, update_user_id?: string, update_user_guid?: UUID, update_timestamp?: Date) {
+        create_user_id?: string, create_timestamp?: Date, update_user_id?: string, update_timestamp?: Date) {
         this.complaint_identifier = complaint_identifier;
         this.species_code = species_code;
         this.hwcr_complaint_nature_code = hwcr_complaint_nature_code;
         this.attractant_hwcr_xref = attractant_hwcr_xref;
         this.other_attractants_text = other_attractants_text;
         this.create_user_id = create_user_id;
-        this.create_user_guid = create_user_guid;
         this.create_timestamp = create_timestamp;
         this.update_user_id = update_user_id;
-        this.update_user_guid = update_user_guid;
         this.update_timestamp = update_timestamp;
       }
 }

@@ -31,12 +31,6 @@ export class AttractantCodeDto
   create_user_id: string;
 
   @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The unique guid of the user that created the attractant code.",
-  })
-  create_user_guid: UUID;
-
-  @ApiProperty({
     example: "2003-04-12 04:05:06",
     description: "The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.",
   })
@@ -47,12 +41,6 @@ export class AttractantCodeDto
     description: "The id of the user that last updated the attractant",
   })
   update_user_id: string;
-
-  @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The unique guid of the user that updated the attractant code.",
-  })
-  update_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
