@@ -1117,7 +1117,7 @@ set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
 where officer_guid = '7c4ad99d-0518-4a83-b12d-984d7c25beeb';
 
 
--- set user HOLSONs office to Prince George
+-- set user HOLSONs office to Vanderhoof
 update public.officer o 
 set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
 where officer_guid = '7fe1cc4e-fc73-412e-9c0e-3f3fec364aac';
@@ -1138,6 +1138,63 @@ update public.officer o
 set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
 where officer_guid = 'a90768f2-ba0e-4786-a68d-1f8b80368e9f';
 
+-- Assign Neil to Prince George
 update public.officer o 
-set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
-where officer_guid = '54892583-7013-48f5-87c8-90c19f95b395';
+set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+where officer_guid = 'efcbaae4-505b-4db3-b036-7ec8b8dd8c6d';
+
+
+-- add complaints
+INSERT INTO public.complaint (complaint_identifier,detail_text,caller_name,caller_address,caller_email,caller_phone_1,caller_phone_2,caller_phone_3,location_summary_text,location_detailed_text,incident_datetime,incident_reported_datetime,referred_by_agency_other_text,create_user_id,create_user_guid,create_timestamp,update_user_id,update_user_guid,update_timestamp,referred_by_agency_code,owned_by_agency_code,complaint_status_code,geo_organization_unit_code,location_geometry_point) VALUES
+	 ('23-007000','RCMP relaying a report of a deer stuck in the COM’s tree. Deer’s hoof is caught in the V, deer is dangling upside down – believe shoulder is dislocated. LVM Sgt Melenka Briefed CO Krenz','Dorothy Ann','435 Fake St','test@gmail.com',NULL,NULL,NULL,NULL,'detailed text 4','2022-12-23 08:57:00','2023-01-10 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','BCWF','COS','OPEN','ALZLK','SRID=4326;POINT (0 0)'),
+	 ('23-007001','Calling to report a black bear that comes through the area at night. It has been getting into garbages that have been left unsecured. Hoping a CO can come round to advise neighbour''s that they need to get their garbages locked up.','Annonymous','433 Fake St',NULL,NULL,NULL,NULL,'373 Front Street','detailed text 2','2022-12-27 09:03:00','2023-01-08 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322',NULL,'COS','OPEN','BDNSTLK','SRID=4326;POINT (0 0)'),
+	 ('23-007002','Calling to report a young deer, looked to be struggling to stand and walk but still mobile. Possibly hit by a car.',NULL,'432 Fake St',NULL,NULL,NULL,NULL,'Kanaka Station Rd','detailed text 1','2022-12-29 09:06:00','2023-01-07 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322',NULL,'COS','OPEN','CLUCLZLK','SRID=4326;POINT (0 0)'),
+	 ('23-007003','COM reporting she saw a bobcat when checking on her property 2 days ago.','Joanne Jackson','1234 Merritt Avenue',NULL,'250-315-1234',NULL,NULL,'unit 8 1226 McMillan Rd, Merritt, BC',NULL,'2022-12-31 09:09:00','2023-01-06 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322',NULL,'COS','OPEN','DOMECRK','SRID=4326;POINT (-120.7893375 50.1035589)'),
+	 ('23-007004','There is an elk with a large chunk of meat missing from its side with hide hanging. The elk has been around for 2-3 days.','Daren Douglas','1234  Oak Bay Avenue','daren@shaw.ca','403-559-1234',NULL,NULL,'1990 Oak Bay Avenue',NULL,'2023-01-02 09:12:00','2023-01-05 09:12:00','Victoria Golf Club','FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','OTHER','COS','OPEN','HANSARDU','SRID=4326;POINT (0 0)'),
+	 ('23-007005','Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves','Phoebe','437 Fake St','tester@gmail.com','250-556-1234',NULL,NULL,'644 Pine Street',NULL,'2022-12-19 08:51:00','2023-01-12 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','COS','COS','OPEN','BDNSTLK','SRID=4326;POINT (0 0)'),
+	 ('23-007006','test2','Chris','1264 Disco Rd.','test@test.ca','(250)-555-3425','(250)-555-3425','(250)-555-3425',NULL,'detail_text','2023-02-22 00:00:00','2023-02-22 00:00:00','other text','chris','903f87c8-76dd-427c-a1bb-4d179e443252','2023-07-26 19:25:34.66322','chris','903f87c8-76dd-427c-a1bb-4d179e443252','2023-07-26 19:25:34.66322',NULL,'COS','OPEN','FINMORE','SRID=4326;POINT (-48.23456 20.12345)'),
+	 ('23-007007','COM was walking their dog near Douglas park – observed a cougar near Heather st. Cougar fled COM, deeper into bushes  LVM CO Ford Briefed Sgt Gravel','Wanda','434 Fake St',NULL,'250-554-1234','250-554-1235','250-554-1236','Keats Campground','detailed text 3','2022-12-25 09:00:00','2023-01-09 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322',NULL,'COS','OPEN','GISCOME','SRID=4326;POINT (0 0)'),
+	 ('23-007008','Caller reporting a young deer that has an injured back leg. Caller said it has a bent back leg and it using some weight on it.','Arnold','438 Fake St',NULL,NULL,NULL,NULL,'3087 Hammond Bay Road',NULL,'2022-12-17 08:48:00','2023-01-13 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','DFO','COS','OPEN','CLUCLZLK','SRID=4326;POINT (0 0)'),
+	 ('23-007009','On Mar 30, 2023 at 1245 hrs I observed Lean Bean Miller''s truck (see photo) hauling a load of poultry slaughter waste along Doran Rd heading north to Hillbank Rd. I have followed this truck in past from the Island Farmhouse Poultry facility to 4035 Hillbank Road and can attest that this is the route this truck takes to dump its loads of slaughter waste. Last month both Island Farmhouse Poultry Ltd. and GT Farms were told by the Ministry to ''Immediately cease disposing of any processing waste that comes from poultry not reared, kept or slaughtered at Miller properties.'' The most recent Ministry Inspection reports, UA202814 and AG144737, both stated that this unauthorized waste disposal must be ceased immediately. Its time for the Ministry to involve the Conservation Officer Service and to start taking regulations enforcement seriously. ','Dalton Campbell','1234 Doran Road, Cobble Hill, BC V0R 1L5 ','dalton.campbell@shaw.ca','250-743-1331',NULL,NULL,'3550 Watson Ave','In a Van down by the River','2023-03-29 07:24:00','2023-03-29 07:24:00','Caller','FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','OTHER','COS','OPEN','HANSARDU','SRID=4326;POINT (123.6031 48.6883)');
+	 
+INSERT INTO public.complaint (complaint_identifier,detail_text,caller_name,caller_address,caller_email,caller_phone_1,caller_phone_2,caller_phone_3,location_summary_text,location_detailed_text,incident_datetime,incident_reported_datetime,referred_by_agency_other_text,create_user_id,create_user_guid,create_timestamp,update_user_id,update_user_guid,update_timestamp,referred_by_agency_code,owned_by_agency_code,complaint_status_code,geo_organization_unit_code,location_geometry_point) VALUES
+	 ('23-007010','Caller reported seeing glowing green eyes from the creek. Caller heard growling when came something came up on his deck.  The neighbor''s put garbage on his deck while he was in the hospital. There were two glowing green eyes.','Mikey','445 Fake St',NULL,NULL,NULL,NULL,'7579 6 St',NULL,'2023-04-30 08:18:00','2023-01-20 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322',NULL,'COS','OPEN','EFRANCLK','SRID=4326;POINT (0 0)'),
+	 ('23-007011','Gate house. Mine site. Might need to be dispatched and they do not have that capability on site. Caller reporting it can not move and there is coyotes trying to eat it.','Liz','443 Fake St',NULL,NULL,NULL,NULL,'7581 6 St',NULL,'2023-05-02 08:18:00','2023-01-18 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322',NULL,'COS','OPEN','EFRANCLK','SRID=4326;POINT (0 0)'),
+	 ('23-007012','Caller reported a cougar that has been coming for their garbage for the past month.','Tim','440 Fake St',NULL,'250-555-1234',NULL,NULL,'194 Church Ave',NULL,'2023-04-05 08:18:00','2023-01-15 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','CEB','COS','OPEN','ENDAKO','SRID=4326;POINT (0 0)'),
+	 ('23-007013','A Moose is stuck in the river outfall pond – exhausted and stuck in the pond muck. No colour codes, COs called in order: Briefed CO Adams','Carlos','439 Fake St',NULL,NULL,NULL,NULL,'196 Church Ave',NULL,'2023-04-06 08:18:00','2023-01-14 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','EPO','COS','OPEN','DECKERLK','SRID=4326;POINT (0 0)'),
+	 ('23-007014','Caller reporting a young deer that has an injured back leg. Caller said it has a bent back leg and it using some weight on it.','Arnold','438 Fake St',NULL,NULL,NULL,NULL,'198 Church Ave',NULL,'2023-04-07 08:18:00','2023-01-13 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','DFO','COS','OPEN','PENDLTNB','SRID=4326;POINT (0 0)'),
+	 ('23-007015','RCMP relaying a report: COM has locked themselves and their dog in the trail bathroom – believe they were pursued by three wolves. Advised one officer en route from penticton LVM CO Cox Briefed CO Van Damme','Keisha','436 Fake St',NULL,NULL,NULL,NULL,'3029 Spruce Dr','detailed text 5','2023-04-09 08:18:00','2023-01-11 09:12:00','test text','FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','BYLAW','COS','OPEN','GLENANNA','SRID=4326;POINT (0 0)'),
+	 ('23-007016','RCMP relaying a report of a deer stuck in the COM’s tree. Deer’s hoof is caught in the V, deer is dangling upside down – believe shoulder is dislocated. LVM Sgt Melenka Briefed CO Krenz','Dorothy Ann','435 Fake St','test@gmail.com',NULL,NULL,NULL,'3029 Spruce Dr','detailed text 4','2023-04-10 10:18:00','2023-01-10 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','BCWF','COS','OPEN','NORALEE','SRID=4326;POINT (0 0)'),
+	 ('23-007017','Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves','Phoebe','437 Fake St','tester@gmail.com','250-556-1234',NULL,NULL,'3029 Spruce Dr',NULL,'2023-04-08 08:18:00','2023-01-12 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','COS','COS','OPEN','GLENANNA','SRID=4326;POINT (0 0)'),
+	 ('23-007018','Caller has had three cougars coming under their sun deck for the past week. They come along the beach. Last sighting was about 06:30 DEC 31.','Valerie','442 Fake St',NULL,NULL,NULL,NULL,'7581 6 St',NULL,'2023-05-03 08:18:00','2023-01-17 09:12:00',NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','OTHER','COS','OPEN','NORALEE','SRID=4326;POINT (0 0)'),
+	 ('23-007019','There is a deer with a large chunk of meat missing from its side with hide hanging.  The deer has been around for 2-3 days.','Daren Douglas','1234  Test Avenue','daren@shaw.ca','403-559-1234',NULL,NULL,'6173 Wilson Rd',NULL,'2023-04-15 10:18:00','2023-01-05 09:12:00','Victoria Golf Club','FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','OTHER','COS','OPEN','PENDLTNB','SRID=4326;POINT (0 0)');
+
+
+-- add complaints to Omenica region
+INSERT INTO public.hwcr_complaint (other_attractants_text,create_user_id,create_user_guid,create_timestamp,update_user_id,update_user_guid,update_timestamp,complaint_identifier,species_code,hwcr_complaint_nature_code) VALUES
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007001','DEER','INJNP'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007002','ELK','INJNP'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007003','MOOSE','INJNP'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007004','UNKNOWN','LIVNCOU');
+INSERT INTO public.allegation_complaint (in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_user_guid,create_timestamp,update_user_id,update_user_guid,update_timestamp,complaint_identifier,violation_code) VALUES
+	 (false,true,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007005','WILDLIFE'),
+	 (true,false,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007006','WILDLIFE'),
+     (true,true,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007007','OPENBURN'),
+	 (true,false,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007008','WILDLIFE');
+
+-- add complaints to Nechako-lakes
+INSERT INTO public.hwcr_complaint (other_attractants_text,create_user_id,create_user_guid,create_timestamp,update_user_id,update_user_guid,update_timestamp,complaint_identifier,species_code,hwcr_complaint_nature_code) VALUES
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007009','DEER','CONFINED'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007010','DEER','CONFINED'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007011','COUGAR','AGGPRES'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007012','DEER','INJPRES'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007013','COUGAR','HUMINJ'),
+	 (NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007014','MOOSE','INJPRES');
+
+
+INSERT INTO public.allegation_complaint (in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_user_guid,create_timestamp,update_user_id,update_user_guid,update_timestamp,complaint_identifier,violation_code) VALUES
+	 (true,true,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007015','OPENBURN'),
+	 (true,false,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007016','OTHER'),
+	 (true,true,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007017','DUMPING'),
+	 (true,false,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007018','RECREATN'),
+	 (true,true,NULL,'FLYWAY',NULL,'2023-07-26 19:25:34.66322','FLYWAY',NULL,'2023-07-26 19:25:34.66322','23-007019','FISHERY');
