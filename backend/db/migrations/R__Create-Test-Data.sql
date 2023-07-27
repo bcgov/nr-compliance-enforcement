@@ -1104,16 +1104,17 @@ update public.officer o
 set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
 where officer_guid = '3cd1512d-53db-4cce-82d8-71e57de735df';
 
+-- assign more officers to Mkenzie
 update public.officer o 
-set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+set office_guid = '3a4e8fc8-db72-4f02-b5ee-1f257c74a635'
 where officer_guid = 'c325ec8f-98d6-4720-a339-bf08f21eeb64';
 
 update public.officer o 
-set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+set office_guid = '3a4e8fc8-db72-4f02-b5ee-1f257c74a635'
 where officer_guid = 'b5053585-cd8e-4392-b0a7-bc9d6ba7a1cd';
 
 update public.officer o 
-set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
+set office_guid = '3a4e8fc8-db72-4f02-b5ee-1f257c74a635'
 where officer_guid = '7c4ad99d-0518-4a83-b12d-984d7c25beeb';
 
 
@@ -1122,6 +1123,7 @@ update public.officer o
 set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
 where officer_guid = '7fe1cc4e-fc73-412e-9c0e-3f3fec364aac';
 
+-- assign some officers to Vanderhoof office
 update public.officer o 
 set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
 where officer_guid = '041430a7-d485-42a9-bda6-7e96b5b71fb3';
@@ -1130,18 +1132,26 @@ update public.officer o
 set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
 where officer_guid = 'eb27498b-4d7f-4873-98ce-4ddafa65c4b7';
 
+-- assign some officers to Burns Lake office
 update public.officer o 
-set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+set office_guid = 'ee09bf4d-e5a1-4fb8-9012-c192692dd1bd'
 where officer_guid = 'af70aeb7-2a6b-45a6-b722-926ebec005b5';
 
 update public.officer o 
-set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+set office_guid = 'ee09bf4d-e5a1-4fb8-9012-c192692dd1bd'
 where officer_guid = 'a90768f2-ba0e-4786-a68d-1f8b80368e9f';
 
 -- Assign Neil to Prince George
 update public.officer o 
 set office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce'
 where officer_guid = 'efcbaae4-505b-4db3-b036-7ec8b8dd8c6d';
+
+-- Assign Barrett to Vanderhoof
+update public.officer o 
+set office_guid = '5128179c-f622-499b-b8e5-b39199081f22'
+where officer_guid = '54892583-7013-48f5-87c8-90c19f95b395';
+
+
 
 
 -- add complaints
