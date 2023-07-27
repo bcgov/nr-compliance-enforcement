@@ -7,6 +7,9 @@ import { UUID } from "crypto";
 import axios from "axios";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
+import { get } from "../../common/api";
+import { ApiRequestParameters } from "../../types/app/api-request-parameters";
+import { AUTH_TOKEN } from "../../service/user-service";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -27,7 +30,7 @@ export const toggleSidebar = () => ({
 });
 
 export const toggleLoading = () => ({
-    type: ActionTypes.TOGGLE_LOADING,
+  type: ActionTypes.TOGGLE_LOADING,
 });
 
 type ModalProperties = {
@@ -142,7 +145,8 @@ export const selectClosingCallback = (state: RootState): any => {
 
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const token = localStorage.getItem(AUTH_TOKEN);
+
   if (token) {
     const decoded: SsoToken = jwtDecode<SsoToken>(token);
     const { given_name, family_name, email, idir_user_guid, idir_username } =
@@ -151,24 +155,31 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     idir_user_guid_transformed = idir_user_guid as UUID;
 
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const response = await axios.get<Officer>(
-      `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
-    );
+
+    const parameters: ApiRequestParameters<Officer> = {
+      url: `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`,
+      enableNotification: false,
+      requiresAuthentication: true,
+    };
+
+    const response = await get<Officer>(dispatch, parameters);
 
     let office = "";
     let region = "";
     let zone = "";
     let zoneDescription = "";
 
-    if (response.data.office_guid !== null) {
+    if (response.office_guid !== null) {
       const {
         office_guid: { cos_geo_org_unit: unit },
-      } = response.data;
+      } = response;
+      
       office = unit.office_location_code;
       region = unit.region_code;
       zone = unit.zone_code;
       zoneDescription = unit.zone_name;
     }
+
     const profile: Profile = {
       givenName: given_name,
       surName: family_name,
@@ -267,10 +278,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         hideCallback: null,
       };
     }
-    case ActionTypes.TOGGLE_LOADING: { 
+    case ActionTypes.TOGGLE_LOADING: {
       const { loading } = state;
 
-      return { ...state, loading: !loading }
+      return { ...state, loading: !loading };
     }
     default:
       return state;
