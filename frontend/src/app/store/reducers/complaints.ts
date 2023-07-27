@@ -148,11 +148,11 @@ export const getComplaints =
       speciesCodeFilter,
       startDateFilter,
       endDateFilter,
-      statusFilter,
+      violationFilter,
+      complaintStatusFilter,
     } = payload;
 
     try {
-      dispatch(toggleLoading(true));
       const token = localStorage.getItem("user");
 
       const apiEndpoint = (type: string): string => {
@@ -180,7 +180,8 @@ export const getComplaints =
               speciesCode: speciesCodeFilter?.value,
               incidentReportedStart: startDateFilter,
               incidentReportedEnd: endDateFilter,
-              status: statusFilter?.value,
+              violationCode: violationFilter?.value,
+              status: complaintStatusFilter?.value,
             },
           }
         );
@@ -188,8 +189,6 @@ export const getComplaints =
       }
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
