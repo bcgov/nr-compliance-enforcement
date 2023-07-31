@@ -37,13 +37,6 @@ export class HwcrComplaintNatureCode
       create_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the human wildlife conflict nature code.",
-      })
-      @Column({type: "uuid"})
-      create_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset.",
       })
@@ -56,13 +49,6 @@ export class HwcrComplaintNatureCode
       })
       @Column({length: 32})
       update_user_id: string;
-    
-      @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that updated the human wildlife conflict nature code.",
-      })
-      @Column({type: "uuid"})
-      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

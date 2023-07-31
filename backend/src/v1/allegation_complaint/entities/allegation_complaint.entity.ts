@@ -48,13 +48,6 @@ export class AllegationComplaint
       create_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the violation",
-      })
-      @Column({type: "uuid"})
-      create_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the violation was created",
       })
@@ -69,13 +62,6 @@ export class AllegationComplaint
       update_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that last updated the violation",
-      })
-      @Column({type: "uuid"})
-      update_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the violation was last updated",
       })
@@ -83,17 +69,15 @@ export class AllegationComplaint
       update_timestamp: Date;
    
       constructor(complaint_identifier?: Complaint, violation_code?: ViolationCode, in_progress_ind?: boolean, observed_ind?: boolean, suspect_witnesss_dtl_text?: string, 
-        create_user_id?: string, create_user_guid?: UUID, create_timestamp?: Date, update_user_id?: string, update_user_guid?: UUID, update_timestamp?: Date) {
+        create_user_id?: string, create_timestamp?: Date, update_user_id?: string, update_timestamp?: Date) {
         this.complaint_identifier = complaint_identifier;
         this.violation_code = violation_code;
         this.in_progress_ind = in_progress_ind;
         this.observed_ind = observed_ind;
         this.suspect_witnesss_dtl_text = suspect_witnesss_dtl_text;
         this.create_user_id = create_user_id;
-        this.create_user_guid = create_user_guid;
         this.create_timestamp = create_timestamp;
         this.update_user_id = update_user_id;
-        this.update_user_guid = update_user_guid;
         this.update_timestamp = update_timestamp;
       }
 }

@@ -18,8 +18,6 @@ export class CreateComplaintDto extends PickType(ComplaintDto, [
   "create_timestamp",
   "update_user_id",
   "update_timestamp",
-  "create_user_guid",
-  "update_user_guid",
   "complaint_identifier",
   "referred_by_agency_code",
   "owned_by_agency_code",
