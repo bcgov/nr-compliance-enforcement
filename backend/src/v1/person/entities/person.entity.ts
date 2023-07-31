@@ -35,17 +35,11 @@ export class Person {
   @Column("character varying", { name: "create_user_id", length: 32 })
   create_user_id: string;
 
-  @Column("uuid", { name: "create_user_guid", nullable: true })
-  create_user_guid: string | null;
-
   @Column("timestamp without time zone", { name: "create_timestamp" })
   create_timestamp: Date;
 
   @Column("character varying", { name: "update_user_id", length: 32 })
   update_user_id: string;
-
-  @Column("uuid", { name: "update_user_guid", nullable: true })
-  update_user_guid: string | null;
 
   @Column("timestamp without time zone", { name: "update_timestamp" })
   updateTimestamp: Date;

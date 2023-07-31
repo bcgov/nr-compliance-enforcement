@@ -15,6 +15,7 @@ import {
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
 } from "./complaints";
+import { toggleLoading } from "./app";
 
 const initialState: OfficerState = {
   officers: [],
@@ -45,18 +46,24 @@ export const { setOfficers } = officerSlice.actions;
 export const getOfficers =
   (zone?: string): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    try {
+      dispatch(toggleLoading(true));
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-      const response = await axios.get<Officer>(
-        `${config.API_BASE_URL}/v1/officer/`
-      );
-      dispatch(
-        setOfficers({
-          officers: response.data,
-        })
-      );
+        const response = await axios.get<Officer>(
+          `${config.API_BASE_URL}/v1/officer/`
+        );
+        dispatch(
+          setOfficers({
+            officers: response.data,
+          })
+        );
+      }
+    } catch (error) {
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -193,17 +200,16 @@ export const selectOfficersByZone =
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
 
-    if(zone){
-      return officers.filter(
-        (officer) => {
-          // check for nulls
-          const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
-          return zone === zoneCode;
-        }
-      );
+    if (zone) {
+      return officers.filter((officer) => {
+        // check for nulls
+        const zoneCode =
+          officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
+        return zone === zoneCode;
+      });
     }
 
-    return []
+    return [];
   };
 
 export default officerSlice.reducer;

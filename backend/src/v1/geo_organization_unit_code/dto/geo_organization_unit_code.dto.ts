@@ -38,12 +38,6 @@ export class GeoOrganizationUnitCodeDto
       create_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the geo organization unit",
-      })
-      create_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the geo organization unit was created",
       })
@@ -54,12 +48,6 @@ export class GeoOrganizationUnitCodeDto
         description: "The id of the user that last updated the geo organization unit",
       })
       update_user_id: string;
-    
-      @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that last updated the geo organization unit",
-      })
-      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

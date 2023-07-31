@@ -16,7 +16,7 @@ enum ActionTypes {
   TOGGLE_SIDEBAR = "app/TOGGLE_SIDEBAR",
   SHOW_MODAL = "app/SHOW_MODAL",
   HIDE_MODAL = "app/HIDE_MODAL",
-  TOGGLE_LOADING = "app/TOGGLE_LOADING",
+  TOGGLE_PAGE_LOADING = "app/TOGGLE_PAGE_LOADING",
 }
 //-- action creators
 
@@ -29,8 +29,9 @@ export const toggleSidebar = () => ({
   type: ActionTypes.TOGGLE_SIDEBAR,
 });
 
-export const toggleLoading = () => ({
-  type: ActionTypes.TOGGLE_LOADING,
+export const toggleLoading = (loading: boolean) => ({
+  type: ActionTypes.TOGGLE_PAGE_LOADING,
+  payload: loading,
 });
 
 type ModalProperties = {
@@ -143,6 +144,13 @@ export const selectClosingCallback = (state: RootState): any => {
   return app.hideCallback;
 };
 
+export const isLoading = (state: RootState) => { 
+  const { loading } = state.app;
+  const { isLoading: _isLoading } = loading;
+
+  return _isLoading;
+}
+
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
@@ -193,6 +201,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     };
 
     dispatch(setTokenProfile(profile));
+
   }
 };
 
@@ -212,7 +221,7 @@ const initialState: AppState = {
   },
   isSidebarOpen: true,
 
-  loading: false,
+  loading: { isLoading: false, count: 0 },
 
   modalIsOpen: false,
   modalSize: undefined,
@@ -278,10 +287,29 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         hideCallback: null,
       };
     }
-    case ActionTypes.TOGGLE_LOADING: {
-      const { loading } = state;
 
-      return { ...state, loading: !loading };
+    case ActionTypes.TOGGLE_PAGE_LOADING: {
+      const {
+        loading: { count },
+      } = state;
+      const { payload } = action;
+
+      if (payload) {
+        let updateCount = count + 1;
+        return { ...state, loading: { isLoading: true, count: updateCount } };
+      }
+
+      if (!payload) {
+        let updateCount = count !== 0 ? count - 1 : 0;
+        let updateIsLoading = updateCount !== 0;
+
+        return {
+          ...state,
+          loading: { isLoading: updateIsLoading, count: updateCount },
+        };
+      }
+
+      return { ...state };
     }
     default:
       return state;

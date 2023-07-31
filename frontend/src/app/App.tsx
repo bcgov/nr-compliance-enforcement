@@ -16,6 +16,7 @@ import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
+import { PageLoader } from "./components/common/page-loader";
 
 const App: FC = () => {
 
@@ -30,6 +31,7 @@ const App: FC = () => {
     <Router>
       <ScrollToTop />
       <Modal />
+      <PageLoader />
       <Routes>
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
           {/* <!-- temporary route --> */}

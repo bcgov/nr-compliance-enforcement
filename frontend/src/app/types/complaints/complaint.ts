@@ -13,10 +13,8 @@ export interface Complaint {
     incident_reported_datetime:    Date;
     referred_by_agency_other_text: null;
     create_user_id:                string;
-    create_user_guid:              string | null;
     create_timestamp:              Date;
     update_user_id:                string;
-    update_user_guid:              string | null;
     update_timestamp:              Date;
     complaint_identifier:          string;
     complaint_status_code:         ComplaintStatusCode;
@@ -29,10 +27,8 @@ export interface Complaint {
     display_order:         number;
     active_ind:            boolean;
     create_user_id:        string;
-    create_user_guid:      null;
     create_timestamp:      Date;
     update_user_id:        string;
-    update_user_guid:      null;
     update_timestamp:      Date;
   }
   
