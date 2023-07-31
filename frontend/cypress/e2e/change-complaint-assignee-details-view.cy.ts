@@ -22,15 +22,15 @@ describe('Complaint Change Assignee spec - Details View', () => {
       //-- click on Tab tab
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.wait(7000);
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       cy.get("#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       cy.get('#details-screen-assign-button').click({ force: true });
-      cy.wait(1000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       // self assign the complaint
       cy.get('#self_assign_button').click({force: true});
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       cy.get('#comp-details-assigned-officer-name-text-id').contains('ENV TestAcct').should('exist');
     });
   }));

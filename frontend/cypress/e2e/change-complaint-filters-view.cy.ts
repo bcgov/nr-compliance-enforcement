@@ -15,11 +15,11 @@ describe('Complaint Change Status spec - Details View', () => {
 
     it('Verifies filters are available and defaults exist', () => {
       cy.visit("/");
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       
       cy.get(complaintTypes[index]).click({ force: true });
       
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       //-- check to make sure there are items in the table
       cy.get("#comp-table")
       .find("tr")

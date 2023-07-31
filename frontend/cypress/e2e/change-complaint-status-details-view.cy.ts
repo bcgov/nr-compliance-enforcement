@@ -20,7 +20,7 @@ describe('Complaint Change Status spec - Details View', () => {
       //-- click on HWCR tab
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       //-- check to make sure there are items in the table
       cy.get("#comp-table")
@@ -28,7 +28,7 @@ describe('Complaint Change Status spec - Details View', () => {
         .then(({ length }) => {
           expect(length, "rows N").to.be.gt(0);
         });
-      cy.wait(2000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       cy.get("#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
 
       cy.window().scrollTo('top')
@@ -44,7 +44,7 @@ describe('Complaint Change Status spec - Details View', () => {
 
       cy.get('#update_complaint_status_button').click();
 
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       cy.get('#comp-details-status-text-id').contains('CLOSED').should('exist');
 
@@ -58,7 +58,7 @@ describe('Complaint Change Status spec - Details View', () => {
         .click()
 
       cy.get('#update_complaint_status_button').click();
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       cy.get('#comp-details-status-text-id').contains('OPEN').should('exist');
 

@@ -16,7 +16,7 @@ describe('Complaint Assign Popover spec', () => {
     it('Changes assignee of complaint', () => {
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('not.exist');
       cy.get('.popover').should('not.exist');
 
       cy.get('td.comp-ellipsis-cell').first() // finds the buttons cell of that row
