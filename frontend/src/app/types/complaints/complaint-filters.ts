@@ -12,5 +12,5 @@ export interface ComplaintFilters {
   violationFilter?: Option;
   startDateFilter?: Date;
   endDateFilter?: Date;
-  statusFilter?: Option;
+  complaintStatusFilter?: Option;
 }
