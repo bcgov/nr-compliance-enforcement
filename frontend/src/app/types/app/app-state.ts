@@ -1,3 +1,4 @@
+import { LoadingState } from "../state/loading-state";
 import Profile from "./profile";
 
 export interface AppState {
@@ -6,8 +7,8 @@ export interface AppState {
   isSidebarOpen: boolean;
 
   //-- loading
-  loading: boolean;
-  
+  loading: LoadingState;
+
   //-- modal properties
   modalSize?: "sm" | "lg" | "xl";
   modalIsOpen: boolean;
