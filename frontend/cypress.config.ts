@@ -6,6 +6,7 @@ export default defineConfig({
   defaultCommandTimeout: 10000,
   e2e: {
     baseUrl: 'http://localhost:3000',
+    experimentalStudio: true,
     setupNodeEvents(on, config) {
       // implement node event listeners here
       on('task', {
@@ -16,7 +17,6 @@ export default defineConfig({
         },
       })
     },
-    experimentalStudio: true,
     experimentalWebKitSupport: true,
     env: {
       auth_base_url: process.env.REACT_APP_KEYCLOAK_URL,
