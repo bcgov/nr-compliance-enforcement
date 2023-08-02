@@ -1,7 +1,6 @@
 import { Dispatch, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk, AppDispatch } from "../store";
 import config from "../../../config";
-import axios from "axios";
 import {
   ComplaintCollection,
   ComplaintState,
@@ -22,8 +21,6 @@ import { toggleLoading } from "./app";
 import { ApiRequestParameters } from "../../types/app/api-request-parameters";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import { ComplaintUpdateParams } from "../../types/api-params/complaint-update-params";
-import { url } from "inspector";
 
 const initialState: ComplaintState = {
   complaintItems: {

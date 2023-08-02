@@ -98,10 +98,8 @@ export const post = <T, M = {}>(
       ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
-		const data = Object.assign({}, { data: params });
-
 		axios
-			.post(url, data, config)
+			.post(url, params, config)
 			.then((response: AxiosResponse) => {
 				resolve(response.data as T);
 			})

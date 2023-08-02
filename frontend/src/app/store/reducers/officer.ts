@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
-import axios from "axios";
 import { OfficerState } from "../../types/complaints/officers-state";
 import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";

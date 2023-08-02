@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Office } from "../../types/office/office";
 import { OfficeState } from "../../types/office/offices-in-zone-state";
 import { AppThunk, RootState } from "../store";
@@ -35,19 +34,6 @@ export const { setOfficesInZone } = officeSlice.actions;
 export const getOfficesInZone =
   (zone?: string): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("__auth_token");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-      const response = await axios.get<Office>(
-        `${config.API_BASE_URL}/v1/office/by-zone/${zone}`
-      );
-      dispatch(
-        setOfficesInZone({
-          officesInZone: response.data,
-        })
-      );
-    }
 
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/office/by-zone/${zone}`

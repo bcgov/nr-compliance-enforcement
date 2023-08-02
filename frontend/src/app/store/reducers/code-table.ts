@@ -1,6 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AppThunk, RootState, store } from "../store";
-import axios from "axios";
 import { from } from "linq-to-typescript";
 import config from "../../../config";
 import { CodeTableState } from "../../types/state/code-table-state";
@@ -15,7 +14,6 @@ import { AttractantCode } from "../../types/code-tables/attractant-code";
 import { DropdownOption } from "../../types/code-tables/option";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
-import { HwcrComplaintNatureCode } from "../../types/code-tables/hwcr-complaint-nature-code";
 
 const initialState: CodeTableState = {
   agencyCodes: [],

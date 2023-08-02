@@ -4,11 +4,9 @@ import { SsoToken } from "../../types/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "../../types/app/profile";
 import { UUID } from "crypto";
-import axios from "axios";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
-import { ApiRequestParameters } from "../../types/app/api-request-parameters";
 import { AUTH_TOKEN } from "../../service/user-service";
 
 enum ActionTypes {
