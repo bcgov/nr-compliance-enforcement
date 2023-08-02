@@ -4,9 +4,11 @@ import { OfficeState } from "../../types/office/offices-in-zone-state";
 import { AppThunk, RootState } from "../store";
 import { createSlice } from "@reduxjs/toolkit";
 import config from "../../../config";
+import { generateApiParameters, get } from "../../common/api";
+import { from } from "linq-to-typescript";
 
 const initialState: OfficeState = {
-    officesInZone: []
+  officesInZone: [],
 };
 
 export const officeSlice = createSlice({
@@ -16,8 +18,8 @@ export const officeSlice = createSlice({
   reducers: {
     setOfficesInZone: (state, action) => {
       const { payload } = action;
-      const officesInZone:Office[] = payload.officesInZone;
-      return { ...state, officesInZone};
+      const officesInZone: Office[] = payload.officesInZone;
+      return { ...state, officesInZone };
     },
   },
 
@@ -30,24 +32,41 @@ export const officeSlice = createSlice({
 export const { setOfficesInZone } = officeSlice.actions;
 
 // Given a zone, returns a list of persons in that zone.
-export const getOfficesInZone = (zone?: string): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    
-    const response = await axios.get<Office>(`${config.API_BASE_URL}/v1/office/by-zone/${zone}`);
-    dispatch(
+export const getOfficesInZone =
+  (zone?: string): AppThunk =>
+  async (dispatch) => {
+    const token = localStorage.getItem("__auth_token");
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      const response = await axios.get<Office>(
+        `${config.API_BASE_URL}/v1/office/by-zone/${zone}`
+      );
+      dispatch(
         setOfficesInZone({
-        officesInZone: response.data
-      })
+          officesInZone: response.data,
+        })
+      );
+    }
+
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/office/by-zone/${zone}`
     );
-  }
+    const response = await get<Array<Office>>(dispatch, parameters);
+
+    if (response && from(response).any()) {
+      dispatch(
+        setOfficesInZone({
+          officesInZone: response,
+        })
+      );
+    }
+  };
+
+export const selectOfficesInZone = (state: RootState) => {
+  debugger;
+  const { officesInZone } = state.offices;
+  return officesInZone;
 };
 
-export const selectOfficesInZone = (state: RootState) => { 
-  debugger
-    const { officesInZone } = state.offices;
-    return officesInZone;
-  }
-  
-  export default officeSlice.reducer;
+export default officeSlice.reducer;

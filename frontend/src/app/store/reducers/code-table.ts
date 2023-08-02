@@ -10,10 +10,12 @@ import { ComplaintStatusCode } from "../../types/code-tables/complaint-status-co
 import { ViolationCode } from "../../types/code-tables/violation-code";
 import { SpeciesCode } from "../../types/code-tables/species-code";
 import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-of-complaint-code";
-import { CosGeoOrgUnit } from "../../types/person/person";
+import { CosGeoOrgUnit } from '../../types/person/person';
 import { AttractantCode } from "../../types/code-tables/attractant-code";
 import { DropdownOption } from "../../types/code-tables/option";
 import { toggleLoading } from "./app";
+import { generateApiParameters, get } from "../../common/api";
+import { HwcrComplaintNatureCode } from "../../types/code-tables/hwcr-complaint-nature-code";
 
 const initialState: CodeTableState = {
   agencyCodes: [],
@@ -204,102 +206,83 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchAgencyCodes = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/agency-code`
+  );
+  const response = await get<Array<AgencyCode>>(dispatch, parameters);
 
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(`${config.API_BASE_URL}/v1/agency-code`);
-    const result = response.data;
-
-    dispatch(setAgencyCodes(result));
+  if (response && from(response).any()) {
+    dispatch(setAgencyCodes(response));
   }
 };
 
 export const fetchViolationCodes = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/violation-code`
+  );
+  const response = await get<Array<ViolationCode>>(dispatch, parameters);
 
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(
-      `${config.API_BASE_URL}/v1/violation-code`
-    );
-    const result = response.data;
-
-    dispatch(setViolationCodes(result));
+  if (response && from(response).any()) {
+    dispatch(setViolationCodes(response));
   }
 };
 
 export const fetchSpeciesCodes = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/species-code`
+  );
+  const response = await get<Array<SpeciesCode>>(dispatch, parameters);
 
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(`${config.API_BASE_URL}/v1/species-code`);
-    const result = response.data;
-
-    dispatch(setSpeciesCodes(result));
+  if (response && from(response).any()) {
+    dispatch(setSpeciesCodes(response));
   }
 };
 
 export const fetchWildlifeNatureOfComplaintCodes =
   (): AppThunk => async (dispatch) => {
-    const token = localStorage.getItem("user");
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/hwcr-complaint-nature-code`
+    );
+    const response = await get<Array<HwcrNatureOfComplaintCode>>(
+      dispatch,
+      parameters
+    );
 
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-      const response = await axios.get(
-        `${config.API_BASE_URL}/v1/hwcr-complaint-nature-code`
-      );
-      const result = response.data;
-
-      dispatch(setWildlifeNatureOfComplaintCodes(result));
+    if (response && from(response).any()) {
+      dispatch(setWildlifeNatureOfComplaintCodes(response));
     }
   };
+
 export const fetchComplaintStatusCodes = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/complaint-status-code`
+  );
+  const response = await get<Array<ComplaintStatusCode>>(dispatch, parameters);
 
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(
-      `${config.API_BASE_URL}/v1/complaint-status-code`
-    );
-    const result = response.data;
-
-    dispatch(setComplaintStatusCodes(result));
+  if (response && from(response).any()) {
+    dispatch(setComplaintStatusCodes(response));
   }
 };
 
 export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/cos-geo-org-unit`
+  );
+  const response = await get<Array<CosGeoOrgUnit>>(dispatch, parameters);
 
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(
-      `${config.API_BASE_URL}/v1/cos-geo-org-unit`
-    );
-    const result = response.data;
-
-    dispatch(setAreaCodes(result));
+  if (response && from(response).any()) {
+    dispatch(setAreaCodes(response));
   }
 };
+
 export const fetchAttractantCodes = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/attractant-code`
+  );
+  const response = await get<Array<AttractantCode>>(dispatch, parameters);
 
-  if (token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const response = await axios.get(
-      `${config.API_BASE_URL}/v1/attractant-code`
-    );
-    const result = response.data;
-
-    dispatch(setAttractantCodes(result));
+  if (response && from(response).any()) {
+    dispatch(setAttractantCodes(response));
   }
 };
 
@@ -321,7 +304,9 @@ export const selectSortedCodeTable = (
   const { codeTables } = state;
   const data = codeTables[table as keyof CodeTableState];
 
-  let sorted = data.sort((a: any, b: any) => a[sortBy].localeCompare(b[sortBy]));
+  let sorted = data.sort((a: any, b: any) =>
+    a[sortBy].localeCompare(b[sortBy])
+  );
 
   return sorted;
 };

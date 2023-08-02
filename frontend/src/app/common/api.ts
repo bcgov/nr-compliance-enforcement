@@ -1,8 +1,15 @@
 import { Dispatch } from "redux";
-import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosResponse,
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosHeaders,
+} from "axios";
 import config from "../../config";
 import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
+import { toggleNotification } from "../store/reducers/app";
+import { url } from "inspector";
 
 const STATUS_CODES = {
   Ok: 200,
@@ -18,9 +25,23 @@ const STATUS_CODES = {
 
 const { KEYCLOAK_URL } = config;
 
-const getToken = (): string => {
-  let token = localStorage.getItem(AUTH_TOKEN);
-  return token ? token : "";
+export const generateApiParameters = <T = {}>(
+  url: string,
+  params?: T,
+  enableNotification: boolean = false,
+  requiresAuthentication: boolean = true
+): ApiRequestParameters<T> => {
+  let result = {
+    url,
+    requiresAuthentication,
+    enableNotification,
+  } as ApiRequestParameters<T>;
+
+  if (params) {
+    return { ...result, params };
+  }
+
+  return result;
 };
 
 export const get = <T, M = {}>(
@@ -32,9 +53,9 @@ export const get = <T, M = {}>(
     const { url, requiresAuthentication, params } = parameters;
 
     if (requiresAuthentication) {
-      config.headers = Object.assign({}, config.headers, {
-        RequestVerificationToken: getToken(),
-      });
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     if (params) {
@@ -44,18 +65,83 @@ export const get = <T, M = {}>(
     axios
       .get(url, config)
       .then((response: AxiosResponse) => {
-        const { data, status, statusText } = response;
+        const { data, status } = response;
 
-        if (status === STATUS_CODES.Ok) {
-            console.log("unauthorized, login!")
-          axios.get(KEYCLOAK_URL);
+        console.log(status);
+        if (status === STATUS_CODES.Unauthorized) {
+          window.location = KEYCLOAK_URL;
         }
 
         resolve(data as T);
       })
       .catch((error: AxiosError) => {
         if (parameters.enableNotification) {
-          //dispatch(toggleErrorNotification(error.message));
+          const { message } = error;
+          dispatch(toggleNotification("error", message));
+        }
+        reject(error);
+      });
+  });
+};
+
+export const post = <T, M = {}>(
+	dispatch: Dispatch,
+	parameters: ApiRequestParameters<M>
+): Promise<T> => {
+	let config: AxiosRequestConfig = { headers: {} };
+	return new Promise<T>((resolve, reject) => {
+		const { url, requiresAuthentication, params } = parameters;
+
+    if (requiresAuthentication) {
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+    }
+
+		const data = Object.assign({}, { data: params });
+
+		axios
+			.post(url, data, config)
+			.then((response: AxiosResponse) => {
+				resolve(response.data as T);
+			})
+			.catch((error: AxiosError) => {
+				if (parameters.enableNotification) {
+          dispatch(toggleNotification("error", error.message));
+        }
+				reject(error);
+			});
+	});
+};
+
+export const patch = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>
+): Promise<T> => {
+  let config: AxiosRequestConfig = { headers: {} };
+  return new Promise<T>((resolve, reject) => {
+    const { url, requiresAuthentication, params: data } = parameters;
+
+    if (requiresAuthentication) {
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+    }
+
+    axios
+      .patch(url, data, config)
+      .then((response: AxiosResponse) => {
+        const { status } = response;
+
+        if (status === STATUS_CODES.Unauthorized) {
+          window.location = KEYCLOAK_URL;
+        }
+
+        resolve(response.data as T);
+      })
+      .catch((error: AxiosError) => {
+        if (parameters.enableNotification) {
+          dispatch(toggleNotification("error", error.message));
         }
         reject(error);
       });

@@ -7,7 +7,7 @@ import { UUID } from "crypto";
 import axios from "axios";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
-import { get } from "../../common/api";
+import { generateApiParameters, get } from "../../common/api";
 import { ApiRequestParameters } from "../../types/app/api-request-parameters";
 import { AUTH_TOKEN } from "../../service/user-service";
 
@@ -16,7 +16,8 @@ enum ActionTypes {
   TOGGLE_SIDEBAR = "app/TOGGLE_SIDEBAR",
   SHOW_MODAL = "app/SHOW_MODAL",
   HIDE_MODAL = "app/HIDE_MODAL",
-  TOGGLE_PAGE_LOADING = "app/TOGGLE_PAGE_LOADING",
+  TOGGLE_LOADING = "app/TOGGLE_LOADING",
+  TOGGLE_NOTIFICATION = "app/TOGGLE_NOTIFICATION",
 }
 //-- action creators
 
@@ -30,8 +31,24 @@ export const toggleSidebar = () => ({
 });
 
 export const toggleLoading = (loading: boolean) => ({
-  type: ActionTypes.TOGGLE_PAGE_LOADING,
+  type: ActionTypes.TOGGLE_LOADING,
   payload: loading,
+});
+
+export const toggleNotification = (
+  type: "success" | "info" | "warning" | "error",
+  message: string
+) => ({
+  type: ActionTypes.TOGGLE_NOTIFICATION,
+  payload: { type, message },
+});
+
+export const toggleToast = (
+  type: "success" | "info" | "warning" | "error",
+  message: string
+) => ({
+  type: ActionTypes.TOGGLE_NOTIFICATION,
+  payload: { type, message },
 });
 
 type ModalProperties = {
@@ -144,64 +161,68 @@ export const selectClosingCallback = (state: RootState): any => {
   return app.hideCallback;
 };
 
-export const isLoading = (state: RootState) => { 
+export const isLoading = (state: RootState) => {
   const { loading } = state.app;
   const { isLoading: _isLoading } = loading;
 
   return _isLoading;
-}
+};
 
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
 
   if (token) {
-    const decoded: SsoToken = jwtDecode<SsoToken>(token);
-    const { given_name, family_name, email, idir_user_guid, idir_username } =
-      decoded;
-    let idir_user_guid_transformed: UUID;
-    idir_user_guid_transformed = idir_user_guid as UUID;
+    dispatch(toggleLoading(true));
+    try {
+      const decoded: SsoToken = jwtDecode<SsoToken>(token);
+      const { given_name, family_name, email, idir_user_guid, idir_username } =
+        decoded;
+      let idir_user_guid_transformed: UUID;
+      idir_user_guid_transformed = idir_user_guid as UUID;
 
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+      );
+      const response = await get<Officer>(dispatch, parameters);
 
-    const parameters: ApiRequestParameters<Officer> = {
-      url: `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`,
-      enableNotification: false,
-      requiresAuthentication: true,
-    };
+      let office = "";
+      let region = "";
+      let zone = "";
+      let zoneDescription = "";
 
-    const response = await get<Officer>(dispatch, parameters);
+      if (response.office_guid !== null) {
+        const {
+          office_guid: { cos_geo_org_unit: unit },
+        } = response;
 
-    let office = "";
-    let region = "";
-    let zone = "";
-    let zoneDescription = "";
+        office = unit.office_location_code;
+        region = unit.region_code;
+        zone = unit.zone_code;
+        zoneDescription = unit.zone_name;
+      }
 
-    if (response.office_guid !== null) {
-      const {
-        office_guid: { cos_geo_org_unit: unit },
-      } = response;
-      
-      office = unit.office_location_code;
-      region = unit.region_code;
-      zone = unit.zone_code;
-      zoneDescription = unit.zone_name;
+      const profile: Profile = {
+        givenName: given_name,
+        surName: family_name,
+        email: email,
+        idir: idir_user_guid_transformed,
+        idir_username: idir_username,
+        office: office,
+        region: region,
+        zone: zone,
+        zoneDescription: zoneDescription,
+      };
+
+      dispatch(setTokenProfile(profile));
+    } catch (error) {
+      //-- handler error
+    } finally {
+      dispatch(toggleLoading(false));
     }
-
-    const profile: Profile = {
-      givenName: given_name,
-      surName: family_name,
-      email: email,
-      idir: idir_user_guid_transformed,
-      idir_username: idir_username,
-      office: office,
-      region: region,
-      zone: zone,
-      zoneDescription: zoneDescription,
-    };
-
-    dispatch(setTokenProfile(profile));
-
+  } else {
+    //-- the user is not logged in redirect them to the login
+    window.location = config.KEYCLOAK_URL;
   }
 };
 
@@ -222,6 +243,11 @@ const initialState: AppState = {
   isSidebarOpen: true,
 
   loading: { isLoading: false, count: 0 },
+
+  notifications: {
+    type: "",
+    message: "",
+  },
 
   modalIsOpen: false,
   modalSize: undefined,
@@ -288,7 +314,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       };
     }
 
-    case ActionTypes.TOGGLE_PAGE_LOADING: {
+    case ActionTypes.TOGGLE_LOADING: {
       const {
         loading: { count },
       } = state;
@@ -310,6 +336,15 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       }
 
       return { ...state };
+    }
+    case ActionTypes.TOGGLE_NOTIFICATION: {
+      const {
+        payload: { type, message },
+      } = action;
+
+      const update = { type, message };
+
+      return { ...state, notifications: update };
     }
     default:
       return state;

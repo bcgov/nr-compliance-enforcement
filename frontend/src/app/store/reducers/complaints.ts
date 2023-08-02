@@ -1,5 +1,5 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../store";
+import { Dispatch, PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { RootState, AppThunk, AppDispatch } from "../store";
 import config from "../../../config";
 import axios from "axios";
 import {
@@ -19,6 +19,11 @@ import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stat
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
+import { ApiRequestParameters } from "../../types/app/api-request-parameters";
+import { generateApiParameters, get, patch } from "../../common/api";
+import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
+import { ComplaintUpdateParams } from "../../types/api-params/complaint-update-params";
+import { url } from "inspector";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -153,7 +158,8 @@ export const getComplaints =
     } = payload;
 
     try {
-      const token = localStorage.getItem("user");
+      dispatch(toggleLoading(true));
+      dispatch(setComplaint(null));
 
       const apiEndpoint = (type: string): string => {
         switch (type) {
@@ -164,31 +170,34 @@ export const getComplaints =
         }
       };
 
-      if (token) {
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        const response = await axios.get(
-          `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/search`,
-          {
-            params: {
-              sortColumn: sortColumn,
-              sortOrder: sortOrder,
-              region: regionCodeFilter?.value,
-              zone: zoneCodeFilter?.value,
-              community: areaCodeFilter?.value,
-              officerAssigned: officerFilter?.value,
-              natureOfComplaint: natureOfComplaintFilter?.value,
-              speciesCode: speciesCodeFilter?.value,
-              incidentReportedStart: startDateFilter,
-              incidentReportedEnd: endDateFilter,
-              violationCode: violationFilter?.value,
-              status: complaintStatusFilter?.value,
-            },
-          }
-        );
-        dispatch(setComplaints({ type: complaintType, data: response.data }));
-      }
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/search`,
+        {
+          sortColumn: sortColumn,
+          sortOrder: sortOrder,
+          region: regionCodeFilter?.value,
+          zone: zoneCodeFilter?.value,
+          community: areaCodeFilter?.value,
+          officerAssigned: officerFilter?.value,
+          natureOfComplaint: natureOfComplaintFilter?.value,
+          speciesCode: speciesCodeFilter?.value,
+          incidentReportedStart: startDateFilter,
+          incidentReportedEnd: endDateFilter,
+          violationCode: violationFilter?.value,
+          status: complaintStatusFilter?.value,
+        }
+      );
+
+      const response = await get<
+        HwcrComplaint | AllegationComplaint,
+        ComplaintQueryParams
+      >(dispatch, parameters);
+
+      dispatch(setComplaints({ type: complaintType, data: response }));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -197,19 +206,16 @@ export const getWildlifeComplaintByComplaintIdentifier =
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
+      dispatch(setComplaint(null));
 
-      const token = localStorage.getItem("user");
-      if (token) {
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
+      );
+      const response = await get<HwcrComplaint>(dispatch, parameters);
 
-        const response = await axios.get(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-        );
-        const result = response.data;
-
-        dispatch(setComplaint({ ...result }));
-      }
+      dispatch(setComplaint({ ...response }));
     } catch (error) {
+      //-- handle the error
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -220,18 +226,16 @@ export const getAllegationComplaintByComplaintIdentifier =
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      const token = localStorage.getItem("user");
-      if (token) {
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      dispatch(setComplaint(null));
 
-        const response = await axios.get(
-          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
-        );
-        const result = response.data;
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
+      );
+      const response = await get<AllegationComplaint>(dispatch, parameters);
 
-        dispatch(setComplaint({ ...result }));
-      }
+      dispatch(setComplaint({ ...response }));
     } catch (error) {
+      //-- handle the error
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -243,81 +247,86 @@ export const getZoneAtAGlanceStats =
     try {
       dispatch(toggleLoading(true));
 
-      const token = localStorage.getItem("user");
-      if (token) {
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/${
+          type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"
+        }-complaint/stats/by-zone/${zone}`
+      );
 
-        const response = await axios.get(
-          `${config.API_BASE_URL}/v1/${
-            type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"
-          }-complaint/stats/by-zone/${zone}`
-        );
-        const result = response.data;
+      const response = await get<ZoneAtAGlanceStats>(dispatch, parameters);
 
-        dispatch(setZoneAtAGlance({ ...result, type }));
-      }
+      dispatch(setZoneAtAGlance({ ...response, type }));
     } catch (error) {
+      //-- handle the error message
     } finally {
       dispatch(toggleLoading(false));
     }
   };
 
+const updateComplaintStatus = async (
+  dispatch: Dispatch,
+  id: string,
+  status: string
+) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/complaint/${id}`,
+    { complaint_status_code: `${status}` }
+  );
+
+  await patch<Complaint>(dispatch, parameters);
+};
+
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-      const complaintResponse = await axios.get<Complaint>(
-        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`
-      );
+    try {
+      dispatch(toggleLoading(true));
 
-      // first update the complaint status
-      let updatedComplaint = complaintResponse.data;
-      updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
-      await axios.patch(
-        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`,
-        { complaint_status_code: `${newStatus}` }
-      );
-      // now get that hwcr complaint row and update the state
-      const response = await axios.get(
+      //-- update the status of the complaint
+      await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
+
+      //-- get the wildlife conflict and update its status
+      const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
       );
-      dispatch(updateWildlifeComplaintByRow(response.data));
-      const result = response.data;
+      const response = await get<HwcrComplaint>(dispatch, parameters);
+
+      dispatch(updateWildlifeComplaintByRow(response));
+      const result = response;
 
       dispatch(setComplaint({ ...result }));
+    } catch (error) {
+      //-- add error handling
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
-export const updateAllegationComplaintStatus = (
-  complaint_identifier: string,
-  newStatus: string
-): AppThunk => {
-  return async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-      const complaintResponse = await axios.get<Complaint>(
-        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`
-      );
+export const updateAllegationComplaintStatus =
+  (complaint_identifier: string, newStatus: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      dispatch(toggleLoading(true));
 
-      // first update the complaint status
-      let updatedComplaint = complaintResponse.data;
-      updatedComplaint.complaint_status_code.complaint_status_code = newStatus;
-      await axios.patch(
-        `${config.API_BASE_URL}/v1/complaint/${complaint_identifier}`,
-        { complaint_status_code: `${newStatus}` }
-      );
+      //-- update the status of the complaint
+      await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
 
-      // now get that allegation complaint row and update the state
-      const response = await axios.get(
+      //-- get the wildlife conflict and update its status
+      const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
       );
-      dispatch(updateAllegationComplaintByRow(response.data));
+      const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      dispatch(updateAllegationComplaintByRow(response));
+      const result = response;
+
+      dispatch(setComplaint({ ...result }));
+    } catch (error) {
+      //-- add error handling
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
-};
 
 //-- selectors
 export const selectComplaint = (
