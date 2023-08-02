@@ -3,13 +3,11 @@ import axios, {
   AxiosResponse,
   AxiosError,
   AxiosRequestConfig,
-  AxiosHeaders,
 } from "axios";
 import config from "../../config";
 import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
 import { toggleNotification } from "../store/reducers/app";
-import { url } from "inspector";
 
 const STATUS_CODES = {
   Ok: 200,

@@ -98,10 +98,6 @@ export const assignCurrentUserToComplaint =
         );
         const officerGuid = officerByUserIdResponse.officer_guid;
 
-        let data = {
-          auth_user_guid: userGuid,
-        };
-
         officerParams = generateApiParameters(
           `${config.API_BASE_URL}/v1/officer/${officerGuid}`,
           { auth_user_guid: userGuid }
@@ -159,9 +155,7 @@ export const updateComplaintAssignee =
         // If there's an active person assigned to a complaint, update it to set it to inactive since we're going to assign someone else to it
         const personComplaintXrefGuid =
           personComplaintXrefGuidResponse[0].personComplaintXrefGuid;
-        let data = {
-          active_ind: false,
-        };
+
         // set person complaint xref to inactive
         let personComplaintParams = generateApiParameters(
           `${config.API_BASE_URL}/v1/person-complaint-xref/${personComplaintXrefGuid}`,

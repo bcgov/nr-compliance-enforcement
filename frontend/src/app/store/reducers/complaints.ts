@@ -1,5 +1,5 @@
 import { Dispatch, PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { RootState, AppThunk, AppDispatch } from "../store";
+import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import {
   ComplaintCollection,
@@ -18,7 +18,6 @@ import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stat
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
-import { ApiRequestParameters } from "../../types/app/api-request-parameters";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 
