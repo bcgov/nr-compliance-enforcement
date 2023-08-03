@@ -16,8 +16,16 @@ describe('Complaint Assign Popover spec', () => {
     it('Changes assignee of complaint', () => {
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
+
+      cy.get('.comp-loader-overlay').should('exist');
       cy.get('.comp-loader-overlay').should('not.exist');
+
       cy.get('.popover').should('not.exist');
+
+      cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so we have some complaint is in the list view
+    
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       cy.get('td.comp-ellipsis-cell').first() // finds the buttons cell of that row
             .click({force: true});

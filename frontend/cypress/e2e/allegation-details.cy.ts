@@ -25,6 +25,7 @@ describe("COMPENF-37 Display ECR Details", () => {
     //-- click on Allegation tab
     cy.get("#ers-tab").click({ force: true });
 
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
 
     //-- check to make sure there are items in the table
@@ -41,9 +42,11 @@ describe("COMPENF-37 Display ECR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#ers-tab").click({ force: true });
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
 
     cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
 
     //-- check to make sure there are items in the table
@@ -52,7 +55,7 @@ describe("COMPENF-37 Display ECR Details", () => {
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(0);
       });
-    cy.get('.comp-loader-overlay').should('not.exist');
+
     cy.get("#comp-table > tbody > tr > td.comp-small-cell").contains("23-007890").click({ force: true });
 
     //-- verify the right complaint identifier is selected and the animal type
@@ -66,8 +69,10 @@ describe("COMPENF-37 Display ECR Details", () => {
 
     //-- click on HWCR tab
     cy.get("#ers-tab").click({ force: true });
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
     cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
 
     //-- check to make sure there are items in the table

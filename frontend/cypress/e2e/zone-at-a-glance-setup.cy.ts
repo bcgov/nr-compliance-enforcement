@@ -37,13 +37,19 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
 
     //-- navigate to the zone at a glance
     cy.get("#zone-at-a-glance-link").click();
+
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
+
     //-- make sure we're on the zone at a glance page
     cy.get('.comp-main-content').contains("Zone At a Glance")
 
     //-- navigate back to complaints
     cy.get('#complaints-link').click();
+
+    cy.get('.comp-loader-overlay').should('exist');
     cy.get('.comp-loader-overlay').should('not.exist');
+
     cy.get("#root > div > div.comp-main-content > div.comp-sub-header").contains("Complaints")
   });
 });
