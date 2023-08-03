@@ -211,7 +211,7 @@
 
     .comp-box-species-type {
       padding: 4px 12px;
-      background: $gray-200;
+      background: $gray-300;
       border-radius: 60px;
       font-size: 12px;
       font-weight: bold;
@@ -754,7 +754,7 @@
   background: $white;
 
   /* Components/Dropdowns/Border */
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid $gray-200;
   border-radius: 4px;
 
   /* Inside auto layout */

@@ -117,16 +117,16 @@
       color: $gray-60;
     }
     .hwcr-unassigned{
-      background-color: #5EDBBE;
+      background-color: $bc-standard-04-300;
     }
     .hwcr-assigned{
-      background-color: #31BA9A;
+      background-color: $bc-standard-04-500;
     }
     .allegation-unassigned{
-      background-color: #ECC51D;
+      background-color: $bc-standard-13-300;
     }
     .allegation-assigned{
-      background-color: #C4A417;
+      background-color: $bc-standard-13-500;
     }
 
     .comp-zag-bar-text {
