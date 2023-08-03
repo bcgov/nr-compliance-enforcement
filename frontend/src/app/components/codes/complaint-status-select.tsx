@@ -19,7 +19,7 @@ const ComplaintStatusSelect: React.FC<Props> = ({onSelectChange }) => {
 
   useEffect(() => {
     // Fetch data using Axios
-    const token = localStorage.getItem("user");
+    const token = localStorage.getItem("__auth_token");
     if (token) {
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
       axios.get(`${config.API_BASE_URL}/v1/${CodeTable.COMPLAINT_STATUS_CODE}`)

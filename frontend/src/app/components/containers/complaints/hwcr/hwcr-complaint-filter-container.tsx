@@ -51,7 +51,7 @@ export const HwcrComplaintFilterContainer: FC<Props>  = ({getCollapseProps, isEx
     useEffect(() => {
         async function fetchCodes()
         {
-            const token = localStorage.getItem("user");
+            const token = localStorage.getItem("__auth_token");
             if (token) {
               axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
