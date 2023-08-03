@@ -15,9 +15,9 @@
 }
 
 .comp-form-control:focus-visible {
+  border: 1px solid $blue-100 !important;
   outline: none;
-  border: 1px solid #90b6F8 !important;
-  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
+  box-shadow: 0px 0px 0px 4px $blue-300 !important;
 }
 
 .comp-form-control:disabled {
@@ -63,7 +63,7 @@
 }
 
 [data-initials-zagview-hwcr]:before {
-  background-color: #31BA9A;
+  background-color: $bc-standard-04-500;
   color: white;
   opacity: 1;
   content: attr(data-initials-zagview-hwcr);
@@ -79,7 +79,7 @@
 }
 
 [data-initials-zagview-allegation]:before {
-  background-color: #C4A417;
+  background-color: $bc-standard-13-500;
   color: white;
   opacity: 1;
   content: attr(data-initials-zagview-allegation);

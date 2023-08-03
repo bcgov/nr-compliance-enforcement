@@ -176,9 +176,8 @@
 
     .comp-box-actions button {
       border-radius: 4px;
-      border: 1px solid var(--gray-white, #FFF);
-      background: var(--hit-box, rgba(255, 255, 255, 0.00));
-      color: var(--gray-white, #FFF);
+      border-color: $white;
+      color: $white;
       font-size: 14px;
     }
 
@@ -309,8 +308,8 @@
 }
 
 .comp-select__control:focus-within {
-  border: 1px solid #90b6F8 !important;
-  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25) !important;
+  border: 1px solid $blue-100 !important;
+  box-shadow: 0px 0px 0px 4px $blue-300 !important;
 }
 
 .comp-details-edit-container {
@@ -419,15 +418,15 @@
   font-size: 12px;
 
   height: 38px;
-  background: rgba(255, 255, 255, 0.0001);
   border-spacing: 0px;
   text-align: left;
   border-collapse: initial;
   margin-left: 12px;
 
   > :not(caption) > * > * {
-    background: rgba(0, 0, 0, 0.06);
-    background-color: rgba(0, 0, 0, 0.06);
+    background: $gray-500;
+    background-color: $gray-200;
+    border-color: $gray-500;
   }
 
   /* Inside auto layout */
@@ -447,14 +446,8 @@
   width: 1330px;
   font-style: normal;
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.0001);
   text-align: left;
   border-collapse: initial;
-
-  > :not(caption) > * > * {
-    background: rgba(255, 255, 255, 0.0001);
-    background-color: rgba(255, 255, 255, 0.0001);
-  }
 
   /* Inside auto layout */
 
@@ -471,9 +464,6 @@
 
   border-width: 1px 1px 0px 0px;
   border-style: solid;
-  border-color: $gray-310;
-  background: rgba(0, 0, 0, 0.06);
-  background-color: rgba(0, 0, 0, 0.06);
   border-bottom-width: 0px;
   flex: none;
   order: 12;
@@ -485,7 +475,6 @@
   {
     padding: 0px 0px 8px;
     gap: 4px;
-
     width: 298px;
     height: 32px;
   }
@@ -607,15 +596,15 @@
 }
 
 .comp-details-edit-calendar-input input:focus {
-  border: 1px solid #90b6F8;
+  border: 1px solid $blue-100 !important;
   outline: none;
-  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25)
+  box-shadow: 0px 0px 0px 4px $blue-300 !important;
 }
 
 .comp-filter-calendar-input input:focus {
-  border: 1px solid #90b6F8;
+  border: 1px solid $blue-100 !important;
   outline: none;
-  box-shadow: 0px 0px 0px 4px rgba(0,120,255,0.25)
+  box-shadow: 0px 0px 0px 4px $blue-300 !important;
 }
 
 //override -- default is one pixel too high
@@ -762,7 +751,7 @@
   height: 82px;
 
   /* Gray/White */
-  background: #ffffff;
+  background: $white;
 
   /* Components/Dropdowns/Border */
   border: 1px solid rgba(0, 0, 0, 0.15);
