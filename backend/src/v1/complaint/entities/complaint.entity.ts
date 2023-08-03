@@ -189,13 +189,6 @@ export class Complaint {
   create_user_id: string;
 
   @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The unique guid of the user that created the complaint",
-  })
-  @Column({ type: "uuid" })
-  create_user_guid: UUID;
-
-  @ApiProperty({
     example: "2003-04-12 04:05:06",
     description: "The timestamp when the complaint was created",
   })
@@ -208,13 +201,6 @@ export class Complaint {
   })
   @Column({ length: 32 })
   update_user_id: string;
-
-  @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The unique guid of the user that last updated the complaint",
-  })
-  @Column({ type: "uuid" })
-  update_user_guid: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
@@ -238,10 +224,8 @@ export class Complaint {
     incident_reported_datetime?: Date,
     referred_by_agency_other_text?: string,
     create_user_id?: string,
-    create_user_guid?: UUID,
     create_timestamp?: Date,
     update_user_id?: string,
-    update_user_guid?: UUID,
     update_timestamp?: Date,
     complaint_identifier?: string,
     referred_by_agency_code?: AgencyCode,
@@ -264,10 +248,8 @@ export class Complaint {
     this.incident_reported_datetime = incident_reported_datetime;
     this.referred_by_agency_other_text = referred_by_agency_other_text;
     this.create_user_id = create_user_id;
-    this.create_user_guid = create_user_guid;
     this.create_timestamp = create_timestamp;
     this.update_user_id = update_user_id;
-    this.update_user_guid = update_user_guid;
     this.update_timestamp = update_timestamp;
     this.complaint_identifier = complaint_identifier;
     this.referred_by_agency_code = referred_by_agency_code;

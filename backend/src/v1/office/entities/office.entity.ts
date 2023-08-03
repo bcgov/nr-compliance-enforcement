@@ -48,13 +48,6 @@ export class Office
       create_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the office",
-      })
-      @Column({type: "uuid"})
-      create_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the office was created",
       })
@@ -67,13 +60,6 @@ export class Office
       })
       @Column({length: 32})
       update_user_id: string;
-    
-      @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that last updated the office",
-      })
-      @Column({type: "uuid"})
-      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

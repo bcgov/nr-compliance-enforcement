@@ -189,8 +189,6 @@
   visibility: visible;
 }
 
-
-
 .react-datepicker__view-calendar-icon input {
     padding: 6px 10px 5px 32px;
     width: 298px;
@@ -210,6 +208,20 @@
 
 .filter-pill-close {
   pointer-events: auto;
+}
+
+.comp-loader-overlay {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: rgba($white, 0.40);
+
+  .comp-overlay-content { 
+    height: 100%;
+  }
 }
 
 .comp-tooltip .tooltip-inner {

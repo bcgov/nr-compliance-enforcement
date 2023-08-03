@@ -48,10 +48,8 @@ describe("AllegationComplaintService", () => {
     new Date(),
     "other text",
     "chris",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "chis",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "COS-1788",
     new AgencyCode("COS"),
@@ -66,10 +64,8 @@ describe("AllegationComplaintService", () => {
     true,
     "witness details",
     "Chris",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "Chris",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date()
   );
 
@@ -88,10 +84,8 @@ describe("AllegationComplaintService", () => {
     new Date(),
     "other text2",
     "chris",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "chis",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "COS-1789",
     new AgencyCode("COS"),
@@ -106,10 +100,8 @@ describe("AllegationComplaintService", () => {
     true,
     "witness details2",
     "Chris",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date(),
     "Chris",
-    "903f87c8-76dd-427c-a1bb-4d179e443252",
     new Date()
   );
   
@@ -127,10 +119,8 @@ describe("AllegationComplaintService", () => {
   const threeIncidentReportedDatetime = new Date();
   const threeReferredByAgencyOtherText = "other text3";
   const threeCreateUserId = "chris";
-  const threeCreateUserGuid = "903f87c8-76dd-427c-a1bb-4d179e443252";
   const threeCreateTimestamp = new Date();
   const threeUpdateUserId = "chis";
-  const threeUpdateUserGuid = "903f87c8-76dd-427c-a1bb-4d179e443252";
   const threeUpdateTimestamp = new Date();
   const threeCompliantIdentifier = "COS-1800";
   const threeReferredByAgencyCode = new AgencyCode("COS");
@@ -138,15 +128,15 @@ describe("AllegationComplaintService", () => {
   const threeComplaintStatusCode = new ComplaintStatusCode("OPEN");
   const threeGeoOrganizationUnitCode = new GeoOrganizationUnitCode("CRBOCHLCTN");
   const threeComplaint = new Complaint(threeDetailText, threeCallerName, threeCallerAddress, threeCallerEmail, threeCallerPhone1, threeCallerPhone2, threeCallerPhone3, threeLocationGeometryPoint,
-    threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateUserGuid, threeCreateTimestamp, threeUpdateUserId,
-    threeUpdateUserGuid, threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode);
+    threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateTimestamp, threeUpdateUserId,
+    threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode);
     const threeViolationCode = new ViolationCode("AINVSPC");
     const threeInProgressInd = true;
     const threeObservedInd = true;
     const threeSuspectWitnessDtlText = "witness 3";
 
-  const threeAllegationComplaint = new AllegationComplaint(threeComplaint, threeViolationCode, threeInProgressInd, threeObservedInd, threeSuspectWitnessDtlText, threeCreateUserId, threeCreateUserGuid, threeCreateTimestamp, threeUpdateUserId,
-    threeUpdateUserGuid, threeUpdateTimestamp);
+  const threeAllegationComplaint = new AllegationComplaint(threeComplaint, threeViolationCode, threeInProgressInd, threeObservedInd, threeSuspectWitnessDtlText, threeCreateUserId, threeCreateTimestamp, threeUpdateUserId,
+    threeUpdateTimestamp);
 
   const allegationComplaintArray = [oneAllegationComplaint, twoAllegationComplaint];
 

@@ -18,12 +18,6 @@ export class AttractantHwcrXrefDto
       create_user_id: string;
     
       @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that created the attractant hwcr cross reference.",
-      })
-      create_user_guid: UUID;
-    
-      @ApiProperty({
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset.",
       })
@@ -34,12 +28,6 @@ export class AttractantHwcrXrefDto
         description: "The id of the user that updated the attractant hwcr cross reference.",
       })
       update_user_id: string;
-    
-      @ApiProperty({
-        example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-        description: "The unique guid of the user that updated the attractant hwcr cross reference.",
-      })
-      update_user_guid: UUID;
     
       @ApiProperty({
         example: "2003-04-12 04:05:06",

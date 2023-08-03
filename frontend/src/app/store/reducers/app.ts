@@ -13,7 +13,7 @@ enum ActionTypes {
   TOGGLE_SIDEBAR = "app/TOGGLE_SIDEBAR",
   SHOW_MODAL = "app/SHOW_MODAL",
   HIDE_MODAL = "app/HIDE_MODAL",
-  TOGGLE_LOADING = "app/TOGGLE_LOADING",
+  TOGGLE_PAGE_LOADING = "app/TOGGLE_PAGE_LOADING",
 }
 //-- action creators
 
@@ -26,8 +26,9 @@ export const toggleSidebar = () => ({
   type: ActionTypes.TOGGLE_SIDEBAR,
 });
 
-export const toggleLoading = () => ({
-    type: ActionTypes.TOGGLE_LOADING,
+export const toggleLoading = (loading: boolean) => ({
+  type: ActionTypes.TOGGLE_PAGE_LOADING,
+  payload: loading,
 });
 
 type ModalProperties = {
@@ -140,48 +141,62 @@ export const selectClosingCallback = (state: RootState): any => {
   return app.hideCallback;
 };
 
+export const isLoading = (state: RootState) => { 
+  const { loading } = state.app;
+  const { isLoading: _isLoading } = loading;
+
+  return _isLoading;
+}
+
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
-  const token = localStorage.getItem("user");
-  if (token) {
-    const decoded: SsoToken = jwtDecode<SsoToken>(token);
-    const { given_name, family_name, email, idir_user_guid, idir_username } =
-      decoded;
-    let idir_user_guid_transformed: UUID;
-    idir_user_guid_transformed = idir_user_guid as UUID;
+  dispatch(toggleLoading(true));
 
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    const response = await axios.get<Officer>(
-      `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
-    );
+  try {
+    const token = localStorage.getItem("user");
+    if (token) {
+      const decoded: SsoToken = jwtDecode<SsoToken>(token);
+      const { given_name, family_name, email, idir_user_guid, idir_username } =
+        decoded;
+      let idir_user_guid_transformed: UUID;
+      idir_user_guid_transformed = idir_user_guid as UUID;
 
-    let office = "";
-    let region = "";
-    let zone = "";
-    let zoneDescription = "";
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      const response = await axios.get<Officer>(
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+      );
 
-    if (response.data.office_guid !== null) {
-      const {
-        office_guid: { cos_geo_org_unit: unit },
-      } = response.data;
-      office = unit.office_location_code;
-      region = unit.region_code;
-      zone = unit.zone_code;
-      zoneDescription = unit.zone_name;
+      let office = "";
+      let region = "";
+      let zone = "";
+      let zoneDescription = "";
+
+      if (response.data.office_guid !== null) {
+        const {
+          office_guid: { cos_geo_org_unit: unit },
+        } = response.data;
+        office = unit.office_location_code;
+        region = unit.region_code;
+        zone = unit.zone_code;
+        zoneDescription = unit.zone_name;
+      }
+      const profile: Profile = {
+        givenName: given_name,
+        surName: family_name,
+        email: email,
+        idir: idir_user_guid_transformed,
+        idir_username: idir_username,
+        office: office,
+        region: region,
+        zone: zone,
+        zoneDescription: zoneDescription,
+      };
+
+      dispatch(setTokenProfile(profile));
     }
-    const profile: Profile = {
-      givenName: given_name,
-      surName: family_name,
-      email: email,
-      idir: idir_user_guid_transformed,
-      idir_username: idir_username,
-      office: office,
-      region: region,
-      zone: zone,
-      zoneDescription: zoneDescription,
-    };
-
-    dispatch(setTokenProfile(profile));
+  } catch (error) {
+  } finally {
+    dispatch(toggleLoading(false));
   }
 };
 
@@ -201,7 +216,7 @@ const initialState: AppState = {
   },
   isSidebarOpen: true,
 
-  loading: false,
+  loading: { isLoading: false, count: 0 },
 
   modalIsOpen: false,
   modalSize: undefined,
@@ -267,10 +282,28 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         hideCallback: null,
       };
     }
-    case ActionTypes.TOGGLE_LOADING: { 
-      const { loading } = state;
+    case ActionTypes.TOGGLE_PAGE_LOADING: {
+      const {
+        loading: { count },
+      } = state;
+      const { payload } = action;
 
-      return { ...state, loading: !loading }
+      if (payload) {
+        let updateCount = count + 1;
+        return { ...state, loading: { isLoading: true, count: updateCount } };
+      }
+
+      if (!payload) {
+        let updateCount = count !== 0 ? count - 1 : 0;
+        let updateIsLoading = updateCount !== 0;
+
+        return {
+          ...state,
+          loading: { isLoading: updateIsLoading, count: updateCount },
+        };
+      }
+
+      return { ...state };
     }
     default:
       return state;
