@@ -17,11 +17,9 @@ export const ComplaintContainer: FC<Props>  = ({ initialState }) => {
   const defaultZoneLabel = useAppSelector(profileZoneDescription);
 
   useEffect(() => {
-    if (!defaultZone || defaultZone === "") {
+    if (!defaultZone) {
       dispatch(getTokenProfile());
-    } else {
-      setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
-    }
+    } 
   }, [dispatch, defaultZone, defaultZoneLabel]);
 
     const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
