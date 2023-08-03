@@ -7,6 +7,7 @@ import {
   getAllegationComplaintByComplaintIdentifier,
   getWildlifeComplaintByComplaintIdentifier,
   selectComplaint,
+  setComplaint,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
@@ -24,6 +25,14 @@ export const ComplaintDetails: FC = () => {
   const dispatch = useAppDispatch();
   const complaint = useAppSelector(selectComplaint);
   const [readOnly, setReadOnly] = useState(true);
+
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+      dispatch(setComplaint(null))
+    };
+  }, []);
+
 
   const editButtonClick = () => {
     setReadOnly(false);
