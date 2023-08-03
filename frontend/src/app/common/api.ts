@@ -64,8 +64,7 @@ export const get = <T, M = {}>(
       .get(url, config)
       .then((response: AxiosResponse) => {
         const { data, status } = response;
-
-        console.log(status);
+        
         if (status === STATUS_CODES.Unauthorized) {
           window.location = KEYCLOAK_URL;
         }

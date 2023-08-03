@@ -68,10 +68,8 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     setEndDateFilter(undefined);
 
     if (newState === ComplaintType.HWCR_COMPLAINT) {
-      console.log("clear hwcr")
       dispatch(setComplaints({ type: COMPLAINT_TYPES.ERS, data: [] }));
     } else {
-      console.log("clear ers")
       dispatch(setComplaints({ type: COMPLAINT_TYPES.HWCR, data: [] }));
     }
   }
