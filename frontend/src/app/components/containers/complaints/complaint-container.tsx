@@ -10,8 +10,6 @@ import {
   profileZone,
   profileZoneDescription,
 } from "../../../store/reducers/app";
-import { setComplaints } from "../../../store/reducers/complaints";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 
 type Props = {
   initialState: number;
@@ -23,11 +21,9 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   const defaultZoneLabel = useAppSelector(profileZoneDescription);
 
   useEffect(() => {
-    if (!defaultZone || defaultZone === "") {
+    if (!defaultZone) {
       dispatch(getTokenProfile());
-    } else {
-      setZoneCodeFilter({ value: defaultZone, label: defaultZoneLabel });
-    }
+    } 
   }, [dispatch, defaultZone, defaultZoneLabel]);
 
   const [sort, setSort] = useState(["incident_reported_datetime", "DESC"]);
@@ -66,12 +62,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     setViolationFilter(null);
     setStartDateFilter(undefined);
     setEndDateFilter(undefined);
-
-    if (newState === ComplaintType.HWCR_COMPLAINT) {
-      dispatch(setComplaints({ type: COMPLAINT_TYPES.ERS, data: [] }));
-    } else {
-      dispatch(setComplaints({ type: COMPLAINT_TYPES.HWCR, data: [] }));
-    }
   }
   function handleSort(newSortColumn: string) {
     if (newSortColumn === sort[0]) {
