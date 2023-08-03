@@ -1,4 +1,5 @@
 import { LoadingState } from "../state/loading-state";
+import { NotificationState } from "../state/notification-state";
 import Profile from "./profile";
 
 export interface AppState {
@@ -9,6 +10,9 @@ export interface AppState {
   //-- loading
   loading: LoadingState;
 
+  //-- notifications
+  notifications: NotificationState;
+  
   //-- modal properties
   modalSize?: "sm" | "lg" | "xl";
   modalIsOpen: boolean;

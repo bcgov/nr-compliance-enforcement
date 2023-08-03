@@ -45,7 +45,7 @@ export const AllegationComplaintFilterContainer: FC<Props>  = ({getCollapseProps
     useEffect(() => {
         async function fetchCodes()
         {
-            const token = localStorage.getItem("user");
+            const token = localStorage.getItem("__auth_token");
             if (token) {
                     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
                     await axios.get(`${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`).then((response) => {

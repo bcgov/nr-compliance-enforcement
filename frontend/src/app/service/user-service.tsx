@@ -1,5 +1,7 @@
 import _kc from "../keycloak";
 
+export const AUTH_TOKEN = "__auth_token";
+
 /**
  * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
  *
@@ -15,7 +17,7 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
       if (!authenticated) {
         console.log('User is not authenticated.');
       } else {
-        localStorage.setItem('user', `${_kc.token}`);
+        localStorage.setItem(AUTH_TOKEN, `${_kc.token}`);
       }
       onAuthenticatedCallback();
     })
@@ -24,7 +26,7 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
   _kc.onTokenExpired = () => {
     _kc.updateToken(5).then((refreshed) => {
       if (refreshed) {
-        localStorage.setItem('user', `${_kc.token}`);
+        localStorage.setItem(AUTH_TOKEN, `${_kc.token}`);
       }
     });
   }
