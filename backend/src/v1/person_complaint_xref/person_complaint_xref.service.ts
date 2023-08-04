@@ -71,7 +71,7 @@ export class PersonComplaintXrefService {
   }
 
   /**
-   * Assigns an officer to a complaint.  This will perform one of two operations.  
+   * Assigns an officer to a complaint.  This will perform one of two operations.
    * If the existing complaint is not yet assigned to an officer, then this will create a new complaint/officer cross reference.
    * As such, this exists as a queryRunner transaction.  If there's an exception, the entire transcation is rolled back.
    *
@@ -90,7 +90,6 @@ export class PersonComplaintXrefService {
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
     try {
-
       // unassign complaint if it's already assigned to an officer
       unassignedPersonComplaintXref = await this.findByComplaint(
         complaintIdentifier
@@ -100,9 +99,7 @@ export class PersonComplaintXrefService {
           `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`
         );
         unassignedPersonComplaintXref.active_ind = false;
-        await queryRunner.manager.save(
-          unassignedPersonComplaintXref
-        );
+        await queryRunner.manager.save(unassignedPersonComplaintXref);
       }
 
       // create a new complaint assignment record
