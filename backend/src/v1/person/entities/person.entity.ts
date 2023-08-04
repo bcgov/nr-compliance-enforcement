@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { Officer } from "../../officer/entities/officer.entity";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { Column, Entity, Index, OneToMany, OneToOne } from "typeorm";
@@ -10,7 +11,7 @@ export class Person {
     name: "person_guid",
     default: () => "uuid_generate_v4()",
   })
-  person_guid: string;
+  person_guid: UUID;
 
   @Column("character varying", { name: "first_name", length: 32 })
   first_name: string;
