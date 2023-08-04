@@ -14,7 +14,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
 
-    cy.wait(5000);
+    cy.get('.comp-loader-overlay').should('exist');
+    cy.get('.comp-loader-overlay').should('not.exist');
 
     //-- check to make sure there are items in the table
     cy.get("#comp-table")
@@ -22,16 +23,17 @@ describe("Complaint Edit Page spec - Edit View", () => {
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(0);
       });
-    cy.wait(2000);
+
     cy.get(
       "#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell"
     ).click({ force: true });
 
+    cy.get('.comp-loader-overlay').should('exist');
+    cy.get('.comp-loader-overlay').should('not.exist');
+
     cy.window().scrollTo("top");
 
-    cy.wait(3000);
     cy.get("#details-screen-edit-button").click({ force: true });
-    cy.wait(3000);
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs

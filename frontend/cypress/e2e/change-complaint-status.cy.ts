@@ -17,9 +17,15 @@ describe('Complaint Assign and Status Popover spec', () => {
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
+
       cy.get('.popover').should('not.exist');
 
+      cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+    
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       // Find the number of closed complaints
       // This number should change if a complaint is changed from closed to open
@@ -36,7 +42,7 @@ describe('Complaint Assign and Status Popover spec', () => {
       cy.get('.popover').get('div#update_status_link').click();
 
       cy.get('#complaint_status_dropdown').click();
-      cy.wait(2000);
+      
       // Select the option with value "Closed"
       cy.get('.comp-select__option')
         .contains('Closed')
@@ -44,7 +50,8 @@ describe('Complaint Assign and Status Popover spec', () => {
 
       cy.get('#update_complaint_status_button').click();
 
-      cy.wait(5000);
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       cy.get('table tr').filter(':contains("Closed")').should('have.length.at.least', 1);
 
@@ -64,7 +71,7 @@ describe('Complaint Assign and Status Popover spec', () => {
       cy.get('.popover').get('div#update_status_link').click();
 
       cy.get('#complaint_status_dropdown').click()
-      cy.wait(2000);
+      
       // Select the option with value "OPEN"
       cy.get('.comp-select__option')
         .contains('Open')
@@ -72,7 +79,6 @@ describe('Complaint Assign and Status Popover spec', () => {
 
       cy.get('#update_complaint_status_button').click();
       cy.get('table tr').filter(':contains("Open")').should('have.length.at.least', 1);
-      cy.wait(5000);
     });
   }));
 })
