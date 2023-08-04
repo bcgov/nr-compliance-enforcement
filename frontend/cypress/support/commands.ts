@@ -93,8 +93,6 @@ const base64url = source => {
           cy.get('[name="password"]').click();
           cy.get('[name="password"]').type(credentials.password, {log: false});
           cy.get('[name="btnSubmit"]').click();
-    
-          cy.wait(10000);
         } else { // different origin, so handle CORS errors
           cy.visit("/");
           cy.on('uncaught:exception', (e) => {
@@ -115,8 +113,6 @@ const base64url = source => {
             cy.get('[name="password"]').click();
             cy.get('[name="password"]').type(password, {log: false});
             cy.get('[name="btnSubmit"]').click();
-      
-            cy.wait(10000);
             });
         }
       });

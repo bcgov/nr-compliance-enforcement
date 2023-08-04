@@ -10,13 +10,20 @@ describe("COMPENF-259 Zone at a Glance - View Complaint Stats", () => {
   
       //-- navigate to the zone at a glance
       cy.get("#zone-at-a-glance-link").click({ force: true });
-      cy.wait(500);
+
+      //First ZAG test... might take a bit longer to spin up
+      cy.get('.comp-loader-overlay', {timeout: 30000}).should('exist');
+      cy.get('.comp-loader-overlay', {timeout: 30000}).should('not.exist');
+
       //-- make sure we're on the zone at a glance page
       cy.get('.comp-main-content').contains("Zone At a Glance")
   
       //-- navigate back to complaints
       cy.get('#complaints-link').click({ force: true });
-      cy.wait(500);
+
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
+
       cy.get("#root > div > div.comp-main-content > div.comp-sub-header").contains("Complaints")
     });
 
