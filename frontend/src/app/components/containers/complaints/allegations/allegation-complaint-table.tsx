@@ -6,7 +6,7 @@ import { formatDateTime } from "../../../../common/methods";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { getComplaints, selectAllegationComplaints } from "../../../../store/reducers/complaints";
+import { getComplaints, selectAllegationComplaints, setComplaints } from "../../../../store/reducers/complaints";
 import { ComplaintFilters } from "../../../../types/complaints/complaint-filters";
 
 type Props = {
@@ -27,6 +27,13 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
     const navigate = useNavigate();
 
     const allegationComplaintsJson = useAppSelector(selectAllegationComplaints);
+
+    useEffect(() => {
+        //-- when the component unmounts clear the complaint from redux
+        return () => {
+          dispatch(setComplaints({ type: COMPLAINT_TYPES.ERS, data: [] }))
+        };
+      }, []);
 
     useEffect(() => {
         const payload = {

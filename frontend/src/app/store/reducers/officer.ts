@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
-import axios from "axios";
 import { OfficerState } from "../../types/complaints/officers-state";
 import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";
@@ -16,6 +15,9 @@ import {
   updateAllegationComplaintByRow,
 } from "./complaints";
 import { toggleLoading } from "./app";
+import { generateApiParameters, get, patch, post } from '../../common/api';
+import { from } from "linq-to-typescript";
+import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
 
 const initialState: OfficerState = {
   officers: [],
@@ -48,20 +50,21 @@ export const getOfficers =
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      const token = localStorage.getItem("user");
-      if (token) {
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-        const response = await axios.get<Officer>(
-          `${config.API_BASE_URL}/v1/officer/`
-        );
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/officer/`
+      );
+      const response = await get<Array<Officer>>(dispatch, parameters);
+
+      if (response && from(response).any()) {
         dispatch(
           setOfficers({
-            officers: response.data,
+            officers: response,
           })
         );
       }
     } catch (error) {
+      //-- handle errors
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -76,34 +79,37 @@ export const assignCurrentUserToComplaint =
     complaint_type: string
   ): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-      let officerResponse = await axios.get<Officer>(
+    try {
+      dispatch(toggleLoading(true));
+
+      let officerParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`
       );
+      let officerResponse = await get<Officer>(dispatch, officerParams);
 
-      // user doesn't have an authid, so patch the officer with the same username
-      if (officerResponse.data.auth_user_guid === undefined) {
-        let officerByUseridResponse = await axios.get<Officer>(
+      if (officerResponse.auth_user_guid === undefined) {
+        officerParams = generateApiParameters(
           `${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`
         );
-        const officerGuid = officerByUseridResponse.data.officer_guid;
 
-        let data = {
-          auth_user_guid: userGuid,
-        };
-
-        officerResponse = await axios.patch<Officer>(
-          `${config.API_BASE_URL}/v1/officer/${officerGuid}`,
-          data
+        let officerByUserIdResponse = await get<Officer>(
+          dispatch,
+          officerParams
         );
+        const officerGuid = officerByUserIdResponse.officer_guid;
+
+        officerParams = generateApiParameters(
+          `${config.API_BASE_URL}/v1/officer/${officerGuid}`,
+          { auth_user_guid: userGuid }
+        );
+
+        await patch<Officer>(dispatch, officerParams);
       }
 
       dispatch(
         updateComplaintAssignee(
           userId,
-          officerResponse.data.person_guid.person_guid as UUID,
+          officerResponse.person_guid.person_guid as UUID,
           complaint_identifier,
           complaint_type
         )
@@ -118,6 +124,10 @@ export const assignCurrentUserToComplaint =
           getAllegationComplaintByComplaintIdentifier(complaint_identifier)
         );
       }
+    } catch (error) {
+      //-- handle error
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -130,30 +140,33 @@ export const updateComplaintAssignee =
     complaint_type: string
   ): AppThunk =>
   async (dispatch) => {
-    const token = localStorage.getItem("user");
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    try {
+      dispatch(toggleLoading(true));
 
       // find an active person assigned to the complaint (if there is one)
-      const personComplaintXrefGuidResponse = await axios.get<
-        PersonComplaintXref[]
-      >(
+      let personComplaintXrefGuidParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/person-complaint-xref/find-by-complaint/${complaint_identifier}`
       );
-      if (personComplaintXrefGuidResponse.data.length > 0) {
+      let personComplaintXrefGuidResponse = await get<
+        Array<PersonComplaintXref>
+      >(dispatch, personComplaintXrefGuidParams);
+
+      if (personComplaintXrefGuidResponse.length > 0) {
         // If there's an active person assigned to a complaint, update it to set it to inactive since we're going to assign someone else to it
         const personComplaintXrefGuid =
-          personComplaintXrefGuidResponse.data[0].personComplaintXrefGuid;
-        let data = {
-          active_ind: false,
-        };
+          personComplaintXrefGuidResponse[0].personComplaintXrefGuid;
+
         // set person complaint xref to inactive
-        await axios.patch<PersonComplaintXref>(
+        let personComplaintParams = generateApiParameters(
           `${config.API_BASE_URL}/v1/person-complaint-xref/${personComplaintXrefGuid}`,
-          data
+          { active_ind: false }
         );
+
+        await patch<PersonComplaintXref>(dispatch, personComplaintParams);
       }
-      let newRecord = {
+
+      // add new person complaint record
+      const payload = {
         active_ind: true,
         person_guid: {
           person_guid: person_guid,
@@ -161,33 +174,42 @@ export const updateComplaintAssignee =
         complaint_identifier: complaint_identifier,
         person_complaint_xref_code: "ASSIGNEE",
         create_user_id: currentUser,
-      };
+      } as NewPersonComplaintXref;
 
-      // add new person complaint record
-      await axios.post<PersonComplaintXref>(
+      let personComplaintParams = generateApiParameters<NewPersonComplaintXref>(
         `${config.API_BASE_URL}/v1/person-complaint-xref/`,
-        newRecord
+        payload
       );
+
+      await post<PersonComplaintXref>(dispatch, personComplaintParams);
 
       // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        const response = await axios.get<HwcrComplaint>(
+        const parameters = generateApiParameters(
           `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
         );
-        dispatch(updateWildlifeComplaintByRow(response.data));
+        const response = await get<HwcrComplaint>(dispatch, parameters);
+
+        dispatch(updateWildlifeComplaintByRow(response));
         dispatch(
           getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
         );
       } else {
-        const response = await axios.get<AllegationComplaint>(
+        const parameters = generateApiParameters(
           `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
         );
-        dispatch(updateAllegationComplaintByRow(response.data));
+        const response = await get<AllegationComplaint>(dispatch, parameters);
+
+        dispatch(updateAllegationComplaintByRow(response));
 
         dispatch(
           getAllegationComplaintByComplaintIdentifier(complaint_identifier)
         );
       }
+    } catch (error) {
+      //-- handle error
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
