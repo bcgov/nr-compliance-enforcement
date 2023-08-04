@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { getComplaints, selectWildlifeComplaints } from "../../../../store/reducers/complaints";
+import { getComplaints, selectWildlifeComplaints, setComplaints } from "../../../../store/reducers/complaints";
 import { ComplaintFilters } from '../../../../types/complaints/complaint-filters';
 import { formatDateTime } from "../../../../common/methods";
 
@@ -27,6 +27,13 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const hwcrComplaintsJson = useAppSelector(selectWildlifeComplaints);
+
+    useEffect(() => {
+      //-- when the component unmounts clear the complaint from redux
+      return () => {
+        dispatch(setComplaints({ type: COMPLAINT_TYPES.HWCR, data: [] }))
+      };
+    }, []);
 
     useEffect(() => {
         const payload = {
