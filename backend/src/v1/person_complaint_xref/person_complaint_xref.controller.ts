@@ -18,14 +18,6 @@ export class PersonComplaintXrefController {
     private readonly personComplaintXrefService: PersonComplaintXrefService
   ) {}
 
-  /**
-   * Assigns an officer to a complaint.  This will perform one of two operations.  If the existing complaint is not yet assigned to an officer, then this will create a new complaint/officer cross reference.
-   *
-   * If the complaint is already assigned to an officer and the intention is to reassign the complaint to another officer, then first deactivate the first assignment and then
-   * create a new cross reference between the complaint and officer.
-   *
-   * Given that this is intended to be idempotent, this is a Put request.
-   */
   @Put("/assign-officer/")
   @Roles(Role.COS_OFFICER)
   assignOfficer(

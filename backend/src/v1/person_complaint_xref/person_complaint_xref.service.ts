@@ -3,13 +3,6 @@ import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
-import { PersonComplaintXrefDto } from "./dto/person_complaint_xref.dto";
-import { UUID } from "crypto";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
-import { PersonComplaintXrefCodeEnum } from "src/enum/person_complaint_xref_code.enum";
-import { Person } from "../person/entities/person.entity";
-import { Complaint } from "../complaint/entities/complaint.entity";
-import { log } from "console";
 
 @Injectable()
 export class PersonComplaintXrefService {
