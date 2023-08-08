@@ -15,7 +15,7 @@ import {
   updateAllegationComplaintByRow,
 } from "./complaints";
 import { toggleLoading } from "./app";
-import { generateApiParameters, get, patch, put } from "../../common/api";
+import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
 
@@ -159,7 +159,7 @@ export const updateComplaintAssignee =
         `${config.API_BASE_URL}/v1/person-complaint-xref/person-complaint-xref`,
         payload
       );
-      await put<Array<PersonComplaintXref>>(
+      await post<Array<PersonComplaintXref>>(
         dispatch,
         personComplaintXrefGuidParams
       );

@@ -1,4 +1,4 @@
-import { Controller, Param, UseGuards, Put, Body } from "@nestjs/common";
+import { Controller, Param, UseGuards, Post, Body } from "@nestjs/common";
 import { PersonComplaintXrefService } from "./person_complaint_xref.service";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -17,7 +17,7 @@ export class PersonComplaintXrefController {
     private readonly personComplaintXrefService: PersonComplaintXrefService
   ) {}
 
-  @Put("/person-complaint-xref/")
+  @Post("/person-complaint-xref/")
   @Roles(Role.COS_OFFICER)
   assignOfficer(
     @Param("complaint_id") complaintId: string, @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
