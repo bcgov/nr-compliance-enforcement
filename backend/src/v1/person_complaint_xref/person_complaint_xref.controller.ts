@@ -17,7 +17,7 @@ export class PersonComplaintXrefController {
     private readonly personComplaintXrefService: PersonComplaintXrefService
   ) {}
 
-  @Put("/assign-officer/")
+  @Put("/person-complaint-xref/")
   @Roles(Role.COS_OFFICER)
   assignOfficer(
     @Param("complaint_id") complaintId: string, @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
