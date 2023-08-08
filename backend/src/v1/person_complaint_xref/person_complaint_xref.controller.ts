@@ -17,14 +17,15 @@ export class PersonComplaintXrefController {
     private readonly personComplaintXrefService: PersonComplaintXrefService
   ) {}
 
-  @Post("/person-complaint-xref/")
+  @Post()
   @Roles(Role.COS_OFFICER)
   assignOfficer(
-    @Param("complaint_id") complaintId: string, @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
+    @Param("complaint_id") complaintId: string,
+    @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ) {
     return this.personComplaintXrefService.assignOfficer(
       complaintId,
       createPersonComplaintXrefDto
-      );
+    );
   }
 }

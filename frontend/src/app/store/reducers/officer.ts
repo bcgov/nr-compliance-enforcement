@@ -156,7 +156,7 @@ export const updateComplaintAssignee =
 
       // assign a complaint to a person
       let personComplaintXrefGuidParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/person-complaint-xref/person-complaint-xref`,
+        `${config.API_BASE_URL}/v1/person-complaint-xref`,
         payload
       );
       await post<Array<PersonComplaintXref>>(
