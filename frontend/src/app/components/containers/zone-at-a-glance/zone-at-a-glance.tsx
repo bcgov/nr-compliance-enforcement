@@ -60,8 +60,8 @@ export const ZoneAtAGlance: FC = () => {
                 assigned={allegationOpenComplaints.assigned}
                 unassigned={allegationOpenComplaints.unassigned}
                 background={{
-                  assignedColor: "#C4A417",
-                  unassignedColor: "#ECC51D",
+                  assignedColor: "#ECC51D",
+                  unassignedColor: "#F4DC77",
                 }}
                 type={COMPLAINT_TYPES.ERS}
               />
