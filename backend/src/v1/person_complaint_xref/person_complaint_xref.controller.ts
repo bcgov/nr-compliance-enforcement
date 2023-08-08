@@ -17,7 +17,7 @@ export class PersonComplaintXrefController {
     private readonly personComplaintXrefService: PersonComplaintXrefService
   ) {}
 
-  @Post()
+  @Post(":complaint_id")
   @Roles(Role.COS_OFFICER)
   assignOfficer(
     @Param("complaint_id") complaintId: string,
