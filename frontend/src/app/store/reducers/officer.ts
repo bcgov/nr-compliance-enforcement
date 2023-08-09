@@ -15,7 +15,7 @@ import {
   updateAllegationComplaintByRow,
 } from "./complaints";
 import { toggleLoading } from "./app";
-import { generateApiParameters, get, patch, post } from '../../common/api';
+import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
 
@@ -143,28 +143,6 @@ export const updateComplaintAssignee =
     try {
       dispatch(toggleLoading(true));
 
-      // find an active person assigned to the complaint (if there is one)
-      let personComplaintXrefGuidParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/person-complaint-xref/find-by-complaint/${complaint_identifier}`
-      );
-      let personComplaintXrefGuidResponse = await get<
-        Array<PersonComplaintXref>
-      >(dispatch, personComplaintXrefGuidParams);
-
-      if (personComplaintXrefGuidResponse.length > 0) {
-        // If there's an active person assigned to a complaint, update it to set it to inactive since we're going to assign someone else to it
-        const personComplaintXrefGuid =
-          personComplaintXrefGuidResponse[0].personComplaintXrefGuid;
-
-        // set person complaint xref to inactive
-        let personComplaintParams = generateApiParameters(
-          `${config.API_BASE_URL}/v1/person-complaint-xref/${personComplaintXrefGuid}`,
-          { active_ind: false }
-        );
-
-        await patch<PersonComplaintXref>(dispatch, personComplaintParams);
-      }
-
       // add new person complaint record
       const payload = {
         active_ind: true,
@@ -176,12 +154,15 @@ export const updateComplaintAssignee =
         create_user_id: currentUser,
       } as NewPersonComplaintXref;
 
-      let personComplaintParams = generateApiParameters<NewPersonComplaintXref>(
-        `${config.API_BASE_URL}/v1/person-complaint-xref/`,
+      // assign a complaint to a person
+      let personComplaintXrefGuidParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/person-complaint-xref/${complaint_identifier}`,
         payload
       );
-
-      await post<PersonComplaintXref>(dispatch, personComplaintParams);
+      await post<Array<PersonComplaintXref>>(
+        dispatch,
+        personComplaintXrefGuidParams
+      );
 
       // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
@@ -207,7 +188,7 @@ export const updateComplaintAssignee =
         );
       }
     } catch (error) {
-      //-- handle error
+      console.log(error);
     } finally {
       dispatch(toggleLoading(false));
     }

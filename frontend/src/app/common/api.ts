@@ -142,3 +142,37 @@ export const patch = <T, M = {}>(
       });
   });
 };
+
+export const put = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>
+): Promise<T> => {
+  let config: AxiosRequestConfig = { headers: {} };
+  return new Promise<T>((resolve, reject) => {
+    const { url, requiresAuthentication, params: data } = parameters;
+
+    if (requiresAuthentication) {
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+    }
+
+    axios
+      .put(url, data, config)
+      .then((response: AxiosResponse) => {
+        const { status } = response;
+
+        if (status === STATUS_CODES.Unauthorized) {
+          window.location = KEYCLOAK_URL;
+        }
+
+        resolve(response.data as T);
+      })
+      .catch((error: AxiosError) => {
+        if (parameters.enableNotification) {
+          dispatch(toggleNotification("error", error.message));
+        }
+        reject(error);
+      });
+  });
+};
