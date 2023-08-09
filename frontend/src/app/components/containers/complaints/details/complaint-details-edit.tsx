@@ -20,9 +20,9 @@ import {
   selectComplaintStatusCodeDropdown, 
   selectSpeciesCodeDropdown, 
   selectViolationCodeDropdown,
-  selectedHwcrNatureOfComplaintCodeDropdown, 
-  selectedAreaCodeDropdown, 
-  selectedAttractantCodeDropdown 
+  selectHwcrNatureOfComplaintCodeDropdown, 
+  selectAreaCodeDropdown, 
+  selectAttractantCodeDropdown 
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -109,9 +109,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as DropdownOption[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as DropdownOption[];
-  const hwcrNatureOfComplaintCodes = useSelector(selectedHwcrNatureOfComplaintCodeDropdown) as DropdownOption[];
-  const areaCodes = useSelector(selectedAreaCodeDropdown) as DropdownOption[];
-  const attractantCodes = useSelector(selectedAttractantCodeDropdown) as DropdownOption[];
+  const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as DropdownOption[];
+  const areaCodes = useSelector(selectAreaCodeDropdown) as DropdownOption[];
+  const attractantCodes = useSelector(selectAttractantCodeDropdown) as DropdownOption[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as DropdownOption[];
   const violationTypeCodes = useSelector(selectViolationCodeDropdown) as DropdownOption[];
 

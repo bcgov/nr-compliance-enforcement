@@ -10,4 +10,7 @@ export interface CodeTableState {
   wildlifeNatureOfComplaintCodes: Array<CodeTable>;
   areaCodes: Array<CodeTable>;
   attractantCodes: Array<CodeTable>;
+  regions: Array<CodeTable>;
+  zones: Array<CodeTable>;
+  communities: Array<CodeTable>;
 }
