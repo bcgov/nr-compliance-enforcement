@@ -40,6 +40,44 @@ export const formatDateTime = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd HH:mm");
 };
 
+// Used to retrieve the coordinates in the decimal format
+export const parseDecimalDegreesCoordinates = (
+  coordinates: number[] | string[] | undefined,
+  coordinateType: Coordinates
+): number => {
+  if (!coordinates) {
+    return 0;
+  }
+
+  return coordinateType === Coordinates.Latitude
+    ? +coordinates[0]
+    : +coordinates[1];
+}
+
+// given coordinates, return true if within BC or false if not within BC
+export const isWithinBC = (coordinates: number[] | string[] | undefined): boolean => {
+  const bcBoundaries = {
+    minLatitude: 48.2513,
+    maxLatitude: 60.0000,
+    minLongitude: -139.0596,
+    maxLongitude: -114.0337,
+  };
+
+  if (!coordinates) {
+    return false;
+  }
+
+  const latitude = +coordinates[0];
+  const longitude = +coordinates[1];
+
+  return (
+    latitude >= bcBoundaries.minLatitude &&
+    latitude <= bcBoundaries.maxLatitude &&
+    longitude >= bcBoundaries.minLongitude &&
+    longitude <= bcBoundaries.maxLongitude
+  );
+};
+
 export const parseCoordinates = (
   coordinates: number[] | string[] | undefined,
   coordinateType: Coordinates
