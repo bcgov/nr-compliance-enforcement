@@ -42,23 +42,22 @@ export const formatDateTime = (input: string | undefined): string => {
 
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (
-  coordinates: number[] | string[] | undefined,
-  coordinateType: Coordinates
-): number => {
+  coordinates: number[] | string[] | undefined
+): { lat: number; lng: number } => {
   if (!coordinates) {
-    return 0;
+    return { lat: 0, lng: 0 };
   }
 
-  return coordinateType === Coordinates.Latitude
-    ? +coordinates[0]
-    : +coordinates[1];
-}
+  return { lat: +coordinates[0], lng: +coordinates[1] };
+};
 
 // given coordinates, return true if within BC or false if not within BC
-export const isWithinBC = (coordinates: number[] | string[] | undefined): boolean => {
+export const isWithinBC = (
+  coordinates: number[] | string[] | undefined
+): boolean => {
   const bcBoundaries = {
     minLatitude: 48.2513,
-    maxLatitude: 60.0000,
+    maxLatitude: 60.0,
     minLongitude: -139.0596,
     maxLongitude: -114.0337,
   };
@@ -108,7 +107,5 @@ export const renderCoordinates = (
 ): JSX.Element => {
   const result = parseCoordinates(coordinates, coordinateType);
 
-  return result === 0 ? <>{'Not Provided'}</> : <>{result}</>;
+  return result === 0 ? <>{"Not Provided"}</> : <>{result}</>;
 };
-
-

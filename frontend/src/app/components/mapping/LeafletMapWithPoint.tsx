@@ -1,37 +1,44 @@
 import { FC, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
 import { Icon } from "leaflet";
 import markerIcon2x from "../../../assets/images/map/marker-icon-2x.png";
-import { Coordinates } from "../../types/app/coordinate-type";
-import { parseDecimalDegreesCoordinates } from "../../common/methods";
 
 type Props = {
-  coordinates: number[] | string[] | undefined;
+  coordinates?: { lat: number; lng: number };
+  address?: string;
+  community?: string;
   draggable: boolean;
 };
 
+/**
+ * Renders a map with a marker at the supplied location 
+ * 
+*/
 const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
-  const complaintPositionLatitude: number = parseDecimalDegreesCoordinates(
-    coordinates,
-    Coordinates.Latitude
-  );
-  const complaintPositionLongitude: number = parseDecimalDegreesCoordinates(
-    coordinates,
-    Coordinates.Longitude
-  );
 
-  const center = {
-    lat: complaintPositionLatitude,
-    lng: complaintPositionLongitude,
-  };
+  // the derived lat long pair.
+  // If a coordinate is supplied, then the latLng is set to the supplied coordinates.
+  // If coordinates aren't supplied, then use the BC Geocoder to determine the latLng based on an address (if supplied), or
+  // the community.  Every complaint will have a community, so theoretically, there will always be a latLng that can be derived.
+  let latLng: { lat: number; lng: number };
+
+  if (coordinates) {
+    latLng = coordinates;
+  } else {
+    // handle other methods of determining coordinates
+    // for now just return 0,0
+    latLng = { lat: 0, lng: 0 };
+  }
 
   // recenter the map when the center value is updated
   const Centerer = () => {
     const map = useMap();
 
     useEffect(() => {
-      map.setView(center);
+      if (latLng) {
+        map.setView(latLng);
+      }
     }, [map]);
 
     return null;
@@ -39,14 +46,15 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
 
   return (
     <MapContainer
-      center={center}
-      zoom={12}
+      center={latLng}
+      zoom={10}
       style={{ height: "400px", width: "100%" }}
     >
       <Centerer />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker
-        position={center}
+        data-testid="complaint-location-marker"
+        position={latLng}
         icon={
           new Icon({
             iconUrl: markerIcon2x,
@@ -55,11 +63,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
           })
         }
         draggable={draggable}
-      >
-        <Popup>
-          {complaintPositionLatitude} {complaintPositionLongitude}
-        </Popup>
-      </Marker>
+      ></Marker>
     </MapContainer>
   );
 };

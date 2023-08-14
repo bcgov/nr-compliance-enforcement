@@ -3,31 +3,37 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintDeails } from "../../../../store/reducers/complaints";
 import LeafletMapWithPoint from "../../../mapping/LeafletMapWithPoint";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
-import { isWithinBC } from "../../../../common/methods";
+import {
+  parseDecimalDegreesCoordinates,
+} from "../../../../common/methods";
 
 type Props = {
   complaintType: string;
   draggable: boolean;
 };
 
+/**
+ * Component that displays a map with a marker representing the complaint location
+ * 
+ */
 export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
-  const { coordinates } = useAppSelector(
+  const { coordinates, area, location } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
 
-  if (coordinates && isWithinBC(coordinates)) {
-    return (
-      <div className="comp-complaint-details-location-block">
-        <h6>Complaint Location</h6>
-        <div className="comp-complaint-location">
-          <LeafletMapWithPoint
-            coordinates={coordinates}
-            draggable={draggable}
-          />
-        </div>
+  const decimalDegreesCoordinates = parseDecimalDegreesCoordinates(coordinates);
+
+  return (
+    <div className="comp-complaint-details-location-block">
+      <h6>Complaint Location</h6>
+      <div className="comp-complaint-location">
+        <LeafletMapWithPoint
+          coordinates={decimalDegreesCoordinates}
+          community={area}
+          address={location}
+          draggable={draggable}
+        />
       </div>
-    );
-  } else {
-    return <></>;
-  }
+    </div>
+  );
 };
