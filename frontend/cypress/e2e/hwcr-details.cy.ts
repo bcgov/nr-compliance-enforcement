@@ -144,30 +144,30 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- verify the call details block
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(1) > div:nth-child(1) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(1) > div.comp-details-content"
     ).contains(callerInformation.name);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(1) > div:nth-child(2) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(2) > div.comp-details-content"
     ).contains(callerInformation.phone);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(1) > div:nth-child(3) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(3) > div.comp-details-content"
     ).should(($el) => {
       expect($el.text().trim()).equal(callerInformation.cell);
     });
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(1) > div:nth-child(4) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(4) > div.comp-details-content"
     ).should(($el) => {
       expect($el.text().trim()).equal(callerInformation.alternate);
     });
 
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(2) > div:nth-child(1) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(2) > div:nth-child(1) > div.comp-details-content"
     ).contains(callerInformation.address);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(2) > div:nth-child(2) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(2) > div:nth-child(2) > div.comp-details-content"
     ).contains(callerInformation.email);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(5) > div > div > div:nth-child(2) > div:nth-child(3) > div.comp-details-content"
+      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(2) > div:nth-child(3) > div.comp-details-content"
     ).contains(callerInformation.referred);
   });
 
