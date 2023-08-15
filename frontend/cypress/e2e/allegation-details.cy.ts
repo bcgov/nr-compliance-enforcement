@@ -64,25 +64,7 @@ describe("COMPENF-37 Display ECR Details", () => {
   });
 
   it("it has correct call details", () => {
-    //-- navigate to application root
-    cy.visit("/");
-
-    //-- click on HWCR tab
-    cy.get("#ers-tab").click({ force: true });
-    cy.get('.comp-loader-overlay').should('exist');
-    cy.get('.comp-loader-overlay').should('not.exist');
-    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
-    cy.get('.comp-loader-overlay').should('exist');
-    cy.get('.comp-loader-overlay').should('not.exist');
-
-    //-- check to make sure there are items in the table
-    cy.get("#comp-table")
-      .find("tr")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.gt(0);
-      });
-
-      cy.get("#comp-table > tbody > tr > td.comp-small-cell").contains("23-007890").click({ force: true });
+    cy.navigateToAllegationDetailsScreen("23-007890");
 
     //-- verify the call details block
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-right-28.col-md-6 > div:nth-child(1) > p").contains(callDetails.description)

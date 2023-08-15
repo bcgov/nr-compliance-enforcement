@@ -46,6 +46,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
 
   return (
     <MapContainer
+      id="map"
       center={latLng}
       zoom={10}
       style={{ height: "400px", width: "100%" }}

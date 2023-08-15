@@ -1,4 +1,3 @@
-
 /// <reference types="cypress" />
 // ***********************************************
 // For comprehensive examples of custom
@@ -148,8 +147,74 @@ Cypress.Commands.add("kcLogout", () => {
 });
 
 Cypress.Commands.add("verifyMapMarkerExists", () => {
-  cy.get('.leaflet-container').should("exist");
+  cy.get(".leaflet-container").should("exist");
   cy.get('img[alt="Marker"]').should("exist");
+});
+
+Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string) => {
+  //-- navigate to application root
+  cy.visit("/");
+
+  //-- click on HWCR tab
+  cy.get("#hwcr-tab").click({ force: true });
+
+  cy.get(".comp-loader-overlay").should("exist");
+  cy.get(".comp-loader-overlay").should("not.exist");
+
+  cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+
+  cy.get(".comp-loader-overlay").should("exist");
+  cy.get(".comp-loader-overlay").should("not.exist");
+
+  //-- check to make sure there are items in the table
+  cy.get("#comp-table")
+    .find("tr")
+    .then(({ length }) => {
+      expect(length, "rows N").to.be.gt(0);
+    });
+
+  cy.get("#comp-table > tbody > tr > td.comp-small-cell")
+    .contains(complaintIdentifier)
+    .click({ force: true });
+
+  cy.get(".comp-loader-overlay").should("exist");
+  cy.get(".comp-loader-overlay").should("not.exist");
+});
+
+Cypress.Commands.add("navigateToHWLCEditScreen", (complaintIdentifier: string) => {
+  cy.navigateToHWLCDetailsScreen(complaintIdentifier);
+  cy.get("#details-screen-edit-button").click({ force: true });
+});
+
+Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: string) => {
+  //-- navigate to application root
+  cy.visit("/");
+
+  //-- click on HWCR tab
+  cy.get("#ers-tab").click({ force: true });
+  cy.get(".comp-loader-overlay").should("exist");
+  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+  cy.get(".comp-loader-overlay").should("exist");
+  cy.get(".comp-loader-overlay").should("not.exist");
+
+  //-- check to make sure there are items in the table
+  cy.get("#comp-table")
+    .find("tr")
+    .then(({ length }) => {
+      expect(length, "rows N").to.be.gt(0);
+    });
+
+  cy.get("#comp-table > tbody > tr > td.comp-small-cell")
+    .contains(complaintIdentifier)
+    .click({ force: true });
+  cy.get(".comp-loader-overlay").should("exist");
+  cy.get(".comp-loader-overlay").should("not.exist");
+});
+
+Cypress.Commands.add("navigateToAllegationEditScreen", (complaintIdentifier: string) => {
+  cy.navigateToAllegationDetailsScreen(complaintIdentifier);
+  cy.get("#details-screen-edit-button").click({ force: true });
 });
 
 function hasSameTopLevelDomain(url1: string, url2: string): boolean {

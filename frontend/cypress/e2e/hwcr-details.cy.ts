@@ -172,33 +172,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    //-- navigate to application root
-    cy.visit("/");
-
-    //-- click on HWCR tab
-    cy.get("#hwcr-tab").click({ force: true });
-
-    cy.get(".comp-loader-overlay").should("exist");
-    cy.get(".comp-loader-overlay").should("not.exist");
-
-    cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
-
-    cy.get(".comp-loader-overlay").should("exist");
-    cy.get(".comp-loader-overlay").should("not.exist");
-
-    //-- check to make sure there are items in the table
-    cy.get("#comp-table")
-      .find("tr")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.gt(0);
-      });
-
-    cy.get("#comp-table > tbody > tr > td.comp-small-cell")
-      .contains("23-007023")
-      .click({ force: true });
-
-    cy.get(".comp-loader-overlay").should("exist");
-    cy.get(".comp-loader-overlay").should("not.exist");
+    cy.navigateToHWLCDetailsScreen("23-007023");
 
     // get the x and y coordinates
     cy.get("#call-details-x-coordinate-div")
