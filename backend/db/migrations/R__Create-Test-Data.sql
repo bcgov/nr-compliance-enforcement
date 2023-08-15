@@ -1271,3 +1271,11 @@ INSERT INTO public.allegation_complaint (in_progress_ind,observed_ind,suspect_wi
 	 (true,false,NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007028','RECREATN'),
 	 (true,true,NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007029','FISHERY')
      ON CONFLICT DO NOTHING;
+
+UPDATE public.complaint t
+set location_geometry_point = 'POINT (50.1705571 -115.6849567)'
+where t.complaint_identifier  = '23-007023';
+
+UPDATE public.complaint t
+set location_geometry_point = 'POINT (53.991532 -125.7878868)'
+where t.complaint_identifier  = '23-006888';
