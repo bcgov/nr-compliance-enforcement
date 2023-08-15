@@ -2,6 +2,8 @@ import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
 
+type Coordinate = number[] | string[] | undefined;
+
 export const getAvatarInitials = (input: string): string => {
   const tokens = input.split(" ");
 
@@ -42,7 +44,7 @@ export const formatDateTime = (input: string | undefined): string => {
 
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (
-  coordinates: number[] | string[] | undefined
+  coordinates: Coordinate
 ): { lat: number; lng: number } => {
   if (!coordinates) {
     return { lat: 0, lng: 0 };
@@ -53,7 +55,7 @@ export const parseDecimalDegreesCoordinates = (
 
 // given coordinates, return true if within BC or false if not within BC
 export const isWithinBC = (
-  coordinates: number[] | string[] | undefined
+  coordinates: Coordinate
 ): boolean => {
   const bcBoundaries = {
     minLatitude: 48.2513,
@@ -78,7 +80,7 @@ export const isWithinBC = (
 };
 
 export const parseCoordinates = (
-  coordinates: number[] | string[] | undefined,
+  coordinates: Coordinate,
   coordinateType: Coordinates
 ): number | string => {
   if (!coordinates) {
@@ -102,7 +104,7 @@ export const getComplaintTypeFromUrl = (): number => {
 };
 
 export const renderCoordinates = (
-  coordinates: number[] | string[] | undefined,
+  coordinates: Coordinate,
   coordinateType: Coordinates
 ): JSX.Element => {
   const result = parseCoordinates(coordinates, coordinateType);
