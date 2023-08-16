@@ -27,6 +27,9 @@ describe("Test Mapping functionality", () => {
         // add a marker to the map
         L.marker([50.1705571, -115.6849567]).addTo(map);
 
+        map.zoomIn();
+        map.zoomOut();
+
         contentWindow.map = map;
       },
     });

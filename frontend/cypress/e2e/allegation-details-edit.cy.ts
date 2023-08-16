@@ -3,7 +3,7 @@ Test to verify that the user is able to click the edit button
 on the wildlife contacts details page and see all the inputs
 */
 describe("Complaint Edit Page spec - Edit Allegation View", () => {
-  before(function () {
+  beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
   });
@@ -184,4 +184,10 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#subject-of-complaint-pair-id textarea").should("exist");
     
   });
+
+  it("it has a map on screen with a marker at the correct location", function () {
+    cy.navigateToAllegationEditScreen("23-006888");
+    cy.verifyMapMarkerExists();
+  });
+
 });

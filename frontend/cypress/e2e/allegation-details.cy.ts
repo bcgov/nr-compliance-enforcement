@@ -78,5 +78,9 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.get("#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(7) > span.comp-details-content").contains(callDetails.region)
   });
 
+  it("it has a map on screen with a marker at the correct location", function () {
+    cy.navigateToAllegationDetailsScreen("23-006888");
+    cy.verifyMapMarkerExists();
+  });
 
 });

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintDeails } from "../../../../store/reducers/complaints";
-import LeafletMapWithPoint from "../../../mapping/LeafletMapWithPoint";
+import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import {
   parseDecimalDegreesCoordinates,
@@ -17,7 +17,7 @@ type Props = {
  * 
  */
 export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
-  const { coordinates, area, location } = useAppSelector(
+  const { coordinates } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
 
@@ -29,8 +29,6 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
       <div className="comp-complaint-location">
         <LeafletMapWithPoint
           coordinates={decimalDegreesCoordinates}
-          community={area}
-          address={location}
           draggable={draggable}
         />
       </div>

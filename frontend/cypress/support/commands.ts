@@ -148,7 +148,7 @@ Cypress.Commands.add("kcLogout", () => {
 
 Cypress.Commands.add("verifyMapMarkerExists", () => {
   cy.get(".leaflet-container").should("exist");
-  cy.get('img[alt="Marker"]').should("exist");
+  cy.get('.leaflet-marker-icon').should("exist");
 });
 
 Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string) => {
