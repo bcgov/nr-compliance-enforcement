@@ -1,60 +1,123 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePersonComplaintXrefDto } from './dto/create-person_complaint_xref.dto';
-import { PersonComplaintXref } from './entities/person_complaint_xref.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
+import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
+  constructor(private dataSource: DataSource) {}
+  @InjectRepository(PersonComplaintXref)
+  private personComplaintXrefRepository: Repository<PersonComplaintXref>;
 
-  constructor(
-    @InjectRepository(PersonComplaintXref)
-    private personComplaintXrefRepository: Repository<PersonComplaintXref>
-  ) {}
+  private readonly logger = new Logger(PersonComplaintXrefService.name);
 
-
-  async create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
-    const newPersonComplaintXref = this.personComplaintXrefRepository.create(createPersonComplaintXrefDto);
-    await this.personComplaintXrefRepository.save(createPersonComplaintXrefDto);
+  async create(
+    createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
+  ): Promise<PersonComplaintXref> {
+    const newPersonComplaintXref = this.personComplaintXrefRepository.create(
+      createPersonComplaintXrefDto
+    );
     return newPersonComplaintXref;
-
   }
 
   async findAll(): Promise<PersonComplaintXref[]> {
     return this.personComplaintXrefRepository.find({
-      relations: { 
+      relations: {
         person_guid: true,
-        complaint_identifier: true
-      }
+        complaint_identifier: true,
+      },
     });
   }
 
   async findOne(person_complaint_xref_guid: any): Promise<PersonComplaintXref> {
     return this.personComplaintXrefRepository.findOne({
-      where: {personComplaintXrefGuid:person_complaint_xref_guid},
+      where: { personComplaintXrefGuid: person_complaint_xref_guid },
       relations: {
         person_guid: true,
-        complaint_identifier: true
-      }    
+        complaint_identifier: true,
+      },
     });
   }
 
-  async findByComplaint(complaint_identifier: any) : Promise<PersonComplaintXref[]> {
-    return this.personComplaintXrefRepository.find({
-      where: { complaint_identifier: complaint_identifier,
-      active_ind: true },
+  async findByComplaint(
+    complaint_identifier: any
+  ): Promise<PersonComplaintXref> {
+    return this.personComplaintXrefRepository.findOne({
+      where: { complaint_identifier: complaint_identifier, active_ind: true },
       relations: {
         person_guid: true,
-        complaint_identifier: true
-      } ,
-
+        complaint_identifier: true,
+      },
     });
   }
 
-
-  async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto) : Promise<PersonComplaintXref> {
-    await this.personComplaintXrefRepository.update(person_complaint_xref_guid, updatePersonComplaintXrefDto);
+  async update(
+    person_complaint_xref_guid: any,
+    updatePersonComplaintXrefDto
+  ): Promise<PersonComplaintXref> {
+    await this.personComplaintXrefRepository.update(
+      person_complaint_xref_guid,
+      updatePersonComplaintXrefDto
+    );
     return this.findOne(person_complaint_xref_guid);
+  }
+
+  /**
+   * Assigns an officer to a complaint.  This will perform one of two operations.
+   * If the existing complaint is not yet assigned to an officer, then this will create a new complaint/officer cross reference.
+   * As such, this exists as a queryRunner transaction.  If there's an exception, the entire transcation is rolled back.
+   *
+   * If the complaint is already assigned to an officer and the intention is to reassign the complaint to another officer, then first deactivate the first assignment and then
+   * create a new cross reference between the complaint and officer.
+   */
+  async assignOfficer(
+    complaintIdentifier: string,
+    createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
+  ): Promise<PersonComplaintXref> {
+    this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let newPersonComplaintXref: PersonComplaintXref;
+    let unassignedPersonComplaintXref: PersonComplaintXref;
+    try {
+      // unassign complaint if it's already assigned to an officer
+      unassignedPersonComplaintXref = await this.findByComplaint(
+        complaintIdentifier
+      );
+      if (unassignedPersonComplaintXref) {
+        this.logger.debug(
+          `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`
+        );
+        unassignedPersonComplaintXref.active_ind = false;
+        await queryRunner.manager.save(unassignedPersonComplaintXref);
+      }
+
+      // create a new complaint assignment record
+      newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
+      this.logger.debug(
+        `Updating assignment on complaint ${complaintIdentifier}`
+      );
+
+      // save the transaction
+      await queryRunner.manager.save(newPersonComplaintXref);
+      await queryRunner.commitTransaction();
+      this.logger.debug(
+        `Successfully assigned person to complaint ${complaintIdentifier}`
+      );
+    } catch (err) {
+      this.logger.error(err);
+      this.logger.error(
+        `Rolling back assignment on complaint ${complaintIdentifier}`
+      );
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(err);
+    } finally {
+      await queryRunner.release();
+    }
+    return newPersonComplaintXref;
   }
 
   remove(id: string) {
