@@ -1,6 +1,9 @@
 import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
+import { CodeTable } from '../types/code-tables/code-table';
+import Option from "../types/app/option";
+import { from } from 'linq-to-typescript';
 
 export const getAvatarInitials = (input: string): string => {
   const tokens = input.split(" ");
@@ -74,3 +77,12 @@ export const renderCoordinates = (
 };
 
 
+// export const convertToOptions = (input: Array<CodeTable>): Array<Option> => { 
+//   if(!from(input).any()){ 
+//     return input.map(({value, label}) => { 
+//       return { value, label } as Option
+//     }) as Array<Option>
+
+//     return new Array<Option>;
+//   }
+// }

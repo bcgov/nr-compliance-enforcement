@@ -17,9 +17,10 @@ import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
+import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
+import COMPLAINT_TYPES from "./types/app/complaint-types";
 
 const App: FC = () => {
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -36,10 +37,14 @@ const App: FC = () => {
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
           {/* <!-- temporary route --> */}
           <Route
-            path="/"
+            path="/legacy"
             element={
-                <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
+              <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
             }
+          />
+          <Route
+            path="/"
+            element={<ComplaintsWrapper defaultComplaintType={COMPLAINT_TYPES.HWCR} />}
           />
           <Route
             path="/complaints/:type?"
@@ -49,10 +54,7 @@ const App: FC = () => {
             path="/complaint/:complaintType/:id"
             element={<ComplaintDetails />}
           />
-          <Route
-            path="/zone/at-a-glance"
-            element={<ZoneAtAGlance />}
-          />
+          <Route path="/zone/at-a-glance" element={<ZoneAtAGlance />} />
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />
         <Route path="*" element={<NotFound />} />

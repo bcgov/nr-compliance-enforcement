@@ -679,6 +679,23 @@ export const selectAllegationComplaints = (
   return allegations;
 };
 
+export const selectTotalComplaintsByType =
+  (complaintType: string) =>
+  (state: RootState): number => {
+    const {
+      complaints: { complaintItems },
+    } = state;
+    const { wildlife, allegations } = complaintItems;
+
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return allegations.length;
+      case COMPLAINT_TYPES.HWCR:
+      default:
+        return wildlife.length;
+    }
+  };
+
 export const selectAllegationComplaintsCount = (state: RootState): number => {
   const {
     complaints: { complaintItems },

@@ -10,6 +10,7 @@ import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectWildlifeComplaintsCount } from "../../../../store/reducers/complaints";
 import { ComplaintFilter } from "../complaint-filter";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 type Props = {
   handleChange: Function;
@@ -116,7 +117,6 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         complaintStatusFilter={complaintStatusFilter}
         setComplaintStatusFilter={setComplaintStatusFilter}
       />
-      <ComplaintFilter />
       <HwcrComplaintTableHeader handleSort={handleSort} />
       <HwcrComplaintTable
         sortColumn={sort[0]}

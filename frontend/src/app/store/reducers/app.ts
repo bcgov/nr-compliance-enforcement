@@ -8,6 +8,7 @@ import { Officer } from "../../types/person/person";
 import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
 import { AUTH_TOKEN } from "../../service/user-service";
+import { DropdownOption } from "../../types/code-tables/option";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -120,6 +121,13 @@ export const profileZone = (state: RootState): string => {
 export const profileZoneDescription = (state: RootState): string => {
   const { profile } = state.app;
   return profile.zoneDescription;
+};
+
+export const selectDefaultZone = (state: RootState): DropdownOption => {
+  const {
+    profile: { zone: value, zoneDescription: label },
+  } = state.app;
+  return { value, label };
 };
 
 export const selectModalOpenState = (state: RootState): boolean => {
