@@ -31,6 +31,7 @@ import { DropdownOption } from "../../../../types/code-tables/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
+import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -384,6 +385,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label id="complaint-location-label-id">
                   Complaint Location
                 </label>
+                <BCGeocoderAutocomplete value={location}/>
                 <input
                   type="text"
                   id="complaint-location-edit-id"
