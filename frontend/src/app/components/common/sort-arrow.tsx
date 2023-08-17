@@ -1,5 +1,7 @@
 import { FC } from "react";
-import { SORT_DIRECTIONS } from "../../constants/sort-direction";
+import { SORT_TYPES } from "../../constants/sort-direction";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort, faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   sortKey: string;
@@ -8,15 +10,12 @@ type Props = {
 };
 
 export const SortArrow: FC<Props> = ({ sortKey, current, direction }): JSX.Element => {
-  console.log(sortKey);
-  console.log(current);
-  console.log(direction);
   if (sortKey === current) {
-    if (direction === SORT_DIRECTIONS.ASCENDING) {
-      return <i className="fa-solid fa-sort-up"></i>;
+    if (direction === SORT_TYPES.ASC) {
+      return <FontAwesomeIcon icon={faSortUp} />
     }
-    return <i className="fa-solid fa-sort-down"></i>;
+    return <FontAwesomeIcon icon={faSortDown} />
   }
 
-  return <i className="fa-solid fa-sort"></i>;
+  return <FontAwesomeIcon icon={faSort} />
 };

@@ -1,5 +1,5 @@
-export const SORT_DIRECTIONS = {
-   ASCENDING: "ASC",
-   DECENDING: "DESC",
+export const SORT_TYPES = {
+   ASC: "ASC",
+   DESC: "DESC",
  };
  
