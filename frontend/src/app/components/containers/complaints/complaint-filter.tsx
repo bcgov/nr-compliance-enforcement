@@ -9,7 +9,7 @@ import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilterState } from "../../../types/providers/complaint-filter-provider-type";
-import { useCollapse } from 'react-collapsed';
+import { useCollapse } from "react-collapsed";
 
 type Props = {
   type: string;
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
-  const { getCollapseProps} = useCollapse({isExpanded: isOpen})
+  const { getCollapseProps } = useCollapse({ isExpanded: isOpen });
 
   const {
     filters,
@@ -62,7 +62,15 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
     setEndDate(end);
   };
 
+  ///--
+  /// Render out the filter drawer by the complaint type passed from the parent complaint component
+  /// Each type of compplaint needs to have its own unique second row of filters specified
+  ///--
   const renderComplaintFilters = (): JSX.Element => {
+
+    //--
+    //-- generate wildlife complaint filters
+    //--
     const renderWildlifeFilters = (): JSX.Element => {
       return (
         <div className="content filter-container">
@@ -186,6 +194,9 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       );
     };
 
+    //--
+    //-- generate allegation complaint filters
+    //--
     const renderAllegationFilters = (): JSX.Element => {
       return (
         <div className="content filter-container">

@@ -705,4 +705,18 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
   return allegations.length;
 };
 
+export const selectComplaintsByType =
+  (complaintType: string) =>
+  (state: RootState): Array<HwcrComplaint | AllegationComplaint> => {
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return selectAllegationComplaints(state);
+      case COMPLAINT_TYPES.HWCR:
+      default:
+        return selectWildlifeComplaints(state);
+    }
+  };
+
+
+
 export default complaintSlice.reducer;

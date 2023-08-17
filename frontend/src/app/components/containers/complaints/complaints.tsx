@@ -101,7 +101,7 @@ const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       </Navbar>
       <ComplaintFilter type={complaintType} isOpen={isExpanded} />
       <ComplaintFilterBar />
-      <ComplaintList />
+      <ComplaintList type={complaintType} />
     </>
   );
 };
