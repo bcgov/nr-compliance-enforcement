@@ -61,6 +61,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
       center={latLng}
       zoom={12}
       style={{ height: "400px", width: "100%" }}
+      className="map-container"
     >
       <Centerer />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
