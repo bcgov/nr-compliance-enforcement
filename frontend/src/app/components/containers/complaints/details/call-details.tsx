@@ -116,12 +116,12 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
             </div>
             <div>
               <div className="comp-details-content-label ">X Coordinate</div>
-              <div className="comp-details-content comp-padding-right-25">
+              <div className="comp-details-content comp-padding-right-25" id="call-details-x-coordinate-div">
                 {renderCoordinates(coordinates, Coordinates.Latitude)}
               </div>
 
               <div className="comp-details-content-label ">Y Coordinate</div>
-              <div className="comp-details-content">
+              <div className="comp-details-content" id="call-details-y-coordinate-div">
                 {renderCoordinates(coordinates, Coordinates.Longitude)}
               </div>
             </div>

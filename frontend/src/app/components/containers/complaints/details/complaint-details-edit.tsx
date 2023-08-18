@@ -32,6 +32,7 @@ import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
 import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
+import { ComplaintLocation } from "./complaint-location";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -491,6 +492,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
           </div>
         </div>
       </div>
+      <ComplaintLocation complaintType={complaintType} draggable={true}/>
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>

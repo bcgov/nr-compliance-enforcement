@@ -15,6 +15,7 @@ import { Button } from "react-bootstrap";
 import { ComplaintDetailsEdit } from "./details/complaint-details-edit";
 import { openModal } from "../../../store/reducers/app";
 import { CancelConfirm } from "../../../types/modal/modal-types";
+import { ComplaintLocation } from "./details/complaint-location";
 
 type ComplaintParams = {
   id: string;
@@ -86,6 +87,9 @@ export const ComplaintDetails: FC = () => {
       <ComplaintHeader id={id} complaintType={complaintType} readOnly={readOnly} editButtonClick={editButtonClick} cancelButtonClick={cancelButtonClick} saveButtonClick={saveButtonClick} />
       { readOnly &&
        <CallDetails complaintType={complaintType}/>
+      }
+      { readOnly &&
+        <ComplaintLocation complaintType={complaintType} draggable={false}/>
       }
       { readOnly &&
       <CallerInformation/>
