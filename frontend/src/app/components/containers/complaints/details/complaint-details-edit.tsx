@@ -385,13 +385,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label id="complaint-location-label-id">
                   Complaint Location
                 </label>
-                <BCGeocoderAutocomplete value={location}/>
-                <input
-                  type="text"
-                  id="complaint-location-edit-id"
-                  className="comp-form-control"
-                  value={location}
-                />
+                <div className="comp-details-edit-input">
+                  <BCGeocoderAutocomplete value={location} id="complaint-location-edit-id" maxResults={10}/>
+                </div>
               </div>
               <div
                 className="comp-details-label-input-pair"
