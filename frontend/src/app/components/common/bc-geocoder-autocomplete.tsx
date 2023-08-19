@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import axios from "axios";
 import CreatableSelect from 'react-select/creatable';
+import { getGeocodedFeatures } from "../../hooks/geocoder";
 
 interface Props {
   value?: string;
@@ -21,27 +22,24 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
   id,
   maxResults,
 }) => {
-  const [selectedAddress, setSelectedAddress] = useState<AddressOption | null>({
-    value: `${value}`,
-    label: `${value}`,
-  });
+  const [selectedAddress, setSelectedAddress] = useState<AddressOption | null>();
   const [addressOptions, setAddressOptions] = useState<AddressOption[]>([]);
-  const [inputValue, setInputValue] = useState<string>("");
+  const [inputValue, setInputValue] = useState<string>(`${value}`);
 
   const fetchAddresses = async (inputValue: string) => {
-    const apiKey = "YOUR_GOOGLE_API_KEY";
-    const apiUrl = `https://geocoder.api.gov.bc.ca/addresses.json?addressString=${inputValue}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2`;
-
+    const features = await getGeocodedFeatures(inputValue, maxResults);
     try {
-      const response = await axios.get(apiUrl);
-      if (response.data.features?.length > 0) {
-      const options = response.data.features.map((feature: any) => ({
+      
+      if (features.features.length > 0) {
+      const options = features.features.map((feature: any) => ({
         value: feature.properties.fullAddress,
         label: feature.properties.fullAddress,
       }));
       if (options) {
         setAddressOptions(options);
       }
+    } else {
+      console.log("Feature length 0");
     }
     } catch (error) {
       console.error("Error fetching addresses:", error);

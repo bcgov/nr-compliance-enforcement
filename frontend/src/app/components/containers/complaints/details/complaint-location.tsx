@@ -17,7 +17,7 @@ type Props = {
  * 
  */
 export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
-  const { coordinates } = useAppSelector(
+  const { coordinates, area, location } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
 
@@ -29,6 +29,8 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
       <div className="comp-complaint-location">
         <LeafletMapWithPoint
           coordinates={decimalDegreesCoordinates}
+          address={location}
+          community={area}
           draggable={draggable}
         />
       </div>
