@@ -30,36 +30,28 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, address, community, dragg
 
   useEffect(() => {
     const fetchData = async () => {
+      // determine the latitude and longitude based on coordinates, address information, or community (prioritized in that order)
+      // If coordinates are not found, use the BC Geocoder to determine the latitude and longitude based on either the address or community
       if (coordinates && isWithinBC(coordinates)) {
         setLatLng(coordinates);
       } else if (address) {
         console.log(`coordinates not found, using address: ${address}`)
         const features = await getGeocodedFeatures(`${address}`, 10);
-        // handle other methods of determining coordinates
-        // for now just return 0,0
-        const lat = features.features[0].geometry.coordinates[1];
-        const lng = features.features[0].geometry.coordinates[0];
+        const lat = features.features[0].geometry?.coordinates[1];
+        const lng = features.features[0].geometry?.coordinates[0];
         console.log(`Latlng: ${lat} ${lng}`)
         setLatLng({lat: lat, lng: lng });
-      } else {
+      } else if (community) {
         console.log(`coordinates not found, using area: ${community}`)
         const features = await getGeocodedFeatures(`${community}`, 10);
-        // handle other methods of determining coordinates
-        // for now just return 0,0
-        const lat = features.features[0].geometry.coordinates[1];
-        const lng = features.features[0].geometry.coordinates[0];
+        const lat = features.features[0].geometry?.coordinates[1];
+        const lng = features.features[0].geometry?.coordinates[0];
         console.log(`Latlng: ${lat} ${lng}`)
         setLatLng({lat: lat, lng: lng });
       }
-
-
     };
-
     fetchData();
-  }, [coordinates]);
-
-
-
+  }, [address, community, coordinates]);
 
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />
