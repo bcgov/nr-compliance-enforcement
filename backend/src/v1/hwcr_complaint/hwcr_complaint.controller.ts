@@ -7,6 +7,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UUID } from 'crypto';
+import { HwcrComplaint } from './entities/hwcr_complaint.entity';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("hwcr-complaint")
@@ -46,7 +47,8 @@ export class HwcrComplaintController {
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: UUID, @Body() updateHwcrComplaintDto: UpdateHwcrComplaintDto) {
+  update(@Param('id') id: UUID, @Body('hwcrComplaint') updateHwcrComplaintDto: string) {
+    console.log("updateHwcrComplaintDto controller1: " + updateHwcrComplaintDto);
     return this.hwcrComplaintService.update(id, updateHwcrComplaintDto);
   }
 

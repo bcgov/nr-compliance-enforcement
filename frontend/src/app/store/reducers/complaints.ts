@@ -20,6 +20,9 @@ import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
+import { ComplaintUpdateParams } from "../../types/api-params/complaint-update-params";
+import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-of-complaint-code";
+import axios from "axios";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -58,7 +61,9 @@ export const complaintSlice = createSlice({
       return { ...state, complaintItems: update };
     },
     setComplaint: (state, action) => {
+      console.log("action 55: " + JSON.stringify(action));
       const { payload: complaint } = action;
+      console.log("complaint 55: " + JSON.stringify(complaint));
       return { ...state, complaint };
     },
     setZoneAtAGlance: (state, action) => {
@@ -209,6 +214,8 @@ export const getWildlifeComplaintByComplaintIdentifier =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
+      console.log("getHwcrComplaint: " + JSON.stringify(response));
+
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
@@ -259,6 +266,19 @@ export const getZoneAtAGlanceStats =
     }
   };
 
+  export const updateComplaint = async (
+    dispatch: Dispatch,
+    id: string,
+    status: string
+  ) => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint/${id}`,
+      { complaint_status_code: `${status}` }
+    );
+  
+    await patch<Complaint>(dispatch, parameters);
+  };
+
 const updateComplaintStatus = async (
   dispatch: Dispatch,
   id: string,
@@ -271,6 +291,40 @@ const updateComplaintStatus = async (
 
   await patch<Complaint>(dispatch, parameters);
 };
+
+export const updateWildlifeComplaint =
+  (hwcrComplaint: HwcrComplaint): AppThunk =>
+  async (dispatch) => {
+    console.log("hwcrComplaint3: " + hwcrComplaint.hwcr_complaint_guid);
+    console.log("hwcrComplaint34: " + JSON.stringify(hwcrComplaint));
+    try {
+      dispatch(toggleLoading(true));
+
+      const updateHwcrComplaintParameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
+        { 
+          hwcrComplaint: `${JSON.stringify(hwcrComplaint)}`,
+        }
+      );
+
+      //await patch<Complaint>(dispatch, updateHwcraComplaintParameters);
+      //await patch<HwcrComplaint>(dispatch, updateHwcrComplaintParameters);
+      await axios.patch(`${config.API_BASE_URL}/v1/hwcr-complaint/` + hwcrComplaint.hwcr_complaint_guid, {hwcrComplaint: JSON.stringify(hwcrComplaint)});
+
+      //-- get the updated wildlife conflict
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${hwcrComplaint.complaint_identifier.complaint_identifier}`
+      );
+      const response = await get<HwcrComplaint>(dispatch, parameters);
+
+      dispatch(setComplaint({ ...response }));
+    } catch (error) {
+      //-- add error handling
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
@@ -679,6 +733,23 @@ export const selectAllegationComplaints = (
   return allegations;
 };
 
+export const selectTotalComplaintsByType =
+  (complaintType: string) =>
+  (state: RootState): number => {
+    const {
+      complaints: { complaintItems },
+    } = state;
+    const { wildlife, allegations } = complaintItems;
+
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return allegations.length;
+      case COMPLAINT_TYPES.HWCR:
+      default:
+        return wildlife.length;
+    }
+  };
+
 export const selectAllegationComplaintsCount = (state: RootState): number => {
   const {
     complaints: { complaintItems },
@@ -687,5 +758,19 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
 
   return allegations.length;
 };
+
+export const selectComplaintsByType =
+  (complaintType: string) =>
+  (state: RootState): Array<HwcrComplaint | AllegationComplaint> => {
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return selectAllegationComplaints(state);
+      case COMPLAINT_TYPES.HWCR:
+      default:
+        return selectWildlifeComplaints(state);
+    }
+  };
+
+
 
 export default complaintSlice.reducer;

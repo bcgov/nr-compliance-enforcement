@@ -12,6 +12,8 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from 'src/types/zone_at
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
+import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
+import { HwcrComplaintDto } from './dto/hwcr_complaint.dto';
 
 @Injectable()
 export class HwcrComplaintService {
@@ -31,6 +33,8 @@ export class HwcrComplaintService {
   protected readonly complaintService: ComplaintService;
   @Inject(AttractantHwcrXrefService)
   protected readonly attractantHwcrXrefService: AttractantHwcrXrefService;
+  @Inject(PersonComplaintXrefService)
+  protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
   async create(hwcrComplaint: any): Promise<HwcrComplaint> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -195,12 +199,26 @@ export class HwcrComplaintService {
   
   async update(
     hwcr_complaint_guid: UUID,
-    updateHwcrComplaint: UpdateHwcrComplaintDto
+    updateHwcrComplaint: string
   ): Promise<HwcrComplaint> {
-    await this.hwcrComplaintsRepository.update(
-      { hwcr_complaint_guid },
-      updateHwcrComplaint
-    );
+    console.log("updateHwcrComplaint21: " + updateHwcrComplaint);
+    const updateHwcrComplaintDto: UpdateHwcrComplaintDto = JSON.parse(updateHwcrComplaint);
+    console.log("updateHwcrComplaint24: " + updateHwcrComplaintDto.hwcr_complaint_nature_code.hwcr_complaint_nature_code);
+    const updateData = 
+      {
+        hwcr_complaint_nature_code: updateHwcrComplaintDto.hwcr_complaint_nature_code
+      };
+      //const updateQuery = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint').update();
+    //await this.hwcrComplaintsRepository.update({hwcr_complaint_guid: hwcr_complaint_guid}, updateData);
+    //.where("hwrc_compliant.hwcr_complaint_nature_code: hwcr_complaint_nature_code", {hwcr_complaint_nature_code: hwcr_complaint_guid})
+    
+  console.log("updateHwcrComplaint25: " + updateData);
+      await this.hwcrComplaintsRepository.update(
+        { hwcr_complaint_guid },
+        updateData
+      );
+      //await this.complaintService.update(JSON.parse(updateHwcrComplaint).complaint_identifier.complaint_identifier, JSON.parse(updateHwcrComplaint).complaint_identifier);
+      //await this.personComplaintXrefService.update(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
       return this.findOne(hwcr_complaint_guid);
     }
   

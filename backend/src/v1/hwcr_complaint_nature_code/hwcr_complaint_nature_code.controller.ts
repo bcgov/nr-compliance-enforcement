@@ -30,7 +30,8 @@ export class HwcrComplaintNatureCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.hwcrComplaintNatureCodeService.findOne(+id);
+    console.log("fucking ID: " + id);
+    return this.hwcrComplaintNatureCodeService.findOne(id);
   }
 
   @Patch(':id')

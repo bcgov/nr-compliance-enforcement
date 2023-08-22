@@ -22,8 +22,9 @@ export class HwcrComplaintNatureCodeService {
     return this.hwcrComplaintNatureCodeRepository.find();
   }
 
-  async findOne(id: any): Promise<HwcrComplaintNatureCode> {
-    return this.hwcrComplaintNatureCodeRepository.findOneOrFail(id);
+  async findOne(id: string): Promise<HwcrComplaintNatureCode> {
+    console.log("fucking ID2: " + id);
+    return this.hwcrComplaintNatureCodeRepository.findOneByOrFail({hwcr_complaint_nature_code: id});
   }
 
   async update(hwcr_complaint_nature_code: string, updateHwcrComplaintNatureCodeDto: UpdateHwcrComplaintNatureCodeDto): Promise<HwcrComplaintNatureCode> {

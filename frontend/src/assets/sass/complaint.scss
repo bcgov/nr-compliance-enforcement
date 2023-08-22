@@ -836,3 +836,13 @@
 .input-field-select__option {
   min-height: 35px;
 }
+.error-message {
+  color: $bc-gov-danger;
+}
+
+.error-border {
+  div
+  {
+    border-color: $bc-gov-danger;
+  }
+}

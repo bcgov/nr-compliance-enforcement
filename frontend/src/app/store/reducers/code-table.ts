@@ -11,7 +11,7 @@ import { SpeciesCode } from "../../types/code-tables/species-code";
 import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-of-complaint-code";
 import { CosGeoOrgUnit } from '../../types/person/person';
 import { AttractantCode } from "../../types/code-tables/attractant-code";
-import { DropdownOption } from "../../types/code-tables/option";
+import Option from "../../types/app/option";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
 
@@ -311,16 +311,16 @@ export const selectSortedCodeTable = (
 
 export const selectAgencyDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { agencyCodes },
   } = state;
-  return agencyCodes as Array<DropdownOption>;
+  return agencyCodes as Array<Option>;
 };
 
 export const selectComplaintStatusCodeDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { complaintStatusCodes },
   } = state;
@@ -329,7 +329,7 @@ export const selectComplaintStatusCodeDropdown = (
 
 export const selectSpeciesCodeDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { speciesCodes },
   } = state;
@@ -338,34 +338,34 @@ export const selectSpeciesCodeDropdown = (
 
 export const selectViolationCodeDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { violationCodes },
   } = state;
   return violationCodes;
 };
 
-export const selectedHwcrNatureOfComplaintCodeDropdown = (
+export const selectHwcrNatureOfComplaintCodeDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { wildlifeNatureOfComplaintCodes },
   } = state;
   return wildlifeNatureOfComplaintCodes;
 };
 
-export const selectedAreaCodeDropdown = (
+export const selectAreaCodeDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { areaCodes },
   } = state;
   return areaCodes;
 };
 
-export const selectedAttractantCodeDropdown = (
+export const selectAttractantCodeDropdown = (
   state: RootState
-): Array<DropdownOption> => {
+): Array<Option> => {
   const {
     codeTables: { attractantCodes },
   } = state;

@@ -20,24 +20,37 @@ import {
   selectComplaintStatusCodeDropdown, 
   selectSpeciesCodeDropdown, 
   selectViolationCodeDropdown,
-  selectedHwcrNatureOfComplaintCodeDropdown, 
-  selectedAreaCodeDropdown, 
-  selectedAttractantCodeDropdown 
+  selectHwcrNatureOfComplaintCodeDropdown, 
+  selectAreaCodeDropdown, 
+  selectAttractantCodeDropdown 
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
-import { DropdownOption } from "../../../../types/code-tables/option";
+import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
+import { ValidationSelect } from "../../../../common/validation-select";
+import { Complaint } from "../../../../types/complaints/complaint";
+import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
+import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
+import axios from "axios";
+import config from "../../../../../config";
+import { HwcrNatureOfComplaintCode } from "../../../../types/code-tables/hwcr-nature-of-complaint-code";
+import { HwcrComplaintNatureCode } from "../../../../types/code-tables/hwcr-complaint-nature-code";
 
 interface ComplaintHeaderProps {
-  complaintType: string;
+  complaint: HwcrComplaint | AllegationComplaint | null | undefined,
+  setComplaint: Function,
+  complaintType: string,
+
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
+  complaint,
+  setComplaint,
   complaintType,
 }) => {
   const {
@@ -108,15 +121,16 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   );
 
   // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as DropdownOption[];
-  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as DropdownOption[];
-  const hwcrNatureOfComplaintCodes = useSelector(selectedHwcrNatureOfComplaintCodeDropdown) as DropdownOption[];
-  const areaCodes = useSelector(selectedAreaCodeDropdown) as DropdownOption[];
-  const attractantCodes = useSelector(selectedAttractantCodeDropdown) as DropdownOption[];
-  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as DropdownOption[];
-  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as DropdownOption[];
 
-  const yesNoOptions: DropdownOption[] = [
+  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
+  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
+  const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
+  const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
+  const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
+  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
+
+  const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
   ];
@@ -157,6 +171,61 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     setSelectedIncidentDateTime(date);
   };
 
+  //const [nocCode, setNOCCode] = useState<Option | undefined>(selectedNatureOfComplaint);
+  const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
+  async function handleNOCChange(selectedOption: Option | null) {
+    if(selectedOption !== null && selectedOption !== undefined)
+    {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
+        if(selectedOption.value === "")
+        {
+          setNOCErrorMsg("Required");
+        }
+        else
+        {
+          setNOCErrorMsg("");
+          let hwcrComplaint: HwcrComplaint = {...complaint} as HwcrComplaint;
+          //await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/DAMNP`).then((response) => {
+          await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/` + selectedOption.value).then((response) => {
+            hwcrComplaint.hwcr_complaint_nature_code = response.data;
+            console.log("hwcrComplaint333333333333333: " + JSON.stringify(hwcrComplaint));
+            setComplaint(hwcrComplaint);
+          });
+
+        }
+      }
+    }
+}
+const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
+  function handleSpeciesChange(selectedOption: Option | null) {
+    if(selectedOption !== null)
+    {
+      if(selectedOption.value === "")
+      {
+        setSpeciesErrorMsg("Required");
+      }
+      else
+      {
+        setSpeciesErrorMsg("");
+      }
+    }
+}
+const [statusErrorMsg, setStatsErrorMsg] = useState<string>("");
+  function handleStatusChange(selectedOption: Option | null) {
+    if(selectedOption !== null)
+    {
+      if(selectedOption.value === "")
+      {
+        setStatsErrorMsg("Required");
+      }
+      else
+      {
+        setStatsErrorMsg("");
+      }
+    }
+  }
+
   return (
     <div>
       {/* edit header block */}
@@ -171,13 +240,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label id="nature-of-complaint-label-id">
                   Nature of Complaint<span className="required-ind">*</span>
                 </label>
-                <Select
-                  className="comp-details-input"
-                  options={hwcrNatureOfComplaintCodes}
-                  defaultValue={selectedNatureOfComplaint}
-                  placeholder="Select"
-                  classNamePrefix='comp-select'
+                <ValidationSelect
                   id="nature-of-complaint-select-id"
+                  options={hwcrNatureOfComplaintCodes}
+                  placeholder="Select"
+                  className="comp-details-input"
+                  classNamePrefix='comp-select'
+                  defaultValue={selectedNatureOfComplaint}
+                  onChange={handleNOCChange}
+                  errMsg={nocErrorMsg}
                 />
               </div>
             )}
@@ -189,13 +260,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label id="species-label-id">
                   Species<span className="required-ind">*</span>
                 </label>
-                <Select
+                <ValidationSelect
                   className="comp-details-input"
                   options={speciesCodes}
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
                   classNamePrefix='comp-select'
+                  onChange={handleSpeciesChange}
+                  errMsg={speciesErrorMsg}
                 />
               </div>
             )}
@@ -221,13 +294,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <label id="status-label-id">
                 Status<span className="required-ind">*</span>
               </label>
-              <Select
+              <ValidationSelect
                 className="comp-details-input"
                 options={complaintStatusCodes}
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
                 classNamePrefix='comp-select'
+                onChange={handleStatusChange}
+                errMsg={statusErrorMsg}
               />
             </div>
             <div
@@ -389,7 +464,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   type="text"
                   id="complaint-location-edit-id"
                   className="comp-form-control"
-                  value={location}
+                  defaultValue={location}
                 />
               </div>
               <div
@@ -414,7 +489,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
-                    value={xCoordinate}
+                    defaultValue={xCoordinate}
                   />
                 </div>
               </div>
@@ -428,7 +503,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     type="text"
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
-                    value={yCoordinate}
+                    defaultValue={yCoordinate}
                   />
                 </div>
               </div>
@@ -459,7 +534,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="office-edit-readonly-id"
                     className="comp-form-control"
                     disabled
-                    value={office}
+                    defaultValue={office}
                   />
                 </div>
               </div>
@@ -471,7 +546,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="zone-edit-readonly-id"
                     className="comp-form-control"
                     disabled
-                    value={zone}
+                    defaultValue={zone}
                   />
                 </div>
               </div>
@@ -486,7 +561,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="region-edit-readonly-id"
                     className="comp-form-control"
                     disabled
-                    value={region}
+                    defaultValue={region}
                   />
                 </div>
               </div>
@@ -512,7 +587,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={name}
+                    defaultValue={name}
                     id="caller-name-id"
                   />
                 </div>
@@ -531,7 +606,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={primaryPhone}
+                    defaultValue={primaryPhone}
                     id="caller-primary-phone-id"
                   />
                 </div>
@@ -550,7 +625,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={alternatePhone}
+                    defaultValue={alternatePhone}
                     id="caller-info-alternate-1-phone-id"
                   />
                 </div>
@@ -569,7 +644,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={secondaryPhone}
+                    defaultValue={secondaryPhone}
                     id="caller-info-alternate-2-phone-id"
                   />
                 </div>
@@ -585,7 +660,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={address}
+                    defaultValue={address}
                     id="comlaint-address-id"
                   />
                 </div>
@@ -597,7 +672,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={email}
+                    defaultValue={email}
                     id="complaint-email-id"
                   />
                 </div>
