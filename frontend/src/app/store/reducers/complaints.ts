@@ -20,6 +20,7 @@ import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
+import { Feature } from "../../types/maps/bcGeocoderType";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -27,6 +28,8 @@ const initialState: ComplaintState = {
     allegations: [],
   },
   complaint: null,
+  complaintLocation: null,
+
   zoneAtGlance: {
     hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [] },
     allegation: { assigned: 0, unassigned: 0, total: 0, offices: [] },
@@ -60,6 +63,10 @@ export const complaintSlice = createSlice({
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
       return { ...state, complaint };
+    },
+    setComplaintLocation: (state, action) => {
+      const { payload: complaintLocation } = action;
+      return { ...state, complaintLocation };
     },
     setZoneAtAGlance: (state, action) => {
       const { payload: statistics } = action;
@@ -129,6 +136,7 @@ export const complaintSlice = createSlice({
 export const {
   setComplaints,
   setComplaint,
+  setComplaintLocation,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
@@ -209,6 +217,19 @@ export const getWildlifeComplaintByComplaintIdentifier =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: { area_name },
+        } = ceComplaint;
+
+        dispatch(
+          getComplaintLocation(`${location_summary_text ?? ""} ${area_name}`)
+        );
+      }
+
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
@@ -228,6 +249,19 @@ export const getAllegationComplaintByComplaintIdentifier =
         `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
       );
       const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: { area_name },
+        } = ceComplaint;
+
+        dispatch(
+          getComplaintLocation(`${location_summary_text ?? ""} ${area_name}`)
+        );
+      }
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -256,6 +290,21 @@ export const getZoneAtAGlanceStats =
       //-- handle the error message
     } finally {
       dispatch(toggleLoading(false));
+    }
+  };
+
+export const getComplaintLocation =
+  (address: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/bc-geo-coder/address/${address}`
+      );
+
+      const response = await get<Feature>(dispatch, parameters);
+      dispatch(setComplaintLocation(response));
+    } catch (error) {
+      //-- handle the error message
     }
   };
 
@@ -332,6 +381,16 @@ export const selectComplaint = (
   const { complaint } = root;
 
   return complaint;
+};
+
+export const selectComplaintLocation = (
+  state: RootState
+): Feature | null | undefined => {
+  const {
+    complaints: { complaintLocation },
+  } = state;
+
+  return complaintLocation;
 };
 
 export const selectComplaintHeader =
