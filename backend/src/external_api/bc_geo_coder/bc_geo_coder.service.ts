@@ -18,7 +18,7 @@ export class BcGeoCoderService {
         const { data } = await firstValueFrom(
             this.httpService.get<any>(apiUrl).pipe(
               catchError((error: AxiosError) => {
-                this.logger.error(error.response);
+                this.logger.error(error.response.data);
                 throw 'Error getting BC Geocoder response';
               }),
             ),
