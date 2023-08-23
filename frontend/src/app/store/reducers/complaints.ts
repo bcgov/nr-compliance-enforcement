@@ -224,10 +224,7 @@ export const getWildlifeComplaintByComplaintIdentifier =
           location_summary_text,
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
-
-        dispatch(
-          getComplaintLocation(`${location_summary_text ?? ""} ${area_name}`)
-        );
+        dispatch(getComplaintLocation(area_name, location_summary_text));
       }
 
       dispatch(setComplaint({ ...response }));
@@ -258,9 +255,7 @@ export const getAllegationComplaintByComplaintIdentifier =
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
 
-        dispatch(
-          getComplaintLocation(`${location_summary_text ?? ""} ${area_name}`)
-        );
+        dispatch(getComplaintLocation(area_name, location_summary_text));
       }
 
       dispatch(setComplaint({ ...response }));
@@ -293,14 +288,35 @@ export const getZoneAtAGlanceStats =
     }
   };
 
-export const getComplaintLocation =
+export const getComplaintLocationByAddress =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/bc-geo-coder/address/${address}`
+        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
       );
+      const response = await get<Feature>(dispatch, parameters);
+      dispatch(setComplaintLocation(response));
+    } catch (error) {
+      //-- handle the error message
+    }
+  };
 
+export const getComplaintLocation =
+  (area: string, address?: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      let parameters;
+
+      if (address && area) {
+        parameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`
+        );
+      } else {
+        parameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`
+        );
+      }
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setComplaintLocation(response));
     } catch (error) {

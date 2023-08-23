@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
-  getComplaintLocation,
+  getComplaintLocationByAddress,
   selectComplaintLocation,
 } from "../../store/reducers/complaints";
 
@@ -37,7 +37,7 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
 
   useEffect(() => {
     const fetchAddresses = async (inputValue: string) => {
-      dispatch(getComplaintLocation(`${inputValue}`));
+      dispatch(getComplaintLocationByAddress(inputValue));
 
       try {
         if (complaintLocation) {
@@ -49,15 +49,15 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
             if (options) {
               setAddressOptions(options);
             }
-          } else {
-            console.log("Feature length 0");
           }
         }
       } catch (error) {
         console.error("Error fetching addresses:", error);
       }
     };
-    fetchAddresses(inputValue);
+    if (inputValue) {
+      fetchAddresses(inputValue);
+    }
   }, [inputValue, maxResults]);
 
   return (
