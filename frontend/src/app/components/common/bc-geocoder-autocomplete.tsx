@@ -37,8 +37,6 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
 
   useEffect(() => {
     const fetchAddresses = async (inputValue: string) => {
-      //const features = await getGeocodedFeatures(inputValue, maxResults);
-
       dispatch(getComplaintLocation(`${inputValue}`));
 
       try {

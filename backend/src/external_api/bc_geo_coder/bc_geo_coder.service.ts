@@ -13,12 +13,12 @@ export class BcGeoCoderService {
 
     async findAll(query: string): Promise<Feature> {
         const maxResults = 10;
-        const apiUrl = `https://geocoder.api.gov.bc.ca/addresses.json?addressString=${query}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2&provinceCode=BC`;
+        const apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${query}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2&provinceCode=BC`;
 
         const { data } = await firstValueFrom(
             this.httpService.get<any>(apiUrl).pipe(
               catchError((error: AxiosError) => {
-                this.logger.error(error.response.data);
+                this.logger.error(error.response);
                 throw 'Error getting BC Geocoder response';
               }),
             ),

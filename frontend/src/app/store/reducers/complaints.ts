@@ -222,13 +222,12 @@ export const getWildlifeComplaintByComplaintIdentifier =
       if (ceComplaint) {
         const {
           location_summary_text,
-          cos_geo_org_unit: {
-            area_name,
-          },
+          cos_geo_org_unit: { area_name },
         } = ceComplaint;
 
         dispatch(
-          getComplaintLocation(`${ location_summary_text ?? ''} ${area_name}`));
+          getComplaintLocation(`${location_summary_text ?? ""} ${area_name}`)
+        );
       }
 
       dispatch(setComplaint({ ...response }));
@@ -256,13 +255,12 @@ export const getAllegationComplaintByComplaintIdentifier =
       if (ceComplaint) {
         const {
           location_summary_text,
-          cos_geo_org_unit: {
-            area_name,
-          },
+          cos_geo_org_unit: { area_name },
         } = ceComplaint;
 
         dispatch(
-          getComplaintLocation(`${ location_summary_text ?? ''} ${area_name}`));
+          getComplaintLocation(`${location_summary_text ?? ""} ${area_name}`)
+        );
       }
 
       dispatch(setComplaint({ ...response }));
@@ -295,23 +293,19 @@ export const getZoneAtAGlanceStats =
     }
   };
 
-  export const getComplaintLocation =
+export const getComplaintLocation =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
-
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/bc-geo-coder/address/${address}`);
+        `${config.API_BASE_URL}/bc-geo-coder/address/${address}`
+      );
 
       const response = await get<Feature>(dispatch, parameters);
-      console.log(`Found response for ${address}`);
-      console.log(response.features[0].geometry.coordinates);
       dispatch(setComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
     } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
