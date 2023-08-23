@@ -22,11 +22,6 @@ export const ComplaintLocation: FC<Props> = ({ draggable }) => {
   lat = complaintLocation?.features[0].geometry.coordinates[1];
   lng = complaintLocation?.features[0].geometry.coordinates[0];
  }
-console.log(`lat/lng: ${lat} ${lng}`);
-  useEffect(() => {
-    console.log('Blabladflksdaj');
-    console.log(complaintLocation);
-  }, [complaintLocation]);
   return (
     <div className="comp-complaint-details-location-block">
       <h6>Complaint Location</h6>
