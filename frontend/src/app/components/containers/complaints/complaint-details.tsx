@@ -65,6 +65,10 @@ export const ComplaintDetails: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   useEffect(() => {
+    if (
+      !complaint ||
+      complaint.complaint_identifier.complaint_identifier !== id
+    ) {
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
@@ -74,26 +78,8 @@ export const ComplaintDetails: FC = () => {
             dispatch(getWildlifeComplaintByComplaintIdentifier(id));
             break;
         }
-
-    if (complaint) {
-      const { complaint_identifier: ceComplaint }: any = complaint;
-
-      if (ceComplaint) {
-        const {
-          location_summary_text,
-          cos_geo_org_unit: {
-            area_name,
-          },
-        } = ceComplaint;
-
-        dispatch(
-          getComplaintLocation(`${ location_summary_text} ${area_name}`));
-
       }
     }
-
-      }
-    
   }, [id, complaintType, complaint, dispatch]);
 
   return (

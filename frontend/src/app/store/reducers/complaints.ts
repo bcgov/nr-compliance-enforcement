@@ -217,6 +217,20 @@ export const getWildlifeComplaintByComplaintIdentifier =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: {
+            area_name,
+          },
+        } = ceComplaint;
+
+        dispatch(
+          getComplaintLocation(`${ location_summary_text ?? ''} ${area_name}`));
+      }
+
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
@@ -236,6 +250,20 @@ export const getAllegationComplaintByComplaintIdentifier =
         `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
       );
       const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: {
+            area_name,
+          },
+        } = ceComplaint;
+
+        dispatch(
+          getComplaintLocation(`${ location_summary_text ?? ''} ${area_name}`));
+      }
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -277,7 +305,7 @@ export const getZoneAtAGlanceStats =
         `${config.API_BASE_URL}/bc-geo-coder/address/${address}`);
 
       const response = await get<Feature>(dispatch, parameters);
-      console.log('Found response');
+      console.log(`Found response for ${address}`);
       console.log(response.features[0].geometry.coordinates);
       dispatch(setComplaintLocation(response));
     } catch (error) {
