@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { BcGeoCoderService } from './bc_geo_coder.service';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../enum/role.enum';
