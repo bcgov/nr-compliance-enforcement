@@ -3,7 +3,7 @@ import { BcGeoCoderService } from "./bc_geo_coder.service";
 import { HttpService, HttpModule } from "@nestjs/axios";
 import { Feature } from "src/types/bc_geocoder/bcGeocoderType";
 import { AxiosResponse } from 'axios';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 
 describe("BcGeoCoderService", () => {
   let service: BcGeoCoderService;

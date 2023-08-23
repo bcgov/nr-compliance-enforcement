@@ -5,7 +5,7 @@ import { HttpModule, HttpService } from "@nestjs/axios";
 
 describe("BcGeoCoderController", () => {
   let controller: BcGeoCoderController;
-  let httpService: HttpService;
+  //let httpService: HttpService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,7 +15,7 @@ describe("BcGeoCoderController", () => {
     }).compile();
 
     controller = module.get<BcGeoCoderController>(BcGeoCoderController);
-    httpService = module.get<HttpService>(HttpService);
+    //httpService = module.get<HttpService>(HttpService);
   });
 
   it("should be defined", () => {

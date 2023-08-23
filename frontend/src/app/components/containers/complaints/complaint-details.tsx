@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
   getAllegationComplaintByComplaintIdentifier,
-  getComplaintLocation,
   getWildlifeComplaintByComplaintIdentifier,
   selectComplaint,
   setComplaint,

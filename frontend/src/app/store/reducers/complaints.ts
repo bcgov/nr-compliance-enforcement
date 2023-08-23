@@ -305,7 +305,6 @@ export const getComplaintLocation =
       dispatch(setComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
-    } finally {
     }
   };
 
