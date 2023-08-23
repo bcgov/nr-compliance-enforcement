@@ -50,7 +50,7 @@ describe("BcGeoCoderService", () => {
 
     jest.spyOn(httpService, 'get').mockReturnValue(of(mockResponse));
     const features: Feature = await service.findAll(
-      "2975 Jutland Road, Victoria, BC"
+      "Victoria","2975 Jutland Road"
     );
 
     expect(features.features[0].geometry.coordinates).toEqual(mockCoordinates);

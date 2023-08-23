@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { BcGeoCoderService } from './bc_geo_coder.service';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../enum/role.enum';
@@ -7,10 +7,10 @@ import { Role } from '../../enum/role.enum';
 export class BcGeoCoderController {
   constructor(private readonly bcGeoCoderService: BcGeoCoderService) {}
 
-  @Get('/address/:query')
+  @Get('/address')
   @Roles(Role.COS_OFFICER)
-  findAll(@Param('query') query: string) {
-    return this.bcGeoCoderService.findAll(query);
+  findAll(@Query('localityName') localityName?: string, @Query('addressString') addressString?: string) {
+    return this.bcGeoCoderService.findAll(localityName,addressString);
   }
 
 }
