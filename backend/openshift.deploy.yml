@@ -152,11 +152,6 @@ objects:
                     secretKeyRef:
                       name: ceds-backend-oicd
                       key: jwt-issuer
-                - name: BC_GEOCODER_API_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: bc-geo-coder
-                      key: BC_GEOCODER_API_URL
               ports:
                 - containerPort: 3000
                   protocol: TCP

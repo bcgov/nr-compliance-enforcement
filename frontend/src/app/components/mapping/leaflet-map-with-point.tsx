@@ -9,7 +9,7 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet from "leaflet";
 
 type Props = {
-  coordinates: { lat: number; lng: number };
+  coordinates?: { lat: number; lng: number };
   draggable: boolean;
 };
 
@@ -18,6 +18,20 @@ type Props = {
  *
  */
 const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
+  // the derived lat long pair.
+  // If a coordinate is supplied, then the latLng is set to the supplied coordinates.
+  // If coordinates aren't supplied, then use the BC Geocoder to determine the latLng based on an address (if supplied), or
+  // the community.  Every complaint will have a community, so theoretically, there will always be a latLng that can be derived.
+  let latLng: { lat: number; lng: number };
+
+  if (coordinates) {
+    latLng = coordinates;
+  } else {
+    // handle other methods of determining coordinates
+    // for now just return 0,0
+    latLng = { lat: 0, lng: 0 };
+  }
+
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />
   );
@@ -33,8 +47,8 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
     const map = useMap();
 
     useEffect(() => {
-      if (coordinates) {
-        map.setView(coordinates);
+      if (latLng) {
+        map.setView(latLng);
       }
     }, [map]);
 
@@ -44,7 +58,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
   return (
     <MapContainer
       id="map"
-      center={coordinates}
+      center={latLng}
       zoom={12}
       style={{ height: "400px", width: "100%" }}
       className="map-container"
@@ -53,7 +67,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker
         data-testid="complaint-location-marker"
-        position={coordinates}
+        position={latLng}
         icon={customMarkerIcon}
         draggable={draggable}
       >

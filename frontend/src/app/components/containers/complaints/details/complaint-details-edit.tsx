@@ -31,7 +31,6 @@ import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
-import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
@@ -490,9 +489,12 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                 <label id="complaint-location-label-id">
                   Complaint Location
                 </label>
-                <div className="comp-details-edit-input">
-                  <BCGeocoderAutocomplete value={location} id="complaint-location-edit-id" maxResults={10}/>
-                </div>
+                <input
+                  type="text"
+                  id="complaint-location-edit-id"
+                  className="comp-form-control"
+                  defaultValue={location}
+                />
               </div>
               <div
                 className="comp-details-label-input-pair"

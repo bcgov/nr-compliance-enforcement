@@ -25,7 +25,6 @@ import { CosGeoOrgUnitModule } from "./v1/cos_geo_org_unit/cos_geo_org_unit.modu
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
 import { PersonComplaintXrefModule } from "./v1/person_complaint_xref/person_complaint_xref.module";
 import { PersonComplaintXrefCodeModule } from "./v1/person_complaint_xref_code/person_complaint_xref_code.module";
-import { BcGeoCoderModule } from "./external_api/bc_geo_coder/bc_geo_coder.module";
 
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
@@ -72,8 +71,7 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     AttractantHwcrXrefModule,
     CosGeoOrgUnitModule,
     PersonComplaintXrefModule,
-    PersonComplaintXrefCodeModule,
-    BcGeoCoderModule,
+    PersonComplaintXrefCodeModule
   ],
   controllers: [AppController],
   providers: [AppService],
