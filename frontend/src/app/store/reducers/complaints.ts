@@ -313,20 +313,6 @@ export const getZoneAtAGlanceStats =
     }
   };
 
-
-  export const updateComplaint = async (
-    dispatch: Dispatch,
-    id: string,
-    status: string
-  ) => {
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/complaint/${id}`,
-      { complaint_status_code: `${status}` }
-    );
-  
-    await patch<Complaint>(dispatch, parameters);
-  };
-
 export const getComplaintLocationByAddress =
   (address: string): AppThunk =>
   async (dispatch) => {
