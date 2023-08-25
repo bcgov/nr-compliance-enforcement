@@ -5,12 +5,10 @@ import { useParams } from "react-router-dom";
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
   getAllegationComplaintByComplaintIdentifier,
-  getWildlifeComplaintByComplaintIdentifier,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
   selectComplaint,
   setComplaint,
   updateWildlifeComplaint,
-  updateWildlifeComplaintStatus,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";

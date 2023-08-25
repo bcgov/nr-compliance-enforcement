@@ -13,7 +13,6 @@ import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
 import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
-import { HwcrComplaintDto } from './dto/hwcr_complaint.dto';
 
 @Injectable()
 export class HwcrComplaintService {

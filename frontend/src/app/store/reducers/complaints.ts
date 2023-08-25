@@ -17,12 +17,11 @@ import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
-import { toggleLoading, userId } from "./app";
+import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
-import { useAppSelector } from "../../hooks/hooks";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
 
@@ -383,8 +382,6 @@ export const updateWildlifeComplaint =
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      //await patch<Complaint>(dispatch, updateHwcraComplaintParameters);
-      //await patch<HwcrComplaint>(dispatch, updateHwcrComplaintParameters);
       await axios.patch(`${config.API_BASE_URL}/v1/hwcr-complaint/` + hwcrComplaint.hwcr_complaint_guid, {hwcrComplaint: JSON.stringify(hwcrComplaint)});
 
       await updateComplaintAssignee(
