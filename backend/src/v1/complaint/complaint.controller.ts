@@ -6,7 +6,6 @@ import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { UUID } from 'crypto';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
