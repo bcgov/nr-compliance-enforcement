@@ -201,24 +201,18 @@ export class HwcrComplaintService {
     hwcr_complaint_guid: UUID,
     updateHwcrComplaint: string
   ): Promise<HwcrComplaint> {
-    console.log("updateHwcrComplaint21: " + updateHwcrComplaint);
     const updateHwcrComplaintDto: UpdateHwcrComplaintDto = JSON.parse(updateHwcrComplaint);
-    console.log("updateHwcrComplaint24: " + updateHwcrComplaintDto.hwcr_complaint_nature_code.hwcr_complaint_nature_code);
     const updateData = 
       {
-        hwcr_complaint_nature_code: updateHwcrComplaintDto.hwcr_complaint_nature_code
+        hwcr_complaint_nature_code: updateHwcrComplaintDto.hwcr_complaint_nature_code,
+        species_code: updateHwcrComplaintDto.species_code,
       };
-      //const updateQuery = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint').update();
-    //await this.hwcrComplaintsRepository.update({hwcr_complaint_guid: hwcr_complaint_guid}, updateData);
-    //.where("hwrc_compliant.hwcr_complaint_nature_code: hwcr_complaint_nature_code", {hwcr_complaint_nature_code: hwcr_complaint_guid})
-    
-  console.log("updateHwcrComplaint25: " + updateData);
       await this.hwcrComplaintsRepository.update(
         { hwcr_complaint_guid },
         updateData
       );
-      //await this.complaintService.update(JSON.parse(updateHwcrComplaint).complaint_identifier.complaint_identifier, JSON.parse(updateHwcrComplaint).complaint_identifier);
-      //await this.personComplaintXrefService.update(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+      await this.complaintService.updateComplex(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
+      await this.personComplaintXrefService.update(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
       return this.findOne(hwcr_complaint_guid);
     }
   

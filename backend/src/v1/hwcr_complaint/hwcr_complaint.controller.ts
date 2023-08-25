@@ -48,7 +48,6 @@ export class HwcrComplaintController {
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: UUID, @Body('hwcrComplaint') updateHwcrComplaintDto: string) {
-    console.log("updateHwcrComplaintDto controller1: " + updateHwcrComplaintDto);
     return this.hwcrComplaintService.update(id, updateHwcrComplaintDto);
   }
 

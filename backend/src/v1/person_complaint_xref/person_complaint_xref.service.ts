@@ -52,6 +52,20 @@ export class PersonComplaintXrefService {
     });
   }
 
+  async findAssigned(
+    person_guid: string,
+    complaint_identifier: string
+  ): Promise<PersonComplaintXref> {
+    return this.personComplaintXrefRepository.createQueryBuilder('personComplaintXref')
+    .leftJoinAndSelect('personComplaintXref.person_guid', 'person_guid')
+    .leftJoinAndSelect('personComplaintXref.complaint_identifier','complaint_identifier')
+    .where('personComplaintXref.person_guid = :person_guid', {person_guid})
+    .andWhere('personComplaintXref.complaint_identifier = :complaint_identifier', {complaint_identifier})
+    .andWhere('personComplaintXref.person_complaint_xref_code = :person_complaint_xref_code', {person_complaint_xref_code: "ASSIGNEE"})
+    .andWhere('personComplaintXref.active_ind = :active_ind', {active_ind: true})
+    .getOne();
+  }
+
   async update(
     person_complaint_xref_guid: any,
     updatePersonComplaintXrefDto

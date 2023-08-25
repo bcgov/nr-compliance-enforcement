@@ -49,6 +49,19 @@ export class ComplaintService {
     return this.findOne(complaint_identifier);
   }
 
+  async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
+    const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
+    const updateData = 
+      {
+        complaint_status_code: updateComplaintDto.complaint_status_code,
+      };
+      await this.complaintsRepository.update(
+        { complaint_identifier },
+        updateData
+      );
+    return this.findOne(complaint_identifier);
+  }
+
   async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
     try {
       await this.complaintsRepository.delete(id);

@@ -33,24 +33,22 @@ import { ComplaintSuspectWitness } from "../../../../types/complaints/details/co
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
-import { Complaint } from "../../../../types/complaints/complaint";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
 import axios from "axios";
 import config from "../../../../../config";
-import { HwcrNatureOfComplaintCode } from "../../../../types/code-tables/hwcr-nature-of-complaint-code";
-import { HwcrComplaintNatureCode } from "../../../../types/code-tables/hwcr-complaint-nature-code";
+import { cloneDeep } from "lodash";
 
-interface ComplaintHeaderProps {
-  complaint: HwcrComplaint | AllegationComplaint | null | undefined,
-  setComplaint: Function,
+interface ComplaintDetailsProps {
+  updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined,
+  setUpdateComplaint: Function,
   complaintType: string,
 
 }
 
-export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
-  complaint,
-  setComplaint,
+export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
+  updateComplaint,
+  setUpdateComplaint,
   complaintType,
 }) => {
   const {
@@ -97,12 +95,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
   // Transform the fetched data into the DropdownOption type
-  const transformedOfficerCodeList = officersInZoneList?.map(
+
+  const transformedOfficerCodeList: Option[] = (officersInZoneList !== null ? officersInZoneList.map(
     (officer: Officer) => ({
-      value: officer.person_guid,
+      value: officer.person_guid.person_guid,
       label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
     })
-  );
+  ) : []);
 
   const xCoordinate = ReactDOMServer.renderToString(
     renderCoordinates(coordinates, Coordinates.Latitude)
@@ -171,7 +170,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     setSelectedIncidentDateTime(date);
   };
 
-  //const [nocCode, setNOCCode] = useState<Option | undefined>(selectedNatureOfComplaint);
   const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
   async function handleNOCChange(selectedOption: Option | null) {
     if(selectedOption !== null && selectedOption !== undefined)
@@ -185,12 +183,10 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
         else
         {
           setNOCErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = {...complaint} as HwcrComplaint;
-          //await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/DAMNP`).then((response) => {
-          await axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/` + selectedOption.value).then((response) => {
+          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
+          axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/` + selectedOption.value).then((response) => {
             hwcrComplaint.hwcr_complaint_nature_code = response.data;
-            console.log("hwcrComplaint333333333333333: " + JSON.stringify(hwcrComplaint));
-            setComplaint(hwcrComplaint);
+            setUpdateComplaint(hwcrComplaint);
           });
 
         }
@@ -199,29 +195,61 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
 }
 const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   function handleSpeciesChange(selectedOption: Option | null) {
-    if(selectedOption !== null)
+    if(selectedOption !== null && selectedOption !== undefined)
     {
-      if(selectedOption.value === "")
+      if(complaintType === COMPLAINT_TYPES.HWCR)
       {
-        setSpeciesErrorMsg("Required");
-      }
-      else
-      {
-        setSpeciesErrorMsg("");
+        if(selectedOption.value === "")
+        {
+          setSpeciesErrorMsg("Required");
+        }
+        else
+        {
+          setSpeciesErrorMsg("");
+          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
+          axios.get(`${config.API_BASE_URL}/v1/species-code/` + selectedOption.value).then((response) => {
+            hwcrComplaint.species_code = response.data;
+            setUpdateComplaint(hwcrComplaint);
+          });
+
+        }
       }
     }
 }
-const [statusErrorMsg, setStatsErrorMsg] = useState<string>("");
+const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   function handleStatusChange(selectedOption: Option | null) {
-    if(selectedOption !== null)
+    if(selectedOption !== null && selectedOption !== undefined)
     {
-      if(selectedOption.value === "")
+      if(complaintType === COMPLAINT_TYPES.HWCR)
       {
-        setStatsErrorMsg("Required");
+        if(selectedOption.value === "")
+        {
+          setStatusErrorMsg("Required");
+        }
+        else
+        {
+          setStatusErrorMsg("");
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
+            hwcrComplaint.complaint_identifier.complaint_status_code = response.data;
+            setUpdateComplaint(hwcrComplaint);
+          });
+
+        }
       }
-      else
+    }
+  }
+
+  function handleAssignedOfficerChange(selectedOption: Option | null) {
+    if(selectedOption !== null && selectedOption !== undefined)
+    {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
       {
-        setStatsErrorMsg("");
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
+            hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
+            setUpdateComplaint(hwcrComplaint);
+          });
       }
     }
   }
@@ -319,6 +347,7 @@ const [statusErrorMsg, setStatsErrorMsg] = useState<string>("");
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
                 classNamePrefix='comp-select'
+                onChange={handleAssignedOfficerChange}
               />
             </div>
           </div>

@@ -22,8 +22,8 @@ export class SpeciesCodeService {
     return this.speciesCodeRepository.find();
   }
 
-  async findOne(id: any): Promise<SpeciesCode> {
-    return this.speciesCodeRepository.findOneOrFail(id);
+  async findOne(id: string): Promise<SpeciesCode> {
+    return this.speciesCodeRepository.findOneByOrFail({species_code: id});
   }
 
   async update(species_code: string, updatespeciesCodeDto: UpdateSpeciesCodeDto): Promise<SpeciesCode> {

@@ -17,12 +17,13 @@ import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
-import { toggleLoading } from "./app";
+import { toggleLoading, userId } from "./app";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import { ComplaintUpdateParams } from "../../types/api-params/complaint-update-params";
-import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-of-complaint-code";
 import axios from "axios";
+import { updateComplaintAssignee } from "./officer";
+import { useAppSelector } from "../../hooks/hooks";
+import { UUID } from "crypto";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -61,9 +62,7 @@ export const complaintSlice = createSlice({
       return { ...state, complaintItems: update };
     },
     setComplaint: (state, action) => {
-      console.log("action 55: " + JSON.stringify(action));
       const { payload: complaint } = action;
-      console.log("complaint 55: " + JSON.stringify(complaint));
       return { ...state, complaint };
     },
     setZoneAtAGlance: (state, action) => {
@@ -202,7 +201,7 @@ export const getComplaints =
     }
   };
 
-export const getWildlifeComplaintByComplaintIdentifier =
+  export const getWildlifeComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
     try {
@@ -214,7 +213,27 @@ export const getWildlifeComplaintByComplaintIdentifier =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
-      console.log("getHwcrComplaint: " + JSON.stringify(response));
+      dispatch(setComplaint({ ...response }));
+    } catch (error) {
+      //-- handle the error
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
+export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
+  (id: string, setUpdateComplaint: Function): AppThunk =>
+  async (dispatch) => {
+    try {
+      dispatch(toggleLoading(true));
+      dispatch(setComplaint(null));
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
+      );
+      const response = await get<HwcrComplaint>(dispatch, parameters);
+
+      setUpdateComplaint(response);
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -292,24 +311,22 @@ const updateComplaintStatus = async (
   await patch<Complaint>(dispatch, parameters);
 };
 
+
 export const updateWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): AppThunk =>
   async (dispatch) => {
-    console.log("hwcrComplaint3: " + hwcrComplaint.hwcr_complaint_guid);
-    console.log("hwcrComplaint34: " + JSON.stringify(hwcrComplaint));
     try {
       dispatch(toggleLoading(true));
-
-      const updateHwcrComplaintParameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
-        { 
-          hwcrComplaint: `${JSON.stringify(hwcrComplaint)}`,
-        }
-      );
-
       //await patch<Complaint>(dispatch, updateHwcraComplaintParameters);
       //await patch<HwcrComplaint>(dispatch, updateHwcrComplaintParameters);
       await axios.patch(`${config.API_BASE_URL}/v1/hwcr-complaint/` + hwcrComplaint.hwcr_complaint_guid, {hwcrComplaint: JSON.stringify(hwcrComplaint)});
+
+      await updateComplaintAssignee(
+        hwcrComplaint.complaint_identifier.create_user_id,
+        hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid as UUID,
+        hwcrComplaint.complaint_identifier.complaint_identifier,
+        COMPLAINT_TYPES.HWCR
+      )
 
       //-- get the updated wildlife conflict
 

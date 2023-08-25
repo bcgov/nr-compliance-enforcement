@@ -6,6 +6,7 @@ import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
   getAllegationComplaintByComplaintIdentifier,
   getWildlifeComplaintByComplaintIdentifier,
+  getWildlifeComplaintByComplaintIdentifierSetUpdate,
   selectComplaint,
   setComplaint,
   updateWildlifeComplaint,
@@ -15,10 +16,9 @@ import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
 import { Button } from "react-bootstrap";
 import { ComplaintDetailsEdit } from "./details/complaint-details-edit";
-import { openModal } from "../../../store/reducers/app";
+import { openModal, userId } from "../../../store/reducers/app";
 import { CancelConfirm } from "../../../types/modal/modal-types";
 import { ComplaintLocation } from "./details/complaint-location";
-import { ComplaintUpdateParams } from "../../../types/api-params/complaint-update-params";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 
@@ -30,7 +30,9 @@ type ComplaintParams = {
 export const ComplaintDetails: FC = () => {
   const dispatch = useAppDispatch();
   const [readOnly, setReadOnly] = useState(true);
-  let complaint = useAppSelector(selectComplaint);
+  const complaint = useAppSelector(selectComplaint);
+  const [updateComplaint, setUpdateComplaint] = useState<HwcrComplaint | AllegationComplaint | null | undefined>(null);
+  const userid = useAppSelector(userId);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
@@ -63,27 +65,14 @@ export const ComplaintDetails: FC = () => {
     };
 
   const saveButtonClick = async () => {
-    console.log("complaintSaveIn: " + JSON.stringify(complaint));
-    if(complaint !== null && complaint !== undefined)
+    if(updateComplaint !== null && updateComplaint !== undefined)
     {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
-        console.log("testisangsfdslfkadfjasl;kfdjfowier");
-        console.log("complaint: " + complaint);
-        let hwcrComplaint = complaint as HwcrComplaint;
-        console.log("hwcrComplaint: " + hwcrComplaint);
-        console.log("hwcr_complaint_nature_code: " + hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code);
-        /*const updateParams: ComplaintUpdateParams = 
-          {
-            complaint_id: hwcrComplaint.complaint_identifier.complaint_identifier, 
-            complaint_status_code: hwcrComplaint.complaint_identifier.complaint_status_code.complaint_status_code, 
-            nature_of_complaint: hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code,
-            species_code: hwcrComplaint.species_code.species_code,
-            officer_assigned_guid: hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid, //this may have to be refactored once we have more types of person complaint relationships
-          };*/
+        let hwcrComplaint = updateComplaint as HwcrComplaint;
+        hwcrComplaint.complaint_identifier.create_user_id = userid;
         await dispatch(updateWildlifeComplaint(hwcrComplaint));
-
-        //dispatch(getWildlifeComplaintByComplaintIdentifier(complaint.complaint_identifier.complaint_identifier));
+        
       }
       setReadOnly(true);
     }
@@ -102,14 +91,12 @@ export const ComplaintDetails: FC = () => {
             dispatch(getAllegationComplaintByComplaintIdentifier(id));
             break;
           case COMPLAINT_TYPES.HWCR:
-            dispatch(getWildlifeComplaintByComplaintIdentifier(id));
-            console.log("stuff1111: " + complaint);
+            dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
             break;
         }
       }
     }
   }, [id, complaintType, complaint, dispatch]);
-  console.log("stuff343: " + complaint);
   return (
 
     <div className="comp-complaint-details">
@@ -127,7 +114,7 @@ export const ComplaintDetails: FC = () => {
         <SuspectWitnessDetails />
       )}
       { !readOnly &&
-        <ComplaintDetailsEdit complaint={complaint} setComplaint={setComplaint} complaintType={complaintType}/>
+        <ComplaintDetailsEdit updateComplaint={updateComplaint} setUpdateComplaint={setUpdateComplaint} complaintType={complaintType}/>
       }
       { !readOnly && 
         <div className="comp-box-footer">
