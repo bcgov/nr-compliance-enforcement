@@ -23,6 +23,7 @@ import { ComplaintQueryParams } from "../../types/api-params/complaint-query-par
 import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
+import { Feature } from "../../types/maps/bcGeocoderType";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -30,6 +31,8 @@ const initialState: ComplaintState = {
     allegations: [],
   },
   complaint: null,
+  complaintLocation: null,
+
   zoneAtGlance: {
     hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [] },
     allegation: { assigned: 0, unassigned: 0, total: 0, offices: [] },
@@ -63,6 +66,10 @@ export const complaintSlice = createSlice({
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
       return { ...state, complaint };
+    },
+    setComplaintLocation: (state, action) => {
+      const { payload: complaintLocation } = action;
+      return { ...state, complaintLocation };
     },
     setZoneAtAGlance: (state, action) => {
       const { payload: statistics } = action;
@@ -132,6 +139,7 @@ export const complaintSlice = createSlice({
 export const {
   setComplaints,
   setComplaint,
+  setComplaintLocation,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
@@ -212,6 +220,16 @@ export const getComplaints =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: { area_name },
+        } = ceComplaint;
+        dispatch(getComplaintLocation(area_name, location_summary_text));
+      }
+
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
@@ -254,6 +272,17 @@ export const getAllegationComplaintByComplaintIdentifier =
       );
       const response = await get<AllegationComplaint>(dispatch, parameters);
 
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: { area_name },
+        } = ceComplaint;
+
+        dispatch(getComplaintLocation(area_name, location_summary_text));
+      }
+
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
@@ -295,6 +324,40 @@ export const getZoneAtAGlanceStats =
     );
   
     await patch<Complaint>(dispatch, parameters);
+export const getComplaintLocationByAddress =
+  (address: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
+      );
+      const response = await get<Feature>(dispatch, parameters);
+      dispatch(setComplaintLocation(response));
+    } catch (error) {
+      //-- handle the error message
+    }
+  };
+
+export const getComplaintLocation =
+  (area: string, address?: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      let parameters;
+
+      if (address && area) {
+        parameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`
+        );
+      } else {
+        parameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`
+        );
+      }
+      const response = await get<Feature>(dispatch, parameters);
+      dispatch(setComplaintLocation(response));
+    } catch (error) {
+      //-- handle the error message
+    }
   };
 
 const updateComplaintStatus = async (
@@ -400,6 +463,16 @@ export const selectComplaint = (
   const { complaint } = root;
 
   return complaint;
+};
+
+export const selectComplaintLocation = (
+  state: RootState
+): Feature | null | undefined => {
+  const {
+    complaints: { complaintLocation },
+  } = state;
+
+  return complaintLocation;
 };
 
 export const selectComplaintHeader =
