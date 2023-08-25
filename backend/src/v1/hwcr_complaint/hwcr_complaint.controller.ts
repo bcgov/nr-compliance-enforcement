@@ -1,11 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Logger } from '@nestjs/common';
 import { HwcrComplaintService } from './hwcr_complaint.service';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
+import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UUID } from 'crypto';
+import { HwcrComplaint } from './entities/hwcr_complaint.entity';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("hwcr-complaint")
