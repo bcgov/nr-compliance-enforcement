@@ -19,7 +19,8 @@ export interface HwcrComplaint {
             office_location_name: string;
             area_name: string;
     },
-    person_complaint_xref: [{person_guid: {person_complaint_xref_guid: string, person_guid: string, first_name: string, last_name: string}, active_ind: boolean}]};
+    person_complaint_xref: {person_guid: {person_complaint_xref_guid: string, person_guid: string, first_name: string, last_name: string}, active_ind: boolean, complaint_identifier: string, person_complaint_xref_code: string}[];
+  }
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
   species_code: SpeciesCode
   update_timestamp: string;

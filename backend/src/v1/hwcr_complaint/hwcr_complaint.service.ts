@@ -211,7 +211,7 @@ export class HwcrComplaintService {
         updateData
       );
       await this.complaintService.updateComplex(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
-      await this.personComplaintXrefService.update(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+      await this.personComplaintXrefService.assignOfficer(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
       return this.findOne(hwcr_complaint_guid);
     }
   
