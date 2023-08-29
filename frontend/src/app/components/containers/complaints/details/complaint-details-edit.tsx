@@ -39,6 +39,8 @@ import { AllegationComplaint } from "../../../../types/complaints/allegation-com
 import axios from "axios";
 import config from "../../../../../config";
 import { cloneDeep } from "lodash";
+import { PersonComplaintXref } from "../../../../types/personComplaintXref";
+import { userId } from "../../../../store/reducers/app";
 
 interface ComplaintDetailsProps {
   updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined,
@@ -88,6 +90,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     email,
     referredByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
+
+  const userid = useAppSelector(userId);
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
@@ -248,7 +252,23 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
       {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
           axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
-            hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
+            if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
+            {
+              hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
+            }
+            else
+            {
+              let personComplaintXref: PersonComplaintXref = 
+              {
+                person_guid: response.data,
+                create_user_id: userid,
+                update_user_id: userid,
+                complaint_identifier: hwcrComplaint.complaint_identifier.complaint_identifier,
+                active_ind: true,
+                person_complaint_xref_code: "ASSIGNEE"
+              }
+              hwcrComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
+            }
             setUpdateComplaint(hwcrComplaint);
           });
       }
