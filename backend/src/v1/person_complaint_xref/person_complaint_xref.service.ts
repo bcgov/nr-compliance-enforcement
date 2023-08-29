@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -67,13 +67,15 @@ export class PersonComplaintXrefService {
   }
 
   async update(
+    //queryRunner: QueryRunner, 
     person_complaint_xref_guid: any,
     updatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
-    await this.personComplaintXrefRepository.update(
+    const updatedValue = await this.personComplaintXrefRepository.update(
       person_complaint_xref_guid,
       updatePersonComplaintXrefDto
     );
+    //queryRunner.manager.save(updatedValue);
     return this.findOne(person_complaint_xref_guid);
   }
 

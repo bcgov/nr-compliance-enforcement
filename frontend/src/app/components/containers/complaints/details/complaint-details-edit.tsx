@@ -40,6 +40,8 @@ import axios from "axios";
 import config from "../../../../../config";
 import { cloneDeep } from "lodash";
 import { PersonComplaintXref } from "../../../../types/personComplaintXref";
+import { ValidationTextArea } from "../../../../common/validation-textarea";
+import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
 import { userId } from "../../../../store/reducers/app";
 
 interface ComplaintDetailsProps {
@@ -54,6 +56,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   setUpdateComplaint,
   complaintType,
 }) => {
+
+  const userid = useAppSelector(userId);
   const {
     details,
     location,
@@ -90,8 +94,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     email,
     referredByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
-
-  const userid = useAppSelector(userId);
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
@@ -275,6 +277,101 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
     }
   }
 
+  const [complaintDescErrorMsg, setComplaintDescErrorMsg] = useState<string>("");
+  function handleComplaintDescChange(value: string) {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
+        if(value === "")
+        {
+          setComplaintDescErrorMsg("Required");
+        }
+        else
+        {
+          setComplaintDescErrorMsg("");
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          hwcrComplaint.complaint_identifier.detail_text = value;
+          setUpdateComplaint(hwcrComplaint);
+        }
+      }
+  }
+
+  function handleLocationDescriptionChange(value: string) {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          hwcrComplaint.complaint_identifier.location_detailed_text = value;
+          setUpdateComplaint(hwcrComplaint);
+      }
+  }
+
+  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
+  function handleAttractantsChange(selectedOptions: Option[] | null) {
+    if(selectedOptions !== null && selectedOptions !== undefined)
+    {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
+        if(selectedOptions.length === 0)
+        {
+          setAttractantsErrorMsg("At least one must be selected");
+        }
+        else
+        {
+          setAttractantsErrorMsg("");
+          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
+          let attractants = [];
+          for(var i = 0; i < selectedOptions.length; i++)
+          {
+            const selectedValue = (selectedOptions[i].value !== undefined ? selectedOptions[i].value : "");
+            if(selectedValue !== undefined)
+            {
+              const attractant = 
+                {
+                  attractant_code: selectedValue,
+                  hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
+                  create_user_id: userid,
+                }
+                attractants.push(attractant);
+              } 
+            }
+          hwcrComplaint.attractant_hwcr_xref = attractants;
+          setUpdateComplaint(hwcrComplaint);
+        }
+      }
+    }
+  }
+
+  const [communityErrorMsg, setCommunityMsg] = useState<string>("");
+  function handleCommunityChange(selectedOption: Option | null) {
+    if(selectedOption !== null && selectedOption !== undefined)
+    {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
+        if(selectedOption.value === "")
+        {
+          setCommunityMsg("Required");
+        }
+        else
+        {
+          setCommunityMsg("");
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          if(selectedOption.value !== undefined)
+          {
+            const geoOrgCode =
+            {
+              geo_organization_unit_code: selectedOption.value,
+              short_description: "", long_description: "", display_order:"", active_ind:"",
+              create_user_id: "", create_timestamp: "", update_user_id: "", update_timestamp: ""
+            }
+            hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code = selectedOption.value;
+            hwcrComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
+          }
+          setUpdateComplaint(hwcrComplaint);
+
+        }
+      }
+    }
+  }
+
   return (
     <div>
       {/* edit header block */}
@@ -426,11 +523,13 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                 >
                   Complaint Description<span className="required-ind">*</span>
                 </label>
-                <textarea
+                <ValidationTextArea
                   className="comp-form-control"
                   id="complaint-description-textarea-id"
-                  defaultValue={details}
+                  defaultValue={(details !== undefined ? details : "")}
                   rows={4}
+                  errMsg={complaintDescErrorMsg}
+                  onChange={handleComplaintDescChange}
                 />
               </div>
               <div
@@ -456,13 +555,15 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                 >
                   <label>Attractants</label>
                   <div className="comp-details-edit-input">
-                    <Select
+                    <ValidationMultiSelect
+                      className="comp-details-input"
                       options={attractantCodes}
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
                       classNamePrefix='comp-select'
-                      isMulti
+                      onChange={handleAttractantsChange}
+                      errMsg={attractantsErrorMsg}
                     />
                   </div>
                 </div>
@@ -524,6 +625,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   id="complaint-location-description-textarea-id"
                   defaultValue={locationDescription}
                   rows={4}
+                  onChange={e => handleLocationDescriptionChange(e.target.value)}
                 />
               </div>
               <div
@@ -562,12 +664,16 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   Community<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                  <Select
-                    options={areaCodes}
-                    defaultValue={selectedAreaCode}
-                    id="area-select-id"
-                    classNamePrefix='comp-select'
-                  />
+                <ValidationSelect
+                  className="comp-details-input"
+                  options={areaCodes}
+                  defaultValue={selectedAreaCode}
+                  placeholder="Select"
+                  id="community-select-id"
+                  classNamePrefix='comp-select'
+                  onChange={handleCommunityChange}
+                  errMsg={communityErrorMsg}
+                />
                 </div>
               </div>
               <div

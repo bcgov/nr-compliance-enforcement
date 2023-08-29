@@ -58,11 +58,11 @@ export class HwcrComplaintService {
           const blankHwcrComplaint = new HwcrComplaint();
           blankHwcrComplaint.hwcr_complaint_guid =
             newHwcrComplaint.hwcr_complaint_guid;
-          newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint =
+          newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint_guid =
             blankHwcrComplaint;
           await this.attractantHwcrXrefService.create(
-            newHwcrComplaint.attractant_hwcr_xref[i],
-            queryRunner
+            //queryRunner,
+            newHwcrComplaint.attractant_hwcr_xref[i]
           );
         }
       }
@@ -200,18 +200,51 @@ export class HwcrComplaintService {
     hwcr_complaint_guid: UUID,
     updateHwcrComplaint: string
   ): Promise<HwcrComplaint> {
-    const updateHwcrComplaintDto: UpdateHwcrComplaintDto = JSON.parse(updateHwcrComplaint);
-    const updateData = 
+    //const queryRunner = this.dataSource.createQueryRunner();
+
+    //await queryRunner.connect();
+    //await queryRunner.startTransaction();
+    try
+    {
+      const updateHwcrComplaintDto: UpdateHwcrComplaintDto = JSON.parse(updateHwcrComplaint);
+      const updateData = 
+        {
+          hwcr_complaint_nature_code: updateHwcrComplaintDto.hwcr_complaint_nature_code,
+          species_code: updateHwcrComplaintDto.species_code,
+        };
+        const updatedValue = await this.hwcrComplaintsRepository.update(
+          { hwcr_complaint_guid },
+          updateData
+        );
+        console.log("test1");
+       // queryRunner.manager.save(updatedValue);
+        console.log("test2");
+        //await this.complaintService.updateComplex(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
+        await this.complaintService.updateComplex(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
+        console.log("test3");
+        //Note: this needs a refactor for when we have more types of persons being loaded in
+        //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        if(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+        {
+          await this.personComplaintXrefService.update(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+        console.log("updateHwcrComplaintDto.attractant_hwcr_xref: " + JSON.stringify(updateHwcrComplaintDto.attractant_hwcr_xref));
+        //await this.attractantHwcrXrefService.updateComplaintAttractants(queryRunner, updateHwcrComplaintDto.hwcr_complaint_guid, updateHwcrComplaintDto.attractant_hwcr_xref);
+        await this.attractantHwcrXrefService.updateComplaintAttractants(updateHwcrComplaintDto.hwcr_complaint_guid, updateHwcrComplaintDto.attractant_hwcr_xref);
+        console.log("test6");
+        //await queryRunner.commitTransaction();
+      } 
+      catch (err) {
+        this.logger.error(err);
+        console.log("test7");
+        //await queryRunner.rollbackTransaction();
+        throw new BadRequestException(err);
+      } 
+      finally
       {
-        hwcr_complaint_nature_code: updateHwcrComplaintDto.hwcr_complaint_nature_code,
-        species_code: updateHwcrComplaintDto.species_code,
-      };
-      await this.hwcrComplaintsRepository.update(
-        { hwcr_complaint_guid },
-        updateData
-      );
-      await this.complaintService.updateComplex(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
-      await this.personComplaintXrefService.assignOfficer(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        //await queryRunner.release();
+        console.log("test8");
+      }
       return this.findOne(hwcr_complaint_guid);
     }
   

@@ -68,7 +68,8 @@ export const ComplaintDetails: FC = () => {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
         let hwcrComplaint = updateComplaint as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.create_user_id = userid;
+        //console.log("hwcrComplaint: " + JSON.stringify(hwcrComplaint));
+       //hwcrComplaint.complaint_identifier.update_user_id = userid;
         await dispatch(updateWildlifeComplaint(hwcrComplaint));
         
       }

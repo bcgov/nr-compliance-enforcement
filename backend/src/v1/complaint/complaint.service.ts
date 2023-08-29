@@ -51,14 +51,22 @@ export class ComplaintService {
 
   async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
     const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
+    console.log("updateComplaintDto: " + JSON.stringify(updateComplaintDto));
     const updateData = 
       {
         complaint_status_code: updateComplaintDto.complaint_status_code,
+        detail_text: updateComplaintDto.detail_text,
+        location_detailed_text: updateComplaintDto.location_detailed_text,
+        cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
       };
-      await this.complaintsRepository.update(
+      console.log("updateData: " + JSON.stringify(updateData));
+      const updatedValue = await this.complaintsRepository.update(
         { complaint_identifier },
         updateData
       );
+      console.log("updatedValue: " + updatedValue);
+      //queryRunner.manager.save(updatedValue);
+      console.log("test4");
     return this.findOne(complaint_identifier);
   }
 
