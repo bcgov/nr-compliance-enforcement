@@ -41,12 +41,12 @@ export const clearFilter = (filter: string) => ({
   filter,
 });
 
-export const resetFilters = () => ({
+export const resetFilters = (payload?: Array<ComplaintFilterPayload>) => ({
   type: ComplaintFilterActionTypes.RESET_FILTERS,
+  payload,
 });
 
 //-- reducer
-
 const complaintFilterReducer = (
   state: ComplaintFilters,
   action: any
@@ -60,15 +60,31 @@ const complaintFilterReducer = (
       return { ...state, [filter]: value };
     }
     case ComplaintFilterActionTypes.CLEAR_FILTER: {
-      const { payload } = action;
-      const update = { ...state, [payload]: null };
+      const { filter } = action;
+      const update = { ...state, [filter]: null };
 
       return { ...update };
     }
     case ComplaintFilterActionTypes.RESET_FILTERS: {
       const { payload } = action;
 
-      return { ...state };
+      let update = { ...state };
+      Object.keys(update).forEach((item) => {
+        switch (item) {
+          case "startDate":
+          case "endDate":
+            return (update[item] = undefined);
+          default:
+            const x: ComplaintFilterPayload = payload.find(
+              (filter: ComplaintFilterPayload) => {
+                return filter.filter === item;
+              }
+            );
+            return x ? (update[item] = x.value) : (update[item] = null);
+        }
+      });
+
+      return { ...update };
     }
     default:
       return state;

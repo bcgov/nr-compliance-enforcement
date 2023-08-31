@@ -1,20 +1,20 @@
 import { FC } from "react";
-import { DropdownOption } from "../../types/code-tables/option";
 
-type Props = {
+interface Props {
   id: string;
   label?: string;
-  clear: (data: DropdownOption | null) => void;
+  name: string;
+  clear: (name: string) => void
 };
 
-export const FilterButton: FC<Props> = ({ id, label, clear }) => {
+export const FilterButton: FC<Props> = ({ id, label, name, clear }) => {
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
     id: string
   ) => {
     e.preventDefault();
-
     console.log(id);
+    clear(name)
   };
 
   return (
@@ -22,7 +22,7 @@ export const FilterButton: FC<Props> = ({ id, label, clear }) => {
       type="button"
       className="btn btn-primary comp-filter-btn comp-filter-pill"
       id={id}
-      onClick={() => clear(null)}
+      onClick={(evt) => handleComplaintClick(evt, "moo")}
     >
       {label}
       <svg

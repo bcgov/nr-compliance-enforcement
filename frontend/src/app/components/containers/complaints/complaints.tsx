@@ -35,6 +35,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
 
   const defaultZone = useAppSelector(selectDefaultZone);
+  const defaultStatus: DropdownOption = { value: "OPEN", label: "Open" };
 
   const totalComplaints = useAppSelector(
     selectTotalComplaintsByType(complaintType)
@@ -47,6 +48,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       dispatch(getTokenProfile());
     }
     setFilter("zone", defaultZone);
+    setFilter("status", defaultStatus);
+
   }, [defaultZone]);
 
   const setFilter = useCallback(
@@ -74,7 +77,13 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
-    filterDispatch(resetFilters());
+
+    //-- apply default filters, if more need to be set they can be added as needed
+    let payload: Array<ComplaintFilterPayload> = [];
+    if(defaultZone){
+      payload = [{ filter: "zone", value: defaultZone}, {  filter: "status", value: defaultStatus}];
+    }
+    filterDispatch(resetFilters(payload));
   };
 
   return (
@@ -125,11 +134,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         </Nav>
       </Navbar>
 
-      {/* <ComplaintFilterProvider> */}
+      <div>
       <ComplaintFilter type={complaintType} isOpen={isExpanded} />
       <ComplaintFilterBar />
       <ComplaintList type={complaintType} />
-      {/* </ComplaintFilterProvider> */}
+      </div>
     </>
   );
 };

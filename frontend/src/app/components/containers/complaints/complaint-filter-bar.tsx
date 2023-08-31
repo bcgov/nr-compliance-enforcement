@@ -1,17 +1,27 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useState, useCallback } from "react";
 import { FilterButton } from "../../common/filter-button";
+import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
+import {
+  ComplaintFilters,
+  clearFilter,
+} from "../../../store/reducers/complaint-filters";
+import { DropdownOption } from "../../../types/code-tables/option";
 
 export const ComplaintFilterBar: FC = () => {
-  const [region, setRegion] = useState<any>();
-  const [zone, setZone] = useState<any>();
-  const [community, setCommunity] = useState<any>();
-  const [officer, setOfficer] = useState<any>();
-  const [startDate, setStartDate] = useState<any>();
-  const [endDate, setEndDate] = useState<any>();
-  const [status, setStatus] = useState<any>();
-  const [species, setSpecies] = useState<any>();
-  const [natureOfComplaint, setNatureOfComplaint] = useState<any>();
-  const [violationType, setViolationType] = useState<any>();
+  const { state, dispatch } = useContext(ComplaintFilterContext);
+
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+  } = state;
 
   const dateRangeLabel = (): string | undefined => {
     if (startDate !== null && endDate !== null) {
@@ -26,8 +36,8 @@ export const ComplaintFilterBar: FC = () => {
   };
 
   const clearDateRange = () => {
-    setStartDate(undefined);
-    setEndDate(undefined);
+    removeFilter("startDate");
+    removeFilter("endDate");
   };
 
   const hasDate = () => {
@@ -41,9 +51,25 @@ export const ComplaintFilterBar: FC = () => {
     return true;
   };
 
-  const hasFilter = (filter: string): boolean => {
-    return false;
+  const hasFilter = (filter: string) => {
+    const selected = state[filter as keyof ComplaintFilters];
+    return !!selected;
   };
+
+  const removeFilter = useCallback(
+    (name: string) => {
+      switch (name) {
+        case "dateRange":
+          dispatch(clearFilter("startDate"));
+          dispatch(clearFilter("endDate"));
+          break;
+        default:
+          dispatch(clearFilter(name));
+          break;
+      }
+    },
+    [state]
+  );
 
   return (
     <div className="comp-filter-pill-container">
@@ -51,7 +77,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-status-filter"
           label={status?.label}
-          clear={setStatus}
+          name="status"
+          clear={removeFilter}
         />
       )}
 
@@ -59,7 +86,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-date-range-filter"
           label={dateRangeLabel()}
-          clear={clearDateRange}
+          name="dateRange"
+          clear={removeFilter}
         />
       )}
 
@@ -67,7 +95,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-species-filter"
           label={species?.label}
-          clear={setSpecies}
+          name="species"
+          clear={removeFilter}
         />
       )}
 
@@ -75,7 +104,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-officer-filter"
           label={officer?.label}
-          clear={setOfficer}
+          name="officer"
+          clear={removeFilter}
         />
       )}
 
@@ -83,7 +113,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-violation-filter"
           label={violationType?.label}
-          clear={setViolationType}
+          name="violationType"
+          clear={removeFilter}
         />
       )}
 
@@ -91,7 +122,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-nature-of-complaint-filter"
           label={natureOfComplaint?.label}
-          clear={setNatureOfComplaint}
+          name="natureOfComplaint"
+          clear={removeFilter}
         />
       )}
 
@@ -99,7 +131,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-community-filter"
           label={community?.label}
-          clear={setCommunity}
+          name="community"
+          clear={removeFilter}
         />
       )}
 
@@ -107,7 +140,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-zone-filter"
           label={zone?.label}
-          clear={setZone}
+          name="zone"
+          clear={removeFilter}
         />
       )}
 
@@ -115,7 +149,8 @@ export const ComplaintFilterBar: FC = () => {
         <FilterButton
           id="comp-region-filter"
           label={region?.label}
-          clear={setRegion}
+          name="region"
+          clear={removeFilter}
         />
       )}
     </div>
