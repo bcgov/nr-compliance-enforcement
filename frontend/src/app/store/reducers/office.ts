@@ -50,7 +50,6 @@ export const getOfficesInZone =
   };
 
 export const selectOfficesInZone = (state: RootState) => {
-  debugger;
   const { officesInZone } = state.offices;
   return officesInZone;
 };

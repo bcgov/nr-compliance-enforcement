@@ -17,7 +17,7 @@ import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
-import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
+import { Complaints, ComplaintsWrapper } from './components/containers/complaints/complaints';
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 
 const App: FC = () => {

@@ -24,7 +24,7 @@ import { Feature } from "../../types/maps/bcGeocoderType";
 
 const initialState: ComplaintState = {
   complaintItems: {
-    wildlife: [],
+    wildlife: null,
     allegations: [],
   },
   complaint: null,
@@ -88,18 +88,20 @@ export const complaintSlice = createSlice({
       const { complaintItems } = state;
       const { wildlife } = complaintItems;
 
-      const index = wildlife.findIndex(
-        ({ hwcr_complaint_guid }) =>
-          hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid
-      );
+      if (wildlife) {
+        const index = wildlife.findIndex(
+          ({ hwcr_complaint_guid }) =>
+            hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid
+        );
 
-      if (index !== -1) {
-        const update = [...wildlife];
-        update[index] = updatedComplaint;
+        if (index !== -1) {
+          const update = [...wildlife];
+          update[index] = updatedComplaint;
 
-        const updatedItems = { ...complaintItems, wildlife: update };
+          const updatedItems = { ...complaintItems, wildlife: update };
 
-        return { ...state, complaintItems: updatedItems };
+          return { ...state, complaintItems: updatedItems };
+        }
       }
     },
     updateAllegationComplaintByRow: (
@@ -145,7 +147,7 @@ export const {
 //-- redux thunks
 export const getComplaints =
   (complaintType: string, payload: ComplaintFilters): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     const {
       sortColumn,
       sortOrder,
@@ -162,6 +164,11 @@ export const getComplaints =
     } = payload;
 
     try {
+      const {
+        app: { loading },
+      } = getState();
+      
+      
       dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
@@ -725,7 +732,7 @@ export const selectAllegationZagOpenComplaints = (
 
 export const selectWildlifeComplaints = (
   state: RootState
-): Array<HwcrComplaint> => {
+): Array<HwcrComplaint> | null => {
   const {
     complaints: { complaintItems },
   } = state;
@@ -740,7 +747,7 @@ export const selectWildlifeComplaintsCount = (state: RootState): number => {
   } = state;
   const { wildlife } = complaintItems;
 
-  return wildlife.length;
+  return wildlife ? wildlife.length : 0;
 };
 
 export const selectAllegationComplaints = (
@@ -767,7 +774,7 @@ export const selectTotalComplaintsByType =
         return allegations.length;
       case COMPLAINT_TYPES.HWCR:
       default:
-        return wildlife.length;
+        return wildlife ? wildlife.length : 0;
     }
   };
 
@@ -782,7 +789,7 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<HwcrComplaint | AllegationComplaint> => {
+  (state: RootState): Array<HwcrComplaint | AllegationComplaint> | null => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
@@ -791,7 +798,5 @@ export const selectComplaintsByType =
         return selectWildlifeComplaints(state);
     }
   };
-
-
 
 export default complaintSlice.reducer;

@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { FC, useCallback, useContext, useState } from "react";
 import Select from "react-select";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
@@ -7,9 +7,13 @@ import { selectCodeTable } from "../../../store/reducers/code-table";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import { ComplaintFilterState } from "../../../types/providers/complaint-filter-provider-type";
 import { useCollapse } from "react-collapsed";
+import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
+import {
+  ComplaintFilterPayload,
+  updateFilter,
+} from "../../../store/reducers/complaint-filters";
+import { DropdownOption } from "../../../types/code-tables/option";
 
 type Props = {
   type: string;
@@ -18,32 +22,21 @@ type Props = {
 
 export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const { getCollapseProps } = useCollapse({ isExpanded: isOpen });
-
   const {
-    filters,
-    setRegion,
-    setZone,
-    setCommunity,
-    setOfficer,
-    setStartDate,
-    setEndDate,
-    setStatus,
-    setSpecies,
-    setNatureOfComplaint,
-    setViolationType,
+    state: {
+      region,
+      zone,
+      community,
+      officer,
+      species,
+      natureOfComplaint,
+      violationType,
+      status,
+      startDate,
+      endDate,
+    },
+    dispatch,
   } = useContext(ComplaintFilterContext);
-  const {
-    region,
-    zone,
-    community,
-    officer,
-    startDate,
-    endDate,
-    status,
-    species,
-    natureOfComplaint,
-    violationType,
-  } = filters as ComplaintFilterState;
 
   const regions = useAppSelector(selectCodeTable("regions"));
   const zones = useAppSelector(selectCodeTable("zones"));
@@ -56,10 +49,18 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const statusTypes = useAppSelector(selectCodeTable("complaintStatusCodes"));
   const violationTypes = useAppSelector(selectCodeTable("violationCodes"));
 
+  const setFilter = useCallback(
+    (name: string, value?: DropdownOption | Date | null) => {
+      let payload: ComplaintFilterPayload = { filter: name, value };
+      dispatch(updateFilter(payload));
+    },
+    []
+  );
+
   const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
+    setFilter("startDate", start);
+    setFilter("endDate", end);
   };
 
   ///--
@@ -67,7 +68,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   /// Each type of compplaint needs to have its own unique second row of filters specified
   ///--
   const renderComplaintFilters = (): JSX.Element => {
-
     //--
     //-- generate wildlife complaint filters
     //--
@@ -82,7 +82,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={natureOfComplaintTypes}
                 onChange={(option) => {
-                  setNatureOfComplaint(option);
+                  setFilter("natureOfComplaint", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -97,7 +97,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={speciesTypes}
                 onChange={(option) => {
-                  setSpecies(option);
+                  setFilter("species", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -181,7 +181,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={statusTypes}
                 onChange={(option) => {
-                  setStatus(option);
+                  setFilter("status", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -208,7 +208,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={violationTypes}
                 onChange={(option) => {
-                  setViolationType(option);
+                  setFilter("violationType", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -292,7 +292,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={statusTypes}
                 onChange={(option) => {
-                  setStatus(option);
+                  setFilter("status", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -327,7 +327,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={regions}
                 onChange={(option) => {
-                  setRegion(option);
+                  setFilter("region", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -342,7 +342,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={zones}
                 onChange={(option) => {
-                  setZone(option);
+                  setFilter("zone", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -358,7 +358,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={communities}
                 onChange={(option) => {
-                  setCommunity(option);
+                  setFilter("community", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
@@ -374,7 +374,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
               <Select
                 options={officers}
                 onChange={(option) => {
-                  setOfficer(option);
+                  setFilter("officer", option);
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"

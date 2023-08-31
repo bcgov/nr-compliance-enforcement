@@ -123,11 +123,12 @@ export const profileZoneDescription = (state: RootState): string => {
   return profile.zoneDescription;
 };
 
-export const selectDefaultZone = (state: RootState): DropdownOption => {
+export const selectDefaultZone = (state: RootState): DropdownOption | null => {
   const {
     profile: { zone: value, zoneDescription: label },
   } = state.app;
-  return { value, label };
+
+  return value && label ? { value, label } : null;
 };
 
 export const selectModalOpenState = (state: RootState): boolean => {

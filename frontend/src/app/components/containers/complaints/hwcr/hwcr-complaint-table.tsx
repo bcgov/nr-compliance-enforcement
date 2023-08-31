@@ -78,7 +78,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>
-                {hwcrComplaintsJson.map((val, key) => {
+                {hwcrComplaintsJson?.map((val, key) => {
                     const complaintIdentifier = val.complaint_identifier.complaint_identifier;
                     const incidentReportedDatetime = formatDateTime(val.complaint_identifier.incident_reported_datetime);
                     const hwcrComplaintNatureCode = val.hwcr_complaint_nature_code != null ? val.hwcr_complaint_nature_code.long_description : "";

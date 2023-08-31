@@ -11,6 +11,6 @@ export interface ComplaintState {
 }
 
 export interface ComplaintCollection {
-  wildlife: Array<HwcrComplaint>;
+  wildlife : Array<HwcrComplaint> | null;
   allegations: Array<AllegationComplaint>;
 }

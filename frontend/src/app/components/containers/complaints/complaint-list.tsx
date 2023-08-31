@@ -1,5 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
+import { FC, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import {
@@ -21,67 +20,54 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
 
-  const { filters } = useContext(ComplaintFilterContext);
-
   const [sortKey, setSortKey] = useState("incident_reported_datetime");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
-  useEffect(() => {
-    const payload = generaComplaintRequestPayload(type);
-    console.log(payload)
-    dispatch(getComplaints(type, payload));
-  }, [dispatch, type]);
 
-  useEffect(() => { 
-    // const payload = generaComplaintRequestPayload(type);
-    // console.log("derp")
-    // dispatch(getComplaints(type, payload));
-    console.log(filters)
-  }, [filters, sortKey, sortDirection])
+  // const generaComplaintRequestPayload = (
+  //   complaintType: string
+  // ): ComplaintFilters => {
 
-  const generaComplaintRequestPayload = (
-    complaintType: string
-  ): ComplaintFilters => {
-    const {
-      region,
-      zone,
-      community,
-      officer,
-      startDate,
-      endDate,
-      status,
-      species,
-      natureOfComplaint,
-      violationType,
-    } = filters as ComplaintFilterState;
+  //   const {
+  //     region,
+  //     zone,
+  //     community,
+  //     officer,
+  //     startDate,
+  //     endDate,
+  //     status,
+  //     species,
+  //     natureOfComplaint,
+  //     violationType,
+  //   } = filters as ComplaintFilterState;
 
-    const common = {
-      sortColumn: sortKey,
-      sortOrder: sortDirection,
-      regionCodeFilter: region,
-      zoneCodeFilter: zone,
-      areaCodeFilter: community,
-      officerFilter: officer,
-      startDateFilter: startDate,
-      endDateFilter: endDate,
-      complaintStatusFilter: status,
-    };
+  //   const common = {
+  //     sortColumn: sortKey,
+  //     sortOrder: sortDirection,
+  //     regionCodeFilter: region,
+  //     zoneCodeFilter: zone,
+  //     areaCodeFilter: community,
+  //     officerFilter: officer,
+  //     startDateFilter: startDate,
+  //     endDateFilter: endDate,
+  //     complaintStatusFilter: status,
+  //   };
 
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return {
-          ...common,
-          violationFilter: violationType,
-        } as ComplaintFilters;
-      case COMPLAINT_TYPES.HWCR:
-      default:
-        return {
-          ...common,
-          speciesCodeFilter: species,
-          natureOfComplaintFilter: natureOfComplaint,
-        } as ComplaintFilters;
-    }
-  };
+  //   switch (complaintType) {
+  //     case COMPLAINT_TYPES.ERS:
+  //       return {
+  //         ...common,
+  //         violationFilter: violationType,
+  //       } as ComplaintFilters;
+  //     case COMPLAINT_TYPES.HWCR:
+  //     default:
+  //       return {
+  //         ...common,
+  //         speciesCodeFilter: species,
+  //         natureOfComplaintFilter: natureOfComplaint,
+  //       } as ComplaintFilters;
+  //   }
+  // };
 
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {

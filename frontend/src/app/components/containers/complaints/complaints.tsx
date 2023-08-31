@@ -1,5 +1,5 @@
-import { FC, useState, useEffect, useContext } from "react";
-import { Nav, Navbar, Tabs, Tab } from "react-bootstrap";
+import { FC, useState, useEffect, useContext, useCallback } from "react";
+import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
@@ -8,21 +8,33 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
+
+import { ComplaintFilterBar } from "./complaint-filter-bar";
 import {
   ComplaintFilterContext,
   ComplaintFilterProvider,
 } from "../../../providers/complaint-filter-provider";
-import { ComplaintFilterBar } from "./complaint-filter-bar";
+import {
+  resetFilters,
+  ComplaintFilterPayload,
+  updateFilter,
+} from "../../../store/reducers/complaint-filters";
+import {
+  selectDefaultZone,
+  getTokenProfile,
+} from "../../../store/reducers/app";
+import { DropdownOption } from "../../../types/code-tables/option";
 
 type Props = {
   defaultComplaintType: string;
 };
 
-const Complaints: FC<Props> = ({ defaultComplaintType }) => {
+export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const dispatch = useAppDispatch();
+  const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
 
-  const { resetFilters } = useContext(ComplaintFilterContext);
+  const defaultZone = useAppSelector(selectDefaultZone);
 
   const totalComplaints = useAppSelector(
     selectTotalComplaintsByType(complaintType)
@@ -30,7 +42,20 @@ const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const [isExpanded, setExpanded] = useState(false);
   const { getToggleProps } = useCollapse({ isExpanded });
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (!defaultZone) {
+      dispatch(getTokenProfile());
+    }
+    setFilter("zone", defaultZone);
+  }, [defaultZone]);
+
+  const setFilter = useCallback(
+    (name: string, value?: DropdownOption | Date | null) => {
+      let payload: ComplaintFilterPayload = { filter: name, value };
+      filterDispatch(updateFilter(payload));
+    },
+    []
+  );
 
   const complaintTypes: Array<{ name: string; id: string; code: string }> =
     Object.keys(COMPLAINT_TYPES).map((item) => {
@@ -49,7 +74,7 @@ const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
-    resetFilters();
+    filterDispatch(resetFilters());
   };
 
   return (
@@ -99,9 +124,12 @@ const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           </Nav.Item>
         </Nav>
       </Navbar>
+
+      {/* <ComplaintFilterProvider> */}
       <ComplaintFilter type={complaintType} isOpen={isExpanded} />
       <ComplaintFilterBar />
       <ComplaintList type={complaintType} />
+      {/* </ComplaintFilterProvider> */}
     </>
   );
 };

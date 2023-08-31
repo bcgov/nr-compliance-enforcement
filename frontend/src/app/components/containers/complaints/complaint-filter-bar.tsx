@@ -1,38 +1,17 @@
-import { FC, useContext } from "react";
-import { ComplaintFilterState } from "../../../types/providers/complaint-filter-provider-type";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
+import { FC, useContext, useState } from "react";
 import { FilterButton } from "../../common/filter-button";
 
 export const ComplaintFilterBar: FC = () => {
-  const {
-    filters,
-    setRegion,
-    setZone,
-    setCommunity,
-    setOfficer,
-    setStartDate,
-    setEndDate,
-    setStatus,
-    setSpecies,
-    setNatureOfComplaint,
-    setViolationType,
-
-    hasFilter,
-    hasDate,
-  } = useContext(ComplaintFilterContext);
-
-  const {
-    region,
-    zone,
-    community,
-    officer,
-    startDate,
-    endDate,
-    status,
-    species,
-    natureOfComplaint,
-    violationType,
-  } = filters as ComplaintFilterState;
+  const [region, setRegion] = useState<any>();
+  const [zone, setZone] = useState<any>();
+  const [community, setCommunity] = useState<any>();
+  const [officer, setOfficer] = useState<any>();
+  const [startDate, setStartDate] = useState<any>();
+  const [endDate, setEndDate] = useState<any>();
+  const [status, setStatus] = useState<any>();
+  const [species, setSpecies] = useState<any>();
+  const [natureOfComplaint, setNatureOfComplaint] = useState<any>();
+  const [violationType, setViolationType] = useState<any>();
 
   const dateRangeLabel = (): string | undefined => {
     if (startDate !== null && endDate !== null) {
@@ -49,6 +28,21 @@ export const ComplaintFilterBar: FC = () => {
   const clearDateRange = () => {
     setStartDate(undefined);
     setEndDate(undefined);
+  };
+
+  const hasDate = () => {
+    if (
+      (startDate === undefined || startDate === null) &&
+      (endDate === undefined || endDate === null)
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const hasFilter = (filter: string): boolean => {
+    return false;
   };
 
   return (
