@@ -59,13 +59,13 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
   setComplaintStatusFilter,
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const total = useAppSelector(selectWildlifeComplaintsCount);
 
-  const toggleViewMode = () => {
-    setViewMode(prevMode => (prevMode === 'map' ? 'list' : 'map'));
-  };
-  
+  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
+
+  const handleToggleView = (view: 'list' | 'map') => {
+    setActiveView(view);
+  };  
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -121,10 +121,11 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         setEndDateFilter={setEndDateFilter}
         complaintStatusFilter={complaintStatusFilter}
         setComplaintStatusFilter={setComplaintStatusFilter}
+        handleToggleView={handleToggleView}
+        activeView={activeView}
       />
-      <button onClick={toggleViewMode}>Toggle View</button>
 
-      {viewMode === 'map' ? (
+      {activeView === 'map' ? (
         <ComplaintsOnMap sortColumn={sort[0]}
         sortOrder={sort[1]}
         regionCodeFilter={regionCodeFilter}

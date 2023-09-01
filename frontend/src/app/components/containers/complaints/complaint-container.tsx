@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
-import { ComplaintsOnMap } from "./complaints-on-map"
 import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
 import { getComplaintTypeFromUrl } from "../../../common/methods";

@@ -325,6 +325,10 @@
   }
 }
 
+.comp-select__menu {
+  z-index: 2;
+}
+
 .comp-select__control:focus-within {
   border: 1px solid $blue-100 !important;
   box-shadow: 0px 0px 0px 4px $blue-300 !important;
@@ -499,9 +503,10 @@
 
   .comp-filter-pill-container
   {
+    display: flex;
+    align-items: center; /* Vertically center items */
+    height: 46px; /* Set the container's height */
     width: 1330px;
-    height: 29px;
-    margin: 5px 0px 15px 0px;
   }
 
   .comp-filter-left
@@ -517,10 +522,16 @@
     margin:0px 0px 0px 43px;
   }
 
+  .comp-filter-pills {
+    display: flex;
+    margin-left: auto;
+    align-items: center; /* Vertically center items */
+  }
+
   .comp-filter-pill
   {
-    float: right;
-    margin: 0px 0px 0px 7px;
+    padding: 4px;
+    height: 46px; /* Set the item's height */
   }
 
 .comp-box-footer {
@@ -835,4 +846,28 @@
 
 .input-field-select__option {
   min-height: 35px;
+}
+
+.map-list-toggle {
+  margin-bottom: 5px;
+  margin-left: 10px;
+  font-size: 12px;
+  height: 38px;
+  z-index: 0 !important;
+}
+
+.toggle-button {
+  background-color: $gray-100 !important;
+  color: $gray-800 !important;
+  border-color: $gray-300 !important;
+  border-radius: 8px;
+  z-index: 0 !important;
+}
+
+.toggle-button.active {
+  background-color: white !important;
+  color: $gray-800 !important;
+  border-color: $gray-300 !important;
+  border-radius: 8px;
+  z-index: 0 !important;
 }
