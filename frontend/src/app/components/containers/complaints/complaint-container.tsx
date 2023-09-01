@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
+import { ComplaintsOnMap } from "./complaints-on-map"
 import ComplaintType from "../../../constants/complaint-types";
 import Option from "../../../types/app/option";
 import { getComplaintTypeFromUrl } from "../../../common/methods";
@@ -17,6 +18,7 @@ type Props = {
 
 export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   const dispatch = useAppDispatch();
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const defaultZone = useAppSelector(profileZone);
   const defaultZoneLabel = useAppSelector(profileZoneDescription);
 
@@ -51,6 +53,10 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     _test !== -1 ? _test : initialState
   );
 
+  const toggleViewMode = () => {
+    setViewMode(prevMode => (prevMode === 'map' ? 'list' : 'map'));
+  };
+
   function handleChange(newState: number) {
     setComplaintType(newState);
     setSort(["incident_reported_datetime", "DESC"]);
@@ -83,9 +89,15 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
       }
     }
   }
+
+  if (viewMode === 'map') {
+    return(<><button onClick={toggleViewMode}>Toggle View</button> <ComplaintsOnMap /></>);
+  } else {
+
   if (complaintType === ComplaintType.HWCR_COMPLAINT) {
     return (
       <>
+        <button onClick={toggleViewMode}>Toggle View</button>
         <div className="comp-sub-header">Complaints</div>
         <div>
           <HwcrComplaintTabContainer
@@ -117,8 +129,11 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   } else if (complaintType === ComplaintType.ALLEGATION_COMPLAINT) {
     return (
       <>
+            <button onClick={toggleViewMode}>Toggle View</button>
         <div className="comp-sub-header">Complaints</div>
+
         <div>
+
           <AllegationComplaintTabContainer
             handleSort={handleSort}
             handleChange={handleChange}
@@ -146,4 +161,5 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   } else {
     return <></>;
   }
+}
 };

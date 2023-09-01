@@ -763,4 +763,20 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
   return allegations.length;
 };
 
+export const selectComplaintLocations = (state: RootState): {lat: number; lng: number}[] => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { wildlife, allegations } = complaintItems;
+
+  const coordinatesArray: { lat: number; lng: number }[] = wildlife.filter(item => item.complaint_identifier.location_geometry_point !== undefined && item.complaint_identifier.location_geometry_point.coordinates !== undefined)
+  .map(item => ({
+    lat: item.complaint_identifier.location_geometry_point === undefined ? 0: +item.complaint_identifier.location_geometry_point.coordinates[1],
+    lng: item.complaint_identifier.location_geometry_point === undefined ? 0: +item.complaint_identifier.location_geometry_point.coordinates[0],
+  }));
+
+
+  return coordinatesArray;
+};
+
 export default complaintSlice.reducer;
