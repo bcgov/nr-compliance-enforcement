@@ -18,7 +18,6 @@ type Props = {
 
 export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   const dispatch = useAppDispatch();
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const defaultZone = useAppSelector(profileZone);
   const defaultZoneLabel = useAppSelector(profileZoneDescription);
 
@@ -53,9 +52,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     _test !== -1 ? _test : initialState
   );
 
-  const toggleViewMode = () => {
-    setViewMode(prevMode => (prevMode === 'map' ? 'list' : 'map'));
-  };
+
 
   function handleChange(newState: number) {
     setComplaintType(newState);
@@ -90,14 +87,9 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     }
   }
 
-  if (viewMode === 'map') {
-    return(<><button onClick={toggleViewMode}>Toggle View</button> <ComplaintsOnMap /></>);
-  } else {
-
   if (complaintType === ComplaintType.HWCR_COMPLAINT) {
     return (
       <>
-        <button onClick={toggleViewMode}>Toggle View</button>
         <div className="comp-sub-header">Complaints</div>
         <div>
           <HwcrComplaintTabContainer
@@ -129,7 +121,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   } else if (complaintType === ComplaintType.ALLEGATION_COMPLAINT) {
     return (
       <>
-            <button onClick={toggleViewMode}>Toggle View</button>
         <div className="comp-sub-header">Complaints</div>
 
         <div>
@@ -161,5 +152,4 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   } else {
     return <></>;
   }
-}
 };

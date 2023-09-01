@@ -2,64 +2,77 @@ import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
   getComplaints,
-  selectAllegationComplaints, selectComplaintLocations,
+  selectAllegationComplaints, selectComplaintLocations, setComplaints,
 } from "../../../store/reducers/complaints";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import Option from "../../../types/app/option";
+
 
 type Props = {
-};
+  sortColumn: string,
+  sortOrder: string,
+  regionCodeFilter: Option | null,
+  zoneCodeFilter: Option | null,
+  areaCodeFilter: Option | null,
+  officerFilter: Option | null,
+  natureOfComplaintFilter: Option | null,
+  speciesCodeFilter: Option | null,
+  startDateFilter: Date | undefined,
+  endDateFilter: Date | undefined,
+  complaintStatusFilter: Option | null,
+}
 
-/**
- * Component that displays a map with a marker representing the complaint location
- *
- */
-export const ComplaintsOnMap: FC<Props> = () => {
+export const ComplaintsOnMap: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter}) => {
   
   const dispatch = useAppDispatch();
 
-  const sortColumn: string = "incident_reported_datetime";
-          const sortOrder: string = "DESC";
-          const regionCodeFilter = undefined;
-          const zoneCodeFilter = undefined;
-          const areaCodeFilter = undefined;
-          const officerFilter = undefined;
-          const violationFilter = undefined;
-          const startDateFilter = undefined;
-          const endDateFilter = undefined;
-          const complaintStatusFilter = undefined;
-
-  useEffect(() => {
-    const payload = {
-      sortColumn,
-          sortOrder,
-          regionCodeFilter,
-          zoneCodeFilter,
-          areaCodeFilter,
-          officerFilter,
-          violationFilter,
-          startDateFilter,
-          endDateFilter,
-          complaintStatusFilter,
-    } as ComplaintFilters;
-
-    dispatch(getComplaints(COMPLAINT_TYPES.HWCR, payload));
-  }, [
-    dispatch,
-  ]);
 
   const coordinatesArray = useAppSelector(selectComplaintLocations);
 
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+      dispatch(setComplaints({ type: COMPLAINT_TYPES.HWCR, data: [] }))
+    };
+  }, []);
+
+  useEffect(() => {
+      const payload = {
+        sortColumn,
+        sortOrder,
+        regionCodeFilter,
+        zoneCodeFilter,
+        areaCodeFilter,
+        officerFilter,
+        natureOfComplaintFilter,
+        speciesCodeFilter,
+        startDateFilter,
+        endDateFilter,
+        complaintStatusFilter,
+      } as ComplaintFilters;
+  
+      dispatch(getComplaints(COMPLAINT_TYPES.HWCR, payload));
+    }, [
+      dispatch,
+      sortColumn,
+      sortOrder,
+      regionCodeFilter,
+      zoneCodeFilter,
+      areaCodeFilter,
+      officerFilter,
+      natureOfComplaintFilter,
+      speciesCodeFilter,
+      startDateFilter,
+      endDateFilter,
+      complaintStatusFilter,
+    ]);
+
 
   return (
-    <div className="comp-complaint-details-location-block">
-      <h6>Complaint Location</h6>
-      <div className="comp-complaint-location">
         <LeafletMapWithMultiplePoints
           markers={coordinatesArray}
         />
-      </div>
-    </div>
   );
 };

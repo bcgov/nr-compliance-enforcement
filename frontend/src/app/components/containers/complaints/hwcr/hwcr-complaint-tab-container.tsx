@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { HwcrComplaintTableHeader } from "./hwcr-complaint-table-header";
 import { HwcrComplaintTable } from "./hwcr-complaint-table";
 import ComplaintType from "../../../../constants/complaint-types";
@@ -9,6 +9,7 @@ import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectWildlifeComplaintsCount } from "../../../../store/reducers/complaints";
+import { ComplaintsOnMap } from "../complaints-on-map";
 
 type Props = {
   handleChange: Function;
@@ -58,7 +59,13 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
   setComplaintStatusFilter,
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const total = useAppSelector(selectWildlifeComplaintsCount);
+
+  const toggleViewMode = () => {
+    setViewMode(prevMode => (prevMode === 'map' ? 'list' : 'map'));
+  };
+  
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -115,6 +122,24 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         complaintStatusFilter={complaintStatusFilter}
         setComplaintStatusFilter={setComplaintStatusFilter}
       />
+      <button onClick={toggleViewMode}>Toggle View</button>
+
+      {viewMode === 'map' ? (
+        <ComplaintsOnMap sortColumn={sort[0]}
+        sortOrder={sort[1]}
+        regionCodeFilter={regionCodeFilter}
+        zoneCodeFilter={zoneCodeFilter}
+        areaCodeFilter={areaCodeFilter}
+        officerFilter={officerFilter}
+        natureOfComplaintFilter={natureOfComplaintFilter}
+        speciesCodeFilter={speciesCodeFilter}
+        startDateFilter={startDateFilter}
+        endDateFilter={endDateFilter}
+        complaintStatusFilter={complaintStatusFilter}/>
+        ) : (
+
+
+      <>
       <HwcrComplaintTableHeader handleSort={handleSort} />
       <HwcrComplaintTable
         sortColumn={sort[0]}
@@ -129,6 +154,9 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         endDateFilter={endDateFilter}
         complaintStatusFilter={complaintStatusFilter}
       />
+      </>
+      )}
     </>
+    
   );
 };
