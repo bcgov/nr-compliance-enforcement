@@ -1,16 +1,17 @@
-import { FC, useState } from "react";
+import { FC, useState, useContext, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import {
+  getComplaints,
   selectComplaintsByType,
   selectWildlifeComplaints,
 } from "../../../store/reducers/complaints";
-import { ComplaintFilterState } from "../../../types/providers/complaint-filter-provider-type";
 import { Table } from "react-bootstrap";
 import { SORT_TYPES } from "../../../constants/sort-direction";
 import { SortableHeader } from "../../common/sortable-header";
-import { getComplaints } from "../../../store/reducers/complaints";
-import { ComplaintFilters } from "../../../types/complaints/complaint-filters";
+import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
+import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
+import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 
 type Props = {
   type: string;
@@ -20,54 +21,84 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
 
+  //-- the state fromthe context is not the same state as used in the rest of the application
+  //-- this is self-contained, rename the state locally to make clear
+  const { state: filters } = useContext(ComplaintFilterContext);
+
   const [sortKey, setSortKey] = useState("incident_reported_datetime");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+  } = filters;
 
-  // const generaComplaintRequestPayload = (
-  //   complaintType: string
-  // ): ComplaintFilters => {
+  const generaComplaintRequestPayload = (
+    complaintType: string,
+    filters: ComplaintFilters
+  ): ComplaintRequestPayload => {
+    const {
+      region,
+      zone,
+      community,
+      officer,
+      startDate,
+      endDate,
+      status,
+      species,
+      natureOfComplaint,
+      violationType,
+    } = filters;
 
-  //   const {
-  //     region,
-  //     zone,
-  //     community,
-  //     officer,
-  //     startDate,
-  //     endDate,
-  //     status,
-  //     species,
-  //     natureOfComplaint,
-  //     violationType,
-  //   } = filters as ComplaintFilterState;
+    const common = {
+      sortColumn: sortKey,
+      sortOrder: sortDirection,
+      regionCodeFilter: region,
+      zoneCodeFilter: zone,
+      areaCodeFilter: community,
+      officerFilter: officer,
+      startDateFilter: startDate,
+      endDateFilter: endDate,
+      complaintStatusFilter: status,
+    };
 
-  //   const common = {
-  //     sortColumn: sortKey,
-  //     sortOrder: sortDirection,
-  //     regionCodeFilter: region,
-  //     zoneCodeFilter: zone,
-  //     areaCodeFilter: community,
-  //     officerFilter: officer,
-  //     startDateFilter: startDate,
-  //     endDateFilter: endDate,
-  //     complaintStatusFilter: status,
-  //   };
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return {
+          ...common,
+          violationFilter: violationType,
+        } as ComplaintRequestPayload;
+      case COMPLAINT_TYPES.HWCR:
+      default:
+        return {
+          ...common,
+          speciesCodeFilter: species,
+          natureOfComplaintFilter: natureOfComplaint,
+        } as ComplaintRequestPayload;
+    }
+  };
 
-  //   switch (complaintType) {
-  //     case COMPLAINT_TYPES.ERS:
-  //       return {
-  //         ...common,
-  //         violationFilter: violationType,
-  //       } as ComplaintFilters;
-  //     case COMPLAINT_TYPES.HWCR:
-  //     default:
-  //       return {
-  //         ...common,
-  //         speciesCodeFilter: species,
-  //         natureOfComplaintFilter: natureOfComplaint,
-  //       } as ComplaintFilters;
-  //   }
-  // };
+  useEffect(() => {
+    const payload = generaComplaintRequestPayload(type, filters);
+    dispatch(getComplaints(type, payload));
+  }, [
+    community,
+    officer,
+    startDate,
+    endDate,
+    species,
+    natureOfComplaint,
+    violationType,
+    region,
+  ]);
 
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {

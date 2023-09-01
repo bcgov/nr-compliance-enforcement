@@ -46,10 +46,13 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   useEffect(() => {
     if (!defaultZone) {
       dispatch(getTokenProfile());
-    }
-    setFilter("zone", defaultZone);
-    setFilter("status", defaultStatus);
 
+      setFilter("zone", defaultZone);
+      setFilter("status", defaultStatus);
+    } else {
+      setFilter("zone", defaultZone);
+      setFilter("status", defaultStatus);
+    }
   }, [defaultZone]);
 
   const setFilter = useCallback(
@@ -80,8 +83,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
     //-- apply default filters, if more need to be set they can be added as needed
     let payload: Array<ComplaintFilterPayload> = [];
-    if(defaultZone){
-      payload = [{ filter: "zone", value: defaultZone}, {  filter: "status", value: defaultStatus}];
+    if (defaultZone) {
+      payload = [
+        { filter: "zone", value: defaultZone },
+        { filter: "status", value: defaultStatus },
+      ];
     }
     filterDispatch(resetFilters(payload));
   };
@@ -135,9 +141,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       </Navbar>
 
       <div>
-      <ComplaintFilter type={complaintType} isOpen={isExpanded} />
-      <ComplaintFilterBar />
-      <ComplaintList type={complaintType} />
+        <ComplaintFilter type={complaintType} isOpen={isExpanded} />
+        <ComplaintFilterBar />
+        <ComplaintList type={complaintType} />
       </div>
     </>
   );

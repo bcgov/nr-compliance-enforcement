@@ -1,5 +1,15 @@
 import React, { FC, createContext, useReducer } from "react";
-import complaintFilterReducer, { ComplaintFilters } from '../store/reducers/complaint-filters';
+import complaintFilterReducer from '../store/reducers/complaint-filters';
+import { ComplaintFilters } from '../types/complaints/complaint-filters/complaint-filters';
+
+interface ComplaintFilterContextType {
+  state: ComplaintFilters
+  dispatch: React.Dispatch<any>
+}
+
+type ProviderProps = {
+  children: React.ReactNode;
+};
 
 const initialState: ComplaintFilters = {
   region: null,
@@ -14,19 +24,11 @@ const initialState: ComplaintFilters = {
   violationType: null,
 };
 
-export interface ComplaintFilterContextType {
-  state: ComplaintFilters
-  dispatch: React.Dispatch<any>
-}
-
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   state: initialState,
   dispatch: () => {}
 })
 
-type ProviderProps = {
-  children: React.ReactNode;
-};
 
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(complaintFilterReducer, initialState as ComplaintFilters);

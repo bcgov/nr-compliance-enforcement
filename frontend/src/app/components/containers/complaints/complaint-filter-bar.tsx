@@ -2,10 +2,10 @@ import { FC, useContext, useState, useCallback } from "react";
 import { FilterButton } from "../../common/filter-button";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import {
-  ComplaintFilters,
   clearFilter,
 } from "../../../store/reducers/complaint-filters";
 import { DropdownOption } from "../../../types/code-tables/option";
+import { ComplaintFilters } from '../../../types/complaints/complaint-filters/complaint-filters';
 
 export const ComplaintFilterBar: FC = () => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
@@ -33,11 +33,6 @@ export const ComplaintFilterBar: FC = () => {
     } else {
       return undefined;
     }
-  };
-
-  const clearDateRange = () => {
-    removeFilter("startDate");
-    removeFilter("endDate");
   };
 
   const hasDate = () => {
