@@ -7,6 +7,7 @@ import "../../../../../../node_modules/react-datepicker/dist/react-datepicker.cs
 import "../../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
 import Option from "../../../../types/app/option";
 import MapListToggle from "../../../common/map-list-toggle";
+import SearchInput from "../../../common/search-input";
 
 type Props = {
   getCollapseProps: Function;
@@ -525,6 +526,9 @@ export const HwcrComplaintFilterContainer: FC<Props> = ({
                 onClick={() => setRegionCodeFilter(null)}
               ></button>
             </button>
+          </div>
+          <div className="comp-filter-search">
+            <SearchInput/>
           </div>
         </div>
       </div>

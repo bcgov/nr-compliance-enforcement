@@ -21,10 +21,10 @@ const MapListToggle: React.FC<Props> = ({ activeView, onToggle, className }) => 
       defaultValue={'list'}
       onChange={(view) => onToggle(view as 'list' | 'map')}
     >
-      <ToggleButton value="list" id="list_toggle_id" className={`toggle-button ${activeView === 'list' ? 'active' : ''}`}>
+      <ToggleButton title="Complaint List View" value="list" id="list_toggle_id" className={`toggle-button ${activeView === 'list' ? 'active' : ''}`}>
         <FontAwesomeIcon icon={faList} />
       </ToggleButton>
-      <ToggleButton value="map" id="map_toggle_id" className={`toggle-button ${activeView === 'map' ? 'active' : ''}`}>
+      <ToggleButton title="Complaint Map View" value="map" id="map_toggle_id" className={`toggle-button ${activeView === 'map' ? 'active' : ''}`}>
         <FontAwesomeIcon icon={faMap} />
       </ToggleButton>
     </ToggleButtonGroup>
