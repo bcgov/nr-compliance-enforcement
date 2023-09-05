@@ -56,9 +56,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
       dispatch(
         updateComplaintAssignee(
           userid,
-          selectedAssignee as UUID,
           complaint_identifier,
-          complaint_type
+          complaint_type,
+          selectedAssignee as UUID,
         )
       );
       submit();

@@ -5,6 +5,8 @@ import { AttractantHwcrXref } from './entities/attractant_hwcr_xref.entity';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
+import { UUID } from 'crypto';
+import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity';
 
 @Injectable()
 
@@ -45,47 +47,42 @@ export class AttractantHwcrXrefService {
 
   async updateComplaintAttractants(
     //queryRunner: QueryRunner, 
-    hwcr_complaint_guid: string, 
+    hwcr_complaint_guid: HwcrComplaint, 
     updateAttractantCodes: AttractantHwcrXref[]) {
-    const updatedValue = this.attractantHwcrXrefRepository.createQueryBuilder('attractant_hwcr_xref')
+    
+    await this.attractantHwcrXrefRepository.createQueryBuilder('attractant_hwcr_xref')
     .delete()
     .from(AttractantHwcrXref)
-    .where("hwcr_complaint_guid = :hwcr_complaint_guid", { hwcr_complaint_guid: hwcr_complaint_guid });
+    .where("hwcr_complaint_guid = :hwcr_complaint_guid", { hwcr_complaint_guid: hwcr_complaint_guid.hwcr_complaint_guid }).execute();
     //queryRunner.manager.save(updatedValue);
-    //const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    //await queryRunner.connect();
-    //await queryRunner.startTransaction();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try
     {
       for(var i = 0; i < updateAttractantCodes.length; i++)
       {
-        console.log("updateAttractantCodes[i]: " + JSON.stringify(updateAttractantCodes[i]));
-        let createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto = new CreateAttractantHwcrXrefDto();
-        createAttractantHwcrXrefDto.attractant_code = updateAttractantCodes[i].attractant_code;
-        createAttractantHwcrXrefDto.hwcr_complaint_guid = updateAttractantCodes[i].hwcr_complaint_guid;
-        createAttractantHwcrXrefDto.update_user_id = createAttractantHwcrXrefDto.create_user_id = updateAttractantCodes[i].create_user_id;
-        createAttractantHwcrXrefDto.create_timestamp = createAttractantHwcrXrefDto.update_timestamp = new Date();
+          let createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto = new CreateAttractantHwcrXrefDto();
 
-        console.log("updateAttractantHwcrXrefDto: " + JSON.stringify(createAttractantHwcrXrefDto));
-        const updatedValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
-        //queryRunner.manager.save(updatedValue);
-        console.log("test1");
+          createAttractantHwcrXrefDto.attractant_code = updateAttractantCodes[i].attractant_code;
+          createAttractantHwcrXrefDto.hwcr_complaint_guid = hwcr_complaint_guid;
+          createAttractantHwcrXrefDto.update_user_id = createAttractantHwcrXrefDto.create_user_id = updateAttractantCodes[i].create_user_id;
+          createAttractantHwcrXrefDto.create_timestamp = createAttractantHwcrXrefDto.update_timestamp = new Date();
+
+          const updatedValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
+          queryRunner.manager.save(updatedValue);
       }
-      console.log("test2");
-      //queryRunner.commitTransaction();
-      console.log("test3");
+      queryRunner.commitTransaction();
     } 
     catch (err) {
       this.logger.error(err);
-      //await queryRunner.rollbackTransaction();
+      await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
     } 
     finally
     {
-      console.log("test4");
       //await queryRunner.release();
-      console.log("test5");
     }
     return ;
   }

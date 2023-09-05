@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
+  bcBoundaries,
   formatDate,
   formatTime,
   renderCoordinates,
@@ -39,10 +40,11 @@ import { AllegationComplaint } from "../../../../types/complaints/allegation-com
 import axios from "axios";
 import config from "../../../../../config";
 import { cloneDeep } from "lodash";
-import { PersonComplaintXref } from "../../../../types/personComplaintXref";
+import { PersonComplaintXref } from "../../../../types/complaints/person-complaint-xref";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
 import { userId } from "../../../../store/reducers/app";
+import { ValidationInput } from "../../../../common/validation-input";
 
 interface ComplaintDetailsProps {
   updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined,
@@ -111,10 +113,10 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   ) : []);
 
   const xCoordinate = ReactDOMServer.renderToString(
-    renderCoordinates(coordinates, Coordinates.Latitude)
+    renderCoordinates(coordinates, Coordinates.Longitude)
   );
   const yCoordinate = ReactDOMServer.renderToString(
-    renderCoordinates(coordinates, Coordinates.Longitude)
+    renderCoordinates(coordinates, Coordinates.Latitude)
   );
 
   // Parse the string to a Date object
@@ -172,10 +174,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const selectedViolationObserved = yesNoOptions.find(
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
-
-  const handleIncidentDateTimeChange = (date: Date) => {
-    setSelectedIncidentDateTime(date);
-  };
 
   const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
   async function handleNOCChange(selectedOption: Option | null) {
@@ -304,6 +302,16 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
       }
   }
 
+  function handleLocationChange(value: string) {
+    if(complaintType === COMPLAINT_TYPES.HWCR)
+    {
+        console.log("locationSummary: " + value);
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+        hwcrComplaint.complaint_identifier.location_summary_text = value;
+        setUpdateComplaint(hwcrComplaint);
+    }
+}
+
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   function handleAttractantsChange(selectedOptions: Option[] | null) {
     if(selectedOptions !== null && selectedOptions !== undefined)
@@ -333,6 +341,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                 attractants.push(attractant);
               } 
             }
+            console.log("attractants: " + JSON.stringify(attractants));
           hwcrComplaint.attractant_hwcr_xref = attractants;
           setUpdateComplaint(hwcrComplaint);
         }
@@ -367,6 +376,61 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
           }
           setUpdateComplaint(hwcrComplaint);
 
+        }
+      }
+    }
+  }
+
+  function handleIncidentDateTimeChange(date: Date) {
+
+    if(complaintType === COMPLAINT_TYPES.HWCR)
+    {
+        setSelectedIncidentDateTime(date);
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+        hwcrComplaint.complaint_identifier.incident_datetime = date.toDateString();
+        setUpdateComplaint(hwcrComplaint);
+    }
+  }
+
+  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
+  function handleGeoPointXChange(value: string) {
+
+    if(complaintType === COMPLAINT_TYPES.HWCR)
+    {
+      if(value !== "")
+      {
+        if(+value > bcBoundaries.maxLongitude || +value < bcBoundaries.minLongitude)
+        {
+          setGeoPointXMsg("Value must be between " + bcBoundaries.minLongitude + " and " + bcBoundaries.maxLongitude + " degrees");
+        }
+        else
+        {
+          setGeoPointXMsg("");
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[1] = +value;
+          setUpdateComplaint(hwcrComplaint);
+        }
+      }
+    }
+  }
+
+  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
+  function handleGeoPointYChange(value: string) {
+
+    if(complaintType === COMPLAINT_TYPES.HWCR)
+    {
+      if(value !== "")
+      {
+        if(+value > bcBoundaries.maxLatitude || +value < bcBoundaries.minLatitude)
+        {
+          setGeoPointYMsg("Value must be between " + bcBoundaries.minLatitude + " and " + bcBoundaries.maxLatitude + " degrees");
+        }
+        else
+        {
+          setGeoPointYMsg("");
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[0] = +value;
+          setUpdateComplaint(hwcrComplaint);
         }
       }
     }
@@ -612,7 +676,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   Complaint Location
                 </label>
                 <div className="comp-details-edit-input">
-                  <BCGeocoderAutocomplete value={location} id="complaint-location-edit-id" maxResults={10}/>
+                  <BCGeocoderAutocomplete value={location} id="complaint-location-edit-id" maxResults={10} parentOnChange={handleLocationChange}/>
                 </div>
               </div>
               <div
@@ -634,11 +698,14 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
               >
                 <label>X Coordinate</label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
+                  <ValidationInput
+                    type="number"
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
                     defaultValue={xCoordinate}
+                    onChange={handleGeoPointXChange}
+                    errMsg={geoPointXMsg}
+                    step="any"
                   />
                 </div>
               </div>
@@ -648,11 +715,14 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
               >
                 <label>Y Coordinate</label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
+                  <ValidationInput
+                    type="number"
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
                     defaultValue={yCoordinate}
+                    onChange={handleGeoPointYChange}
+                    errMsg={geoPointYMsg}
+                    step="any"
                   />
                 </div>
               </div>

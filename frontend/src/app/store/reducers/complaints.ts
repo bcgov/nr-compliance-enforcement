@@ -372,9 +372,9 @@ export const updateWildlifeComplaint =
 
       await updateComplaintAssignee(
         hwcrComplaint.complaint_identifier.create_user_id,
-        hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid as UUID,
         hwcrComplaint.complaint_identifier.complaint_identifier,
-        COMPLAINT_TYPES.HWCR
+        COMPLAINT_TYPES.HWCR,
+        (hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined ? hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid as UUID : undefined)
       )
 
       //-- get the updated wildlife conflict
@@ -384,8 +384,10 @@ export const updateWildlifeComplaint =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
+      console.log("complaintResponse: " + response);
       dispatch(setComplaint({ ...response }));
     } catch (error) {
+      console.log(error);
       //-- add error handling
     } finally {
       dispatch(toggleLoading(false));
@@ -450,7 +452,7 @@ export const selectComplaint = (
 ): HwcrComplaint | AllegationComplaint | undefined | null => {
   const { complaints: root } = state;
   const { complaint } = root;
-
+  //console.log("reducerReturn: " + JSON.stringify(complaint));
   return complaint;
 };
 

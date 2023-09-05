@@ -47,7 +47,6 @@ export class HwcrComplaintController {
   @Roles(Role.COS_OFFICER)
   async update(@Param('id') id: UUID, @Body('hwcrComplaint') updateHwcrComplaintDto: string) {
     const hwcrComplaint = await this.hwcrComplaintService.update(id, updateHwcrComplaintDto);
-    console.log("hwcrComplaint: " + JSON.stringify(hwcrComplaint));
     return hwcrComplaint;
   }
 

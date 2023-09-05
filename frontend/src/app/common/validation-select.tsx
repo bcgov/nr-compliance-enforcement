@@ -25,7 +25,6 @@ interface ValidationSelectProps {
     errMsg,
   }) => {
     const calulatedClass = (errMsg === "" ? "" : "error-message");
-    console.log("validationSelectValue: " + defaultValue?.value);
     return (<div className={className}>
         <div>
         <Select 

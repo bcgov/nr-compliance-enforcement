@@ -71,6 +71,7 @@ export class PersonComplaintXrefService {
     person_complaint_xref_guid: any,
     updatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
+    console.log("updatePersonComplaintXrefDto: " + JSON.stringify(updatePersonComplaintXrefDto));
     const updatedValue = await this.personComplaintXrefRepository.update(
       person_complaint_xref_guid,
       updatePersonComplaintXrefDto

@@ -29,7 +29,7 @@ export const ComplaintDetails: FC = () => {
   const dispatch = useAppDispatch();
   const [readOnly, setReadOnly] = useState(true);
   const complaint = useAppSelector(selectComplaint);
-  const [updateComplaint, setUpdateComplaint] = useState<HwcrComplaint | AllegationComplaint | null | undefined>(null);
+  const [updateComplaint, setUpdateComplaint] = useState<HwcrComplaint | AllegationComplaint | null | undefined>(complaint);
   const userid = useAppSelector(userId);
 
   useEffect(() => {
@@ -68,8 +68,7 @@ export const ComplaintDetails: FC = () => {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
         let hwcrComplaint = updateComplaint as HwcrComplaint;
-        //console.log("hwcrComplaint: " + JSON.stringify(hwcrComplaint));
-       //hwcrComplaint.complaint_identifier.update_user_id = userid;
+        console.log("hwcrComplaint: " + JSON.stringify(hwcrComplaint));
         await dispatch(updateWildlifeComplaint(hwcrComplaint));
         
       }

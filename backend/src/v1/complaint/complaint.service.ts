@@ -58,15 +58,15 @@ export class ComplaintService {
         detail_text: updateComplaintDto.detail_text,
         location_detailed_text: updateComplaintDto.location_detailed_text,
         cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
+        incident_datetime: updateComplaintDto.incident_datetime,
+        location_geometry_point: updateComplaintDto.location_geometry_point,
+        location_summary_text: updateComplaintDto.location_summary_text,
       };
-      console.log("updateData: " + JSON.stringify(updateData));
       const updatedValue = await this.complaintsRepository.update(
         { complaint_identifier },
         updateData
       );
-      console.log("updatedValue: " + updatedValue);
       //queryRunner.manager.save(updatedValue);
-      console.log("test4");
     return this.findOne(complaint_identifier);
   }
 

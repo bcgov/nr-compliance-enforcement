@@ -25,7 +25,7 @@ interface ValidationMultiSelectProps {
     errMsg,
   }) => {
     const calulatedClass = (errMsg === "" ? "" : "error-message");
-    return (<div className={className}> qq
+    return (<div className={className}>
         <div>
         <Select 
                 id={id}

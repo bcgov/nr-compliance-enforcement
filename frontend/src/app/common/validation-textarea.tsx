@@ -20,7 +20,7 @@ interface ValidationTextAreaProps {
   }) => {
     const errClass = (errMsg === "" ? "" : "error-message");
     const calulatedClass = (errMsg === "" ? className : className + " error-border");
-    return (<div>
+    return (<div className="width-full">
         <div>
         <textarea
                     id={id}

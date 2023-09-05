@@ -10,6 +10,7 @@ interface Props {
   value?: string;
   id?: string;
   maxResults: number;
+  parentOnChange: Function;
 }
 
 interface AddressOption {
@@ -24,12 +25,15 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
   value,
   id,
   maxResults,
+  parentOnChange,
 }) => {
   const [addressOptions, setAddressOptions] = useState<AddressOption[]>([]);
   const [inputValue, setInputValue] = useState<string>(`${value ?? ""}`);
 
   const handleInputChange = (inputValue: string) => {
+    console.log("inputValue: " + inputValue);
     setInputValue(inputValue);
+    parentOnChange(inputValue);
   };
 
   const dispatch = useAppDispatch();

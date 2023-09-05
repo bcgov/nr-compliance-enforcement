@@ -2,6 +2,8 @@ import { ComplaintStatusCode } from "../code-tables/complaint-status-code";
 import { GeoOrganizationUnitCode } from "../code-tables/geo-organization-unit-code";
 import { HwcrComplaintNatureCode } from "../code-tables/hwcr-complaint-nature-code";
 import { SpeciesCode } from "../code-tables/species-code";
+import { LocationGeometryPoint } from "./complaint";
+import { PersonComplaintXref } from "./person-complaint-xref";
 
 export interface HwcrComplaint {
   complaint_identifier: {
@@ -17,13 +19,14 @@ export interface HwcrComplaint {
     update_user_id: string;
     update_timestamp: string;
     complaint_status_code: ComplaintStatusCode;
+    location_geometry_point: LocationGeometryPoint;
     cos_geo_org_unit: {
             zone_code: string;
             office_location_name: string;
             area_name: string;
             area_code: string;
     },
-    person_complaint_xref: {person_guid: {person_complaint_xref_guid: string, person_guid: string, first_name: string, last_name: string}, active_ind: boolean, complaint_identifier: string, person_complaint_xref_code: string}[];
+    person_complaint_xref: PersonComplaintXref[];
   }
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
   species_code: SpeciesCode
