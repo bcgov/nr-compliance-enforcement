@@ -302,6 +302,21 @@ export const getComplaintLocationByAddress =
     }
   };
 
+  export const getComplaintLocationByAddressAsync =
+  (address: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
+      );
+      const response = await get<Feature>(dispatch, parameters);
+      return response.features[0].geometry;
+    } catch (error) {
+      //-- handle the error message
+    }
+  };
+
+
 export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
@@ -763,18 +778,84 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
   return allegations.length;
 };
 
-export const selectComplaintLocations = (state: RootState): {lat: number; lng: number}[] => {
+export const selectWildlifeComplaintLocations = (
+  state: RootState
+): { lat: number; lng: number }[] => {
   const {
     complaints: { complaintItems },
   } = state;
-  const { wildlife, allegations } = complaintItems;
+  const { wildlife } = complaintItems;
 
-  const coordinatesArray: { lat: number; lng: number }[] = wildlife.filter(item => item.complaint_identifier.location_geometry_point !== undefined && item.complaint_identifier.location_geometry_point.coordinates !== undefined)
-  .map(item => ({
-    lat: item.complaint_identifier.location_geometry_point === undefined ? 0: +item.complaint_identifier.location_geometry_point.coordinates[1],
-    lng: item.complaint_identifier.location_geometry_point === undefined ? 0: +item.complaint_identifier.location_geometry_point.coordinates[0],
-  }));
+  let coordinatesArray: { lat: number; lng: number }[] = wildlife
+  
+    .filter(
+      (item) =>
+        item.complaint_identifier.location_geometry_point !== undefined &&
+        item.complaint_identifier.location_geometry_point.coordinates !==
+          undefined
+    )
+    .map((item) => ({
+      lat:
+        item.complaint_identifier.location_geometry_point === undefined
+          ? 0
+          : +item.complaint_identifier.location_geometry_point.coordinates[1],
+      lng:
+        item.complaint_identifier.location_geometry_point === undefined
+          ? 0
+          : +item.complaint_identifier.location_geometry_point.coordinates[0],
+    }));
 
+    // find complaints without coordinates, but with address information.  This will be needed
+    // to geocode complaints that are missing coordinates so that we can display them on a map.
+    const addressArray: { address: string, community: string}[] = wildlife
+    .filter(
+      (item) =>
+        (item.complaint_identifier.location_geometry_point === undefined ||
+        item.complaint_identifier.location_geometry_point.coordinates ===
+          undefined) && item.complaint_identifier.location_summary_text !== undefined
+
+    )
+    .map((item) => ({
+      address:
+        item.complaint_identifier.location_summary_text,
+      community: item.complaint_identifier.cos_geo_org_unit.area_name
+    }));
+
+    for (const address of addressArray) {
+      
+    }
+
+    
+
+
+  return coordinatesArray;
+};
+
+export const selectAllegationComplaintLocations = (
+  state: RootState
+): { lat: number; lng: number }[] => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { allegations } = complaintItems;
+
+  const coordinatesArray: { lat: number; lng: number }[] = allegations
+    .filter(
+      (item) =>
+        item.complaint_identifier.location_geometry_point !== undefined &&
+        item.complaint_identifier.location_geometry_point.coordinates !==
+          undefined
+    )
+    .map((item) => ({
+      lat:
+        item.complaint_identifier.location_geometry_point === undefined
+          ? 0
+          : +item.complaint_identifier.location_geometry_point.coordinates[1],
+      lng:
+        item.complaint_identifier.location_geometry_point === undefined
+          ? 0
+          : +item.complaint_identifier.location_geometry_point.coordinates[0],
+    }));
 
   return coordinatesArray;
 };

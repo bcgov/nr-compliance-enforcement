@@ -9,7 +9,8 @@ import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectAllegationComplaintsCount } from "../../../../store/reducers/complaints";
-import { ComplaintsOnMap } from "../complaints-on-map";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
+import { AllegationComplaintsOnMap } from "../allegation-complaints-on-map";
 
 type Props = {
   handleChange: Function;
@@ -117,15 +118,18 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
         activeView={activeView}
       />
 {activeView === 'map' ? (
-        <ComplaintsOnMap sortColumn={sort[0]}
+        <AllegationComplaintsOnMap sortColumn={sort[0]}
         sortOrder={sort[1]}
         regionCodeFilter={regionCodeFilter}
         zoneCodeFilter={zoneCodeFilter}
         areaCodeFilter={areaCodeFilter}
         officerFilter={officerFilter}
+        violationFilter={violationFilter}
         startDateFilter={startDateFilter}
         endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}/>
+        complaintStatusFilter={complaintStatusFilter}
+        complaintType={COMPLAINT_TYPES.ERS}
+        />
         ) : (
 
 

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { catchError, firstValueFrom } from "rxjs";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosRequestConfig } from "axios";
 import { Feature } from "src/types/bc_geocoder/bcGeocoderType";
 
 @Injectable()
@@ -30,8 +30,20 @@ export class BcGeoCoderService {
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2&provinceCode=BC`;
     }
     if (apiUrl) {
+      const apiKey = process.env.BC_GEOCODER_API_URL;
+
+      const headers = {
+        'apikey': apiKey,
+        // Add any other headers you need here
+      };
+  
+      const config: AxiosRequestConfig = {
+        headers,
+        // Add any other Axios request configuration options here
+      };
+
       const { data } = await firstValueFrom(
-        this.httpService.get<any>(apiUrl).pipe(
+        this.httpService.get<any>(apiUrl, config).pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response);
             throw "Error getting BC Geocoder response";

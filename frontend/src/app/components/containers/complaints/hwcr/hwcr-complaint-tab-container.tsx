@@ -9,7 +9,8 @@ import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectWildlifeComplaintsCount } from "../../../../store/reducers/complaints";
-import { ComplaintsOnMap } from "../complaints-on-map";
+import { WildlifeComplaintsOnMap } from "../wildlife-complaints-on-map";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 type Props = {
   handleChange: Function;
@@ -126,7 +127,7 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
       />
 
       {activeView === 'map' ? (
-        <ComplaintsOnMap sortColumn={sort[0]}
+        <WildlifeComplaintsOnMap sortColumn={sort[0]}
         sortOrder={sort[1]}
         regionCodeFilter={regionCodeFilter}
         zoneCodeFilter={zoneCodeFilter}
@@ -136,7 +137,8 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         speciesCodeFilter={speciesCodeFilter}
         startDateFilter={startDateFilter}
         endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}/>
+        complaintStatusFilter={complaintStatusFilter}
+        complaintType={COMPLAINT_TYPES.HWCR}/>
         ) : (
 
 
