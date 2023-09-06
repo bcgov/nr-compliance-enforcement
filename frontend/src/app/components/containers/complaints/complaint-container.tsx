@@ -78,6 +78,16 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   const handlePageChange = (page: number) => {
     setPage(page);
   };
+  const displayPages = 10;
+  const middlePage = Math.floor(displayPages / 2);
+  let startPage = Math.max((page === undefined ? 1 :page) - middlePage, 1);
+  let endPage = Math.min(startPage + displayPages - 1, total);
+
+  if (endPage - startPage + 1 < displayPages) {
+    startPage = Math.max(endPage - displayPages + 1, 1);
+  }
+
+
   function handleSort(newSortColumn: string) {
     if (newSortColumn === sort[0]) {
       if (sort[1] === "DESC") {
@@ -128,6 +138,11 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
           />
         </div>
         <Pagination>
+            <Pagination.First />
+          <Pagination.Prev />
+          <Pagination.Item>{1}</Pagination.Item>
+          <Pagination.Ellipsis />
+      
         {Array.from({ length: Math.ceil(total / (pageSize ? pageSize : 10)) }, (_, index) => (
           <Pagination.Item
             key={index + 1}
@@ -136,7 +151,12 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
           >
             {index + 1}
           </Pagination.Item>
+          
         ))}
+        <Pagination.Ellipsis />
+        <Pagination.Item>{Math.ceil(total / (pageSize ? pageSize : 10))}</Pagination.Item>
+        <Pagination.Next />
+        <Pagination.Last />
       </Pagination>
       </>
     );
