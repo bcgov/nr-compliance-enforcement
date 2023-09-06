@@ -21,9 +21,11 @@ type Props = {
     startDateFilter: Date | undefined,
     endDateFilter: Date | undefined,
     complaintStatusFilter: Option | null,
+    page?: number,
+    pageSize?: number
 }
 
-export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter}) => {
+export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter, page, pageSize}) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const hwcrComplaintsJson = useAppSelector(selectWildlifeComplaints);
@@ -48,6 +50,8 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
           startDateFilter,
           endDateFilter,
           complaintStatusFilter,
+          page,
+          pageSize,
         } as ComplaintFilters;
     
         dispatch(getComplaints(COMPLAINT_TYPES.HWCR, payload));
@@ -64,6 +68,8 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
         startDateFilter,
         endDateFilter,
         complaintStatusFilter,
+        page,
+        pageSize
       ]);
     
   const handleComplaintClick = (
@@ -119,5 +125,6 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
                 })}
             </tbody>
         </Table>
+        
     );
   };

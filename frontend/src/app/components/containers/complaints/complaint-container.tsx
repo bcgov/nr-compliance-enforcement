@@ -10,6 +10,8 @@ import {
   profileZone,
   profileZoneDescription,
 } from "../../../store/reducers/app";
+import { Pagination } from "react-bootstrap";
+import { selectWildlifeComplaintsCount } from "../../../store/reducers/complaints";
 
 type Props = {
   initialState: number;
@@ -51,6 +53,11 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     _test !== -1 ? _test : initialState
   );
 
+  const [page, setPage] = useState<number | undefined>(1);
+  const [pageSize, setPageSize] = useState<number | undefined>(10);
+
+  const total: number = useAppSelector(selectWildlifeComplaintsCount);
+
   function handleChange(newState: number) {
     setComplaintType(newState);
     setSort(["incident_reported_datetime", "DESC"]);
@@ -64,7 +71,13 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     setViolationFilter(null);
     setStartDateFilter(undefined);
     setEndDateFilter(undefined);
+    setPage(undefined);
+    setPageSize(undefined);
   }
+
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
   function handleSort(newSortColumn: string) {
     if (newSortColumn === sort[0]) {
       if (sort[1] === "DESC") {
@@ -110,8 +123,21 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
             setEndDateFilter={setEndDateFilter}
             complaintStatusFilter={complaintStatusFilter}
             setComplaintStatusFilter={setComplaintStatusFilter}
+            page={page}
+            pageSize={pageSize}
           />
         </div>
+        <Pagination>
+        {Array.from({ length: Math.ceil(total / (pageSize ? pageSize : 10)) }, (_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={page === index + 1}
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
       </>
     );
   } else if (complaintType === ComplaintType.ALLEGATION_COMPLAINT) {

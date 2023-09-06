@@ -32,6 +32,8 @@ type Props = {
   setEndDateFilter: Function;
   complaintStatusFilter: Option | null;
   setComplaintStatusFilter: Function;
+  page?: number;
+  pageSize?: number;
 };
 
 export const HwcrComplaintTabContainer: FC<Props> = ({
@@ -56,6 +58,8 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
   setEndDateFilter,
   complaintStatusFilter,
   setComplaintStatusFilter,
+  page,
+  pageSize
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectWildlifeComplaintsCount);
@@ -128,6 +132,8 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         startDateFilter={startDateFilter}
         endDateFilter={endDateFilter}
         complaintStatusFilter={complaintStatusFilter}
+        page={page}
+        pageSize={pageSize}
       />
     </>
   );

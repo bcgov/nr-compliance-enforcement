@@ -27,6 +27,7 @@ const initialState: ComplaintState = {
     wildlife: [],
     allegations: [],
   },
+  totalCount: 0,
   complaint: null,
   complaintLocation: null,
 
@@ -47,7 +48,7 @@ export const complaintSlice = createSlice({
       } = action;
       const { complaintItems } = state;
 
-      let update: ComplaintCollection = { wildlife: [], allegations: [] };
+      let update: ComplaintCollection = { wildlife: [], allegations: []};
 
       switch (type) {
         case COMPLAINT_TYPES.ERS:
@@ -59,6 +60,9 @@ export const complaintSlice = createSlice({
       }
 
       return { ...state, complaintItems: update };
+    },
+    setTotalCount(state, action) {
+      state.totalCount = action.payload;
     },
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
@@ -135,6 +139,7 @@ export const complaintSlice = createSlice({
 // export the actions/reducers
 export const {
   setComplaints,
+  setTotalCount,
   setComplaint,
   setComplaintLocation,
   setZoneAtAGlance,
@@ -159,6 +164,8 @@ export const getComplaints =
       endDateFilter,
       violationFilter,
       complaintStatusFilter,
+      page,
+      pageSize,
     } = payload;
 
     try {
@@ -189,15 +196,19 @@ export const getComplaints =
           incidentReportedEnd: endDateFilter,
           violationCode: violationFilter?.value,
           status: complaintStatusFilter?.value,
+          page: page,
+          pageSize: pageSize,
         }
       );
 
-      const response = await get<
-        HwcrComplaint | AllegationComplaint,
+      const {complaints, totalCount} = await get<
+        {complaints: HwcrComplaint | AllegationComplaint, totalCount: number},
         ComplaintQueryParams
       >(dispatch, parameters);
 
-      dispatch(setComplaints({ type: complaintType, data: response }));
+
+      dispatch(setComplaints({ type: complaintType, data: complaints }));
+      dispatch(setTotalCount(totalCount));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
     } finally {
@@ -735,12 +746,7 @@ export const selectWildlifeComplaints = (
 };
 
 export const selectWildlifeComplaintsCount = (state: RootState): number => {
-  const {
-    complaints: { complaintItems },
-  } = state;
-  const { wildlife } = complaintItems;
-
-  return wildlife.length;
+  return state.complaints.totalCount
 };
 
 export const selectAllegationComplaints = (
