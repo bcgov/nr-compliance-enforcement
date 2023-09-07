@@ -5,6 +5,7 @@ import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
 
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
+  complaintItemsOnMap: ComplaintCollection;
   complaint: HwcrComplaint | AllegationComplaint | undefined | null;
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
