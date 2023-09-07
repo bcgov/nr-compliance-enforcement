@@ -12,6 +12,8 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from 'src/types/zone_at
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
+import { Stream } from 'stream';
+import { ReadStream } from 'typeorm/platform/PlatformTools';
 
 @Injectable()
 export class HwcrComplaintService {
@@ -153,11 +155,11 @@ export class HwcrComplaintService {
     }
 
     async searchMap(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 
-      speciesCode?: string, incidentReportedStart?: Date, incidentReportedEnd?: Date, status?: string): Promise<HwcrComplaint[]> {
+      speciesCode?: string, incidentReportedStart?: Date, incidentReportedEnd?: Date, status?: string): Promise<NodeJS.ReadableStream> {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
      
 
-      const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+      const queryBuilder = await this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoin('hwcr_complaint.species_code','species_code')
       .leftJoin('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
@@ -168,7 +170,8 @@ export class HwcrComplaintService {
       .leftJoin('complaint_identifier.cos_geo_org_unit', 'cos_geo_org_unit')
       .leftJoin('attractant_hwcr_xref.attractant_code', 'attractant_code')
       .leftJoin('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
-      .leftJoin('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+      .leftJoin('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true');
+
       
 
       if(community !== null && community !== undefined && community !== '')
@@ -213,7 +216,9 @@ export class HwcrComplaintService {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
 
-      return queryBuilder.getMany();
+      const stream = await queryBuilder.stream();
+
+      return stream;
     }
   
     async findAll(sortColumn: string, sortOrder: string): Promise<HwcrComplaint[]> {
