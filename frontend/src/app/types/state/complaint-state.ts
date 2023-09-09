@@ -15,3 +15,13 @@ export interface ComplaintCollection {
   wildlife: Array<HwcrComplaint>;
   allegations: Array<AllegationComplaint>;
 }
+
+export interface Coordinate {
+  lat: number;
+  lng: number;
+  
+}
+
+export interface MarkerCluster {
+coordinates: Array<Coordinate>
+}
