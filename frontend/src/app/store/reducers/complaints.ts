@@ -249,7 +249,6 @@ export const getComplaints =
 
     try {
       dispatch(toggleLoading(true));
-      //dispatch(setComplaintsOnMap(null));
 
       const apiEndpoint = (type: string): string => {
         switch (type) {
@@ -890,22 +889,9 @@ export const selectWildlifeComplaintLocations = (
   const { wildlife } = complaintItemsOnMap;
 
   let coordinatesArray: { lat: number; lng: number }[] = wildlife
-  
-    .filter(
-      (item) =>
-        item.complaint_identifier.location_geometry_point !== undefined &&
-        item.complaint_identifier.location_geometry_point.coordinates !==
-          undefined
-    )
     .map((item) => ({
-      lat:
-        item.complaint_identifier.location_geometry_point === undefined
-          ? 0
-          : +item.complaint_identifier.location_geometry_point.coordinates[1],
-      lng:
-        item.complaint_identifier.location_geometry_point === undefined
-          ? 0
-          : +item.complaint_identifier.location_geometry_point.coordinates[0],
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
     }));
 
   return coordinatesArray;
@@ -920,21 +906,9 @@ export const selectAllegationComplaintLocations = (
   const { allegations } = complaintItemsOnMap;
 
   const coordinatesArray: { lat: number; lng: number }[] = allegations
-    .filter(
-      (item) =>
-        item.complaint_identifier.location_geometry_point !== undefined &&
-        item.complaint_identifier.location_geometry_point.coordinates !==
-          undefined
-    )
     .map((item) => ({
-      lat:
-        item.complaint_identifier.location_geometry_point === undefined
-          ? 0
-          : +item.complaint_identifier.location_geometry_point.coordinates[1],
-      lng:
-        item.complaint_identifier.location_geometry_point === undefined
-          ? 0
-          : +item.complaint_identifier.location_geometry_point.coordinates[0],
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
     }));
 
   return coordinatesArray;
