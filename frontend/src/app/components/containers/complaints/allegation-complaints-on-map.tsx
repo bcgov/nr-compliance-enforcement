@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
-  getComplaints,
+  getComplaintsOnMap,
   selectAllegationComplaintLocations,
   setComplaints,
 } from "../../../store/reducers/complaints";
@@ -63,7 +63,7 @@ export const AllegationComplaintsOnMap: FC<Props> = ({
       complaintStatusFilter,
     } as ComplaintFilters;
 
-    dispatch(getComplaints(complaintType, payload));
+    dispatch(getComplaintsOnMap(complaintType, payload));
   }, [
     dispatch,
     sortColumn,

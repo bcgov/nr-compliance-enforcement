@@ -8,7 +8,7 @@ import { AllegationComplaintFilterContainer } from "./allegation-complaint-filte
 import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectAllegationComplaintsCount } from "../../../../store/reducers/complaints";
+import { selectAllegationComplaintsCount, selectAllegationComplaintsOnMapCount } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { AllegationComplaintsOnMap } from "../allegation-complaints-on-map";
 
@@ -56,6 +56,7 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectAllegationComplaintsCount);
+  const totalOnMap = useAppSelector(selectAllegationComplaintsOnMapCount);
   const [activeView, setActiveView] = useState<'list' | 'map'>('list');
 
   const handleToggleView = (view: 'list' | 'map') => {
@@ -76,7 +77,7 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
           </Nav.Item>
           <Nav.Item className="nav-item comp-tab-active">
             <button className="nav-link active" id="ers-tab">
-              Enforcement ({`${total}`})
+              Enforcement ({activeView === 'list' ? `${total}` : `${totalOnMap}`} )
             </button>
           </Nav.Item>
           <Nav.Item className="ms-auto" {...getToggleProps()}>

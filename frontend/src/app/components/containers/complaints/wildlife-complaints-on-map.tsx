@@ -8,6 +8,7 @@ import {
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters";
 import Option from "../../../types/app/option";
+
 type Props = {
   sortColumn: string;
   sortOrder: string;

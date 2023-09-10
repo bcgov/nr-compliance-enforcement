@@ -834,23 +834,20 @@ export const selectWildlifeComplaints = (
 
   return wildlife;
 };
-
-export const selectWildlifeComplaintsOnMap = (
-  state: RootState
-): Array<HwcrComplaint> => {
-  const {
-    complaints: { complaintItems },
-  } = state;
-  const { wildlife } = complaintItems;
-
-  return wildlife;
-};
-
 export const selectWildlifeComplaintsCount = (state: RootState): number => {
   const {
     complaints: { complaintItems },
   } = state;
   const { wildlife } = complaintItems;
+
+  return wildlife.length;
+};
+
+export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { wildlife } = complaintItemsOnMap;
 
   return wildlife.length;
 };
@@ -871,6 +868,15 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
     complaints: { complaintItems },
   } = state;
   const { allegations } = complaintItems;
+
+  return allegations.length;
+};
+
+export const selectAllegationComplaintsOnMapCount = (state: RootState): number => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { allegations } = complaintItemsOnMap;
 
   return allegations.length;
 };
@@ -909,9 +915,9 @@ export const selectAllegationComplaintLocations = (
   state: RootState
 ): { lat: number; lng: number }[] => {
   const {
-    complaints: { complaintItems },
+    complaints: { complaintItemsOnMap },
   } = state;
-  const { allegations } = complaintItems;
+  const { allegations } = complaintItemsOnMap;
 
   const coordinatesArray: { lat: number; lng: number }[] = allegations
     .filter(
