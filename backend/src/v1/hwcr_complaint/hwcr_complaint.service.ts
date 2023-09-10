@@ -134,7 +134,7 @@ export class HwcrComplaintService {
       }
       if(speciesCode !== null && speciesCode !== undefined && speciesCode !== "")
       {
-        queryBuilder.andWhere('hwcr_complaint.species_code = :SpeciesCode', { SpeciesCode:'speciesCode' });
+        queryBuilder.andWhere('hwcr_complaint.species_code = :SpeciesCode', { SpeciesCode: speciesCode });
       }
       if(incidentReportedStart !== null && incidentReportedStart !== undefined)
       {
@@ -146,7 +146,7 @@ export class HwcrComplaintService {
       }
       if(status !== null && status !== undefined && status !== "")
       {
-        queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:'asdfasd' });
+        queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
 
       return queryBuilder.getMany();
