@@ -97,7 +97,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- verify the call details block
     cy.get(
-      "comp-description"
+      ".comp-description"
     ).contains(callDetails.description);
     cy.get(
       "#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(1) > div.comp-details-content"
