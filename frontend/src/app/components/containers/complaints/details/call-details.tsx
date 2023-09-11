@@ -45,7 +45,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-content-label">
                   Complaint Description
                 </div>
-                <p>{details}</p>
+                <p id="comp-description">{details}</p>
               </div>
               <div>
                 <div className="comp-details-content-label ">Incident Time</div>

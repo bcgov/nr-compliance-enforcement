@@ -22,7 +22,6 @@ export interface HwcrComplaint {
     update_user_id: string;
     update_timestamp: string;
     complaint_status_code: ComplaintStatusCode;
-    location_geometry_point: LocationGeometryPoint;
     caller_name: string;
     caller_address: string;
     caller_email: string;
