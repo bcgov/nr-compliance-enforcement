@@ -56,8 +56,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
         position={coordinates}
         icon={customMarkerIcon}
         draggable={draggable}
-      >
-      </Marker>
+      ></Marker>
     </MapContainer>
   );
 };

@@ -1,5 +1,6 @@
 import { ComplaintStatusCode } from "../code-tables/complaint-status-code";
 import { ViolationCode } from "../code-tables/violation-code";
+import { LocationGeometryPoint } from "./complaint";
 
 export interface AllegationComplaint {
   complaint_identifier: {
@@ -10,6 +11,7 @@ export interface AllegationComplaint {
       office_location_name: string;
       area_name: string;
     },
+    location_geometry_point: LocationGeometryPoint;
     incident_datetime: string;
     incident_reported_datetime: string;
     location_summary_text: string;

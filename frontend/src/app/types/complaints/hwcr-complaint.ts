@@ -11,6 +11,7 @@ export interface HwcrComplaint {
   complaint_identifier: {
     complaint_identifier: string;
     geo_organization_unit_code: GeoOrganizationUnitCode;
+    location_geometry_point: LocationGeometryPoint;
     incident_datetime: string;
     incident_reported_datetime: string;
     location_summary_text: string;
