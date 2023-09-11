@@ -12,6 +12,7 @@ import {
 } from "../../../store/reducers/app";
 import { Pagination } from "react-bootstrap";
 import { selectWildlifeComplaintsCount } from "../../../store/reducers/complaints";
+import ComplaintPagination from "../../../common/ComplaintPagination";
 
 type Props = {
   initialState: number;
@@ -53,8 +54,8 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     _test !== -1 ? _test : initialState
   );
 
-  const [page, setPage] = useState<number | undefined>(1);
-  const [pageSize, setPageSize] = useState<number | undefined>(10);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const total: number = useAppSelector(selectWildlifeComplaintsCount);
 
@@ -71,8 +72,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     setViolationFilter(null);
     setStartDateFilter(undefined);
     setEndDateFilter(undefined);
-    setPage(undefined);
-    setPageSize(undefined);
   }
 
   const handlePageChange = (page: number) => {
@@ -82,6 +81,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   const middlePage = Math.floor(displayPages / 2);
   let startPage = Math.max((page === undefined ? 1 :page) - middlePage, 1);
   let endPage = Math.min(startPage + displayPages - 1, total);
+  let lastPage = Math.ceil(total/ pageSize);
 
   if (endPage - startPage + 1 < displayPages) {
     startPage = Math.max(endPage - displayPages + 1, 1);
@@ -137,27 +137,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
             pageSize={pageSize}
           />
         </div>
-        <Pagination>
-            <Pagination.First />
-          <Pagination.Prev />
-          <Pagination.Item>{1}</Pagination.Item>
-          <Pagination.Ellipsis />
-      
-        {Array.from({ length: Math.ceil(total / (pageSize ? pageSize : 10)) }, (_, index) => (
-          <Pagination.Item
-            key={index + 1}
-            active={page === index + 1}
-            onClick={() => handlePageChange(index + 1)}
-          >
-            {index + 1}
-          </Pagination.Item>
-          
-        ))}
-        <Pagination.Ellipsis />
-        <Pagination.Item>{Math.ceil(total / (pageSize ? pageSize : 10))}</Pagination.Item>
-        <Pagination.Next />
-        <Pagination.Last />
-      </Pagination>
+        <ComplaintPagination currentPage={page} totalItems={total} onPageChange={handlePageChange} />
       </>
     );
   } else if (complaintType === ComplaintType.ALLEGATION_COMPLAINT) {
