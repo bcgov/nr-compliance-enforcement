@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
   getComplaintsOnMap,
   selectWildlifeComplaintLocations,
-  setComplaints,
+  setComplaintsOnMap,
 } from "../../../store/reducers/complaints";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters";
@@ -47,7 +47,7 @@ export const WildlifeComplaintsOnMap: FC<Props> = ({
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
-      dispatch(setComplaints({ type: { complaintType }, data: [] }));
+      dispatch(setComplaintsOnMap({ type: { complaintType }, data: [] }));
     };
   }, []);
 
