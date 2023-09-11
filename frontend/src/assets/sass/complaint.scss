@@ -841,5 +841,26 @@
 }
 
 .error-border {
-    border-color: $bc-gov-danger;
+    border-color: $bc-gov-danger !important;
+}
+
+.comp-complaint-error {
+  margin: 24px 24px;
+  padding: 24px;
+  border: 1px solid #EEA8AB;
+  border-radius: 3px;
+  background-color: #FBEAEA;
+  color: $bc-gov-danger;
+}
+
+.display-none {
+  display: none;
+}
+
+.Toastify__toast--error {
+  border: 1px solid #EEA8AB;
+  border-radius: 3px !important;
+  background: #FAE1E2 !important;
+  background-color: #FBEAEA !important;
+  color: $bc-gov-danger !important;
 }

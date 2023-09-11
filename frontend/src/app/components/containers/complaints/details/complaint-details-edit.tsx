@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
-  bcBoundaries,
   formatDate,
   formatTime,
   renderCoordinates,
@@ -37,29 +36,86 @@ import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import axios from "axios";
-import config from "../../../../../config";
 import { cloneDeep } from "lodash";
-import { PersonComplaintXref } from "../../../../types/complaints/person-complaint-xref";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
-import { userId } from "../../../../store/reducers/app";
 import { ValidationInput } from "../../../../common/validation-input";
+import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
+import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 
 interface ComplaintDetailsProps {
+  complaintType: string,
   updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined,
   setUpdateComplaint: Function,
-  complaintType: string,
-
+  nocErrorMsg: string,
+  handleNOCChange: Function,
+  speciesErrorMsg: string,
+  handleSpeciesChange: Function,
+  statusErrorMsg: string,
+  handleStatusChange: Function,
+  complaintDescErrorMsg: string,
+  handleComplaintDescChange: Function,
+  attractantsErrorMsg: string,
+  handleAttractantsChange: Function,
+  communityErrorMsg: string,
+  handleCommunityChange: Function,
+  geoPointXMsg: string,
+  handleGeoPointXChange: Function,
+  geoPointYMsg: string,
+  handleGeoPointYChange: Function,
+  emailMsg: string,
+  handleEmailChange: Function,
+  primaryPhoneMsg: string,
+  handlePrimaryPhoneChange: Function,
+  secondaryPhoneMsg: string,
+  handleSecondaryPhoneChange: Function,
+  alternatePhoneMsg: string,
+  handleAlternatePhoneChange: Function,
+  handleReferredByChange: Function,
+  handleAssignedOfficerChange: Function,
+  handleLocationDescriptionChange: Function,
+  handleLocationChange: Function,
+  handleNameChange: Function,
+  handleAddressChange: Function,
+  errorNotificationClass: string,
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
+  complaintType,
   updateComplaint,
   setUpdateComplaint,
-  complaintType,
+  nocErrorMsg,
+  handleNOCChange,
+  speciesErrorMsg,
+  handleSpeciesChange,
+  statusErrorMsg,
+  handleStatusChange,
+  complaintDescErrorMsg,
+  handleComplaintDescChange,
+  attractantsErrorMsg,
+  handleAttractantsChange,
+  communityErrorMsg,
+  handleCommunityChange,
+  geoPointXMsg,
+  handleGeoPointXChange,
+  geoPointYMsg,
+  handleGeoPointYChange,
+  emailMsg,
+  handleEmailChange,
+  primaryPhoneMsg,
+  handlePrimaryPhoneChange,
+  secondaryPhoneMsg,
+  handleSecondaryPhoneChange,
+  alternatePhoneMsg,
+  handleAlternatePhoneChange,
+  handleReferredByChange,
+  handleAssignedOfficerChange,
+  handleLocationDescriptionChange,
+  handleLocationChange,
+  handleNameChange,
+  handleAddressChange,
+  errorNotificationClass,
 }) => {
-
-  const userid = useAppSelector(userId);
   const {
     details,
     location,
@@ -103,6 +159,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
+  const incidentDateTimeObject = new Date(
+    incidentDateTime ?? ""
+  );
+
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
+    incidentDateTimeObject
+  );
+
   // Transform the fetched data into the DropdownOption type
 
   const transformedOfficerCodeList: Option[] = (officersInZoneList !== null ? officersInZoneList.map(
@@ -119,17 +183,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     renderCoordinates(coordinates, Coordinates.Latitude)
   );
 
-  // Parse the string to a Date object
-  const incidentDateTimeObject = new Date(
-    incidentDateTime ?? ""
-  );
-
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
-    incidentDateTimeObject
-  );
-
   // Get the code table lists to populate the Selects
-
   const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
@@ -160,7 +214,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
       option.value ===
-      (referredByAgencyCode === undefined ? "" : referredByAgencyCode)
+      (referredByAgencyCode?.agency_code === undefined ? "" : referredByAgencyCode.agency_code)
   );
   const selectedAttractants = attractantCodes.filter((option) =>
     attractants?.some((attractant) => attractant.code === option.value)
@@ -175,212 +229,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
-  const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
-  async function handleNOCChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOption.value === "")
-        {
-          setNOCErrorMsg("Required");
-        }
-        else
-        {
-          setNOCErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.hwcr_complaint_nature_code = response.data;
-            setUpdateComplaint(hwcrComplaint);
-          });
-
-        }
-      }
-    }
-}
-const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
-  function handleSpeciesChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOption.value === "")
-        {
-          setSpeciesErrorMsg("Required");
-        }
-        else
-        {
-          setSpeciesErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/species-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.species_code = response.data;
-            setUpdateComplaint(hwcrComplaint);
-          });
-
-        }
-      }
-    }
-}
-const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
-  function handleStatusChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOption.value === "")
-        {
-          setStatusErrorMsg("Required");
-        }
-        else
-        {
-          setStatusErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.complaint_identifier.complaint_status_code = response.data;
-            setUpdateComplaint(hwcrComplaint);
-          });
-
-        }
-      }
-    }
-  }
-
-  function handleAssignedOfficerChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
-            if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
-            {
-              hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
-            }
-            else
-            {
-              let personComplaintXref: PersonComplaintXref = 
-              {
-                person_guid: response.data,
-                create_user_id: userid,
-                update_user_id: userid,
-                complaint_identifier: hwcrComplaint.complaint_identifier.complaint_identifier,
-                active_ind: true,
-                person_complaint_xref_code: "ASSIGNEE"
-              }
-              hwcrComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
-            }
-            setUpdateComplaint(hwcrComplaint);
-          });
-      }
-    }
-  }
-
-  const [complaintDescErrorMsg, setComplaintDescErrorMsg] = useState<string>("");
-  function handleComplaintDescChange(value: string) {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(value === "")
-        {
-          setComplaintDescErrorMsg("Required");
-        }
-        else
-        {
-          setComplaintDescErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.detail_text = value;
-          setUpdateComplaint(hwcrComplaint);
-        }
-      }
-  }
-
-  function handleLocationDescriptionChange(value: string) {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_detailed_text = value;
-          setUpdateComplaint(hwcrComplaint);
-      }
-  }
-
-  function handleLocationChange(value: string) {
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
-        console.log("locationSummary: " + value);
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.location_summary_text = value;
-        setUpdateComplaint(hwcrComplaint);
-    }
-}
-
-  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
-  function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if(selectedOptions !== null && selectedOptions !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOptions.length === 0)
-        {
-          setAttractantsErrorMsg("At least one must be selected");
-        }
-        else
-        {
-          setAttractantsErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
-          let attractants = [];
-          for(var i = 0; i < selectedOptions.length; i++)
-          {
-            const selectedValue = (selectedOptions[i].value !== undefined ? selectedOptions[i].value : "");
-            if(selectedValue !== undefined)
-            {
-              const attractant = 
-                {
-                  attractant_code: selectedValue,
-                  hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
-                  create_user_id: userid,
-                }
-                attractants.push(attractant);
-              } 
-            }
-            console.log("attractants: " + JSON.stringify(attractants));
-          hwcrComplaint.attractant_hwcr_xref = attractants;
-          setUpdateComplaint(hwcrComplaint);
-        }
-      }
-    }
-  }
-
-  const [communityErrorMsg, setCommunityMsg] = useState<string>("");
-  function handleCommunityChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOption.value === "")
-        {
-          setCommunityMsg("Required");
-        }
-        else
-        {
-          setCommunityMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          if(selectedOption.value !== undefined)
-          {
-            const geoOrgCode =
-            {
-              geo_organization_unit_code: selectedOption.value,
-              short_description: "", long_description: "", display_order:"", active_ind:"",
-              create_user_id: "", create_timestamp: "", update_user_id: "", update_timestamp: ""
-            }
-            hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code = selectedOption.value;
-            hwcrComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
-          }
-          setUpdateComplaint(hwcrComplaint);
-
-        }
-      }
-    }
-  }
-
   function handleIncidentDateTimeChange(date: Date) {
 
     if(complaintType === COMPLAINT_TYPES.HWCR)
@@ -392,53 +240,13 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
     }
   }
 
-  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
-  function handleGeoPointXChange(value: string) {
-
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
-      if(value !== "")
-      {
-        if(+value > bcBoundaries.maxLongitude || +value < bcBoundaries.minLongitude)
-        {
-          setGeoPointXMsg("Value must be between " + bcBoundaries.minLongitude + " and " + bcBoundaries.maxLongitude + " degrees");
-        }
-        else
-        {
-          setGeoPointXMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[1] = +value;
-          setUpdateComplaint(hwcrComplaint);
-        }
-      }
-    }
-  }
-
-  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
-  function handleGeoPointYChange(value: string) {
-
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
-      if(value !== "")
-      {
-        if(+value > bcBoundaries.maxLatitude || +value < bcBoundaries.minLatitude)
-        {
-          setGeoPointYMsg("Value must be between " + bcBoundaries.minLatitude + " and " + bcBoundaries.maxLatitude + " degrees");
-        }
-        else
-        {
-          setGeoPointYMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[0] = +value;
-          setUpdateComplaint(hwcrComplaint);
-        }
-      }
-    }
-  }
-
   return (
     <div>
       {/* edit header block */}
+      <div id="complaint-error-notification" className={errorNotificationClass}>
+        <img src={notificationInvalid} alt="error" className="filter-image-spacing"/>
+        Errors in form
+      </div>
       <div className="comp-complaint-header-edit-block">
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
@@ -457,7 +265,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   className="comp-details-input"
                   classNamePrefix='comp-select'
                   defaultValue={selectedNatureOfComplaint}
-                  onChange={handleNOCChange}
+                  onChange={e => handleNOCChange(e?.value)}
                   errMsg={nocErrorMsg}
                 />
               </div>
@@ -477,7 +285,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   placeholder="Select"
                   id="species-select-id"
                   classNamePrefix='comp-select'
-                  onChange={handleSpeciesChange}
+                  onChange={e => handleSpeciesChange(e?.value)}
                   errMsg={speciesErrorMsg}
                 />
               </div>
@@ -511,7 +319,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                 placeholder="Select"
                 id="status-select-id"
                 classNamePrefix='comp-select'
-                onChange={handleStatusChange}
+                onChange={e => handleStatusChange(e?.value)}
                 errMsg={statusErrorMsg}
               />
             </div>
@@ -529,7 +337,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
                 classNamePrefix='comp-select'
-                onChange={handleAssignedOfficerChange}
+                onChange={e => handleAssignedOfficerChange(e?.value)}
               />
             </div>
           </div>
@@ -741,7 +549,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   placeholder="Select"
                   id="community-select-id"
                   classNamePrefix='comp-select'
-                  onChange={handleCommunityChange}
+                  onChange={e => handleCommunityChange(e?.value)}
                   errMsg={communityErrorMsg}
                 />
                 </div>
@@ -812,6 +620,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                     className="comp-form-control"
                     defaultValue={name}
                     id="caller-name-id"
+                    onChange={e => handleNameChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -826,50 +635,59 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                   Primary Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
+                <ValidationPhoneInput
+                    country="CA"
+                    className="comp-details-input"
                     defaultValue={primaryPhone}
-                    id="caller-primary-phone-id"
-                  />
+                    onChange={handlePrimaryPhoneChange}
+                    maxLength={14}
+                    international={false} 
+                    id="caller-primary-phone-id" 
+                    errMsg={primaryPhoneMsg}/>
                 </div>
               </div>
               <div
                 className="comp-details-label-input-pair"
-                id="alternate-1-phone-pair-id"
+                id="secondary-phone-pair-id"
               >
                 <label
-                  id="complaint-caller-info-alternate1-phone-label-id"
+                  id="complaint-caller-info-secondary-phone-label-id"
                   className="col-auto"
                 >
                   Alternate 1 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
-                    defaultValue={alternatePhone}
-                    id="caller-info-alternate-1-phone-id"
-                  />
+                <ValidationPhoneInput
+                    country="CA"
+                    className="comp-details-input"
+                    defaultValue={secondaryPhone}
+                    onChange={handleSecondaryPhoneChange}
+                    maxLength={14}
+                    international={false} 
+                    id="caller-info-secondary-phone-id" 
+                    errMsg={secondaryPhoneMsg}/>
                 </div>
               </div>
               <div
                 className="comp-details-label-input-pair"
-                id="alternate-2-phone-pair-id"
+                id="alternate-phone-pair-id"
               >
                 <label
-                  id="complaint-caller-info-alternate2-phone-label-id"
+                  id="complaint-caller-info-alternate-phone-label-id"
                   className="col-auto"
                 >
                   Alternate 2 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
-                    defaultValue={secondaryPhone}
-                    id="caller-info-alternate-2-phone-id"
-                  />
+                <ValidationPhoneInput
+                    country="CA"
+                    className="comp-details-input"
+                    defaultValue={alternatePhone}
+                    onChange={handleAlternatePhoneChange}
+                    maxLength={14}
+                    international={false} 
+                    id="caller-info-alternate-phone-id" 
+                    errMsg={alternatePhoneMsg}/>
                 </div>
               </div>
             </div>
@@ -885,6 +703,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                     className="comp-form-control"
                     defaultValue={address}
                     id="comlaint-address-id"
+                    onChange={e => handleAddressChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -892,11 +711,13 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
               <div className="comp-details-label-input-pair" id="email-pair-id">
                 <label>Email</label>
                 <div className="comp-details-edit-input">
-                  <input
+                  <ValidationInput
                     type="text"
                     className="comp-form-control"
-                    defaultValue={email}
+                    defaultValue={(email !== undefined ? email : "")}
                     id="complaint-email-id"
+                    onChange={handleEmailChange} 
+                    errMsg={emailMsg} 
                   />
                 </div>
               </div>
@@ -912,6 +733,7 @@ const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
                     classNamePrefix='comp-select'
+                    onChange={e => handleReferredByChange(e)}
                   />
                 </div>
               </div>

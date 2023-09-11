@@ -4,8 +4,6 @@ import { UpdateAttractantHwcrXrefDto } from './dto/update-attractant_hwcr_xref.d
 import { AttractantHwcrXref } from './entities/attractant_hwcr_xref.entity';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
-import { UUID } from 'crypto';
 import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity';
 
 @Injectable()
@@ -24,6 +22,7 @@ export class AttractantHwcrXrefService {
 
   async findAll(): Promise<AttractantHwcrXref[]> {
     return this.attractantHwcrXrefRepository.find({
+      where: {active_ind: true},
       relations: { 
         attractant_code: true,
         hwcr_complaint_guid: true
@@ -50,10 +49,11 @@ export class AttractantHwcrXrefService {
     hwcr_complaint_guid: HwcrComplaint, 
     updateAttractantCodes: AttractantHwcrXref[]) {
     
+      /*
     await this.attractantHwcrXrefRepository.createQueryBuilder('attractant_hwcr_xref')
     .delete()
     .from(AttractantHwcrXref)
-    .where("hwcr_complaint_guid = :hwcr_complaint_guid", { hwcr_complaint_guid: hwcr_complaint_guid.hwcr_complaint_guid }).execute();
+    .where("hwcr_complaint_guid = :hwcr_complaint_guid", { hwcr_complaint_guid: hwcr_complaint_guid.hwcr_complaint_guid }).execute();*/
     //queryRunner.manager.save(updatedValue);
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -63,15 +63,33 @@ export class AttractantHwcrXrefService {
     {
       for(var i = 0; i < updateAttractantCodes.length; i++)
       {
+        if(updateAttractantCodes[i].attractant_hwcr_xref_guid === undefined)
+        {
           let createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto = new CreateAttractantHwcrXrefDto();
 
           createAttractantHwcrXrefDto.attractant_code = updateAttractantCodes[i].attractant_code;
           createAttractantHwcrXrefDto.hwcr_complaint_guid = hwcr_complaint_guid;
           createAttractantHwcrXrefDto.update_user_id = createAttractantHwcrXrefDto.create_user_id = updateAttractantCodes[i].create_user_id;
           createAttractantHwcrXrefDto.create_timestamp = createAttractantHwcrXrefDto.update_timestamp = new Date();
+          createAttractantHwcrXrefDto.active_ind = updateAttractantCodes[i].active_ind;
 
           const updatedValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
           queryRunner.manager.save(updatedValue);
+        }
+        else
+        {
+          let updateAttractantHwcrXrefDto: UpdateAttractantHwcrXrefDto = new UpdateAttractantHwcrXrefDto();
+
+          updateAttractantHwcrXrefDto.attractant_hwcr_xref_guid = updateAttractantCodes[i].attractant_hwcr_xref_guid;
+          updateAttractantHwcrXrefDto.attractant_code = updateAttractantCodes[i].attractant_code;
+          updateAttractantHwcrXrefDto.hwcr_complaint_guid = hwcr_complaint_guid;
+          updateAttractantHwcrXrefDto.update_user_id = updateAttractantHwcrXrefDto.create_user_id = updateAttractantCodes[i].create_user_id;
+          updateAttractantHwcrXrefDto.create_timestamp = updateAttractantHwcrXrefDto.update_timestamp = new Date();
+          updateAttractantHwcrXrefDto.active_ind = updateAttractantCodes[i].active_ind;
+
+          const updatedValue = await this.attractantHwcrXrefRepository.update(updateAttractantCodes[i].attractant_hwcr_xref_guid, updateAttractantHwcrXrefDto);
+          queryRunner.manager.update(AttractantHwcrXref, updateAttractantHwcrXrefDto.attractant_hwcr_xref_guid, updateAttractantHwcrXrefDto);
+        }
       }
       queryRunner.commitTransaction();
     } 

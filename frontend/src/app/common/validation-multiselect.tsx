@@ -24,9 +24,10 @@ interface ValidationMultiSelectProps {
     onChange,
     errMsg,
   }) => {
-    const calulatedClass = (errMsg === "" ? "" : "error-message");
-    return (<div className={className}>
-        <div>
+    const errClass = (errMsg === "" ? "" : "error-message");
+    const calulatedClass = (errMsg === "" ? "" : "error-border");
+    return (<div>
+        <div className={calulatedClass}>
         <Select 
                 id={id}
                 options={options} 
@@ -37,11 +38,12 @@ interface ValidationMultiSelectProps {
                 }
                 placeholder={placeholder} 
                 classNamePrefix={classNamePrefix}
+                className={calulatedClass}
                 defaultValue={defaultValue}
                 isMulti
                 />
         </div>
-        <div className={calulatedClass}>
+        <div className={errClass}>
             {errMsg}
         </div>
     </div>)

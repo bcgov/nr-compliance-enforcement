@@ -5,6 +5,7 @@ import {
   getComplaintLocationByAddress,
   selectComplaintLocation,
 } from "../../store/reducers/complaints";
+import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
 interface Props {
   value?: string;
@@ -31,9 +32,7 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
   const [inputValue, setInputValue] = useState<string>(`${value ?? ""}`);
 
   const handleInputChange = (inputValue: string) => {
-    console.log("inputValue: " + inputValue);
     setInputValue(inputValue);
-    parentOnChange(inputValue);
   };
 
   const dispatch = useAppDispatch();
@@ -73,7 +72,9 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
       classNamePrefix="comp-select"
       placeholder="Search for an address"
       id={id}
+      
       formatCreateLabel={() => undefined}
+      onChange={(value) => {parentOnChange(value?.value)}}
       components={{
         DropdownIndicator: () => null,
         IndicatorSeparator: () => null,

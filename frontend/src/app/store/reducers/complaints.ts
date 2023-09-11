@@ -232,7 +232,6 @@ export const getComplaints =
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
-      //-- handle the error
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -250,6 +249,15 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: { area_name },
+        } = ceComplaint;
+        await dispatch(getComplaintLocation(area_name, location_summary_text));
+      }
       setUpdateComplaint(response);
 
       dispatch(setComplaint({ ...response }));
@@ -384,7 +392,6 @@ export const updateWildlifeComplaint =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
-      console.log("complaintResponse: " + response);
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       console.log(error);
@@ -452,7 +459,6 @@ export const selectComplaint = (
 ): HwcrComplaint | AllegationComplaint | undefined | null => {
   const { complaints: root } = state;
   const { complaint } = root;
-  //console.log("reducerReturn: " + JSON.stringify(complaint));
   return complaint;
 };
 
@@ -462,7 +468,6 @@ export const selectComplaintLocation = (
   const {
     complaints: { complaintLocation },
   } = state;
-
   return complaintLocation;
 };
 
@@ -630,7 +635,6 @@ export const selectComplaintDeails =
     } = state;
 
     let results: ComplaintDetails = {};
-
     if (complaint) {
       const { complaint_identifier: ceComplaint }: any = complaint;
 
@@ -699,7 +703,6 @@ export const selectComplaintDeails =
         }
       }
     }
-
     return results;
   };
 
@@ -714,7 +717,6 @@ export const selectComplaintCallerInformation = (
 
   if (complaint) {
     const { complaint_identifier: ceComplaint } = complaint;
-
     const {
       caller_name,
       caller_phone_1,
@@ -725,8 +727,6 @@ export const selectComplaintCallerInformation = (
       referred_by_agency_code,
     }: any = ceComplaint;
 
-    const { long_description: description } = referred_by_agency_code || {};
-
     results = {
       ...results,
       name: caller_name,
@@ -735,7 +735,7 @@ export const selectComplaintCallerInformation = (
       alternatePhone: caller_phone_3,
       address: caller_address,
       email: caller_email,
-      referredByAgencyCode: description,
+      referredByAgencyCode: referred_by_agency_code,
     };
   }
 
