@@ -77,16 +77,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   const handlePageChange = (page: number) => {
     setPage(page);
   };
-  const displayPages = 10;
-  const middlePage = Math.floor(displayPages / 2);
-  let startPage = Math.max((page === undefined ? 1 :page) - middlePage, 1);
-  let endPage = Math.min(startPage + displayPages - 1, total);
-  let lastPage = Math.ceil(total/ pageSize);
-
-  if (endPage - startPage + 1 < displayPages) {
-    startPage = Math.max(endPage - displayPages + 1, 1);
-  }
-
 
   function handleSort(newSortColumn: string) {
     if (newSortColumn === sort[0]) {

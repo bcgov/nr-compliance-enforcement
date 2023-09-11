@@ -1,4 +1,3 @@
-import { last } from 'cypress/types/lodash';
 import React from 'react';
 import Pagination from 'react-bootstrap/Pagination';
 
