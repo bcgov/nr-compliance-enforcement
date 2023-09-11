@@ -51,6 +51,8 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     _test !== -1 ? _test : initialState
   );
 
+
+
   function handleChange(newState: number) {
     setComplaintType(newState);
     setSort(["incident_reported_datetime", "DESC"]);
@@ -83,6 +85,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
       }
     }
   }
+
   if (complaintType === ComplaintType.HWCR_COMPLAINT) {
     return (
       <>
@@ -118,7 +121,9 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     return (
       <>
         <div className="comp-sub-header">Complaints</div>
+
         <div>
+
           <AllegationComplaintTabContainer
             handleSort={handleSort}
             handleChange={handleChange}
