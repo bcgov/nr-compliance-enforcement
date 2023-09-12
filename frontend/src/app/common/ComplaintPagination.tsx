@@ -1,19 +1,39 @@
-import React from 'react';
-import Pagination from 'react-bootstrap/Pagination';
+import React, { useState } from "react";
+import { Button, Form } from "react-bootstrap";
+import Pagination from "react-bootstrap/Pagination";
 
 interface ComplaintPaginationProps {
   currentPage: number;
   totalItems: number;
   onPageChange: (page: number) => void;
+  onResultsPerPageChange: (perPage: number) => void;
 }
 
 const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   currentPage,
   totalItems,
   onPageChange,
+  onResultsPerPageChange,
 }) => {
-  const lastPage = Math.ceil(totalItems/10);
-  const PAGE_SIZE = 10;
+  const [resultsPerPage, setResultsPerPage] = useState<number>(10);
+  const [specificPage, setSpecificPage] = useState<string>("");
+
+  const handleResultsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newResultsPerPage = parseInt(event.target.value, 10);
+    setResultsPerPage(newResultsPerPage);
+    onResultsPerPageChange(newResultsPerPage);
+  };
+
+  const handleSpecificPageChange = () => {
+    const page = parseInt(specificPage, 10);
+    if (!isNaN(page) && page >= 1 && page <= totalItems) {
+      onPageChange(page);
+    }
+  };
+
+  const lastPage = Math.ceil(totalItems / resultsPerPage);
   const renderPaginationItems = () => {
     const items = [];
 
@@ -23,11 +43,14 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
     // Render the ellipsis if necessary
     if (startPage > 1) {
-        items.push(
-            <Pagination.Item onClick={() => onPageChange(1)}>{1}</Pagination.Item>        
-        )
       items.push(
-        <Pagination.Ellipsis key="ellipsis-start" onClick={() => onPageChange(startPage - 1)} />
+        <Pagination.Item onClick={() => onPageChange(1)}>{1}</Pagination.Item>
+      );
+      items.push(
+        <Pagination.Ellipsis
+          key="ellipsis-start"
+          onClick={() => onPageChange(startPage - 1)}
+        />
       );
     }
 
@@ -46,11 +69,16 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
     if (endPage < lastPage) {
       items.push(
-        <Pagination.Ellipsis key="ellipsis-end" onClick={() => onPageChange(endPage + 1)} />
+        <Pagination.Ellipsis
+          key="ellipsis-end"
+          onClick={() => onPageChange(endPage + 1)}
+        />
       );
       items.push(
-        <Pagination.Item onClick={() => onPageChange(lastPage)}>{lastPage}</Pagination.Item>
-      )
+        <Pagination.Item onClick={() => onPageChange(lastPage)}>
+          {lastPage}
+        </Pagination.Item>
+      );
     }
 
     return items;
@@ -58,14 +86,53 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
   return (
     <div className="pagination_container">
-    <div className="pagination_total">Total {totalItems} items</div>
-    {totalItems > PAGE_SIZE && (
-    <Pagination>
-      <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}/>
-      {renderPaginationItems()}
-      <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= lastPage}/>
-    </Pagination>
-  )}</div>);
+      <div className="pagination_total">Total {totalItems} items</div>
+      {totalItems > resultsPerPage && (
+        <>
+          <div>
+            <Pagination>
+              <Pagination.Prev
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage <= 1}
+              />
+              {renderPaginationItems()}
+              <Pagination.Next
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage >= lastPage}
+              />
+            </Pagination>
+          </div>
+          <div>
+            <Form.Group controlId="resultsPerPageSelect">
+              <Form.Control
+                as="select"
+                value={resultsPerPage}
+                onChange={handleResultsPerPageChange}
+              >
+                <option value={10}>10 / page</option>
+                <option value={50}>50 / page</option>
+                <option value={100}>100 / page</option>
+              </Form.Control>
+            </Form.Group>
+          </div>
+          <div>
+            <Form.Label>Go to</Form.Label>
+          </div>
+          <div className="pagination_specific_page">
+            <Form.Control
+              type="number"
+              placeholder="Page"
+              value={specificPage}
+              onChange={(e) => setSpecificPage(e.target.value)}
+            />
+          </div>
+          <div className="pagination_specific_page">
+            <Button onClick={handleSpecificPageChange}>Go</Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default ComplaintPagination;

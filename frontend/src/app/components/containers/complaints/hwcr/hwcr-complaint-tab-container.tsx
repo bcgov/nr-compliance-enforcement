@@ -8,7 +8,10 @@ import { Nav, Navbar } from "react-bootstrap";
 import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectWildlifeComplaintsCount, selectWildlifeComplaintsOnMapCount } from "../../../../store/reducers/complaints";
+import {
+  selectWildlifeComplaintsCount,
+  selectWildlifeComplaintsOnMapCount,
+} from "../../../../store/reducers/complaints";
 import { WildlifeComplaintsOnMap } from "../wildlife-complaints-on-map";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
@@ -61,24 +64,25 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
   complaintStatusFilter,
   setComplaintStatusFilter,
   page,
-  pageSize
+  pageSize,
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectWildlifeComplaintsCount);
   const totalOnMap = useAppSelector(selectWildlifeComplaintsOnMapCount);
 
-  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
+  const [activeView, setActiveView] = useState<"list" | "map">("list");
 
-  const handleToggleView = (view: 'list' | 'map') => {
+  const handleToggleView = (view: "list" | "map") => {
     setActiveView(view);
-  };  
+  };
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
           <Nav.Item className="nav-item comp-tab-active">
             <button className="nav-link active" id="hwcr-tab">
-              Human Wildlife Conflicts ({activeView === 'list' ? `${total}` : `${totalOnMap}`} )
+              Human Wildlife Conflicts (
+              {activeView === "list" ? `${total}` : `${totalOnMap}`} )
             </button>
           </Nav.Item>
           <Nav.Item className="nav-item comp-tab-inactive">
@@ -131,42 +135,41 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         activeView={activeView}
       />
 
-      {activeView === 'map' ? (
-        <WildlifeComplaintsOnMap sortColumn={sort[0]}
-        sortOrder={sort[1]}
-        regionCodeFilter={regionCodeFilter}
-        zoneCodeFilter={zoneCodeFilter}
-        areaCodeFilter={areaCodeFilter}
-        officerFilter={officerFilter}
-        natureOfComplaintFilter={natureOfComplaintFilter}
-        speciesCodeFilter={speciesCodeFilter}
-        startDateFilter={startDateFilter}
-        endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}
-        complaintType={COMPLAINT_TYPES.HWCR}/>
-        ) : (
-
-
-      <>
-      <HwcrComplaintTableHeader handleSort={handleSort} />
-      <HwcrComplaintTable
-        sortColumn={sort[0]}
-        sortOrder={sort[1]}
-        regionCodeFilter={regionCodeFilter}
-        zoneCodeFilter={zoneCodeFilter}
-        areaCodeFilter={areaCodeFilter}
-        officerFilter={officerFilter}
-        natureOfComplaintFilter={natureOfComplaintFilter}
-        speciesCodeFilter={speciesCodeFilter}
-        startDateFilter={startDateFilter}
-        endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}
-        page={page}
-        pageSize={pageSize}
-      />
-      </>
+      {activeView === "map" ? (
+        <WildlifeComplaintsOnMap
+          sortColumn={sort[0]}
+          sortOrder={sort[1]}
+          regionCodeFilter={regionCodeFilter}
+          zoneCodeFilter={zoneCodeFilter}
+          areaCodeFilter={areaCodeFilter}
+          officerFilter={officerFilter}
+          natureOfComplaintFilter={natureOfComplaintFilter}
+          speciesCodeFilter={speciesCodeFilter}
+          startDateFilter={startDateFilter}
+          endDateFilter={endDateFilter}
+          complaintStatusFilter={complaintStatusFilter}
+          complaintType={COMPLAINT_TYPES.HWCR}
+        />
+      ) : (
+        <>
+          <HwcrComplaintTableHeader handleSort={handleSort} />
+          <HwcrComplaintTable
+            sortColumn={sort[0]}
+            sortOrder={sort[1]}
+            regionCodeFilter={regionCodeFilter}
+            zoneCodeFilter={zoneCodeFilter}
+            areaCodeFilter={areaCodeFilter}
+            officerFilter={officerFilter}
+            natureOfComplaintFilter={natureOfComplaintFilter}
+            speciesCodeFilter={speciesCodeFilter}
+            startDateFilter={startDateFilter}
+            endDateFilter={endDateFilter}
+            complaintStatusFilter={complaintStatusFilter}
+            page={page}
+            pageSize={pageSize}
+          />
+        </>
       )}
     </>
-    
   );
 };

@@ -52,7 +52,7 @@ export const complaintSlice = createSlice({
       } = action;
       const { complaintItems } = state;
 
-      let update: ComplaintCollection = { wildlife: [], allegations: []};
+      let update: ComplaintCollection = { wildlife: [], allegations: [] };
 
       switch (type) {
         case COMPLAINT_TYPES.ERS:
@@ -225,11 +225,10 @@ export const getComplaints =
         }
       );
 
-      const {complaints, totalCount} = await get<
-        {complaints: HwcrComplaint | AllegationComplaint, totalCount: number},
+      const { complaints, totalCount } = await get<
+        { complaints: HwcrComplaint | AllegationComplaint; totalCount: number },
         ComplaintQueryParams
       >(dispatch, parameters);
-
 
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
@@ -240,70 +239,7 @@ export const getComplaints =
     }
   };
 
-  export const getComplaintsOnMap =
-  (complaintType: string, payload: ComplaintFilters): AppThunk =>
-  async (dispatch) => {
-    const {
-      sortColumn,
-      sortOrder,
-      regionCodeFilter,
-      areaCodeFilter,
-      zoneCodeFilter,
-      officerFilter,
-      natureOfComplaintFilter,
-      speciesCodeFilter,
-      startDateFilter,
-      endDateFilter,
-      violationFilter,
-      complaintStatusFilter,
-    } = payload;
-
-    try {
-      dispatch(toggleLoading(true));
-
-      const apiEndpoint = (type: string): string => {
-        switch (type) {
-          case COMPLAINT_TYPES.ERS:
-            return "allegation-complaint";
-          default:
-            return "hwcr-complaint";
-        }
-      };
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/map/search`,
-        {
-          sortColumn: sortColumn,
-          sortOrder: sortOrder,
-          region: regionCodeFilter?.value,
-          zone: zoneCodeFilter?.value,
-          community: areaCodeFilter?.value,
-          officerAssigned: officerFilter?.value,
-          natureOfComplaint: natureOfComplaintFilter?.value,
-          speciesCode: speciesCodeFilter?.value,
-          incidentReportedStart: startDateFilter,
-          incidentReportedEnd: endDateFilter,
-          violationCode: violationFilter?.value,
-          status: complaintStatusFilter?.value,
-          page: page,
-          pageSize: pageSize,
-        }
-      );
-
-      const {complaints, totalCount} = await get<
-        {complaints: HwcrComplaint | AllegationComplaint, totalCount: number},
-        ComplaintQueryParams
-      >(dispatch, parameters);
-
-      dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
-    } catch (error) {
-      console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
-    } finally {
-      dispatch(toggleLoading(false));
-    }
-  };
-
-  export const getComplaintsOnMap =
+export const getComplaintsOnMap =
   (complaintType: string, payload: ComplaintFilters): AppThunk =>
   async (dispatch) => {
     const {
@@ -357,7 +293,6 @@ export const getComplaints =
       >(dispatch, parameters);
 
       dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
-      dispatch(setTotalCount(totalCount));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
     } finally {
@@ -462,7 +397,7 @@ export const getComplaintLocationByAddress =
     }
   };
 
-  export const getComplaintLocationByAddressAsync =
+export const getComplaintLocationByAddressAsync =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
@@ -475,7 +410,6 @@ export const getComplaintLocationByAddress =
       //-- handle the error message
     }
   };
-
 
 export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
@@ -909,19 +843,12 @@ export const selectWildlifeComplaints = (
   return wildlife;
 };
 export const selectWildlifeComplaintsCount = (state: RootState): number => {
-  return state.complaints.totalCount
-};ß
-
-export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => {
-  const {
-    complaints: { complaintItemsOnMap },
-  } = state;
-  const { wildlife } = complaintItemsOnMap;
-
-  return wildlife.length;
+  return state.complaints.totalCount;
 };
 
-export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => {
+export const selectWildlifeComplaintsOnMapCount = (
+  state: RootState
+): number => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
@@ -942,15 +869,12 @@ export const selectAllegationComplaints = (
 };
 
 export const selectAllegationComplaintsCount = (state: RootState): number => {
-  const {
-    complaints: { complaintItems },
-  } = state;
-  const { allegations } = complaintItems;
-
-  return allegations.length;
+  return state.complaints.totalCount;
 };
 
-export const selectAllegationComplaintsOnMapCount = (state: RootState): number => {
+export const selectAllegationComplaintsOnMapCount = (
+  state: RootState
+): number => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
@@ -967,11 +891,12 @@ export const selectWildlifeComplaintLocations = (
   } = state;
   const { wildlife } = complaintItemsOnMap;
 
-  let coordinatesArray: { lat: number; lng: number }[] = wildlife
-    .map((item) => ({
+  let coordinatesArray: { lat: number; lng: number }[] = wildlife.map(
+    (item) => ({
       lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
       lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
-    }));
+    })
+  );
 
   return coordinatesArray;
 };
@@ -984,11 +909,12 @@ export const selectAllegationComplaintLocations = (
   } = state;
   const { allegations } = complaintItemsOnMap;
 
-  const coordinatesArray: { lat: number; lng: number }[] = allegations
-    .map((item) => ({
+  const coordinatesArray: { lat: number; lng: number }[] = allegations.map(
+    (item) => ({
       lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
       lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
-    }));
+    })
+  );
 
   return coordinatesArray;
 };

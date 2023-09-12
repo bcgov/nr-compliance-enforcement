@@ -8,7 +8,10 @@ import { AllegationComplaintFilterContainer } from "./allegation-complaint-filte
 import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectAllegationComplaintsCount, selectAllegationComplaintsOnMapCount } from "../../../../store/reducers/complaints";
+import {
+  selectAllegationComplaintsCount,
+  selectAllegationComplaintsOnMapCount,
+} from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { AllegationComplaintsOnMap } from "../allegation-complaints-on-map";
 
@@ -32,6 +35,8 @@ type Props = {
   setEndDateFilter: Function;
   complaintStatusFilter: Option | null;
   setComplaintStatusFilter: Function;
+  page?: number;
+  pageSize?: number;
 };
 export const AllegationComplaintTabContainer: FC<Props> = ({
   handleChange,
@@ -53,15 +58,17 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
   setEndDateFilter,
   complaintStatusFilter,
   setComplaintStatusFilter,
+  page,
+  pageSize,
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectAllegationComplaintsCount);
   const totalOnMap = useAppSelector(selectAllegationComplaintsOnMapCount);
-  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
+  const [activeView, setActiveView] = useState<"list" | "map">("list");
 
-  const handleToggleView = (view: 'list' | 'map') => {
+  const handleToggleView = (view: "list" | "map") => {
     setActiveView(view);
-  }
+  };
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -77,7 +84,8 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
           </Nav.Item>
           <Nav.Item className="nav-item comp-tab-active">
             <button className="nav-link active" id="ers-tab">
-              Enforcement ({activeView === 'list' ? `${total}` : `${totalOnMap}`} )
+              Enforcement (
+              {activeView === "list" ? `${total}` : `${totalOnMap}`} )
             </button>
           </Nav.Item>
           <Nav.Item className="ms-auto" {...getToggleProps()}>
@@ -118,37 +126,39 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
         handleToggleView={handleToggleView}
         activeView={activeView}
       />
-{activeView === 'map' ? (
-        <AllegationComplaintsOnMap sortColumn={sort[0]}
-        sortOrder={sort[1]}
-        regionCodeFilter={regionCodeFilter}
-        zoneCodeFilter={zoneCodeFilter}
-        areaCodeFilter={areaCodeFilter}
-        officerFilter={officerFilter}
-        violationFilter={violationFilter}
-        startDateFilter={startDateFilter}
-        endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}
-        complaintType={COMPLAINT_TYPES.ERS}
+      {activeView === "map" ? (
+        <AllegationComplaintsOnMap
+          sortColumn={sort[0]}
+          sortOrder={sort[1]}
+          regionCodeFilter={regionCodeFilter}
+          zoneCodeFilter={zoneCodeFilter}
+          areaCodeFilter={areaCodeFilter}
+          officerFilter={officerFilter}
+          violationFilter={violationFilter}
+          startDateFilter={startDateFilter}
+          endDateFilter={endDateFilter}
+          complaintStatusFilter={complaintStatusFilter}
+          complaintType={COMPLAINT_TYPES.ERS}
         />
-        ) : (
-
-
-            <>
-      <AllegationComplaintTableHeader handleSort={handleSort} />
-      <AllegationComplaintTable
-        sortColumn={sort[0]}
-        sortOrder={sort[1]}
-        regionCodeFilter={regionCodeFilter}
-        zoneCodeFilter={zoneCodeFilter}
-        areaCodeFilter={areaCodeFilter}
-        officerFilter={officerFilter}
-        violationFilter={violationFilter}
-        startDateFilter={startDateFilter}
-        endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}
-        />
-      </>
+      ) : (
+        <>
+          <AllegationComplaintTableHeader handleSort={handleSort} />
+          <AllegationComplaintTable
+            sortColumn={sort[0]}
+            sortOrder={sort[1]}
+            regionCodeFilter={regionCodeFilter}
+            zoneCodeFilter={zoneCodeFilter}
+            areaCodeFilter={areaCodeFilter}
+            officerFilter={officerFilter}
+            violationFilter={violationFilter}
+            startDateFilter={startDateFilter}
+            endDateFilter={endDateFilter}
+            complaintStatusFilter={complaintStatusFilter}
+            page={page}
+            pageSize={pageSize}
+          />
+        </>
       )}
-</>)
-}
+    </>
+  );
+};

@@ -212,7 +212,18 @@ export class HwcrComplaintService {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
 
-      return queryBuilder.getMany();
+      if (skip !== undefined) {
+        // a page number was supplied, limit the results returned
+        const [data, totalCount] = await queryBuilder
+          .skip(skip)
+          .take(pageSize)
+          .getManyAndCount();
+        return {complaints: data, totalCount: totalCount};
+      } else {
+        // not paginating results, just get them all
+        const [data, totalCount] = await queryBuilder.getManyAndCount();
+        return {complaints: data, totalCount: totalCount};
+      }
     }
 
     async searchMap(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 

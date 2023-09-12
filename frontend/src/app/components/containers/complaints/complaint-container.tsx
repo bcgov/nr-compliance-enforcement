@@ -10,8 +10,7 @@ import {
   profileZone,
   profileZoneDescription,
 } from "../../../store/reducers/app";
-import { Pagination } from "react-bootstrap";
-import { selectWildlifeComplaintsCount } from "../../../store/reducers/complaints";
+import { selectAllegationComplaintsCount, selectWildlifeComplaintsCount } from "../../../store/reducers/complaints";
 import ComplaintPagination from "../../../common/ComplaintPagination";
 
 type Props = {
@@ -55,14 +54,14 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   );
 
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [resultsPerPage, setResultsPerPage] = useState<number>(10); // Default to 10 results per page
 
-  const total: number = useAppSelector(selectWildlifeComplaintsCount);
-
-
+  const totalWildlifeComplaintsCount: number = useAppSelector(selectWildlifeComplaintsCount);
+  const totalAllegationComplaintsCount: number = useAppSelector(selectAllegationComplaintsCount);
 
   function handleChange(newState: number) {
     setComplaintType(newState);
+    setPage(1);
     setSort(["incident_reported_datetime", "DESC"]);
     setComplaintStatusFilter({ value: "OPEN", label: "Open" });
     setRegionCodeFilter(null);
@@ -75,6 +74,11 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     setStartDateFilter(undefined);
     setEndDateFilter(undefined);
   }
+
+  const handleResultsPerPageChange = (perPage: number) => {
+    setResultsPerPage(perPage);
+    setPage(1);
+  };
 
   const handlePageChange = (page: number) => {
     setPage(page);
@@ -127,10 +131,10 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
             complaintStatusFilter={complaintStatusFilter}
             setComplaintStatusFilter={setComplaintStatusFilter}
             page={page}
-            pageSize={pageSize}
+            pageSize={resultsPerPage}
           />
         </div>
-        <ComplaintPagination currentPage={page} totalItems={total} onPageChange={handlePageChange} />
+        <ComplaintPagination currentPage={page} totalItems={totalWildlifeComplaintsCount} onPageChange={handlePageChange} onResultsPerPageChange={handleResultsPerPageChange} />
       </>
     );
   } else if (complaintType === ComplaintType.ALLEGATION_COMPLAINT) {
@@ -160,8 +164,11 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
             setEndDateFilter={setEndDateFilter}
             complaintStatusFilter={complaintStatusFilter}
             setComplaintStatusFilter={setComplaintStatusFilter}
+            page={page}
+            pageSize={resultsPerPage}
           />
         </div>
+        <ComplaintPagination currentPage={page} totalItems={totalAllegationComplaintsCount} onPageChange={handlePageChange} onResultsPerPageChange={handleResultsPerPageChange}  />
       </>
     );
   } else {
