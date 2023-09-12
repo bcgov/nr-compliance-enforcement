@@ -38,6 +38,14 @@ export class HwcrComplaintController {
     return this.hwcrComplaintService.search(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status);
   }
 
+  @Get('map/search')
+  @Roles(Role.COS_OFFICER)
+  searchMap(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string, @Query('community') community: string, @Query('zone') zone: string,
+   @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('natureOfComplaint') natureOfComplaint: string, 
+   @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status) {
+    return this.hwcrComplaintService.searchMap(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status);
+  }
+
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {

@@ -95,7 +95,7 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
                     const lastInitial = lastName?.length > 0 ? lastName.substring(0,1) : "";
                     const initials = firstInitial + lastInitial;
                     const displayName = firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
-                    const zone = val.complaint_identifier.cos_geo_org_unit.zone_code;
+                    const zone = val.complaint_identifier.cos_geo_org_unit?.zone_code;
 
                         return (
                             <tr key={`allegation-complaint-${complaintIdentifier}`}>

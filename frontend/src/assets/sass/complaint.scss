@@ -499,9 +499,10 @@
 
   .comp-filter-pill-container
   {
+    display: flex;
+    align-items: center; /* Vertically center items */
+    height: 46px; /* Set the container's height */
     width: 1330px;
-    height: 29px;
-    margin: 5px 0px 15px 0px;
   }
 
   .comp-filter-left
@@ -517,10 +518,16 @@
     margin:0px 0px 0px 43px;
   }
 
+  .comp-filter-pills {
+    align-items: center;
+    display: flex;
+    margin-left: auto;
+  }
+
   .comp-filter-pill
   {
-    float: right;
-    margin: 0px 0px 0px 7px;
+    padding-left: 4px;
+    padding-right: 4px;
   }
 
 .comp-box-footer {
@@ -835,4 +842,31 @@
 
 .input-field-select__option {
   min-height: 35px;
+}
+
+.map-list-toggle {
+  margin-left: 10px;
+  font-size: 12px;
+  height: 38px;
+  z-index: 0 !important;
+}
+
+.toggle-button {
+  background-color: $gray-100 !important;
+  color: $gray-800 !important;
+  border-color: $gray-300 !important;
+  border-radius: 8px;
+  z-index: 0 !important;
+}
+
+.toggle-button.active {
+  background-color: white !important;
+  color: $gray-800 !important;
+  border-color: $gray-300 !important;
+  border-radius: 8px;
+  z-index: 0 !important;
+}
+
+.comp-filter-search {
+  margin-left: 16px;
 }
