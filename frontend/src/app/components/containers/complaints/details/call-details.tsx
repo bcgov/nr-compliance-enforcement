@@ -45,7 +45,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-content-label">
                   Complaint Description
                 </div>
-                <p id="comp-description">{details}</p>
+                <p id="comp-details-description">{details}</p>
               </div>
               <div>
                 <div className="comp-details-content-label ">Incident Time</div>
@@ -83,10 +83,10 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
               {complaintType === COMPLAINT_TYPES.ERS && (
                 <>
                   <div>
-                    <span className="comp-details-content-label ">
+                    <span className="comp-details-content-label">
                       Violation In Progress
                     </span>
-                    <span className="comp-details-content">
+                    <span id="comp-details-violation-in-progress" className="comp-details-content">
                       {violationInProgress ? "Yes" : "No"}
                     </span>
                   </div>
@@ -94,7 +94,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
                     <span className="comp-details-content-label ">
                       Violation Observed
                     </span>
-                    <span className="comp-details-content">
+                    <span id="comp-details-violation-observed" className="comp-details-content">
                       {violationObserved ? "Yes" : "No"}
                     </span>
                   </div>
@@ -106,13 +106,13 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
                 <div className="comp-details-content-label ">
                   Complaint Location
                 </div>
-                <div className="comp-details-content">{location}</div>
+                <div id="comp-details-location" className="comp-details-content">{location}</div>
               </div>
               <div>
                 <div className="comp-details-content-label ">
                   Location Description
                 </div>
-                <p>{locationDescription}</p>
+                <p id="comp-details-location-description">{locationDescription}</p>
             </div>
             <div>
               <div className="comp-details-content-label ">X Coordinate</div>
@@ -127,20 +127,20 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
             </div>
             <div>
               <span className="comp-details-content-label ">Community</span>
-              <span className="comp-details-content">{area}</span>
+              <span id="comp-details-community" className="comp-details-content">{area}</span>
             </div>
             <div>
               <span className="comp-details-content-label ">Office</span>
-              <span className="comp-details-content">{office}</span>
+              <span id="comp-details-office" className="comp-details-content">{office}</span>
             </div>
 
             <div className="comp-complaint-section">
               <span className="comp-details-content-label ">Zone</span>
-              <span className="comp-details-content">{zone}</span>
+              <span id="comp-details-zone" className="comp-details-content">{zone}</span>
             </div>
             <div className="comp-complaint-section">
               <span className="comp-details-content-label ">Region</span>
-              <span className="comp-details-content">{region}</span>
+              <span id="comp-details-region" className="comp-details-content">{region}</span>
             </div>
             </Col>
           </Row>

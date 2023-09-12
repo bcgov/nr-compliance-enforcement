@@ -14,8 +14,8 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
   const callerInformation = {
     name: "Phoebe",
-    phone: "250-556-1234",
-    cell: "",
+    phone: "(250) 556-1234",
+    secondary: "",
     alternate: "",
     address: "437 Fake St",
     email: "tester@gmail.com",
@@ -97,22 +97,26 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- verify the call details block
     cy.get(
-      ".comp-description"
+      'p[id="comp-details-description"]'
     ).contains(callDetails.description);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(1) > div.comp-details-content"
+      'div[id="comp-details-location"]'
     ).contains(callDetails.location);
+    
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(4) > span.comp-details-content"
+      'p[id="comp-details-location-description"]'
+    ).should('have.value', '');
+    cy.get(
+      'span[id="comp-details-community"]'
     ).contains(callDetails.community);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(5) > span.comp-details-content"
+      'span[id="comp-details-office"]'
     ).contains(callDetails.office);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(6) > span.comp-details-content"
+      'span[id="comp-details-zone"]'
     ).contains(callDetails.zone);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(4) > div > div > div.comp-padding-left-28.col-md-6 > div:nth-child(7) > span.comp-details-content"
+      'span[id="comp-details-region"]'
     ).contains(callDetails.region);
   });
 
@@ -144,30 +148,30 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     //-- verify the call details block
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(1) > div.comp-details-content"
+      'div[id="comp-details-name"]'
     ).contains(callerInformation.name);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(2) > div.comp-details-content"
+      'div[id="comp-details-phone"]'
     ).contains(callerInformation.phone);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(3) > div.comp-details-content"
+      'div[id="comp-details-phone-2"]'
     ).should(($el) => {
-      expect($el.text().trim()).equal(callerInformation.cell);
+      expect($el.text().trim()).equal(callerInformation.secondary);
     });
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(1) > div:nth-child(4) > div.comp-details-content"
+      'div[id="comp-details-phone-3"]'
     ).should(($el) => {
       expect($el.text().trim()).equal(callerInformation.alternate);
     });
 
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(2) > div:nth-child(1) > div.comp-details-content"
+      'div[id="comp-details-address"]'
     ).contains(callerInformation.address);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(2) > div:nth-child(2) > div.comp-details-content"
+      'div[id="comp-details-email"]'
     ).contains(callerInformation.email);
     cy.get(
-      "#root > div > div.comp-main-content > div > div:nth-child(6) > div > div > div:nth-child(2) > div:nth-child(3) > div.comp-details-content"
+      'div[id="comp-details-referred"]'
     ).contains(callerInformation.referred);
   });
 

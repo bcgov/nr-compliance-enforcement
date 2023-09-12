@@ -169,12 +169,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   // Transform the fetched data into the DropdownOption type
 
-  const transformedOfficerCodeList: Option[] = (officersInZoneList !== null ? officersInZoneList.map(
+  let transformedOfficerCodeList: Option[] = (officersInZoneList !== null ? officersInZoneList.map(
     (officer: Officer) => ({
       value: officer.person_guid.person_guid,
       label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
     })
   ) : []);
+
+  transformedOfficerCodeList.unshift({ value: "Unassigned", label: "" });
 
   const xCoordinate = ReactDOMServer.renderToString(
     renderCoordinates(coordinates, Coordinates.Longitude)
@@ -265,7 +267,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   className="comp-details-input"
                   classNamePrefix='comp-select'
                   defaultValue={selectedNatureOfComplaint}
-                  onChange={e => handleNOCChange(e?.value)}
+                  onChange={e => handleNOCChange(e)}
                   errMsg={nocErrorMsg}
                 />
               </div>
@@ -285,7 +287,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   placeholder="Select"
                   id="species-select-id"
                   classNamePrefix='comp-select'
-                  onChange={e => handleSpeciesChange(e?.value)}
+                  onChange={e => handleSpeciesChange(e)}
                   errMsg={speciesErrorMsg}
                 />
               </div>
@@ -319,7 +321,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 placeholder="Select"
                 id="status-select-id"
                 classNamePrefix='comp-select'
-                onChange={e => handleStatusChange(e?.value)}
+                onChange={e => handleStatusChange(e)}
                 errMsg={statusErrorMsg}
               />
             </div>
@@ -484,7 +486,13 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   Complaint Location
                 </label>
                 <div className="comp-details-edit-input">
-                  <BCGeocoderAutocomplete value={location} id="complaint-location-edit-id" maxResults={10} parentOnChange={handleLocationChange}/>
+                  <input
+                    type="text"
+                    id="location-edit-id"
+                    className="comp-form-control"
+                    defaultValue={location}
+                    onChange={e => handleLocationChange(e.target.value)}
+                  />
                 </div>
               </div>
               <div

@@ -233,26 +233,43 @@ export const ComplaintDetails: FC = () => {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption).then((response) => {
+          if(selectedOption.value !== undefined)
+          {
+            axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption).then((response) => {
+            
+                //change assignee
+                if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
+                {
+                  hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
+                }
+                // create new assignee
+                else
+                {
+                  let personComplaintXref: PersonComplaintXref = 
+                  {
+                    person_guid: response.data,
+                    create_user_id: userid,
+                    update_user_id: userid,
+                    complaint_identifier: hwcrComplaint.complaint_identifier.complaint_identifier,
+                    active_ind: true,
+                    person_complaint_xref_code: "ASSIGNEE"
+                  }
+                  hwcrComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
+                }
+                setUpdateComplaint(hwcrComplaint);
+            }
+            );
+          }
+          else
+          {
+            //unasignee complaint
             if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
             {
-              hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
+              hwcrComplaint.complaint_identifier.person_complaint_xref[0].active_ind = false;
+              setUpdateComplaint(hwcrComplaint);
             }
-            else
-            {
-              let personComplaintXref: PersonComplaintXref = 
-              {
-                person_guid: response.data,
-                create_user_id: userid,
-                update_user_id: userid,
-                complaint_identifier: hwcrComplaint.complaint_identifier.complaint_identifier,
-                active_ind: true,
-                person_complaint_xref_code: "ASSIGNEE"
-              }
-              hwcrComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
-            }
-            setUpdateComplaint(hwcrComplaint);
-          });
+          }
+        
       }
     }
   }
@@ -286,6 +303,7 @@ export const ComplaintDetails: FC = () => {
   function handleLocationChange(value: string) {
     if(complaintType === COMPLAINT_TYPES.HWCR)
     {
+      console.log("address Change: " + value);
         let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.location_summary_text = (value === undefined ? "" : value);
         setUpdateComplaint(hwcrComplaint);

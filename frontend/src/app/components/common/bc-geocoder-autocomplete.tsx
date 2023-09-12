@@ -32,7 +32,14 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
   const [inputValue, setInputValue] = useState<string>(`${value ?? ""}`);
 
   const handleInputChange = (inputValue: string) => {
+    /*let options = addressOptions;
+    options.pop();
+    options.push({ value: inputValue, label: inputValue });
+    setAddressOptions(options);*/
     setInputValue(inputValue);
+    parentOnChange(inputValue);
+    console.log("inputValue: " + JSON.stringify(inputValue));
+    //console.log("inputChange: " + JSON.stringify(options));
   };
 
   const dispatch = useAppDispatch();
@@ -45,11 +52,12 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
       try {
         if (complaintLocation) {
           if (complaintLocation.features.length > 0) {
-            const options = complaintLocation.features.map((feature: any) => ({
+            let options = complaintLocation.features.map((feature: any) => ({
               value: feature.properties.fullAddress,
               label: feature.properties.fullAddress,
             }));
             if (options) {
+              options.push({ value: inputValue, label: inputValue });
               setAddressOptions(options);
             }
           }
@@ -72,9 +80,7 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
       classNamePrefix="comp-select"
       placeholder="Search for an address"
       id={id}
-      
       formatCreateLabel={() => undefined}
-      onChange={(value) => {parentOnChange(value?.value)}}
       components={{
         DropdownIndicator: () => null,
         IndicatorSeparator: () => null,
