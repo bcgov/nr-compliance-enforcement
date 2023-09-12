@@ -151,6 +151,62 @@ export class AllegationComplaintService {
     return queryBuilder.getMany();
   }
 
+  async searchMap(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, violationCode?: string, 
+    incidentReportedStart?: string, incidentReportedEnd?: string, status?: string): Promise<AllegationComplaint[]> {
+
+    const queryBuilder = this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
+    .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')
+    .leftJoin('allegation_complaint.violation_code','violation_code')
+    .leftJoin('complaint_identifier.complaint_status_code', 'complaint_status_code')
+    .leftJoin('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
+    .leftJoin('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
+    .leftJoin('complaint_identifier.cos_geo_org_unit', 'cos_geo_org_unit')
+    .leftJoin('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
+    .leftJoin('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
+    if(community !== null && community !== undefined && community !== '')
+      {
+        queryBuilder.andWhere('cos_geo_org_unit.area_code = :Community', { Community: community });
+      }
+      if(zone !== null && zone !== undefined && zone !== '')
+      {
+        queryBuilder.andWhere('cos_geo_org_unit.zone_code = :Zone', { Zone: zone });
+      }
+      if(region !== null && region !== undefined && region !== '')
+      {
+        queryBuilder.andWhere('cos_geo_org_unit.region_code = :Region', { Region: region });
+      }
+      if(officerAssigned !== null && officerAssigned !== undefined && officerAssigned !== '' && officerAssigned !== 'null')
+      {
+        queryBuilder.andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' });
+        queryBuilder.andWhere('person_complaint_xref.person_guid = :PersonGuid', { PersonGuid: officerAssigned });
+      }
+      else if(officerAssigned === 'null')
+      {
+        queryBuilder.andWhere('person_complaint_xref.person_guid IS NULL');
+      }
+    if(violationCode !== null && violationCode !== undefined && violationCode !== "")
+    {
+      queryBuilder.andWhere('allegation_complaint.violation_code = :ViolationCode', { ViolationCode:violationCode });
+    }
+    if(incidentReportedStart !== null && incidentReportedStart !== undefined && incidentReportedStart !== "")
+    {
+      queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart:incidentReportedStart });
+    }
+    if(incidentReportedEnd !== null && incidentReportedEnd !== undefined && incidentReportedEnd !== "")
+    {
+      queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd:incidentReportedEnd });
+    }
+    if(status !== null && status !== undefined && status !== "")
+    {
+      queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
+    }
+
+    queryBuilder.andWhere('ST_X(complaint_identifier.location_geometry_point) <> 0')
+    queryBuilder.andWhere('ST_Y(complaint_identifier.location_geometry_point) <> 0')
+
+    return queryBuilder.getMany();
+  }
+
   async findOne(id: any): Promise<AllegationComplaint> {
     return this.allegationComplaintsRepository.createQueryBuilder('allegation_complaint')
     .leftJoinAndSelect('allegation_complaint.complaint_identifier', 'complaint_identifier')

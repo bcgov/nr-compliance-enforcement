@@ -6,6 +6,7 @@ import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
   totalCount: number,
+  complaintItemsOnMap: ComplaintCollection;
   complaint: HwcrComplaint | AllegationComplaint | undefined | null;
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
@@ -14,4 +15,14 @@ export interface ComplaintState {
 export interface ComplaintCollection {
   wildlife: Array<HwcrComplaint>;
   allegations: Array<AllegationComplaint>;
+}
+
+export interface Coordinate {
+  lat: number;
+  lng: number;
+  
+}
+
+export interface MarkerCluster {
+coordinates: Array<Coordinate>
 }

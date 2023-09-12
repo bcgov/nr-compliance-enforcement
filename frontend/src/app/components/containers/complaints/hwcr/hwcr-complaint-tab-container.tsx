@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { HwcrComplaintTableHeader } from "./hwcr-complaint-table-header";
 import { HwcrComplaintTable } from "./hwcr-complaint-table";
 import ComplaintType from "../../../../constants/complaint-types";
@@ -8,7 +8,9 @@ import { Nav, Navbar } from "react-bootstrap";
 import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectWildlifeComplaintsCount } from "../../../../store/reducers/complaints";
+import { selectWildlifeComplaintsCount, selectWildlifeComplaintsOnMapCount } from "../../../../store/reducers/complaints";
+import { WildlifeComplaintsOnMap } from "../wildlife-complaints-on-map";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 type Props = {
   handleChange: Function;
@@ -63,13 +65,20 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectWildlifeComplaintsCount);
+  const totalOnMap = useAppSelector(selectWildlifeComplaintsOnMapCount);
+
+  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
+
+  const handleToggleView = (view: 'list' | 'map') => {
+    setActiveView(view);
+  };  
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
           <Nav.Item className="nav-item comp-tab-active">
             <button className="nav-link active" id="hwcr-tab">
-              Human Wildlife Conflicts ({`${total}`})
+              Human Wildlife Conflicts ({activeView === 'list' ? `${total}` : `${totalOnMap}`} )
             </button>
           </Nav.Item>
           <Nav.Item className="nav-item comp-tab-inactive">
@@ -118,7 +127,27 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         setEndDateFilter={setEndDateFilter}
         complaintStatusFilter={complaintStatusFilter}
         setComplaintStatusFilter={setComplaintStatusFilter}
+        handleToggleView={handleToggleView}
+        activeView={activeView}
       />
+
+      {activeView === 'map' ? (
+        <WildlifeComplaintsOnMap sortColumn={sort[0]}
+        sortOrder={sort[1]}
+        regionCodeFilter={regionCodeFilter}
+        zoneCodeFilter={zoneCodeFilter}
+        areaCodeFilter={areaCodeFilter}
+        officerFilter={officerFilter}
+        natureOfComplaintFilter={natureOfComplaintFilter}
+        speciesCodeFilter={speciesCodeFilter}
+        startDateFilter={startDateFilter}
+        endDateFilter={endDateFilter}
+        complaintStatusFilter={complaintStatusFilter}
+        complaintType={COMPLAINT_TYPES.HWCR}/>
+        ) : (
+
+
+      <>
       <HwcrComplaintTableHeader handleSort={handleSort} />
       <HwcrComplaintTable
         sortColumn={sort[0]}
@@ -135,6 +164,9 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
         page={page}
         pageSize={pageSize}
       />
+      </>
+      )}
     </>
+    
   );
 };

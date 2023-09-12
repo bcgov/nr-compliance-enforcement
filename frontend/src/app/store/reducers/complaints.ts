@@ -35,6 +35,10 @@ const initialState: ComplaintState = {
     hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [] },
     allegation: { assigned: 0, unassigned: 0, total: 0, offices: [] },
   },
+  complaintItemsOnMap: {
+    wildlife: [],
+    allegations: [],
+  },
 };
 
 export const complaintSlice = createSlice({
@@ -63,6 +67,25 @@ export const complaintSlice = createSlice({
     },
     setTotalCount(state, action) {
       state.totalCount = action.payload;
+    },
+    setComplaintsOnMap: (state, action) => {
+      const {
+        payload: { type, data },
+      } = action;
+      const { complaintItemsOnMap } = state;
+
+      let update: ComplaintCollection = { wildlife: [], allegations: [] };
+
+      switch (type) {
+        case COMPLAINT_TYPES.ERS:
+          update = { ...complaintItemsOnMap, allegations: data };
+          break;
+        case COMPLAINT_TYPES.HWCR:
+          update = { ...complaintItemsOnMap, wildlife: data };
+          break;
+      }
+
+      return { ...state, complaintItemsOnMap: update };
     },
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
@@ -140,6 +163,7 @@ export const complaintSlice = createSlice({
 export const {
   setComplaints,
   setTotalCount,
+  setComplaintsOnMap,
   setComplaint,
   setComplaintLocation,
   setZoneAtAGlance,
@@ -208,6 +232,131 @@ export const getComplaints =
 
 
       dispatch(setComplaints({ type: complaintType, data: complaints }));
+      dispatch(setTotalCount(totalCount));
+    } catch (error) {
+      console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
+  export const getComplaintsOnMap =
+  (complaintType: string, payload: ComplaintFilters): AppThunk =>
+  async (dispatch) => {
+    const {
+      sortColumn,
+      sortOrder,
+      regionCodeFilter,
+      areaCodeFilter,
+      zoneCodeFilter,
+      officerFilter,
+      natureOfComplaintFilter,
+      speciesCodeFilter,
+      startDateFilter,
+      endDateFilter,
+      violationFilter,
+      complaintStatusFilter,
+    } = payload;
+
+    try {
+      dispatch(toggleLoading(true));
+
+      const apiEndpoint = (type: string): string => {
+        switch (type) {
+          case COMPLAINT_TYPES.ERS:
+            return "allegation-complaint";
+          default:
+            return "hwcr-complaint";
+        }
+      };
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/map/search`,
+        {
+          sortColumn: sortColumn,
+          sortOrder: sortOrder,
+          region: regionCodeFilter?.value,
+          zone: zoneCodeFilter?.value,
+          community: areaCodeFilter?.value,
+          officerAssigned: officerFilter?.value,
+          natureOfComplaint: natureOfComplaintFilter?.value,
+          speciesCode: speciesCodeFilter?.value,
+          incidentReportedStart: startDateFilter,
+          incidentReportedEnd: endDateFilter,
+          violationCode: violationFilter?.value,
+          status: complaintStatusFilter?.value,
+          page: page,
+          pageSize: pageSize,
+        }
+      );
+
+      const {complaints, totalCount} = await get<
+        {complaints: HwcrComplaint | AllegationComplaint, totalCount: number},
+        ComplaintQueryParams
+      >(dispatch, parameters);
+
+      dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
+    } catch (error) {
+      console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
+  export const getComplaintsOnMap =
+  (complaintType: string, payload: ComplaintFilters): AppThunk =>
+  async (dispatch) => {
+    const {
+      sortColumn,
+      sortOrder,
+      regionCodeFilter,
+      areaCodeFilter,
+      zoneCodeFilter,
+      officerFilter,
+      natureOfComplaintFilter,
+      speciesCodeFilter,
+      startDateFilter,
+      endDateFilter,
+      violationFilter,
+      complaintStatusFilter,
+    } = payload;
+
+    try {
+      dispatch(toggleLoading(true));
+
+      const apiEndpoint = (type: string): string => {
+        switch (type) {
+          case COMPLAINT_TYPES.ERS:
+            return "allegation-complaint";
+          default:
+            return "hwcr-complaint";
+        }
+      };
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/map/search`,
+        {
+          sortColumn: sortColumn,
+          sortOrder: sortOrder,
+          region: regionCodeFilter?.value,
+          zone: zoneCodeFilter?.value,
+          community: areaCodeFilter?.value,
+          officerAssigned: officerFilter?.value,
+          natureOfComplaint: natureOfComplaintFilter?.value,
+          speciesCode: speciesCodeFilter?.value,
+          incidentReportedStart: startDateFilter,
+          incidentReportedEnd: endDateFilter,
+          violationCode: violationFilter?.value,
+          status: complaintStatusFilter?.value,
+        }
+      );
+
+      const response = await get<
+        HwcrComplaint | AllegationComplaint,
+        ComplaintQueryParams
+      >(dispatch, parameters);
+
+      dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
       dispatch(setTotalCount(totalCount));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
@@ -312,6 +461,21 @@ export const getComplaintLocationByAddress =
       //-- handle the error message
     }
   };
+
+  export const getComplaintLocationByAddressAsync =
+  (address: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
+      );
+      const response = await get<Feature>(dispatch, parameters);
+      return response.features[0].geometry;
+    } catch (error) {
+      //-- handle the error message
+    }
+  };
+
 
 export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
@@ -744,9 +908,26 @@ export const selectWildlifeComplaints = (
 
   return wildlife;
 };
-
 export const selectWildlifeComplaintsCount = (state: RootState): number => {
   return state.complaints.totalCount
+};ß
+
+export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { wildlife } = complaintItemsOnMap;
+
+  return wildlife.length;
+};
+
+export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { wildlife } = complaintItemsOnMap;
+
+  return wildlife.length;
 };
 
 export const selectAllegationComplaints = (
@@ -767,6 +948,49 @@ export const selectAllegationComplaintsCount = (state: RootState): number => {
   const { allegations } = complaintItems;
 
   return allegations.length;
+};
+
+export const selectAllegationComplaintsOnMapCount = (state: RootState): number => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { allegations } = complaintItemsOnMap;
+
+  return allegations.length;
+};
+
+export const selectWildlifeComplaintLocations = (
+  state: RootState
+): { lat: number; lng: number }[] => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { wildlife } = complaintItemsOnMap;
+
+  let coordinatesArray: { lat: number; lng: number }[] = wildlife
+    .map((item) => ({
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
+    }));
+
+  return coordinatesArray;
+};
+
+export const selectAllegationComplaintLocations = (
+  state: RootState
+): { lat: number; lng: number }[] => {
+  const {
+    complaints: { complaintItemsOnMap },
+  } = state;
+  const { allegations } = complaintItemsOnMap;
+
+  const coordinatesArray: { lat: number; lng: number }[] = allegations
+    .map((item) => ({
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
+    }));
+
+  return coordinatesArray;
 };
 
 export default complaintSlice.reducer;
