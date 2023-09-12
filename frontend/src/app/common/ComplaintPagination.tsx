@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import Pagination from "react-bootstrap/Pagination";
 
 interface ComplaintPaginationProps {
@@ -17,6 +17,14 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 }) => {
   const [resultsPerPage, setResultsPerPage] = useState<number>(10);
   const [specificPage, setSpecificPage] = useState<string>("");
+
+  const handleEnterKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter") {
+      handleSpecificPageChange();
+    }
+  };
 
   const handleResultsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -38,7 +46,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     const items = [];
 
     // Calculate the range of pages to display based on the current page
-    const startPage = Math.max(1, currentPage - 4);
+    const startPage = Math.max(1, lastPage > 10 ? currentPage - 4 : 1);
     const endPage = Math.min(lastPage, startPage + 9);
 
     // Render the ellipsis if necessary
@@ -46,6 +54,9 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
       items.push(
         <Pagination.Item onClick={() => onPageChange(1)}>{1}</Pagination.Item>
       );
+    }
+
+    if (startPage > 1 && lastPage > 10) {
       items.push(
         <Pagination.Ellipsis
           key="ellipsis-start"
@@ -109,9 +120,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
                 value={resultsPerPage}
                 onChange={handleResultsPerPageChange}
               >
-                <option value={10}>10 / page</option>
                 <option value={50}>50 / page</option>
-                <option value={100}>100 / page</option>
               </Form.Control>
             </Form.Group>
           </div>
@@ -123,11 +132,9 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
               type="number"
               placeholder="Page"
               value={specificPage}
+              onKeyPress={handleEnterKeyPress}
               onChange={(e) => setSpecificPage(e.target.value)}
             />
-          </div>
-          <div className="pagination_specific_page">
-            <Button onClick={handleSpecificPageChange}>Go</Button>
           </div>
         </>
       )}
