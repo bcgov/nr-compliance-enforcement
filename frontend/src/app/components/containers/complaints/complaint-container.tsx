@@ -9,10 +9,13 @@ import {
   getTokenProfile,
   profileZone,
   profileZoneDescription,
+  selectDefaultPageSize,
 } from "../../../store/reducers/app";
-import { selectAllegationComplaintsCount, selectWildlifeComplaintsCount } from "../../../store/reducers/complaints";
+import {
+  selectAllegationComplaintsCount,
+  selectWildlifeComplaintsCount,
+} from "../../../store/reducers/complaints";
 import ComplaintPagination from "../../common/complaint-pagination";
-import { selectDefaultPageSize } from "../../../store/reducers/configurations";
 
 type Props = {
   initialState: number;
@@ -27,7 +30,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     if (!defaultZone) {
       dispatch(getTokenProfile());
     } else {
-      setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
+      setZoneCodeFilter({ value: defaultZone, label: defaultZoneLabel });
     }
   }, [dispatch, defaultZone, defaultZoneLabel]);
 
@@ -61,10 +64,14 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     if (resultsPerPageDefault) {
       setResultsPerPage(resultsPerPageDefault);
     }
-  }, [dispatch,resultsPerPageDefault]);
+  }, [dispatch, resultsPerPageDefault]);
 
-  const totalWildlifeComplaintsCount: number = useAppSelector(selectWildlifeComplaintsCount);
-  const totalAllegationComplaintsCount: number = useAppSelector(selectAllegationComplaintsCount);
+  const totalWildlifeComplaintsCount: number = useAppSelector(
+    selectWildlifeComplaintsCount
+  );
+  const totalAllegationComplaintsCount: number = useAppSelector(
+    selectAllegationComplaintsCount
+  );
 
   function handleChange(newState: number) {
     setComplaintType(newState);
@@ -84,7 +91,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
 
   const handlePageChange = (page: number) => {
     setPage(page);
-    window.scrollTo({top: 0, behavior: 'auto'});
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   function handleSort(newSortColumn: string) {
@@ -137,7 +144,12 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
             pageSize={resultsPerPage}
           />
         </div>
-        <ComplaintPagination currentPage={page} totalItems={totalWildlifeComplaintsCount} onPageChange={handlePageChange} resultsPerPage={resultsPerPage} />
+        <ComplaintPagination
+          currentPage={page}
+          totalItems={totalWildlifeComplaintsCount}
+          onPageChange={handlePageChange}
+          resultsPerPage={resultsPerPage}
+        />
       </>
     );
   } else if (complaintType === ComplaintType.ALLEGATION_COMPLAINT) {
@@ -146,7 +158,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
         <div className="comp-sub-header">Complaints</div>
 
         <div>
-
           <AllegationComplaintTabContainer
             handleSort={handleSort}
             handleChange={handleChange}
@@ -171,7 +182,12 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
             pageSize={resultsPerPage}
           />
         </div>
-        <ComplaintPagination currentPage={page} totalItems={totalAllegationComplaintsCount} onPageChange={handlePageChange} resultsPerPage={resultsPerPage}/>
+        <ComplaintPagination
+          currentPage={page}
+          totalItems={totalAllegationComplaintsCount}
+          onPageChange={handlePageChange}
+          resultsPerPage={resultsPerPage}
+        />
       </>
     );
   } else {

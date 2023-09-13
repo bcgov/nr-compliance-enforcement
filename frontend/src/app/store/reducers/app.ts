@@ -8,6 +8,10 @@ import { Officer } from "../../types/person/person";
 import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
 import { AUTH_TOKEN } from "../../service/user-service";
+import { ConfigurationEnum } from "../../../enum/configuration.enum";
+import { ConfigurationType } from "../../types/configurations/configuration";
+import { from } from "linq-to-typescript";
+import { ConfigurationState } from "../../types/state/configuration-state";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -16,12 +20,18 @@ enum ActionTypes {
   HIDE_MODAL = "app/HIDE_MODAL",
   TOGGLE_LOADING = "app/TOGGLE_LOADING",
   TOGGLE_NOTIFICATION = "app/TOGGLE_NOTIFICATION",
+  SET_CONFIGURATIONS = "app/CONFIGURATIONS",
 }
 //-- action creators
 
 export const setTokenProfile = (profile: Profile) => ({
   type: ActionTypes.SET_TOKEN_PROFILE,
   payload: profile,
+});
+
+export const setConfigurations = (configurations: ConfigurationState) => ({
+  type: ActionTypes.SET_CONFIGURATIONS,
+  payload: configurations,
 });
 
 export const toggleSidebar = () => ({
@@ -166,6 +176,17 @@ export const isLoading = (state: RootState) => {
   return _isLoading;
 };
 
+export const selectDefaultPageSize = (state: RootState): any => {
+  const { app } = state;
+  const configuration = app.configurations?.configurations?.find(
+    (record) => ConfigurationEnum.DEFAULT_PAGE_SIZE === record.configurationCode
+  );
+  if (configuration?.configurationValue) {
+    return +configuration.configurationValue;
+  }
+  return 50; // if there is no default in the configuration table, use 50 is the fallback
+};
+
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
@@ -224,6 +245,30 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
   }
 };
 
+// Get list of the officers and update store
+export const getConfigurations = (): AppThunk => async (dispatch) => {
+  try {
+    dispatch(toggleLoading(true));
+
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/configuration/`
+    );
+    const response = await get<Array<ConfigurationType>>(dispatch, parameters);
+
+    if (response && from(response).any()) {
+      dispatch(
+        setConfigurations({
+          configurations: response,
+        })
+      );
+    }
+  } catch (error) {
+    //-- handle errors
+  } finally {
+    dispatch(toggleLoading(false));
+  }
+};
+
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
@@ -254,6 +299,9 @@ const initialState: AppState = {
   modalType: "",
   callback: null,
   hideCallback: null,
+  configurations: {
+    configurations: undefined,
+  },
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -343,6 +391,15 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { type, message };
 
       return { ...state, notifications: update };
+    }
+    case ActionTypes.SET_CONFIGURATIONS: {
+      const {
+        payload: { configurations },
+      } = action;
+
+      const configuration = { configurations };
+
+      return { ...state, configurations: configuration };
     }
     default:
       return state;

@@ -5,7 +5,7 @@ import app from "./reducers/app";
 import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
-import configurations from "./reducers/configurations";
+
 
 export const rootReducer = combineReducers({
   app,
@@ -13,5 +13,4 @@ export const rootReducer = combineReducers({
   offices,
   complaints,
   codeTables,
-  configurations,
 });
