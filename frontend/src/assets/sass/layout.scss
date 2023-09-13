@@ -351,8 +351,9 @@ button.modal-buttons {
 .pagination_container {
   display: flex;
   align-items: baseline;
+  width: 1300px;
+  justify-content: center;
   padding-top: 10px;
-  margin: 0 auto; /* Center horizontally */
   gap: 8px;
 }
 

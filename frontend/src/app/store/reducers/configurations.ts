@@ -63,10 +63,13 @@ export const getConfigurations =
 
 // find configurations
 export const selectDefaultPageSize =
-  (state: RootState): ConfigurationType | undefined => {
+  (state: RootState): number | undefined => {
     const { configurations: configurationRoot } = state.configurations;
     const configuration = configurationRoot.find((record) => record.configurationCode === 'DFLTPAGNUM');;
-    return configuration;
+    if (configuration?.configurationValue) {
+      return +configuration.configurationValue
+    }
+    return 50;
   };
 
 export default configurationSlice.reducer;
