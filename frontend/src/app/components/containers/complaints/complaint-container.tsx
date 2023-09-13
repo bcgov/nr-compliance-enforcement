@@ -63,7 +63,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     }
   }, [dispatch,resultsPerPageDefault]);
 
-
   const totalWildlifeComplaintsCount: number = useAppSelector(selectWildlifeComplaintsCount);
   const totalAllegationComplaintsCount: number = useAppSelector(selectAllegationComplaintsCount);
 
