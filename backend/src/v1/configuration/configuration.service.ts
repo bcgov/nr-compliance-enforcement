@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreateConfigurationDto } from './dto/create-configuration.dto';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
+import { Configuration } from './entities/configuration.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ConfigurationService {
-  create(createConfigurationDto: CreateConfigurationDto) {
-    return 'This action adds a new configuration';
-  }
+
+  constructor(
+    @InjectRepository(Configuration)
+    private configurationRepository: Repository<Configuration>
+  ) {}
 
   findAll() {
-    return `This action returns all configuration`;
+    return this.configurationRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} configuration`;
+  findOne(configurationCode: string) {
+    return `This action returns a #${configurationCode} configuration`;
   }
 
   update(id: number, updateConfigurationDto: UpdateConfigurationDto) {

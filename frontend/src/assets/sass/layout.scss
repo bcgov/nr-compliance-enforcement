@@ -351,7 +351,6 @@ button.modal-buttons {
 .pagination_container {
   display: flex;
   align-items: baseline;
-  width: 1330px;
   padding-top: 10px;
   margin: 0 auto; /* Center horizontally */
   gap: 8px;
@@ -362,7 +361,6 @@ button.modal-buttons {
   color: #fff; /* Text color of the active page link */
   border-color: $gray-300; /* Border color of the active page link */
 }
-
 
 .pagination_container .page-link {
   background-color: #fff; /* Background color of non-active page links */

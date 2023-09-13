@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import Pagination from "react-bootstrap/Pagination";
 
 interface ComplaintPaginationProps {
   currentPage: number;
   totalItems: number;
+  resultsPerPage: number;
   onPageChange: (page: number) => void;
-  onResultsPerPageChange: (perPage: number) => void;
 }
 
 const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   currentPage,
   totalItems,
   onPageChange,
-  onResultsPerPageChange,
+  resultsPerPage,
 }) => {
-  const [resultsPerPage, setResultsPerPage] = useState<number>(50);
-  const [specificPage, setSpecificPage] = useState<string>("");
 
+  const [specificPage, setSpecificPage] = useState<string>("");
+  
   const handleEnterKeyPress = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -26,22 +26,16 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     }
   };
 
-  const handleResultsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newResultsPerPage = parseInt(event.target.value, 50);
-    setResultsPerPage(newResultsPerPage);
-    onResultsPerPageChange(newResultsPerPage);
-  };
+  const lastPage = Math.ceil(totalItems / resultsPerPage);
 
   const handleSpecificPageChange = () => {
     const page = parseInt(specificPage, 10);
-    if (!isNaN(page) && page >= 1 && page <= totalItems) {
+    if (!isNaN(page) && page >= 1 && page <= lastPage) {
       onPageChange(page);
     }
   };
 
-  const lastPage = Math.ceil(totalItems / resultsPerPage);
+  
   const renderPaginationItems = () => {
     const items = [];
 
@@ -118,9 +112,8 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
               <Form.Control
                 as="select"
                 value={resultsPerPage}
-                onChange={handleResultsPerPageChange}
               >
-                <option value={50}>50 / page</option>
+                <option value={resultsPerPage}>{resultsPerPage} / page</option>
               </Form.Control>
             </Form.Group>
           </div>

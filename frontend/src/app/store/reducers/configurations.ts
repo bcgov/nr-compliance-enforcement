@@ -62,13 +62,11 @@ export const getConfigurations =
 //-- selectors
 
 // find configurations
-export const selectConfigurations =
-  (zone?: string) =>
-  (state: RootState): ConfigurationType[] | null => {
-    const { configurations: configurationRoot } = state;
-    const { configurations } = configurationRoot;
-
-      return configurations;
+export const selectDefaultPageSize =
+  (state: RootState): ConfigurationType | undefined => {
+    const { configurations: configurationRoot } = state.configurations;
+    const configuration = configurationRoot.find((record) => record.configurationCode === 'DFLTPAGNUM');;
+    return configuration;
   };
 
 export default configurationSlice.reducer;

@@ -17,6 +17,7 @@ import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
+import { getConfigurations } from "./store/reducers/configurations";
 
 const App: FC = () => {
 
@@ -24,6 +25,7 @@ const App: FC = () => {
 
   useEffect(() => {
     dispatch(fetchCodeTables());
+    dispatch(getConfigurations());
     dispatch(getOfficers());
   }, [dispatch]);
 
