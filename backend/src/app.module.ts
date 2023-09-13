@@ -26,6 +26,7 @@ import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
 import { PersonComplaintXrefModule } from "./v1/person_complaint_xref/person_complaint_xref.module";
 import { PersonComplaintXrefCodeModule } from "./v1/person_complaint_xref_code/person_complaint_xref_code.module";
 import { BcGeoCoderModule } from "./external_api/bc_geo_coder/bc_geo_coder.module";
+import { ConfigurationModule } from './v1/configuration/configuration.module';
 
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
@@ -74,6 +75,7 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     PersonComplaintXrefModule,
     PersonComplaintXrefCodeModule,
     BcGeoCoderModule,
+    ConfigurationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

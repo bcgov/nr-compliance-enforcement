@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { HwcrComplaintTabContainer } from "./hwcr/hwcr-complaint-tab-container";
 import { AllegationComplaintTabContainer } from "./allegations/allegation-complaint-tab-container";
 import ComplaintType from "../../../constants/complaint-types";
@@ -18,6 +18,7 @@ type Props = {
 };
 
 export const ComplaintContainer: FC<Props> = ({ initialState }) => {
+  const bodyRef = useRef<HTMLBodyElement>(null);
   const dispatch = useAppDispatch();
   const defaultZone = useAppSelector(profileZone);
   const defaultZoneLabel = useAppSelector(profileZoneDescription);
@@ -82,6 +83,9 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
 
   const handlePageChange = (page: number) => {
     setPage(page);
+    if (bodyRef.current) {
+      bodyRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // You can use 'auto' instead of 'smooth' for an instant scroll
+    }
   };
 
   function handleSort(newSortColumn: string) {

@@ -15,7 +15,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   onPageChange,
   onResultsPerPageChange,
 }) => {
-  const [resultsPerPage, setResultsPerPage] = useState<number>(10);
+  const [resultsPerPage, setResultsPerPage] = useState<number>(50);
   const [specificPage, setSpecificPage] = useState<string>("");
 
   const handleEnterKeyPress = (
@@ -29,7 +29,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   const handleResultsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newResultsPerPage = parseInt(event.target.value, 10);
+    const newResultsPerPage = parseInt(event.target.value, 50);
     setResultsPerPage(newResultsPerPage);
     onResultsPerPageChange(newResultsPerPage);
   };

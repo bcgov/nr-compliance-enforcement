@@ -30,8 +30,8 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
   let lng = 0;
 
   if (coordinates && isWithinBC(coordinates)) {
-    lat = +coordinates[0];
-    lng = +coordinates[1];
+    lat = +coordinates[1];
+    lng = +coordinates[0];
   } else if (complaintLocation) {
     lat = complaintLocation?.features[0]?.geometry?.coordinates[1];
     lng = complaintLocation?.features[0]?.geometry?.coordinates[0];

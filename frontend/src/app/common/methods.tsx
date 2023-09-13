@@ -68,8 +68,8 @@ export const isWithinBC = (
     return false;
   }
 
-  const latitude = +coordinates[0];
-  const longitude = +coordinates[1];
+  const latitude = +coordinates[1];
+  const longitude = +coordinates[0];
 
   return (
     latitude >= bcBoundaries.minLatitude &&

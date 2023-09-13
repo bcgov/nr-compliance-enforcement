@@ -854,7 +854,7 @@ export const selectWildlifeComplaintsOnMapCount = (
   } = state;
   const { wildlife } = complaintItemsOnMap;
 
-  return wildlife.length;
+  return wildlife ? wildlife.length : 0;
 };
 
 export const selectAllegationComplaints = (
@@ -880,7 +880,7 @@ export const selectAllegationComplaintsOnMapCount = (
   } = state;
   const { allegations } = complaintItemsOnMap;
 
-  return allegations.length;
+  return allegations ? allegations.length : 0;
 };
 
 export const selectWildlifeComplaintLocations = (
