@@ -9,6 +9,13 @@ interface ComplaintPaginationProps {
   onPageChange: (page: number) => void;
 }
 
+/**
+ * 
+ * Pagination component for displaying a react-bootstrap pagination component
+ * @param currentPage Current page that is selected
+ * @param totalItems Total number of items
+ * @param resultsPerPage The number of results to appear on each page
+ */
 const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   currentPage,
   totalItems,
