@@ -20,26 +20,101 @@ import {
   selectComplaintStatusCodeDropdown, 
   selectSpeciesCodeDropdown, 
   selectViolationCodeDropdown,
-  selectedHwcrNatureOfComplaintCodeDropdown, 
-  selectedAreaCodeDropdown, 
-  selectedAttractantCodeDropdown 
+  selectHwcrNatureOfComplaintCodeDropdown, 
+  selectAreaCodeDropdown, 
+  selectAttractantCodeDropdown 
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
 import ReactDOMServer from "react-dom/server";
-import { DropdownOption } from "../../../../types/code-tables/option";
+import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
 import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
 import { ComplaintLocation } from "./complaint-location";
+import { ValidationSelect } from "../../../../common/validation-select";
+import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
+import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
+import { cloneDeep } from "lodash";
+import { ValidationTextArea } from "../../../../common/validation-textarea";
+import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
+import { ValidationInput } from "../../../../common/validation-input";
+import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
+import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 
-interface ComplaintHeaderProps {
-  complaintType: string;
+interface ComplaintDetailsProps {
+  complaintType: string,
+  updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined,
+  setUpdateComplaint: Function,
+  nocErrorMsg: string,
+  handleNOCChange: Function,
+  speciesErrorMsg: string,
+  handleSpeciesChange: Function,
+  statusErrorMsg: string,
+  handleStatusChange: Function,
+  complaintDescErrorMsg: string,
+  handleComplaintDescChange: Function,
+  attractantsErrorMsg: string,
+  handleAttractantsChange: Function,
+  communityErrorMsg: string,
+  handleCommunityChange: Function,
+  geoPointXMsg: string,
+  handleGeoPointXChange: Function,
+  geoPointYMsg: string,
+  handleGeoPointYChange: Function,
+  emailMsg: string,
+  handleEmailChange: Function,
+  primaryPhoneMsg: string,
+  handlePrimaryPhoneChange: Function,
+  secondaryPhoneMsg: string,
+  handleSecondaryPhoneChange: Function,
+  alternatePhoneMsg: string,
+  handleAlternatePhoneChange: Function,
+  handleReferredByChange: Function,
+  handleAssignedOfficerChange: Function,
+  handleLocationDescriptionChange: Function,
+  handleLocationChange: Function,
+  handleNameChange: Function,
+  handleAddressChange: Function,
+  errorNotificationClass: string,
 }
 
-export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
+export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   complaintType,
+  updateComplaint,
+  setUpdateComplaint,
+  nocErrorMsg,
+  handleNOCChange,
+  speciesErrorMsg,
+  handleSpeciesChange,
+  statusErrorMsg,
+  handleStatusChange,
+  complaintDescErrorMsg,
+  handleComplaintDescChange,
+  attractantsErrorMsg,
+  handleAttractantsChange,
+  communityErrorMsg,
+  handleCommunityChange,
+  geoPointXMsg,
+  handleGeoPointXChange,
+  geoPointYMsg,
+  handleGeoPointYChange,
+  emailMsg,
+  handleEmailChange,
+  primaryPhoneMsg,
+  handlePrimaryPhoneChange,
+  secondaryPhoneMsg,
+  handleSecondaryPhoneChange,
+  alternatePhoneMsg,
+  handleAlternatePhoneChange,
+  handleReferredByChange,
+  handleAssignedOfficerChange,
+  handleLocationDescriptionChange,
+  handleLocationChange,
+  handleNameChange,
+  handleAddressChange,
+  errorNotificationClass,
 }) => {
   const {
     details,
@@ -84,22 +159,6 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
-  // Transform the fetched data into the DropdownOption type
-  const transformedOfficerCodeList = officersInZoneList?.map(
-    (officer: Officer) => ({
-      value: officer.person_guid,
-      label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-    })
-  );
-
-  const xCoordinate = ReactDOMServer.renderToString(
-    renderCoordinates(coordinates, Coordinates.Latitude)
-  );
-  const yCoordinate = ReactDOMServer.renderToString(
-    renderCoordinates(coordinates, Coordinates.Longitude)
-  );
-
-  // Parse the string to a Date object
   const incidentDateTimeObject = new Date(
     incidentDateTime ?? ""
   );
@@ -108,16 +167,34 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     incidentDateTimeObject
   );
 
-  // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as DropdownOption[];
-  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as DropdownOption[];
-  const hwcrNatureOfComplaintCodes = useSelector(selectedHwcrNatureOfComplaintCodeDropdown) as DropdownOption[];
-  const areaCodes = useSelector(selectedAreaCodeDropdown) as DropdownOption[];
-  const attractantCodes = useSelector(selectedAttractantCodeDropdown) as DropdownOption[];
-  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as DropdownOption[];
-  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as DropdownOption[];
+  // Transform the fetched data into the DropdownOption type
 
-  const yesNoOptions: DropdownOption[] = [
+  let transformedOfficerCodeList: Option[] = (officersInZoneList !== null ? officersInZoneList.map(
+    (officer: Officer) => ({
+      value: officer.person_guid.person_guid,
+      label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+    })
+  ) : []);
+
+  transformedOfficerCodeList.unshift({ value: "Unassigned", label: "" });
+
+  const xCoordinate = ReactDOMServer.renderToString(
+    renderCoordinates(coordinates, Coordinates.Longitude)
+  );
+  const yCoordinate = ReactDOMServer.renderToString(
+    renderCoordinates(coordinates, Coordinates.Latitude)
+  );
+
+  // Get the code table lists to populate the Selects
+  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
+  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
+  const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
+  const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
+  const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
+  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
+
+  const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
   ];
@@ -139,7 +216,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
       option.value ===
-      (referredByAgencyCode === undefined ? "" : referredByAgencyCode)
+      (referredByAgencyCode?.agency_code === undefined ? "" : referredByAgencyCode.agency_code)
   );
   const selectedAttractants = attractantCodes.filter((option) =>
     attractants?.some((attractant) => attractant.code === option.value)
@@ -154,13 +231,24 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
-  const handleIncidentDateTimeChange = (date: Date) => {
-    setSelectedIncidentDateTime(date);
-  };
+  function handleIncidentDateTimeChange(date: Date) {
+
+    if(complaintType === COMPLAINT_TYPES.HWCR)
+    {
+        setSelectedIncidentDateTime(date);
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+        hwcrComplaint.complaint_identifier.incident_datetime = date.toDateString();
+        setUpdateComplaint(hwcrComplaint);
+    }
+  }
 
   return (
     <div>
       {/* edit header block */}
+      <div id="complaint-error-notification" className={errorNotificationClass}>
+        <img src={notificationInvalid} alt="error" className="filter-image-spacing"/>
+        Errors in form
+      </div>
       <div className="comp-complaint-header-edit-block">
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
@@ -172,13 +260,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label id="nature-of-complaint-label-id">
                   Nature of Complaint<span className="required-ind">*</span>
                 </label>
-                <Select
-                  className="comp-details-input"
-                  options={hwcrNatureOfComplaintCodes}
-                  defaultValue={selectedNatureOfComplaint}
-                  placeholder="Select"
-                  classNamePrefix='comp-select'
+                <ValidationSelect
                   id="nature-of-complaint-select-id"
+                  options={hwcrNatureOfComplaintCodes}
+                  placeholder="Select"
+                  className="comp-details-input"
+                  classNamePrefix='comp-select'
+                  defaultValue={selectedNatureOfComplaint}
+                  onChange={e => handleNOCChange(e)}
+                  errMsg={nocErrorMsg}
                 />
               </div>
             )}
@@ -190,13 +280,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 <label id="species-label-id">
                   Species<span className="required-ind">*</span>
                 </label>
-                <Select
+                <ValidationSelect
                   className="comp-details-input"
                   options={speciesCodes}
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
                   classNamePrefix='comp-select'
+                  onChange={e => handleSpeciesChange(e)}
+                  errMsg={speciesErrorMsg}
                 />
               </div>
             )}
@@ -222,13 +314,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <label id="status-label-id">
                 Status<span className="required-ind">*</span>
               </label>
-              <Select
+              <ValidationSelect
                 className="comp-details-input"
                 options={complaintStatusCodes}
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
                 classNamePrefix='comp-select'
+                onChange={e => handleStatusChange(e)}
+                errMsg={statusErrorMsg}
               />
             </div>
             <div
@@ -245,6 +339,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
                 classNamePrefix='comp-select'
+                onChange={e => handleAssignedOfficerChange(e?.value)}
               />
             </div>
           </div>
@@ -302,11 +397,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 >
                   Complaint Description<span className="required-ind">*</span>
                 </label>
-                <textarea
+                <ValidationTextArea
                   className="comp-form-control"
                   id="complaint-description-textarea-id"
-                  defaultValue={details}
+                  defaultValue={(details !== undefined ? details : "")}
                   rows={4}
+                  errMsg={complaintDescErrorMsg}
+                  onChange={handleComplaintDescChange}
                 />
               </div>
               <div
@@ -332,13 +429,15 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                 >
                   <label>Attractants</label>
                   <div className="comp-details-edit-input">
-                    <Select
+                    <ValidationMultiSelect
+                      className="comp-details-input"
                       options={attractantCodes}
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
                       classNamePrefix='comp-select'
-                      isMulti
+                      onChange={handleAttractantsChange}
+                      errMsg={attractantsErrorMsg}
                     />
                   </div>
                 </div>
@@ -387,7 +486,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Complaint Location
                 </label>
                 <div className="comp-details-edit-input">
-                  <BCGeocoderAutocomplete value={location} id="complaint-location-edit-id" maxResults={10}/>
+                  <input
+                    type="text"
+                    id="location-edit-id"
+                    className="comp-form-control"
+                    defaultValue={location}
+                    onChange={e => handleLocationChange(e.target.value)}
+                  />
                 </div>
               </div>
               <div
@@ -400,6 +505,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   id="complaint-location-description-textarea-id"
                   defaultValue={locationDescription}
                   rows={4}
+                  onChange={e => handleLocationDescriptionChange(e.target.value)}
                 />
               </div>
               <div
@@ -408,11 +514,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               >
                 <label>X Coordinate</label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
+                  <ValidationInput
+                    type="number"
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
-                    value={xCoordinate}
+                    defaultValue={xCoordinate}
+                    onChange={handleGeoPointXChange}
+                    errMsg={geoPointXMsg}
+                    step="any"
                   />
                 </div>
               </div>
@@ -422,11 +531,14 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               >
                 <label>Y Coordinate</label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
+                  <ValidationInput
+                    type="number"
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
-                    value={yCoordinate}
+                    defaultValue={yCoordinate}
+                    onChange={handleGeoPointYChange}
+                    errMsg={geoPointYMsg}
+                    step="any"
                   />
                 </div>
               </div>
@@ -438,12 +550,16 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Community<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                  <Select
-                    options={areaCodes}
-                    defaultValue={selectedAreaCode}
-                    id="area-select-id"
-                    classNamePrefix='comp-select'
-                  />
+                <ValidationSelect
+                  className="comp-details-input"
+                  options={areaCodes}
+                  defaultValue={selectedAreaCode}
+                  placeholder="Select"
+                  id="community-select-id"
+                  classNamePrefix='comp-select'
+                  onChange={e => handleCommunityChange(e?.value)}
+                  errMsg={communityErrorMsg}
+                />
                 </div>
               </div>
               <div
@@ -457,7 +573,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="office-edit-readonly-id"
                     className="comp-form-control"
                     disabled
-                    value={office}
+                    defaultValue={office}
                   />
                 </div>
               </div>
@@ -469,7 +585,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="zone-edit-readonly-id"
                     className="comp-form-control"
                     disabled
-                    value={zone}
+                    defaultValue={zone}
                   />
                 </div>
               </div>
@@ -484,7 +600,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     id="region-edit-readonly-id"
                     className="comp-form-control"
                     disabled
-                    value={region}
+                    defaultValue={region}
                   />
                 </div>
               </div>
@@ -510,8 +626,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={name}
+                    defaultValue={name}
                     id="caller-name-id"
+                    onChange={e => handleNameChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -526,50 +643,59 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   Primary Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
-                    value={primaryPhone}
-                    id="caller-primary-phone-id"
-                  />
+                <ValidationPhoneInput
+                    country="CA"
+                    className="comp-details-input"
+                    defaultValue={primaryPhone}
+                    onChange={handlePrimaryPhoneChange}
+                    maxLength={14}
+                    international={false} 
+                    id="caller-primary-phone-id" 
+                    errMsg={primaryPhoneMsg}/>
                 </div>
               </div>
               <div
                 className="comp-details-label-input-pair"
-                id="alternate-1-phone-pair-id"
+                id="secondary-phone-pair-id"
               >
                 <label
-                  id="complaint-caller-info-alternate1-phone-label-id"
+                  id="complaint-caller-info-secondary-phone-label-id"
                   className="col-auto"
                 >
                   Alternate 1 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
-                    value={alternatePhone}
-                    id="caller-info-alternate-1-phone-id"
-                  />
+                <ValidationPhoneInput
+                    country="CA"
+                    className="comp-details-input"
+                    defaultValue={secondaryPhone}
+                    onChange={handleSecondaryPhoneChange}
+                    maxLength={14}
+                    international={false} 
+                    id="caller-info-secondary-phone-id" 
+                    errMsg={secondaryPhoneMsg}/>
                 </div>
               </div>
               <div
                 className="comp-details-label-input-pair"
-                id="alternate-2-phone-pair-id"
+                id="alternate-phone-pair-id"
               >
                 <label
-                  id="complaint-caller-info-alternate2-phone-label-id"
+                  id="complaint-caller-info-alternate-phone-label-id"
                   className="col-auto"
                 >
                   Alternate 2 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
-                    value={secondaryPhone}
-                    id="caller-info-alternate-2-phone-id"
-                  />
+                <ValidationPhoneInput
+                    country="CA"
+                    className="comp-details-input"
+                    defaultValue={alternatePhone}
+                    onChange={handleAlternatePhoneChange}
+                    maxLength={14}
+                    international={false} 
+                    id="caller-info-alternate-phone-id" 
+                    errMsg={alternatePhoneMsg}/>
                 </div>
               </div>
             </div>
@@ -583,8 +709,9 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                   <input
                     type="text"
                     className="comp-form-control"
-                    value={address}
+                    defaultValue={address}
                     id="comlaint-address-id"
+                    onChange={e => handleAddressChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -592,11 +719,13 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
               <div className="comp-details-label-input-pair" id="email-pair-id">
                 <label>Email</label>
                 <div className="comp-details-edit-input">
-                  <input
+                  <ValidationInput
                     type="text"
                     className="comp-form-control"
-                    value={email}
+                    defaultValue={(email !== undefined ? email : "")}
                     id="complaint-email-id"
+                    onChange={handleEmailChange} 
+                    errMsg={emailMsg} 
                   />
                 </div>
               </div>
@@ -612,6 +741,7 @@ export const ComplaintDetailsEdit: FC<ComplaintHeaderProps> = ({
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
                     classNamePrefix='comp-select'
+                    onChange={e => handleReferredByChange(e)}
                   />
                 </div>
               </div>

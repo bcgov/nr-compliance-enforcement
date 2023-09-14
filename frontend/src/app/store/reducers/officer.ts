@@ -4,7 +4,7 @@ import config from "../../../config";
 import { OfficerState } from "../../types/complaints/officers-state";
 import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";
-import { PersonComplaintXref } from "../../types/personComplaintXref";
+import { PersonComplaintXref } from "../../types/complaints/person-complaint-xref";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
@@ -109,9 +109,9 @@ export const assignCurrentUserToComplaint =
       dispatch(
         updateComplaintAssignee(
           userId,
-          officerResponse.person_guid.person_guid as UUID,
           complaint_identifier,
-          complaint_type
+          complaint_type,
+          officerResponse.person_guid.person_guid as UUID,
         )
       );
 
@@ -135,9 +135,9 @@ export const assignCurrentUserToComplaint =
 export const updateComplaintAssignee =
   (
     currentUser: string,
-    person_guid: UUID,
     complaint_identifier: string,
-    complaint_type: string
+    complaint_type: string,
+    person_guid?: UUID,
   ): AppThunk =>
   async (dispatch) => {
     try {

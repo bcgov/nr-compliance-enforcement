@@ -4,6 +4,7 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { Person } from './entities/person.entity';
 import { QueryRunner, DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class PersonService {
@@ -47,8 +48,8 @@ export class PersonService {
     return `This action returns all person`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} person`;
+  findOne(person_guid: UUID) {
+    return this.personRepository.findOneBy({person_guid: person_guid});
   }
 
   update(id: number, updatePersonDto: UpdatePersonDto) {

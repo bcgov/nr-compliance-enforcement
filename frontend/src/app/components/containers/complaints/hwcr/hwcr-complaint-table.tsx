@@ -35,7 +35,7 @@ export const HwcrComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCo
       return () => {
         dispatch(setComplaints({ type: COMPLAINT_TYPES.HWCR, data: [] }))
       };
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         const payload = {

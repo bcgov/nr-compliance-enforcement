@@ -1,4 +1,4 @@
-import { Controller, Param, UseGuards, Post, Body } from "@nestjs/common";
+import { Controller, Param, UseGuards, Post, Body, Get } from "@nestjs/common";
 import { PersonComplaintXrefService } from "./person_complaint_xref.service";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -26,6 +26,18 @@ export class PersonComplaintXrefController {
     return this.personComplaintXrefService.assignOfficer(
       complaintId,
       createPersonComplaintXrefDto
+    );
+  }
+
+  @Get("/:person_guid/:complaint_id")
+  @Roles(Role.COS_OFFICER)
+  findAssigned(
+    @Param("person_guid") personGuid: string,
+    @Param("complaint_id") complaintId: string
+  ) {
+    return this.personComplaintXrefService.findAssigned(
+      personGuid,
+      complaintId
     );
   }
 }

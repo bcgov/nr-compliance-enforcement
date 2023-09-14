@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -52,14 +52,30 @@ export class PersonComplaintXrefService {
     });
   }
 
+  async findAssigned(
+    person_guid: string,
+    complaint_identifier: string
+  ): Promise<PersonComplaintXref> {
+    return this.personComplaintXrefRepository.createQueryBuilder('personComplaintXref')
+    .leftJoinAndSelect('personComplaintXref.person_guid', 'person_guid')
+    .leftJoinAndSelect('personComplaintXref.complaint_identifier','complaint_identifier')
+    .where('personComplaintXref.person_guid = :person_guid', {person_guid})
+    .andWhere('personComplaintXref.complaint_identifier = :complaint_identifier', {complaint_identifier})
+    .andWhere('personComplaintXref.person_complaint_xref_code = :person_complaint_xref_code', {person_complaint_xref_code: "ASSIGNEE"})
+    .andWhere('personComplaintXref.active_ind = :active_ind', {active_ind: true})
+    .getOne();
+  }
+
   async update(
+    //queryRunner: QueryRunner, 
     person_complaint_xref_guid: any,
     updatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
-    await this.personComplaintXrefRepository.update(
+    const updatedValue = await this.personComplaintXrefRepository.update(
       person_complaint_xref_guid,
       updatePersonComplaintXrefDto
     );
+    //queryRunner.manager.save(updatedValue);
     return this.findOne(person_complaint_xref_guid);
   }
 
@@ -94,7 +110,7 @@ export class PersonComplaintXrefService {
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
       }
-
+      console.log(JSON.stringify(createPersonComplaintXrefDto));
       // create a new complaint assignment record
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
       this.logger.debug(

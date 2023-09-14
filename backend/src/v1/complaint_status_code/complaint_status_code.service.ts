@@ -23,7 +23,7 @@ export class ComplaintStatusCodeService {
   }
 
   async findOne(id: any): Promise<ComplaintStatusCode> {
-    return this.complaintStatusCodeRepository.findOneOrFail(id);
+    return this.complaintStatusCodeRepository.findOneByOrFail({complaint_status_code: id});
   }
 
   async update(complaint_status_code: string, updateComplaintStatusCodeDto: UpdateComplaintStatusCodeDto): Promise<ComplaintStatusCode> {

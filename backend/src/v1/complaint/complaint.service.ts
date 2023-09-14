@@ -49,6 +49,33 @@ export class ComplaintService {
     return this.findOne(complaint_identifier);
   }
 
+  async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
+    const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
+    const updateData = 
+      {
+        complaint_status_code: updateComplaintDto.complaint_status_code,
+        detail_text: updateComplaintDto.detail_text,
+        location_detailed_text: updateComplaintDto.location_detailed_text,
+        cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
+        incident_datetime: updateComplaintDto.incident_datetime,
+        location_geometry_point: updateComplaintDto.location_geometry_point,
+        location_summary_text: updateComplaintDto.location_summary_text,
+        caller_name: updateComplaintDto.caller_name,
+        caller_email: updateComplaintDto.caller_email,
+        caller_address: updateComplaintDto.caller_address,
+        caller_phone_1: updateComplaintDto.caller_phone_1,
+        caller_phone_2: updateComplaintDto.caller_phone_2,
+        caller_phone_3: updateComplaintDto.caller_phone_3,
+        referred_by_agency_code: updateComplaintDto.referred_by_agency_code,
+      };
+      const updatedValue = await this.complaintsRepository.update(
+        { complaint_identifier },
+        updateData
+      );
+      //queryRunner.manager.save(updatedValue);
+    return this.findOne(complaint_identifier);
+  }
+
   async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
     try {
       await this.complaintsRepository.delete(id);
