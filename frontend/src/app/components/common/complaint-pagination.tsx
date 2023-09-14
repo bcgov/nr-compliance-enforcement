@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
+import Select from 'react-select';
 import Pagination from "react-bootstrap/Pagination";
+import Option from "../../types/app/option";
 
 interface ComplaintPaginationProps {
   currentPage: number;
@@ -24,11 +26,13 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 }) => {
 
   const [specificPage, setSpecificPage] = useState<string>("");
+  const pageSizeOptions: Option[] = [{label: `${resultsPerPage } / page`, value: `${resultsPerPage}`}];
+  const defaultOption: Option = {label: `${resultsPerPage } / page`, value: `${resultsPerPage}`};
 
   useEffect(() => {
-    // Update the local state whenever selectedValue changes
+    // Update the local state whenever selectedValue changes so that the pagination starts at 1 again.
     onPageChange(1);
-  }, [onPageChange, totalItems]); // Specify selectedValue as a dependency
+  }, [totalItems]);
 
 
   const handleEnterKeyPress = (
@@ -121,14 +125,11 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
             </Pagination>
           </div>
           <div>
-            <Form.Group controlId="resultsPerPageSelect">
-              <Form.Control
-                as="select"
-                value={resultsPerPage}
-              >
-                <option value={resultsPerPage}>{resultsPerPage} / page</option>
-              </Form.Control>
-            </Form.Group>
+          <Select 
+                id="resultsPerPageSelect"
+                options={pageSizeOptions}
+                defaultValue={defaultOption}
+               />
           </div>
           <div>
             <Form.Label>Go to</Form.Label>
