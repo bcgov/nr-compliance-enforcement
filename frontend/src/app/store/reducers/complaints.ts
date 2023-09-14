@@ -24,6 +24,7 @@ import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
+import { Coordinates } from "../../types/app/coordinate-type";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -976,8 +977,8 @@ export const selectWildlifeComplaintLocations = (
 
   let coordinatesArray: { lat: number; lng: number }[] = wildlife
     .map((item) => ({
-      lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
-      lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude],
     }));
 
   return coordinatesArray;
@@ -993,8 +994,8 @@ export const selectAllegationComplaintLocations = (
 
   const coordinatesArray: { lat: number; lng: number }[] = allegations
     .map((item) => ({
-      lat: +item.complaint_identifier.location_geometry_point.coordinates[1],
-      lng: +item.complaint_identifier.location_geometry_point.coordinates[0],
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude],
     }));
 
   return coordinatesArray;
