@@ -339,7 +339,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 defaultValue={selectedAssignedOfficer}
                 id="officer-assigned-select-id"
                 classNamePrefix='comp-select'
-                onChange={e => handleAssignedOfficerChange(e?.value)}
+                onChange={e => handleAssignedOfficerChange(e)}
               />
             </div>
           </div>
