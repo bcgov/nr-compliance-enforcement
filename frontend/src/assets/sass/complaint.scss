@@ -872,6 +872,14 @@
   color: $bc-gov-danger !important;
 }
 
+.Toastify__toast--success {
+  border: 1px solid #BADBCC;
+  border-radius: 3px !important;
+  background: #D1E7DD !important;
+  background-color: #D1E7DD !important;
+  color: #0F5132 !important;
+}
+
 .map-list-toggle {
   margin-left: 10px;
   font-size: 12px;

@@ -97,6 +97,8 @@ export const ComplaintDetails: FC = () => {
           setErrorNotificationClass("comp-complaint-error display-none");
         }
         setReadOnly(true);
+        const notify = () => toast.success("Updates have been saved");
+        notify();
       }
       else
       {
@@ -233,10 +235,9 @@ export const ComplaintDetails: FC = () => {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          if(selectedOption.value !== undefined)
+          if(selectedOption.value !== "Unassigned")
           {
-            axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption).then((response) => {
-            
+            axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
                 //change assignee
                 if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
                 {
@@ -257,8 +258,7 @@ export const ComplaintDetails: FC = () => {
                   hwcrComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
                 }
                 setUpdateComplaint(hwcrComplaint);
-            }
-            );
+            });
           }
           else
           {
