@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { AllegationComplaintTableHeader } from "./allegation-complaint-table-header";
 import { AllegationComplaintTable } from "./allegation-complaint-table";
 import ComplaintType from "../../../../constants/complaint-types";
@@ -14,6 +14,8 @@ import {
 } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { AllegationComplaintsOnMap } from "../allegation-complaints-on-map";
+import ComplaintPagination from "../../../common/complaint-pagination";
+import { selectDefaultPageSize } from "../../../../store/reducers/app";
 
 type Props = {
   handleChange: Function;
@@ -35,8 +37,6 @@ type Props = {
   setEndDateFilter: Function;
   complaintStatusFilter: Option | null;
   setComplaintStatusFilter: Function;
-  page?: number;
-  pageSize?: number;
 };
 export const AllegationComplaintTabContainer: FC<Props> = ({
   handleChange,
@@ -58,13 +58,29 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
   setEndDateFilter,
   complaintStatusFilter,
   setComplaintStatusFilter,
-  page,
-  pageSize,
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectAllegationComplaintsCount);
   const totalOnMap = useAppSelector(selectAllegationComplaintsOnMapCount);
   const [activeView, setActiveView] = useState<"list" | "map">("list");
+
+  const [resultsPerPage, setResultsPerPage] = useState<number>(50); // Default to 10 results per page
+  const resultsPerPageDefault = useAppSelector(selectDefaultPageSize);
+  const [page, setPage] = useState<number>(1);
+  useEffect(() => {
+    if (resultsPerPageDefault) {
+      setResultsPerPage(resultsPerPageDefault);
+    }
+  }, [resultsPerPageDefault]);
+
+  const handlePageChange = (page: number) => {
+    setPage(page);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  const totalAllegationComplaintsCount: number = useAppSelector(
+    selectAllegationComplaintsCount
+  );
 
   const handleToggleView = (view: "list" | "map") => {
     setActiveView(view);
@@ -155,7 +171,13 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
             endDateFilter={endDateFilter}
             complaintStatusFilter={complaintStatusFilter}
             page={page}
-            pageSize={pageSize}
+            pageSize={resultsPerPage}
+          />
+          <ComplaintPagination
+            currentPage={page}
+            totalItems={totalAllegationComplaintsCount}
+            onPageChange={handlePageChange}
+            resultsPerPage={resultsPerPage}
           />
         </>
       )}

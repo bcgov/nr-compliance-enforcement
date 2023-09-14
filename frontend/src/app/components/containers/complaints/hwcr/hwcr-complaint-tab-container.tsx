@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { HwcrComplaintTableHeader } from "./hwcr-complaint-table-header";
 import { HwcrComplaintTable } from "./hwcr-complaint-table";
 import ComplaintType from "../../../../constants/complaint-types";
@@ -14,6 +14,8 @@ import {
 } from "../../../../store/reducers/complaints";
 import { WildlifeComplaintsOnMap } from "../wildlife-complaints-on-map";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
+import ComplaintPagination from "../../../common/complaint-pagination";
+import { selectDefaultPageSize } from "../../../../store/reducers/app";
 
 type Props = {
   handleChange: Function;
@@ -37,8 +39,6 @@ type Props = {
   setEndDateFilter: Function;
   complaintStatusFilter: Option | null;
   setComplaintStatusFilter: Function;
-  page?: number;
-  pageSize?: number;
 };
 
 export const HwcrComplaintTabContainer: FC<Props> = ({
@@ -63,8 +63,6 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
   setEndDateFilter,
   complaintStatusFilter,
   setComplaintStatusFilter,
-  page,
-  pageSize,
 }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectWildlifeComplaintsCount);
@@ -75,6 +73,26 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
   const handleToggleView = (view: "list" | "map") => {
     setActiveView(view);
   };
+
+  const [resultsPerPage, setResultsPerPage] = useState<number>(50); // Default to 10 results per page
+  const resultsPerPageDefault = useAppSelector(selectDefaultPageSize);
+  const [page, setPage] = useState<number>(1);
+
+  useEffect(() => {
+    if (resultsPerPageDefault) {
+      setResultsPerPage(resultsPerPageDefault);
+    }
+  }, [resultsPerPageDefault]);
+
+  const handlePageChange = (page: number) => {
+    setPage(page);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  const totalWildlifeComplaintsCount: number = useAppSelector(
+    selectWildlifeComplaintsCount
+  );
+
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -166,7 +184,13 @@ export const HwcrComplaintTabContainer: FC<Props> = ({
             endDateFilter={endDateFilter}
             complaintStatusFilter={complaintStatusFilter}
             page={page}
-            pageSize={pageSize}
+            pageSize={resultsPerPage}
+          />
+          <ComplaintPagination
+            currentPage={page}
+            totalItems={totalWildlifeComplaintsCount}
+            onPageChange={handlePageChange}
+            resultsPerPage={resultsPerPage}
           />
         </>
       )}

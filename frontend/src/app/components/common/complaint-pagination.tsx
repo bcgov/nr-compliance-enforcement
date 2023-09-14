@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import Pagination from "react-bootstrap/Pagination";
 
@@ -17,7 +17,13 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 }) => {
 
   const [specificPage, setSpecificPage] = useState<string>("");
-  
+
+  useEffect(() => {
+    // Update the local state whenever selectedValue changes
+    onPageChange(1);
+  }, [onPageChange, totalItems]); // Specify selectedValue as a dependency
+
+
   const handleEnterKeyPress = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
