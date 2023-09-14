@@ -6,6 +6,7 @@ import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../enum/role.enum';
+import { UUID } from 'crypto';
 
 @ApiTags("person")
 @UseGuards(JwtRoleGuard)
@@ -30,7 +31,7 @@ export class PersonController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.personService.findOne(+id);
+    return this.personService.findOne(id as UUID);
   }
 
   @Get("/find-by-zone/:zone_code")

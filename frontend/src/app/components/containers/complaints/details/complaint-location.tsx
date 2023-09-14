@@ -18,7 +18,8 @@ type Props = {
  *
  */
 export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
-  const { coordinates } = useAppSelector(
+  
+  const { location, coordinates } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
   const complaintLocation = useAppSelector(selectComplaintLocation);
@@ -33,8 +34,8 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
     lat = +coordinates[0];
     lng = +coordinates[1];
   } else if (complaintLocation) {
-    lat = complaintLocation?.features[0]?.geometry?.coordinates[1];
-    lng = complaintLocation?.features[0]?.geometry?.coordinates[0];
+    lat = (complaintLocation?.features[0]?.geometry?.coordinates[1] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[1] : 0);
+    lng = (complaintLocation?.features[0]?.geometry?.coordinates[0] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[0] : 0);
   }
 
   if (!lat && !lng) {

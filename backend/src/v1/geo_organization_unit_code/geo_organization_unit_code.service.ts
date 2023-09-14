@@ -28,8 +28,8 @@ export class GeoOrganizationUnitCodeService {
     });
   }
 
-  async findOne(id: any): Promise<GeoOrganizationUnitCode> {
-    return this.geoOrganizationUnitCodeRepository.findOneOrFail(id);
+  async findOne(id: string): Promise<GeoOrganizationUnitCode> {
+    return this.geoOrganizationUnitCodeRepository.findOneByOrFail({geo_organization_unit_code: id});
   }
 
   async update(geo_organization_unit_code: string, updateGeoOrganizationUnitCodeDto: UpdateGeoOrganizationUnitCodeDto): Promise<GeoOrganizationUnitCode> {

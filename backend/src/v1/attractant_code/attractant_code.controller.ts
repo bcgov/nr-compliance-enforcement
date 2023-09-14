@@ -30,7 +30,7 @@ export class AttractantCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.attractantCodeService.findOne(+id);
+    return this.attractantCodeService.findOne({where: {attractant_code: id}});
   }
 
   @Patch(':id')

@@ -56,5 +56,12 @@ export class AttractantHwcrXref {
       example: "903f87c8-76dd-427c-a1bb-4d179e443252",
       description: "System generated unique key for a hwcr complaint.",
     })
-    public hwcr_complaint: HwcrComplaint;
+    public hwcr_complaint_guid: HwcrComplaint;
+
+    @ApiProperty({
+      example: "true",
+      description: "A boolean indicating if this is an active attractant for the HWCR",
+    })
+    @Column()
+    public active_ind: Boolean;
 }

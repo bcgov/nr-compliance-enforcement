@@ -53,16 +53,17 @@ export const parseDecimalDegreesCoordinates = (
   return { lat: +coordinates[0], lng: +coordinates[1] };
 };
 
+export const bcBoundaries = {
+  minLatitude: 48.2513,
+  maxLatitude: 60.0,
+  minLongitude: -139.0596,
+  maxLongitude: -114.0337,
+};
+
 // given coordinates, return true if within BC or false if not within BC
 export const isWithinBC = (
   coordinates: Coordinate
 ): boolean => {
-  const bcBoundaries = {
-    minLatitude: 48.2513,
-    maxLatitude: 60.0,
-    minLongitude: -139.0596,
-    maxLongitude: -114.0337,
-  };
 
   if (!coordinates) {
     return false;
