@@ -12,7 +12,6 @@ interface ComplaintPaginationProps {
 }
 
 /**
- * 
  * Pagination component for displaying a react-bootstrap pagination component
  * @param currentPage Current page that is selected
  * @param totalItems Total number of items
