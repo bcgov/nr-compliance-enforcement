@@ -69,8 +69,8 @@ export const isWithinBC = (
     return false;
   }
 
-  const latitude = +coordinates[Coordinates.Latitude];
-  const longitude = +coordinates[Coordinates.Longitude];
+  const latitude = +coordinates[0];
+  const longitude = +coordinates[1];
 
   return (
     latitude >= bcBoundaries.minLatitude &&
@@ -89,8 +89,8 @@ export const parseCoordinates = (
   }
 
   return coordinateType === Coordinates.Latitude
-    ? coordinates[Coordinates.Latitude]
-    : coordinates[Coordinates.Longitude];
+    ? coordinates[0]
+    : coordinates[1];
 };
 
 export const getComplaintTypeFromUrl = (): number => {

@@ -27,7 +27,6 @@ import Option from "../../../types/app/option";
 import { PersonComplaintXref } from "../../../types/complaints/person-complaint-xref";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Coordinates } from "../../../types/app/coordinate-type";
 
 type ComplaintParams = {
   id: string;
@@ -435,7 +434,7 @@ export const ComplaintDetails: FC = () => {
         {
           setGeoPointXMsg("");
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[1] = +value;
           setUpdateComplaint(hwcrComplaint);
         }
       }
@@ -443,7 +442,7 @@ export const ComplaintDetails: FC = () => {
       {
         setGeoPointXMsg("");
         let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[1] = 0;
           setUpdateComplaint(hwcrComplaint);
       }
     }
@@ -463,7 +462,7 @@ export const ComplaintDetails: FC = () => {
         {
           setGeoPointYMsg("");
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[0] = +value;
           setUpdateComplaint(hwcrComplaint);
         }
       }
@@ -471,7 +470,7 @@ export const ComplaintDetails: FC = () => {
       {
           setGeoPointYMsg("");
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[0] = 0;
           setUpdateComplaint(hwcrComplaint);
       }
     }
