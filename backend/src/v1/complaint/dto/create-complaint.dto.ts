@@ -13,6 +13,7 @@ export class CreateComplaintDto extends PickType(ComplaintDto, [
   "location_summary_text",
   "location_detailed_text",
   "incident_reported_datetime",
+  "incident_datetime",
   "referred_by_agency_other_text",
   "create_user_id",
   "create_timestamp",
@@ -22,5 +23,6 @@ export class CreateComplaintDto extends PickType(ComplaintDto, [
   "referred_by_agency_code",
   "owned_by_agency_code",
   "complaint_status_code",
-  "geo_organization_unit_code"
+  "geo_organization_unit_code",
+  "cos_geo_org_unit",
         ] as const) {}

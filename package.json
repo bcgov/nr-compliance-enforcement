@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@types/lodash": "^4.14.197",
     "geojson": "^0.5.0",
+    "lodash": "^4.17.21",
     "react-datepicker": "^4.14.0"
   }
 }

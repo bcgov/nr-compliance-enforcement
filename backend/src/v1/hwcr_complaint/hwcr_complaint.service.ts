@@ -12,6 +12,7 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from 'src/types/zone_at
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
+import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
 
 @Injectable()
 export class HwcrComplaintService {
@@ -31,6 +32,8 @@ export class HwcrComplaintService {
   protected readonly complaintService: ComplaintService;
   @Inject(AttractantHwcrXrefService)
   protected readonly attractantHwcrXrefService: AttractantHwcrXrefService;
+  @Inject(PersonComplaintXrefService)
+  protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
   async create(hwcrComplaint: any): Promise<HwcrComplaint> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -55,11 +58,11 @@ export class HwcrComplaintService {
           const blankHwcrComplaint = new HwcrComplaint();
           blankHwcrComplaint.hwcr_complaint_guid =
             newHwcrComplaint.hwcr_complaint_guid;
-          newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint =
+          newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint_guid =
             blankHwcrComplaint;
           await this.attractantHwcrXrefService.create(
-            newHwcrComplaint.attractant_hwcr_xref[i],
-            queryRunner
+            //queryRunner,
+            newHwcrComplaint.attractant_hwcr_xref[i]
           );
         }
       }
@@ -95,7 +98,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
-      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref', 'attractant_hwcr_xref.active_ind = true')
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
@@ -228,7 +231,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
-      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref', 'attractant_hwcr_xref.active_ind = true')
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
@@ -247,7 +250,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
-      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+      .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref', 'attractant_hwcr_xref.active_ind = true')
       .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
       .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
       .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')
@@ -261,12 +264,46 @@ export class HwcrComplaintService {
   
   async update(
     hwcr_complaint_guid: UUID,
-    updateHwcrComplaint: UpdateHwcrComplaintDto
+    updateHwcrComplaint: string
   ): Promise<HwcrComplaint> {
-    await this.hwcrComplaintsRepository.update(
-      { hwcr_complaint_guid },
-      updateHwcrComplaint
-    );
+    //const queryRunner = this.dataSource.createQueryRunner();
+
+    //await queryRunner.connect();
+    //await queryRunner.startTransaction();
+    try
+    {
+      const updateHwcrComplaintDto: UpdateHwcrComplaintDto = JSON.parse(updateHwcrComplaint);
+      const updateData = 
+        {
+          hwcr_complaint_nature_code: updateHwcrComplaintDto.hwcr_complaint_nature_code,
+          species_code: updateHwcrComplaintDto.species_code,
+        };
+        const updatedValue = await this.hwcrComplaintsRepository.update(
+          { hwcr_complaint_guid },
+          updateData
+        );
+        //queryRunner.manager.save(updatedValue);
+        //await this.complaintService.updateComplex(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
+        await this.complaintService.updateComplex(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
+        //Note: this needs a refactor for when we have more types of persons being loaded in
+        //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        if(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+        {
+          await this.personComplaintXrefService.assignOfficer(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+        //await this.attractantHwcrXrefService.updateComplaintAttractants(queryRunner, updateHwcrComplaintDto.hwcr_complaint_guid, updateHwcrComplaintDto.attractant_hwcr_xref);
+        await this.attractantHwcrXrefService.updateComplaintAttractants(updateHwcrComplaintDto as HwcrComplaint, updateHwcrComplaintDto.attractant_hwcr_xref);
+        //await queryRunner.commitTransaction();
+      } 
+      catch (err) {
+        this.logger.error(err);
+        //await queryRunner.rollbackTransaction();
+        throw new BadRequestException(err);
+      } 
+      finally
+      {
+        //await queryRunner.release();
+      }
       return this.findOne(hwcr_complaint_guid);
     }
   
@@ -293,7 +330,7 @@ export class HwcrComplaintService {
     .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
     .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
     .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
-    .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref')
+    .leftJoinAndSelect('hwcr_complaint.attractant_hwcr_xref', 'attractant_hwcr_xref', 'attractant_hwcr_xref.active_ind = true')
     .leftJoinAndSelect('complaint_identifier.complaint_status_code', 'complaint_status_code')
     .leftJoinAndSelect('complaint_identifier.referred_by_agency_code', 'referred_by_agency_code')
     .leftJoinAndSelect('complaint_identifier.owned_by_agency_code', 'owned_by_agency_code')

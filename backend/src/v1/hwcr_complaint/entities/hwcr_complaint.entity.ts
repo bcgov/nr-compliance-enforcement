@@ -32,8 +32,8 @@ export class HwcrComplaint
       @JoinColumn({name: "hwcr_complaint_nature_code"})
       hwcr_complaint_nature_code: HwcrComplaintNatureCode;
 
-      @OneToMany(() => AttractantHwcrXref, attractant_hwcr_xref => attractant_hwcr_xref.hwcr_complaint)
-      @JoinColumn({name: "hwcr_complaint"})
+      @OneToMany(() => AttractantHwcrXref, attractant_hwcr_xref => attractant_hwcr_xref.hwcr_complaint_guid)
+      @JoinColumn({name: "hwcr_complaint_guid"})
       attractant_hwcr_xref: AttractantHwcrXref[];
     
       @ApiProperty({

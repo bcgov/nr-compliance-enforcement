@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Logger } from '@nestjs/common';
 import { HwcrComplaintService } from './hwcr_complaint.service';
 import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
-import { UpdateHwcrComplaintDto } from './dto/update-hwcr_complaint.dto';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
@@ -54,8 +53,9 @@ export class HwcrComplaintController {
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: UUID, @Body() updateHwcrComplaintDto: UpdateHwcrComplaintDto) {
-    return this.hwcrComplaintService.update(id, updateHwcrComplaintDto);
+  async update(@Param('id') id: UUID, @Body('hwcrComplaint') updateHwcrComplaintDto: string) {
+    const hwcrComplaint = await this.hwcrComplaintService.update(id, updateHwcrComplaintDto);
+    return hwcrComplaint;
   }
 
   @Delete(':id')

@@ -56,23 +56,24 @@ export const parseDecimalDegreesCoordinates = (
   return { lat: +coordinates[0], lng: +coordinates[1] };
 };
 
+export const bcBoundaries = {
+  minLatitude: 48.2513,
+  maxLatitude: 60.0,
+  minLongitude: -139.0596,
+  maxLongitude: -114.0337,
+};
+
 // given coordinates, return true if within BC or false if not within BC
 export const isWithinBC = (
   coordinates: Coordinate
 ): boolean => {
-  const bcBoundaries = {
-    minLatitude: 48.2513,
-    maxLatitude: 60.0,
-    minLongitude: -139.0596,
-    maxLongitude: -114.0337,
-  };
 
   if (!coordinates) {
     return false;
   }
 
-  const latitude = +coordinates[0];
-  const longitude = +coordinates[1];
+  const latitude = +coordinates[Coordinates.Latitude];
+  const longitude = +coordinates[Coordinates.Longitude];
 
   return (
     latitude >= bcBoundaries.minLatitude &&
@@ -91,8 +92,8 @@ export const parseCoordinates = (
   }
 
   return coordinateType === Coordinates.Latitude
-    ? coordinates[0]
-    : coordinates[1];
+    ? coordinates[Coordinates.Latitude]
+    : coordinates[Coordinates.Longitude];
 };
 
 export const getComplaintTypeFromUrl = (): number => {

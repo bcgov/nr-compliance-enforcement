@@ -7,6 +7,7 @@ export class CreateHwcrComplaintDto extends PickType(HwcrComplaintDto, [
     "hwcr_complaint_nature_code",
     "attractant_hwcr_xref",
     "other_attractants_text",
+    "hwcr_complaint_guid",
     "create_user_id",
     "create_timestamp",
     "update_user_id",

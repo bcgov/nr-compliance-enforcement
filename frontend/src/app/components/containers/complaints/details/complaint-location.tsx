@@ -7,6 +7,7 @@ import {
 import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { isWithinBC } from "../../../../common/methods";
+import { Coordinates } from "../../../../types/app/coordinate-type";
 
 type Props = {
   complaintType: string;
@@ -18,7 +19,8 @@ type Props = {
  *
  */
 export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
-  const { coordinates } = useAppSelector(
+  
+  const { location, coordinates } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
   const complaintLocation = useAppSelector(selectComplaintLocation);
@@ -30,11 +32,11 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
   let lng = 0;
 
   if (coordinates && isWithinBC(coordinates)) {
-    lat = +coordinates[0];
-    lng = +coordinates[1];
+    lat = +coordinates[Coordinates.Latitude];
+    lng = +coordinates[Coordinates.Longitude];
   } else if (complaintLocation) {
-    lat = complaintLocation?.features[0]?.geometry?.coordinates[1];
-    lng = complaintLocation?.features[0]?.geometry?.coordinates[0];
+    lat = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Latitude] : 0);
+    lng = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] : 0);
   }
 
   if (!lat && !lng) {

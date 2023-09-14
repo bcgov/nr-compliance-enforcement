@@ -5,11 +5,13 @@ import {
   getComplaintLocationByAddress,
   selectComplaintLocation,
 } from "../../store/reducers/complaints";
+import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
 interface Props {
   value?: string;
   id?: string;
   maxResults: number;
+  parentOnChange: Function;
 }
 
 interface AddressOption {
@@ -24,12 +26,20 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
   value,
   id,
   maxResults,
+  parentOnChange,
 }) => {
   const [addressOptions, setAddressOptions] = useState<AddressOption[]>([]);
   const [inputValue, setInputValue] = useState<string>(`${value ?? ""}`);
 
   const handleInputChange = (inputValue: string) => {
+    /*let options = addressOptions;
+    options.pop();
+    options.push({ value: inputValue, label: inputValue });
+    setAddressOptions(options);*/
     setInputValue(inputValue);
+    parentOnChange(inputValue);
+    console.log("inputValue: " + JSON.stringify(inputValue));
+    //console.log("inputChange: " + JSON.stringify(options));
   };
 
   const dispatch = useAppDispatch();
@@ -42,11 +52,12 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
       try {
         if (complaintLocation) {
           if (complaintLocation.features.length > 0) {
-            const options = complaintLocation.features.map((feature: any) => ({
+            let options = complaintLocation.features.map((feature: any) => ({
               value: feature.properties.fullAddress,
               label: feature.properties.fullAddress,
             }));
             if (options) {
+              options.push({ value: inputValue, label: inputValue });
               setAddressOptions(options);
             }
           }

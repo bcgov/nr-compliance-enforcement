@@ -30,7 +30,7 @@ export class SpeciesCodeController {
   @Get(':id')
   @Roles(Role.COS_OFFICER)
   findOne(@Param('id') id: string) {
-    return this.speciesCodeService.findOne(+id);
+    return this.speciesCodeService.findOne(id);
   }
 
   @Patch(':id')
