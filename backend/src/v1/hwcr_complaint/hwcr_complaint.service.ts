@@ -116,7 +116,7 @@ export class HwcrComplaintService {
         : "_update_timestamp";
 
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
-      .addSelect("GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)","_update_timestamp")
+      .addSelect("GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)","_update_timestamp")
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
