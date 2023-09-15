@@ -31,6 +31,7 @@ const initialState: ComplaintState = {
     wildlife: null,
     allegations: [],
   },
+  totalCount: 0,
   complaint: null,
   complaintLocation: null,
 
@@ -67,6 +68,9 @@ export const complaintSlice = createSlice({
       }
 
       return { ...state, complaintItems: update };
+    },
+    setTotalCount(state, action) {
+      state.totalCount = action.payload;
     },
     setComplaintsOnMap: (state, action) => {
       const {
@@ -164,6 +168,7 @@ export const complaintSlice = createSlice({
 // export the actions/reducers
 export const {
   setComplaints,
+  setTotalCount,
   setComplaintsOnMap,
   setComplaint,
   setComplaintLocation,
@@ -189,6 +194,8 @@ export const getComplaints =
       endDateFilter,
       violationFilter,
       complaintStatusFilter,
+      page,
+      pageSize,
     } = payload;
 
     try {
@@ -224,15 +231,18 @@ export const getComplaints =
           incidentReportedEnd: endDateFilter,
           violationCode: violationFilter?.value,
           status: complaintStatusFilter?.value,
+          page: page,
+          pageSize: pageSize,
         }
       );
 
-      const response = await get<
-        HwcrComplaint | AllegationComplaint,
+      const { complaints, totalCount } = await get<
+        { complaints: HwcrComplaint | AllegationComplaint; totalCount: number },
         ComplaintQueryParams
       >(dispatch, parameters);
 
-      dispatch(setComplaints({ type: complaintType, data: response }));
+      dispatch(setComplaints({ type: complaintType, data: complaints }));
+      dispatch(setTotalCount(totalCount));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
     } finally {
@@ -240,7 +250,7 @@ export const getComplaints =
     }
   };
 
-  export const getComplaintsOnMap =
+export const getComplaintsOnMap =
   (complaintType: string, payload: ComplaintFilters): AppThunk =>
   async (dispatch) => {
     const {
@@ -428,7 +438,7 @@ export const getComplaintLocationByAddress =
     }
   };
 
-  export const getComplaintLocationByAddressAsync =
+export const getComplaintLocationByAddressAsync =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
@@ -441,7 +451,6 @@ export const getComplaintLocationByAddress =
       //-- handle the error message
     }
   };
-
 
 export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
@@ -907,7 +916,9 @@ export const selectWildlifeComplaintsCount = (state: RootState): number => {
   return wildlife ? wildlife.length : 0;
 };
 
-export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => {
+export const selectWildlifeComplaintsOnMapCount = (
+  state: RootState
+): number => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
@@ -945,12 +956,7 @@ export const selectTotalComplaintsByType =
   };
 
 export const selectAllegationComplaintsCount = (state: RootState): number => {
-  const {
-    complaints: { complaintItems },
-  } = state;
-  const { allegations } = complaintItems;
-
-  return allegations.length;
+  return state.complaints.totalCount;
 };
 
 export const selectComplaintsByType =
@@ -971,7 +977,7 @@ export const selectAllegationComplaintsOnMapCount = (state: RootState): number =
   } = state;
   const { allegations } = complaintItemsOnMap;
 
-  return allegations.length;
+  return allegations ? allegations.length : 0;
 };
 
 export const selectWildlifeComplaintLocations = (

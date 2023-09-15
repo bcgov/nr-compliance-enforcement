@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { AllegationComplaintTableHeader } from "./allegation-complaint-table-header";
 import { AllegationComplaintTable } from "./allegation-complaint-table";
 import ComplaintType from "../../../../constants/complaint-types";
@@ -8,9 +8,14 @@ import { AllegationComplaintFilterContainer } from "./allegation-complaint-filte
 import Option from "../../../../types/app/option";
 import filterIcon from "../../../../../assets/images/filter-icon.png";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectAllegationComplaintsCount, selectAllegationComplaintsOnMapCount } from "../../../../store/reducers/complaints";
+import {
+  selectAllegationComplaintsCount,
+  selectAllegationComplaintsOnMapCount,
+} from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { AllegationComplaintsOnMap } from "../allegation-complaints-on-map";
+import ComplaintPagination from "../../../common/complaint-pagination";
+import { selectDefaultPageSize } from "../../../../store/reducers/app";
 
 type Props = {
   handleChange: Function;
@@ -57,11 +62,29 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   const total = useAppSelector(selectAllegationComplaintsCount);
   const totalOnMap = useAppSelector(selectAllegationComplaintsOnMapCount);
-  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
+  const [activeView, setActiveView] = useState<"list" | "map">("list");
 
-  const handleToggleView = (view: 'list' | 'map') => {
+  const [resultsPerPage, setResultsPerPage] = useState<number>(50); // Default to 10 results per page
+  const resultsPerPageDefault = useAppSelector(selectDefaultPageSize);
+  const [page, setPage] = useState<number>(1);
+  useEffect(() => {
+    if (resultsPerPageDefault) {
+      setResultsPerPage(resultsPerPageDefault);
+    }
+  }, [resultsPerPageDefault]);
+
+  const handlePageChange = (page: number) => {
+    setPage(page);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  const totalAllegationComplaintsCount: number = useAppSelector(
+    selectAllegationComplaintsCount
+  );
+
+  const handleToggleView = (view: "list" | "map") => {
     setActiveView(view);
-  }
+  };
   return (
     <>
       <Navbar className="basic-navbar-nav complaint-tab-container-width">
@@ -77,7 +100,8 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
           </Nav.Item>
           <Nav.Item className="nav-item comp-tab-active">
             <button className="nav-link active" id="ers-tab">
-              Enforcement ({activeView === 'list' ? `${total}` : `${totalOnMap}`} )
+              Enforcement (
+              {activeView === "list" ? `${total}` : `${totalOnMap}`} )
             </button>
           </Nav.Item>
           <Nav.Item className="ms-auto" {...getToggleProps()}>
@@ -118,37 +142,45 @@ export const AllegationComplaintTabContainer: FC<Props> = ({
         handleToggleView={handleToggleView}
         activeView={activeView}
       />
-{activeView === 'map' ? (
-        <AllegationComplaintsOnMap sortColumn={sort[0]}
-        sortOrder={sort[1]}
-        regionCodeFilter={regionCodeFilter}
-        zoneCodeFilter={zoneCodeFilter}
-        areaCodeFilter={areaCodeFilter}
-        officerFilter={officerFilter}
-        violationFilter={violationFilter}
-        startDateFilter={startDateFilter}
-        endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}
-        complaintType={COMPLAINT_TYPES.ERS}
+      {activeView === "map" ? (
+        <AllegationComplaintsOnMap
+          sortColumn={sort[0]}
+          sortOrder={sort[1]}
+          regionCodeFilter={regionCodeFilter}
+          zoneCodeFilter={zoneCodeFilter}
+          areaCodeFilter={areaCodeFilter}
+          officerFilter={officerFilter}
+          violationFilter={violationFilter}
+          startDateFilter={startDateFilter}
+          endDateFilter={endDateFilter}
+          complaintStatusFilter={complaintStatusFilter}
+          complaintType={COMPLAINT_TYPES.ERS}
         />
-        ) : (
-
-
-            <>
-      <AllegationComplaintTableHeader handleSort={handleSort} />
-      <AllegationComplaintTable
-        sortColumn={sort[0]}
-        sortOrder={sort[1]}
-        regionCodeFilter={regionCodeFilter}
-        zoneCodeFilter={zoneCodeFilter}
-        areaCodeFilter={areaCodeFilter}
-        officerFilter={officerFilter}
-        violationFilter={violationFilter}
-        startDateFilter={startDateFilter}
-        endDateFilter={endDateFilter}
-        complaintStatusFilter={complaintStatusFilter}
-        />
-      </>
+      ) : (
+        <>
+          <AllegationComplaintTableHeader handleSort={handleSort} />
+          <AllegationComplaintTable
+            sortColumn={sort[0]}
+            sortOrder={sort[1]}
+            regionCodeFilter={regionCodeFilter}
+            zoneCodeFilter={zoneCodeFilter}
+            areaCodeFilter={areaCodeFilter}
+            officerFilter={officerFilter}
+            violationFilter={violationFilter}
+            startDateFilter={startDateFilter}
+            endDateFilter={endDateFilter}
+            complaintStatusFilter={complaintStatusFilter}
+            page={page}
+            pageSize={resultsPerPage}
+          />
+          <ComplaintPagination
+            currentPage={page}
+            totalItems={totalAllegationComplaintsCount}
+            onPageChange={handlePageChange}
+            resultsPerPage={resultsPerPage}
+          />
+        </>
       )}
-</>)
-}
+    </>
+  );
+};

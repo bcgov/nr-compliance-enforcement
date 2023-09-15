@@ -19,6 +19,8 @@ import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { Complaints, ComplaintsWrapper } from './components/containers/complaints/complaints';
 import COMPLAINT_TYPES from "./types/app/complaint-types";
+import { getConfigurations } from "./store/reducers/app";
+
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +28,7 @@ const App: FC = () => {
   useEffect(() => {
     dispatch(fetchCodeTables());
     dispatch(getOfficers());
+    dispatch(getConfigurations());
   }, [dispatch]);
 
   return (
