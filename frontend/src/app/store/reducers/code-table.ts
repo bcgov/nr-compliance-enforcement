@@ -15,6 +15,7 @@ import Option from "../../types/app/option";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
 import { GeoOrganizationCode } from "../../types/code-tables/geo-orginaization-code";
+import { DropdownOption } from '../../types/code-tables/option';
 
 const initialState: CodeTableState = {
   agencyCodes: [],

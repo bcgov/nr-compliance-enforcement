@@ -1,5 +1,10 @@
 import { FC, useEffect } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useParams,
+} from "react-router-dom";
 
 import Roles from "./constants/roles";
 import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
@@ -17,10 +22,11 @@ import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
-import { Complaints, ComplaintsWrapper } from './components/containers/complaints/complaints';
+import {
+  ComplaintsWrapper,
+} from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getConfigurations } from "./store/reducers/app";
-
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -47,11 +53,13 @@ const App: FC = () => {
           />
           <Route
             path="/"
-            element={<ComplaintsWrapper defaultComplaintType={COMPLAINT_TYPES.HWCR} />}
+            element={
+              <ComplaintsWrapper defaultComplaintType={COMPLAINT_TYPES.HWCR} />
+            }
           />
           <Route
             path="/complaints/:type?"
-            element={<ComplaintContainer initialState={0} />}
+            element={<ComplaintsRouteWrapper />}
           />
           <Route
             path="/complaint/:complaintType/:id"
@@ -65,6 +73,13 @@ const App: FC = () => {
       </Routes>
     </Router>
   );
+};
+
+const ComplaintsRouteWrapper = () => {
+  const { type } = useParams();
+  const defaultType = type ? type : COMPLAINT_TYPES.HWCR;
+
+  return <ComplaintsWrapper defaultComplaintType={defaultType} />;
 };
 
 export default App;

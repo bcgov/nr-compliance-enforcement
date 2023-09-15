@@ -6,6 +6,7 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
+import { selectComplaintLocations } from '../../../store/reducers/complaints';
 import {
   getComplaintsOnMap,
   selectAllegationComplaintLocations,
@@ -19,7 +20,7 @@ type Props = {
 export const ComplaintMap: FC<Props> = ({ type }) => {
   const dispatch = useAppDispatch();
 
-  const coordinatesArray = useAppSelector(selectAllegationComplaintLocations);
+  const coordinatesArray = useAppSelector(selectComplaintLocations(type));
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear

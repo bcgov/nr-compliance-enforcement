@@ -1,6 +1,6 @@
 
 import { FC } from "react";
-import PhoneInput from "react-phone-number-input/input";
+import PhoneInput from 'react-phone-number-input/input';
 
 interface ValidationPhoneInputProps {
     className: string,

@@ -25,6 +25,7 @@ import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
 import { Coordinates } from "../../types/app/coordinate-type";
+import { from } from "linq-to-typescript";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -202,8 +203,7 @@ export const getComplaints =
       const {
         app: { loading },
       } = getState();
-      
-      
+
       dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
@@ -487,20 +487,27 @@ const updateComplaintStatus = async (
   await patch<Complaint>(dispatch, parameters);
 };
 
-
 export const updateWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): AppThunk =>
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      await axios.patch(`${config.API_BASE_URL}/v1/hwcr-complaint/` + hwcrComplaint.hwcr_complaint_guid, {hwcrComplaint: JSON.stringify(hwcrComplaint)});
+      await axios.patch(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/` +
+          hwcrComplaint.hwcr_complaint_guid,
+        { hwcrComplaint: JSON.stringify(hwcrComplaint) }
+      );
 
       await updateComplaintAssignee(
         hwcrComplaint.complaint_identifier.create_user_id,
         hwcrComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.HWCR,
-        (hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined ? hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid as UUID : undefined)
-      )
+        hwcrComplaint.complaint_identifier.person_complaint_xref[0] !==
+          undefined
+          ? (hwcrComplaint.complaint_identifier.person_complaint_xref[0]
+              .person_guid.person_guid as UUID)
+          : undefined
+      );
 
       //-- get the updated wildlife conflict
 
@@ -942,17 +949,10 @@ export const selectTotalComplaintsByType =
   (complaintType: string) =>
   (state: RootState): number => {
     const {
-      complaints: { complaintItems },
+      complaints: { totalCount },
     } = state;
-    const { wildlife, allegations } = complaintItems;
 
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return allegations.length;
-      case COMPLAINT_TYPES.HWCR:
-      default:
-        return wildlife ? wildlife.length : 0;
-    }
+    return totalCount;
   };
 
 export const selectAllegationComplaintsCount = (state: RootState): number => {
@@ -971,7 +971,9 @@ export const selectComplaintsByType =
     }
   };
 
-export const selectAllegationComplaintsOnMapCount = (state: RootState): number => {
+export const selectAllegationComplaintsOnMapCount = (
+  state: RootState
+): number => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
@@ -979,6 +981,53 @@ export const selectAllegationComplaintsOnMapCount = (state: RootState): number =
 
   return allegations ? allegations.length : 0;
 };
+
+export const selectComplaintLocations =
+  (complaintType: string) =>
+  (state: RootState): Array<{ lat: number; lng: number }> => {
+    const {
+      complaints: { complaintItemsOnMap },
+    } = state;
+
+    const flattenCoordinates = (
+      collection: Array<HwcrComplaint> | Array<AllegationComplaint>
+    ): Array<{ lat: number; lng: number }> => {
+      if (collection) {
+        return collection.map((item) => ({
+          lat: +item.complaint_identifier.location_geometry_point.coordinates[
+            Coordinates.Latitude
+          ],
+          lng: +item.complaint_identifier.location_geometry_point.coordinates[
+            Coordinates.Longitude
+          ],
+        }));
+      }
+
+      return new Array<{ lat: number; lng: number }>();
+    };
+
+    let coordinates = new Array<{ lat: number; lng: number }>();
+
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        const { allegations } = complaintItemsOnMap;
+
+        if (allegations && from(allegations).any()) {
+          coordinates = flattenCoordinates(allegations);
+        }
+        break;
+      case COMPLAINT_TYPES.HWCR:
+      default:
+        const { wildlife } = complaintItemsOnMap;
+
+        if (wildlife && from(wildlife).any()) {
+          coordinates = flattenCoordinates(wildlife);
+        }
+        break;
+    }
+
+    return coordinates;
+  };
 
 export const selectWildlifeComplaintLocations = (
   state: RootState
@@ -989,10 +1038,15 @@ export const selectWildlifeComplaintLocations = (
   const { wildlife } = complaintItemsOnMap;
 
   let coordinatesArray: { lat: number; lng: number }[] = wildlife
-    .map((item) => ({
-      lat: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude],
-      lng: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude],
-    }));
+    ? wildlife.map((item) => ({
+        lat: +item.complaint_identifier.location_geometry_point.coordinates[
+          Coordinates.Latitude
+        ],
+        lng: +item.complaint_identifier.location_geometry_point.coordinates[
+          Coordinates.Longitude
+        ],
+      }))
+    : [];
 
   return coordinatesArray;
 };
@@ -1005,14 +1059,18 @@ export const selectAllegationComplaintLocations = (
   } = state;
   const { allegations } = complaintItemsOnMap;
 
-  const coordinatesArray: { lat: number; lng: number }[] = allegations
-    .map((item) => ({
-      lat: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude],
-      lng: +item.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude],
-    }));
+  const coordinatesArray: { lat: number; lng: number }[] = allegations.map(
+    (item) => ({
+      lat: +item.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Latitude
+      ],
+      lng: +item.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Longitude
+      ],
+    })
+  );
 
   return coordinatesArray;
 };
-
 
 export default complaintSlice.reducer;

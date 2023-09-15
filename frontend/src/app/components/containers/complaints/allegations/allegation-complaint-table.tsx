@@ -94,61 +94,7 @@ export const AllegationComplaintTable: FC<Props> = ({
     navigate(`/complaint/${COMPLAINT_TYPES.ERS}/${id}`);
   };
 
-  return (
-    <Table id="comp-table" className="comp-table">
-      <tbody>
-        {allegationComplaintsJson.map((val, key, { length }) => {
-          const complaintIdentifier =
-            val.complaint_identifier.complaint_identifier;
-          const incidentReportedDatetime = formatDateTime(
-            val.complaint_identifier.incident_reported_datetime
-          );
-          const violationCode =
-            val.violation_code != null
-              ? val.violation_code.long_description
-              : "";
-          const inProgressButtonClass =
-            String(val.in_progress_ind) === "true"
-              ? "btn btn-primary comp-in-progress-btn"
-              : "btn btn-primary comp-in-progress-btn btn-hidden";
-          const inProgressInd =
-            String(val.in_progress_ind) === "true" ? "In Progress" : "";
-          const geoOrganizationUnitCode = val.complaint_identifier
-            .cos_geo_org_unit
-            ? val.complaint_identifier.cos_geo_org_unit.area_name
-            : "";
-          const locationSummary =
-            val.complaint_identifier.location_summary_text;
-          const statusButtonClass =
-            val.complaint_identifier.complaint_status_code.long_description ===
-            "Closed"
-              ? "btn btn-primary comp-status-closed-btn"
-              : "btn btn-primary comp-status-open-btn";
-          const status =
-            val.complaint_identifier.complaint_status_code.long_description;
-          const updateDate =
-            Date.parse(val.complaint_identifier.update_timestamp) >=
-            Date.parse(val.update_timestamp)
-              ? formatDateTime(val.complaint_identifier.update_timestamp)
-              : formatDateTime(val.update_timestamp);
-          const assigned_ind =
-            val.complaint_identifier.person_complaint_xref.length > 0 &&
-            val.complaint_identifier.person_complaint_xref[0].active_ind;
-          const firstName =
-            val.complaint_identifier.person_complaint_xref[0]?.person_guid
-              ?.first_name;
-          const lastName =
-            val.complaint_identifier.person_complaint_xref[0]?.person_guid
-              ?.last_name;
-          const firstInitial =
-            firstName?.length > 0 ? firstName.substring(0, 1) : "";
-          const lastInitial =
-            lastName?.length > 0 ? lastName.substring(0, 1) : "";
-          const initials = firstInitial + lastInitial;
-          const displayName =
-            firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
-          const zone = val.complaint_identifier.cos_geo_org_unit?.zone_code;
-          
+  
     return (
         <Table id="comp-table" className="comp-table">
             <tbody>

@@ -13,12 +13,14 @@ import { ComplaintFilters } from "../../../types/complaints/complaint-filters/co
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import { WildlifeComplaintListHeader } from "./wildlife-complaint-list-header";
 import { AllegationComplaintListHeader } from "./allegation-complaint-list-header";
-import { selectDefaultZone } from "../../../store/reducers/app";
+import { selectDefaultPageSize } from "../../../store/reducers/app";
 import { WildlifeComplaintListItem } from "./wildlife-complaint-list-item";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { useNavigate } from "react-router-dom";
 import { AllegationComplaintListItem } from "./allegation-complaint-list-item";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
+import ComplaintPagination from "../../common/complaint-pagination";
+import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 
 type Props = {
   type: string;
@@ -29,6 +31,8 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const complaints = useAppSelector(selectComplaintsByType(type));
   const navigate = useNavigate();
 
+  const totalComplaints = useAppSelector(selectTotalComplaintsByType(type));
+
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters, dispatch: filterDispatch } = useContext(
@@ -38,9 +42,15 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const [sortKey, setSortKey] = useState("incident_reported_datetime");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(50); // Default to 10 results per page
+  const defaultPageSize = useAppSelector(selectDefaultPageSize);
+
   const generateComplaintRequestPayload = (
     complaintType: string,
-    filters: ComplaintFilters
+    filters: ComplaintFilters,
+    page: number,
+    pageSize: number
   ): ComplaintRequestPayload => {
     const {
       region,
@@ -65,6 +75,8 @@ export const ComplaintList: FC<Props> = ({ type }) => {
       startDateFilter: startDate,
       endDateFilter: endDate,
       complaintStatusFilter: status,
+      page,
+      pageSize,
     };
 
     switch (complaintType) {
@@ -84,9 +96,14 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   };
 
   useEffect(() => {
-    const payload = generateComplaintRequestPayload(type, filters);
+    const payload = generateComplaintRequestPayload(
+      type,
+      filters,
+      page,
+      pageSize
+    );
     dispatch(getComplaints(type, payload));
-  }, [filters]);
+  }, [filters, sortKey, sortDirection, page, pageSize]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
@@ -115,6 +132,11 @@ export const ComplaintList: FC<Props> = ({ type }) => {
     navigate(`/complaint/${type}/${id}`);
   };
 
+  const handlePageChange = (page: number) => {
+    setPage(page);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
   const renderComplaintListHeader = (type: string): JSX.Element => {
     switch (type) {
       case COMPLAINT_TYPES.ERS:
@@ -139,34 +161,6 @@ export const ComplaintList: FC<Props> = ({ type }) => {
 
   return (
     <>
-      {/* <Table className="comp-table-header">
-        <thead>{renderComplaintListHeader(type)}</thead>
-      </Table>
-      <table id="comp-table" className="comp-table">
-        <tbody>
-          {complaints?.map((item) => {
-            const { complaint_identifier: complaint } = item;
-            const { complaint_identifier } = complaint;
-
-            switch (type) {
-              case COMPLAINT_TYPES.ERS:
-                return <>allecation</>;
-              case COMPLAINT_TYPES.HWCR:
-              default:
-                return (
-                  <WildlifeComplaintListItem
-                    key={complaint_identifier}
-                    type={type}
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    complaint={item as HwcrComplaint}
-                    complaintClick={handleComplaintClick}
-                  />
-                );
-            }
-          })}
-        </tbody>
-      </table> */}
       <Table id="complaint-list">
         {renderComplaintListHeader(type)}
         <tbody>
@@ -202,6 +196,13 @@ export const ComplaintList: FC<Props> = ({ type }) => {
           })}
         </tbody>
       </Table>
+
+      <ComplaintPagination
+        currentPage={page}
+        totalItems={totalComplaints}
+        onPageChange={handlePageChange}
+        resultsPerPage={pageSize}
+      />
     </>
   );
 };

@@ -68,25 +68,25 @@ export const WildlifeComplaintListItem: FC<Props> = ({
     <tr key={id}>
       <td
         className="comp-cell-width-95 comp-header-left-border"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         {id}
       </td>
       <td
         className="comp-cell-width-95 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         {incidentReportedDatetime}
       </td>
       <td
         className="comp-cell-width-330"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         {natureCode}
       </td>
       <td
         className="comp-cell-width-130 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         <button type="button" className="btn btn-primary comp-species-btn">
           {species}
@@ -94,19 +94,19 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       </td>
       <td
         className="comp-cell-width-165"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         {location}
       </td>
       <td
         className="comp-cell-width-170 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         {locationSummary}
       </td>
       <td
         className="comp-cell-width-130"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         <div
           data-initials-listview={initials}
@@ -116,7 +116,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       </td>
       <td
         className="comp-cell-width-75 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         <button type="button" className={statusButtonClass}>
           {status}
@@ -124,7 +124,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       </td>
       <td
         className="comp-cell-width-110 comp-header-right-border"
-        onClick={(event) => complaintClick(event, complaintIdentifier)}
+        onClick={(event) => complaintClick(event, id)}
       >
         {updateDate}
       </td>

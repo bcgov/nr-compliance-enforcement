@@ -455,6 +455,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { ...profile, zone: name, zoneDescription: description }
 
       return { ...state, profile: update}
+    }
     case ActionTypes.SET_CONFIGURATIONS: {
       const {
         payload: { configurations },
