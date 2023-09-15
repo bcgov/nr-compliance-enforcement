@@ -5,9 +5,11 @@ import { useParams } from "react-router-dom";
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
   getAllegationComplaintByComplaintIdentifier,
+  getAllegationComplaintByComplaintIdentifierSetUpdate,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
   selectComplaint,
   setComplaint,
+  updateAllegationComplaint,
   updateWildlifeComplaint,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -94,8 +96,14 @@ export const ComplaintDetails: FC = () => {
           let hwcrComplaint = updateComplaint as HwcrComplaint;
           await dispatch(updateWildlifeComplaint(hwcrComplaint));
           await dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(hwcrComplaint.complaint_identifier.complaint_identifier, setUpdateComplaint));
-          setErrorNotificationClass("comp-complaint-error display-none");
         }
+        else if(complaintType === COMPLAINT_TYPES.ERS)
+        {
+          let allegationComplaint = updateComplaint as AllegationComplaint;
+          await dispatch(updateAllegationComplaint(allegationComplaint));
+          await dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(allegationComplaint.complaint_identifier.complaint_identifier, setUpdateComplaint));
+        }
+        setErrorNotificationClass("comp-complaint-error display-none");
         setReadOnly(true);
         const notify = () => toast.success("Updates have been saved");
         notify();
@@ -119,7 +127,7 @@ export const ComplaintDetails: FC = () => {
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
-            dispatch(getAllegationComplaintByComplaintIdentifier(id));
+            dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
             break;
           case COMPLAINT_TYPES.HWCR:
             dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
@@ -357,6 +365,18 @@ export const ComplaintDetails: FC = () => {
       }
   }
 
+  function handleViolationInProgessChange(selectedOption: Option | null) {
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+      allegationComplaint.in_progress_ind = (selectedOption?.value === "Yes" ? true : false);
+      setUpdateComplaint(allegationComplaint);
+  }
+
+  function handleViolationObservedChange(selectedOption: Option | null) {
+    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+    allegationComplaint.observed_ind = (selectedOption?.value === "Yes" ? true : false);
+    setUpdateComplaint(allegationComplaint);
+}
+
   function handleLocationChange(value: string) {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
@@ -590,7 +610,7 @@ export const ComplaintDetails: FC = () => {
         hwcrComplaint.complaint_identifier.caller_name = value;
         setUpdateComplaint(hwcrComplaint);
     }
-    else if(complaintType === COMPLAINT_TYPES.HWCR)
+    else if(complaintType === COMPLAINT_TYPES.ERS)
     {
         let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_name = value;
@@ -614,9 +634,14 @@ export const ComplaintDetails: FC = () => {
   }
 
   function handlePrimaryPhoneChange(value: string) {
+      console.log("value: " + value);
         if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setPrimaryPhoneMsg("Phone number must be 10 digits");
+        }
+        else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
+        {
+          setPrimaryPhoneMsg("Invalid Format");
         }
         else
         {
@@ -636,9 +661,13 @@ export const ComplaintDetails: FC = () => {
         }
   }
   function handleSecondaryPhoneChange(value: string) {
-        if(value.length !== 0 && value.length !== 12)
+        if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setSecondaryPhoneMsg("Phone number must be 10 digits");
+        }
+        else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
+        {
+          setSecondaryPhoneMsg("Invalid Format");
         }
         else
         {
@@ -662,6 +691,10 @@ export const ComplaintDetails: FC = () => {
         if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setAlternatePhoneMsg("Phone number must be 10 digits");
+        }
+        else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
+        {
+          setAlternatePhoneMsg("Invalid Format");
         }
         else
         {
@@ -764,6 +797,8 @@ export const ComplaintDetails: FC = () => {
           handleLocationDescriptionChange={handleLocationDescriptionChange} handleLocationChange={handleLocationChange}
           handleNameChange={handleNameChange} handleAddressChange={handleAddressChange}
           errorNotificationClass={errorNotificationClass}
+          handleViolationInProgessChange={handleViolationInProgessChange}
+          handleViolationObservedChange={handleViolationObservedChange}
           />
       }
       { !readOnly && 

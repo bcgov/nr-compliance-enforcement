@@ -78,6 +78,8 @@ interface ComplaintDetailsProps {
   handleNameChange: Function,
   handleAddressChange: Function,
   errorNotificationClass: string,
+  handleViolationInProgessChange: Function,
+  handleViolationObservedChange: Function,
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
@@ -115,6 +117,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   handleNameChange,
   handleAddressChange,
   errorNotificationClass,
+  handleViolationInProgessChange,
+  handleViolationObservedChange,
 }) => {
   const {
     details,
@@ -232,14 +236,19 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   );
 
   function handleIncidentDateTimeChange(date: Date) {
-
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
-        setSelectedIncidentDateTime(date);
+      setSelectedIncidentDateTime(date);
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
         let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.incident_datetime = date.toDateString();
         setUpdateComplaint(hwcrComplaint);
-    }
+      }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+        allegationComplaint.complaint_identifier.incident_datetime = date.toDateString();
+        setUpdateComplaint(allegationComplaint);
+      }
   }
 
   return (
@@ -455,6 +464,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       placeholder="Select"
                       id="violation-in-progress-select-id"
                       classNamePrefix='comp-select'
+                      onChange={e => handleViolationInProgessChange(e)}
                     />
                   </div>
                 </div>
@@ -472,6 +482,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       placeholder="Select"
                       id="violation-observed-select-id"
                       classNamePrefix='comp-select'
+                      onChange={e => handleViolationObservedChange(e)}
                     />
                   </div>
                 </div>
@@ -557,7 +568,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   placeholder="Select"
                   id="community-select-id"
                   classNamePrefix='comp-select'
-                  onChange={e => handleCommunityChange(e?.value)}
+                  onChange={e => handleCommunityChange(e)}
                   errMsg={communityErrorMsg}
                 />
                 </div>

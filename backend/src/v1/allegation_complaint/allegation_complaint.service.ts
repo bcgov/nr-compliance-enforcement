@@ -11,6 +11,7 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from 'src/types/zone_at
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
+import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 
 @Injectable()
 export class AllegationComplaintService {
@@ -28,6 +29,8 @@ export class AllegationComplaintService {
   private cosGeoOrgUnitRepository: Repository<CosGeoOrgUnit>;
   @Inject(ComplaintService)
   protected readonly complaintService: ComplaintService;
+  @Inject(PersonComplaintXrefService)
+  protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
   async create(allegationComplaint: any): Promise<AllegationComplaint> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -226,14 +229,47 @@ export class AllegationComplaintService {
 
   async update(
     allegation_complaint_guid: UUID,
-    updateAllegationComplaint: UpdateAllegationComplaintDto
+    updateAllegationComplaint: string
   ): Promise<AllegationComplaint> {
-    await this.allegationComplaintsRepository.update(
-      { allegation_complaint_guid },
-      updateAllegationComplaint
-    );
-    return this.findOne(allegation_complaint_guid);
-  }
+    //const queryRunner = this.dataSource.createQueryRunner();
+
+    //await queryRunner.connect();
+    //await queryRunner.startTransaction();
+    try
+    {
+      const updateAllegationComplaintDto: UpdateAllegationComplaintDto = JSON.parse(updateAllegationComplaint);
+      
+      const updateData = 
+        {
+          allegation_complaint_guid: updateAllegationComplaintDto.allegation_complaint_guid,
+          in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
+          observed_ind: updateAllegationComplaintDto.observed_ind,
+        };
+        const updatedValue = await this.allegationComplaintsRepository.update(
+          { allegation_complaint_guid },
+          updateData
+        );
+        //queryRunner.manager.save(updatedValue);
+        //await this.complaintService.updateComplex(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
+        await this.complaintService.updateComplex(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateAllegationComplaintDto.complaint_identifier));
+        //Note: this needs a refactor for when we have more types of persons being loaded in
+        //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        if(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+        {
+          await this.personComplaintXrefService.assignOfficer(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+      } 
+      catch (err) {
+        this.logger.error(err);
+        //await queryRunner.rollbackTransaction();
+        throw new BadRequestException(err);
+      } 
+      finally
+      {
+        //await queryRunner.release();
+      }
+      return this.findOne(allegation_complaint_guid);
+    }
 
   async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
     try {

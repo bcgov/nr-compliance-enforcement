@@ -383,6 +383,37 @@ export const getAllegationComplaintByComplaintIdentifier =
       dispatch(toggleLoading(false));
     }
   };
+              
+  export const getAllegationComplaintByComplaintIdentifierSetUpdate =
+  (id: string, setUpdateComplaint: Function): AppThunk =>
+  async (dispatch) => {
+    try {
+      dispatch(toggleLoading(true));
+      dispatch(setComplaint(null));
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
+      );
+      const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      const { complaint_identifier: ceComplaint }: any = response;
+
+      if (ceComplaint) {
+        const {
+          location_summary_text,
+          cos_geo_org_unit: { area_name },
+        } = ceComplaint;
+        await dispatch(getComplaintLocation(area_name, location_summary_text));
+      }
+      setUpdateComplaint(response);
+
+      dispatch(setComplaint({ ...response }));
+    } catch (error) {
+      //-- handle the error
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
 export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
@@ -470,6 +501,35 @@ const updateComplaintStatus = async (
   await patch<Complaint>(dispatch, parameters);
 };
 
+export const updateAllegationComplaint =
+  (allegationComplaint: AllegationComplaint): AppThunk =>
+  async (dispatch) => {
+    try {
+      dispatch(toggleLoading(true));
+      await axios.patch(`${config.API_BASE_URL}/v1/allegation-complaint/` + allegationComplaint.allegation_complaint_guid, {allegationComplaint: JSON.stringify(allegationComplaint)});
+
+      await updateComplaintAssignee(
+        allegationComplaint.complaint_identifier.create_user_id,
+        allegationComplaint.complaint_identifier.complaint_identifier,
+        COMPLAINT_TYPES.ERS,
+        (allegationComplaint.complaint_identifier.person_complaint_xref[0] !== undefined ? allegationComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid as UUID : undefined)
+      )
+
+      //-- get the updated wildlife conflict
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
+      );
+      const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      dispatch(setComplaint({ ...response }));
+    } catch (error) {
+      console.log(error);
+      //-- add error handling
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
 export const updateWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): AppThunk =>
