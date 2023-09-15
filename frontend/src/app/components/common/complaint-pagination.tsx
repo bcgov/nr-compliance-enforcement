@@ -106,7 +106,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   };
 
   return (
-    <div className="pagination_container">
+    <div id="complaint_pagination_container_id" className="pagination_container">
       <div className="pagination_total">Total {totalItems} items</div>
       {totalItems > resultsPerPage && (
         <>

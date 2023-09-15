@@ -156,10 +156,11 @@ export class AllegationComplaintService {
     const sortString =
       sortColumn !== "update_timestamp"
         ? sortTable + sortColumn
-        : "GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)";
+        : "_update_timestamp";
 
     const queryBuilder = this.allegationComplaintsRepository
       .createQueryBuilder("allegation_complaint")
+      .addSelect("GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)","_update_timestamp")
       .leftJoinAndSelect(
         "allegation_complaint.complaint_identifier",
         "complaint_identifier"
