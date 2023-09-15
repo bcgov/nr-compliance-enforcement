@@ -1,13 +1,18 @@
 import { FC, useContext, useState, useCallback } from "react";
 import { FilterButton } from "../../common/filter-button";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import {
-  clearFilter,
-} from "../../../store/reducers/complaint-filters";
+import { clearFilter } from "../../../store/reducers/complaint-filters";
 import { DropdownOption } from "../../../types/code-tables/option";
-import { ComplaintFilters } from '../../../types/complaints/complaint-filters/complaint-filters';
+import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
+import MapListToggle from "../../common/map-list-toggle";
+import SearchInput from "../../common/search-input";
 
-export const ComplaintFilterBar: FC = () => {
+type Props = { 
+  toggleViewType: (view: "map" | "list") => void;
+  viewType: "map" | "list";
+}
+
+export const ComplaintFilterBar: FC<Props> = ({viewType, toggleViewType}) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
   const {
@@ -68,86 +73,97 @@ export const ComplaintFilterBar: FC = () => {
 
   return (
     <div className="comp-filter-pill-container">
-      {hasFilter("status") && (
-        <FilterButton
-          id="comp-status-filter"
-          label={status?.label}
-          name="status"
-          clear={removeFilter}
-        />
-      )}
+      <MapListToggle
+        onToggle={toggleViewType}
+        activeView={viewType}
+        className="map-list-toggle"
+      />
+      <div className="comp-filter-pills">
+        {hasFilter("status") && (
+          <FilterButton
+            id="comp-status-filter"
+            label={status?.label}
+            name="status"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasDate() && (
-        <FilterButton
-          id="comp-date-range-filter"
-          label={dateRangeLabel()}
-          name="dateRange"
-          clear={removeFilter}
-        />
-      )}
+        {hasDate() && (
+          <FilterButton
+            id="comp-date-range-filter"
+            label={dateRangeLabel()}
+            name="dateRange"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("species") && (
-        <FilterButton
-          id="comp-species-filter"
-          label={species?.label}
-          name="species"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("species") && (
+          <FilterButton
+            id="comp-species-filter"
+            label={species?.label}
+            name="species"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("officer") && (
-        <FilterButton
-          id="comp-officer-filter"
-          label={officer?.label}
-          name="officer"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("officer") && (
+          <FilterButton
+            id="comp-officer-filter"
+            label={officer?.label}
+            name="officer"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("violationType") && (
-        <FilterButton
-          id="comp-violation-filter"
-          label={violationType?.label}
-          name="violationType"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("violationType") && (
+          <FilterButton
+            id="comp-violation-filter"
+            label={violationType?.label}
+            name="violationType"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("natureOfComplaint") && (
-        <FilterButton
-          id="comp-nature-of-complaint-filter"
-          label={natureOfComplaint?.label}
-          name="natureOfComplaint"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("natureOfComplaint") && (
+          <FilterButton
+            id="comp-nature-of-complaint-filter"
+            label={natureOfComplaint?.label}
+            name="natureOfComplaint"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("community") && (
-        <FilterButton
-          id="comp-community-filter"
-          label={community?.label}
-          name="community"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("community") && (
+          <FilterButton
+            id="comp-community-filter"
+            label={community?.label}
+            name="community"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("zone") && (
-        <FilterButton
-          id="comp-zone-filter"
-          label={zone?.label}
-          name="zone"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("zone") && (
+          <FilterButton
+            id="comp-zone-filter"
+            label={zone?.label}
+            name="zone"
+            clear={removeFilter}
+          />
+        )}
 
-      {hasFilter("region") && (
-        <FilterButton
-          id="comp-region-filter"
-          label={region?.label}
-          name="region"
-          clear={removeFilter}
-        />
-      )}
+        {hasFilter("region") && (
+          <FilterButton
+            id="comp-region-filter"
+            label={region?.label}
+            name="region"
+            clear={removeFilter}
+          />
+        )}
+
+        <div className="comp-filter-search">
+          <SearchInput />
+        </div>
+      </div>
     </div>
   );
 };

@@ -18,7 +18,7 @@ const initialState: ComplaintFilters = {
   officer: null,
   startDate: undefined,
   endDate: undefined,
-  status: null,
+  status: { value: "OPEN", label: "Open" },
   species: null,
   natureOfComplaint: null,
   violationType: null,

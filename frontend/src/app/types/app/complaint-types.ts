@@ -8,7 +8,7 @@ export const complaintTypeToName = (complaintType: string | undefined | null) =>
     case COMPLAINT_TYPES.ERS:
       return "Enforcement";
     case COMPLAINT_TYPES.HWCR:
-      return "Human Wildlife Conflict";
+      return "Human Wildlife Conflicts";
     default:
       return "";
   }

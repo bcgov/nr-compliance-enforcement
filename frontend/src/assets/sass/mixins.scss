@@ -200,3 +200,10 @@
     }
   }
 }
+
+//-- table cell mixins
+@each $width in $cell-widths {
+  .comp-cell-width-#{$width} {
+    width: #{$width}px;
+  }
+}

@@ -913,7 +913,7 @@ export const selectWildlifeComplaintsOnMapCount = (state: RootState): number => 
   } = state;
   const { wildlife } = complaintItemsOnMap;
 
-  return wildlife.length;
+  return wildlife ? wildlife.length : 0;
 };
 
 export const selectAllegationComplaints = (

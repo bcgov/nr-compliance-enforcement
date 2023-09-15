@@ -1,40 +1,69 @@
-import { OverlayTrigger, Popover } from 'react-bootstrap';
-import { useAppDispatch } from '../../../hooks/hooks';
-import { openModal } from '../../../store/reducers/app';
-import { AssignOfficer, ChangeStatus } from '../../../types/modal/modal-types';
-import { FC } from 'react';
+import { OverlayTrigger, Popover } from "react-bootstrap";
+import { useAppDispatch } from "../../../hooks/hooks";
+import { openModal } from "../../../store/reducers/app";
+import { AssignOfficer, ChangeStatus } from "../../../types/modal/modal-types";
+import { FC, useContext } from "react";
 import Option from "../../../types/app/option";
+import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 
-type Props= {
-  complaint_identifier: string,
-  complaint_type: string,
+type Props = {
+  complaint_identifier: string;
+  complaint_type: string;
   sortColumn: string,
   sortOrder: string,
-  natureOfComplaintFilter: Option | null,
-  speciesCodeFilter: Option | null,
-  startDateFilter: Date | undefined,
-  endDateFilter: Date | undefined,
-  complaintStatusFilter: Option | null,
-  violationFilter: Option | null,
-  assigned_ind: boolean,
-  zone: string,
-}
+  assigned_ind: boolean;
+};
 
 /**
  * Renders a popover that contains the following actions:
  * 1. Assign Complaint
  * 2. Update astatus
  */
-export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, complaint_type, assigned_ind, zone, sortColumn, sortOrder, natureOfComplaintFilter, speciesCodeFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+export const ComplaintEllipsisPopover: FC<Props> = ({
+  complaint_identifier,
+  complaint_type,
+  assigned_ind,
+  sortColumn,
+  sortOrder
+}) => {
+  /*
+   */
   const dispatch = useAppDispatch();
-  const assignText = assigned_ind ? 'Reassign Complaint' : 'Assign Complaint';
-  
-  const renderPopover = () => ( 
+
+  const { state: filters } = useContext(ComplaintFilterContext);
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    species: speciesCodeFilter,
+    natureOfComplaint: natureOfComplaintFilter,
+    violationType: violationFilter,
+    status: complaintStatusFilter,
+    startDate: startDateFilter,
+    endDate: endDateFilter,
+  } = filters;
+
+  const assignText = assigned_ind ? "Reassign Complaint" : "Assign Complaint";
+
+  const renderPopover = () => (
     <Popover>
-        <Popover.Body>
-              <div id="assign_complaint_link" className="popover-text" onClick={openAsignOfficerModal}>{assignText}</div>
-              <div id="update_status_link" className="popover-text" onClick={openStatusChangeModal}>Update Status</div>
-        </Popover.Body>
+      <Popover.Body>
+        <div
+          id="assign_complaint_link"
+          className="popover-text"
+          onClick={openAsignOfficerModal}
+        >
+          {assignText}
+        </div>
+        <div
+          id="update_status_link"
+          className="popover-text"
+          onClick={openStatusChangeModal}
+        >
+          Update Status
+        </div>
+      </Popover.Body>
     </Popover>
   );
 
@@ -56,7 +85,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           startDateFilter: startDateFilter,
           endDateFilter: endDateFilter,
           complaintStatusFilter: complaintStatusFilter,
-        }
+        },
       })
     );
   };
@@ -72,8 +101,8 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
-          zone: zone
-        }
+          zone: zone,
+        },
       })
     );
   };
@@ -82,13 +111,15 @@ export const ComplaintEllipsisPopover: FC<Props> = ({ complaint_identifier, comp
     <OverlayTrigger
       trigger="click"
       placement="bottom"
-      offset={[-70,-5]}
+      offset={[-70, -5]}
       rootClose={true}
-      overlay={renderPopover()}>
+      overlay={renderPopover()}
+    >
       <td className="comp-ellipsis-cell comp-cell">
-              <i className="bi bi-three-dots-vertical"></i>
+        <i className="bi bi-three-dots-vertical"></i>
       </td>
-    </OverlayTrigger>  );
+    </OverlayTrigger>
+  );
 };
 
 export default ComplaintEllipsisPopover;

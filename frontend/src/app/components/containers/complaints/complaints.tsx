@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, useContext, useCallback } from "react";
+import { FC, useState, useContext, useEffect, useCallback } from "react";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, {
@@ -17,13 +17,11 @@ import {
 import {
   resetFilters,
   ComplaintFilterPayload,
-  updateFilter,
 } from "../../../store/reducers/complaint-filters";
-import {
-  selectDefaultZone,
-  getTokenProfile,
-} from "../../../store/reducers/app";
-import { DropdownOption } from "../../../types/code-tables/option";
+import { selectDefaultZone, getOfficerZone, profileZoneDescription, profileZone } from '../../../store/reducers/app';
+import { DropdownOption } from '../../../types/code-tables/option';
+import { updateFilter } from '../../../store/reducers/complaint-filters';
+import { ComplaintMap } from "./complaint-map";
 
 type Props = {
   defaultComplaintType: string;
@@ -34,8 +32,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
 
-  const defaultZone = useAppSelector(selectDefaultZone);
-  const defaultStatus: DropdownOption = { value: "OPEN", label: "Open" };
+  const [viewType, setViewType] = useState<"map" | "list">("list");
 
   const totalComplaints = useAppSelector(
     selectTotalComplaintsByType(complaintType)
@@ -43,17 +40,17 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const [isExpanded, setExpanded] = useState(false);
   const { getToggleProps } = useCollapse({ isExpanded });
 
-  useEffect(() => {
-    if (!defaultZone) {
-      dispatch(getTokenProfile());
+  const defaultZone = useAppSelector(selectDefaultZone);
+  const zone_name = useAppSelector(profileZone);
+  const zone_descrption = useAppSelector(profileZoneDescription);
 
-      setFilter("zone", defaultZone);
-      setFilter("status", defaultStatus);
+  useEffect(() => {
+    if (defaultZone) {
+      setFilter("zone", { value: zone_name, label: zone_descrption });
     } else {
-      setFilter("zone", defaultZone);
-      setFilter("status", defaultStatus);
+      dispatch(getOfficerZone);
     }
-  }, [defaultZone]);
+  }, [zone_name, zone_descrption]);
 
   const setFilter = useCallback(
     (name: string, value?: DropdownOption | Date | null) => {
@@ -86,10 +83,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     if (defaultZone) {
       payload = [
         { filter: "zone", value: defaultZone },
-        { filter: "status", value: defaultStatus },
+        { filter: "status", value: { value: "OPEN", label: "Open" } },
       ];
     }
     filterDispatch(resetFilters(payload));
+  };
+
+  const toggleViewType = (view: "list" | "map") => {
+    setViewType(view);
   };
 
   return (
@@ -142,8 +143,15 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
       <div>
         <ComplaintFilter type={complaintType} isOpen={isExpanded} />
-        <ComplaintFilterBar />
-        <ComplaintList type={complaintType} />
+        <ComplaintFilterBar
+          viewType={viewType}
+          toggleViewType={toggleViewType}
+        />
+        {viewType === "list" ? (
+          <ComplaintList type={complaintType} />
+        ) : (
+          <ComplaintMap type={complaintType} />
+        )}
       </div>
     </>
   );

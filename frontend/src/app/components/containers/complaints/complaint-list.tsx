@@ -4,14 +4,21 @@ import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import {
   getComplaints,
   selectComplaintsByType,
-  selectWildlifeComplaints,
+  setComplaints,
 } from "../../../store/reducers/complaints";
 import { Table } from "react-bootstrap";
 import { SORT_TYPES } from "../../../constants/sort-direction";
-import { SortableHeader } from "../../common/sortable-header";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
+import { WildlifeComplaintListHeader } from "./wildlife-complaint-list-header";
+import { AllegationComplaintListHeader } from "./allegation-complaint-list-header";
+import { selectDefaultZone } from "../../../store/reducers/app";
+import { WildlifeComplaintListItem } from "./wildlife-complaint-list-item";
+import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
+import { useNavigate } from "react-router-dom";
+import { AllegationComplaintListItem } from "./allegation-complaint-list-item";
+import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 
 type Props = {
   type: string;
@@ -20,28 +27,18 @@ type Props = {
 export const ComplaintList: FC<Props> = ({ type }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
+  const navigate = useNavigate();
 
-  //-- the state fromthe context is not the same state as used in the rest of the application
+  //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
-  const { state: filters } = useContext(ComplaintFilterContext);
+  const { state: filters, dispatch: filterDispatch } = useContext(
+    ComplaintFilterContext
+  );
 
   const [sortKey, setSortKey] = useState("incident_reported_datetime");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
-  const {
-    region,
-    zone,
-    community,
-    officer,
-    startDate,
-    endDate,
-    status,
-    species,
-    natureOfComplaint,
-    violationType,
-  } = filters;
-
-  const generaComplaintRequestPayload = (
+  const generateComplaintRequestPayload = (
     complaintType: string,
     filters: ComplaintFilters
   ): ComplaintRequestPayload => {
@@ -87,18 +84,16 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   };
 
   useEffect(() => {
-    const payload = generaComplaintRequestPayload(type, filters);
+    const payload = generateComplaintRequestPayload(type, filters);
     dispatch(getComplaints(type, payload));
-  }, [
-    community,
-    officer,
-    startDate,
-    endDate,
-    species,
-    natureOfComplaint,
-    violationType,
-    region,
-  ]);
+  }, [filters]);
+
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+      dispatch(setComplaints({ type: { type }, data: [] }));
+    };
+  }, []);
 
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {
@@ -111,191 +106,102 @@ export const ComplaintList: FC<Props> = ({ type }) => {
     }
   };
 
+  const handleComplaintClick = (
+    e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
+    id: string
+  ) => {
+    e.preventDefault();
+
+    navigate(`/complaint/${type}/${id}`);
+  };
+
   const renderComplaintListHeader = (type: string): JSX.Element => {
-    const renderWildlifeHeader = () => {
-      return (
-        <tr className="row">
-          <SortableHeader
-            title="Incident#"
-            sortFnc={handleSort}
-            sortKey="complaint_identifier"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-small-cell comp-header-cell comp-top-left comp-cell-left"
-          />
-          <SortableHeader
-            title="Date/Time"
-            sortFnc={handleSort}
-            sortKey="incident_reported_datetime"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-small-cell comp-header-cell"
-          />
-          <SortableHeader
-            title="Nature of Complaint"
-            sortFnc={handleSort}
-            sortKey="hwcr_complaint_nature_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-nature-complaint-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Species"
-            sortFnc={handleSort}
-            sortKey="species_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-medium-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Community"
-            sortFnc={handleSort}
-            sortKey="geo_organization_unit_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-area-cell comp-header-cell"
-          />
-          <th className="comp-location-cell comp-header-cell">
-            <div className="comp-header-label">Location/Address</div>
-          </th>
-
-          <SortableHeader
-            title="Officer Assigned"
-            sortFnc={handleSort}
-            sortKey="last_name"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-medium-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Status"
-            sortFnc={handleSort}
-            sortKey="complaint_status_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-status-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Last Updated"
-            sortFnc={handleSort}
-            sortKey="update_timestamp"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-last-updated-cell comp-header-cell"
-          />
-
-          <th className="comp-ellipsis-cell comp-header-cell comp-top-right">
-            <div className="comp-header-label">
-              <i className="bi bi-three-dots-vertical"></i>
-            </div>
-          </th>
-        </tr>
-      );
-    };
-
-    const renderAllegationHeader = () => {
-      return (
-        <tr className="row">
-          <SortableHeader
-            title="Incident#"
-            sortFnc={handleSort}
-            sortKey="complaint_identifier"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-small-cell comp-header-cell comp-top-left comp-cell-left"
-          />
-
-          <SortableHeader
-            title="Date/Time"
-            sortFnc={handleSort}
-            sortKey="incident_reported_datetime"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-small-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Violation Type"
-            sortFnc={handleSort}
-            sortKey="violation_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-violation-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Violation In Progress"
-            sortFnc={handleSort}
-            sortKey="in_progress_ind"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-in-progress-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Community"
-            sortFnc={handleSort}
-            sortKey="geo_organization_unit_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-area-cell comp-header-cell"
-          />
-          <th className="comp-location-cell comp-header-cell">
-            <div className="comp-header-label">Location/Address</div>
-          </th>
-
-          <SortableHeader
-            title="Officer Assigned"
-            sortFnc={handleSort}
-            sortKey="last_name"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-medium-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Status"
-            sortFnc={handleSort}
-            sortKey="complaint_status_code"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-status-cell comp-header-cell"
-          />
-
-          <SortableHeader
-            title="Last Updated"
-            sortFnc={handleSort}
-            sortKey="update_timestamp"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-            className="comp-last-updated-cell comp-header-cell"
-          />
-
-          <th className="comp-ellipsis-cell comp-header-cell comp-top-right">
-            <div className="comp-header-label">
-              <i className="bi bi-three-dots-vertical"></i>
-            </div>
-          </th>
-        </tr>
-      );
-    };
-
     switch (type) {
       case COMPLAINT_TYPES.ERS:
-        return renderAllegationHeader();
+        return (
+          <AllegationComplaintListHeader
+            handleSort={handleSort}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+          />
+        );
       case COMPLAINT_TYPES.HWCR:
       default:
-        return renderWildlifeHeader();
+        return (
+          <WildlifeComplaintListHeader
+            handleSort={handleSort}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+          />
+        );
     }
   };
 
   return (
-    <Table id="comp-table" className="comp-table comp-table-header">
-      <thead>{renderComplaintListHeader(type)}</thead>
-    </Table>
+    <>
+      {/* <Table className="comp-table-header">
+        <thead>{renderComplaintListHeader(type)}</thead>
+      </Table>
+      <table id="comp-table" className="comp-table">
+        <tbody>
+          {complaints?.map((item) => {
+            const { complaint_identifier: complaint } = item;
+            const { complaint_identifier } = complaint;
+
+            switch (type) {
+              case COMPLAINT_TYPES.ERS:
+                return <>allecation</>;
+              case COMPLAINT_TYPES.HWCR:
+              default:
+                return (
+                  <WildlifeComplaintListItem
+                    key={complaint_identifier}
+                    type={type}
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    complaint={item as HwcrComplaint}
+                    complaintClick={handleComplaintClick}
+                  />
+                );
+            }
+          })}
+        </tbody>
+      </table> */}
+      <Table id="complaint-list">
+        {renderComplaintListHeader(type)}
+        <tbody>
+          {complaints?.map((item) => {
+            const { complaint_identifier: complaint } = item;
+            const { complaint_identifier } = complaint;
+
+            switch (type) {
+              case COMPLAINT_TYPES.ERS:
+                return (
+                  <AllegationComplaintListItem
+                    key={complaint_identifier}
+                    type={type}
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    complaint={item as AllegationComplaint}
+                    complaintClick={handleComplaintClick}
+                  />
+                );
+              case COMPLAINT_TYPES.HWCR:
+              default:
+                return (
+                  <WildlifeComplaintListItem
+                    key={complaint_identifier}
+                    type={type}
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    complaint={item as HwcrComplaint}
+                    complaintClick={handleComplaintClick}
+                  />
+                );
+            }
+          })}
+        </tbody>
+      </Table>
+    </>
   );
 };

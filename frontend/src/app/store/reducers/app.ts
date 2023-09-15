@@ -17,6 +17,7 @@ enum ActionTypes {
   HIDE_MODAL = "app/HIDE_MODAL",
   TOGGLE_LOADING = "app/TOGGLE_LOADING",
   TOGGLE_NOTIFICATION = "app/TOGGLE_NOTIFICATION",
+  SET_DEFAULT_ZONE = "app/SET_DEFAULT_ZONE",
 }
 //-- action creators
 
@@ -79,6 +80,11 @@ export const openModal = ({
 
 export const closeModal = () => ({
   type: ActionTypes.HIDE_MODAL,
+});
+
+export const setOfficerDefaultZone = (name: string, description: string) => ({
+  type: ActionTypes.SET_TOKEN_PROFILE,
+  payload: { name, description },
 });
 
 //-- selectors
@@ -233,6 +239,43 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const getOfficerZone = (): AppThunk => async (dispatch) => {
+  const token = localStorage.getItem(AUTH_TOKEN);
+
+  if (token) {
+    dispatch(toggleLoading(true));
+    try {
+      const decoded: SsoToken = jwtDecode<SsoToken>(token);
+      const {  idir_user_guid, idir_username } =
+        decoded;
+      let idir_user_guid_transformed: UUID;
+      idir_user_guid_transformed = idir_user_guid as UUID;
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+      );
+      const response = await get<Officer>(dispatch, parameters);
+
+      if (response.office_guid !== null) {
+        const {
+          office_guid: { cos_geo_org_unit: unit },
+        } = response;
+
+        const { zone_code: name, zone_name: description } = unit;
+
+        dispatch(setOfficerDefaultZone(name, description));
+      }
+    } catch (error) {
+      //-- handler error
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  } else {
+    //-- the user is not logged in redirect them to the login
+    window.location = config.KEYCLOAK_URL;
+  }
+};
+
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
@@ -352,6 +395,16 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { type, message };
 
       return { ...state, notifications: update };
+    }
+    case ActionTypes.SET_DEFAULT_ZONE: {
+      const {
+        payload: { name, description },
+      } = action;
+
+      const { profile } = state;
+      const update = { ...profile, zone: name, zoneDescription: description }
+
+      return { ...state, profile: update}
     }
     default:
       return state;
