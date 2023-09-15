@@ -214,6 +214,21 @@ export const ComplaintDetails: FC = () => {
       }
     }
 }
+
+function handleViolationTypeChange(selectedOption: Option | null) {
+  if(selectedOption !== null && selectedOption !== undefined)
+  {
+    if(complaintType === COMPLAINT_TYPES.ERS)
+    {
+        let allegationComplaint: AllegationComplaint = {...updateComplaint} as AllegationComplaint;
+        axios.get(`${config.API_BASE_URL}/v1/violation-code/` + selectedOption.value).then((response) => {
+          allegationComplaint.violation_code = response.data;
+          setUpdateComplaint(allegationComplaint);
+        });
+    }
+  }
+}
+
   function handleStatusChange(selectedOption: Option | null) {
     if(selectedOption !== null && selectedOption !== undefined)
     {
@@ -464,7 +479,6 @@ export const ComplaintDetails: FC = () => {
               newAttractants.push(attractant);
             }
           }
-          console.log(JSON.stringify(newAttractants));
           hwcrComplaint.attractant_hwcr_xref = newAttractants;
           setUpdateComplaint(hwcrComplaint);
       }
@@ -634,7 +648,6 @@ export const ComplaintDetails: FC = () => {
   }
 
   function handlePrimaryPhoneChange(value: string) {
-      console.log("value: " + value);
         if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setPrimaryPhoneMsg("Phone number must be 10 digits");
@@ -799,6 +812,7 @@ export const ComplaintDetails: FC = () => {
           errorNotificationClass={errorNotificationClass}
           handleViolationInProgessChange={handleViolationInProgessChange}
           handleViolationObservedChange={handleViolationObservedChange}
+          handleViolationTypeChange={handleViolationTypeChange}
           />
       }
       { !readOnly && 

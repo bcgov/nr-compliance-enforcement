@@ -731,6 +731,8 @@ export const selectComplaintHeader =
         status: "",
         zone: "",
         violationType: "", //-- needs to be violation as well
+        personGuid: "",
+        violationTypeCode: "",
       };
 
       if (complaint) {
@@ -741,6 +743,7 @@ export const selectComplaintHeader =
 
         if (ceComplaint) {
           let officerAssigned = "Not Assigned";
+          let personGuid = "";
           const {
             incident_reported_datetime: loggedDate,
             create_user_id: createdBy,
@@ -755,6 +758,8 @@ export const selectComplaintHeader =
             const lastName =
               ceComplaint.person_complaint_xref[0].person_guid.last_name;
             officerAssigned = `${firstName} ${lastName}`;
+            personGuid =
+                ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
           const { complaint_status_code: status } = ceStatusCode;
@@ -764,21 +769,20 @@ export const selectComplaintHeader =
             loggedDate,
             createdBy,
             lastUpdated,
-            officerAssigned,
+            officerAssigned: officerAssigned,
             status,
             zone: zone_code,
+            personGuid,
           };
         }
 
         if (ceViolation) {
-          const { long_description: violationType } = ceViolation;
-          result = { ...result, violationType };
+          const { long_description: violationType, violation_code: violationTypeCode } = ceViolation;
+          result = { ...result, violationType, violationTypeCode };
         }
       }
-
       return result;
     };
-
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaintHeader(state);

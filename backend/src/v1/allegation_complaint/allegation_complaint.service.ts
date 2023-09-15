@@ -244,6 +244,7 @@ export class AllegationComplaintService {
           allegation_complaint_guid: updateAllegationComplaintDto.allegation_complaint_guid,
           in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
           observed_ind: updateAllegationComplaintDto.observed_ind,
+          violation_code: updateAllegationComplaintDto.violation_code,
         };
         const updatedValue = await this.allegationComplaintsRepository.update(
           { allegation_complaint_guid },
@@ -256,7 +257,7 @@ export class AllegationComplaintService {
         //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         if(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
-          await this.personComplaintXrefService.assignOfficer(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+          await this.personComplaintXrefService.assignOfficer(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
       } 
       catch (err) {

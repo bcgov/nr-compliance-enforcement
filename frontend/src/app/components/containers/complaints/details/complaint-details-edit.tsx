@@ -80,6 +80,7 @@ interface ComplaintDetailsProps {
   errorNotificationClass: string,
   handleViolationInProgessChange: Function,
   handleViolationObservedChange: Function,
+  handleViolationTypeChange: Function,
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
@@ -119,6 +120,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   errorNotificationClass,
   handleViolationInProgessChange,
   handleViolationObservedChange,
+  handleViolationTypeChange,
 }) => {
   const {
     details,
@@ -144,7 +146,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     status,
     natureOfComplaintCode,
     speciesCode,
-    violationType,
+    violationTypeCode,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const {
@@ -226,7 +228,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     attractants?.some((attractant) => attractant.code === option.value)
   );
   const selectedViolationTypeCode = violationTypeCodes.find(
-    (option) => option.value === violationType
+    (option) => option.value === violationTypeCode
   );
   const selectedViolationInProgress = yesNoOptions.find(
     (option) => option.value === (violationInProgress ? "Yes" : "No")
@@ -315,6 +317,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedViolationTypeCode}
                   placeholder="Select"
                   id="violation-type-select-id"
+                  onChange={e => handleViolationTypeChange(e)}
                   classNamePrefix='comp-select'
                 />
               </div>
