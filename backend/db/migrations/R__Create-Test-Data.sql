@@ -1279,3 +1279,11 @@ where t.complaint_identifier  = '23-007023';
 UPDATE public.complaint t
 set location_geometry_point = 'POINT (-127.4810142 50.4217838)'
 where t.complaint_identifier  = '23-006888';
+
+-- update the test records so that we can sort by them and find them via cypress tests
+update complaint set update_timestamp  = current_timestamp 
+where complaint_identifier in ('23-007890','23-006888','23-007023');
+update allegation_complaint set update_timestamp  = current_timestamp 
+where complaint_identifier in ('23-007890','23-006888','23-007023');
+update hwcr_complaint  set update_timestamp  = current_timestamp 
+where complaint_identifier in ('23-007890','23-006888','23-007023');

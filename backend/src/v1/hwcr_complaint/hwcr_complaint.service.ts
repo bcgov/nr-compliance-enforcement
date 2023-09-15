@@ -16,7 +16,6 @@ import { PersonComplaintXrefService } from '../person_complaint_xref/person_comp
 
 @Injectable()
 export class HwcrComplaintService {
-
   private readonly logger = new Logger(HwcrComplaintService.name);
 
   constructor(private dataSource: DataSource) {}
@@ -71,30 +70,53 @@ export class HwcrComplaintService {
       this.logger.error(err);
       await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
-      } finally {
-        await queryRunner.release();
-      }
-      return newHwcrComplaintString;
+    } finally {
+      await queryRunner.release();
+    }
+    return newHwcrComplaintString;
+  }
+
+  async search(
+    sortColumn: string,
+    sortOrder: string,
+    community?: string,
+    zone?: string,
+    region?: string,
+    officerAssigned?: string,
+    natureOfComplaint?: string,
+    speciesCode?: string,
+    incidentReportedStart?: Date,
+    incidentReportedEnd?: Date,
+    status?: string,
+    page?: number,
+    pageSize?: number
+  ):Promise<{ complaints: HwcrComplaint[]; totalCount: number }> {
+    // how many records to skip based on the current page and page size
+    let skip: number;
+    if (page && pageSize) {
+      skip = (page - 1) * pageSize;
     }
 
-    async search(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 
-      speciesCode?: string, incidentReportedStart?: Date, incidentReportedEnd?: Date, status?: string): Promise<HwcrComplaint[]> {
-      //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
-      const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-      let sortTable = 'complaint_identifier.';
-      if(sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code')
-      {
-        sortTable = 'hwcr_complaint.';
-      }
-      else if(sortColumn === 'last_name')
-      {
-        sortTable ='person.';
-      }
+    //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
+    const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
+    let sortTable = "complaint_identifier.";
+    if (
+      sortColumn === "complaint_identifier" ||
+      sortColumn === "species_code" ||
+      sortColumn === "hwcr_complaint_nature_code"
+    ) {
+      sortTable = "hwcr_complaint.";
+    } else if (sortColumn === "last_name") {
+      sortTable = "person.";
+    }
 
-      const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
-      
+    const sortString =
+      sortColumn !== "update_timestamp"
+        ? sortTable + sortColumn
+        : "_update_timestamp";
 
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
+      .addSelect("GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)","_update_timestamp")
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
@@ -152,7 +174,18 @@ export class HwcrComplaintService {
         queryBuilder.andWhere('complaint_identifier.complaint_status_code = :Status', { Status:status });
       }
 
-      return queryBuilder.getMany();
+      if (skip !== undefined) {
+        // a page number was supplied, limit the results returned
+        const [data, totalCount] = await queryBuilder
+          .skip(skip)
+          .take(pageSize)
+          .getManyAndCount();
+        return {complaints: data, totalCount: totalCount};
+      } else {
+        // not paginating results, just get them all
+        const [data, totalCount] = await queryBuilder.getManyAndCount();
+        return {complaints: data, totalCount: totalCount};
+      }
     }
 
     async searchMap(sortColumn: string, sortOrder: string, community?: string, zone?: string, region?: string, officerAssigned?: string, natureOfComplaint?: string, 
@@ -227,6 +260,7 @@ export class HwcrComplaintService {
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
       const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
 
+
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
@@ -240,7 +274,11 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
-      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
+      .addOrderBy(
+        "complaint_identifier.incident_reported_datetime",
+        sortColumn === "incident_reported_datetime" ? sortOrderString : "DESC"
+      );
+
 
       return queryBuilder.getMany();
     }
@@ -260,12 +298,13 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .where('hwcr_complaint.hwcr_complaint_guid = :id', {id})
       .getOne();
-    }
-  
+  }
+
   async update(
     hwcr_complaint_guid: UUID,
     updateHwcrComplaint: string
   ): Promise<HwcrComplaint> {
+
     //const queryRunner = this.dataSource.createQueryRunner();
 
     //await queryRunner.connect();
@@ -326,6 +365,7 @@ export class HwcrComplaintService {
   }
 
   async findByComplaintIdentifier(id: any): Promise<HwcrComplaint> {
+
     return this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
     .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
     .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
@@ -342,8 +382,13 @@ export class HwcrComplaintService {
     .getOne();
   }
 
-  async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> { 
-    let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0, offices:[] };
+  async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {
+    let results: ZoneAtAGlanceStats = {
+      total: 0,
+      assigned: 0,
+      unassigned: 0,
+      offices: [],
+    };
 
     //-- get total complaints for the zone
     let totalComplaints = await this.hwcrComplaintsRepository
@@ -377,92 +422,132 @@ export class HwcrComplaintService {
       })
       .getCount();
 
-    const officeQuery = await this.cosGeoOrgUnitRepository.createQueryBuilder('cos_geo_org_unit')
-    .where('cos_geo_org_unit.zone_code = :zone', { zone })
-    .distinctOn(['cos_geo_org_unit.offloc_code'])
-    .orderBy('cos_geo_org_unit.offloc_code');
+    const officeQuery = await this.cosGeoOrgUnitRepository
+      .createQueryBuilder("cos_geo_org_unit")
+      .where("cos_geo_org_unit.zone_code = :zone", { zone })
+      .distinctOn(["cos_geo_org_unit.offloc_code"])
+      .orderBy("cos_geo_org_unit.offloc_code");
 
     const zoneOffices = await officeQuery.getMany();
 
     let offices: OfficeStats[] = [];
- 
-    for(let i = 0; i < zoneOffices.length; i++)
-    {
-      offices[i] = { name:  zoneOffices[i].office_location_name,
+
+    for (let i = 0; i < zoneOffices.length; i++) {
+      offices[i] = {
+        name: zoneOffices[i].office_location_name,
         assigned: 0,
         unassigned: 0,
         officers: [],
-        officeGuid: null};
+        officeGuid: null,
+      };
       const zoneOfficeCode = zoneOffices[i].office_location_code;
 
-      const assignedComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('assigned_hwcr_complaint')
-        .leftJoinAndSelect('assigned_hwcr_complaint.complaint_identifier', 'complaint_identifier')
-        .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-        .innerJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref',)
-        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
-        .andWhere('person_complaint_xref.active_ind = true')
-        .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
+      const assignedComplaintsQuery = await this.hwcrComplaintsRepository
+        .createQueryBuilder("assigned_hwcr_complaint")
+        .leftJoinAndSelect(
+          "assigned_hwcr_complaint.complaint_identifier",
+          "complaint_identifier"
+        )
+        .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
+        .innerJoinAndSelect(
+          "complaint_identifier.person_complaint_xref",
+          "person_complaint_xref"
+        )
+        .where("area_code.offloc_code = :zoneOfficeCode", { zoneOfficeCode })
+        .andWhere("person_complaint_xref.active_ind = true")
+        .andWhere(
+          "person_complaint_xref.person_complaint_xref_code = :Assignee",
+          { Assignee: "ASSIGNEE" }
+        )
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
         });
 
-        offices[i].assigned = await assignedComplaintsQuery.getCount();
-      
+      offices[i].assigned = await assignedComplaintsQuery.getCount();
 
-      const totalComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('total_hwcr_complaint')
-        .leftJoinAndSelect('total_hwcr_complaint.complaint_identifier', 'complaint_identifier')
-        .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-        .where('area_code.offloc_code = :zoneOfficeCode', { zoneOfficeCode })
+      const totalComplaintsQuery = await this.hwcrComplaintsRepository
+        .createQueryBuilder("total_hwcr_complaint")
+        .leftJoinAndSelect(
+          "total_hwcr_complaint.complaint_identifier",
+          "complaint_identifier"
+        )
+        .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
+        .where("area_code.offloc_code = :zoneOfficeCode", { zoneOfficeCode })
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
         });
 
-
-      offices[i].unassigned = await totalComplaintsQuery.getCount() - offices[i].assigned;
+      offices[i].unassigned =
+        (await totalComplaintsQuery.getCount()) - offices[i].assigned;
 
       const geoCode = zoneOffices[i].office_location_code;
-      const officeGuidQuery = await this.officeRepository.createQueryBuilder('office')
-      .where('office.geo_organization_unit_code = :geoCode', { geoCode })
+      const officeGuidQuery = await this.officeRepository
+        .createQueryBuilder("office")
+        .where("office.geo_organization_unit_code = :geoCode", { geoCode });
       const office = await officeGuidQuery.getOne();
 
       const officeGuid = office.office_guid;
-      const officeOfficersQuery = await this.officersRepository.createQueryBuilder('officers')
-      .leftJoinAndSelect('officers.person_guid', 'person')
-      .where('officers.office_guid = :officeGuid', { officeGuid });
+      const officeOfficersQuery = await this.officersRepository
+        .createQueryBuilder("officers")
+        .leftJoinAndSelect("officers.person_guid", "person")
+        .where("officers.office_guid = :officeGuid", { officeGuid });
 
-    const officeOfficers = await officeOfficersQuery.getMany();
+      const officeOfficers = await officeOfficersQuery.getMany();
 
       let officers: OfficerStats[] = [];
-      for(let j = 0; j < officeOfficers.length; j++)
-      {
-        officers[j] = { name:  officeOfficers[j].person_guid.first_name + " " + officeOfficers[j].person_guid.last_name,
+      for (let j = 0; j < officeOfficers.length; j++) {
+        officers[j] = {
+          name:
+            officeOfficers[j].person_guid.first_name +
+            " " +
+            officeOfficers[j].person_guid.last_name,
           hwcrAssigned: 0,
           allegationAssigned: 0,
           officerGuid: officeOfficers[j].officer_guid,
-        }
+        };
 
         const officerGuid = officers[j].officerGuid;
 
-        const assignedOfficerComplaintsQuery = await this.hwcrComplaintsRepository.createQueryBuilder('assigned_hwcr_complaint')
-        .leftJoinAndSelect('assigned_hwcr_complaint.complaint_identifier', 'complaint_identifier')
-        .leftJoinAndSelect('complaint_identifier.cos_geo_org_unit', 'area_code')
-        .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref')
-        .leftJoinAndSelect('person_complaint_xref.person_guid', 'person')
-        .leftJoinAndSelect('person.officer', 'officer')
-        .where('person_complaint_xref.active_ind = true')
-        .andWhere('person_complaint_xref.person_complaint_xref_code = :Assignee', { Assignee: 'ASSIGNEE' })
-        .andWhere('officer.officer_guid = :officerGuid', {officerGuid})
-        .andWhere("complaint_identifier.complaint_status_code = :status", {
-          status: "OPEN",
-        });
+        const assignedOfficerComplaintsQuery =
+          await this.hwcrComplaintsRepository
+            .createQueryBuilder("assigned_hwcr_complaint")
+            .leftJoinAndSelect(
+              "assigned_hwcr_complaint.complaint_identifier",
+              "complaint_identifier"
+            )
+            .leftJoinAndSelect(
+              "complaint_identifier.cos_geo_org_unit",
+              "area_code"
+            )
+            .leftJoinAndSelect(
+              "complaint_identifier.person_complaint_xref",
+              "person_complaint_xref"
+            )
+            .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
+            .leftJoinAndSelect("person.officer", "officer")
+            .where("person_complaint_xref.active_ind = true")
+            .andWhere(
+              "person_complaint_xref.person_complaint_xref_code = :Assignee",
+              { Assignee: "ASSIGNEE" }
+            )
+            .andWhere("officer.officer_guid = :officerGuid", { officerGuid })
+            .andWhere("complaint_identifier.complaint_status_code = :status", {
+              status: "OPEN",
+            });
 
-        officers[j].hwcrAssigned = await assignedOfficerComplaintsQuery.getCount();    
+        officers[j].hwcrAssigned =
+          await assignedOfficerComplaintsQuery.getCount();
       }
       offices[i].officers = officers;
-
     }
 
-    results = { ...results, total: totalComplaints, assigned: totalAssignedComplaints, unassigned: totalComplaints - totalAssignedComplaints, offices: offices }
+    results = {
+      ...results,
+      total: totalComplaints,
+      assigned: totalAssignedComplaints,
+      unassigned: totalComplaints - totalAssignedComplaints,
+      offices: offices,
+    };
     return results;
   }
 }

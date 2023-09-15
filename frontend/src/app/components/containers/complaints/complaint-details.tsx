@@ -29,6 +29,7 @@ import Option from "../../../types/app/option";
 import { PersonComplaintXref } from "../../../types/complaints/person-complaint-xref";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Coordinates } from "../../../types/app/coordinate-type";
 
 type ComplaintParams = {
   id: string;
@@ -546,13 +547,13 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           if(complaintType === COMPLAINT_TYPES.HWCR)
           {
             let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[1] = +value;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
             setUpdateComplaint(hwcrComplaint);
           }
           else if(complaintType === COMPLAINT_TYPES.ERS)
           {
             let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[1] = +value;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
             setUpdateComplaint(allegationComplaint);
           }
         }
@@ -563,13 +564,13 @@ function handleViolationTypeChange(selectedOption: Option | null) {
         if(complaintType === COMPLAINT_TYPES.HWCR)
         {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[1] = 0;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
           setUpdateComplaint(hwcrComplaint);
         }
         else if(complaintType === COMPLAINT_TYPES.ERS)
         {
           let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[1] = 0;
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
           setUpdateComplaint(allegationComplaint);
         }
       }
@@ -588,13 +589,13 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           if(complaintType === COMPLAINT_TYPES.HWCR)
           {
             let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[0] = +value;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
             setUpdateComplaint(hwcrComplaint);
           }
           if(complaintType === COMPLAINT_TYPES.ERS)
           {
             let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[0] = +value;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
             setUpdateComplaint(allegationComplaint);
           }
         }
@@ -605,13 +606,13 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           if(complaintType === COMPLAINT_TYPES.HWCR)
           {
             let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[0] = 0;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
             setUpdateComplaint(hwcrComplaint);
           }
           else if(complaintType === COMPLAINT_TYPES.ERS)
           {
             let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[0] = 0;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
             setUpdateComplaint(allegationComplaint);
           }
       }

@@ -13,4 +13,6 @@ export interface ComplaintFilters {
   startDateFilter?: Date;
   endDateFilter?: Date;
   complaintStatusFilter?: Option;
+  page?: number,
+  pageSize?: number,
 }

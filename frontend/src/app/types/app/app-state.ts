@@ -1,3 +1,4 @@
+import { ConfigurationState } from "../state/configuration-state";
 import { LoadingState } from "../state/loading-state";
 import { NotificationState } from "../state/notification-state";
 import Profile from "./profile";
@@ -21,4 +22,6 @@ export interface AppState {
   modalType: string;
   callback: (() => void) | null;
   hideCallback: (() => void) | null;
+
+  configurations: ConfigurationState;
 }
