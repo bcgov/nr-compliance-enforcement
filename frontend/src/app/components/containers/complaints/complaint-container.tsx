@@ -24,7 +24,7 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     if (!defaultZone) {
       dispatch(getTokenProfile());
     } else {
-      setZoneCodeFilter({value: defaultZone, label: defaultZoneLabel});
+      setZoneCodeFilter({ value: defaultZone, label: defaultZoneLabel });
     }
   }, [dispatch, defaultZone, defaultZoneLabel]);
 
@@ -52,7 +52,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
   );
 
 
-
   function handleChange(newState: number) {
     setComplaintType(newState);
     setSort(["incident_reported_datetime", "DESC"]);
@@ -67,6 +66,8 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
     setStartDateFilter(undefined);
     setEndDateFilter(undefined);
   }
+
+
   function handleSort(newSortColumn: string) {
     if (newSortColumn === sort[0]) {
       if (sort[1] === "DESC") {
@@ -123,7 +124,6 @@ export const ComplaintContainer: FC<Props> = ({ initialState }) => {
         <div className="comp-sub-header">Complaints</div>
 
         <div>
-
           <AllegationComplaintTabContainer
             handleSort={handleSort}
             handleChange={handleChange}

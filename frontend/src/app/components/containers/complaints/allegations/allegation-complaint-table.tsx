@@ -6,62 +6,84 @@ import { formatDateTime } from "../../../../common/methods";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { getComplaints, selectAllegationComplaints, setComplaints } from "../../../../store/reducers/complaints";
+import {
+  getComplaints,
+  selectAllegationComplaints,
+  setComplaints,
+} from "../../../../store/reducers/complaints";
 import { ComplaintFilters } from "../../../../types/complaints/complaint-filters";
 
 type Props = {
-    sortColumn: string,
-    sortOrder: string,
-    regionCodeFilter: Option | null,
-    zoneCodeFilter: Option | null,
-    areaCodeFilter: Option | null,
-    officerFilter: Option | null,
-    violationFilter: Option | null,
-    startDateFilter: Date | undefined,
-    endDateFilter: Date | undefined,
-    complaintStatusFilter: Option | null,
-}
-export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, regionCodeFilter, zoneCodeFilter, areaCodeFilter, officerFilter, violationFilter, startDateFilter, endDateFilter, complaintStatusFilter }) => {
+  sortColumn: string;
+  sortOrder: string;
+  regionCodeFilter: Option | null;
+  zoneCodeFilter: Option | null;
+  areaCodeFilter: Option | null;
+  officerFilter: Option | null;
+  violationFilter: Option | null;
+  startDateFilter: Date | undefined;
+  endDateFilter: Date | undefined;
+  complaintStatusFilter: Option | null;
+  page?: number;
+  pageSize?: number;
+};
+export const AllegationComplaintTable: FC<Props> = ({
+  sortColumn,
+  sortOrder,
+  regionCodeFilter,
+  zoneCodeFilter,
+  areaCodeFilter,
+  officerFilter,
+  violationFilter,
+  startDateFilter,
+  endDateFilter,
+  complaintStatusFilter,
+  page,
+  pageSize,
+}) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+  const allegationComplaintsJson = useAppSelector(selectAllegationComplaints);
 
-    const allegationComplaintsJson = useAppSelector(selectAllegationComplaints);
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+      dispatch(setComplaints({ type: COMPLAINT_TYPES.ERS, data: [] }));
+    };
+  }, []);
 
-    useEffect(() => {
-        //-- when the component unmounts clear the complaint from redux
-        return () => {
-          dispatch(setComplaints({ type: COMPLAINT_TYPES.ERS, data: [] }))
-        };
-      }, []);
-
-    useEffect(() => {
-        const payload = {
-          sortColumn,
-          sortOrder,
-          regionCodeFilter,
-          zoneCodeFilter,
-          areaCodeFilter,
-          officerFilter,
-          violationFilter,
-          startDateFilter,
-          endDateFilter,
-          complaintStatusFilter,
-        } as ComplaintFilters;
-        dispatch(getComplaints(COMPLAINT_TYPES.ERS, payload));
-      }, [
-        dispatch,
-        sortColumn,
-        sortOrder,
-        regionCodeFilter,
-        zoneCodeFilter,
-        areaCodeFilter,
-        officerFilter,
-        violationFilter,
-        startDateFilter,
-        endDateFilter,
-        complaintStatusFilter,
-      ]);
+  useEffect(() => {
+    const payload = {
+      sortColumn,
+      sortOrder,
+      regionCodeFilter,
+      zoneCodeFilter,
+      areaCodeFilter,
+      officerFilter,
+      violationFilter,
+      startDateFilter,
+      endDateFilter,
+      complaintStatusFilter,
+      page,
+      pageSize,
+    } as ComplaintFilters;
+    dispatch(getComplaints(COMPLAINT_TYPES.ERS, payload));
+  }, [
+    dispatch,
+    sortColumn,
+    sortOrder,
+    regionCodeFilter,
+    zoneCodeFilter,
+    areaCodeFilter,
+    officerFilter,
+    violationFilter,
+    startDateFilter,
+    endDateFilter,
+    complaintStatusFilter,
+    page,
+    pageSize,
+  ]);
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
@@ -72,53 +94,154 @@ export const AllegationComplaintTable: FC<Props>  = ({ sortColumn, sortOrder, re
     navigate(`/complaint/${COMPLAINT_TYPES.ERS}/${id}`);
   };
 
+  return (
+    <Table id="comp-table" className="comp-table">
+      <tbody>
+        {allegationComplaintsJson.map((val, key, { length }) => {
+          const complaintIdentifier =
+            val.complaint_identifier.complaint_identifier;
+          const incidentReportedDatetime = formatDateTime(
+            val.complaint_identifier.incident_reported_datetime
+          );
+          const violationCode =
+            val.violation_code != null
+              ? val.violation_code.long_description
+              : "";
+          const inProgressButtonClass =
+            String(val.in_progress_ind) === "true"
+              ? "btn btn-primary comp-in-progress-btn"
+              : "btn btn-primary comp-in-progress-btn btn-hidden";
+          const inProgressInd =
+            String(val.in_progress_ind) === "true" ? "In Progress" : "";
+          const geoOrganizationUnitCode = val.complaint_identifier
+            .cos_geo_org_unit
+            ? val.complaint_identifier.cos_geo_org_unit.area_name
+            : "";
+          const locationSummary =
+            val.complaint_identifier.location_summary_text;
+          const statusButtonClass =
+            val.complaint_identifier.complaint_status_code.long_description ===
+            "Closed"
+              ? "btn btn-primary comp-status-closed-btn"
+              : "btn btn-primary comp-status-open-btn";
+          const status =
+            val.complaint_identifier.complaint_status_code.long_description;
+          const updateDate =
+            Date.parse(val.complaint_identifier.update_timestamp) >=
+            Date.parse(val.update_timestamp)
+              ? formatDateTime(val.complaint_identifier.update_timestamp)
+              : formatDateTime(val.update_timestamp);
+          const assigned_ind =
+            val.complaint_identifier.person_complaint_xref.length > 0 &&
+            val.complaint_identifier.person_complaint_xref[0].active_ind;
+          const firstName =
+            val.complaint_identifier.person_complaint_xref[0]?.person_guid
+              ?.first_name;
+          const lastName =
+            val.complaint_identifier.person_complaint_xref[0]?.person_guid
+              ?.last_name;
+          const firstInitial =
+            firstName?.length > 0 ? firstName.substring(0, 1) : "";
+          const lastInitial =
+            lastName?.length > 0 ? lastName.substring(0, 1) : "";
+          const initials = firstInitial + lastInitial;
+          const displayName =
+            firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
+          const zone = val.complaint_identifier.cos_geo_org_unit?.zone_code;
 
-    return (
-        <Table id="comp-table" className="comp-table">
-            <tbody>
-                {
-                allegationComplaintsJson.map((val, key, {length}) => {
-                    const complaintIdentifier = val.complaint_identifier.complaint_identifier;
-                    const incidentReportedDatetime = formatDateTime(val.complaint_identifier.incident_reported_datetime);
-                    const violationCode = val.violation_code != null ? val.violation_code.long_description : "";
-                    const inProgressButtonClass = (String)(val.in_progress_ind) === 'true' ? "btn btn-primary comp-in-progress-btn" : "btn btn-primary comp-in-progress-btn btn-hidden";
-                    const inProgressInd = (String)(val.in_progress_ind) === 'true' ? "In Progress" : "";
-                    const geoOrganizationUnitCode = val.complaint_identifier.cos_geo_org_unit ? val.complaint_identifier.cos_geo_org_unit.area_name : "";
-                    const locationSummary = val.complaint_identifier.location_summary_text;
-                    const statusButtonClass =  val.complaint_identifier.complaint_status_code.long_description === 'Closed' ? 'btn btn-primary comp-status-closed-btn' : 'btn btn-primary comp-status-open-btn';
-                    const status = val.complaint_identifier.complaint_status_code.long_description;
-                    const updateDate = Date.parse(val.complaint_identifier.update_timestamp) >= Date.parse(val.update_timestamp) ? formatDateTime(val.complaint_identifier.update_timestamp) : formatDateTime(val.update_timestamp);
-                    const assigned_ind = val.complaint_identifier.person_complaint_xref.length > 0 && val.complaint_identifier.person_complaint_xref[0].active_ind;
-                    const firstName = val.complaint_identifier.person_complaint_xref[0]?.person_guid?.first_name;
-                    const lastName = val.complaint_identifier.person_complaint_xref[0]?.person_guid?.last_name;
-                    const firstInitial = firstName?.length > 0 ? firstName.substring(0,1) : "";
-                    const lastInitial = lastName?.length > 0 ? lastName.substring(0,1) : "";
-                    const initials = firstInitial + lastInitial;
-                    const displayName = firstInitial.length > 0 ? firstInitial + ". " + lastName : lastName;
-                    const zone = val.complaint_identifier.cos_geo_org_unit?.zone_code;
-
-                        return (
-                            <tr key={`allegation-complaint-${complaintIdentifier}`}>
-                                <td className="comp-small-cell comp-cell comp-cell-left" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{complaintIdentifier}</td>
-                                <td className="comp-small-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{incidentReportedDatetime}</td>
-                                <td className="comp-violation-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{violationCode}</td>
-                                <td className="comp-in-progress-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
-                                    <button type="button" className={inProgressButtonClass}>{inProgressInd}</button>
-                                </td>
-                                <td className="comp-area-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{geoOrganizationUnitCode} </td>
-                                <td className="comp-location-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>{locationSummary} </td>
-                                <td className="comp-medium-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
-                                    <div data-initials-listview={initials} className="comp-profile-avatar"></div> {displayName}
-                                </td>
-                                <td className="comp-status-cell comp-cell" onClick={event => handleComplaintClick(event, complaintIdentifier)}>
-                                    <button type="button" className={statusButtonClass}>{status}</button>
-                                </td>
-                                <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
-                                <ComplaintEllipsisPopover complaint_identifier={complaintIdentifier} complaint_type={COMPLAINT_TYPES.ERS} assigned_ind={assigned_ind} zone={zone} sortColumn={sortColumn} sortOrder={sortOrder} natureOfComplaintFilter={null} speciesCodeFilter={null} violationFilter={violationFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} complaintStatusFilter={complaintStatusFilter}></ComplaintEllipsisPopover>
-                            </tr>
-                        )
-                    })}
-            </tbody>
-        </Table>
-    );
-  };
+          return (
+            <tr key={`allegation-complaint-${complaintIdentifier}`}>
+              <td
+                className="comp-small-cell comp-cell comp-cell-left"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                {complaintIdentifier}
+              </td>
+              <td
+                className="comp-small-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                {incidentReportedDatetime}
+              </td>
+              <td
+                className="comp-violation-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                {violationCode}
+              </td>
+              <td
+                className="comp-in-progress-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                <button type="button" className={inProgressButtonClass}>
+                  {inProgressInd}
+                </button>
+              </td>
+              <td
+                className="comp-area-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                {geoOrganizationUnitCode}{" "}
+              </td>
+              <td
+                className="comp-location-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                {locationSummary}{" "}
+              </td>
+              <td
+                className="comp-medium-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                <div
+                  data-initials-listview={initials}
+                  className="comp-profile-avatar"
+                ></div>{" "}
+                {displayName}
+              </td>
+              <td
+                className="comp-status-cell comp-cell"
+                onClick={(event) =>
+                  handleComplaintClick(event, complaintIdentifier)
+                }
+              >
+                <button type="button" className={statusButtonClass}>
+                  {status}
+                </button>
+              </td>
+              <td className="comp-last-updated-cell comp-cell">{updateDate}</td>
+              <ComplaintEllipsisPopover
+                complaint_identifier={complaintIdentifier}
+                complaint_type={COMPLAINT_TYPES.ERS}
+                assigned_ind={assigned_ind}
+                zone={zone}
+                sortColumn={sortColumn}
+                sortOrder={sortOrder}
+                natureOfComplaintFilter={null}
+                speciesCodeFilter={null}
+                violationFilter={violationFilter}
+                startDateFilter={startDateFilter}
+                endDateFilter={endDateFilter}
+                complaintStatusFilter={complaintStatusFilter}
+              ></ComplaintEllipsisPopover>
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
+};

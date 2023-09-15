@@ -28,7 +28,7 @@ services:
     command:
       - info
       - migrate
-      - info
+      - -outOfOrder=true
     volumes:
       - "./backend/db/migrations:/flyway/sql"
     environment:

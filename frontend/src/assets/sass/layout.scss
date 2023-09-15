@@ -347,3 +347,41 @@ button.modal-buttons {
   align-self: stretch;
   flex-grow: 0;
 }
+
+.pagination_container {
+  display: flex;
+  align-items: baseline;
+  width: 1300px;
+  justify-content: center;
+  padding-top: 10px;
+  gap: 8px;
+}
+
+.pagination_container .page-item.active .page-link {
+  background-color: $bc-gov-neutral-500; /* Background color of the active page link */
+  color: #fff; /* Text color of the active page link */
+  border-color: $gray-300; /* Border color of the active page link */
+}
+
+.pagination_container .page-link {
+  background-color: #fff; /* Background color of non-active page links */
+  color: $bc-gov-link-blue; /* Text color of non-active page links */
+  border-color: $gray-300; /* Border color of non-active page links */
+}
+
+.pagination_container .page-item.disabled .page-link {
+  color: #ccc; /* Text color of disabled page links */
+  pointer-events: none; /* Disable click events on disabled links */
+}
+
+.pagination_total {
+  width: 140px;
+  height: 24px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.pagination_specific_page {
+  width: 110px;
+}
