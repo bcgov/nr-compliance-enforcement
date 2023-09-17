@@ -231,6 +231,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
+
+  const handleMarkerMove = (lat: number, lng: number) => {
+    setLatitude(lat);
+    setLongitude(lng);
+  };
+
   function handleIncidentDateTimeChange(date: Date) {
 
     if(complaintType === COMPLAINT_TYPES.HWCR)
@@ -518,6 +526,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="number"
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
+                    value={`${longitude}`}
                     defaultValue={xCoordinate}
                     onChange={handleGeoPointXChange}
                     errMsg={geoPointXMsg}
@@ -535,6 +544,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="number"
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
+                    value={`${latitude}`}
                     defaultValue={yCoordinate}
                     onChange={handleGeoPointYChange}
                     errMsg={geoPointYMsg}
@@ -608,7 +618,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
           </div>
         </div>
       </div>
-      <ComplaintLocation complaintType={complaintType} draggable={true}/>
+      <ComplaintLocation complaintType={complaintType} draggable={true} onMarkerMove={handleMarkerMove}/>
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>

@@ -10,6 +10,7 @@ interface ValidationInputProps {
     type: string,
     step?: string,
     maxLength?: number,
+    value?: string,
   }
 
   export const ValidationInput: FC<ValidationInputProps> = ({
@@ -21,6 +22,7 @@ interface ValidationInputProps {
     type,
     step,
     maxLength,
+    value
   }) => {
     const errClass = (errMsg === "" ? "" : "error-message");
     const calulatedClass = (errMsg === "" ? className : className + " error-border");
@@ -31,6 +33,7 @@ interface ValidationInputProps {
                     id={id}
                     className={calulatedClass}
                     defaultValue={defaultValue}
+                    value={value}
                     onChange={e => onChange(e.target.value)}
                     step={step}
                     maxLength={maxLength}

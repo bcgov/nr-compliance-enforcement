@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -11,16 +11,32 @@ import Leaflet from "leaflet";
 type Props = {
   coordinates: { lat: number; lng: number };
   draggable: boolean;
+  onMarkerMove?: (lat: number, lng: number) => void;
 };
 
 /**
  * Renders a map with a marker at the supplied location
  *
  */
-const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
+const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }) => {
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />
   );
+
+  const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number }>(coordinates);
+
+  const handleMarkerDragEnd = (e: L.LeafletEvent) => {
+    const marker = e.target;
+    if (marker && marker.getLatLng) {
+      const newPosition = marker.getLatLng();
+      
+      if (onMarkerMove) {
+        onMarkerMove(newPosition.lat, newPosition.lng);
+        setMarkerPosition({lat: newPosition.lat, lng: newPosition.lng});
+      }
+    }
+  };
+
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,
     className: "map-marker",
@@ -33,8 +49,8 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
     const map = useMap();
 
     useEffect(() => {
-      if (coordinates) {
-        map.setView(coordinates);
+      if (markerPosition) {
+        map.setView(markerPosition);
       }
     }, [map]);
 
@@ -44,7 +60,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
   return (
     <MapContainer
       id="map"
-      center={coordinates}
+      center={markerPosition}
       zoom={12}
       style={{ height: "400px", width: "100%" }}
       className="map-container"
@@ -53,9 +69,10 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable }) => {
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker
         data-testid="complaint-location-marker"
-        position={coordinates}
+        position={markerPosition}
         icon={customMarkerIcon}
         draggable={draggable}
+        eventHandlers={{ dragend: handleMarkerDragEnd }}
       ></Marker>
     </MapContainer>
   );

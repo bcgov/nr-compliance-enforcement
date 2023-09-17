@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
   selectComplaintDeails,
-  selectComplaintLocation,
+  selectGeocodedComplaintLocation,
 } from "../../../../store/reducers/complaints";
 import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
@@ -12,22 +12,23 @@ import { Coordinates } from "../../../../types/app/coordinate-type";
 type Props = {
   complaintType: string;
   draggable: boolean;
+  onMarkerMove?: (lat: number, lng: number) => void;
 };
 
 /**
  * Component that displays a map with a marker representing the complaint location
  *
  */
-export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
+export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarkerMove }) => {
   
-  const { location, coordinates } = useAppSelector(
+  const { coordinates } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
-  const complaintLocation = useAppSelector(selectComplaintLocation);
+  const complaintLocation = useAppSelector(selectGeocodedComplaintLocation);
 
   // the lat and long of the marker we need to display on the map
   // Initialized to 0.  This will either be populated using the optionally supplied coordinates
-  // or they'll be derived using the complaint's location and/or communit.
+  // or they'll be derived using the complaint's location and/or community.
   let lat = 0;
   let lng = 0;
 
@@ -57,6 +58,7 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
           <LeafletMapWithPoint
             coordinates={{ lat: lat, lng: lng }}
             draggable={draggable}
+            onMarkerMove={onMarkerMove}
           />
         </div>
       </div>
