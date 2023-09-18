@@ -31,8 +31,9 @@ const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
 
 
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(complaintFilterReducer, initialState as ComplaintFilters);
+  const [state, dispatch] = useReducer(complaintFilterReducer, initialState);
 
+  ///--- memoize this after secondary refactor
   return (
     <ComplaintFilterContext.Provider value={{state, dispatch}}>
       {children}

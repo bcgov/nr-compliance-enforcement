@@ -6,11 +6,10 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
-import { selectComplaintLocations } from '../../../store/reducers/complaints';
 import {
   getComplaintsOnMap,
-  selectAllegationComplaintLocations,
   setComplaintsOnMap,
+  selectComplaintLocations,
 } from "../../../store/reducers/complaints";
 
 type Props = {
@@ -24,9 +23,7 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
-  const { state: filters, dispatch: filterDispatch } = useContext(
-    ComplaintFilterContext
-  );
+  const { state: filters } = useContext(ComplaintFilterContext);
 
   const [sortKey, setSortKey] = useState("incident_reported_datetime");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);

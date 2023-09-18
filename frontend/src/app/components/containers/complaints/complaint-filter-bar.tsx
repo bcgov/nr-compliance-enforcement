@@ -1,8 +1,7 @@
-import { FC, useContext, useState, useCallback } from "react";
+import { FC, useContext, useCallback } from "react";
 import { FilterButton } from "../../common/filter-button";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { clearFilter } from "../../../store/reducers/complaint-filters";
-import { DropdownOption } from "../../../types/code-tables/option";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import MapListToggle from "../../common/map-list-toggle";
 import SearchInput from "../../common/search-input";

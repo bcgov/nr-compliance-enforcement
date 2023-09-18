@@ -17,10 +17,10 @@ import {
 import {
   resetFilters,
   ComplaintFilterPayload,
+  updateFilter
 } from "../../../store/reducers/complaint-filters";
 import { selectDefaultZone, getOfficerZone, profileZoneDescription, profileZone } from '../../../store/reducers/app';
 import { DropdownOption } from '../../../types/code-tables/option';
-import { updateFilter } from '../../../store/reducers/complaint-filters';
 import { ComplaintMap } from "./complaint-map";
 
 type Props = {
