@@ -11,7 +11,7 @@ import { AUTH_TOKEN } from "../../service/user-service";
 
 import { DropdownOption } from "../../types/code-tables/option";
 
-import { ConfigurationEnum } from "../../../enum/configuration.enum";
+import { Configurations } from "../../constants/configurations";
 import { ConfigurationType } from "../../types/configurations/configuration";
 import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
@@ -95,7 +95,7 @@ export const closeModal = () => ({
 });
 
 export const setOfficerDefaultZone = (name: string, description: string) => ({
-  type: ActionTypes.SET_TOKEN_PROFILE,
+  type: ActionTypes.SET_DEFAULT_ZONE,
   payload: { name, description },
 });
 
@@ -196,7 +196,7 @@ export const isLoading = (state: RootState) => {
 export const selectDefaultPageSize = (state: RootState): any => {
   const { app } = state;
   const configuration = app.configurations?.configurations?.find(
-    (record) => ConfigurationEnum.DEFAULT_PAGE_SIZE === record.configurationCode
+    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode
   );
   if (configuration?.configurationValue) {
     return +configuration.configurationValue;
@@ -262,7 +262,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const getOfficerZone = (): AppThunk => async (dispatch) => {
+export const getOfficerDefaultZone  = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
 
   if (token) {
@@ -294,7 +294,7 @@ export const getOfficerZone = (): AppThunk => async (dispatch) => {
     //-- the user is not logged in redirect them to the login
     window.location = config.KEYCLOAK_URL;
   }
-};
+}
 
 // Get list of the officers and update store
 export const getConfigurations = (): AppThunk => async (dispatch) => {
@@ -371,6 +371,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
       };
+
+      console.log("profile? ", {action })
+      console.log("huh? ", { ...state, profile })
+
       return { ...state, profile };
     }
     case ActionTypes.TOGGLE_SIDEBAR: {

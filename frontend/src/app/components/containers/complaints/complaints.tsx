@@ -19,7 +19,7 @@ import {
   ComplaintFilterPayload,
   updateFilter
 } from "../../../store/reducers/complaint-filters";
-import { selectDefaultZone, getOfficerZone, profileZoneDescription, profileZone } from '../../../store/reducers/app';
+import { selectDefaultZone, getOfficerDefaultZone, profileZoneDescription, profileZone } from '../../../store/reducers/app';
 import { DropdownOption } from '../../../types/code-tables/option';
 import { ComplaintMap } from "./complaint-map";
 
@@ -48,7 +48,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     if (defaultZone) {
       setFilter("zone", { value: zone_name, label: zone_descrption });
     } else {
-      dispatch(getOfficerZone);
+      dispatch(getOfficerDefaultZone);
     }
   }, [zone_name, zone_descrption]);
 
