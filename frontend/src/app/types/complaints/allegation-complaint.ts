@@ -38,7 +38,7 @@ export interface AllegationComplaint {
   violation_code: ViolationCode;
   in_progress_ind: string | boolean;
   observed_ind: boolean;
-  suspect_witnesss_dtl_text?: string
+  suspect_witnesss_dtl_text: string;
   update_timestamp: string;
   allegation_complaint_guid: string
 }

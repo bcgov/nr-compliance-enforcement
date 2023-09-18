@@ -1,17 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
 import { Complaint } from './entities/complaint.entity';
-import { QueryRunner, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ComplaintService {
-
+  
+  constructor(private dataSource: DataSource) {}
   private readonly logger = new Logger(ComplaintService.name);
-
-  constructor(
-  ) {}
 
 
   @InjectRepository(Complaint)
@@ -50,29 +48,50 @@ export class ComplaintService {
   }
 
   async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
-    const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
-    const updateData = 
+    //const queryRunner = this.dataSource.createQueryRunner();
+
+    //await queryRunner.connect();
+    //await queryRunner.startTransaction();
+    try
+    {
+      const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
+      let referredByAgencyCode = updateComplaintDto.referred_by_agency_code;
+      if(referredByAgencyCode.agency_code === "")
       {
-        complaint_status_code: updateComplaintDto.complaint_status_code,
-        detail_text: updateComplaintDto.detail_text,
-        location_detailed_text: updateComplaintDto.location_detailed_text,
-        cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
-        incident_datetime: updateComplaintDto.incident_datetime,
-        location_geometry_point: updateComplaintDto.location_geometry_point,
-        location_summary_text: updateComplaintDto.location_summary_text,
-        caller_name: updateComplaintDto.caller_name,
-        caller_email: updateComplaintDto.caller_email,
-        caller_address: updateComplaintDto.caller_address,
-        caller_phone_1: updateComplaintDto.caller_phone_1,
-        caller_phone_2: updateComplaintDto.caller_phone_2,
-        caller_phone_3: updateComplaintDto.caller_phone_3,
-        referred_by_agency_code: updateComplaintDto.referred_by_agency_code,
-      };
-      const updatedValue = await this.complaintsRepository.update(
-        { complaint_identifier },
-        updateData
-      );
-      //queryRunner.manager.save(updatedValue);
+        referredByAgencyCode = null;
+      }
+      const updateData = 
+        {
+          complaint_status_code: updateComplaintDto.complaint_status_code,
+          detail_text: updateComplaintDto.detail_text,
+          location_detailed_text: updateComplaintDto.location_detailed_text,
+          cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
+          incident_datetime: updateComplaintDto.incident_datetime,
+          location_geometry_point: updateComplaintDto.location_geometry_point,
+          location_summary_text: updateComplaintDto.location_summary_text,
+          caller_name: updateComplaintDto.caller_name,
+          caller_email: updateComplaintDto.caller_email,
+          caller_address: updateComplaintDto.caller_address,
+          caller_phone_1: updateComplaintDto.caller_phone_1,
+          caller_phone_2: updateComplaintDto.caller_phone_2,
+          caller_phone_3: updateComplaintDto.caller_phone_3,
+          referred_by_agency_code: referredByAgencyCode,
+        };
+        const updatedValue = await this.complaintsRepository.update(
+          { complaint_identifier },
+          updateData
+        );
+        //queryRunner.manager.save(updatedValue);
+    }
+    catch (err) {
+      this.logger.error(err);
+      //await queryRunner.rollbackTransaction();
+      throw new BadRequestException(err);
+    } 
+    finally
+    {
+      //await queryRunner.release();
+    }
     return this.findOne(complaint_identifier);
   }
 

@@ -81,6 +81,7 @@ interface ComplaintDetailsProps {
   handleViolationInProgessChange: Function,
   handleViolationObservedChange: Function,
   handleViolationTypeChange: Function,
+  handleSuspectDetailsChange: Function,
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
@@ -121,6 +122,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   handleViolationInProgessChange,
   handleViolationObservedChange,
   handleViolationTypeChange,
+  handleSuspectDetailsChange,
 }) => {
   const {
     details,
@@ -784,6 +786,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       id="complaint-description-textarea-id"
                       defaultValue={complaint_witness_details}
                       rows={4}
+                      onChange={e => handleSuspectDetailsChange(e.target.value)}
                     />
                   </div>
               </div>
