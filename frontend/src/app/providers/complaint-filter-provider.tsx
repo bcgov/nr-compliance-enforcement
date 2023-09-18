@@ -1,10 +1,10 @@
 import React, { FC, createContext, useReducer } from "react";
-import complaintFilterReducer from '../store/reducers/complaint-filters';
-import { ComplaintFilters } from '../types/complaints/complaint-filters/complaint-filters';
+import complaintFilterReducer from "../store/reducers/complaint-filters";
+import { ComplaintFilters } from "../types/complaints/complaint-filters/complaint-filters";
 
 interface ComplaintFilterContextType {
-  state: ComplaintFilters
-  dispatch: React.Dispatch<any>
+  state: ComplaintFilters;
+  dispatch: React.Dispatch<any>;
 }
 
 type ProviderProps = {
@@ -26,19 +26,25 @@ const initialState: ComplaintFilters = {
 
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   state: initialState,
-  dispatch: () => {}
-})
-
+  dispatch: () => {},
+});
 
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(complaintFilterReducer, initialState);
 
-  ///--- memoize this after secondary refactor
+  const value = React.useMemo(
+    () => ({
+      state,
+      dispatch,
+    }),
+    [state]
+  );
+
   return (
-    <ComplaintFilterContext.Provider value={{state, dispatch}}>
+    <ComplaintFilterContext.Provider value={value}>
       {children}
     </ComplaintFilterContext.Provider>
-  )
-}
+  );
+};
 
 export { ComplaintFilterContext, ComplaintFilterProvider };

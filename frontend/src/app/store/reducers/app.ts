@@ -269,10 +269,7 @@ export const getOfficerZone = (): AppThunk => async (dispatch) => {
     dispatch(toggleLoading(true));
     try {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
-      const {  idir_user_guid, idir_username } =
-        decoded;
-      let idir_user_guid_transformed: UUID;
-      idir_user_guid_transformed = idir_user_guid as UUID;
+      const { idir_username } = decoded;
 
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`

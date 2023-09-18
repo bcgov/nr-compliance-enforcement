@@ -1,5 +1,5 @@
 import { DropdownOption } from "../../types/code-tables/option";
-import { ComplaintFilters } from '../../types/complaints/complaint-filters/complaint-filters';
+import { ComplaintFilters } from "../../types/complaints/complaint-filters/complaint-filters";
 
 export type ComplaintFilterPayload = {
   filter: string;
@@ -55,14 +55,21 @@ const complaintFilterReducer = (
         switch (item) {
           case "startDate":
           case "endDate":
-            return (update[item] = undefined);
+            update[item] = undefined;
+            return update[item];
           default:
             const x: ComplaintFilterPayload = payload.find(
               (filter: ComplaintFilterPayload) => {
                 return filter.filter === item;
               }
             );
-            return x ? (update[item] = x.value) : (update[item] = null);
+            if (x) {
+              update[item] = x.value;
+            } else {
+              update[item] = null;
+            }
+
+            return update[item];
         }
       });
 
