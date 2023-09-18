@@ -3,6 +3,7 @@ import { AllegationComplaintDto } from "./allegation_complaint.dto";
 
 export class CreateAllegationComplaintDto extends PickType(AllegationComplaintDto, [
     "complaint_identifier",
+    "allegation_complaint_guid",
     "violation_code",
     "in_progress_ind",
     "observed_ind",

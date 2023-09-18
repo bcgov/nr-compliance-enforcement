@@ -328,7 +328,7 @@ export class HwcrComplaintService {
         //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         if(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
-          await this.personComplaintXrefService.assignOfficer(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+          await this.personComplaintXrefService.assignOfficer(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
         //await this.attractantHwcrXrefService.updateComplaintAttractants(queryRunner, updateHwcrComplaintDto.hwcr_complaint_guid, updateHwcrComplaintDto.attractant_hwcr_xref);
         await this.attractantHwcrXrefService.updateComplaintAttractants(updateHwcrComplaintDto as HwcrComplaint, updateHwcrComplaintDto.attractant_hwcr_xref);

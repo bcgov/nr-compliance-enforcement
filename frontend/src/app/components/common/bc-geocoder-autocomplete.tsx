@@ -38,8 +38,6 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
     setAddressOptions(options);*/
     setInputValue(inputValue);
     parentOnChange(inputValue);
-    console.log("inputValue: " + JSON.stringify(inputValue));
-    //console.log("inputChange: " + JSON.stringify(options));
   };
 
   const dispatch = useAppDispatch();

@@ -21,10 +21,12 @@ import { Office } from '../office/entities/office.entity';
 import { Officer } from '../officer/entities/officer.entity';
 import { PersonService } from '../person/person.service';
 import { Person } from '../person/entities/person.entity';
+import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
+import { PersonComplaintXref } from '../person_complaint_xref/entities/person_complaint_xref.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([ViolationCode]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) , TypeOrmModule.forFeature([Office]),TypeOrmModule.forFeature([Officer]), TypeOrmModule.forFeature([Person])],
+  imports: [TypeOrmModule.forFeature([AllegationComplaint]), TypeOrmModule.forFeature([Complaint]), TypeOrmModule.forFeature([ViolationCode]), TypeOrmModule.forFeature([AgencyCode]), TypeOrmModule.forFeature([ComplaintStatusCode]), TypeOrmModule.forFeature([GeoOrganizationUnitCode]), TypeOrmModule.forFeature([CosGeoOrgUnit]) , TypeOrmModule.forFeature([Office]),TypeOrmModule.forFeature([Officer]), TypeOrmModule.forFeature([Person]), TypeOrmModule.forFeature([PersonComplaintXref])],
   controllers: [AllegationComplaintController],
-  providers: [AllegationComplaintService, ComplaintService, ViolationCodeService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, CosGeoOrgUnitService, OfficeService, OfficerService, PersonService]
+  providers: [AllegationComplaintService, ComplaintService, ViolationCodeService, AgencyCodeService, ComplaintStatusCodeService, GeoOrganizationUnitCodeService, CosGeoOrgUnitService, OfficeService, OfficerService, PersonService, PersonComplaintXrefService]
 })
 export class AllegationComplaintModule {}

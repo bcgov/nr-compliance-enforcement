@@ -5,9 +5,11 @@ import { useParams } from "react-router-dom";
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
   getAllegationComplaintByComplaintIdentifier,
+  getAllegationComplaintByComplaintIdentifierSetUpdate,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
   selectComplaint,
   setComplaint,
+  updateAllegationComplaint,
   updateWildlifeComplaint,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -95,8 +97,14 @@ export const ComplaintDetails: FC = () => {
           let hwcrComplaint = updateComplaint as HwcrComplaint;
           await dispatch(updateWildlifeComplaint(hwcrComplaint));
           await dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(hwcrComplaint.complaint_identifier.complaint_identifier, setUpdateComplaint));
-          setErrorNotificationClass("comp-complaint-error display-none");
         }
+        else if(complaintType === COMPLAINT_TYPES.ERS)
+        {
+          let allegationComplaint = updateComplaint as AllegationComplaint;
+          await dispatch(updateAllegationComplaint(allegationComplaint));
+          await dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(allegationComplaint.complaint_identifier.complaint_identifier, setUpdateComplaint));
+        }
+        setErrorNotificationClass("comp-complaint-error display-none");
         setReadOnly(true);
         const notify = () => toast.success("Updates have been saved");
         notify();
@@ -120,7 +128,7 @@ export const ComplaintDetails: FC = () => {
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
-            dispatch(getAllegationComplaintByComplaintIdentifier(id));
+            dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
             break;
           case COMPLAINT_TYPES.HWCR:
             dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
@@ -207,11 +215,24 @@ export const ComplaintDetails: FC = () => {
       }
     }
 }
+
+function handleViolationTypeChange(selectedOption: Option | null) {
+  if(selectedOption !== null && selectedOption !== undefined)
+  {
+    if(complaintType === COMPLAINT_TYPES.ERS)
+    {
+        let allegationComplaint: AllegationComplaint = {...updateComplaint} as AllegationComplaint;
+        axios.get(`${config.API_BASE_URL}/v1/violation-code/` + selectedOption.value).then((response) => {
+          allegationComplaint.violation_code = response.data;
+          setUpdateComplaint(allegationComplaint);
+        });
+    }
+  }
+}
+
   function handleStatusChange(selectedOption: Option | null) {
     if(selectedOption !== null && selectedOption !== undefined)
     {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
         if(selectedOption.value === "")
         {
           setStatusErrorMsg("Required");
@@ -219,15 +240,24 @@ export const ComplaintDetails: FC = () => {
         else
         {
           setStatusErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.complaint_identifier.complaint_status_code = response.data;
-            setUpdateComplaint(hwcrComplaint);
-          });
-
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
+              hwcrComplaint.complaint_identifier.complaint_status_code = response.data;
+              setUpdateComplaint(hwcrComplaint);
+            }); 
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
+              allegationComplaint.complaint_identifier.complaint_status_code = response.data;
+              setUpdateComplaint(allegationComplaint);
+            }); 
+          }
         }
       }
-    }
   }
 
   function handleAssignedOfficerChange(selectedOption: Option | null) {
@@ -270,14 +300,50 @@ export const ComplaintDetails: FC = () => {
               setUpdateComplaint(hwcrComplaint);
             }
           }
+      }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+          if(selectedOption.value !== "Unassigned")
+          {
+            axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
+                //change assignee
+                if(allegationComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
+                {
+                  allegationComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
+                }
+                // create new assignee
+                else
+                {
+                  let personComplaintXref: PersonComplaintXref = 
+                  {
+                    person_guid: response.data,
+                    create_user_id: userid,
+                    update_user_id: userid,
+                    complaint_identifier: allegationComplaint.complaint_identifier.complaint_identifier,
+                    active_ind: true,
+                    person_complaint_xref_code: "ASSIGNEE"
+                  }
+                  allegationComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
+                }
+                setUpdateComplaint(allegationComplaint);
+            });
+          }
+          else
+          {
+            //unasignee complaint
+            if(allegationComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
+            {
+              allegationComplaint.complaint_identifier.person_complaint_xref[0].active_ind = false;
+              setUpdateComplaint(allegationComplaint);
+            }
+          }
         
       }
     }
   }
 
   function handleComplaintDescChange(value: string) {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
         if(value === "")
         {
           setComplaintDescErrorMsg("Required");
@@ -285,10 +351,18 @@ export const ComplaintDetails: FC = () => {
         else
         {
           setComplaintDescErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.detail_text = value;
-          setUpdateComplaint(hwcrComplaint);
-        }
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.detail_text = value;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.detail_text = value;
+            setUpdateComplaint(allegationComplaint);
+          }
       }
   }
 
@@ -299,16 +373,39 @@ export const ComplaintDetails: FC = () => {
           hwcrComplaint.complaint_identifier.location_detailed_text = value;
           setUpdateComplaint(hwcrComplaint);
       }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+          allegationComplaint.complaint_identifier.location_detailed_text = value;
+          setUpdateComplaint(allegationComplaint);
+      }
   }
 
+  function handleViolationInProgessChange(selectedOption: Option | null) {
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+      allegationComplaint.in_progress_ind = (selectedOption?.value === "Yes" ? true : false);
+      setUpdateComplaint(allegationComplaint);
+  }
+
+  function handleViolationObservedChange(selectedOption: Option | null) {
+    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+    allegationComplaint.observed_ind = (selectedOption?.value === "Yes" ? true : false);
+    setUpdateComplaint(allegationComplaint);
+}
+
   function handleLocationChange(value: string) {
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
-      console.log("address Change: " + value);
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
         let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.location_summary_text = (value === undefined ? "" : value);
         setUpdateComplaint(hwcrComplaint);
-    }
+      }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+        allegationComplaint.complaint_identifier.location_summary_text = (value === undefined ? "" : value);
+        setUpdateComplaint(allegationComplaint);
+      }
 }
 
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
@@ -383,7 +480,6 @@ export const ComplaintDetails: FC = () => {
               newAttractants.push(attractant);
             }
           }
-          console.log(JSON.stringify(newAttractants));
           hwcrComplaint.attractant_hwcr_xref = newAttractants;
           setUpdateComplaint(hwcrComplaint);
       }
@@ -393,8 +489,6 @@ export const ComplaintDetails: FC = () => {
   function handleCommunityChange(selectedOption: Option | null) {
     if(selectedOption !== null && selectedOption !== undefined)
     {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
         if(selectedOption.value === "")
         {
           setCommunityErrorMsg("Required");
@@ -402,29 +496,45 @@ export const ComplaintDetails: FC = () => {
         else
         {
           setCommunityErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          if(selectedOption.value !== undefined)
+          if(complaintType === COMPLAINT_TYPES.HWCR)
           {
-            const geoOrgCode =
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            if(selectedOption.value !== undefined)
             {
-              geo_organization_unit_code: selectedOption.value,
-              short_description: "", long_description: "", display_order:"", active_ind:"",
-              create_user_id: "", create_timestamp: "", update_user_id: "", update_timestamp: ""
+              const geoOrgCode =
+              {
+                geo_organization_unit_code: selectedOption.value,
+                short_description: "", long_description: "", display_order:"", active_ind:"",
+                create_user_id: "", create_timestamp: "", update_user_id: "", update_timestamp: ""
+              }
+              hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code = selectedOption.value;
+              hwcrComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
             }
-            hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code = selectedOption.value;
-            hwcrComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
+            setUpdateComplaint(hwcrComplaint);
           }
-          setUpdateComplaint(hwcrComplaint);
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            if(selectedOption.value !== undefined)
+            {
+              const geoOrgCode =
+              {
+                geo_organization_unit_code: selectedOption.value,
+                short_description: "", long_description: "", display_order:"", active_ind:"",
+                create_user_id: "", create_timestamp: "", update_user_id: "", update_timestamp: ""
+              }
+              allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code = selectedOption.value;
+              allegationComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
+            }
+            setUpdateComplaint(allegationComplaint);
+          }
 
         }
       }
-    }
   }
 
   function handleGeoPointXChange(value: string) {
 
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
       if(value !== "")
       {
         if(+value > bcBoundaries.maxLongitude || +value < bcBoundaries.minLongitude)
@@ -434,25 +544,39 @@ export const ComplaintDetails: FC = () => {
         else
         {
           setGeoPointXMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
-          setUpdateComplaint(hwcrComplaint);
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
+            setUpdateComplaint(allegationComplaint);
+          }
         }
       }
       else
       {
         setGeoPointXMsg("");
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+        if(complaintType === COMPLAINT_TYPES.HWCR)
+        {
+          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
           hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
           setUpdateComplaint(hwcrComplaint);
+        }
+        else if(complaintType === COMPLAINT_TYPES.ERS)
+        {
+          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
+          setUpdateComplaint(allegationComplaint);
+        }
       }
-    }
   }
 
   function handleGeoPointYChange(value: string) {
-
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
       if(value !== "")
       {
         if(+value > bcBoundaries.maxLatitude || +value < bcBoundaries.minLatitude)
@@ -462,19 +586,36 @@ export const ComplaintDetails: FC = () => {
         else
         {
           setGeoPointYMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
-          setUpdateComplaint(hwcrComplaint);
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
+            setUpdateComplaint(allegationComplaint);
+          }
         }
       }
       else
       {
           setGeoPointYMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-          setUpdateComplaint(hwcrComplaint);
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
+            setUpdateComplaint(allegationComplaint);
+          }
       }
-    }
   }
 
   function handleNameChange(value: string) {
@@ -483,6 +624,12 @@ export const ComplaintDetails: FC = () => {
         let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_name = value;
         setUpdateComplaint(hwcrComplaint);
+    }
+    else if(complaintType === COMPLAINT_TYPES.ERS)
+    {
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+        allegationComplaint.complaint_identifier.caller_name = value;
+        setUpdateComplaint(allegationComplaint);
     }
   }
 
@@ -493,84 +640,138 @@ export const ComplaintDetails: FC = () => {
         hwcrComplaint.complaint_identifier.caller_address = value;
         setUpdateComplaint(hwcrComplaint);
     }
+    else if(complaintType === COMPLAINT_TYPES.ERS)
+    {
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+      allegationComplaint.complaint_identifier.caller_address = value;
+        setUpdateComplaint(allegationComplaint);
+    }
   }
 
   function handlePrimaryPhoneChange(value: string) {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
         if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setPrimaryPhoneMsg("Phone number must be 10 digits");
         }
+        else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
+        {
+          setPrimaryPhoneMsg("Invalid Format");
+        }
         else
         {
           setPrimaryPhoneMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.caller_phone_1 = (value !== undefined ? value : "");
-          setUpdateComplaint(hwcrComplaint);
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.caller_phone_1 = (value !== undefined ? value : "");
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.caller_phone_1 = (value !== undefined ? value : "");
+            setUpdateComplaint(allegationComplaint);
+          }
         }
-      }
   }
   function handleSecondaryPhoneChange(value: string) {
-      if(value !== undefined && complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(value.length !== 0 && value.length !== 12)
+        if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setSecondaryPhoneMsg("Phone number must be 10 digits");
+        }
+        else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
+        {
+          setSecondaryPhoneMsg("Invalid Format");
         }
         else
         {
           setSecondaryPhoneMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.caller_phone_2 = (value !== undefined ? value : "");
-          setUpdateComplaint(hwcrComplaint);
+          if(value !== undefined && complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.caller_phone_2 = (value !== undefined ? value : "");
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(value !== undefined && complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.caller_phone_2 = (value !== undefined ? value : "");
+            setUpdateComplaint(allegationComplaint);
+          }
         }
-      }
   }
 
   function handleAlternatePhoneChange(value: string) {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
         if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
           setAlternatePhoneMsg("Phone number must be 10 digits");
         }
+        else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
+        {
+          setAlternatePhoneMsg("Invalid Format");
+        }
         else
         {
           setAlternatePhoneMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.caller_phone_3 = (value !== undefined ? value : "");
-          setUpdateComplaint(hwcrComplaint);
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.caller_phone_3 = (value !== undefined ? value : "");
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.caller_phone_3 = (value !== undefined ? value : "");
+            setUpdateComplaint(allegationComplaint);
+          }
         }
-      }
   }
 
   function handleEmailChange(value: string) {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
         let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if(!re.test(value))
+        if(value !== undefined && value !== "" && !re.test(value))
         {
           setEmailMsg("Please enter a vaild email");
         }
         else
         {
           setEmailMsg("");
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          hwcrComplaint.complaint_identifier.caller_email = value;
-          setUpdateComplaint(hwcrComplaint);
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.caller_email = value;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+            allegationComplaint.complaint_identifier.caller_email = value;
+            setUpdateComplaint(allegationComplaint);
+          }
         }
-      }
+      
   }
 
   function handleReferredByChange(selectedOption: Option | null) {
     if(selectedOption !== null && selectedOption !== undefined)
     {
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
           axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
             hwcrComplaint.complaint_identifier.referred_by_agency_code = response.data;
             setUpdateComplaint(hwcrComplaint);
           });
+      }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+          axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
+            allegationComplaint.complaint_identifier.referred_by_agency_code = response.data;
+            setUpdateComplaint(allegationComplaint);
+          });
+      }
     }
   }
 
@@ -610,6 +811,9 @@ export const ComplaintDetails: FC = () => {
           handleLocationDescriptionChange={handleLocationDescriptionChange} handleLocationChange={handleLocationChange}
           handleNameChange={handleNameChange} handleAddressChange={handleAddressChange}
           errorNotificationClass={errorNotificationClass}
+          handleViolationInProgessChange={handleViolationInProgessChange}
+          handleViolationObservedChange={handleViolationObservedChange}
+          handleViolationTypeChange={handleViolationTypeChange}
           />
       }
       { !readOnly && 
