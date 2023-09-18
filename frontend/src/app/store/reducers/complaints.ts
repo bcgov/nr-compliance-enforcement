@@ -200,10 +200,6 @@ export const getComplaints =
     } = payload;
 
     try {
-      const {
-        app: { loading },
-      } = getState();
-
       dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
