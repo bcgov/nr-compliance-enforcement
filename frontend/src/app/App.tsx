@@ -7,24 +7,18 @@ import {
 } from "react-router-dom";
 
 import Roles from "./constants/roles";
-import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
-
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
 import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
 import ColorReference from "./components/reference";
-
-import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
-import {
-  ComplaintsWrapper,
-} from "./components/containers/complaints/complaints";
+import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getConfigurations } from "./store/reducers/app";
 
@@ -44,19 +38,7 @@ const App: FC = () => {
       <PageLoader />
       <Routes>
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
-          {/* <!-- temporary route --> */}
-          <Route
-            path="/legacy"
-            element={
-              <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <ComplaintsWrapper defaultComplaintType={COMPLAINT_TYPES.HWCR} />
-            }
-          />
+          <Route path="/" element={<ComplaintsRouteWrapper />} />
           <Route
             path="/complaints/:type?"
             element={<ComplaintsRouteWrapper />}
@@ -77,7 +59,7 @@ const App: FC = () => {
 
 const ComplaintsRouteWrapper = () => {
   const { type } = useParams();
-  const defaultType = type ? type : COMPLAINT_TYPES.HWCR;
+  const defaultType = !type ? COMPLAINT_TYPES.HWCR : type;
 
   return <ComplaintsWrapper defaultComplaintType={defaultType} />;
 };

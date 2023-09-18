@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SortableHeader } from "../../common/sortable-header";
+import { SortableHeader } from "../../../common/sortable-header";
 
 type Props = {
   handleSort: Function;
@@ -7,7 +7,7 @@ type Props = {
   sortDirection: string;
 };
 
-export const AllegationComplaintListHeader: FC<Props> = ({
+export const WildlifeComplaintListHeader: FC<Props> = ({
   handleSort,
   sortKey,
   sortDirection,
@@ -23,7 +23,6 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortDirection={sortDirection}
           className="comp-cell-width-95 comp-header-left-radius "
         />
-
         <SortableHeader
           title="Date/Time"
           sortFnc={handleSort}
@@ -32,23 +31,22 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortDirection={sortDirection}
           className="comp-cell-width-95 comp-header-horizontal-border"
         />
-
         <SortableHeader
-          title="Violation Type"
+          title="Nature of Complaint"
           sortFnc={handleSort}
-          sortKey="violation_code"
+          sortKey="hwcr_complaint_nature_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-305 comp-header-horizontal-border comp-header-vertical-border"
+          className="comp-cell-width-330 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
-          title="Violation In Progress"
+          title="Species"
           sortFnc={handleSort}
-          sortKey="in_progress_ind"
+          sortKey="species_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-155 comp-header-horizontal-border"
+          className="comp-cell-width-130 comp-header-horizontal-border"
         />
 
         <SortableHeader

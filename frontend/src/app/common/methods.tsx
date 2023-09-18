@@ -1,9 +1,6 @@
 import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
-import { CodeTable } from '../types/code-tables/code-table';
-import Option from "../types/app/option";
-import { from } from 'linq-to-typescript';
 
 type Coordinate = number[] | string[] | undefined;
 

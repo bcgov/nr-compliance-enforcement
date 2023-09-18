@@ -3,7 +3,6 @@ import { useAppDispatch } from "../../../hooks/hooks";
 import { openModal } from "../../../store/reducers/app";
 import { AssignOfficer, ChangeStatus } from "../../../types/modal/modal-types";
 import { FC, useContext } from "react";
-import Option from "../../../types/app/option";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 
 type Props = {
@@ -32,13 +31,9 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
 
   const { state: filters } = useContext(ComplaintFilterContext);
   const {
-    region,
     zone,
-    community,
-    officer,
     species: speciesCodeFilter,
     natureOfComplaint: natureOfComplaintFilter,
-    violationType: violationFilter,
     status: complaintStatusFilter,
     startDate: startDateFilter,
     endDate: endDateFilter,

@@ -5,22 +5,22 @@ import {
   getComplaints,
   selectComplaintsByType,
   setComplaints,
+  selectTotalComplaintsByType
 } from "../../../store/reducers/complaints";
 import { Table } from "react-bootstrap";
 import { SORT_TYPES } from "../../../constants/sort-direction";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
-import { WildlifeComplaintListHeader } from "./wildlife-complaint-list-header";
-import { AllegationComplaintListHeader } from "./allegation-complaint-list-header";
+import { WildlifeComplaintListHeader } from "./wildlife/wildlife-complaint-list-header";
+import { AllegationComplaintListHeader } from "./allegations/allegation-complaint-list-header";
 import { selectDefaultPageSize } from "../../../store/reducers/app";
-import { WildlifeComplaintListItem } from "./wildlife-complaint-list-item";
+import { WildlifeComplaintListItem } from "./wildlife/wildlife-complaint-list-item";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { useNavigate } from "react-router-dom";
-import { AllegationComplaintListItem } from "./allegation-complaint-list-item";
+import { AllegationComplaintListItem } from "./allegations/allegation-complaint-list-item";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import ComplaintPagination from "../../common/complaint-pagination";
-import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 
 type Props = {
   type: string;
@@ -32,19 +32,18 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const navigate = useNavigate();
 
   const totalComplaints = useAppSelector(selectTotalComplaintsByType(type));
+  const defaultPageSize = useAppSelector(selectDefaultPageSize);
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
-  const { state: filters, dispatch: filterDispatch } = useContext(
-    ComplaintFilterContext
-  );
+  const { state: filters } = useContext(ComplaintFilterContext);
 
   const [sortKey, setSortKey] = useState("incident_reported_datetime");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(50); // Default to 10 results per page
-  const defaultPageSize = useAppSelector(selectDefaultPageSize);
+  const [pageSize, setPageSize] = useState<number>(defaultPageSize); // Default to 10 results per page
+
 
   const generateComplaintRequestPayload = (
     complaintType: string,
@@ -104,6 +103,12 @@ export const ComplaintList: FC<Props> = ({ type }) => {
     );
     dispatch(getComplaints(type, payload));
   }, [filters, sortKey, sortDirection, page, pageSize]);
+
+  useEffect(() => {
+    if (defaultPageSize) {
+      setPageSize(defaultPageSize);
+    }
+  }, [defaultPageSize]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
