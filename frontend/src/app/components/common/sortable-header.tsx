@@ -19,10 +19,11 @@ export const SortableHeader: FC<Props> = ({
   className,
 }) => {
   return (
-    <th className={["sortableHeader", className].join(" ")}>
-      <div className="comp-header-label" onClick={() => sortFnc(sortKey)}>
-        {title}
-      </div>
+    <th
+      className={["sortableHeader", className].join(" ")}
+      onClick={() => sortFnc(sortKey)}
+    >
+      <div className="comp-header-label">{title}</div>
       <div className="comp-header-caret">
         <SortArrow
           sortKey={sortKey}
