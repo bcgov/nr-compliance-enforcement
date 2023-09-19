@@ -45,7 +45,6 @@ export const codeTableSlice = createSlice({
         }
       );
       data.unshift({value: "", label: "", description: ""});
-      console.log(JSON.stringify(data));
       return { ...state, agencyCodes: data };
     },
     setComplaintStatusCodes: (
