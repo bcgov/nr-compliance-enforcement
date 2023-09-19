@@ -448,10 +448,13 @@ export const getZoneAtAGlanceStats =
     }
   };
 
+// used by the autocomplete
 export const getComplaintLocationByAddress =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
+      dispatch(toggleLoading(true));
+
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
       );
@@ -459,27 +462,17 @@ export const getComplaintLocationByAddress =
       dispatch(setComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
-export const getComplaintLocationByAddressAsync =
-  (address: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
-      );
-      const response = await get<Feature>(dispatch, parameters);
-      return response.features[0].geometry;
-    } catch (error) {
-      //-- handle the error message
-    }
-  };
-
-export const getComplaintLocation =
+  // Used to get the complaint location by area and address
+  export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
     try {
+      dispatch(toggleLoading(true));
       let parameters;
 
       if (address && area) {
@@ -495,6 +488,8 @@ export const getComplaintLocation =
       dispatch(setComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 

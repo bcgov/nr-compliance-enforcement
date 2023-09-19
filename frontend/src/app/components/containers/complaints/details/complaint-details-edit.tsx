@@ -31,7 +31,6 @@ import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
-import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
@@ -60,9 +59,8 @@ interface ComplaintDetailsProps {
   communityErrorMsg: string,
   handleCommunityChange: Function,
   geoPointXMsg: string,
-  handleGeoPointXChange: Function,
+  handleGeoPointChange: Function,
   geoPointYMsg: string,
-  handleGeoPointYChange: Function,
   emailMsg: string,
   handleEmailChange: Function,
   primaryPhoneMsg: string,
@@ -101,9 +99,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   communityErrorMsg,
   handleCommunityChange,
   geoPointXMsg,
-  handleGeoPointXChange,
+  handleGeoPointChange,
   geoPointYMsg,
-  handleGeoPointYChange,
   emailMsg,
   handleEmailChange,
   primaryPhoneMsg,
@@ -239,6 +236,26 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
+  const [latitude, setLatitude] = useState<number>(+yCoordinate);
+  const [longitude, setLongitude] = useState<number>(+xCoordinate);
+
+  const handleMarkerMove = async (lat: number, lng: number) => {
+    await updateCoordinates(lat,lng);
+    await updateValidation(lat,lng);
+
+
+  };
+
+  async function updateCoordinates(lat: number,lng: number) {
+    setLatitude(lat);
+    setLongitude(lng);
+
+  }
+
+  async function updateValidation(lat: number,lng: number) {
+    handleGeoPointChange(lat,lng);
+  }
+
   function handleIncidentDateTimeChange(date: Date) {
       setSelectedIncidentDateTime(date);
       if(complaintType === COMPLAINT_TYPES.HWCR)
@@ -253,6 +270,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
         allegationComplaint.complaint_identifier.incident_datetime = date.toDateString();
         setUpdateComplaint(allegationComplaint);
       }
+  }
+
+  const handleLongitudeChange = (newValue: string) => {
+    setLongitude(+newValue);
+    updateValidation(latitude,longitude);
+  }
+
+  const handleLatitudeChange = (newValue: string) => {
+    setLatitude(+newValue);
+    updateValidation(latitude,longitude);
   }
 
   return (
@@ -534,8 +561,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="number"
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
-                    defaultValue={xCoordinate}
-                    onChange={handleGeoPointXChange}
+                    value={`${longitude}`}
+                    defaultValue={`${longitude}`}
+                    onChange={handleLongitudeChange}
                     errMsg={geoPointXMsg}
                     step="any"
                   />
@@ -551,8 +579,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="number"
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
-                    defaultValue={yCoordinate}
-                    onChange={handleGeoPointYChange}
+                    value={`${latitude}`}
+                    defaultValue={`${latitude}`}
+                    onChange={handleLatitudeChange}
                     errMsg={geoPointYMsg}
                     step="any"
                   />
@@ -624,7 +653,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
           </div>
         </div>
       </div>
-      <ComplaintLocation complaintType={complaintType} draggable={true}/>
+      <ComplaintLocation complaintType={complaintType} draggable={true} onMarkerMove={handleMarkerMove}/>
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>

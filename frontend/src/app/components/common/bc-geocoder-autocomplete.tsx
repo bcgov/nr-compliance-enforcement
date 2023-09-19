@@ -5,7 +5,6 @@ import {
   getComplaintLocationByAddress,
   selectComplaintLocation,
 } from "../../store/reducers/complaints";
-import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
 interface Props {
   value?: string;

@@ -12,22 +12,23 @@ import { Coordinates } from "../../../../types/app/coordinate-type";
 type Props = {
   complaintType: string;
   draggable: boolean;
+  onMarkerMove?: (lat: number, lng: number) => void;
 };
 
 /**
  * Component that displays a map with a marker representing the complaint location
  *
  */
-export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
+export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarkerMove }) => {
   
-  const { location, coordinates } = useAppSelector(
+  const { coordinates } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
   const complaintLocation = useAppSelector(selectComplaintLocation);
 
   // the lat and long of the marker we need to display on the map
   // Initialized to 0.  This will either be populated using the optionally supplied coordinates
-  // or they'll be derived using the complaint's location and/or communit.
+  // or they'll be derived using the complaint's location and/or community.
   let lat = 0;
   let lng = 0;
 
@@ -39,17 +40,6 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
     lng = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] : 0);
   }
 
-  if (!lat && !lng) {
-    return (
-      <div className="comp-complaint-details-location-block">
-        <h6>Complaint Location</h6>
-        <div className="comp-complaint-location">
-          Unable to determine location based on address and community
-          information.
-        </div>
-      </div>
-    );
-  } else {
     return (
       <div className="comp-complaint-details-location-block">
         <h6>Complaint Location</h6>
@@ -57,9 +47,10 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable }) => {
           <LeafletMapWithPoint
             coordinates={{ lat: lat, lng: lng }}
             draggable={draggable}
+            onMarkerMove={onMarkerMove}
           />
         </div>
       </div>
     );
-  }
+  
 };
