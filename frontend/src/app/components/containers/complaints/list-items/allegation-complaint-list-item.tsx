@@ -82,12 +82,21 @@ export const AllegationComplaintListItem: FC<Props> = ({
       >
         {incidentReportedDatetime}
       </td>
-      <td className="sortableHeader comp-cell-width-305">{violationCode}</td>
+      <td
+        className="sortableHeader comp-cell-width-305"
+        onClick={(event) => complaintClick(event, id)}
+      >
+        {violationCode}
+      </td>
       <td
         className="sortableHeader comp-cell-width-155 comp-header-vertical-border"
         onClick={(event) => complaintClick(event, id)}
       >
-        <button type="button" className={inProgressButtonClass}>
+        <button
+          type="button"
+          className={inProgressButtonClass}
+          onClick={(event) => complaintClick(event, id)}
+        >
           {inProgressInd}
         </button>
       </td>

@@ -13,7 +13,6 @@ export const FilterButton: FC<Props> = ({ id, label, name, clear }) => {
     id: string
   ) => {
     e.preventDefault();
-    console.log(id);
     clear(name)
   };
 

@@ -30,7 +30,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortKey="incident_reported_datetime"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-horizontal-border"
+          className="comp-cell-width-95 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -39,7 +39,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortKey="violation_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-305 comp-header-horizontal-border comp-header-vertical-border"
+          className="comp-cell-width-305 comp-header-horizontal-border "
         />
 
         <SortableHeader
@@ -48,7 +48,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortKey="in_progress_ind"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-155 comp-header-horizontal-border"
+          className="comp-cell-width-155 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -57,9 +57,9 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortKey="geo_organization_unit_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-165 comp-header-horizontal-border comp-header-vertical-border"
+          className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border">
+        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border">
           <div className="comp-header-label">Location/Address</div>
         </th>
 

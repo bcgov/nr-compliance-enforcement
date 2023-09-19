@@ -12,13 +12,13 @@ import { SORT_TYPES } from "../../../constants/sort-direction";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
-import { WildlifeComplaintListHeader } from "./wildlife/wildlife-complaint-list-header";
-import { AllegationComplaintListHeader } from "./allegations/allegation-complaint-list-header";
+import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
+import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
 import { selectDefaultPageSize } from "../../../store/reducers/app";
-import { WildlifeComplaintListItem } from "./wildlife/wildlife-complaint-list-item";
+import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { useNavigate } from "react-router-dom";
-import { AllegationComplaintListItem } from "./allegations/allegation-complaint-list-item";
+import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import ComplaintPagination from "../../common/complaint-pagination";
 

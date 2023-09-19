@@ -21,7 +21,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortKey="complaint_identifier"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-left-radius "
+          className="comp-cell-width-95 comp-header-left-radius"
         />
         <SortableHeader
           title="Date/Time"
@@ -29,7 +29,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortKey="incident_reported_datetime"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-horizontal-border"
+          className="comp-cell-width-95 comp-header-horizontal-border  comp-header-vertical-border"
         />
         <SortableHeader
           title="Nature of Complaint"
@@ -37,7 +37,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortKey="hwcr_complaint_nature_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-330 comp-header-horizontal-border comp-header-vertical-border"
+          className="comp-cell-width-330 comp-header-horizontal-border"
         />
 
         <SortableHeader
@@ -46,7 +46,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortKey="species_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-130 comp-header-horizontal-border"
+          className="comp-cell-width-130 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -55,9 +55,9 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortKey="geo_organization_unit_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-165 comp-header-horizontal-border comp-header-vertical-border"
+          className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border">
+        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border">
           <div className="comp-header-label">Location/Address</div>
         </th>
 

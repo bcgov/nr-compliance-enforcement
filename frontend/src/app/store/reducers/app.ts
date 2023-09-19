@@ -371,10 +371,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
       };
-
-      console.log("profile? ", {action })
-      console.log("huh? ", { ...state, profile })
-
+      
       return { ...state, profile };
     }
     case ActionTypes.TOGGLE_SIDEBAR: {
