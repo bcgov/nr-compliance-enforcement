@@ -93,11 +93,12 @@ export class PersonComplaintXrefService {
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     const queryRunner = this.dataSource.createQueryRunner();
+    let newPersonComplaintXref: PersonComplaintXref;
+    let unassignedPersonComplaintXref: PersonComplaintXref;
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    let newPersonComplaintXref: PersonComplaintXref;
-    let unassignedPersonComplaintXref: PersonComplaintXref;
+
     try {
       // unassign complaint if it's already assigned to an officer
       unassignedPersonComplaintXref = await this.findByComplaint(
@@ -110,6 +111,7 @@ export class PersonComplaintXrefService {
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
       }
+      this.logger.debug("test9");
       // create a new complaint assignment record
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
       this.logger.debug(

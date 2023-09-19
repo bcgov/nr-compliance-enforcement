@@ -462,6 +462,7 @@ export class AllegationComplaintService {
           in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
           observed_ind: updateAllegationComplaintDto.observed_ind,
           violation_code: updateAllegationComplaintDto.violation_code,
+          suspect_witnesss_dtl_text: updateAllegationComplaintDto.suspect_witnesss_dtl_text,
         };
         const updatedValue = await this.allegationComplaintsRepository.update(
           { allegation_complaint_guid },

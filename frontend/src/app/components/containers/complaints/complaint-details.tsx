@@ -29,6 +29,7 @@ import { PersonComplaintXref } from "../../../types/complaints/person-complaint-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Coordinates } from "../../../types/app/coordinate-type";
+import { AgencyCode } from "../../../types/code-tables/agency-code";
 
 type ComplaintParams = {
   id: string;
@@ -682,13 +683,13 @@ function handleViolationTypeChange(selectedOption: Option | null) {
         else
         {
           setSecondaryPhoneMsg("");
-          if(value !== undefined && complaintType === COMPLAINT_TYPES.HWCR)
+          if(complaintType === COMPLAINT_TYPES.HWCR)
           {
             let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
             hwcrComplaint.complaint_identifier.caller_phone_2 = (value !== undefined ? value : "");
             setUpdateComplaint(hwcrComplaint);
           }
-          else if(value !== undefined && complaintType === COMPLAINT_TYPES.ERS)
+          else if (complaintType === COMPLAINT_TYPES.ERS)
           {
             let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
             allegationComplaint.complaint_identifier.caller_phone_2 = (value !== undefined ? value : "");
@@ -752,22 +753,58 @@ function handleViolationTypeChange(selectedOption: Option | null) {
   function handleReferredByChange(selectedOption: Option | null) {
     if(selectedOption !== null && selectedOption !== undefined)
     {
+      const emptyOption: AgencyCode = {
+        agency_code: "",
+        short_description: "",
+        long_description: "",
+        display_order: 0,
+        active_ind: true,
+        create_user_id: "",
+        create_timestamp: "",
+        update_user_id: "",
+        update_timestamp: "",
+      };
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.complaint_identifier.referred_by_agency_code = response.data;
+          if(selectedOption.value !== "")
+          {
+            axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
+              hwcrComplaint.complaint_identifier.referred_by_agency_code = response.data;
+              setUpdateComplaint(hwcrComplaint);
+            });
+          }
+          else
+          {
+            hwcrComplaint.complaint_identifier.referred_by_agency_code = emptyOption;
             setUpdateComplaint(hwcrComplaint);
-          });
+          }
       }
       else if(complaintType === COMPLAINT_TYPES.ERS)
       {
           let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
-            allegationComplaint.complaint_identifier.referred_by_agency_code = response.data;
+          if(selectedOption.value !== "")
+          {
+            axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
+              allegationComplaint.complaint_identifier.referred_by_agency_code = response.data;
+              setUpdateComplaint(allegationComplaint);
+            });
+          }
+          else
+          {
+            allegationComplaint.complaint_identifier.referred_by_agency_code = emptyOption;
             setUpdateComplaint(allegationComplaint);
-          });
+          }
       }
+    }
+  }
+
+  function handleSuspectDetailsChange(value: string) {
+  if(complaintType === COMPLAINT_TYPES.ERS)
+    {
+      let allegationComplaint: AllegationComplaint = updateComplaint as AllegationComplaint;
+      allegationComplaint.suspect_witnesss_dtl_text = value;
+        setUpdateComplaint(allegationComplaint);
     }
   }
 
@@ -810,6 +847,7 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           handleViolationInProgessChange={handleViolationInProgessChange}
           handleViolationObservedChange={handleViolationObservedChange}
           handleViolationTypeChange={handleViolationTypeChange}
+          handleSuspectDetailsChange={handleSuspectDetailsChange}
           />
       }
       { !readOnly && 
