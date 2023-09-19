@@ -25,6 +25,14 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }
 
   const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number }>(coordinates);
 
+  // update the marker poisition when the coordinates are updated (occurs when geocoded).
+  // but don't update them if the marker position has already been set manually
+  useEffect(() => {
+    if (markerPosition.lat === 0 && markerPosition.lng === 0) {
+      setMarkerPosition(coordinates);
+    }
+  }, [coordinates, markerPosition.lat, markerPosition.lng]);
+
   const handleMarkerDragEnd = (e: L.LeafletEvent) => {
     const marker = e.target;
     if (marker?.getLatLng) {
