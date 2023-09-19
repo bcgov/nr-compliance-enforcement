@@ -4,7 +4,6 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 
-
 export const CallerInformation: FC = () => {
   const {
     name,

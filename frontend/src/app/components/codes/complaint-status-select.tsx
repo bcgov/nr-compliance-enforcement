@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../../../config';
-import { CodeTable } from '../../../enum/code-table.enum';
+import { CodeTable } from '../../constants/code-table.enum';
 import Select from 'react-select';
 
 interface Option {

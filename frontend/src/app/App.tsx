@@ -1,29 +1,32 @@
 import { FC, useEffect } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useParams,
+} from "react-router-dom";
 
 import Roles from "./constants/roles";
-import { ComplaintContainer } from "./components/containers/complaints/complaint-container";
-
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
 import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
 import ColorReference from "./components/reference";
-
-import ComplaintType from "./constants/complaint-types";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 import { fetchCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
-import { getConfigurations } from "./store/reducers/app";
+import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
+import COMPLAINT_TYPES from "./types/app/complaint-types";
+import { getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
 
 const App: FC = () => {
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(getOfficerDefaultZone())
     dispatch(fetchCodeTables());
     dispatch(getOfficers());
     dispatch(getConfigurations());
@@ -36,25 +39,16 @@ const App: FC = () => {
       <PageLoader />
       <Routes>
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
-          {/* <!-- temporary route --> */}
-          <Route
-            path="/"
-            element={
-                <ComplaintContainer initialState={ComplaintType.HWCR_COMPLAINT} />
-            }
-          />
+          <Route path="/" element={<ComplaintsRouteWrapper />} />
           <Route
             path="/complaints/:type?"
-            element={<ComplaintContainer initialState={0} />}
+            element={<ComplaintsRouteWrapper />}
           />
           <Route
             path="/complaint/:complaintType/:id"
             element={<ComplaintDetails />}
           />
-          <Route
-            path="/zone/at-a-glance"
-            element={<ZoneAtAGlance />}
-          />
+          <Route path="/zone/at-a-glance" element={<ZoneAtAGlance />} />
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />
         <Route path="*" element={<NotFound />} />
@@ -62,6 +56,13 @@ const App: FC = () => {
       </Routes>
     </Router>
   );
+};
+
+const ComplaintsRouteWrapper = () => {
+  const { type } = useParams();
+  const defaultType = !type ? COMPLAINT_TYPES.HWCR : type;
+
+  return <ComplaintsWrapper defaultComplaintType={defaultType} />;
 };
 
 export default App;

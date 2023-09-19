@@ -8,7 +8,10 @@ import { Officer } from "../../types/person/person";
 import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
 import { AUTH_TOKEN } from "../../service/user-service";
-import { ConfigurationEnum } from "../../../enum/configuration.enum";
+
+import { DropdownOption } from "../../types/code-tables/option";
+
+import { Configurations } from "../../constants/configurations";
 import { ConfigurationType } from "../../types/configurations/configuration";
 import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
@@ -20,6 +23,7 @@ enum ActionTypes {
   HIDE_MODAL = "app/HIDE_MODAL",
   TOGGLE_LOADING = "app/TOGGLE_LOADING",
   TOGGLE_NOTIFICATION = "app/TOGGLE_NOTIFICATION",
+  SET_DEFAULT_ZONE = "app/SET_DEFAULT_ZONE",
   SET_CONFIGURATIONS = "app/CONFIGURATIONS",
 }
 //-- action creators
@@ -90,6 +94,11 @@ export const closeModal = () => ({
   type: ActionTypes.HIDE_MODAL,
 });
 
+export const setOfficerDefaultZone = (name: string, description: string) => ({
+  type: ActionTypes.SET_DEFAULT_ZONE,
+  payload: { name, description },
+});
+
 //-- selectors
 export const alertCount = (state: RootState) => state.app.alerts;
 export const isSidebarOpen = (state: RootState) => state.app.isSidebarOpen;
@@ -130,6 +139,14 @@ export const profileZone = (state: RootState): string => {
 export const profileZoneDescription = (state: RootState): string => {
   const { profile } = state.app;
   return profile.zoneDescription;
+};
+
+export const selectDefaultZone = (state: RootState): DropdownOption | null => {
+  const {
+    profile: { zone: value, zoneDescription: label },
+  } = state.app;
+
+  return value && label ? { value, label } : null;
 };
 
 export const selectModalOpenState = (state: RootState): boolean => {
@@ -179,7 +196,7 @@ export const isLoading = (state: RootState) => {
 export const selectDefaultPageSize = (state: RootState): any => {
   const { app } = state;
   const configuration = app.configurations?.configurations?.find(
-    (record) => ConfigurationEnum.DEFAULT_PAGE_SIZE === record.configurationCode
+    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode
   );
   if (configuration?.configurationValue) {
     return +configuration.configurationValue;
@@ -244,6 +261,40 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
     window.location = config.KEYCLOAK_URL;
   }
 };
+
+export const getOfficerDefaultZone  = (): AppThunk => async (dispatch) => {
+  const token = localStorage.getItem(AUTH_TOKEN);
+
+  if (token) {
+    dispatch(toggleLoading(true));
+    try {
+      const decoded: SsoToken = jwtDecode<SsoToken>(token);
+      const { idir_username } = decoded;
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+      );
+      const response = await get<Officer>(dispatch, parameters);
+
+      if (response.office_guid !== null) {
+        const {
+          office_guid: { cos_geo_org_unit: unit },
+        } = response;
+
+        const { zone_code: name, zone_name: description } = unit;
+
+        dispatch(setOfficerDefaultZone(name, description));
+      }
+    } catch (error) {
+      //-- handler error
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  } else {
+    //-- the user is not logged in redirect them to the login
+    window.location = config.KEYCLOAK_URL;
+  }
+}
 
 // Get list of the officers and update store
 export const getConfigurations = (): AppThunk => async (dispatch) => {
@@ -320,6 +371,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
       };
+      
       return { ...state, profile };
     }
     case ActionTypes.TOGGLE_SIDEBAR: {
@@ -391,6 +443,16 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { type, message };
 
       return { ...state, notifications: update };
+    }
+    case ActionTypes.SET_DEFAULT_ZONE: {
+      const {
+        payload: { name, description },
+      } = action;
+
+      const { profile } = state;
+      const update = { ...profile, zone: name, zoneDescription: description }
+
+      return { ...state, profile: update}
     }
     case ActionTypes.SET_CONFIGURATIONS: {
       const {

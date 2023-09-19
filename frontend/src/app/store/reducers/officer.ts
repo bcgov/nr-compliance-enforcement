@@ -18,6 +18,7 @@ import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
+import { DropdownOption } from "../../types/code-tables/option";
 
 const initialState: OfficerState = {
   officers: [],
@@ -195,6 +196,29 @@ export const updateComplaintAssignee =
   };
 
 //-- selectors
+
+export const selectOfficers = (state: RootState): Array<any> => {
+  const { officers: officerRoot } = state;
+  const { officers } = officerRoot;
+
+  return officers;
+};
+
+export const selectOfficersDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const { officers: officerRoot } = state;
+  const { officers } = officerRoot;
+
+  const results = officers?.map((item) => {
+    const {
+      person_guid: { person_guid: id, first_name, last_name },
+    } = item;
+    return { value: id, label: `${first_name.substring(0, 1)} ${last_name}` };
+  });
+
+  return results;
+};
 
 // find officers that have an office in the given zone
 export const selectOfficersByZone =

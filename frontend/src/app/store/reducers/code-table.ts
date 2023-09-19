@@ -8,12 +8,14 @@ import { CodeTable } from "../../types/code-tables/code-table";
 import { ComplaintStatusCode } from "../../types/code-tables/complaint-status-code";
 import { ViolationCode } from "../../types/code-tables/violation-code";
 import { SpeciesCode } from "../../types/code-tables/species-code";
-import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-of-complaint-code";
-import { CosGeoOrgUnit } from '../../types/person/person';
+import { HwcrNatureOfComplaintCode } from '../../types/code-tables/hwcr-nature-of-complaint-code';
+import { CosGeoOrgUnit } from "../../types/person/person";
 import { AttractantCode } from "../../types/code-tables/attractant-code";
 import Option from "../../types/app/option";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
+import { GeoOrganizationCode } from "../../types/code-tables/geo-orginaization-code";
+import { DropdownOption } from '../../types/code-tables/option';
 
 const initialState: CodeTableState = {
   agencyCodes: [],
@@ -23,6 +25,9 @@ const initialState: CodeTableState = {
   wildlifeNatureOfComplaintCodes: [],
   areaCodes: [],
   attractantCodes: [],
+  regions: [],
+  zones: [],
+  communities: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -137,6 +142,54 @@ export const codeTableSlice = createSlice({
       );
       return { ...state, attractantCodes: data };
     },
+    setRegions: (
+      state: CodeTableState,
+      action: PayloadAction<Array<GeoOrganizationCode>>
+    ) => {
+      const { payload } = action;
+      const data = payload.map(
+        ({
+          geo_organization_unit_code: value,
+          long_description: label,
+          short_description: description,
+        }) => {
+          return { value, label, description } as CodeTable;
+        }
+      );
+      return { ...state, regions: data };
+    },
+    setZones: (
+      state: CodeTableState,
+      action: PayloadAction<Array<GeoOrganizationCode>>
+    ) => {
+      const { payload } = action;
+      const data = payload.map(
+        ({
+          geo_organization_unit_code: value,
+          long_description: label,
+          short_description: description,
+        }) => {
+          return { value, label, description } as CodeTable;
+        }
+      );
+      return { ...state, zones: data };
+    },
+    setCommunities: (
+      state: CodeTableState,
+      action: PayloadAction<Array<GeoOrganizationCode>>
+    ) => {
+      const { payload } = action;
+      const data = payload.map(
+        ({
+          geo_organization_unit_code: value,
+          long_description: label,
+          short_description: description,
+        }) => {
+          return { value, label, description } as CodeTable;
+        }
+      );
+      return { ...state, communities: data };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -152,6 +205,9 @@ export const {
   setWildlifeNatureOfComplaintCodes,
   setAreaCodes,
   setAttractantCodes,
+  setRegions,
+  setZones,
+  setCommunities,
 } = codeTableSlice.actions;
 
 export const fetchCodeTables = (): AppThunk => async (dispatch) => {
@@ -165,6 +221,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       wildlifeNatureOfComplaintCodes,
       areaCodes,
       attractantCodes,
+      regions,
+      zones,
+      communities
     },
   } = state;
 
@@ -198,6 +257,18 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 
     if (!from(attractantCodes).any()) {
       dispatch(fetchAttractantCodes());
+    }
+
+    if(!from(regions).any()){
+      dispatch(fetchRegions())
+    }
+
+    if(!from(zones).any()){
+      dispatch(fetchZones())
+    }
+
+    if(!from(communities).any()){
+      dispatch(fetchCommunities())
     }
   } catch (error) {
   } finally {
@@ -286,30 +357,61 @@ export const fetchAttractantCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const selectCodeTable = (
-  state: RootState,
-  table: string
-): Array<CodeTable> => {
-  const { codeTables } = state;
-  const selected = codeTables[table as keyof CodeTableState];
 
-  return selected;
-};
-
-export const selectSortedCodeTable = (
-  state: RootState,
-  table: string,
-  sortBy: string
-): Array<CodeTable> => {
-  const { codeTables } = state;
-  const data = codeTables[table as keyof CodeTableState];
-
-  let sorted = data.sort((a: any, b: any) =>
-    a[sortBy].localeCompare(b[sortBy])
+export const fetchRegions = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`
   );
+  const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
 
-  return sorted;
+  if (response && from(response).any()) {
+    dispatch(setRegions(response));
+  }
 };
+
+export const fetchZones = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-zones`
+  );
+  const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
+
+  if (response && from(response).any()) {
+    dispatch(setZones(response));
+  }
+};
+
+export const fetchCommunities = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-areas`
+  );
+  const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
+
+  if (response && from(response).any()) {
+    dispatch(setCommunities(response));
+  }
+};
+
+export const selectCodeTable =
+  (table: string) =>
+  (state: RootState): Array<CodeTable> => {
+    const { codeTables } = state;
+    const selected = codeTables[table as keyof CodeTableState];
+
+    return selected;
+  };
+
+export const selectSortedCodeTable =
+  (table: string, sortBy: string) =>
+  (state: RootState): Array<CodeTable> => {
+    const { codeTables } = state;
+    const data = codeTables[table as keyof CodeTableState];
+
+    let sorted = data.sort((a: any, b: any) =>
+      a[sortBy].localeCompare(b[sortBy])
+    );
+
+    return sorted;
+  };
 
 export const selectAgencyDropdown = (
   state: RootState
@@ -372,6 +474,33 @@ export const selectAttractantCodeDropdown = (
     codeTables: { attractantCodes },
   } = state;
   return attractantCodes;
+};
+
+export const selectedZoneCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { regions },
+  } = state;
+  return regions;
+};
+
+export const selectRegionCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { zones },
+  } = state;
+  return zones;
+};
+
+export const selectCommunityCodeDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { communities },
+  } = state;
+  return communities;
 };
 
 export default codeTableSlice.reducer;

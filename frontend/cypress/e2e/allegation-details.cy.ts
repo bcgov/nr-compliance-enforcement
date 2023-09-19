@@ -31,7 +31,7 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.get('.comp-loader-overlay').should('not.exist');
 
     //-- check to make sure there are items in the table
-    cy.get("#comp-table")
+    cy.get("#complaint-list")
       .find("tr")
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(0);
