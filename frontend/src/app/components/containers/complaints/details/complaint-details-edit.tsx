@@ -31,7 +31,6 @@ import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
-import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
@@ -60,9 +59,8 @@ interface ComplaintDetailsProps {
   communityErrorMsg: string,
   handleCommunityChange: Function,
   geoPointXMsg: string,
-  handleGeoPointXChange: Function,
+  handleGeoPointChange: Function,
   geoPointYMsg: string,
-  handleGeoPointYChange: Function,
   emailMsg: string,
   handleEmailChange: Function,
   primaryPhoneMsg: string,
@@ -78,6 +76,10 @@ interface ComplaintDetailsProps {
   handleNameChange: Function,
   handleAddressChange: Function,
   errorNotificationClass: string,
+  handleViolationInProgessChange: Function,
+  handleViolationObservedChange: Function,
+  handleViolationTypeChange: Function,
+  handleSuspectDetailsChange: Function,
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
@@ -97,9 +99,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   communityErrorMsg,
   handleCommunityChange,
   geoPointXMsg,
-  handleGeoPointXChange,
+  handleGeoPointChange,
   geoPointYMsg,
-  handleGeoPointYChange,
   emailMsg,
   handleEmailChange,
   primaryPhoneMsg,
@@ -115,6 +116,10 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   handleNameChange,
   handleAddressChange,
   errorNotificationClass,
+  handleViolationInProgessChange,
+  handleViolationObservedChange,
+  handleViolationTypeChange,
+  handleSuspectDetailsChange,
 }) => {
   const {
     details,
@@ -140,7 +145,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     status,
     natureOfComplaintCode,
     speciesCode,
-    violationType,
+    violationTypeCode,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const {
@@ -222,7 +227,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     attractants?.some((attractant) => attractant.code === option.value)
   );
   const selectedViolationTypeCode = violationTypeCodes.find(
-    (option) => option.value === violationType
+    (option) => option.value === violationTypeCode
   );
   const selectedViolationInProgress = yesNoOptions.find(
     (option) => option.value === (violationInProgress ? "Yes" : "No")
@@ -231,15 +236,50 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
-  function handleIncidentDateTimeChange(date: Date) {
+  const [latitude, setLatitude] = useState<number>(+yCoordinate);
+  const [longitude, setLongitude] = useState<number>(+xCoordinate);
 
-    if(complaintType === COMPLAINT_TYPES.HWCR)
-    {
-        setSelectedIncidentDateTime(date);
+  const handleMarkerMove = async (lat: number, lng: number) => {
+    await updateCoordinates(lat,lng);
+    await updateValidation(lat,lng);
+
+
+  };
+
+  async function updateCoordinates(lat: number,lng: number) {
+    setLatitude(lat);
+    setLongitude(lng);
+
+  }
+
+  async function updateValidation(lat: number,lng: number) {
+    handleGeoPointChange(lat,lng);
+  }
+
+  function handleIncidentDateTimeChange(date: Date) {
+      setSelectedIncidentDateTime(date);
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
         let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.incident_datetime = date.toDateString();
         setUpdateComplaint(hwcrComplaint);
-    }
+      }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+        allegationComplaint.complaint_identifier.incident_datetime = date.toDateString();
+        setUpdateComplaint(allegationComplaint);
+      }
+  }
+
+  const handleLongitudeChange = (newValue: string) => {
+    setLongitude(+newValue);
+    updateValidation(latitude,longitude);
+  }
+
+  const handleLatitudeChange = (newValue: string) => {
+    setLatitude(+newValue);
+    updateValidation(latitude,longitude);
   }
 
   return (
@@ -306,6 +346,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedViolationTypeCode}
                   placeholder="Select"
                   id="violation-type-select-id"
+                  onChange={e => handleViolationTypeChange(e)}
                   classNamePrefix='comp-select'
                 />
               </div>
@@ -455,6 +496,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       placeholder="Select"
                       id="violation-in-progress-select-id"
                       classNamePrefix='comp-select'
+                      onChange={e => handleViolationInProgessChange(e)}
                     />
                   </div>
                 </div>
@@ -472,6 +514,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       placeholder="Select"
                       id="violation-observed-select-id"
                       classNamePrefix='comp-select'
+                      onChange={e => handleViolationObservedChange(e)}
                     />
                   </div>
                 </div>
@@ -518,8 +561,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="number"
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
-                    defaultValue={xCoordinate}
-                    onChange={handleGeoPointXChange}
+                    value={`${longitude}`}
+                    defaultValue={`${longitude}`}
+                    onChange={handleLongitudeChange}
                     errMsg={geoPointXMsg}
                     step="any"
                   />
@@ -535,8 +579,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="number"
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
-                    defaultValue={yCoordinate}
-                    onChange={handleGeoPointYChange}
+                    value={`${latitude}`}
+                    defaultValue={`${latitude}`}
+                    onChange={handleLatitudeChange}
                     errMsg={geoPointYMsg}
                     step="any"
                   />
@@ -557,7 +602,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   placeholder="Select"
                   id="community-select-id"
                   classNamePrefix='comp-select'
-                  onChange={e => handleCommunityChange(e?.value)}
+                  onChange={e => handleCommunityChange(e)}
                   errMsg={communityErrorMsg}
                 />
                 </div>
@@ -608,7 +653,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
           </div>
         </div>
       </div>
-      <ComplaintLocation complaintType={complaintType} draggable={true}/>
+      <ComplaintLocation complaintType={complaintType} draggable={true} onMarkerMove={handleMarkerMove}/>
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>
@@ -770,6 +815,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       id="complaint-description-textarea-id"
                       defaultValue={complaint_witness_details}
                       rows={4}
+                      onChange={e => handleSuspectDetailsChange(e.target.value)}
                     />
                   </div>
               </div>

@@ -91,7 +91,7 @@ export class AttractantHwcrXrefService {
           queryRunner.manager.update(AttractantHwcrXref, updateAttractantHwcrXrefDto.attractant_hwcr_xref_guid, updateAttractantHwcrXrefDto);
         }
       }
-      queryRunner.commitTransaction();
+      await queryRunner.commitTransaction();
     } 
     catch (err) {
       this.logger.error(err);
@@ -100,7 +100,7 @@ export class AttractantHwcrXrefService {
     } 
     finally
     {
-      //await queryRunner.release();
+      await queryRunner.release();
     }
     return ;
   }

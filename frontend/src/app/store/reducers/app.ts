@@ -314,7 +314,7 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
       );
     }
   } catch (error) {
-    //-- handle errors
+    console.log(error);
   } finally {
     dispatch(toggleLoading(false));
   }
