@@ -52,7 +52,7 @@ export class ComplaintService {
     {
       const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
       let referredByAgencyCode = updateComplaintDto.referred_by_agency_code;
-      if(referredByAgencyCode.agency_code === "")
+      if(referredByAgencyCode !== null && referredByAgencyCode.agency_code === "")
       {
         referredByAgencyCode = null;
       }
