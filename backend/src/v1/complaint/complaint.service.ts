@@ -48,10 +48,6 @@ export class ComplaintService {
   }
 
   async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
-    //const queryRunner = this.dataSource.createQueryRunner();
-
-    //await queryRunner.connect();
-    //await queryRunner.startTransaction();
     try
     {
       const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
@@ -81,17 +77,11 @@ export class ComplaintService {
           { complaint_identifier },
           updateData
         );
-        //queryRunner.manager.save(updatedValue);
     }
     catch (err) {
       this.logger.error(err);
-      //await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
     } 
-    finally
-    {
-      //await queryRunner.release();
-    }
     return this.findOne(complaint_identifier);
   }
 
