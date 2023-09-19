@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 
 import { CallDetails, CallerInformation, ComplaintHeader } from "./details";
 import {
-  getAllegationComplaintByComplaintIdentifier,
   getAllegationComplaintByComplaintIdentifierSetUpdate,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
   selectComplaint,
@@ -609,48 +608,6 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           }
           else if(complaintType === COMPLAINT_TYPES.ERS)
           {
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-            setUpdateComplaint(allegationComplaint);
-          }
-      }
-  }
-
-  function handleGeoPointYChange(value: string) {
-      if(value !== "")
-      {
-        if(+value > bcBoundaries.maxLatitude || +value < bcBoundaries.minLatitude)
-        {
-          setGeoPointYMsg("Value must be between " + bcBoundaries.minLatitude + " and " + bcBoundaries.maxLatitude + " degrees");
-        }
-        else
-        {
-          setGeoPointYMsg("");
-          if(complaintType === COMPLAINT_TYPES.HWCR)
-          {
-            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
-            setUpdateComplaint(hwcrComplaint);
-          }
-          if(complaintType === COMPLAINT_TYPES.ERS)
-          {
-            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +value;
-            setUpdateComplaint(allegationComplaint);
-          }
-        }
-      }
-      else
-      {
-          setGeoPointYMsg("");
-          if(complaintType === COMPLAINT_TYPES.HWCR)
-          {
-            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-            setUpdateComplaint(hwcrComplaint);
-          }
-          else if(complaintType === COMPLAINT_TYPES.ERS)
-          {
-            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
             allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
             setUpdateComplaint(allegationComplaint);
           }

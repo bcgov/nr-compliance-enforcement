@@ -27,7 +27,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }
 
   const handleMarkerDragEnd = (e: L.LeafletEvent) => {
     const marker = e.target;
-    if (marker && marker.getLatLng) {
+    if (marker?.getLatLng) {
       const newPosition = marker.getLatLng();
       
       if (onMarkerMove) {

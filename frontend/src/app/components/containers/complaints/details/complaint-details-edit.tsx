@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
@@ -31,7 +31,6 @@ import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
-import { BCGeocoderAutocomplete } from "../../../common/bc-geocoder-autocomplete";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
