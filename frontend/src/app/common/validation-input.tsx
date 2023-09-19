@@ -12,6 +12,7 @@ interface ValidationInputProps {
     maxLength?: number,
     value?: string,
   }
+  
 
   export const ValidationInput: FC<ValidationInputProps> = ({
     className,
@@ -24,6 +25,12 @@ interface ValidationInputProps {
     maxLength,
     value
   }) => {
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = event.target.value;
+      onChange(newValue); // Call the parent's onChange function
+    };
+    
     const errClass = (errMsg === "" ? "" : "error-message");
     const calulatedClass = (errMsg === "" ? className : className + " error-border");
     return (<div>
@@ -34,7 +41,7 @@ interface ValidationInputProps {
                     className={calulatedClass}
                     defaultValue={defaultValue}
                     value={value}
-                    onChange={e => onChange(e.target.value)}
+                    onChange={handleInputChange}
                     step={step}
                     maxLength={maxLength}
                   />

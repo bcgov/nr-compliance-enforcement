@@ -422,10 +422,9 @@ export const ComplaintDetails: FC = () => {
   }
 
   function handleGeoPointXChange(value: string) {
-
     if(complaintType === COMPLAINT_TYPES.HWCR)
     {
-      if(value !== "")
+      if(value !== "" && value !== "-")
       {
         if(+value > bcBoundaries.maxLongitude || +value < bcBoundaries.minLongitude)
         {
@@ -450,10 +449,10 @@ export const ComplaintDetails: FC = () => {
   }
 
   function handleGeoPointYChange(value: string) {
-
+   
     if(complaintType === COMPLAINT_TYPES.HWCR)
     {
-      if(value !== "")
+      if(value !== "" && value !== "-")
       {
         if(+value > bcBoundaries.maxLatitude || +value < bcBoundaries.minLatitude)
         {

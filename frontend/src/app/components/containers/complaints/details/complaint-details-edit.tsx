@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
@@ -231,13 +231,26 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
-  const [latitude, setLatitude] = useState<number>(0);
-  const [longitude, setLongitude] = useState<number>(0);
+  const [latitude, setLatitude] = useState<number>(+yCoordinate);
+  const [longitude, setLongitude] = useState<number>(+xCoordinate);
 
   const handleMarkerMove = (lat: number, lng: number) => {
+    updateCoordinates(lat,lng);
+    updateValidation(lat,lng);
+
+
+  };
+
+  function updateCoordinates(lat: number,lng: number) {
     setLatitude(lat);
     setLongitude(lng);
-  };
+
+  }
+
+  function updateValidation(lat: number,lng: number) {
+    handleGeoPointXChange(lng);
+    handleGeoPointYChange(lat);
+  }
 
   function handleIncidentDateTimeChange(date: Date) {
 
@@ -248,6 +261,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
         hwcrComplaint.complaint_identifier.incident_datetime = date.toDateString();
         setUpdateComplaint(hwcrComplaint);
     }
+  }
+
+  const handleLongitudeChange = (newValue: string) => {
+    setLongitude(+newValue);
+    updateValidation(latitude,longitude);
+  }
+
+  const handleLatitudeChange = (newValue: string) => {
+    setLatitude(+newValue);
+    updateValidation(latitude,longitude);
   }
 
   return (
@@ -527,8 +550,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     id="comp-details-edit-x-coordinate-input"
                     className="comp-form-control"
                     value={`${longitude}`}
-                    defaultValue={xCoordinate}
-                    onChange={handleGeoPointXChange}
+                    defaultValue={`${longitude}`}
+                    onChange={handleLongitudeChange}
                     errMsg={geoPointXMsg}
                     step="any"
                   />
@@ -545,8 +568,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     id="comp-details-edit-y-coordinate-input"
                     className="comp-form-control"
                     value={`${latitude}`}
-                    defaultValue={yCoordinate}
-                    onChange={handleGeoPointYChange}
+                    defaultValue={`${latitude}`}
+                    onChange={handleLatitudeChange}
                     errMsg={geoPointYMsg}
                     step="any"
                   />

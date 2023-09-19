@@ -422,6 +422,8 @@ export const getComplaintLocationByAddress =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
+      dispatch(toggleLoading(true));
+
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
       );
@@ -429,6 +431,8 @@ export const getComplaintLocationByAddress =
       dispatch(setGeocodedComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -437,6 +441,7 @@ export const getComplaintLocationByAddress =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
     try {
+      dispatch(toggleLoading(true));
       let parameters;
 
       if (address && area) {
@@ -452,6 +457,8 @@ export const getComplaintLocationByAddress =
       dispatch(setGeocodedComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
