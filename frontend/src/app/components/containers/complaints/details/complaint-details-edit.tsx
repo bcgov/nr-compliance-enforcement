@@ -60,9 +60,8 @@ interface ComplaintDetailsProps {
   communityErrorMsg: string,
   handleCommunityChange: Function,
   geoPointXMsg: string,
-  handleGeoPointXChange: Function,
+  handleGeoPointChange: Function,
   geoPointYMsg: string,
-  handleGeoPointYChange: Function,
   emailMsg: string,
   handleEmailChange: Function,
   primaryPhoneMsg: string,
@@ -100,9 +99,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   communityErrorMsg,
   handleCommunityChange,
   geoPointXMsg,
-  handleGeoPointXChange,
+  handleGeoPointChange,
   geoPointYMsg,
-  handleGeoPointYChange,
   emailMsg,
   handleEmailChange,
   primaryPhoneMsg,
@@ -240,22 +238,21 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const [latitude, setLatitude] = useState<number>(+yCoordinate);
   const [longitude, setLongitude] = useState<number>(+xCoordinate);
 
-  const handleMarkerMove = (lat: number, lng: number) => {
-    updateCoordinates(lat,lng);
-    updateValidation(lat,lng);
+  const handleMarkerMove = async (lat: number, lng: number) => {
+    await updateCoordinates(lat,lng);
+    await updateValidation(lat,lng);
 
 
   };
 
-  function updateCoordinates(lat: number,lng: number) {
+  async function updateCoordinates(lat: number,lng: number) {
     setLatitude(lat);
     setLongitude(lng);
 
   }
 
-  function updateValidation(lat: number,lng: number) {
-    handleGeoPointXChange(lng);
-    handleGeoPointYChange(lat);
+  async function updateValidation(lat: number,lng: number) {
+    handleGeoPointChange(lat,lng);
   }
 
   function handleIncidentDateTimeChange(date: Date) {

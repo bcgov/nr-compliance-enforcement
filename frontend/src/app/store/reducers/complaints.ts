@@ -414,7 +414,7 @@ export const getAllegationComplaintByComplaintIdentifier =
           location_summary_text,
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
-        await dispatch(getComplaintLocation(area_name, location_summary_text));
+        await dispatch(getGeocodedComplaintLocation(area_name, location_summary_text));
       }
       setUpdateComplaint(response);
 

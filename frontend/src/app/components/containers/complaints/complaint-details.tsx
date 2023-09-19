@@ -533,11 +533,13 @@ function handleViolationTypeChange(selectedOption: Option | null) {
       }
   }
 
-  function handleGeoPointXChange(value: string) {
+  function handleGeoPointChange(lat: string, lng: string) {
+    let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
+    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
 
-      if(value !== "")
+      if(lng !== "")
       {
-        if(+value > bcBoundaries.maxLongitude || +value < bcBoundaries.minLongitude)
+        if(+lng > bcBoundaries.maxLongitude || +lng < bcBoundaries.minLongitude)
         {
           setGeoPointXMsg("Value must be between " + bcBoundaries.minLongitude + " and " + bcBoundaries.maxLongitude + " degrees");
         }
@@ -546,14 +548,15 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           setGeoPointXMsg("");
           if(complaintType === COMPLAINT_TYPES.HWCR)
           {
-            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
             setUpdateComplaint(hwcrComplaint);
           }
           else if(complaintType === COMPLAINT_TYPES.ERS)
           {
             let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +value;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
             setUpdateComplaint(allegationComplaint);
           }
         }
@@ -563,16 +566,52 @@ function handleViolationTypeChange(selectedOption: Option | null) {
         setGeoPointXMsg("");
         if(complaintType === COMPLAINT_TYPES.HWCR)
         {
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
           hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
           setUpdateComplaint(hwcrComplaint);
         }
         else if(complaintType === COMPLAINT_TYPES.ERS)
         {
-          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
           allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
           setUpdateComplaint(allegationComplaint);
         }
+      }
+
+      if(lat !== "")
+      {
+        if(+lat > bcBoundaries.maxLatitude || +lat < bcBoundaries.minLatitude)
+        {
+          setGeoPointYMsg("Value must be between " + bcBoundaries.minLatitude + " and " + bcBoundaries.maxLatitude + " degrees");
+        }
+        else
+        {
+          setGeoPointYMsg("");
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
+            setUpdateComplaint(allegationComplaint);
+          }
+        }
+      }
+      else
+      {
+          setGeoPointYMsg("");
+          if(complaintType === COMPLAINT_TYPES.HWCR)
+          {
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
+            setUpdateComplaint(hwcrComplaint);
+          }
+          else if(complaintType === COMPLAINT_TYPES.ERS)
+          {
+            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
+            setUpdateComplaint(allegationComplaint);
+          }
       }
   }
 
@@ -801,8 +840,8 @@ function handleViolationTypeChange(selectedOption: Option | null) {
           complaintDescErrorMsg={complaintDescErrorMsg} handleComplaintDescChange={handleComplaintDescChange}
           attractantsErrorMsg={attractantsErrorMsg} handleAttractantsChange={handleAttractantsChange}
           communityErrorMsg={communityErrorMsg} handleCommunityChange={handleCommunityChange}
-          geoPointXMsg={geoPointXMsg} handleGeoPointXChange={handleGeoPointXChange}
-          geoPointYMsg={geoPointYMsg} handleGeoPointYChange={handleGeoPointYChange}
+          geoPointXMsg={geoPointXMsg} handleGeoPointChange={handleGeoPointChange}
+          geoPointYMsg={geoPointYMsg}
           emailMsg={emailMsg} handleEmailChange={handleEmailChange}
           primaryPhoneMsg={primaryPhoneMsg} handlePrimaryPhoneChange={handlePrimaryPhoneChange}
           secondaryPhoneMsg={secondaryPhoneMsg} handleSecondaryPhoneChange={handleSecondaryPhoneChange}
