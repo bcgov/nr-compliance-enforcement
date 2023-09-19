@@ -8,6 +8,7 @@ import {
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
   selectComplaint,
   setComplaint,
+  setComplaintLocation,
   updateAllegationComplaint,
   updateWildlifeComplaint,
 } from "../../../store/reducers/complaints";
@@ -47,6 +48,7 @@ export const ComplaintDetails: FC = () => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
       dispatch(setComplaint(null));
+      dispatch(setComplaintLocation(null));
     };
   }, [dispatch]);
 
