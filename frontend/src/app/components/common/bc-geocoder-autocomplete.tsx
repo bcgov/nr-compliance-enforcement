@@ -3,9 +3,8 @@ import CreatableSelect from "react-select/creatable";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
   getComplaintLocationByAddress,
-  selectGeocodedComplaintLocation,
+  selectComplaintLocation,
 } from "../../store/reducers/complaints";
-import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
 interface Props {
   value?: string;
@@ -41,7 +40,7 @@ export const BCGeocoderAutocomplete: FC<Props> = ({
   };
 
   const dispatch = useAppDispatch();
-  const complaintLocation = useAppSelector(selectGeocodedComplaintLocation);
+  const complaintLocation = useAppSelector(selectComplaintLocation);
 
   useEffect(() => {
     const fetchAddresses = async (inputValue: string) => {

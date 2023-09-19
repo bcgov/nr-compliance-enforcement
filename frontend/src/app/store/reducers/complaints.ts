@@ -95,9 +95,9 @@ export const complaintSlice = createSlice({
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
-    setGeocodedComplaintLocation: (state, action) => {
-      const { payload: geocodedComplaintLocation } = action;
-      return { ...state, geocodedComplaintLocation };
+    setComplaintLocation: (state, action) => {
+      const { payload: complaintLocation } = action;
+      return { ...state, complaintLocation };
     },
     setZoneAtAGlance: (state, action) => {
       const { payload: statistics } = action;
@@ -169,7 +169,7 @@ export const {
   setTotalCount,
   setComplaintsOnMap,
   setComplaint,
-  setGeocodedComplaintLocation,
+  setComplaintLocation,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
@@ -323,7 +323,7 @@ export const getWildlifeComplaintByComplaintIdentifier =
           location_summary_text,
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
-        dispatch(getGeocodedComplaintLocation(area_name, location_summary_text));
+        dispatch(getComplaintLocation(area_name, location_summary_text));
       }
 
       dispatch(setComplaint({ ...response }));
@@ -352,7 +352,7 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
           location_summary_text,
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
-        await dispatch(getGeocodedComplaintLocation(area_name, location_summary_text));
+        await dispatch(getComplaintLocation(area_name, location_summary_text));
       }
       setUpdateComplaint(response);
 
@@ -384,7 +384,7 @@ export const getAllegationComplaintByComplaintIdentifier =
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
 
-        dispatch(getGeocodedComplaintLocation(area_name, location_summary_text));
+        dispatch(getComplaintLocation(area_name, location_summary_text));
       }
 
       dispatch(setComplaint({ ...response }));
@@ -414,7 +414,7 @@ export const getAllegationComplaintByComplaintIdentifier =
           location_summary_text,
           cos_geo_org_unit: { area_name },
         } = ceComplaint;
-        await dispatch(getGeocodedComplaintLocation(area_name, location_summary_text));
+        await dispatch(getComplaintLocation(area_name, location_summary_text));
       }
       setUpdateComplaint(response);
 
@@ -459,7 +459,7 @@ export const getComplaintLocationByAddress =
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
       );
       const response = await get<Feature>(dispatch, parameters);
-      dispatch(setGeocodedComplaintLocation(response));
+      dispatch(setComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
     } finally {
@@ -468,7 +468,7 @@ export const getComplaintLocationByAddress =
   };
 
   // Used to get the complaint location by area and address
-  export const getGeocodedComplaintLocation =
+  export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
     try {
@@ -485,7 +485,7 @@ export const getComplaintLocationByAddress =
         );
       }
       const response = await get<Feature>(dispatch, parameters);
-      dispatch(setGeocodedComplaintLocation(response));
+      dispatch(setComplaintLocation(response));
     } catch (error) {
       //-- handle the error message
     } finally {
@@ -627,7 +627,7 @@ export const selectComplaint = (
   return complaint;
 };
 
-export const selectGeocodedComplaintLocation = (
+export const selectComplaintLocation = (
   state: RootState
 ): Feature | null | undefined => {
   const {

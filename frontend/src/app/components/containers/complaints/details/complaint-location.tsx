@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
   selectComplaintDeails,
-  selectGeocodedComplaintLocation,
+  selectComplaintLocation,
 } from "../../../../store/reducers/complaints";
 import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
@@ -24,7 +24,7 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
   const { coordinates } = useAppSelector(
     selectComplaintDeails(complaintType)
   ) as ComplaintDetails;
-  const complaintLocation = useAppSelector(selectGeocodedComplaintLocation);
+  const complaintLocation = useAppSelector(selectComplaintLocation);
 
   // the lat and long of the marker we need to display on the map
   // Initialized to 0.  This will either be populated using the optionally supplied coordinates
@@ -40,17 +40,6 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
     lng = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] : 0);
   }
 
-  if (!lat && !lng) {
-    return (
-      <div className="comp-complaint-details-location-block">
-        <h6>Complaint Location</h6>
-        <div className="comp-complaint-location">
-          Unable to determine location based on address and community
-          information.
-        </div>
-      </div>
-    );
-  } else {
     return (
       <div className="comp-complaint-details-location-block">
         <h6>Complaint Location</h6>
@@ -63,5 +52,5 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
         </div>
       </div>
     );
-  }
+  
 };
