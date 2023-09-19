@@ -114,14 +114,8 @@ export class AllegationComplaintController {
 
   @Patch(":id")
   @Roles(Role.COS_OFFICER)
-  update(
-    @Param("id") id: UUID,
-    @Body() updateAllegationComplaintDto: UpdateAllegationComplaintDto
-  ) {
-    return this.allegationComplaintService.update(
-      id,
-      updateAllegationComplaintDto
-    );
+  update(@Param('id') id: UUID, @Body('allegationComplaint') updateAllegationComplaintDto: string) {
+    return this.allegationComplaintService.update(id, updateAllegationComplaintDto);
   }
 
   @Delete(":id")

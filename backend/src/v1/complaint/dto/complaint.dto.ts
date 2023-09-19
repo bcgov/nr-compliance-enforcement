@@ -5,6 +5,7 @@ import { ComplaintStatusCode } from '../../complaint_status_code/entities/compla
 import { GeoOrganizationUnitCode } from '../../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
 import { Geometry, Point } from 'geojson';
 import { CosGeoOrgUnit } from '../../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
+import { PersonComplaintXref } from '../../person_complaint_xref/entities/person_complaint_xref.entity';
 
 export class ComplaintDto {
   @ApiProperty({
@@ -43,6 +44,12 @@ export class ComplaintDto {
       "The geographical organization code of the organization that currently owns the complaint",
   })
   cos_geo_org_unit: CosGeoOrgUnit;
+
+  @ApiProperty({
+    example: "DCC",
+    description: "The geographical organization code of the organization that currently owns the complaint",
+  })
+  person_complaint_xref: PersonComplaintXref[];
 
   @ApiProperty({
     example: "Bear overturning garbage bins",

@@ -110,7 +110,6 @@ export class PersonComplaintXrefService {
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
       }
-      console.log(JSON.stringify(createPersonComplaintXrefDto));
       // create a new complaint assignment record
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
       this.logger.debug(

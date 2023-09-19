@@ -22,8 +22,8 @@ export class ViolationCodeService {
     return this.violationCodeRepository.find();
   }
 
-  async findOne(id: any): Promise<ViolationCode> {
-    return this.violationCodeRepository.findOneOrFail(id);
+  async findOne(id: string): Promise<ViolationCode> {
+    return this.violationCodeRepository.findOneByOrFail({violation_code: id});
   }
 
   async update(violation_code: string, updateViolationCodeDto: UpdateViolationCodeDto): Promise<ViolationCode> {
