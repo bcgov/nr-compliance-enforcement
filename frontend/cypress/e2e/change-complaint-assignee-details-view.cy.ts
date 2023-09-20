@@ -25,7 +25,7 @@ describe('Complaint Change Assignee spec - Details View', () => {
       cy.get('.comp-loader-overlay').should('exist');
       cy.get('.comp-loader-overlay').should('not.exist');
 
-      cy.get("#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
+      cy.get("#complaint-list > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
 
       cy.get('.comp-loader-overlay').should('exist');
       cy.get('.comp-loader-overlay').should('not.exist');

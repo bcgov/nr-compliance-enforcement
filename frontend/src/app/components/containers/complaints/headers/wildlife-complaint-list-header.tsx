@@ -80,6 +80,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
         />
 
         <SortableHeader
+          id="update-date-column"
           title="Last Updated"
           sortFnc={handleSort}
           sortKey="update_timestamp"

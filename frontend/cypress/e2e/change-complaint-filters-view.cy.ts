@@ -21,7 +21,7 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get(complaintTypes[index]).click({ force: true });
       
       //-- check to make sure there are items in the table
-      cy.get("#comp-table")
+      cy.get("#complaint-list")
       .find("tr")
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(0);

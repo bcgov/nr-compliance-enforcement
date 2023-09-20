@@ -981,17 +981,6 @@ export const selectWildlifeComplaintsCount = (state: RootState): number => {
   return wildlife ? wildlife.length : 0;
 };
 
-export const selectWildlifeComplaintsOnMapCount = (
-  state: RootState
-): number => {
-  const {
-    complaints: { complaintItemsOnMap },
-  } = state;
-  const { wildlife } = complaintItemsOnMap;
-
-  return wildlife ? wildlife.length : 0;
-};
-
 export const selectAllegationComplaints = (
   state: RootState
 ): Array<AllegationComplaint> => {
@@ -1029,15 +1018,22 @@ export const selectComplaintsByType =
     }
   };
 
-export const selectAllegationComplaintsOnMapCount = (
-  state: RootState
-): number => {
+export const selectTotalComplaintsOnMapByType = 
+(complaintType: string) =>
+(state: RootState): number => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
-  const { allegations } = complaintItemsOnMap;
+  const { allegations, wildlife } = complaintItemsOnMap;
 
-  return allegations ? allegations.length : 0;
+  switch (complaintType) {
+    case COMPLAINT_TYPES.ERS:
+      return allegations ? allegations.length : 0;
+    case COMPLAINT_TYPES.HWCR:
+      return wildlife ? wildlife.length : 0;
+    default:
+      return 0;
+  }
 };
 
 export const selectComplaintLocations =

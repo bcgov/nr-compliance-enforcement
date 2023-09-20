@@ -24,13 +24,13 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get('.comp-loader-overlay').should('not.exist');
 
       //-- check to make sure there are items in the table
-      cy.get("#comp-table")
+      cy.get("#complaint-list")
         .find("tr")
         .then(({ length }) => {
           expect(length, "rows N").to.be.gt(0);
         });
      
-      cy.get("#comp-table > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
+      cy.get("#complaint-list > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
 
       cy.window().scrollTo('top')
 

@@ -88,6 +88,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           currentSort={sortKey}
           sortDirection={sortDirection}
           className="comp-cell-width-110 comp-header-horizontal-border"
+          id="update-date-column"
         />
 
         <th className="comp-cell-width-30 comp-header-right-radius">
