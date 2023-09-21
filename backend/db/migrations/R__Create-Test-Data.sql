@@ -1281,7 +1281,11 @@ set location_geometry_point = 'POINT (-127.4810142 50.4217838)'
 where t.complaint_identifier  = '23-006888';
 
 -- update the test records so that we can sort by them and find them via cypress tests
-update complaint set incident_datetime  = current_timestamp 
+update complaint set update_timestamp  = current_timestamp 
+where complaint_identifier in ('23-007890','23-006888','23-007023','23-000076');
+update allegation_complaint set update_timestamp  = current_timestamp 
+where complaint_identifier in ('23-007890','23-006888','23-007023');
+update hwcr_complaint  set update_timestamp  = current_timestamp 
 where complaint_identifier in ('23-007890','23-006888','23-007023','23-000076');
 update complaint set caller_phone_1 = '+12505561234'
 where complaint_identifier  = '23-000076';
