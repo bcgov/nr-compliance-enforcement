@@ -9,7 +9,7 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
 
 interface MapProps {
-  markers: { lat: number; lng: number }[];
+  markers: { complaintIdentifier: string, lat: number; lng: number }[];
 }
 
 const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
@@ -54,7 +54,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
             position={[marker.lat, marker.lng]}
             icon={customMarkerIcon}
           >
-            <Popup>{marker.lat} {marker.lng}</Popup>
+            <Popup><ComplaintSummaryOnMarker complaintIdentifier={marker.complaintIdentifier}></Popup>
           </Marker>
         ))}
       </MarkerClusterGroup>

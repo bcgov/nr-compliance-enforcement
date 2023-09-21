@@ -1042,16 +1042,17 @@ export const selectAllegationComplaintsOnMapCount = (
 
 export const selectComplaintLocations =
   (complaintType: string) =>
-  (state: RootState): Array<{ lat: number; lng: number }> => {
+  (state: RootState): Array<{ complaint_identifier: string; lat: number; lng: number }> => {
     const {
       complaints: { complaintItemsOnMap },
     } = state;
 
     const flattenCoordinates = (
       collection: Array<HwcrComplaint> | Array<AllegationComplaint>
-    ): Array<{ lat: number; lng: number }> => {
+    ): Array<{ complaint_identifier: string; lat: number; lng: number }> => {
       if (collection) {
         return collection.map((item) => ({
+          complaint_identifier: item.complaint_identifier,
           lat: +item.complaint_identifier.location_geometry_point.coordinates[
             Coordinates.Latitude
           ],
@@ -1061,10 +1062,10 @@ export const selectComplaintLocations =
         }));
       }
 
-      return new Array<{ lat: number; lng: number }>();
+      return new Array<{complaint_identifier: string; lat: number; lng: number }>();
     };
 
-    let coordinates = new Array<{ lat: number; lng: number }>();
+    let coordinates = new Array<{ complaint_identifier: string; lat: number; lng: number }>();
 
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
@@ -1089,14 +1090,15 @@ export const selectComplaintLocations =
 
 export const selectWildlifeComplaintLocations = (
   state: RootState
-): { lat: number; lng: number }[] => {
+): { complaint_identifier: string; lat: number; lng: number }[] => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
   const { wildlife } = complaintItemsOnMap;
 
-  let coordinatesArray: { lat: number; lng: number }[] = wildlife
+  let coordinatesArray: { complaint_identifier: string; lat: number; lng: number }[] = wildlife
     ? wildlife.map((item) => ({
+      complaint_identifier: item.complaint_identifier,
         lat: +item.complaint_identifier.location_geometry_point.coordinates[
           Coordinates.Latitude
         ],
