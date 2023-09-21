@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AttractantHwcrXrefService } from './attractant_hwcr_xref.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AttractantHwcrXref } from './entities/attractant_hwcr_xref.entity';
+import { DataSource } from 'typeorm';
+import { dataSourceMockFactory } from '../../../test/mocks/datasource';
 
 describe('AttractantHwcrXrefService', () => {
   let service: AttractantHwcrXrefService;
@@ -15,7 +17,11 @@ describe('AttractantHwcrXrefService', () => {
           useValue: {
 
           },
-        },],
+        },
+        {
+          provide: DataSource,
+          useFactory: dataSourceMockFactory
+        }],
     }).compile();
 
     service = module.get<AttractantHwcrXrefService>(AttractantHwcrXrefService);
