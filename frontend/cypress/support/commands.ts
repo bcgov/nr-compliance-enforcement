@@ -166,15 +166,6 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
 
-  cy.get("#update-date-column").click({ force: true }); //sort by last updated
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-
-  cy.get("#update-date-column").click({ force: true }); //sort by last updated
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-
-
   //-- check to make sure there are items in the table
   cy.get("#complaint-list")
     .find("tr")
@@ -206,14 +197,7 @@ Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: 
   cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
-  cy.get("#update-date-column").click({ force: true }); //sort by update date, descending
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-  cy.get("#update-date-column").click({ force: true }); //sort by last updated
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-
-  
+ 
   //-- check to make sure there are items in the table
   cy.get("#complaint-list")
     .find("tr")
