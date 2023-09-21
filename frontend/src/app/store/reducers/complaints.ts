@@ -1113,14 +1113,15 @@ export const selectWildlifeComplaintLocations = (
 
 export const selectAllegationComplaintLocations = (
   state: RootState
-): { lat: number; lng: number }[] => {
+): { complaint_identifier: string; lat: number; lng: number }[] => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
   const { allegations } = complaintItemsOnMap;
 
-  const coordinatesArray: { lat: number; lng: number }[] = allegations.map(
+  const coordinatesArray: { complaint_identifier: string; lat: number; lng: number }[] = allegations.map(
     (item) => ({
+      complaint_identifier: item.complaint_identifier,
       lat: +item.complaint_identifier.location_geometry_point.coordinates[
         Coordinates.Latitude
       ],
