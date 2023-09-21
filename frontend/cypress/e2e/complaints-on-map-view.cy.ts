@@ -4,7 +4,7 @@ HWLC and Enforcement list screens
 */
 describe('Complaints on map tests', () => {
 
-  const complaintTypes = ['#hwcr-tab', '#ers-tab'];
+  const complaintTypes = ['#ers-tab','#hwcr-tab'];
 
   beforeEach(function() {
     cy.viewport("macbook-16");
@@ -16,14 +16,17 @@ describe('Complaints on map tests', () => {
   
     it('Switch to map view', () => {
       cy.visit("/");
+
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
+
 
       cy.get('#list_toggle_id').should('exist');
-      cy.get('#map_list_toggle_id').should('exist'); //verifies that the list/map toggle button appears.  Click the map view
-      cy.get('#map_list_toggle_id').click();
+      cy.get('#map_toggle_id').should('exist'); //verifies that the list/map toggle button appears.  Click the map view
+      cy.get('#map_toggle_id').click({force: true});
 
       // wait for the map to load
       cy.get('.comp-loader-overlay').should('exist');

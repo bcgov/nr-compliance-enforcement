@@ -2,72 +2,49 @@
 Test to verify that the user is able to change the status both the
 HWLC and Enforcement details screens
 */
-describe('Complaint Change Status spec - Details View', () => {
+describe("Complaint Change Status spec - Details View", () => {
+  const complaintTypes = ["#hwcr-tab", "#ers-tab"];
 
-  const complaintTypes = ['#hwcr-tab', '#ers-tab'];
-
-  beforeEach(function() {
+  beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
   });
 
-  Cypress._.times(complaintTypes.length, ((index) => {
+  Cypress._.times(complaintTypes.length, (index) => {
+    it("Changes status of complaint to open, closed, and back to open", () => {
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        cy.navigateToHWLCDetailsScreen("23-000076");
+      } else {
+        cy.navigateToAllegationDetailsScreen("23-006888");
+      }
 
-    it('Changes status of complaint to open, closed, and back to open', () => {
-      
-      cy.visit("/");
+      cy.get("#details-screen-update-status-button").click({ force: true });
 
-      //-- click on HWCR tab
-      cy.get(complaintTypes[index]).click({ force: true });
-
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
-
-      //-- check to make sure there are items in the table
-      cy.get("#complaint-list")
-        .find("tr")
-        .then(({ length }) => {
-          expect(length, "rows N").to.be.gt(0);
-        });
-     
-      cy.get("#complaint-list > tbody > tr:nth-child(1) td.comp-location-cell.comp-cell").click({ force: true });
-
-      cy.window().scrollTo('top')
-
-      cy.get('#details-screen-update-status-button').click({ force: true });
-
-      cy.get('#complaint_status_dropdown').click();
+      cy.get("#complaint_status_dropdown").click();
 
       // Select the option with value "Closed"
-      cy.get('.comp-select__option')
-        .contains('Closed')
-        .click()
+      cy.get(".comp-select__option").contains("Closed").click();
 
-      cy.get('#update_complaint_status_button').click();
+      cy.get("#update_complaint_status_button").click();
 
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
 
+      cy.get("#comp-details-status-text-id").contains("CLOSED").should("exist");
 
-      cy.get('#comp-details-status-text-id').contains('CLOSED').should('exist');
+      cy.get("#details-screen-update-status-button").click({ force: true });
 
-      cy.get('#details-screen-update-status-button').click({ force: true });
-
-      cy.get('#complaint_status_dropdown').click()
+      cy.get("#complaint_status_dropdown").click();
 
       // Select the option with value "Opened"
-      cy.get('.comp-select__option')
-        .contains('Open')
-        .click()
+      cy.get(".comp-select__option").contains("Open").click();
 
-      cy.get('#update_complaint_status_button').click();
+      cy.get("#update_complaint_status_button").click();
 
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
 
-      cy.get('#comp-details-status-text-id').contains('OPEN').should('exist');
-      
-
+      cy.get("#comp-details-status-text-id").contains("OPEN").should("exist");
     });
-  }));
+  });
 });
