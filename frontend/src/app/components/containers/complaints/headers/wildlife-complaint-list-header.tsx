@@ -24,6 +24,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           className="comp-cell-width-95 comp-header-left-radius"
         />
         <SortableHeader
+          id="incident-date-column"
           title="Date/Time"
           sortFnc={handleSort}
           sortKey="incident_reported_datetime"
