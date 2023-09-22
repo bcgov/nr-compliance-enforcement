@@ -4485,3 +4485,28 @@ INSERT INTO public.allegation_complaint(in_progress_ind,observed_ind,suspect_wit
 INSERT INTO public.allegation_complaint(in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_timestamp,complaint_identifier,violation_code) VALUES(True,True,null,'CDOYLEWA@idir','2023-07-01 09:27:42','23-024697','AINVSPC') ON CONFLICT DO NOTHING;
 INSERT INTO public.allegation_complaint(in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_timestamp,complaint_identifier,violation_code) VALUES(False,False,null,'PBRACKEN@idir','2023-07-01 08:37:10','23-024677','DUMPING') ON CONFLICT DO NOTHING;
 INSERT INTO public.allegation_complaint(in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_timestamp,complaint_identifier,violation_code) VALUES(True,True,'New GMC black 1500 truck - Towing blue and white wake boat with black cover ','EFITCH@IDIR','2023-07-01 08:18:09','23-024673','WINVSPC') ON CONFLICT DO NOTHING;
+
+
+-- COMPENF-830; Update missing coordinates based on values from geocoder with 90%+ confidence values
+update complaint set location_geometry_point ='SRID=4326;POINT (-122.5955062 53.9186262)'::public.geometry where complaint_identifier = '23-024836';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.5734126 53.9599952)'::public.geometry where complaint_identifier = '23-025259';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.7289201 49.4453332)'::public.geometry where complaint_identifier = '23-025818';
+update complaint set location_geometry_point ='SRID=4326;POINT (-124.3602441 49.2671502)'::public.geometry where complaint_identifier = '23-025884';
+update complaint set location_geometry_point ='SRID=4326;POINT (-117.2871449 49.5141479)'::public.geometry where complaint_identifier = '23-026000';
+update complaint set location_geometry_point ='SRID=4326;POINT (-116.0596549 50.5425461)'::public.geometry where complaint_identifier = '23-026046';
+update complaint set location_geometry_point ='SRID=4326;POINT (-120.5539218 50.6629099)'::public.geometry where complaint_identifier = '23-026138';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.4584109 48.5736092)'::public.geometry where complaint_identifier = '23-026426';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.163558 49.268037)'::public.geometry where complaint_identifier = '23-026634';
+update complaint set location_geometry_point ='SRID=4326;POINT (-119.6068829 49.4556612)'::public.geometry where complaint_identifier = '23-027034';
+update complaint set location_geometry_point ='SRID=4326;POINT (-125.1396191 49.8647176)'::public.geometry where complaint_identifier = '23-027140';
+update complaint set location_geometry_point ='SRID=4326;POINT (-120.8673272 56.2314689)'::public.geometry where complaint_identifier = '23-027363';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.096665 55.329436)'::public.geometry where complaint_identifier = '23-027377';
+update complaint set location_geometry_point ='SRID=4326;POINT (-120.3841082 50.3548338)'::public.geometry where complaint_identifier = '23-027565';
+update complaint set location_geometry_point ='SRID=4326;POINT (-119.1380731 50.5418817)'::public.geometry where complaint_identifier = '23-028154';
+update complaint set location_geometry_point ='SRID=4326;POINT (-122.9750889 49.1675964)'::public.geometry where complaint_identifier = '23-028175';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.4815303 49.4238406)'::public.geometry where complaint_identifier = '23-028303';
+update complaint set location_geometry_point ='SRID=4326;POINT (-127.0721995 54.6779566)'::public.geometry where complaint_identifier = '23-028740';
+update complaint set location_geometry_point ='SRID=4326;POINT (-118.2498893 49.1234227)'::public.geometry where complaint_identifier = '23-029627';
+update complaint set location_geometry_point ='SRID=4326;POINT (-122.8650045 49.1576083)'::public.geometry where complaint_identifier = '23-031200';
+update complaint set location_geometry_point ='SRID=4326;POINT (-122.6558304 49.2072801)'::public.geometry where complaint_identifier = '23-031220';
+update complaint set location_geometry_point ='SRID=4326;POINT (-123.6031684 48.6880271)'::public.geometry where complaint_identifier = '23-031371';
