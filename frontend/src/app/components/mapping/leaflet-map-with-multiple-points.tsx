@@ -34,7 +34,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
       // Fit the map to the bounds
       mapRef.current.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [markers]);this is where shit is changing
+  }, [markers]);
 
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,
