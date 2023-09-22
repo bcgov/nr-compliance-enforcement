@@ -14,7 +14,7 @@ import {
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
-import Select, { StylesConfig } from "react-select";
+import Select from "react-select";
 import {
   selectAgencyDropdown,
   selectComplaintStatusCodeDropdown,
