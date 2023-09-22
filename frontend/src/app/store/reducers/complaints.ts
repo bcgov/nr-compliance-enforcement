@@ -266,7 +266,6 @@ export const getComplaintsOnMap =
 
     try {
       dispatch(toggleLoading(true));
-
       const apiEndpoint = (type: string): string => {
         switch (type) {
           case COMPLAINT_TYPES.ERS:
@@ -1042,17 +1041,19 @@ export const selectAllegationComplaintsOnMapCount = (
 
 export const selectComplaintLocations =
   (complaintType: string) =>
-  (state: RootState): Array<{ complaint_identifier: string; lat: number; lng: number }> => {
+  (state: RootState): Array<{ complaint_type: string; complaint_identifier: string; lat: number; lng: number }> => {
     const {
       complaints: { complaintItemsOnMap },
     } = state;
 
     const flattenCoordinates = (
+      complaint_type: string,
       collection: Array<HwcrComplaint> | Array<AllegationComplaint>
-    ): Array<{ complaint_identifier: string; lat: number; lng: number }> => {
+    ): Array<{ complaint_type: string, complaint_identifier: string; lat: number; lng: number }> => {
       if (collection) {
         return collection.map((item) => ({
-          complaint_identifier: item.complaint_identifier,
+          complaint_type: complaint_type,
+          complaint_identifier: item.complaint_identifier.complaint_identifier,
           lat: +item.complaint_identifier.location_geometry_point.coordinates[
             Coordinates.Latitude
           ],
@@ -1062,17 +1063,17 @@ export const selectComplaintLocations =
         }));
       }
 
-      return new Array<{complaint_identifier: string; lat: number; lng: number }>();
+      return new Array<{complaint_type: string; complaint_identifier: string; lat: number; lng: number }>();
     };
 
-    let coordinates = new Array<{ complaint_identifier: string; lat: number; lng: number }>();
+    let coordinates = new Array<{ complaint_type: string; complaint_identifier: string; lat: number; lng: number }>();
 
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         const { allegations } = complaintItemsOnMap;
 
         if (allegations && from(allegations).any()) {
-          coordinates = flattenCoordinates(allegations);
+          coordinates = flattenCoordinates(COMPLAINT_TYPES.ERS,allegations);
         }
         break;
       case COMPLAINT_TYPES.HWCR:
@@ -1080,7 +1081,7 @@ export const selectComplaintLocations =
         const { wildlife } = complaintItemsOnMap;
 
         if (wildlife && from(wildlife).any()) {
-          coordinates = flattenCoordinates(wildlife);
+          coordinates = flattenCoordinates(COMPLAINT_TYPES.HWCR,wildlife);
         }
         break;
     }
@@ -1090,15 +1091,16 @@ export const selectComplaintLocations =
 
 export const selectWildlifeComplaintLocations = (
   state: RootState
-): { complaint_identifier: string; lat: number; lng: number }[] => {
+): { complaint_type: string; complaint_identifier: string; lat: number; lng: number }[] => {
   const {
     complaints: { complaintItemsOnMap },
   } = state;
   const { wildlife } = complaintItemsOnMap;
 
-  let coordinatesArray: { complaint_identifier: string; lat: number; lng: number }[] = wildlife
+  let coordinatesArray: { complaint_type: string; complaint_identifier: string; lat: number; lng: number }[] = wildlife
     ? wildlife.map((item) => ({
-      complaint_identifier: item.complaint_identifier,
+      complaint_type: COMPLAINT_TYPES.HWCR,
+      complaint_identifier: item.complaint_identifier.complaint_identifier,
         lat: +item.complaint_identifier.location_geometry_point.coordinates[
           Coordinates.Latitude
         ],
@@ -1119,9 +1121,10 @@ export const selectAllegationComplaintLocations = (
   } = state;
   const { allegations } = complaintItemsOnMap;
 
-  const coordinatesArray: { complaint_identifier: string; lat: number; lng: number }[] = allegations.map(
+  const coordinatesArray: { complaint_type: string; complaint_identifier: string; lat: number; lng: number }[] = allegations.map(
     (item) => ({
-      complaint_identifier: item.complaint_identifier,
+      complaint_type: COMPLAINT_TYPES.ERS,
+      complaint_identifier: item.complaint_identifier.complaint_identifier,
       lat: +item.complaint_identifier.location_geometry_point.coordinates[
         Coordinates.Latitude
       ],

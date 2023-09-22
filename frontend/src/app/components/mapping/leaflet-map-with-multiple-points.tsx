@@ -7,9 +7,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
+import { ComplaintSummaryPopup } from "./complaint-summary-popup";
 
 interface MapProps {
-  markers: { complaintIdentifier: string, lat: number; lng: number }[];
+  markers: {
+    complaint_type: string;
+    complaint_identifier: string;
+    lat: number;
+    lng: number;
+  }[];
 }
 
 const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
@@ -21,12 +27,14 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
   useEffect(() => {
     if (mapRef.current && markers.length > 0) {
       // Calculate the bounds of all markers
-      const bounds = Leaflet.latLngBounds(markers.map(marker => [marker.lat, marker.lng] as LatLngExpression));
+      const bounds = Leaflet.latLngBounds(
+        markers.map((marker) => [marker.lat, marker.lng] as LatLngExpression)
+      );
 
       // Fit the map to the bounds
-      mapRef.current.fitBounds(bounds);
+      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [markers]);
+  }, [markers]);this is where shit is changing
 
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,
@@ -54,7 +62,12 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
             position={[marker.lat, marker.lng]}
             icon={customMarkerIcon}
           >
-            <Popup><ComplaintSummaryOnMarker complaintIdentifier={marker.complaintIdentifier}></Popup>
+            <Popup>
+              <ComplaintSummaryPopup
+                complaintType={marker.complaint_type}
+                complaint_identifier={marker.complaint_identifier}
+              />
+            </Popup>
           </Marker>
         ))}
       </MarkerClusterGroup>

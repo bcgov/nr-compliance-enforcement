@@ -112,3 +112,14 @@ export const renderCoordinates = (
 
   return result === 0 ? <>{"Not Provided"}</> : <>{result}</>;
 };
+
+export const applyStatusClass = (state: string): string => {
+  switch (state.toLowerCase()) {
+    case "open":
+      return "comp-status-badge-open";
+      case "closed": 
+      return "comp-status-badge-closed";
+    default: 
+    return "";
+  }
+};
