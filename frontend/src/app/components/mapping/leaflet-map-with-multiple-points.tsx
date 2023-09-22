@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
@@ -23,18 +23,19 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
     <FontAwesomeIcon icon={faMapMarkerAlt} />
   );
   const mapRef = useRef<Map | null>(null);
+  const [markersState, setMarkersState] = useState<{lat: number; lng: number}[]>(markers);
 
   useEffect(() => {
-    if (mapRef.current && markers.length > 0) {
+    if (mapRef.current && markersState.length > 0) {
       // Calculate the bounds of all markers
       const bounds = Leaflet.latLngBounds(
-        markers.map((marker) => [marker.lat, marker.lng] as LatLngExpression)
+        markersState.map((marker) => [marker.lat, marker.lng] as LatLngExpression)
       );
 
       // Fit the map to the bounds
       mapRef.current.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [markers]);
+  }, [markersState]);
 
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,
