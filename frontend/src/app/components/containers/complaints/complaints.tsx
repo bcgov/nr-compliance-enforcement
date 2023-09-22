@@ -5,7 +5,7 @@ import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
+import { selectTotalComplaintsByType, selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -22,6 +22,7 @@ import {
 import { selectDefaultZone, getOfficerDefaultZone, profileZoneDescription, profileZone } from '../../../store/reducers/app';
 import { DropdownOption } from '../../../types/code-tables/option';
 import { ComplaintMap } from "./complaint-map";
+import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 
 type Props = {
   defaultComplaintType: string;
@@ -37,6 +38,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const totalComplaints = useAppSelector(
     selectTotalComplaintsByType(complaintType)
   );
+
+  const totalComplaintsOnMap = useAppSelector(
+    selectTotalComplaintsOnMapByType(complaintType)
+  );
+
   const [isExpanded, setExpanded] = useState(false);
   const { getToggleProps } = useCollapse({ isExpanded });
 
@@ -69,8 +75,15 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       };
     });
 
-  const renderComplaintTotal = (code: string): string | undefined => {
-    if (complaintType === code) {
+  // renders the complaint count on the list and map views, for the selected complaint type
+  const renderComplaintTotal = (selectedComplaintType: string): string | undefined => {
+    
+    if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
+      if (complaintType === selectedComplaintType) {
+        return `(${totalComplaintsOnMap})`;
+      }
+    } else 
+    if (complaintType === selectedComplaintType) {
       return `(${totalComplaints})`;
     }
   };

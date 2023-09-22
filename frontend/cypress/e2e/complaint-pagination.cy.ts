@@ -26,9 +26,14 @@ describe('Complaint Paginate from list view', () => {
       cy.get(".comp-loader-overlay").should("exist");
       cy.get(".comp-loader-overlay").should("not.exist");
     
-      cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
       
       cy.get("#complaint_pagination_container_id").should("exist");
+
+      cy.get('[id^="pagination_page_"]').should('exist');
+
+      // Click on the second page
+      cy.get('[id="pagination_page_2_id"]').click();
 
     });
   }));

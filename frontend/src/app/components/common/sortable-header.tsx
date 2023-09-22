@@ -8,6 +8,7 @@ type Props = {
   currentSort: string;
   sortDirection: string;
   className?: string;
+  id?: string;
 };
 
 export const SortableHeader: FC<Props> = ({
@@ -17,10 +18,12 @@ export const SortableHeader: FC<Props> = ({
   currentSort,
   sortDirection,
   className,
+  id,
 }) => {
   return (
     <th
       className={["sortableHeader", className].join(" ")}
+      id={id}
       onClick={() => sortFnc(sortKey)}
     >
       <div className="comp-header-label">{title}</div>

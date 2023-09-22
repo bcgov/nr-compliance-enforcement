@@ -161,24 +161,20 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
 
-  cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
+  cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-
-  cy.get("#sort_by_update_timestamp_id").click({ force: true }); //sort by last updated
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
 
 
   //-- check to make sure there are items in the table
-  cy.get("#comp-table")
+  cy.get("#complaint-list")
     .find("tr")
     .then(({ length }) => {
       expect(length, "rows N").to.be.gt(0);
     });
 
-  cy.get("#comp-table > tbody > tr > td.comp-small-cell")
+  cy.get("#complaint-list > tbody > tr")
     .contains(complaintIdentifier)
     .click({ force: true });
 
@@ -195,18 +191,14 @@ Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: 
   //-- navigate to application root
   cy.visit("/");
 
-  //-- click on HWCR tab
+  //-- click on allegation tab
   cy.get("#ers-tab").click({ force: true });
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
-  cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so this complaint is in the list view
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-  cy.get("#sort_by_update_timestamp_id").click({ force: true }); //sort by update date, descending
+  cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
   
-
   //-- check to make sure there are items in the table
   cy.get("#complaint-list")
     .find("tr")
@@ -214,7 +206,7 @@ Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: 
       expect(length, "rows N").to.be.gt(0);
     });
 
-  cy.get("#complaint-list > tbody > tr > td.comp-small-cell")
+  cy.get("#complaint-list > tbody > tr > td")
     .contains(complaintIdentifier)
     .click({ force: true });
   cy.get(".comp-loader-overlay").should("exist");

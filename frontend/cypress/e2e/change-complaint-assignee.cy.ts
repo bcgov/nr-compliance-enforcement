@@ -22,7 +22,7 @@ describe('Complaint Assign Popover spec', () => {
 
       cy.get('.popover').should('not.exist');
 
-      cy.get("#comp-zone-close").click({ force: true }); //clear zone filter so we have some complaint is in the list view
+      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so we have some complaint is in the list view
     
       cy.get('.comp-loader-overlay').should('exist');
       cy.get('.comp-loader-overlay').should('not.exist');

@@ -75,7 +75,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       return (
         <div className="content filter-container">
           {/* <!-- wildlife filters --> */}
-          <div className="comp-filter-left" id="comp-filter-region-id">
+          <div className="comp-filter-left" id="comp-filter-nature-of-complaint-id">
             {/* <!-- nature of complaints --> */}
             <div className="comp-filter-label">Nature of Complaint</div>
             <div className="filter-select-padding">
@@ -91,7 +91,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
             </div>
           </div>
           {/* <!-- species --> */}
-          <div className="comp-filter" id="comp-filter-zone-id">
+          <div className="comp-filter" id="comp-species-filter-id">
             <div className="comp-filter-label">Species</div>
             <div className="filter-select-padding">
               <Select
@@ -175,7 +175,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           </div>
 
           {/* <!-- status --> */}
-          <div className="comp-filter" id="comp-filter-officer-id">
+          <div className="comp-filter" id="comp-filter-status-id">
             <div className="comp-filter-label">Status</div>
             <div className="filter-select-padding">
               <Select
@@ -201,7 +201,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       return (
         <div className="content filter-container">
           {/* <!-- allegation filters --> */}
-          <div className="comp-filter-left" id="comp-filter-region-id">
+          <div className="comp-filter-left" id="comp-filter-violation-id">
             {/* <!-- violation types --> */}
             <div className="comp-filter-label">Violation Type</div>
             <div className="filter-select-padding">
@@ -286,7 +286,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           </div>
 
           {/* <!-- status --> */}
-          <div className="comp-filter" id="comp-filter-officer-id">
+          <div className="comp-filter" id="comp-filter-status-id">
             <div className="comp-filter-label">Status</div>
             <div className="filter-select-padding">
               <Select
