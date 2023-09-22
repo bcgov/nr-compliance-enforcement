@@ -25,6 +25,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
         />
 
         <SortableHeader
+          id="incident-date-column"
           title="Date/Time"
           sortFnc={handleSort}
           sortKey="incident_reported_datetime"
@@ -88,6 +89,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           currentSort={sortKey}
           sortDirection={sortDirection}
           className="comp-cell-width-110 comp-header-horizontal-border"
+          id="update-date-column"
         />
 
         <th className="comp-cell-width-30 comp-header-right-radius">

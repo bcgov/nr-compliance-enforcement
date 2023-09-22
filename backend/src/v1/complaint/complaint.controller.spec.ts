@@ -3,6 +3,8 @@ import { ComplaintController } from './complaint.controller';
 import { ComplaintService } from './complaint.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Complaint } from './entities/complaint.entity';
+import { DataSource } from 'typeorm';
+import { dataSourceMockFactory } from '../../../test/mocks/datasource';
 
 describe('ComplaintController', () => {
   let controller: ComplaintController;
@@ -13,10 +15,12 @@ describe('ComplaintController', () => {
       providers: [ComplaintService,
         {
           provide: getRepositoryToken(Complaint),
-          useValue: {
-
-          },
-        },],
+          useValue: { },
+        },
+        {
+          provide: DataSource,
+          useFactory: dataSourceMockFactory
+        }],
     }).compile();
 
     controller = module.get<ComplaintController>(ComplaintController);
