@@ -8,6 +8,8 @@ import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
 import { ComplaintSummaryPopup } from "./complaint-summary-popup";
+import { useAppDispatch } from "../../hooks/hooks";
+import { getWildlifeComplaintByComplaintIdentifier, setComplaint } from "../../store/reducers/complaints";
 
 interface MapProps {
   markers: {
@@ -24,7 +26,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
   );
   const mapRef = useRef<Map | null>(null);
   const [markersState, setMarkersState] = useState<{lat: number; lng: number}[]>(markers);
-
+  
   useEffect(() => {
     if (mapRef.current && markersState.length > 0) {
       // Calculate the bounds of all markers
@@ -44,6 +46,17 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
     iconAnchor: [20, 40], // Adjust icon anchor point
   });
 
+  const dispatch = useAppDispatch();
+
+  const handlePopupOpen = (complaint_identifier: string) => (e: L.LeafletEvent) => {
+    dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
+  };
+
+  // unmount complaint when popup closes
+  const handlePopupClose = (e: L.LeafletEvent) => {
+    dispatch(setComplaint(null)); 
+  };
+
   return (
     <MapContainer
       style={{ height: "652px", width: "1330px", zIndex: 0 }}
@@ -56,19 +69,18 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <MarkerClusterGroup chunkedLoading>
-        {markers.map((marker, index) => (
+      <MarkerClusterGroup>
+        {markers.map((marker) => (
           <Marker
-            key={index}
+            key={marker.complaint_identifier}
             position={[marker.lat, marker.lng]}
             icon={customMarkerIcon}
+            eventHandlers={{ click: handlePopupOpen(marker.complaint_identifier), popupclose: handlePopupClose}} 
           >
-            <Popup>
               <ComplaintSummaryPopup
                 complaintType={marker.complaint_type}
                 complaint_identifier={marker.complaint_identifier}
               />
-            </Popup>
           </Marker>
         ))}
       </MarkerClusterGroup>

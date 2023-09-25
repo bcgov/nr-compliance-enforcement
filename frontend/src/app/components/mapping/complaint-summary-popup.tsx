@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   getWildlifeComplaintByComplaintIdentifier,
   selectComplaintDeails,
@@ -15,6 +15,7 @@ import {
 import { complaintTypeToName } from "../../types/app/complaint-types";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { Popup } from "react-leaflet";
 
 interface Props {
   complaint_identifier: string;
@@ -25,12 +26,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   complaint_identifier,
   complaintType,
 }) => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
-  }, [complaint_identifier, dispatch]);
-
+  
   const { officerAssigned, natureOfComplaint, species } = useAppSelector(
     selectComplaintHeader(complaintType)
   );
@@ -44,10 +40,10 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   );
 
   return (
+    <Popup className="map-comp-popup">
     <div className="map-comp-summary-popup-container">
       <div className="map-comp-summary-popup-details">
         <div className="map-comp-summary-popup-header">
-          <div className="map-comp-summary-popup-header">
             <div className="complaint-identifier">{complaint_identifier}</div>
             <div className="complaint-assignee ">
               <div
@@ -61,14 +57,12 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                   {officerAssigned}
                 </span>
               </div>
-            </div>
           </div>
         </div>
         <div className="comp-complaint-info">
           <div className="map-comp-summary-popup-subheading">
             <div
-              className="comp-box-conflict-type hwcr-conflict-type
-              "
+              className="comp-box-conflict-type hwcr-conflict-type"
             >
               {complaintTypeToName(complaintType)}
             </div>
@@ -82,7 +76,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
             </div>
           </div>
         </div>
-        <div>{natureOfComplaint}</div>
+        <div className="map-comp-nature-of-complaint">{natureOfComplaint}</div>
         <div className="map-comp-summary-popup-details-section">
           <div className="comp-details-content">
             <div>
@@ -112,5 +106,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({
         <Button variant="primary">View Details</Button>
       </Link>
     </div>
+    </Popup>
   );
 };
