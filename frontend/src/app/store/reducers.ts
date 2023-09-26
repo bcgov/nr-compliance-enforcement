@@ -5,6 +5,7 @@ import app from "./reducers/app";
 import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
+import complaintLocations from "./reducers/complaintLocations";
 
 
 export const rootReducer = combineReducers({
@@ -13,4 +14,5 @@ export const rootReducer = combineReducers({
   offices,
   complaints,
   codeTables,
+  complaintLocations,
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
@@ -12,23 +12,25 @@ import { useAppDispatch } from "../../hooks/hooks";
 import { getWildlifeComplaintByComplaintIdentifier, setComplaint } from "../../store/reducers/complaints";
 
 interface MapProps {
+  complaint_type: string;
   markers: {
-    complaint_type: string;
     complaint_identifier: string;
     lat: number;
     lng: number;
   }[];
 }
 
-const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
+const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, markers }) => {
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />
   );
   const mapRef = useRef<Map | null>(null);
   const [markersState, setMarkersState] = useState<{lat: number; lng: number}[]>(markers);
-  
+
+
   useEffect(() => {
     if (mapRef.current && markersState.length > 0) {
+
       // Calculate the bounds of all markers
       const bounds = Leaflet.latLngBounds(
         markersState.map((marker) => [marker.lat, marker.lng] as LatLngExpression)
@@ -48,7 +50,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
 
   const dispatch = useAppDispatch();
 
-  const handlePopupOpen = (complaint_identifier: string) => (e: L.LeafletEvent) => {
+  const handlePopupOpen = (complaint_identifier: string) => (e: L.PopupEvent) => {
     dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
   };
 
@@ -75,10 +77,10 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ markers }) => {
             key={marker.complaint_identifier}
             position={[marker.lat, marker.lng]}
             icon={customMarkerIcon}
-            eventHandlers={{ click: handlePopupOpen(marker.complaint_identifier), popupclose: handlePopupClose}} 
+            eventHandlers={{ popupopen: handlePopupOpen(marker.complaint_identifier), popupclose: handlePopupClose}} 
           >
               <ComplaintSummaryPopup
-                complaintType={marker.complaint_type}
+                complaintType={complaint_type}
                 complaint_identifier={marker.complaint_identifier}
               />
           </Marker>

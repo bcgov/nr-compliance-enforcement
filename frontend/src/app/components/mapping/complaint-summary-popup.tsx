@@ -11,6 +11,7 @@ import {
   formatDate,
   formatTime,
   getAvatarInitials,
+  getFirstInitialAndLastName,
 } from "../../common/methods";
 import { complaintTypeToName } from "../../types/app/complaint-types";
 import { Button } from "react-bootstrap";
@@ -26,7 +27,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   complaint_identifier,
   complaintType,
 }) => {
-  
   const { officerAssigned, natureOfComplaint, species } = useAppSelector(
     selectComplaintHeader(complaintType)
   );
@@ -41,11 +41,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({
 
   return (
     <Popup className="map-comp-popup">
-    <div className="map-comp-summary-popup-container">
-      <div className="map-comp-summary-popup-details">
-        <div className="map-comp-summary-popup-header">
+      <div className="map-comp-summary-popup-container">
+        <div className="map-comp-summary-popup-details">
+          <div className="map-comp-summary-popup-header">
             <div className="complaint-identifier">{complaint_identifier}</div>
-            <div className="complaint-assignee ">
+            <div className="complaint-assignee">
               <div
                 data-initials-sm={getAvatarInitials(officerAssigned)}
                 className="comp-orange-avatar-sm"
@@ -54,58 +54,66 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                   id="comp-details-assigned-officer-name-text-id"
                   className="comp-padding-left-xs"
                 >
-                  {officerAssigned}
+                  {getFirstInitialAndLastName(officerAssigned)}
                 </span>
               </div>
-          </div>
-        </div>
-        <div className="comp-complaint-info">
-          <div className="map-comp-summary-popup-subheading">
-            <div
-              className="comp-box-conflict-type hwcr-conflict-type"
-            >
-              {complaintTypeToName(complaintType)}
-            </div>
-            <div className="comp-box-species-type">{species}</div>
-
-            <div
-              id="comp-details-status-text-id"
-              className={`badge ${applyStatusClass(status)}`}
-            >
-              {status}
             </div>
           </div>
-        </div>
-        <div className="map-comp-nature-of-complaint">{natureOfComplaint}</div>
-        <div className="map-comp-summary-popup-details-section">
-          <div className="comp-details-content">
-            <div>
-              Logged <i className="bi bi-calendar comp-margin-right-xxs"></i>
-              {formatDate(loggedDate)}
-              <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-              {formatTime(loggedDate)}
+          <div className="comp-complaint-info">
+            <div className="map-comp-summary-popup-subheading">
+              <div className="map-comp-summary-popup-subheading-item comp-box-conflict-type hwcr-conflict-type">
+                {complaintTypeToName(complaintType)}
+              </div>
+              <div className="map-comp-summary-popup-subheading-item comp-box-species-type">{species}</div>
+              <div
+                id="comp-details-status-text-id"
+                className={`map-comp-summary-popup-subheading-item badge ${applyStatusClass(status)}`}
+              >
+                {status}
+              </div>
             </div>
           </div>
-          <div>Community {zone}</div>
-          <div>Location/Address {location}</div>
-          <div className="comp-details-content-label">Last Updated</div>
-          <div className="comp-details-content">
-            {lastUpdated && (
-              <>
+          <div className="map-comp-nature-of-complaint">
+            {natureOfComplaint}
+          </div>
+          <div className="map-comp-summary-popup-details-section">
+            <div className="comp-details-content">
+              <div>
+                <label>Logged</label>
                 <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                {formatDate(lastUpdated)}
+                {formatDate(loggedDate)}
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(lastUpdated)}
-              </>
-            )}
-            {!lastUpdated && <>Not Available</>}
+                {formatTime(loggedDate)}
+              </div>
+              <div>
+                <label>Community</label>
+                {zone}
+              </div>
+              <div>
+                <label>Location/Address</label>
+                <div>
+                  {location}
+                </div>
+              </div>
+              <div>
+                <label>Last Updated</label>
+                  {lastUpdated && (
+                  <>
+                    <i className="bi bi-calendar comp-margin-right-xxs"></i>
+                    {formatDate(lastUpdated)}
+                    <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
+                    {formatTime(lastUpdated)}
+                  </>
+                  )}
+                  {!lastUpdated && <>Not Available</>}
+              </div>
+            </div>
           </div>
         </div>
+        <Link to={`/complaint/${complaintType}/${complaint_identifier}`}>
+          <Button variant="primary">View Details</Button>
+        </Link>
       </div>
-      <Link to={`/complaint/HWCR/${complaint_identifier}`}>
-        <Button variant="primary">View Details</Button>
-      </Link>
-    </div>
     </Popup>
   );
 };

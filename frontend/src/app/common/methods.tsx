@@ -18,6 +18,26 @@ export const getAvatarInitials = (input: string): string => {
   }
 };
 
+export const getFirstInitialAndLastName = (fullName: string): string => {
+  // Split the full name into an array of words
+  const words = fullName.trim().split(' ');
+
+  if (words.length === 0) {
+    // If there are no words, return an empty string
+    return '';
+  } else if (words.length === 1) {
+    // If there is only one word, return the entire word as the last name
+    return words[0];
+  } else {
+    // Extract the first initial and last name
+    const firstInitial = words[0].charAt(0).toUpperCase();
+    const lastName = words[words.length - 1];
+
+    // Concatenate the first initial and last name with a space
+    return `${firstInitial}. ${lastName}`;
+  }
+}
+
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
     return "";
