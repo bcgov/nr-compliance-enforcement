@@ -543,7 +543,7 @@ function handleViolationTypeChange(selectedOption: Option | null) {
       {
         if(+lng > bcBoundaries.maxLongitude || +lng < bcBoundaries.minLongitude)
         {
-          setGeoPointXMsg("Value must be between " + bcBoundaries.minLongitude + " and " + bcBoundaries.maxLongitude + " degrees");
+          setGeoPointXMsg(`Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`);
         }
         else
         {
@@ -582,7 +582,7 @@ function handleViolationTypeChange(selectedOption: Option | null) {
       {
         if(+lat > bcBoundaries.maxLatitude || +lat < bcBoundaries.minLatitude)
         {
-          setGeoPointYMsg("Value must be between " + bcBoundaries.minLatitude + " and " + bcBoundaries.maxLatitude + " degrees");
+          setGeoPointYMsg(`Value must be between ${bcBoundaries.minLatitude} and ${bcBoundaries.maxLatitude} degrees`);
         }
         else
         {
