@@ -203,6 +203,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     selectViolationCodeDropdown
   ) as Option[];
 
+console.log("derp: ", referredByAgencyCodes)
+
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
