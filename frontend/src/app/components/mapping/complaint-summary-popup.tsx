@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import {
   getWildlifeComplaintByComplaintIdentifier,
-  selectComplaintDeails,
+  selectComplaintDetails,
   selectComplaintHeader,
 } from "../../store/reducers/complaints";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
@@ -32,7 +32,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   );
 
   const { location, zone } = useAppSelector(
-    selectComplaintDeails(complaintType)
+    selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
 
   const { loggedDate, lastUpdated, status } = useAppSelector(

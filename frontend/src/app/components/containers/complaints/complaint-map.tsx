@@ -81,9 +81,5 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
     };
   }, []);
 
-  useEffect(() => {
-    //alert('test10');
-  }, [coordinatesArray]);
-
   return <LeafletMapWithMultiplePoints complaint_type={type} markers={coordinatesArray} />;
 };

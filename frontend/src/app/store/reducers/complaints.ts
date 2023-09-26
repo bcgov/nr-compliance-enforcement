@@ -234,15 +234,6 @@ export const getWildlifeComplaintByComplaintIdentifier =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
-      const { complaint_identifier: ceComplaint }: any = response;
-
-      if (ceComplaint) {
-        const {
-          location_summary_text,
-          cos_geo_org_unit: { area_name },
-        } = ceComplaint;
-        dispatch(getComplaintLocation(area_name, location_summary_text));
-      }
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -263,15 +254,6 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
-      const { complaint_identifier: ceComplaint }: any = response;
-
-      if (ceComplaint) {
-        const {
-          location_summary_text,
-          cos_geo_org_unit: { area_name },
-        } = ceComplaint;
-        await dispatch(getComplaintLocation(area_name, location_summary_text));
-      }
       setUpdateComplaint(response);
 
       dispatch(setComplaint({ ...response }));
@@ -294,17 +276,6 @@ export const getAllegationComplaintByComplaintIdentifier =
       );
       const response = await get<AllegationComplaint>(dispatch, parameters);
 
-      const { complaint_identifier: ceComplaint }: any = response;
-
-      if (ceComplaint) {
-        const {
-          location_summary_text,
-          cos_geo_org_unit: { area_name },
-        } = ceComplaint;
-
-        dispatch(getComplaintLocation(area_name, location_summary_text));
-      }
-
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
@@ -325,15 +296,6 @@ export const getAllegationComplaintByComplaintIdentifier =
       );
       const response = await get<AllegationComplaint>(dispatch, parameters);
 
-      const { complaint_identifier: ceComplaint }: any = response;
-
-      if (ceComplaint) {
-        const {
-          location_summary_text,
-          cos_geo_org_unit: { area_name },
-        } = ceComplaint;
-        await dispatch(getComplaintLocation(area_name, location_summary_text));
-      }
       setUpdateComplaint(response);
 
       dispatch(setComplaint({ ...response }));
@@ -724,7 +686,7 @@ export const selectComplaintHeader =
     }
   };
 
-export const selectComplaintDeails =
+export const selectComplaintDetails =
   (complaintType: string) =>
   (state: RootState): ComplaintDetails => {
     const {

@@ -116,30 +116,23 @@ export const getComplaintsOnMap =
     }
   };
 
-
-export const selectWildlifeComplaintsOnMapCount = (
-  state: RootState
-): number => {
+export const selectTotalComplaintsOnMapByType = 
+(complaintType: string) =>
+(state: RootState): number => {
   const {
     complaintLocations: { complaintItemsOnMap },
   } = state;
-  const { wildlife } = complaintItemsOnMap;
+  const { allegations, wildlife } = complaintItemsOnMap;
 
-  return wildlife ? wildlife.length : 0;
+  switch (complaintType) {
+    case COMPLAINT_TYPES.ERS:
+      return allegations ? allegations.length : 0;
+    case COMPLAINT_TYPES.HWCR:
+      return wildlife ? wildlife.length : 0;
+    default:
+      return 0;
+  }
 };
-
-
-export const selectAllegationComplaintsOnMapCount = (
-  state: RootState
-): number => {
-  const {
-    complaintLocations: { complaintItemsOnMap },
-  } = state;
-  const { allegations } = complaintItemsOnMap;
-
-  return allegations ? allegations.length : 0;
-};
-
 export const selectComplaintLocations =
   (complaintType: string) =>
   (state: RootState): Array<{ complaint_type: string; complaint_identifier: string; lat: number; lng: number }> => {
