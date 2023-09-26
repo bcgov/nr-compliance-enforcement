@@ -102,12 +102,10 @@ export const getComplaintsOnMap =
           status: complaintStatusFilter?.value,
         }
       );
-
       const response = await get<
         HwcrComplaint | AllegationComplaint,
         ComplaintQueryParams
       >(dispatch, parameters);
-
       dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);

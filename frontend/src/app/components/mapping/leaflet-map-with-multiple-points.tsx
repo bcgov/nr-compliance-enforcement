@@ -9,7 +9,9 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
 import { ComplaintSummaryPopup } from "./complaint-summary-popup";
 import { useAppDispatch } from "../../hooks/hooks";
-import { getWildlifeComplaintByComplaintIdentifier, setComplaint } from "../../store/reducers/complaints";
+import { getAllegationComplaintByComplaintIdentifier, getWildlifeComplaintByComplaintIdentifier, setComplaint } from "../../store/reducers/complaints";
+import ComplaintType from "../../constants/complaint-types";
+import COMPLAINT_TYPES from "../../types/app/complaint-types";
 
 interface MapProps {
   complaint_type: string;
@@ -41,6 +43,12 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, mark
     }
   }, [markersState]);
 
+  useMemo(() => {
+    if (markersState.length !== markers.length)
+    setMarkersState(markers);
+
+  },[markers]);
+
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,
     className: "map-marker",
@@ -51,7 +59,11 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, mark
   const dispatch = useAppDispatch();
 
   const handlePopupOpen = (complaint_identifier: string) => (e: L.PopupEvent) => {
+    if (COMPLAINT_TYPES.HWCR === complaint_type) {
     dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
+    } else {
+      dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
+    }
   };
 
   // unmount complaint when popup closes

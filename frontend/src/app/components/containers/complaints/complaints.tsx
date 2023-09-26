@@ -23,7 +23,7 @@ import { selectDefaultZone, getOfficerDefaultZone, profileZoneDescription, profi
 import { DropdownOption } from '../../../types/code-tables/option';
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
-import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaintLocations";
+import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
 
 type Props = {
   defaultComplaintType: string;

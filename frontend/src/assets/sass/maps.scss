@@ -12,37 +12,18 @@
     z-index: 1;
 }
 
-
-.leaflet-popup-content-wrapper {
-    display: flex;
-    justify-content: center;
-}
-
-.leaflet-popup-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto !important;
-    /* Set width to auto */
-    max-width: 100%;
-    /* Ensure the content does not exceed the available width */
-}
-
 .map-comp-summary-popup-container {
     display: flex;
-    gap: 24px;
+    gap: 12px;
     flex-direction: column;
     justify-content: flex-start;
-    /* Align items to the left */
-}
-
-.map-comp-summary-popup-subheading-item {
-    white-space: nowrap;
+    min-width: 300px;
 }
 
 .map-comp-summary-popup-header {
     display: flex;
     justify-content: space-between;
+
 }
 
 .map-comp-summary-popup-header .complaint-identifier {
@@ -59,19 +40,16 @@
 
 .map-comp-summary-popup-subheading {
     display: flex;
-    justify-content: space-between;
+    
     gap: 12px;
     color: $white;
-}
-
-.map-comp-summary-popup-subheading:last-child {
-    margin-left: auto;
+    white-space: nowrap;
 }
 
 .map-comp-summary-popup-details {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     font-size: 16px;
 
     .comp-details-content {
@@ -85,6 +63,12 @@
         color: $gray-600;
         ;
     }
+
+    .comp-complaint-info {
+        display: inline !important;
+        align-items: center;
+    }
+
 }
 
 .map-comp-nature-of-complaint {
@@ -108,7 +92,6 @@
 .map-comp-summary-popup-subheading .comp-box-conflict-type {
     margin: 0px 12px;
     padding: 4px 12px;
-
     border-radius: 60px;
     font-size: 12px;
     font-weight: bold;
@@ -132,3 +115,28 @@
 .popup-invisible {
     visibility: visible;
 }
+
+.leaflet-popup-tip {
+    display: none; /* Hide the default tip (pointer) */
+}
+
+.leaflet-popup-content-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: px;
+}
+
+.leaflet-popup-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto !important;
+    /* Set width to auto */
+    max-width: 100%;
+    /* Ensure the content does not exceed the available width */
+}
+
+.leaflet-popup-close-button {
+    display: none; 
+ }

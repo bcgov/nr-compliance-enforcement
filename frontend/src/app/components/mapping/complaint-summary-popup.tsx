@@ -1,10 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import {
-  getWildlifeComplaintByComplaintIdentifier,
   selectComplaintDetails,
   selectComplaintHeader,
 } from "../../store/reducers/complaints";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppSelector } from "../../hooks/hooks";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import {
   applyStatusClass,
@@ -13,7 +12,9 @@ import {
   getAvatarInitials,
   getFirstInitialAndLastName,
 } from "../../common/methods";
-import { complaintTypeToName } from "../../types/app/complaint-types";
+import COMPLAINT_TYPES, {
+  complaintTypeToName,
+} from "../../types/app/complaint-types";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Popup } from "react-leaflet";
@@ -27,9 +28,12 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   complaint_identifier,
   complaintType,
 }) => {
-  const { officerAssigned, natureOfComplaint, species } = useAppSelector(
-    selectComplaintHeader(complaintType)
-  );
+  const { officerAssigned, natureOfComplaint, species, violationType } =
+    useAppSelector(selectComplaintHeader(complaintType));
+
+  const { violationInProgress } = useAppSelector(
+    selectComplaintDetails(complaintType)
+  ) as ComplaintDetails;
 
   const { location, zone } = useAppSelector(
     selectComplaintDetails(complaintType)
@@ -38,6 +42,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   const { loggedDate, lastUpdated, status } = useAppSelector(
     selectComplaintHeader(complaintType)
   );
+
+  // used to indicate what sections should be rendered in the popup
+  const renderHWCRSection = COMPLAINT_TYPES.HWCR === complaintType;
+
+  const inProgressInd = violationInProgress ? "In Progress" : "";
 
   return (
     <Popup className="map-comp-popup">
@@ -61,23 +70,41 @@ export const ComplaintSummaryPopup: FC<Props> = ({
           </div>
           <div className="comp-complaint-info">
             <div className="map-comp-summary-popup-subheading">
-              <div className="map-comp-summary-popup-subheading-item comp-box-conflict-type hwcr-conflict-type">
+              <div className="comp-box-conflict-type hwcr-conflict-type">
                 {complaintTypeToName(complaintType)}
               </div>
-              <div className="map-comp-summary-popup-subheading-item comp-box-species-type">{species}</div>
+              {renderHWCRSection ? (
+                <div className="comp-box-species-type">{species}</div>
+              ) : violationInProgress && (
+                <div
+                id="comp-details-status-text-id"
+                className={`badge ${applyStatusClass(status)}`}
+              >
+                {inProgressInd}
+              </div>
+
+              ) }
               <div
                 id="comp-details-status-text-id"
-                className={`map-comp-summary-popup-subheading-item badge ${applyStatusClass(status)}`}
+                className={`badge ${applyStatusClass(status)}`}
               >
                 {status}
               </div>
             </div>
           </div>
-          <div className="map-comp-nature-of-complaint">
-            {natureOfComplaint}
-          </div>
+          {renderHWCRSection && (
+            <div className="map-comp-nature-of-complaint">
+              {natureOfComplaint}
+            </div>
+          )}
           <div className="map-comp-summary-popup-details-section">
             <div className="comp-details-content">
+              {!renderHWCRSection && (
+                <div>
+                  <label>Violation Type</label>
+                  {violationType}
+                </div>
+              )}
               <div>
                 <label>Logged</label>
                 <i className="bi bi-calendar comp-margin-right-xxs"></i>
@@ -91,21 +118,19 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               </div>
               <div>
                 <label>Location/Address</label>
-                <div>
-                  {location}
-                </div>
+                <div>{location}</div>
               </div>
               <div>
                 <label>Last Updated</label>
-                  {lastUpdated && (
+                {lastUpdated && (
                   <>
                     <i className="bi bi-calendar comp-margin-right-xxs"></i>
                     {formatDate(lastUpdated)}
                     <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                     {formatTime(lastUpdated)}
                   </>
-                  )}
-                  {!lastUpdated && <>Not Available</>}
+                )}
+                {!lastUpdated && <>Not Available</>}
               </div>
             </div>
           </div>

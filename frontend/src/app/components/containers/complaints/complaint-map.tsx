@@ -6,7 +6,7 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
-import { getComplaintsOnMap, selectComplaintLocations, setComplaintsOnMap } from "../../../store/reducers/complaintLocations";
+import { getComplaintsOnMap, selectComplaintLocations, setComplaintsOnMap } from "../../../store/reducers/complaint-locations";
 
 type Props = {
   type: string;
