@@ -103,7 +103,7 @@ describe('PersonController', () => {
                         person_guid: null,
                         first_name: 'Miss',
                         middle_name_1: 'Jane',
-                        middle_name_2: null,
+                        middle_name_2: 'Angela',
                         last_name: 'Marple',
                         create_user_id: 'JEST',
                         create_timestamp: new Date(),

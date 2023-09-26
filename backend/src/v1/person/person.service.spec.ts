@@ -95,7 +95,7 @@ describe('PersonService', () => {
 
   //This method is not properly implemented yet.  Leaving this here so the test gets written when it is done.
   it('should return all values', async () => {
-    let response = await service.findAll();
+    let response = service.findAll();
     expect(response).toBe('This action returns all person');
   });
 
