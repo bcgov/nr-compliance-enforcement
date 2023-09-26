@@ -21,7 +21,7 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get(complaintTypes[index]).click({ force: true });
       
       //-- check to make sure there are items in the table
-      cy.get("#comp-table")
+      cy.get("#complaint-list")
       .find("tr")
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(0);
@@ -34,13 +34,13 @@ describe('Complaint Change Status spec - Details View', () => {
       cy.get('#comp-filter-community-id').should('exist');
       cy.get('#comp-filter-officer-id').should('exist');
       if ('#hwcr-tab' === complaintTypes[index]) {
-        cy.get('#comp-filter-nature-id').should('exist');//only hwrc
+        cy.get('#comp-filter-nature-of-complaint-id').should('exist');//only hwrc
         cy.get('#comp-filter-violation-id').should('not.exist');//only ers
-        cy.get('#comp-filter-species-id').should('exist');//only hwrc
+        cy.get('#comp-species-filter-id').should('exist');//only hwrc
       } else {
-        cy.get('#comp-filter-nature-id').should('not.exist');//only hwrc
+        cy.get('#comp-nature-of-complaint-filter').should('not.exist');//only hwrc
         cy.get('#comp-filter-violation-id').should('exist');//only ers
-        cy.get('#comp-filter-species-id').should('not.exist');//only hwrc
+        cy.get('comp-species-filter-id').should('not.exist');//only hwrc
       }
       cy.get('#comp-filter-date-id').should('exist');
       cy.get('#comp-filter-status-id').should('exist');

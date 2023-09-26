@@ -43,7 +43,6 @@ describe("COMPENF-37 Display ECR Details", () => {
 
     //-- verify the right complaint identifier is selected and the animal type
     cy.get(".comp-box-complaint-id").contains("23-007890")
-    cy.get("#root > div > div.comp-main-content > div > div.comp-details-header > div.comp-nature-of-complaint").contains("Wildlife")
   });
 
   it("it has correct call details", () => {

@@ -24,8 +24,6 @@ import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
-import { Coordinates } from "../../types/app/coordinate-type";
-import { from } from "linq-to-typescript";
 
 const initialState: ComplaintState = {
   complaintItems: {

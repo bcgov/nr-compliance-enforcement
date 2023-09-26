@@ -136,16 +136,16 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#primary-phone-pair-id input").should("exist");
 
     // Alternative 1 Phone
-    cy.get("#alternate-1-phone-pair-id label").should(($label) => {
+    cy.get("#secondary-phone-pair-id label").should(($label) => {
       expect($label).to.contain.text("Alternate 1 Phone");
     });
-    cy.get("#alternate-1-phone-pair-id input").should("exist");
+    cy.get("#secondary-phone-pair-id input").should("exist");
 
     // Alternative 2 Phone
-    cy.get("#alternate-2-phone-pair-id label").should(($label) => {
+    cy.get("#alternate-phone-pair-id label").should(($label) => {
       expect($label).to.contain.text("Alternate 2 Phone");
     });
-    cy.get("#alternate-2-phone-pair-id input").should("exist");
+    cy.get("#alternate-phone-pair-id input").should("exist");
 
     // Address
     cy.get("#address-pair-id label").should(($label) => {

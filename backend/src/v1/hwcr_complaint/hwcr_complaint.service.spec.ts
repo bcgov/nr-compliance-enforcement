@@ -16,7 +16,8 @@ import { Officer } from '../officer/entities/officer.entity';
 import { OfficerService } from '../officer/officer.service';
 import { PersonService } from '../person/person.service';
 import { Person } from '../person/entities/person.entity';
-import { PersonComplaintXref } from '../person_complaint_xref/entities/person_complaint_xref.entity';
+import { PersonComplaintXref} from '../person_complaint_xref/entities/person_complaint_xref.entity';
+import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
 
 describe('HwcrComplaintService', () => {
   let service: HwcrComplaintService;
@@ -63,7 +64,7 @@ describe('HwcrComplaintService', () => {
           provide: getRepositoryToken(Person),
           useValue: {},
         },
-        PersonComplaintXref,
+        PersonComplaintXrefService,
         {
           provide: getRepositoryToken(PersonComplaintXref),
           useValue: {},

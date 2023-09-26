@@ -130,7 +130,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
           {status}
         </button>
       </td>
-      <td
+      <td 
         className="sortableHeader comp-cell-width-110 comp-header-right-border"
         onClick={(event) => complaintClick(event, id)}
       >

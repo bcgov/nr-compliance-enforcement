@@ -18,6 +18,8 @@ import { OfficerService } from '../officer/officer.service';
 import { Officer } from '../officer/entities/officer.entity';
 import { PersonService } from '../person/person.service';
 import { Person } from '../person/entities/person.entity';
+import { PersonComplaintXref } from '../person_complaint_xref/entities/person_complaint_xref.entity';
+import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
@@ -312,6 +314,33 @@ describe("AllegationComplaintService", () => {
     delete: jest.fn(() => { return Promise.resolve(true)}),
   });
 
+  const personComplaintxRefMockFactory = () => ({
+    // mock repository functions for testing
+    findAll: jest.fn(),
+    find: jest.fn(),
+    findOneOrFail: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    queryRunner:
+      {
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        rollbackTransaction: jest.fn(),
+        release: jest.fn(),
+        manager: {
+          save: jest.fn()
+        }
+      },
+
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    //update: jest.fn().mockResolvedValue(true),
+    // as these do not actually use their return values in our sample
+    // we just make sure that their resolve is true to not crash
+    delete: jest.fn(() => { return Promise.resolve(true)}),
+  });
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -350,6 +379,11 @@ describe("AllegationComplaintService", () => {
           provide: getRepositoryToken(Person),
           useFactory: personRepositoryMockFactory,
         },
+        PersonComplaintXrefService,
+        {
+          provide: getRepositoryToken(PersonComplaintXref),
+          useFactory: personComplaintxRefMockFactory,
+        }
       ],
       
     }).compile().catch((err) => {
