@@ -52,43 +52,47 @@ export const ComplaintSummaryPopup: FC<Props> = ({
     <Popup className="map-comp-popup">
       <div className="map-comp-summary-popup-container">
         <div className="map-comp-summary-popup-details">
-          <div className="map-comp-summary-popup-header">
-            <div className="complaint-identifier">{complaint_identifier}</div>
-            <div className="complaint-assignee">
-              <div
-                data-initials-sm={getAvatarInitials(officerAssigned)}
-                className="comp-orange-avatar-sm"
-              >
-                <span
-                  id="comp-details-assigned-officer-name-text-id"
-                  className="comp-padding-left-xs"
+          <div className="map-comp-popup-header-container">
+            <div className="map-comp-summary-popup-header">
+              <div className="complaint-identifier">{complaint_identifier}</div>
+              <div className="complaint-assignee">
+                <div
+                  data-initials-sm={getAvatarInitials(officerAssigned)}
+                  className="comp-orange-avatar-sm"
                 >
-                  {getFirstInitialAndLastName(officerAssigned)}
-                </span>
+                  <span
+                    id="comp-details-assigned-officer-name-text-id"
+                    className="comp-padding-left-xs"
+                  >
+                    {getFirstInitialAndLastName(officerAssigned)}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="comp-complaint-info">
-            <div className="map-comp-summary-popup-subheading">
-              <div className="comp-box-conflict-type hwcr-conflict-type">
-                {complaintTypeToName(complaintType)}
-              </div>
-              {renderHWCRSection ? (
-                <div className="comp-box-species-type">{species}</div>
-              ) : violationInProgress && (
-                <div
-                id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(status)}`}
-              >
-                {inProgressInd}
-              </div>
 
-              ) }
-              <div
-                id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(status)}`}
-              >
-                {status}
+            <div className="comp-complaint-info">
+              <div className="map-comp-summary-popup-subheading">
+                <div className="comp-box-conflict-type hwcr-conflict-type">
+                  {complaintTypeToName(complaintType)}
+                </div>
+                {renderHWCRSection ? (
+                  <div className="comp-box-species-type">{species}</div>
+                ) : (
+                  violationInProgress && (
+                    <div
+                      id="comp-details-status-text-id"
+                      className="badge comp-violation-in-progress"
+                    >
+                      {inProgressInd}
+                    </div>
+                  )
+                )}
+                <div
+                  id="comp-details-status-text-id"
+                  className={`badge ${applyStatusClass(status)}`}
+                >
+                  {status}
+                </div>
               </div>
             </div>
           </div>
@@ -116,7 +120,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                 <label>Community</label>
                 {zone}
               </div>
-              <div>
+              <div className="map-comp-popup-address">
                 <label>Location/Address</label>
                 <div>{location}</div>
               </div>
