@@ -47,7 +47,7 @@ describe('PersonController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a person', () => {
+  it('should return 201 when a POST is called successfully', () => {
 
     const personDto = { 
                         person_guid: null,
@@ -61,43 +61,35 @@ describe('PersonController', () => {
                         update_timestamp: null
                       };
 
-    return request(app.getHttpServer())
+     request(app.getHttpServer())
       .post('/person/')
       .send({personDto})
       .expect(201)
   });
 
-  it('should fetch all people', () => {
-    return request(app.getHttpServer())
+  it('should return 200 when a GET is called successfully', () => {
+     request(app.getHttpServer())
       .get('/person/')
-      .expect(200)
-  });
+      .expect(200);
 
-  it('should fetch a single person', () => {
-    return request(app.getHttpServer())
+      request(app.getHttpServer())
       .get('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/')
-      .expect(200)
-  });
+      .expect(200);
 
-  it('should find people by zone', () => {
-    return request(app.getHttpServer())
+      request(app.getHttpServer())
       .get('/person/find-by-zone/SISL/')
-      .expect(200)
-  });
+      .expect(200);
 
-  it('should find people by zone', () => {
-    return request(app.getHttpServer())
+       request(app.getHttpServer())
       .get('/person/find-by-office/VICTORIA/')
-      .expect(200)
-  });
+      .expect(200);
 
-  it('should remove a single person', () => {
-    return request(app.getHttpServer())
+      request(app.getHttpServer())
       .delete('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/')
-      .expect(200)
+      .expect(200);
   });
 
-  it('should update a person', () => {
+  it('should return 200 when a PATCH is called successfully', () => {
 
     const personDto = { 
                         person_guid: null,
@@ -111,7 +103,7 @@ describe('PersonController', () => {
                         update_timestamp: null
                       };
 
-    return request(app.getHttpServer())
+     request(app.getHttpServer())
       .patch('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/')
       .send({personDto})
       .expect(200)
