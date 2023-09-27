@@ -230,7 +230,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
   dispatch(toggleLoading(true));
 
   try {
-    console.log(JSON.stringify(agencyCodes));
     if (!from(agencyCodes).any()) {
       dispatch(fetchAgencyCodes());
     }

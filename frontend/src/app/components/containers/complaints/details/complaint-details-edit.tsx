@@ -476,7 +476,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
-                      classNamePrefix='comp-select'
+                      classNamePrefix='comp-attractants-select'
                       onChange={handleAttractantsChange}
                       errMsg={attractantsErrorMsg}
                     />
@@ -755,7 +755,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="text"
                     className="comp-form-control"
                     defaultValue={address}
-                    id="comlaint-address-id"
+                    id="complaint-address-id"
                     onChange={e => handleAddressChange(e.target.value)}
                   />
                 </div>
@@ -785,7 +785,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     options={referredByAgencyCodes}
                     defaultValue={selectedAgencyCode}
                     id="referred-select-id"
-                    classNamePrefix='comp-select'
+                    classNamePrefix='comp-referred-select'
                     onChange={e => handleReferredByChange(e)}
                   />
                 </div>
