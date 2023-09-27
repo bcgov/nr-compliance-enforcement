@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import "react-leaflet-markercluster/dist/styles.min.css";
@@ -9,8 +9,11 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
 import { ComplaintSummaryPopup } from "./complaint-summary-popup";
 import { useAppDispatch } from "../../hooks/hooks";
-import { getAllegationComplaintByComplaintIdentifier, getWildlifeComplaintByComplaintIdentifier, setComplaint } from "../../store/reducers/complaints";
-import ComplaintType from "../../constants/complaint-types";
+import {
+  getAllegationComplaintByComplaintIdentifier,
+  getWildlifeComplaintByComplaintIdentifier,
+  setComplaint,
+} from "../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 
 interface MapProps {
@@ -22,20 +25,24 @@ interface MapProps {
   }[];
 }
 
-const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, markers }) => {
+const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
+  complaint_type,
+  markers,
+}) => {
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />
   );
   const mapRef = useRef<Map | null>(null);
-  const [markersState, setMarkersState] = useState<{lat: number; lng: number}[]>(markers);
-
+  const [markersState, setMarkersState] =
+    useState<{ lat: number; lng: number }[]>(markers);
 
   useEffect(() => {
     if (mapRef.current && markersState.length > 0) {
-
       // Calculate the bounds of all markers
       const bounds = Leaflet.latLngBounds(
-        markersState.map((marker) => [marker.lat, marker.lng] as LatLngExpression)
+        markersState.map(
+          (marker) => [marker.lat, marker.lng] as LatLngExpression
+        )
       );
 
       // Fit the map to the bounds
@@ -43,11 +50,9 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, mark
     }
   }, [markersState]);
 
-  useMemo(() => {
-    if (markersState.length !== markers.length)
-    setMarkersState(markers);
-
-  },[markers]);
+  useEffect(() => {
+    if (markersState.length !== markers.length) setMarkersState(markers);
+  }, [markers]);
 
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,
@@ -58,17 +63,22 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, mark
 
   const dispatch = useAppDispatch();
 
-  const handlePopupOpen = (complaint_identifier: string) => (e: L.PopupEvent) => {
-    if (COMPLAINT_TYPES.HWCR === complaint_type) {
-    dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
-    } else {
-      dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
-    }
-  };
+  const handlePopupOpen =
+    (complaint_identifier: string) => (e: L.PopupEvent) => {
+      if (COMPLAINT_TYPES.HWCR === complaint_type) {
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+        );
+      } else {
+        dispatch(
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+        );
+      }
+    };
 
   // unmount complaint when popup closes
   const handlePopupClose = (e: L.LeafletEvent) => {
-    dispatch(setComplaint(null)); 
+    dispatch(setComplaint(null));
   };
 
   return (
@@ -89,12 +99,15 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaint_type, mark
             key={marker.complaint_identifier}
             position={[marker.lat, marker.lng]}
             icon={customMarkerIcon}
-            eventHandlers={{ popupopen: handlePopupOpen(marker.complaint_identifier), popupclose: handlePopupClose}} 
+            eventHandlers={{
+              popupopen: handlePopupOpen(marker.complaint_identifier),
+              popupclose: handlePopupClose,
+            }}
           >
-              <ComplaintSummaryPopup
-                complaintType={complaint_type}
-                complaint_identifier={marker.complaint_identifier}
-              />
+            <ComplaintSummaryPopup
+              complaintType={complaint_type}
+              complaint_identifier={marker.complaint_identifier}
+            />
           </Marker>
         ))}
       </MarkerClusterGroup>

@@ -2,9 +2,7 @@
     color: red;
     font-size: 40px;
     text-align: center;
-    /* Horizontally center the text (icon) */
     line-height: 20px;
-    /* Vertically center the text (icon) */
 }
 
 .map-container {
@@ -68,7 +66,6 @@
     .comp-details-content label {
         margin-right: 10px;
         color: $gray-600;
-        ;
     }
 
     .comp-complaint-info {
@@ -89,13 +86,6 @@
     gap: 12px
 }
 
-/* Each row within the other-div */
-.map-comp-summary-popup-details-section .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
 .map-comp-summary-popup-subheading .comp-box-conflict-type {
     margin: 0px 12px;
     padding: 4px 12px;
@@ -114,10 +104,6 @@
     margin: 0px !important
 }
 
-.map-comp-summary-popup-subheading .comp-box-conflict-type.allegation-conflict-type {
-    background: $bc-standard-05;
-}
-
 .map-comp-popup-address {
     display: flex;
     flex-direction: column;
@@ -132,15 +118,19 @@
     visibility: visible;
 }
 
+/** Leaflet style updates **/
+
 .leaflet-popup-tip {
     display: none; /* Hide the default tip (pointer) */
 }
 
+.leaflet-popup {
+    bottom: 15px !important; /* requirement is to display the popup midway above marker, this does the trick.  Can't use transform because that's used for other magic by leaflet */
+}
 
 .leaflet-popup-content-wrapper {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
     padding: 0px;
 }
 
@@ -149,10 +139,8 @@
     align-items: center;
     justify-content: center;
     width: auto !important;
-    /* Set width to auto */
     max-width: 100%;
     margin: 24px !important;
-    /* Ensure the content does not exceed the available width */
 }
 
 .leaflet-popup-close-button {
