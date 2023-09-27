@@ -15,6 +15,7 @@ import {
   setComplaint,
 } from "../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
+import { isEqual } from "lodash";
 
 interface MapProps {
   complaint_type: string;
@@ -46,13 +47,18 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
       );
 
       // Fit the map to the bounds
-      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      mapRef.current.fitBounds(bounds, { padding: [35, 35] });
     }
   }, [markersState]);
 
+  // redux will update the location store when the complaint details are retrieved.  We don't want this to trigger
+  // a re-render of the map to fit the markers on screen.  So, let's compare the new markers against the marker state.
+  // If they're the same, don't re-center the map and don't zoom out.
   useEffect(() => {
-    if (markersState.length !== markers.length) setMarkersState(markers);
-  }, [markers]);
+    if (!isEqual(markersState, markers)) {
+      setMarkersState(markers);
+    }
+  }, [markers, markersState]);
 
   const customMarkerIcon = new Leaflet.DivIcon({
     html: iconHTML,

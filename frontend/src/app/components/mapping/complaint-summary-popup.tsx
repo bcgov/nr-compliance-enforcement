@@ -135,7 +135,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
           </div>
         </div>
         <Link to={`/complaint/${complaintType}/${complaint_identifier}`}>
-          <Button variant="primary">View Details</Button>
+          <Button id="view-complaint-details-button-id" variant="primary">View Details</Button>
         </Link>
       </div>
     </Popup>
