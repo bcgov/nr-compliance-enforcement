@@ -769,7 +769,8 @@ function handleViolationTypeChange(selectedOption: Option | null) {
       if(complaintType === COMPLAINT_TYPES.HWCR)
       {
           let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          if(selectedOption.value !== "")
+          debugger
+          if(selectedOption.value)
           {
             axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
               hwcrComplaint.complaint_identifier.referred_by_agency_code = response.data;
@@ -785,7 +786,7 @@ function handleViolationTypeChange(selectedOption: Option | null) {
       else if(complaintType === COMPLAINT_TYPES.ERS)
       {
           let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-          if(selectedOption.value !== "")
+          if(selectedOption.value)
           {
             axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
               allegationComplaint.complaint_identifier.referred_by_agency_code = response.data;
