@@ -15,14 +15,14 @@ import {
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
-import { 
-  selectAgencyDropdown, 
-  selectComplaintStatusCodeDropdown, 
-  selectSpeciesCodeDropdown, 
+import {
+  selectAgencyDropdown,
+  selectComplaintStatusCodeDropdown,
+  selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
-  selectHwcrNatureOfComplaintCodeDropdown, 
-  selectAreaCodeDropdown, 
-  selectAttractantCodeDropdown 
+  selectHwcrNatureOfComplaintCodeDropdown,
+  selectAreaCodeDropdown,
+  selectAttractantCodeDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -41,45 +41,46 @@ import { ValidationMultiSelect } from "../../../../common/validation-multiselect
 import { ValidationInput } from "../../../../common/validation-input";
 import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
+import { CompSelect } from "../../../common/comp-select";
 
 interface ComplaintDetailsProps {
-  complaintType: string,
-  updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined,
-  setUpdateComplaint: Function,
-  nocErrorMsg: string,
-  handleNOCChange: Function,
-  speciesErrorMsg: string,
-  handleSpeciesChange: Function,
-  statusErrorMsg: string,
-  handleStatusChange: Function,
-  complaintDescErrorMsg: string,
-  handleComplaintDescChange: Function,
-  attractantsErrorMsg: string,
-  handleAttractantsChange: Function,
-  communityErrorMsg: string,
-  handleCommunityChange: Function,
-  geoPointXMsg: string,
-  handleGeoPointChange: Function,
-  geoPointYMsg: string,
-  emailMsg: string,
-  handleEmailChange: Function,
-  primaryPhoneMsg: string,
-  handlePrimaryPhoneChange: Function,
-  secondaryPhoneMsg: string,
-  handleSecondaryPhoneChange: Function,
-  alternatePhoneMsg: string,
-  handleAlternatePhoneChange: Function,
-  handleReferredByChange: Function,
-  handleAssignedOfficerChange: Function,
-  handleLocationDescriptionChange: Function,
-  handleLocationChange: Function,
-  handleNameChange: Function,
-  handleAddressChange: Function,
-  errorNotificationClass: string,
-  handleViolationInProgessChange: Function,
-  handleViolationObservedChange: Function,
-  handleViolationTypeChange: Function,
-  handleSuspectDetailsChange: Function,
+  complaintType: string;
+  updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined;
+  setUpdateComplaint: Function;
+  nocErrorMsg: string;
+  handleNOCChange: Function;
+  speciesErrorMsg: string;
+  handleSpeciesChange: Function;
+  statusErrorMsg: string;
+  handleStatusChange: Function;
+  complaintDescErrorMsg: string;
+  handleComplaintDescChange: Function;
+  attractantsErrorMsg: string;
+  handleAttractantsChange: Function;
+  communityErrorMsg: string;
+  handleCommunityChange: Function;
+  geoPointXMsg: string;
+  handleGeoPointChange: Function;
+  geoPointYMsg: string;
+  emailMsg: string;
+  handleEmailChange: Function;
+  primaryPhoneMsg: string;
+  handlePrimaryPhoneChange: Function;
+  secondaryPhoneMsg: string;
+  handleSecondaryPhoneChange: Function;
+  alternatePhoneMsg: string;
+  handleAlternatePhoneChange: Function;
+  handleReferredByChange: Function;
+  handleAssignedOfficerChange: Function;
+  handleLocationDescriptionChange: Function;
+  handleLocationChange: Function;
+  handleNameChange: Function;
+  handleAddressChange: Function;
+  errorNotificationClass: string;
+  handleViolationInProgessChange: Function;
+  handleViolationObservedChange: Function;
+  handleViolationTypeChange: Function;
+  handleSuspectDetailsChange: Function;
 }
 
 export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
@@ -164,9 +165,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
-  const incidentDateTimeObject = new Date(
-    incidentDateTime ?? ""
-  );
+  const incidentDateTimeObject = new Date(incidentDateTime ?? "");
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
     incidentDateTimeObject
@@ -174,14 +173,13 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   // Transform the fetched data into the DropdownOption type
 
-  let transformedOfficerCodeList: Option[] = (officersInZoneList !== null ? officersInZoneList.map(
-    (officer: Officer) => ({
-      value: officer.person_guid.person_guid,
-      label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-    })
-  ) : []);
-
-  transformedOfficerCodeList.unshift({ value: "Unassigned", label: "" });
+  let assignableOfficers: Option[] =
+    officersInZoneList !== null
+      ? officersInZoneList.map((officer: Officer) => ({
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+        }))
+      : [];
 
   const xCoordinate = ReactDOMServer.renderToString(
     renderCoordinates(coordinates, Coordinates.Longitude)
@@ -191,13 +189,19 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   );
 
   // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
+  const complaintStatusCodes = useSelector(
+    selectComplaintStatusCodeDropdown
+  ) as Option[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
-  const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
+  const hwcrNatureOfComplaintCodes = useSelector(
+    selectHwcrNatureOfComplaintCodeDropdown
+  ) as Option[];
   const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
-  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
+  const violationTypeCodes = useSelector(
+    selectViolationCodeDropdown
+  ) as Option[];
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -215,13 +219,15 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === natureOfComplaintCode
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-  const selectedAssignedOfficer = transformedOfficerCodeList?.find(
+  const selectedAssignedOfficer = assignableOfficers?.find(
     (option) => option.value === personGuid
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
       option.value ===
-      (referredByAgencyCode?.agency_code === undefined ? "" : referredByAgencyCode.agency_code)
+      (referredByAgencyCode?.agency_code === undefined
+        ? ""
+        : referredByAgencyCode.agency_code)
   );
   const selectedAttractants = attractantCodes.filter((option) =>
     attractants?.some((attractant) => attractant.code === option.value)
@@ -240,53 +246,57 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const [longitude, setLongitude] = useState<number>(+xCoordinate);
 
   const handleMarkerMove = async (lat: number, lng: number) => {
-    await updateCoordinates(lat,lng);
-    await updateValidation(lat,lng);
-
-
+    await updateCoordinates(lat, lng);
+    await updateValidation(lat, lng);
   };
 
-  async function updateCoordinates(lat: number,lng: number) {
+  async function updateCoordinates(lat: number, lng: number) {
     setLatitude(lat);
     setLongitude(lng);
-
   }
 
-  async function updateValidation(lat: number,lng: number) {
-    handleGeoPointChange(lat,lng);
+  async function updateValidation(lat: number, lng: number) {
+    handleGeoPointChange(lat, lng);
   }
 
   function handleIncidentDateTimeChange(date: Date) {
-      setSelectedIncidentDateTime(date);
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.incident_datetime = date.toDateString();
-        setUpdateComplaint(hwcrComplaint);
-      }
-      else if(complaintType === COMPLAINT_TYPES.ERS)
-      {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.incident_datetime = date.toDateString();
-        setUpdateComplaint(allegationComplaint);
-      }
+    setSelectedIncidentDateTime(date);
+    if (complaintType === COMPLAINT_TYPES.HWCR) {
+      let hwcrComplaint: HwcrComplaint = cloneDeep(
+        updateComplaint
+      ) as HwcrComplaint;
+      hwcrComplaint.complaint_identifier.incident_datetime =
+        date.toDateString();
+      setUpdateComplaint(hwcrComplaint);
+    } else if (complaintType === COMPLAINT_TYPES.ERS) {
+      let allegationComplaint: AllegationComplaint = cloneDeep(
+        updateComplaint
+      ) as AllegationComplaint;
+      allegationComplaint.complaint_identifier.incident_datetime =
+        date.toDateString();
+      setUpdateComplaint(allegationComplaint);
+    }
   }
 
   const handleLongitudeChange = (newValue: string) => {
     setLongitude(+newValue);
-    updateValidation(latitude,longitude);
-  }
+    updateValidation(latitude, longitude);
+  };
 
   const handleLatitudeChange = (newValue: string) => {
     setLatitude(+newValue);
-    updateValidation(latitude,longitude);
-  }
+    updateValidation(latitude, longitude);
+  };
 
   return (
     <div>
       {/* edit header block */}
       <div id="complaint-error-notification" className={errorNotificationClass}>
-        <img src={notificationInvalid} alt="error" className="filter-image-spacing"/>
+        <img
+          src={notificationInvalid}
+          alt="error"
+          className="filter-image-spacing"
+        />
         Errors in form
       </div>
       <div className="comp-complaint-header-edit-block">
@@ -305,9 +315,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   options={hwcrNatureOfComplaintCodes}
                   placeholder="Select"
                   className="comp-details-input"
-                  classNamePrefix='comp-select'
+                  classNamePrefix="comp-select"
                   defaultValue={selectedNatureOfComplaint}
-                  onChange={e => handleNOCChange(e)}
+                  onChange={(e) => handleNOCChange(e)}
                   errMsg={nocErrorMsg}
                 />
               </div>
@@ -326,8 +336,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
-                  classNamePrefix='comp-select'
-                  onChange={e => handleSpeciesChange(e)}
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handleSpeciesChange(e)}
                   errMsg={speciesErrorMsg}
                 />
               </div>
@@ -346,8 +356,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedViolationTypeCode}
                   placeholder="Select"
                   id="violation-type-select-id"
-                  onChange={e => handleViolationTypeChange(e)}
-                  classNamePrefix='comp-select'
+                  onChange={(e) => handleViolationTypeChange(e)}
+                  classNamePrefix="comp-select"
                 />
               </div>
             )}
@@ -361,8 +371,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                classNamePrefix='comp-select'
-                onChange={e => handleStatusChange(e)}
+                classNamePrefix="comp-select"
+                onChange={(e) => handleStatusChange(e)}
                 errMsg={statusErrorMsg}
               />
             </div>
@@ -373,14 +383,15 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               <label id="officer-assigned-select-label-id">
                 Officer Assigned
               </label>
-              <Select
-                className="comp-details-input"
-                options={transformedOfficerCodeList}
-                placeholder="Select"
-                defaultValue={selectedAssignedOfficer}
+              <CompSelect
                 id="officer-assigned-select-id"
-                classNamePrefix='comp-select'
-                onChange={e => handleAssignedOfficerChange(e)}
+                className="comp-details-input"
+                options={assignableOfficers}
+                defaultOption={{ label: "None", value: "Unassigned" }}
+                placeholder="Select"
+                enableValidation={false}
+                value={selectedAssignedOfficer}
+                onChange={(e) => handleAssignedOfficerChange(e)}
               />
             </div>
           </div>
@@ -441,7 +452,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 <ValidationTextArea
                   className="comp-form-control"
                   id="complaint-description-textarea-id"
-                  defaultValue={(details !== undefined ? details : "")}
+                  defaultValue={details !== undefined ? details : ""}
                   rows={4}
                   errMsg={complaintDescErrorMsg}
                   onChange={handleComplaintDescChange}
@@ -476,7 +487,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
-                      classNamePrefix='comp-select'
+                      classNamePrefix="comp-select"
                       onChange={handleAttractantsChange}
                       errMsg={attractantsErrorMsg}
                     />
@@ -495,8 +506,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationInProgress}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      classNamePrefix='comp-select'
-                      onChange={e => handleViolationInProgessChange(e)}
+                      classNamePrefix="comp-select"
+                      onChange={(e) => handleViolationInProgessChange(e)}
                     />
                   </div>
                 </div>
@@ -513,8 +524,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationObserved}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      classNamePrefix='comp-select'
-                      onChange={e => handleViolationObservedChange(e)}
+                      classNamePrefix="comp-select"
+                      onChange={(e) => handleViolationObservedChange(e)}
                     />
                   </div>
                 </div>
@@ -534,7 +545,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     id="location-edit-id"
                     className="comp-form-control"
                     defaultValue={location}
-                    onChange={e => handleLocationChange(e.target.value)}
+                    onChange={(e) => handleLocationChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -548,7 +559,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   id="complaint-location-description-textarea-id"
                   defaultValue={locationDescription}
                   rows={4}
-                  onChange={e => handleLocationDescriptionChange(e.target.value)}
+                  onChange={(e) =>
+                    handleLocationDescriptionChange(e.target.value)
+                  }
                 />
               </div>
               <div
@@ -595,16 +608,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   Community<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                <ValidationSelect
-                  className="comp-details-input"
-                  options={areaCodes}
-                  defaultValue={selectedAreaCode}
-                  placeholder="Select"
-                  id="community-select-id"
-                  classNamePrefix='comp-select'
-                  onChange={e => handleCommunityChange(e)}
-                  errMsg={communityErrorMsg}
-                />
+                  <ValidationSelect
+                    className="comp-details-input"
+                    options={areaCodes}
+                    defaultValue={selectedAreaCode}
+                    placeholder="Select"
+                    id="community-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handleCommunityChange(e)}
+                    errMsg={communityErrorMsg}
+                  />
                 </div>
               </div>
               <div
@@ -653,7 +666,11 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
           </div>
         </div>
       </div>
-      <ComplaintLocation complaintType={complaintType} draggable={true} onMarkerMove={handleMarkerMove}/>
+      <ComplaintLocation
+        complaintType={complaintType}
+        draggable={true}
+        onMarkerMove={handleMarkerMove}
+      />
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>
@@ -673,7 +690,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     className="comp-form-control"
                     defaultValue={name}
                     id="caller-name-id"
-                    onChange={e => handleNameChange(e.target.value)}
+                    onChange={(e) => handleNameChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -688,15 +705,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   Primary Phone
                 </label>
                 <div className="comp-details-edit-input">
-                <ValidationPhoneInput
+                  <ValidationPhoneInput
                     country="CA"
                     className="comp-details-input"
                     defaultValue={primaryPhone}
                     onChange={handlePrimaryPhoneChange}
                     maxLength={14}
-                    international={false} 
-                    id="caller-primary-phone-id" 
-                    errMsg={primaryPhoneMsg}/>
+                    international={false}
+                    id="caller-primary-phone-id"
+                    errMsg={primaryPhoneMsg}
+                  />
                 </div>
               </div>
               <div
@@ -710,15 +728,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   Alternate 1 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                <ValidationPhoneInput
+                  <ValidationPhoneInput
                     country="CA"
                     className="comp-details-input"
                     defaultValue={secondaryPhone}
                     onChange={handleSecondaryPhoneChange}
                     maxLength={14}
-                    international={false} 
-                    id="caller-info-secondary-phone-id" 
-                    errMsg={secondaryPhoneMsg}/>
+                    international={false}
+                    id="caller-info-secondary-phone-id"
+                    errMsg={secondaryPhoneMsg}
+                  />
                 </div>
               </div>
               <div
@@ -732,15 +751,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   Alternate 2 Phone
                 </label>
                 <div className="comp-details-edit-input">
-                <ValidationPhoneInput
+                  <ValidationPhoneInput
                     country="CA"
                     className="comp-details-input"
                     defaultValue={alternatePhone}
                     onChange={handleAlternatePhoneChange}
                     maxLength={14}
-                    international={false} 
-                    id="caller-info-alternate-phone-id" 
-                    errMsg={alternatePhoneMsg}/>
+                    international={false}
+                    id="caller-info-alternate-phone-id"
+                    errMsg={alternatePhoneMsg}
+                  />
                 </div>
               </div>
             </div>
@@ -756,7 +776,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     className="comp-form-control"
                     defaultValue={address}
                     id="comlaint-address-id"
-                    onChange={e => handleAddressChange(e.target.value)}
+                    onChange={(e) => handleAddressChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -767,10 +787,10 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   <ValidationInput
                     type="text"
                     className="comp-form-control"
-                    defaultValue={(email !== undefined ? email : "")}
+                    defaultValue={email !== undefined ? email : ""}
                     id="complaint-email-id"
-                    onChange={handleEmailChange} 
-                    errMsg={emailMsg} 
+                    onChange={handleEmailChange}
+                    errMsg={emailMsg}
                   />
                 </div>
               </div>
@@ -780,13 +800,15 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               >
                 <label>Referred by / Complaint Agency</label>
                 <div className="comp-details-edit-input">
-                  <Select
-                    placeholder="Select"
-                    options={referredByAgencyCodes}
-                    defaultValue={selectedAgencyCode}
+                  <CompSelect
                     id="referred-select-id"
-                    classNamePrefix='comp-select'
-                    onChange={e => handleReferredByChange(e)}
+                    className="comp-details-edit-input"
+                    options={referredByAgencyCodes}
+                    defaultOption={{ label: "None", value: undefined }}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={selectedAgencyCode}
+                    onChange={(e) => handleReferredByChange(e)}
                   />
                 </div>
               </div>
@@ -794,7 +816,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
           </div>
         </div>
       </div>
-      {complaintType === COMPLAINT_TYPES.ERS &&
+      {complaintType === COMPLAINT_TYPES.ERS && (
         <div className="comp-complaint-details-block">
           <h6>Subject of Complaint/Witness Details</h6>
           <div className="comp-complaint-call-information">
@@ -810,20 +832,20 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   >
                     Description
                   </label>
-                    <textarea
-                      className="comp-form-control"
-                      id="complaint-description-textarea-id"
-                      defaultValue={complaint_witness_details}
-                      rows={4}
-                      onChange={e => handleSuspectDetailsChange(e.target.value)}
-                    />
-                  </div>
+                  <textarea
+                    className="comp-form-control"
+                    id="complaint-description-textarea-id"
+                    defaultValue={complaint_witness_details}
+                    rows={4}
+                    onChange={(e) => handleSuspectDetailsChange(e.target.value)}
+                  />
+                </div>
               </div>
-              <div className="comp-details-edit-column"/>
+              <div className="comp-details-edit-column" />
             </div>
           </div>
         </div>
-      }
+      )}
     </div>
   );
 };
