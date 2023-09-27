@@ -55,14 +55,14 @@ describe('ViolationCodeController', () => {
       .expect(201)
   });
 
-  it('should return 200 when a GET is called successfully', () => {
-    request(app.getHttpServer())
-      .get('/violation-code/AINVSPC/')
-      .expect(200)
-    
-    request(app.getHttpServer())
-      .get('/violation-code/')
-      .expect(200)
+  it('should return 200 when a GET is called successfully', async () => {
+    let response = await request(app.getHttpServer()).get('/violation-code/AINVSPC/');
+
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get('/violation-code/');
+
+    expect(response.statusCode).toBe(200);
   });
 
   it('should return 200 when a PATCH is called successfully', () => {
@@ -75,14 +75,14 @@ describe('ViolationCodeController', () => {
                                 active_ind: "Y"
                               };
 
-    request(app.getHttpServer())
+    return request(app.getHttpServer())
       .patch('/violation-code/AINVSPC/')
       .send({violationCodeDto})
       .expect(200)
   });
 
   it('should return 201 when a DELETE is called successfully', () => {
-     request(app.getHttpServer())
+     return request(app.getHttpServer())
       .delete('/violation-code/AINVSPC/')
       .expect(200)
   });

@@ -61,32 +61,39 @@ describe('PersonController', () => {
                         update_timestamp: null
                       };
 
-     request(app.getHttpServer())
+     return request(app.getHttpServer())
       .post('/person/')
       .send({personDto})
       .expect(201)
   });
 
-  it('should return 200 when a GET is called successfully', () => {
-     request(app.getHttpServer())
-      .get('/person/')
-      .expect(200);
+  it('should return 200 when a GET is called successfully', async () => {
+    let response = await request(app.getHttpServer()).get('/person/');
 
-      request(app.getHttpServer())
-      .get('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/')
-      .expect(200);
+    expect(response.statusCode).toBe(200);
 
-      request(app.getHttpServer())
-      .get('/person/find-by-zone/SISL/')
-      .expect(200);
+    response = await request(app.getHttpServer()).get('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/');
 
-       request(app.getHttpServer())
-      .get('/person/find-by-office/VICTORIA/')
-      .expect(200);
+    expect(response.statusCode).toBe(200);
 
-      request(app.getHttpServer())
+    response = await request(app.getHttpServer()).get('/person/find-by-zone/SISL/');
+
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get('/person/find-by-office/VICTORIA/');
+
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get('/person/find-by-zone/SISL/');
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('should return 200 when a DELETE is called successfully', () => {
+
+     return request(app.getHttpServer())
       .delete('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/')
-      .expect(200);
+      .expect(200)
   });
 
   it('should return 200 when a PATCH is called successfully', () => {
@@ -103,7 +110,7 @@ describe('PersonController', () => {
                         update_timestamp: null
                       };
 
-     request(app.getHttpServer())
+     return request(app.getHttpServer())
       .patch('/person/81c5d19b-b188-4b52-8ca3-f00fa987ed88/')
       .send({personDto})
       .expect(200)
