@@ -49,7 +49,7 @@ export const codeTableSlice = createSlice({
           return { value, label, description } as CodeTable;
         }
       );
-      data.unshift({value: "", label: "", description: ""});
+
       return { ...state, agencyCodes: data };
     },
     setComplaintStatusCodes: (
