@@ -49,7 +49,7 @@ export const codeTableSlice = createSlice({
           return { value, label, description } as CodeTable;
         }
       );
-      data.unshift({value: "", label: "", description: ""});
+
       return { ...state, agencyCodes: data };
     },
     setComplaintStatusCodes: (
@@ -230,7 +230,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
   dispatch(toggleLoading(true));
 
   try {
-    console.log(JSON.stringify(agencyCodes));
     if (!from(agencyCodes).any()) {
       dispatch(fetchAgencyCodes());
     }
