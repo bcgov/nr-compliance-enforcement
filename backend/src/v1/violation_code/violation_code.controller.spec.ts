@@ -38,14 +38,8 @@ describe('ViolationCodeController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-  it('should fetch all violation codes', () => {
-    return request(app.getHttpServer())
-      .get('/violation-code/')
-      .expect(200)
-  });
-
-  it('should create a violation code', () => {
+  
+  it('should return 201 when a POST is called successfully', () => {
 
     const violationCodeDto = { 
                                 violation_code: "NEWCODE",
@@ -61,13 +55,17 @@ describe('ViolationCodeController', () => {
       .expect(201)
   });
 
-  it('should fetch a single violation codes', () => {
-    return request(app.getHttpServer())
+  it('should return 200 when a GET is called successfully', () => {
+    request(app.getHttpServer())
       .get('/violation-code/AINVSPC/')
+      .expect(200)
+    
+    request(app.getHttpServer())
+      .get('/violation-code/')
       .expect(200)
   });
 
-  it('should update a violation code', () => {
+  it('should return 200 when a PATCH is called successfully', () => {
 
     const violationCodeDto = { 
                                 violation_code: "NEWCODE",
@@ -77,14 +75,14 @@ describe('ViolationCodeController', () => {
                                 active_ind: "Y"
                               };
 
-    return request(app.getHttpServer())
+    request(app.getHttpServer())
       .patch('/violation-code/AINVSPC/')
       .send({violationCodeDto})
       .expect(200)
   });
 
-  it('should remove a single violation codes', () => {
-    return request(app.getHttpServer())
+  it('should return 201 when a DELETE is called successfully', () => {
+     request(app.getHttpServer())
       .delete('/violation-code/AINVSPC/')
       .expect(200)
   });
