@@ -14,8 +14,13 @@ describe("Complaints on map tests", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Switch to map view", () => {
       cy.visit("/");
-
+      cy.wait(2000);
       cy.get(complaintTypes[index]).click({ force: true });
+
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
+
+      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
       cy.get(".comp-loader-overlay").should("exist");
       cy.get(".comp-loader-overlay").should("not.exist");
@@ -31,6 +36,7 @@ describe("Complaints on map tests", () => {
       cy.get("div.leaflet-container").should("exist");
 
       cy.get(".leaflet-popup").should("not.exist");
+      cy.wait(1000);
 
       cy.get(".leaflet-marker-icon").each(($marker, index) => {
         // Click the first marker (index 0)
