@@ -5,6 +5,7 @@ import COMPLAINT_TYPES from "../types/app/complaint-types";
 type Coordinate = number[] | string[] | undefined;
 
 export const getAvatarInitials = (input: string): string => {
+
   const tokens = input.split(" ");
 
   if (tokens && tokens.length >= 1) {
@@ -19,6 +20,14 @@ export const getAvatarInitials = (input: string): string => {
 };
 
 export const getFirstInitialAndLastName = (fullName: string): string => {
+
+  const NOT_ASSIGNED = "Not Assigned";
+
+  if (NOT_ASSIGNED === fullName) {
+    return NOT_ASSIGNED;
+  }
+
+
   // Split the full name into an array of words
   const words = fullName.trim().split(' ');
 

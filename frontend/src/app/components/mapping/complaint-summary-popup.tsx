@@ -18,6 +18,9 @@ import COMPLAINT_TYPES, {
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Popup } from "react-leaflet";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+
 
 interface Props {
   complaint_identifier: string;
@@ -72,7 +75,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
 
             <div className="comp-complaint-info">
               <div className="map-comp-summary-popup-subheading">
-                <div className="comp-box-conflict-type hwcr-conflict-type">
+                <div className={`comp-box-conflict-type ${renderHWCRSection ? 'hwcr-conflict-type' : 'allegation-conflict-type'}`}>
                   {complaintTypeToName(complaintType)}
                 </div>
                 {renderHWCRSection ? (
@@ -81,9 +84,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                   violationInProgress && (
                     <div
                       id="comp-details-status-text-id"
-                      className="badge comp-violation-in-progress"
+                      className="comp-box-violation-in-progress"
                     >
-                      {inProgressInd}
+                      <FontAwesomeIcon id="violation-in-progress-icon" icon={faExclamationCircle} />{inProgressInd}
                     </div>
                   )
                 )}
@@ -96,19 +99,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               </div>
             </div>
           </div>
-          {renderHWCRSection && (
             <div className="map-comp-nature-of-complaint">
-              {natureOfComplaint}
+              {renderHWCRSection ? natureOfComplaint : violationType}
             </div>
-          )}
           <div className="map-comp-summary-popup-details-section">
             <div className="comp-details-content">
-              {!renderHWCRSection && (
-                <div>
-                  <label>Violation Type</label>
-                  {violationType}
-                </div>
-              )}
               <div>
                 <label>Logged</label>
                 <i className="bi bi-calendar comp-margin-right-xxs"></i>
