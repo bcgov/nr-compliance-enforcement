@@ -3,7 +3,6 @@ Test to verify that the user is able to click the edit button
 on the wildlife contacts details page and see all the inputs
 */
 describe("Complaint Edit Page spec - Edit View", () => {
-
   const originalCallDetails = {
     description:
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves",
@@ -57,7 +56,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     incidentDate: "2022-12-21",
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
-    attratantsIndex: [9,0,0],
+    attratantsIndex: [9, 0, 0],
     xCoord: "-118",
     yCoord: "49",
     community: "Blaeberry",
@@ -99,438 +98,448 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.kcLogout().kcLogin();
   });
 
-  it("Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data", function() {
+  it("Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data", function () {
     //start edit
     cy.navigateToHWLCEditScreen("23-000076");
-    cy.get('#caller-name-id').clear().type(editCallerInformation.name);
-    cy.get('#complaint-address-id').clear().type(editCallerInformation.address);
-    cy.get('#complaint-email-id').clear().type(editCallerInformation.email);
+    cy.get("#caller-name-id").clear().type(editCallerInformation.name);
+    cy.get("#complaint-address-id").clear().type(editCallerInformation.address);
+    cy.get("#complaint-email-id").clear().type(editCallerInformation.email);
+
+    cy.get("#caller-primary-phone-id").click({ force: true });
+    cy.get("#caller-primary-phone-id").clear()
+    cy.get("#caller-primary-phone-id").typeAndTriggerChange(editCallerInformation.phoneInput);
     
-    cy.get('#caller-primary-phone-id').click({force:true});
-    cy.get('#caller-primary-phone-id').type('{end}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type('{backspace}');
-    cy.get('#caller-primary-phone-id').type(editCallerInformation.phoneInput);
-    cy.get('#caller-primary-phone-id').invoke('val').then((value:string) => {cy.task('log', "pri phone count: " + value.length)});
-    cy.get('#caller-info-secondary-phone-id').clear().type(editCallerInformation.secondaryInput);
-    cy.get('#caller-info-secondary-phone-id').invoke('val').then((value:string) => {cy.task('log', "sec phone count: " + value.length)});
-    cy.get('#caller-info-alternate-phone-id').clear().type(editCallerInformation.alternateInput);
-    cy.get('#caller-info-alternate-phone-id').invoke('val').then((value:string) => {cy.task('log', "alt phone count: " + value.length)});
+    cy.get("#caller-info-secondary-phone-id")
+      .clear()
+      .typeAndTriggerChange(editCallerInformation.secondaryInput);
+    cy.get("#caller-info-secondary-phone-id")
+      .invoke("val")
+      .then((value: string) => {
+        cy.task("log", "sec phone count: " + value.length);
+      });
+    cy.get("#caller-info-alternate-phone-id")
+      .clear()
+      .typeAndTriggerChange(editCallerInformation.alternateInput);
+    cy.get("#caller-info-alternate-phone-id")
+      .invoke("val")
+      .then((value: string) => {
+        cy.task("log", "alt phone count: " + value.length);
+      });
 
-    cy.get('.comp-referred-select__control')    
-      .click({force: true})
-      .get('.comp-referred-select__menu')
-      .find('.comp-referred-select__option').each(($el, index, $list) => {
-        if(index === editCallerInformation.referredIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-referred-select__control")
+      .click({ force: true })
+      .get(".comp-referred-select__menu")
+      .find(".comp-referred-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallerInformation.referredIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
-    cy.get('#location-edit-id').click({force: true});
-    cy.get('#location-edit-id').clear().type(editCallDetails.location);
-    cy.get('#complaint-location-description-textarea-id').click({force: true});
-    cy.get('#complaint-location-description-textarea-id').clear().type(editCallDetails.locationDescription);
-    cy.get('#complaint-description-textarea-id').click({force: true});
-    cy.get('#complaint-description-textarea-id').clear().type(editCallDetails.description);
-    cy.get('#complaint-description-textarea-id').click({force: true});
+    cy.get("#location-edit-id").click({ force: true });
+    cy.get("#location-edit-id").clear().type(editCallDetails.location);
+    cy.get("#complaint-location-description-textarea-id").click({
+      force: true,
+    });
+    cy.get("#complaint-location-description-textarea-id")
+      .clear()
+      .type(editCallDetails.locationDescription);
+    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.get("#complaint-description-textarea-id")
+      .clear()
+      .type(editCallDetails.description);
+    cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get('#complaint-incident-time')
-    .click({force:true}).wait(1000)
-    .get('.react-datepicker__day--021')
-    .click({force:true});
-    
+    cy.get("#complaint-incident-time")
+      .click({ force: true })
+      .wait(1000)
+      .get(".react-datepicker__day--021")
+      .click({ force: true });
 
-    cy.get(".comp-attractants-select__multi-value__remove").first().click({force: true});
-    cy.get(".comp-attractants-select__multi-value__remove").first().click({force: true});
-    cy.get(".comp-attractants-select__multi-value__remove").first().click({force: true});
-    cy.get('.comp-referred-select__control')    
-      .click({force: true})
-      .get('.comp-referred-select__menu')
-      .find('.comp-referred-select__option').each(($el, index, $list) => {
-        if(index === editCallerInformation.referredIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-attractants-select__multi-value__remove")
+      .first()
+      .click({ force: true });
+    cy.get(".comp-attractants-select__multi-value__remove")
+      .first()
+      .click({ force: true });
+    cy.get(".comp-attractants-select__multi-value__remove")
+      .first()
+      .click({ force: true });
+    cy.get(".comp-referred-select__control")
+      .click({ force: true })
+      .get(".comp-referred-select__menu")
+      .find(".comp-referred-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallerInformation.referredIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
-    cy.get('.comp-attractants-select__control')    
-      .click({force: true})
-      .get('.comp-attractants-select__menu')
-      .find('.comp-attractants-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.attratantsIndex[0])
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-attractants-select__control")
+      .click({ force: true })
+      .get(".comp-attractants-select__menu")
+      .find(".comp-attractants-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.attratantsIndex[0]) {
+          cy.wrap($el).click({ force: true });
         }
       });
-      cy.get('#complaint-description-textarea-id').click({force: true});
-      cy.get('.comp-attractants-select__control')    
-      .click({force: true})
-      .get('.comp-attractants-select__menu')
-      .find('.comp-attractants-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.attratantsIndex[1])
-        {
-          cy.wrap($el).click({force:true})
+    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.get(".comp-attractants-select__control")
+      .click({ force: true })
+      .get(".comp-attractants-select__menu")
+      .find(".comp-attractants-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.attratantsIndex[1]) {
+          cy.wrap($el).click({ force: true });
         }
       });
-      cy.get('#complaint-description-textarea-id').click({force: true});
-      cy.get('.comp-attractants-select__control')    
-      .click({force: true})
-      .get('.comp-attractants-select__menu')
-      .find('.comp-attractants-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.attratantsIndex[2])
-        {
-          cy.wrap($el).click({force:true})
-        }
-      });
-
-      cy.get('.comp-community-select__control')    
-      .click({force: true})
-      .get('.comp-community-select__menu')
-      .find('.comp-community-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.communityIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.get(".comp-attractants-select__control")
+      .click({ force: true })
+      .get(".comp-attractants-select__menu")
+      .find(".comp-attractants-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.attratantsIndex[2]) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
-      cy.get('.comp-nature-select__control')    
-      .click({force: true})
-      .get('.comp-nature-select__menu')
-      .find('.comp-nature-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.natureOfComplaintIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-community-select__control")
+      .click({ force: true })
+      .get(".comp-community-select__menu")
+      .find(".comp-community-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.communityIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
-      cy.get('.comp-species-select__control')    
-      .click({force: true})
-      .get('.comp-species-select__menu')
-      .find('.comp-species-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.speciesIndex)
-        {
-          cy.wrap($el).click({force:true})
+
+    cy.get(".comp-nature-select__control")
+      .click({ force: true })
+      .get(".comp-nature-select__menu")
+      .find(".comp-nature-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.natureOfComplaintIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
-      cy.get('.comp-status-select__control')    
-      .click({force: true})
-      .get('.comp-status-select__menu')
-      .find('.comp-status-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.statusIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-species-select__control")
+      .click({ force: true })
+      .get(".comp-species-select__menu")
+      .find(".comp-species-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.speciesIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
-      cy.get('.comp-officer-select__control')    
-      .click({force: true})
-      .get('.comp-officer-select__menu')
-      .find('.comp-officer-select__option').each(($el, index, $list) => {
-        if(index === editCallDetails.assignedIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-status-select__control")
+      .click({ force: true })
+      .get(".comp-status-select__menu")
+      .find(".comp-status-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.statusIndex) {
+          cy.wrap($el).click({ force: true });
+        }
+      });
+    cy.get(".comp-officer-select__control")
+      .click({ force: true })
+      .get(".comp-officer-select__menu")
+      .find(".comp-officer-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.assignedIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
     cy.wait(1000);
-    cy.get('#details-screen-cancel-save-button-top').click({force: true});
+    cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end edit
 
     //start checking edit changes saved
     cy.get(".comp-loader-overlay").should("not.exist");
-    
-    cy.get(
-      'div[id="comp-details-name"]'
-    ).contains(editCallerInformation.name);
-    cy.get(
-      'div[id="comp-details-address"]'
-    ).contains(editCallerInformation.address);
-    cy.get(
-      'div[id="comp-details-email"]'
-    ).contains(editCallerInformation.email);
-    cy.get(
-      'div[id="comp-details-phone"]'
-    ).contains(editCallerInformation.phone);
-    cy.get(
-      'div[id="comp-details-phone-2"]'
-    ).should(($el) => {
+
+    cy.get('div[id="comp-details-name"]').contains(editCallerInformation.name);
+    cy.get('div[id="comp-details-address"]').contains(
+      editCallerInformation.address
+    );
+    cy.get('div[id="comp-details-email"]').contains(
+      editCallerInformation.email
+    );
+    cy.get('div[id="comp-details-phone"]').contains(
+      editCallerInformation.phone
+    );
+    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.secondary);
     });
-    cy.get(
-      'div[id="comp-details-phone-3"]'
-    ).should(($el) => {
+    cy.get('div[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
-    cy.get(
-      'div[id="comp-details-referred"]'
-    ).contains(editCallerInformation.referred);
-    cy.get(
-      'div[id="comp-details-email"]'
-    ).contains(editCallerInformation.email);
-    cy.get(
-      'div[id="comp-details-location"]'
-    ).contains(editCallDetails.location);
-    cy.get(
-      'p[id="comp-details-location-description"]'
-    ).contains(editCallDetails.locationDescription);
+    cy.get('div[id="comp-details-referred"]').contains(
+      editCallerInformation.referred
+    );
+    cy.get('div[id="comp-details-email"]').contains(
+      editCallerInformation.email
+    );
+    cy.get('div[id="comp-details-location"]').contains(
+      editCallDetails.location
+    );
+    cy.get('p[id="comp-details-location-description"]').contains(
+      editCallDetails.locationDescription
+    );
 
-    cy.get(
-      'div[id="complaint-incident-date-time"]'
-    ).contains(editCallDetails.incidentDate);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDate
+    );
 
-    cy.get(
-      'p[id="comp-details-description"]'
-    ).contains(editCallDetails.description);
+    cy.get('p[id="comp-details-description"]').contains(
+      editCallDetails.description
+    );
 
-    cy.get(
-      'span[id="comp-details-community"]'
-    ).contains(editCallDetails.community);
-    
-    cy.get(
-      'span[id="comp-details-office"]'
-    ).contains(editCallDetails.office);
+    cy.get('span[id="comp-details-community"]').contains(
+      editCallDetails.community
+    );
 
-    cy.get(
-      'span[id="comp-details-zone"]'
-    ).contains(editCallDetails.zone);
+    cy.get('span[id="comp-details-office"]').contains(editCallDetails.office);
 
-    cy.get(
-      'span[id="comp-details-region"]'
-    ).contains(editCallDetails.region);
+    cy.get('span[id="comp-details-zone"]').contains(editCallDetails.zone);
+
+    cy.get('span[id="comp-details-region"]').contains(editCallDetails.region);
 
     cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-      expect($defaultValue.eq(0)).to.contain('Livestock');
-      expect($defaultValue.eq(1)).to.contain('BBQ');
-      expect($defaultValue.eq(2)).to.contain('Beehive');
+      expect($defaultValue.eq(0)).to.contain("Livestock");
+      expect($defaultValue.eq(1)).to.contain("BBQ");
+      expect($defaultValue.eq(2)).to.contain("Beehive");
     });
     //end checking edit changes saved
-    
+
     //start reverting changes
     cy.navigateToHWLCEditScreen("23-000076");
-    cy.get('#caller-name-id').clear().type(originalCallerInformation.name);
-    cy.get('#complaint-address-id').clear().type(originalCallerInformation.address);
-    cy.get('#complaint-email-id').clear().type(originalCallerInformation.email);
-    
+    cy.get("#caller-name-id").clear().type(originalCallerInformation.name);
+    cy.get("#complaint-address-id")
+      .clear()
+      .type(originalCallerInformation.address);
+    cy.get("#complaint-email-id").clear().type(originalCallerInformation.email);
+
     //clear() doesn't work here -- why? I have no idea, hit backspace 10 times instead.
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-primary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type(originalCallerInformation.phoneInput);
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-secondary-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('#caller-info-alternate-phone-id').type('{esc}');
-    cy.get('.comp-referred-select__control')    
-      .click({force: true})
-      .get('.comp-referred-select__menu')
-      .find('.comp-referred-select__option')
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-primary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type(
+      originalCallerInformation.phoneInput
+    );
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-secondary-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get("#caller-info-alternate-phone-id").type("{esc}");
+    cy.get(".comp-referred-select__control")
+      .click({ force: true })
+      .get(".comp-referred-select__menu")
+      .find(".comp-referred-select__option")
       .each(($el, index, $list) => {
-        if(index === originalCallerInformation.referredIndex)
-        {
-          cy.wrap($el).click({force:true})
+        if (index === originalCallerInformation.referredIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
-    cy.get('#location-edit-id').click({force: true});
-    cy.get('#location-edit-id').clear().type(originalCallDetails.location);
-    cy.get('#complaint-location-description-textarea-id').click({force: true});
-    cy.get('#complaint-location-description-textarea-id').clear();//original blank
-    cy.get('#complaint-description-textarea-id').click({force: true});
-    cy.get('#complaint-description-textarea-id').clear().type(originalCallDetails.description);
-    cy.get('#complaint-description-textarea-id').click({force: true});
+    cy.get("#location-edit-id").click({ force: true });
+    cy.get("#location-edit-id").clear().type(originalCallDetails.location);
+    cy.get("#complaint-location-description-textarea-id").click({
+      force: true,
+    });
+    cy.get("#complaint-location-description-textarea-id").clear(); //original blank
+    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.get("#complaint-description-textarea-id")
+      .clear()
+      .type(originalCallDetails.description);
+    cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get('#complaint-incident-time')
-    .click({force:true}).wait(1000)
-    .get('.react-datepicker__day--019')
-    .click({force:true});
+    cy.get("#complaint-incident-time")
+      .click({ force: true })
+      .wait(1000)
+      .get(".react-datepicker__day--019")
+      .click({ force: true });
 
-    cy.get(".comp-attractants-select__multi-value__remove").first().click({force: true});
-    cy.get(".comp-attractants-select__multi-value__remove").first().click({force: true});
-    cy.get(".comp-attractants-select__multi-value__remove").first().click({force: true});
+    cy.get(".comp-attractants-select__multi-value__remove")
+      .first()
+      .click({ force: true });
+    cy.get(".comp-attractants-select__multi-value__remove")
+      .first()
+      .click({ force: true });
+    cy.get(".comp-attractants-select__multi-value__remove")
+      .first()
+      .click({ force: true });
 
-    cy.get('.comp-attractants-select__control')    
-      .click({force: true})
-      .get('.comp-attractants-select__menu')
-      .find('.comp-attractants-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.attratantsIndex[0])
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-attractants-select__control")
+      .click({ force: true })
+      .get(".comp-attractants-select__menu")
+      .find(".comp-attractants-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.attratantsIndex[0]) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
-      cy.get('#complaint-description-textarea-id').click({force: true});
+    cy.get("#complaint-description-textarea-id").click({ force: true });
 
-      cy.get('.comp-attractants-select__control')    
-      .click({force: true})
-      .get('.comp-attractants-select__menu')
-      .find('.comp-attractants-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.attratantsIndex[1])
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-attractants-select__control")
+      .click({ force: true })
+      .get(".comp-attractants-select__menu")
+      .find(".comp-attractants-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.attratantsIndex[1]) {
+          cy.wrap($el).click({ force: true });
         }
       });
-      cy.get('#complaint-description-textarea-id').click({force: true});
-      cy.get('.comp-attractants-select__control')    
-      .click({force: true})
-      .get('.comp-attractants-select__menu')
-      .find('.comp-attractants-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.attratantsIndex[2])
-        {
-          cy.wrap($el).click({force:true})
-        }
-      });
-
-      cy.get('.comp-community-select__control')    
-      .click({force: true})
-      .get('.comp-community-select__menu')
-      .find('.comp-community-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.communityIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.get(".comp-attractants-select__control")
+      .click({ force: true })
+      .get(".comp-attractants-select__menu")
+      .find(".comp-attractants-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.attratantsIndex[2]) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
-      cy.get('.comp-nature-select__control')    
-      .click({force: true})
-      .get('.comp-nature-select__menu')
-      .find('.comp-nature-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.natureOfComplaintIndex)
-        {
-          cy.wrap($el).click({force:true})
-        }
-      });
-      cy.get('.comp-species-select__control')    
-      .click({force: true})
-      .get('.comp-species-select__menu')
-      .find('.comp-species-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.speciesIndex)
-        {
-          cy.wrap($el).click({force:true})
-        }
-      });
-      cy.get('.comp-status-select__control')    
-      .click({force: true})
-      .get('.comp-status-select__menu')
-      .find('.comp-status-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.statusIndex)
-        {
-          cy.wrap($el).click({force:true})
-        }
-      });
-      cy.get('.comp-officer-select__control')    
-      .click({force: true})
-      .get('.comp-officer-select__menu')
-      .find('.comp-officer-select__option').each(($el, index, $list) => {
-        if(index === originalCallDetails.assignedIndex)
-        {
-          cy.wrap($el).click({force:true})
+    cy.get(".comp-community-select__control")
+      .click({ force: true })
+      .get(".comp-community-select__menu")
+      .find(".comp-community-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.communityIndex) {
+          cy.wrap($el).click({ force: true });
         }
       });
 
-      cy.wait(1000);
-    cy.get('#details-screen-cancel-save-button-top').click({force: true});
+    cy.get(".comp-nature-select__control")
+      .click({ force: true })
+      .get(".comp-nature-select__menu")
+      .find(".comp-nature-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.natureOfComplaintIndex) {
+          cy.wrap($el).click({ force: true });
+        }
+      });
+    cy.get(".comp-species-select__control")
+      .click({ force: true })
+      .get(".comp-species-select__menu")
+      .find(".comp-species-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.speciesIndex) {
+          cy.wrap($el).click({ force: true });
+        }
+      });
+    cy.get(".comp-status-select__control")
+      .click({ force: true })
+      .get(".comp-status-select__menu")
+      .find(".comp-status-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.statusIndex) {
+          cy.wrap($el).click({ force: true });
+        }
+      });
+    cy.get(".comp-officer-select__control")
+      .click({ force: true })
+      .get(".comp-officer-select__menu")
+      .find(".comp-officer-select__option")
+      .each(($el, index, $list) => {
+        if (index === originalCallDetails.assignedIndex) {
+          cy.wrap($el).click({ force: true });
+        }
+      });
+
+    cy.wait(1000);
+    cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end reverting changes
     //start verifying changes are reverted
     cy.get(".comp-loader-overlay").should("not.exist");
-    
-    
-    cy.get(
-      'div[id="comp-details-name"]'
-    ).contains(originalCallerInformation.name);
-    cy.get(
-      'div[id="comp-details-address"]'
-    ).contains(originalCallerInformation.address);
-    cy.get(
-      'div[id="comp-details-email"]'
-    ).contains(originalCallerInformation.email);
-    
-    cy.get(
-      'div[id="comp-details-phone"]'
-    ).contains(originalCallerInformation.phone);
-    cy.get(
-      'div[id="comp-details-phone-2"]'
-    ).should(($el) => {
+
+    cy.get('div[id="comp-details-name"]').contains(
+      originalCallerInformation.name
+    );
+    cy.get('div[id="comp-details-address"]').contains(
+      originalCallerInformation.address
+    );
+    cy.get('div[id="comp-details-email"]').contains(
+      originalCallerInformation.email
+    );
+
+    cy.get('div[id="comp-details-phone"]').contains(
+      originalCallerInformation.phone
+    );
+    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.secondary);
     });
-    cy.get(
-      'div[id="comp-details-phone-3"]'
-    ).should(($el) => {
+    cy.get('div[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
     });
-    
-    cy.get(
-      'div[id="comp-details-referred"]'
-    ).contains(originalCallerInformation.referred);
 
-    cy.get(
-      'div[id="comp-details-location"]'
-    ).contains(originalCallDetails.location);
-    cy.get(
-      'p[id="comp-details-location-description"]'
-    ).should('have.value',originalCallDetails.locationDescription);
+    cy.get('div[id="comp-details-referred"]').contains(
+      originalCallerInformation.referred
+    );
 
-    cy.get(
-      'div[id="complaint-incident-date-time"]'
-    ).contains(originalCallDetails.incidentDate);
+    cy.get('div[id="comp-details-location"]').contains(
+      originalCallDetails.location
+    );
+    cy.get('p[id="comp-details-location-description"]').should(
+      "have.value",
+      originalCallDetails.locationDescription
+    );
 
-    cy.get(
-      'p[id="comp-details-description"]'
-    ).contains(originalCallDetails.description);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDate
+    );
 
-    cy.get(
-      'span[id="comp-details-community"]'
-    ).contains(originalCallDetails.community);
-    
-    cy.get(
-      'span[id="comp-details-office"]'
-    ).contains(originalCallDetails.office);
+    cy.get('p[id="comp-details-description"]').contains(
+      originalCallDetails.description
+    );
 
-    cy.get(
-      'span[id="comp-details-zone"]'
-    ).contains(originalCallDetails.zone);
+    cy.get('span[id="comp-details-community"]').contains(
+      originalCallDetails.community
+    );
 
-    cy.get(
-      'span[id="comp-details-region"]'
-    ).contains(originalCallDetails.region);
+    cy.get('span[id="comp-details-office"]').contains(
+      originalCallDetails.office
+    );
+
+    cy.get('span[id="comp-details-zone"]').contains(originalCallDetails.zone);
+
+    cy.get('span[id="comp-details-region"]').contains(
+      originalCallDetails.region
+    );
 
     cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-      expect($defaultValue.eq(0)).to.contain('Garbage');
-      expect($defaultValue.eq(1)).to.contain('Freezer');
-      expect($defaultValue.eq(2)).to.contain('Compost');
+      expect($defaultValue.eq(0)).to.contain("Garbage");
+      expect($defaultValue.eq(1)).to.contain("Freezer");
+      expect($defaultValue.eq(2)).to.contain("Compost");
     });
     //end verifying changes are reverted
   });
 
-  it("Navigate to the Complaint Edit page & check inputs", function() {
+  it("Navigate to the Complaint Edit page & check inputs", function () {
     cy.navigateToHWLCEditScreen("23-007023");
 
     // Note: if the layout of this page changes, these selectors that use classes may break
@@ -692,8 +701,5 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.navigateToHWLCEditScreen("23-007023");
 
     cy.verifyMapMarkerExists();
-
   });
-
-  
 });
