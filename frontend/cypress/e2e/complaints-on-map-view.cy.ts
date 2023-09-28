@@ -20,7 +20,7 @@ describe("Complaints on map tests", () => {
       cy.get(".comp-loader-overlay").should("exist");
       cy.get(".comp-loader-overlay").should("not.exist");
 
-      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+      cy.get("#comp-status-filter").click({ force: true }); //clear status filter so this complaint is in the list view
 
       cy.get(".comp-loader-overlay").should("exist");
       cy.get(".comp-loader-overlay").should("not.exist");
