@@ -508,7 +508,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationInProgress}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      classNamePrefix="comp-select"
+                      classNamePrefix="comp-violation-ip-select"
                       onChange={(e) => handleViolationInProgessChange(e)}
                     />
                   </div>
@@ -526,7 +526,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationObserved}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      classNamePrefix="comp-select"
+                      classNamePrefix="comp-violation-observed-select"
                       onChange={(e) => handleViolationObservedChange(e)}
                     />
                   </div>
@@ -617,7 +617,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   placeholder="Select"
                   id="community-select-id"
                   classNamePrefix='comp-community-select'
-                  onChange={e => handleCommunityChange(e)}
+                  onChange={(e) => handleCommunityChange(e)}
                   errMsg={communityErrorMsg}
                 />
                 </div>
@@ -837,7 +837,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   </label>
                   <textarea
                     className="comp-form-control"
-                    id="complaint-description-textarea-id"
+                    id="complaint-witness-details-textarea-id"
                     defaultValue={complaint_witness_details}
                     rows={4}
                     onChange={(e) => handleSuspectDetailsChange(e.target.value)}

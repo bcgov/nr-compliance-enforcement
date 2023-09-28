@@ -112,19 +112,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#caller-info-secondary-phone-id")
       .clear()
       .typeAndTriggerChange(editCallerInformation.secondaryInput);
-    cy.get("#caller-info-secondary-phone-id")
-      .invoke("val")
-      .then((value: string) => {
-        cy.task("log", "sec phone count: " + value.length);
-      });
     cy.get("#caller-info-alternate-phone-id")
       .clear()
       .typeAndTriggerChange(editCallerInformation.alternateInput);
-    cy.get("#caller-info-alternate-phone-id")
-      .invoke("val")
-      .then((value: string) => {
-        cy.task("log", "alt phone count: " + value.length);
-      });
 
     cy.get(".comp-referred-select__control")
       .click({ force: true })
@@ -143,17 +133,17 @@ describe("Complaint Edit Page spec - Edit View", () => {
     });
     cy.get("#complaint-location-description-textarea-id")
       .clear()
-      .type(editCallDetails.locationDescription);
+      .type(editCallDetails.locationDescription, {delay: 0});
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
       .clear()
-      .type(editCallDetails.description);
+      .type(editCallDetails.description, {delay: 0});
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get("#complaint-incident-time")
       .click({ force: true })
-      .wait(1000)
       .get(".react-datepicker__day--021")
+      .should('exist')
       .click({ force: true });
 
     cy.get(".comp-attractants-select__multi-value__remove")
@@ -251,7 +241,6 @@ describe("Complaint Edit Page spec - Edit View", () => {
         }
       });
 
-    cy.wait(1000);
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end edit
 
@@ -320,41 +309,18 @@ describe("Complaint Edit Page spec - Edit View", () => {
       .type(originalCallerInformation.address);
     cy.get("#complaint-email-id").clear().type(originalCallerInformation.email);
 
-    //clear() doesn't work here -- why? I have no idea, hit backspace 10 times instead.
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-primary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type(
-      originalCallerInformation.phoneInput
-    );
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-secondary-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get("#caller-info-alternate-phone-id").type("{esc}");
-    cy.get(".comp-referred-select__control")
+    cy.get("#caller-primary-phone-id").click({ force: true });
+    cy.get("#caller-primary-phone-id").clear()
+    cy.get("#caller-primary-phone-id").typeAndTriggerChange(originalCallerInformation.phoneInput);
+    
+    cy.get("#caller-info-secondary-phone-id")
+      .clear()
+      .typeAndTriggerChange(originalCallerInformation.secondaryInput);
+    cy.get("#caller-info-alternate-phone-id")
+      .clear()
+      .typeAndTriggerChange(originalCallerInformation.alternateInput);
+
+      cy.get(".comp-referred-select__control")
       .click({ force: true })
       .get(".comp-referred-select__menu")
       .find(".comp-referred-select__option")
@@ -373,13 +339,13 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
       .clear()
-      .type(originalCallDetails.description);
+      .type(originalCallDetails.description, {delay: 0});
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get("#complaint-incident-time")
       .click({ force: true })
-      .wait(1000)
       .get(".react-datepicker__day--019")
+      .should('exist')
       .click({ force: true });
 
     cy.get(".comp-attractants-select__multi-value__remove")
@@ -471,7 +437,6 @@ describe("Complaint Edit Page spec - Edit View", () => {
         }
       });
 
-    cy.wait(1000);
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end reverting changes
     //start verifying changes are reverted

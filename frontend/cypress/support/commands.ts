@@ -154,6 +154,8 @@ Cypress.Commands.add("verifyMapMarkerExists", () => {
 Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string) => {
   //-- navigate to application root
   cy.visit("/");
+  cy.get("#comp-status-filter").should("exist");
+  cy.get("#comp-zone-filter").should("exist");
 
   //-- click on HWCR tab
   cy.get("#hwcr-tab").click({ force: true });
@@ -162,6 +164,7 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   cy.get(".comp-loader-overlay").should("not.exist");
 
   cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+  cy.get("#comp-status-filter").click({ force: true }); 
 
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
@@ -190,12 +193,15 @@ Cypress.Commands.add("navigateToHWLCEditScreen", (complaintIdentifier: string) =
 Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: string) => {
   //-- navigate to application root
   cy.visit("/");
+  cy.get("#comp-status-filter").should("exist");
+  cy.get("#comp-zone-filter").should("exist");
 
   //-- click on allegation tab
   cy.get("#ers-tab").click({ force: true });
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
   cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+  cy.get("#comp-status-filter").click({ force: true }); 
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
   
@@ -243,7 +249,8 @@ Cypress.Commands.add('typeAndTriggerChange', { prevSubject: 'element' },
         )?.set
         
         nativeInputValueSetter?.call(element, value)
-        element.dispatchEvent(new Event('input', { bubbles: true }))
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
     }
 )
 
