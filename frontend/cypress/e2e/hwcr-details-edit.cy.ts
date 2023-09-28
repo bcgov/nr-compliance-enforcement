@@ -106,17 +106,21 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('#complaint-address-id').clear().type(editCallerInformation.address);
     cy.get('#complaint-email-id').clear().type(editCallerInformation.email);
     
-    
-    cy.get('#caller-primary-phone-id').click({force: true});
-    cy.get('#caller-primary-phone-id').clear().type(editCallerInformation.phoneInput);
-    cy.wait(1000);
-    cy.get('#caller-info-secondary-phone-id').click({force: true});
+    cy.get('#caller-primary-phone-id').click({force:true});
+    cy.get('#caller-primary-phone-id').type('{end}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type('{backspace}');
+    cy.get('#caller-primary-phone-id').type(editCallerInformation.phoneInput);
     cy.get('#caller-info-secondary-phone-id').clear().type(editCallerInformation.secondaryInput);
-    cy.wait(1000);
-    cy.get('#caller-info-alternate-phone-id').click({force: true});
     cy.get('#caller-info-alternate-phone-id').clear().type(editCallerInformation.alternateInput);
-    cy.wait(1000);
-    cy.get('#caller-primary-phone-id').click({force: true});
 
     cy.get('.comp-referred-select__control')    
       .click({force: true})
@@ -247,7 +251,6 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get(
       'div[id="comp-details-email"]'
     ).contains(editCallerInformation.email);
-    /*
     cy.get(
       'div[id="comp-details-phone"]'
     ).contains(editCallerInformation.phone);
@@ -260,7 +263,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       'div[id="comp-details-phone-3"]'
     ).should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
-    });*/
+    });
     cy.get(
       'div[id="comp-details-referred"]'
     ).contains(editCallerInformation.referred);
@@ -311,11 +314,38 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('#complaint-address-id').clear().type(originalCallerInformation.address);
     cy.get('#complaint-email-id').clear().type(originalCallerInformation.email);
     
-    /*
-    cy.get('#caller-primary-phone-id').clear().type(originalCallerInformation.phoneInput);
-    //orignals are blank, can't type blank
-    cy.get('#caller-info-secondary-phone-id').clear();
-    cy.get('#caller-info-alternate-phone-id').clear();*/
+    //clear() doesn't work here -- why? I have no idea, hit backspace 10 times instead.
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-primary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type(originalCallerInformation.phoneInput);
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-secondary-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
+    cy.get('#caller-info-alternate-phone-id').type('{esc}');
     cy.get('.comp-referred-select__control')    
       .click({force: true})
       .get('.comp-referred-select__menu')
@@ -439,7 +469,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get(
       'div[id="comp-details-email"]'
     ).contains(originalCallerInformation.email);
-    /*
+    
     cy.get(
       'div[id="comp-details-phone"]'
     ).contains(originalCallerInformation.phone);
@@ -452,7 +482,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       'div[id="comp-details-phone-3"]'
     ).should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
-    });*/
+    });
     
     cy.get(
       'div[id="comp-details-referred"]'
