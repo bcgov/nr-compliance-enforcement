@@ -119,8 +119,11 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('#caller-primary-phone-id').type('{backspace}');
     cy.get('#caller-primary-phone-id').type('{backspace}');
     cy.get('#caller-primary-phone-id').type(editCallerInformation.phoneInput);
+    cy.get('#caller-primary-phone-id').invoke('val').then((value:string) => {cy.task('log', "pri phone count: " + value.length)});
     cy.get('#caller-info-secondary-phone-id').clear().type(editCallerInformation.secondaryInput);
+    cy.get('#caller-info-secondary-phone-id').invoke('val').then((value:string) => {cy.task('log', "sec phone count: " + value.length)});
     cy.get('#caller-info-alternate-phone-id').clear().type(editCallerInformation.alternateInput);
+    cy.get('#caller-info-alternate-phone-id').invoke('val').then((value:string) => {cy.task('log', "alt phone count: " + value.length)});
 
     cy.get('.comp-referred-select__control')    
       .click({force: true})
