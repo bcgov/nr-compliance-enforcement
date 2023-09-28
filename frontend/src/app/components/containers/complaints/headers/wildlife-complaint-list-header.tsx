@@ -13,7 +13,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
   sortDirection,
 }) => {
   return (
-    <thead className="fixed-sub-header">
+    <thead className="fixed-table-header">
       <tr>
         <SortableHeader
           title="Incident#"

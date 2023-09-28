@@ -11,9 +11,15 @@
   top: 0;
 }
 
-.fixed-sub-header {
+.fixed-filter-header {
   position: sticky;
   top: 72px;
+  background-color: $white;
+}
+
+.fixed-table-header {
+  position: sticky;
+  top: 118px;
 }
 
 .comp-header {
