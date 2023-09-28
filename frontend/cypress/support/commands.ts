@@ -218,6 +218,18 @@ Cypress.Commands.add("navigateToAllegationEditScreen", (complaintIdentifier: str
   cy.get("#details-screen-edit-button").click({ force: true });
 });
 
+Cypress.Commands.add('isInViewport', { prevSubject: true },(subject) => {
+  const bottom = Cypress.$(cy.state('window')).height();
+  const rect = subject[0].getBoundingClientRect();
+
+  console.log(rect.top);
+
+  expect(rect.top).not.to.be.greaterThan(bottom, `Expected element not to be below the visible scrolled area`);
+  expect(rect.top).to.be.greaterThan(0, `Expected element not to be above the visible scrolled area`);
+
+  return subject;
+});
+
 function hasSameTopLevelDomain(url1: string, url2: string): boolean {
   const tld1 = extractTopLevelDomain(url1);
   const tld2 = extractTopLevelDomain(url2);
@@ -232,5 +244,7 @@ function extractTopLevelDomain(url: string): string {
 
   return tld;
 }
+
+
 
 module.exports = {};
