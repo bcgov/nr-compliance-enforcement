@@ -118,7 +118,10 @@
     "coverageDirectory": "../coverage",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/test/"
+      "/test/",
+      ".module.ts",
+      ".entity.ts",
+      ".dto.ts"
     ],
     "coverageReporters": [
       "text",
