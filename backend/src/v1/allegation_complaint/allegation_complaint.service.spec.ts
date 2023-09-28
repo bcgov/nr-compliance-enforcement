@@ -9,7 +9,8 @@ import { ComplaintStatusCode } from '../complaint_status_code/entities/complaint
 import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
 import { ViolationCode } from '../violation_code/entities/violation_code.entity';
 import { ComplaintService } from '../complaint/complaint.service';
-import { MockType, dataSourceMockFactory } from '../../../test/mocks/datasource';
+import { dataSourceMockFactory } from '../../../test/mocks/datasource';
+import { MockType } from '../../../test/mocks/mockType'; 
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { CosGeoOrgUnitService } from '../cos_geo_org_unit/cos_geo_org_unit.service';
 import { OfficeService } from '../office/office.service';
