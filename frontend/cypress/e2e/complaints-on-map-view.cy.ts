@@ -14,7 +14,7 @@ describe("Complaints on map tests", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Switch to map view", () => {
       cy.visit("/");
-      cy.wait(2000);
+      cy.wait(3000);
       cy.get(complaintTypes[index]).click({ force: true });
 
       cy.get(".comp-loader-overlay").should("exist");
