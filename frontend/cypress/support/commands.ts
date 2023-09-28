@@ -155,6 +155,7 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   //-- navigate to application root
   cy.visit("/");
 
+  cy.wait(5000);
   //-- click on HWCR tab
   cy.get("#hwcr-tab").click({ force: true });
 
@@ -162,6 +163,7 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   cy.get(".comp-loader-overlay").should("not.exist");
 
   cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+  cy.get("#comp-status-filter").click({ force: true }); //clear 2nd zone filter so closed complaint in the list view
 
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");

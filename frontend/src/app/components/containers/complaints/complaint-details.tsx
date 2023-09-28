@@ -650,23 +650,28 @@ function handleViolationTypeChange(selectedOption: Option | null) {
   function handlePrimaryPhoneChange(value: string) {
         if(value !== undefined && value.length !== 0 && value.length !== 12)
         {
+          console.log("test");
           setPrimaryPhoneMsg("Phone number must be 10 digits");
         }
         else if(value !== undefined && (value.startsWith("+11") || value.startsWith("+10")))
         {
+          console.log("test1");
           setPrimaryPhoneMsg("Invalid Format");
         }
         else
         {
+          console.log("test2");
           setPrimaryPhoneMsg("");
           if(complaintType === COMPLAINT_TYPES.HWCR)
           {
+            console.log("test3");
             let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
             hwcrComplaint.complaint_identifier.caller_phone_1 = (value !== undefined ? value : "");
             setUpdateComplaint(hwcrComplaint);
           }
           else if(complaintType === COMPLAINT_TYPES.ERS)
           {
+            console.log("test4");
             let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
             allegationComplaint.complaint_identifier.caller_phone_1 = (value !== undefined ? value : "");
             setUpdateComplaint(allegationComplaint);
