@@ -6,7 +6,7 @@ import {
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
-  selectComplaintDeails,
+  selectComplaintDetails,
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
@@ -135,7 +135,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     attractants,
     violationInProgress,
     violationObserved,
-  } = useAppSelector(selectComplaintDeails(complaintType)) as ComplaintDetails;
+  } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const {
     loggedDate,
@@ -574,6 +574,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               </div>
               <CompInput
                 id="comp-details-edit-x-coordinate-input"
+                divId="x-coordinate-pair-id"
                 type="input"
                 label="X Coordinate"
                 containerClass="comp-details-edit-input"
@@ -590,7 +591,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 }
               />
               <CompInput
-                id="comp-details-edit-x-coordinate-input"
+                id="comp-details-edit-y-coordinate-input"
+                divId="y-coordinate-pair-id"
                 type="input"
                 label="Y Coordinate"
                 containerClass="comp-details-edit-input"

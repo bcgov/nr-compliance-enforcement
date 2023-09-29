@@ -5,7 +5,7 @@ import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType, selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaints";
+import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -23,6 +23,7 @@ import { selectDefaultZone, getOfficerDefaultZone, profileZoneDescription, profi
 import { DropdownOption } from '../../../types/code-tables/option';
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
+import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
 
 type Props = {
   defaultComplaintType: string;
@@ -111,7 +112,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <div className="comp-sub-header">Complaints</div>
 
       {/* <!-- create list of complaint types --> */}
-      <Navbar className="basic-navbar-nav complaint-tab-container-width">
+      <Navbar className="fixed-nav-header basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
           {/* <!-- dynamic tabs --> */}
           {complaintTypes.map(({ id, code, name }) => {

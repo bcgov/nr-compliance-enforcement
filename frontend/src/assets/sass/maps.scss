@@ -1,11 +1,148 @@
 .map-marker {
     color: red;
     font-size: 40px;
-    text-align: center; /* Horizontally center the text (icon) */
-    line-height: 20px; /* Vertically center the text (icon) */
+    text-align: center;
+    line-height: 20px;
 }
 
 .map-container {
     border-radius: 4px;
     z-index: 1;
 }
+
+.map-comp-summary-popup-container {
+    display: flex;
+    gap: 24px;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 300px;
+}
+
+.map-comp-popup-header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.map-comp-summary-popup-header {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.map-comp-summary-popup-header .complaint-identifier {
+    font-weight: bold;
+    font-size: 24px;
+    margin-right: auto;
+}
+
+.map-comp-summary-popup-header .complaint-assignee {
+    font-size: 16px;
+    margin-left: auto;
+
+}
+
+.map-comp-summary-popup-subheading {
+    display: flex;
+    
+    gap: 12px;
+    color: $white;
+    white-space: nowrap;
+}
+
+.map-comp-summary-popup-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 16px;
+
+    .comp-details-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 0px !important;
+    }
+
+    .comp-details-content label {
+        margin-right: 10px;
+        color: $gray-600;
+    }
+
+    .comp-complaint-info {
+        display: inline !important;
+        align-items: center;
+    }
+
+}
+
+.map-comp-nature-of-complaint {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.map-comp-summary-popup-details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.map-comp-summary-popup-subheading .comp-box-conflict-type {
+    margin: 0px 12px;
+    padding: 4px 12px;
+    border-radius: 60px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    display: flex;
+}
+
+.map-comp-summary-popup-subheading .comp-box-conflict-type.hwcr-conflict-type {
+    margin: 0px !important
+}
+
+.map-comp-summary-popup-subheading .comp-box-conflict-type.allegation-conflict-type {
+    margin: 0px !important
+}
+
+.map-comp-popup-address {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.popup-visible {
+    visibility: visible;
+}
+
+.popup-invisible {
+    visibility: visible;
+}
+
+/** Leaflet style updates **/
+
+.leaflet-popup-tip {
+    display: none; /* Hide the default tip (pointer) */
+}
+
+.leaflet-popup {
+    bottom: 15px !important; /* requirement is to display the popup midway above marker, this does the trick.  Can't use transform because that's used for other magic by leaflet */
+}
+
+.leaflet-popup-content-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 0px;
+}
+
+.leaflet-popup-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto !important;
+    max-width: 100%;
+    margin: 24px !important;
+}
+
+.leaflet-popup-close-button {
+    display: none; 
+ }

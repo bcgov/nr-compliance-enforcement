@@ -11,6 +11,23 @@
   top: 0;
 }
 
+.fixed-nav-header {
+  position: sticky !important;
+  top: 72px; // Header (72px)
+  background-color: $white;
+}
+
+.fixed-filter-header {
+  position: sticky;
+  top: 130px; // Header (72px) + Tabs (58px) 
+  background-color: $white;
+}
+
+.fixed-table-header {
+  position: sticky;
+  top: 176px; // Header (72px) + Tabs (58px) + filters (46px)
+}
+
 .comp-header {
   height: 72px;
   padding: 0 0 0 12px;

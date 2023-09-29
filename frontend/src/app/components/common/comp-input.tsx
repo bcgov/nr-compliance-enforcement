@@ -2,6 +2,7 @@ import { FC } from "react";
 
 type Props = {
   id: string;
+  divId: string;
   type: "input" | "number" | "text";
   label?: string;
   inputClass?: string;
@@ -25,6 +26,7 @@ const noop = () => {};
 
 export const CompInput: FC<Props> = ({
   id,
+  divId,
   type,
   inputClass,
   formClass,
@@ -62,6 +64,7 @@ export const CompInput: FC<Props> = ({
 
   const props = {
     id: id,
+    divId: divId,
     value: value,
    //  defaultValue: defaultValue,
     className: inputClasses.join(" "),
@@ -80,7 +83,7 @@ export const CompInput: FC<Props> = ({
   }
 
   return (
-    <div className={formClass} id="x-coordinate-pair-id">
+    <div className={formClass} id={divId}>
       {label && (
         <label className="text-box" htmlFor={id}>
           {label}
