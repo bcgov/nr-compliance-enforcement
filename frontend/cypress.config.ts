@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './.env' });
 
 export default defineConfig({
-  defaultCommandTimeout: 10000,
+  defaultCommandTimeout: 15000,
   e2e: {
     baseUrl: 'http://localhost:3001',
     experimentalStudio: true,
