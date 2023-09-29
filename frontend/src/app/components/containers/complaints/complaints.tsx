@@ -111,7 +111,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <div className="comp-sub-header">Complaints</div>
 
       {/* <!-- create list of complaint types --> */}
-      <Navbar className="basic-navbar-nav complaint-tab-container-width">
+      <Navbar className="fixed-nav-header basic-navbar-nav complaint-tab-container-width">
         <Nav className="nav nav-tabs comp-tab container-fluid">
           {/* <!-- dynamic tabs --> */}
           {complaintTypes.map(({ id, code, name }) => {
