@@ -93,6 +93,7 @@ export const ComplaintDetails: FC = () => {
     "comp-complaint-error display-none"
   );
   const saveButtonClick = async () => {
+    debugger
     if (updateComplaint !== null && updateComplaint !== undefined) {
       if (noErrors()) {
         if (complaintType === COMPLAINT_TYPES.HWCR) {
