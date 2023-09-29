@@ -173,7 +173,7 @@ export const getComplaints =
       page,
       pageSize,
     } = payload;
-console.log(payload)
+
     try {
       dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
