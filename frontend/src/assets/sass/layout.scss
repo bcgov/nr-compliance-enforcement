@@ -22,14 +22,14 @@
 
 .fixed-filter-header {
   position: sticky;
-  top: 120px; // Header (72px) + Tabs (58px) 
+  top: 120px; // Header (72px) + Tabs (48px) 
   background-color: $white;
   z-index: 9000;
 }
 
 .fixed-table-header {
   position: sticky;
-  top: 176px; // Header (72px) + Tabs (58px) + filters (46px)
+  top: 166px; // Header (72px) + Tabs (48px) + filters (46px)
 }
 
 .comp-header {
