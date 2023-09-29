@@ -244,8 +244,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     }
 
     let result = type === Coordinates.Latitude ? input[0] : input[1]
-
-    return result.toString();
+    return result === 0 || result === "0" ? "" : result.toString();
   };
 
   const [latitude, setLatitude] = useState<string>(getEditableCoordinates(coordinates, Coordinates.Longitude));
@@ -594,7 +593,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 type="input"
                 label="Y Coordinate"
                 containerClass="comp-details-edit-input"
-                formClass="comp-details-label-input-pair comp-margin-top-30"
+                formClass="comp-details-label-input-pair"
                 inputClass="comp-form-control"
                 value={latitude}
                 error={geoPointYMsg}
