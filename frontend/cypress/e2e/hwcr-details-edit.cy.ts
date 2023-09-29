@@ -389,7 +389,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
           cy.wrap($el).click({ force: true });
         }
       });
-
+      cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get(".comp-community-select__control")
       .click({ force: true })
       .get(".comp-community-select__menu")
@@ -399,6 +399,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
           cy.wrap($el).click({ force: true });
         }
       });
+      cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get(".comp-nature-select__control")
       .click({ force: true })

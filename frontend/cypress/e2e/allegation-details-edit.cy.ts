@@ -169,6 +169,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
           cy.wrap($el).click({ force: true });
         }
       });
+      
+    cy.get("#complaint-description-textarea-id").click({ force: true });
 
       cy.get(".comp-violation-ip-select__control")
       .click({ force: true })
@@ -186,16 +188,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .find(".comp-violation-observed-select__option")
       .each(($el, index, $list) => {
         if (index === editCallDetails.violationObservedIndex) {
-          cy.wrap($el).click({ force: true });
-        }
-      });
-
-      cy.get(".comp-violation-select__control")
-      .click({ force: true })
-      .get(".comp-violation-select__menu")
-      .find(".comp-violation-select__option")
-      .each(($el, index, $list) => {
-        if (index === editCallDetails.violationIndex) {
           cy.wrap($el).click({ force: true });
         }
       });
@@ -218,6 +210,21 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
           cy.wrap($el).click({ force: true });
         }
       });
+
+      cy.get("#complaint-description-textarea-id").click({ force: true });
+
+      cy.get(".comp-violation-select__control")
+      .click({ force: true })
+      .get(".comp-violation-select__menu")
+      .find(".comp-violation-select__option")
+      .each(($el, index, $list) => {
+        if (index === editCallDetails.violationIndex) {
+          cy.wrap($el).click({ force: true });
+        }
+      });
+
+      cy.get("#complaint-description-textarea-id").click({ force: true });
+
       
       cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end edit
