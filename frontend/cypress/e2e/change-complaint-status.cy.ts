@@ -2,7 +2,7 @@
 Test to verify that the status and assignment popover displays when clicking the vertical ellipsis on both the
 HWLC and Enforcement list screens
 */
-describe('Complaint Assign and Status Popover spec', () => {
+describe('Complaint Assign and Status Popover spec', { scrollBehavior: false }, () => {
 
   const complaintTypes = ['#hwcr-tab', '#ers-tab'];
 

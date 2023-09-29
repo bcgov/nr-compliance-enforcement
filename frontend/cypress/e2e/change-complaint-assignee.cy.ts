@@ -2,7 +2,7 @@
 Test to verify that the status and assignment popover displays when clicking the vertical ellipsis on both the
 HWLC and Enforcement list screens
 */
-describe('Complaint Assign Popover spec', () => {
+describe('Complaint Assign Popover spec', { scrollBehavior: false }, () => {
 
   const complaintTypes = ['#hwcr-tab', '#ers-tab'];
 
@@ -13,7 +13,7 @@ describe('Complaint Assign Popover spec', () => {
 
   Cypress._.times(complaintTypes.length, ((index) => {
   
-    it('Changes assignee of complaint', () => {
+    it('Changes assignee of complaint',  () => {
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
 
