@@ -15,6 +15,7 @@
   position: sticky !important;
   top: 72px; // Header (72px)
   background-color: $white;
+  z-index: 10000;
 }
 
 .fixed-filter-header {
