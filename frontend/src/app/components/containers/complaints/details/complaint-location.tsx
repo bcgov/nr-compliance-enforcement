@@ -1,7 +1,8 @@
-import { FC } from "react";
-import { useAppSelector } from "../../../../hooks/hooks";
+import { FC, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import {
-  selectComplaintDeails,
+  getComplaintLocation,
+  selectComplaintDetails,
   selectComplaintLocation,
 } from "../../../../store/reducers/complaints";
 import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
@@ -20,10 +21,18 @@ type Props = {
  *
  */
 export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarkerMove }) => {
-  
-  const { coordinates } = useAppSelector(
-    selectComplaintDeails(complaintType)
+  const dispatch = useAppDispatch();
+  const { coordinates, area, location } = useAppSelector(
+    selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
+  
+  useEffect(() => {
+    if (area) {
+      dispatch(getComplaintLocation(area, location));
+    }
+  
+  }, [area, dispatch, location]);
+  
   const complaintLocation = useAppSelector(selectComplaintLocation);
 
   // the lat and long of the marker we need to display on the map
@@ -31,7 +40,6 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
   // or they'll be derived using the complaint's location and/or community.
   let lat = 0;
   let lng = 0;
-
   if (coordinates && isWithinBC(coordinates)) {
     lat = +coordinates[Coordinates.Latitude];
     lng = +coordinates[Coordinates.Longitude];

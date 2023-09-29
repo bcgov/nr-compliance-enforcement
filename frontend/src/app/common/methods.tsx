@@ -5,6 +5,7 @@ import COMPLAINT_TYPES from "../types/app/complaint-types";
 type Coordinate = number[] | string[] | undefined;
 
 export const getAvatarInitials = (input: string): string => {
+
   const tokens = input.split(" ");
 
   if (tokens && tokens.length >= 1) {
@@ -17,6 +18,34 @@ export const getAvatarInitials = (input: string): string => {
     return input.charAt(0);
   }
 };
+
+export const getFirstInitialAndLastName = (fullName: string): string => {
+
+  const NOT_ASSIGNED = "Not Assigned";
+
+  if (NOT_ASSIGNED === fullName) {
+    return NOT_ASSIGNED;
+  }
+
+
+  // Split the full name into an array of words
+  const words = fullName.trim().split(' ');
+
+  if (words.length === 0) {
+    // If there are no words, return an empty string
+    return '';
+  } else if (words.length === 1) {
+    // If there is only one word, return the entire word as the last name
+    return words[0];
+  } else {
+    // Extract the first initial and last name
+    const firstInitial = words[0].charAt(0).toUpperCase();
+    const lastName = words[words.length - 1];
+
+    // Concatenate the first initial and last name with a space
+    return `${firstInitial}. ${lastName}`;
+  }
+}
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
@@ -111,4 +140,15 @@ export const renderCoordinates = (
   const result = parseCoordinates(coordinates, coordinateType);
 
   return result === 0 ? <>{"Not Provided"}</> : <>{result}</>;
+};
+
+export const applyStatusClass = (state: string): string => {
+  switch (state.toLowerCase()) {
+    case "open":
+      return "comp-status-badge-open";
+      case "closed": 
+      return "comp-status-badge-closed";
+    default: 
+    return "";
+  }
 };

@@ -6,6 +6,7 @@ import COMPLAINT_TYPES, {
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import {
+  applyStatusClass,
   formatDate,
   formatTime,
   getAvatarInitials,
@@ -46,16 +47,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === 'Not Assigned' ? 'Assign' : 'Reassign';
-  const applyStatusClass = (state: string): string => {
-    switch (state.toLowerCase()) {
-      case "open":
-        return "comp-status-badge-open";
-        case "closed": 
-        return "comp-status-badge-closed";
-      default: 
-      return "";
-    }
-  };
+  
 
   const openStatusChangeModal = () => {
     document.body.click();

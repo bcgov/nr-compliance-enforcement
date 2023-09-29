@@ -6,7 +6,7 @@ import {
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
-  selectComplaintDeails,
+  selectComplaintDetails,
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
@@ -135,7 +135,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     attractants,
     violationInProgress,
     violationObserved,
-  } = useAppSelector(selectComplaintDeails(complaintType)) as ComplaintDetails;
+  } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const {
     loggedDate,

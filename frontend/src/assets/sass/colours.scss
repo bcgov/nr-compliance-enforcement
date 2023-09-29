@@ -412,6 +412,13 @@ $blue-200: #9EC5FE;
 $blue-300: #CCDDFD;
 $blue-600: #0A58CA;
 
+$green-100: #2E8540;
+
+$green-100-80: tint-color($green-100, 80%);
+
+
+
 $red-300: #D8292F;
+$red-300-80: tint-color($red-300,80%);
 
 $bc-gov-link-blue: #2464A4;
