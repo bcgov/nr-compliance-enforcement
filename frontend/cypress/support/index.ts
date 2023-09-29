@@ -9,5 +9,6 @@ declare namespace Cypress {
     navigateToHWLCEditScreen(complaintIdentifier: string) : Chainable<any>;
     navigateToAllegationDetailsScreen(complaintIdentifier: string) : Chainable<any>;
     navigateToAllegationEditScreen(complaintIdentifier: string) : Chainable<any>;
+    isInViewport() : Chainable<any>;
   }
 }

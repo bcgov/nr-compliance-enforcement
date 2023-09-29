@@ -71,7 +71,7 @@ export const ComplaintFilterBar: FC<Props> = ({viewType, toggleViewType}) => {
   );
 
   return (
-    <div className="comp-filter-pill-container">
+    <div className="fixed-filter-header comp-filter-pill-container">
       <MapListToggle
         onToggle={toggleViewType}
         activeView={viewType}
