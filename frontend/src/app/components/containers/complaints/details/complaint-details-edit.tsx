@@ -3,7 +3,6 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
   formatTime,
-  renderCoordinates,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
@@ -26,7 +25,6 @@ import {
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
-import ReactDOMServer from "react-dom/server";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
@@ -42,6 +40,7 @@ import { ValidationInput } from "../../../../common/validation-input";
 import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { CompSelect } from "../../../common/comp-select";
+import { CompInput } from "../../../common/comp-input";
 
 interface ComplaintDetailsProps {
   complaintType: string;
@@ -181,14 +180,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
         }))
       : [];
 
-  const xCoordinate = ReactDOMServer.renderToString(
-    renderCoordinates(coordinates, Coordinates.Longitude)
-  );
-  const yCoordinate = ReactDOMServer.renderToString(
-    renderCoordinates(coordinates, Coordinates.Latitude)
-  );
-
-  // Get the code table lists to populate the Selects
+      // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(
     selectComplaintStatusCodeDropdown
   ) as Option[];
@@ -242,8 +234,22 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
-  const [latitude, setLatitude] = useState<number>(+yCoordinate);
-  const [longitude, setLongitude] = useState<number>(+xCoordinate);
+  //--
+  const getEditableCoordinates = (
+    input: Array<number> | Array<string> | undefined,
+    type: Coordinates
+  ): string => {
+    if (!input) {
+      return "";
+    }
+
+    let result = type === Coordinates.Latitude ? input[0] : input[1]
+
+    return result.toString();
+  };
+
+  const [latitude, setLatitude] = useState<string>(getEditableCoordinates(coordinates, Coordinates.Longitude));
+  const [longitude, setLongitude] = useState<string>(getEditableCoordinates(coordinates, Coordinates.Latitude));
 
   const handleMarkerMove = async (lat: number, lng: number) => {
     await updateCoordinates(lat, lng);
@@ -251,8 +257,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   };
 
   async function updateCoordinates(lat: number, lng: number) {
-    setLatitude(lat);
-    setLongitude(lng);
+    setLatitude(lat.toString());
+    setLongitude(lng.toString());
   }
 
   async function updateValidation(lat: number, lng: number) {
@@ -278,14 +284,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     }
   }
 
-  const handleLongitudeChange = (newValue: string) => {
-    setLongitude(+newValue);
-    updateValidation(latitude, longitude);
-  };
-
-  const handleLatitudeChange = (newValue: string) => {
-    setLatitude(+newValue);
-    updateValidation(latitude, longitude);
+  const handleCoordinateChange = (input: string, type: Coordinates) => {
+    if (type === Coordinates.Latitude) {
+      setLatitude(input);
+      handleGeoPointChange(input, longitude);
+    } else {
+      setLongitude(input);
+      handleGeoPointChange(latitude, input);
+    }
   };
 
   return (
@@ -566,42 +572,37 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   }
                 />
               </div>
-              <div
-                className="comp-details-label-input-pair comp-margin-top-30"
-                id="x-coordinate-pair-id"
-              >
-                <label>X Coordinate</label>
-                <div className="comp-details-edit-input">
-                  <ValidationInput
-                    type="number"
-                    id="comp-details-edit-x-coordinate-input"
-                    className="comp-form-control"
-                    value={`${longitude}`}
-                    defaultValue={`${longitude}`}
-                    onChange={handleLongitudeChange}
-                    errMsg={geoPointXMsg}
-                    step="any"
-                  />
-                </div>
-              </div>
-              <div
-                className="comp-details-label-input-pair"
-                id="y-coordinate-pair-id"
-              >
-                <label>Y Coordinate</label>
-                <div className="comp-details-edit-input">
-                  <ValidationInput
-                    type="number"
-                    id="comp-details-edit-y-coordinate-input"
-                    className="comp-form-control"
-                    value={`${latitude}`}
-                    defaultValue={`${latitude}`}
-                    onChange={handleLatitudeChange}
-                    errMsg={geoPointYMsg}
-                    step="any"
-                  />
-                </div>
-              </div>
+              <CompInput
+                id="comp-details-edit-x-coordinate-input"
+                type="input"
+                label="X Coordinate"
+                containerClass="comp-details-edit-input"
+                formClass="comp-details-label-input-pair comp-margin-top-30"
+                inputClass="comp-form-control"
+                value={longitude}
+                error={geoPointXMsg}
+                step="any"
+                onChange={(evt: any) =>
+                  handleCoordinateChange(
+                    evt.target.value,
+                    Coordinates.Longitude
+                  )
+                }
+              />
+              <CompInput
+                id="comp-details-edit-x-coordinate-input"
+                type="input"
+                label="Y Coordinate"
+                containerClass="comp-details-edit-input"
+                formClass="comp-details-label-input-pair comp-margin-top-30"
+                inputClass="comp-form-control"
+                value={latitude}
+                error={geoPointYMsg}
+                step="any"
+                onChange={(evt: any) =>
+                  handleCoordinateChange(evt.target.value, Coordinates.Latitude)
+                }
+              />
               <div
                 className="comp-details-label-input-pair"
                 id="area-community-pair-id"
