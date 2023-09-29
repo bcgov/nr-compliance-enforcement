@@ -383,6 +383,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
         }
       });
 
+      cy.get("#complaint-description-textarea-id").click({ force: true });
       cy.get(".comp-violation-select__control")
       .click({ force: true })
       .get(".comp-violation-select__menu")
@@ -392,6 +393,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
           cy.wrap($el).click({ force: true });
         }
       });
+      cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get(".comp-status-select__control")
       .click({ force: true })
