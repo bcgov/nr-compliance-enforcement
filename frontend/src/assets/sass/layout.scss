@@ -9,19 +9,21 @@
   position: fixed;
   width: 100%;
   top: 0;
+  z-index: 10000;
 }
 
 .fixed-nav-header {
   position: sticky !important;
   top: 72px; // Header (72px)
   background-color: $white;
-  z-index: 10000;
+  z-index: 9000;
 }
 
 .fixed-filter-header {
   position: sticky;
   top: 130px; // Header (72px) + Tabs (58px) 
   background-color: $white;
+  z-index: 9000;
 }
 
 .fixed-table-header {
