@@ -14,7 +14,9 @@ describe("Complaints on map tests", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Verify filters work and are maintained between list and map view", () => {
       cy.visit("/");
-      cy.wait(3000);
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
+
       cy.get(complaintTypes[index]).click({ force: true });
 
       cy.get(".comp-loader-overlay").should("exist");
@@ -78,7 +80,9 @@ describe("Complaints on map tests", () => {
     // test to verify that user can switch to map view and click a marker to see popup
     it("Switch to map view and click marker", () => {
       cy.visit("/");
-      cy.wait(3000);
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
+
       cy.get(complaintTypes[index]).click({ force: true });
 
       cy.get(".comp-loader-overlay").should("exist");
