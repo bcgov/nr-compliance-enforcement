@@ -13,42 +13,43 @@ describe("Complaints on map tests", () => {
   // perform the same test on each of the tabs (HWCR and ERS)
   Cypress._.times(complaintTypes.length, (index) => {
     it("Verify filters work and are maintained between list and map view", () => {
-        cy.visit("/");
-        cy.wait(3000);
-        cy.get(complaintTypes[index]).click({ force: true });
+      cy.visit("/");
+      cy.wait(3000);
+      cy.get(complaintTypes[index]).click({ force: true });
 
-        cy.get(".comp-loader-overlay").should("exist");
-        cy.get(".comp-loader-overlay").should("not.exist");
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
 
-        cy.get("#comp-status-filter").should("exist");
-        cy.get("#comp-status-filter").click({ force: true }); //clear status filter in list view
-        cy.get("#comp-status-filter").should("not.exist");
+      cy.get("#comp-status-filter").should("exist");
+      cy.get("#comp-status-filter").click({ force: true }); //clear status filter in list view
+      cy.get("#comp-status-filter").should("not.exist");
 
-        cy.get("#comp-zone-filter").should("exist");
-        cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter in list view
-        cy.get("#comp-zone-filter").should("not.exist");
+      cy.get("#comp-zone-filter").should("exist");
+      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter in list view
+      cy.get("#comp-zone-filter").should("not.exist");
 
-        cy.get(".comp-loader-overlay").should("exist");
-        cy.get(".comp-loader-overlay").should("not.exist");
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
 
-        cy.get("#map_toggle_id").click({ force: true });
+      // switch to map view
+      cy.get("#map_toggle_id").click({ force: true });
 
-        // wait for the map to load
-        cy.get(".comp-loader-overlay").should("exist");
-        cy.get(".comp-loader-overlay").should("not.exist");
+      // wait for the map to load
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
 
-        // verify the status filter is still removed
-        cy.get("#comp-status-filter").should("not.exist");
+      // verify the status filters are still removed
+      cy.get("#comp-status-filter").should("not.exist");
+      cy.get("#comp-zone-filter").should("not.exist");
 
-        // find how many markers there are, we'll compare this to the count after another filter is applied
-        cy.get(".leaflet-marker-icon")
-          .its("length")
-          .as("complaintCountInZone");
+      // find how many markers there are, we'll compare this to the count after another filter is applied
+      cy.get(".leaflet-marker-icon").its("length").as("complaintCountInZone");
 
-        cy.get('#complaint-filter-image-id').click({ force: true });
+      cy.get("#complaint-filter-image-id").click({ force: true });
 
-        // add the region filter
-        cy.get(".comp-select__control ").first()
+      // add the region filter
+      cy.get(".comp-select__control ")
+        .first()
         .click({ force: true })
         .get(".comp-select__menu")
         .find(".comp-select__option")
@@ -58,7 +59,7 @@ describe("Complaints on map tests", () => {
           }
         });
 
-      // count the filters again, they should now have a different count
+      // count the markers again, they should now have a different count
       cy.get(".leaflet-marker-icon")
         .its("length")
         .as("complaintCountInZoneAndRegion");
@@ -68,14 +69,14 @@ describe("Complaints on map tests", () => {
         "@complaintCountInZoneAndRegion"
       );
 
-      // switch back to map view to verify filter is still applied
+      // switch back to list view to verify filter is still applied
       cy.get("#list_toggle_id").click({ force: true });
 
       cy.get("#comp-region-filter").should("exist");
-      
     });
 
-    it("Switch to map view", () => {
+    // test to verify that user can switch to map view and click a marker to see popup
+    it("Switch to map view and click marker", () => {
       cy.visit("/");
       cy.wait(3000);
       cy.get(complaintTypes[index]).click({ force: true });
