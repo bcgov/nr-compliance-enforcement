@@ -140,7 +140,21 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <Nav.Item
             className="ms-auto"
             {...getToggleProps({
-              onClick: () => setExpanded((prevExpanded) => !prevExpanded),
+                onClick: () => {
+                  const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
+                  const rect = filterElem?.getBoundingClientRect();
+                  const bottom = rect?.bottom;
+
+                  if({isExpanded}.isExpanded && bottom !== undefined && bottom < 140) //page has been scrolled while filter is open... need to close it!
+                  {
+                    setExpanded((prevExpanded) => !prevExpanded);
+                  }
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                    });
+                  setExpanded((prevExpanded) => !prevExpanded);
+                },
             })}
           >
             <div
