@@ -38,7 +38,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
     selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
 
-  const { location, zone } = useAppSelector(
+  const { location, area } = useAppSelector(
     selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
 
@@ -52,7 +52,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
   return (
-    <Popup className="map-comp-popup">
       <div className="map-comp-summary-popup-container">
         <div className="map-comp-summary-popup-details">
           <div className="map-comp-popup-header-container">
@@ -113,7 +112,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               </div>
               <div>
                 <label>Community</label>
-                {zone}
+                {area}
               </div>
               <div className="map-comp-popup-address">
                 <label>Location/Address</label>
@@ -138,6 +137,5 @@ export const ComplaintSummaryPopup: FC<Props> = ({
           <Button id="view-complaint-details-button-id" variant="primary">View Details</Button>
         </Link>
       </div>
-    </Popup>
   );
 };

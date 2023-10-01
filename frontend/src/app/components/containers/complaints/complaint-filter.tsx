@@ -332,6 +332,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 value={region}
+                id="region-select-filter-id"
               />
             </div>
           </div>
