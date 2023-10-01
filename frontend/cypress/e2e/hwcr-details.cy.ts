@@ -34,7 +34,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
     //-- click on HWCR tab
     cy.get("#hwcr-tab").click({ force: true });
 
-    cy.get(".comp-loader-overlay").should("not.exist");
+    cy.waitForSpinner();
 
     //-- check to make sure there are items in the table
     cy.get("#complaint-list")

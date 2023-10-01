@@ -27,8 +27,7 @@ describe("Complaint Change Status spec - Details View", () => {
 
       cy.get("#update_complaint_status_button").click();
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("#comp-details-status-text-id").contains("Closed").should("exist");
 
@@ -41,8 +40,7 @@ describe("Complaint Change Status spec - Details View", () => {
 
       cy.get("#update_complaint_status_button").click();
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("#comp-details-status-text-id").contains("Open").should("exist");
     });

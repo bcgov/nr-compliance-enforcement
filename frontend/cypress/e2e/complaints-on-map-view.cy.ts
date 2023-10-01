@@ -14,31 +14,22 @@ describe("Complaints on map tests", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Verify filters work and are maintained between list and map view", () => {
       cy.visit("/");
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
-
+      cy.waitForSpinner();
+      
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
-      cy.get("#comp-status-filter").should("exist");
-      cy.get("#comp-status-filter").click({ force: true }); //clear status filter in list view
-      cy.get("#comp-status-filter").should("not.exist");
+      cy.clearFilterById("comp-status-filter");
+      cy.clearFilterById("comp-zone-filter");
 
-      cy.get("#comp-zone-filter").should("exist");
-      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter in list view
-      cy.get("#comp-zone-filter").should("not.exist");
-
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       // switch to map view
       cy.get("#map_toggle_id").click({ force: true });
 
       // wait for the map to load
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       // verify the status filters are still removed
       cy.get("#comp-status-filter").should("not.exist");
@@ -50,16 +41,7 @@ describe("Complaints on map tests", () => {
       cy.get("#complaint-filter-image-id").click({ force: true });
 
       // add the region filter
-      cy.get(".comp-select__control ")
-        .first()
-        .click({ force: true })
-        .get(".comp-select__menu")
-        .find(".comp-select__option")
-        .each(($el, index, $list) => {
-          if (index === 1) {
-            cy.wrap($el).click({ force: true });
-          }
-        });
+      cy.selectItem("comp-select__control",1);
 
       // count the markers again, they should now have a different count
       cy.get(".leaflet-marker-icon")
@@ -80,32 +62,27 @@ describe("Complaints on map tests", () => {
     // test to verify that user can switch to map view and click a marker to see popup
     it("Switch to map view and click marker", () => {
       cy.visit("/");
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
-
+      cy.waitForSpinner();
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("#comp-status-filter").click({ force: true }); //clear status filter so this complaint is in the list view
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("#list_toggle_id").should("exist");
       cy.get("#map_toggle_id").should("exist"); //verifies that the list/map toggle button appears.  Click the map view
       cy.get("#map_toggle_id").click({ force: true });
 
       // wait for the map to load
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("div.leaflet-container").should("exist");
 
       cy.get(".leaflet-popup").should("not.exist");
       cy.wait(1000);
-
+      
       cy.get(".leaflet-marker-icon").each(($marker, index) => {
         // Click the first marker (index 0)
         if (index === 0) {
@@ -114,16 +91,14 @@ describe("Complaints on map tests", () => {
       });
 
       // wait for the popup to load
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
-
+      cy.waitForSpinner();
+      
       cy.get(".leaflet-popup").should("exist");
 
       // click the "view details" button to navigate to the complaint
       cy.get("#view-complaint-details-button-id").click({ force: true });
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
     });
   });
 });

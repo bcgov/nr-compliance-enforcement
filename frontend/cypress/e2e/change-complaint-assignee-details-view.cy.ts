@@ -22,8 +22,7 @@ describe("Complaint Change Assignee spec - Details View", () => {
 
       // self assign the complaint
       cy.get("#self_assign_button").click({ force: true });
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
       cy.get("#comp-details-assigned-officer-name-text-id")
         .contains("ENV TestAcct")
         .should("exist");

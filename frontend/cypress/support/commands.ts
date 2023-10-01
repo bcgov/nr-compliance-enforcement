@@ -158,13 +158,11 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   //-- click on HWCR tab
   cy.get("#hwcr-tab").click({ force: true });
 
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.waitForSpinner();
 
   cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.waitForSpinner();
 
 
   //-- check to make sure there are items in the table
@@ -178,8 +176,7 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
     .contains(complaintIdentifier)
     .click({ force: true });
 
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.waitForSpinner();
 });
 
 Cypress.Commands.add("navigateToHWLCEditScreen", (complaintIdentifier: string) => {
@@ -193,11 +190,9 @@ Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: 
 
   //-- click on allegation tab
   cy.get("#ers-tab").click({ force: true });
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.waitForSpinner();
   cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.waitForSpinner();
   
   //-- check to make sure there are items in the table
   cy.get("#complaint-list")
@@ -209,13 +204,38 @@ Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: 
   cy.get("#complaint-list > tbody > tr > td")
     .contains(complaintIdentifier)
     .click({ force: true });
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+  cy.waitForSpinner();
 });
 
 Cypress.Commands.add("navigateToAllegationEditScreen", (complaintIdentifier: string) => {
   cy.navigateToAllegationDetailsScreen(complaintIdentifier);
   cy.get("#details-screen-edit-button").click({ force: true });
+});
+
+Cypress.Commands.add("waitForSpinner", () => {
+  cy.get('.comp-loader-overlay').should('exist');
+  cy.get('.comp-loader-overlay').should('not.exist');
+});
+
+Cypress.Commands.add("clearFilterById", (filterId: string) => {
+  cy.get(`#${filterId}`).should("exist");
+  cy.get(`#${filterId}`).click({ force: true }); //clear status filter in list view
+  cy.get(`#${filterId}`).should("not.exist");
+
+});
+
+
+Cypress.Commands.add("selectItem", (selectClass: string, rowIndex: number) => {
+  cy.get(`.${selectClass}`)
+  .first()
+  .click({ force: true })
+  .get(".comp-select__menu")
+  .find(".comp-select__option")
+  .each(($el, index, $list) => {
+    if (index === rowIndex) {
+      cy.wrap($el).click({ force: true });
+    }
+  });
 });
 
 Cypress.Commands.add('isInViewport', { prevSubject: true },(subject) => {

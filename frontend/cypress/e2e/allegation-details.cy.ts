@@ -27,8 +27,7 @@ describe("COMPENF-37 Display ECR Details", () => {
     //-- click on Allegation tab
     cy.get("#ers-tab").click({ force: true });
 
-    cy.get('.comp-loader-overlay').should('exist');
-    cy.get('.comp-loader-overlay').should('not.exist');
+    cy.waitForSpinner();
 
     //-- check to make sure there are items in the table
     cy.get("#complaint-list")
