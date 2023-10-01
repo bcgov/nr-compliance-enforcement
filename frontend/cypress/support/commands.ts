@@ -225,7 +225,7 @@ Cypress.Commands.add("clearFilterById", (filterId: string) => {
 });
 
 
-Cypress.Commands.add("selectItem", (selectClass: string, rowIndex: number) => {
+Cypress.Commands.add("selectItemByClass", (selectClass: string, rowIndex: number) => {
   cy.get(`.${selectClass}`)
   .first()
   .click({ force: true })

@@ -41,7 +41,7 @@ describe("Complaints on map tests", () => {
       cy.get("#complaint-filter-image-id").click({ force: true });
 
       // add the region filter
-      cy.selectItem("comp-select__control",1);
+      cy.selectItemByClass("comp-select__control",1);
 
       // count the markers again, they should now have a different count
       cy.get(".leaflet-marker-icon")
@@ -82,7 +82,7 @@ describe("Complaints on map tests", () => {
 
       cy.get(".leaflet-popup").should("not.exist");
       cy.wait(1000);
-      
+
       cy.get(".leaflet-marker-icon").each(($marker, index) => {
         // Click the first marker (index 0)
         if (index === 0) {
