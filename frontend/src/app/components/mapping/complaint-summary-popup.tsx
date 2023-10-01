@@ -52,6 +52,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
   return (
+    <Popup className="map-comp-popup">
       <div className="map-comp-summary-popup-container">
         <div className="map-comp-summary-popup-details">
           <div className="map-comp-popup-header-container">
@@ -137,5 +138,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({
           <Button id="view-complaint-details-button-id" variant="primary">View Details</Button>
         </Link>
       </div>
+      </Popup>
   );
 };
