@@ -151,12 +151,12 @@ Cypress.Commands.add("verifyMapMarkerExists", () => {
   cy.get('.leaflet-marker-icon').should("exist");
 });
 
-Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string) => {
+Cypress.Commands.add("navigateToDetailsScreen", (complaintType: string, complaintIdentifier: string) => {
   //-- navigate to application root
   cy.visit("/");
 
   //-- click on HWCR tab
-  cy.get("#hwcr-tab").click({ force: true });
+  cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
 
   cy.waitForSpinner();
 
@@ -179,36 +179,8 @@ Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string
   cy.waitForSpinner();
 });
 
-Cypress.Commands.add("navigateToHWLCEditScreen", (complaintIdentifier: string) => {
-  cy.navigateToHWLCDetailsScreen(complaintIdentifier);
-  cy.get("#details-screen-edit-button").click({ force: true });
-});
-
-Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: string) => {
-  //-- navigate to application root
-  cy.visit("/");
-
-  //-- click on allegation tab
-  cy.get("#ers-tab").click({ force: true });
-  cy.waitForSpinner();
-  cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
-  cy.waitForSpinner();
-  
-  //-- check to make sure there are items in the table
-  cy.get("#complaint-list")
-    .find("tr")
-    .then(({ length }) => {
-      expect(length, "rows N").to.be.gt(0);
-    });
-
-  cy.get("#complaint-list > tbody > tr > td")
-    .contains(complaintIdentifier)
-    .click({ force: true });
-  cy.waitForSpinner();
-});
-
-Cypress.Commands.add("navigateToAllegationEditScreen", (complaintIdentifier: string) => {
-  cy.navigateToAllegationDetailsScreen(complaintIdentifier);
+Cypress.Commands.add("navigateToEditScreen", (complaintType: string, complaintIdentifier: string) => {
+  cy.navigateToDetailsScreen(complaintType.toLowerCase(), complaintIdentifier);
   cy.get("#details-screen-edit-button").click({ force: true });
 });
 
