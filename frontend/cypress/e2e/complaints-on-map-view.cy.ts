@@ -15,13 +15,8 @@ describe("Complaints on map tests", () => {
     it("Verify filters work and are maintained between list and map view", () => {
       cy.visit("/");
       cy.waitForSpinner();
-      
+
       cy.get(complaintTypes[index]).click({ force: true });
-
-      cy.waitForSpinner();
-
-      cy.clearFilterById("comp-status-filter");
-      cy.clearFilterById("comp-zone-filter");
 
       cy.waitForSpinner();
 
@@ -31,17 +26,43 @@ describe("Complaints on map tests", () => {
       // wait for the map to load
       cy.waitForSpinner();
 
-      // verify the status filters are still removed
-      cy.get("#comp-status-filter").should("not.exist");
-      cy.get("#comp-zone-filter").should("not.exist");
+      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+
+      // verify no other filters exist
+      cy.get("#comp-officer-filter").should("not.exist");
+      cy.get("#comp-community-filter").should("not.exist");
+      cy.get("#comp-region-filter").should("not.exist");
+
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        cy.get("#comp-species-filter").should("not.exist");
+        cy.get("#comp-nature-of-complaint-filter").should("not.exist");
+      } else {
+        cy.get("#comp-violation-filter").should("not.exist");
+      }
 
       // find how many markers there are, we'll compare this to the count after another filter is applied
       cy.get(".leaflet-marker-icon").its("length").as("complaintCountInZone");
 
       cy.get("#complaint-filter-image-id").click({ force: true });
 
-      // add the region filter
-      cy.selectItemByClass("comp-select__control",1);
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        // add the hwcr filters
+        // add the region filter
+        cy.selectItemById("region-select-filter-id", "Thompson Cariboo");
+        cy.selectItemById("zone-select-id", "Cariboo Thompson");
+        cy.selectItemById("community-select-id", "Blue River");
+
+        cy.selectItemById("nature-of-complaint-select-id", "Food Conditioned");
+        cy.selectItemById("species-select-id", "Black Bear");
+      } else {
+        // add the alegation filters
+        // add the region filter
+        cy.selectItemById("region-select-filter-id", "Omineca");
+        cy.selectItemById("zone-select-id", "Nechako-Lakes");
+        cy.selectItemById("community-select-id", "Fort St. James");
+
+        cy.selectItemById("violation-type-select-id", "Wildlife");
+      }
 
       // count the markers again, they should now have a different count
       cy.get(".leaflet-marker-icon")
@@ -53,10 +74,22 @@ describe("Complaints on map tests", () => {
         "@complaintCountInZoneAndRegion"
       );
 
-      // switch back to list view to verify filter is still applied
+      // switch back to list view to verify filters are still applied
       cy.get("#list_toggle_id").click({ force: true });
 
+      // verify the filters still exits
+      cy.get("#comp-status-filter").should("exist");
+      cy.get("#comp-zone-filter").should("exist");
+      cy.get("#comp-community-filter").should("exist");
       cy.get("#comp-region-filter").should("exist");
+
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        // add the hwcr filters
+        cy.get("#comp-species-filter").should("exist");
+        cy.get("#comp-nature-of-complaint-filter").should("exist");
+      } else {
+        cy.get("#comp-violation-filter").should("exist");
+      }
     });
 
     // test to verify that user can switch to map view and click a marker to see popup
@@ -92,7 +125,7 @@ describe("Complaints on map tests", () => {
 
       // wait for the popup to load
       cy.waitForSpinner();
-      
+
       cy.get(".leaflet-popup").should("exist");
 
       // click the "view details" button to navigate to the complaint

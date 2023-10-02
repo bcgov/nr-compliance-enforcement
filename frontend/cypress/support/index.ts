@@ -10,6 +10,6 @@ declare namespace Cypress {
     isInViewport() : Chainable<any>;
     waitForSpinner(): Chainable<any>;
     clearFilterById(filterId: string): Chainable<any>;
-    selectItemByClass(selectClass: string, rowIndex: number) : Chainable<any>;
+    selectItemById(selectId: string, optionText: string) : Chainable<any>;
   }
 }
