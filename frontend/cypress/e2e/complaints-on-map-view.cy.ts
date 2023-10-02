@@ -41,7 +41,7 @@ describe("Complaints on map tests", () => {
       }
 
       // find how many markers there are, we'll compare this to the count after another filter is applied
-      cy.get(".leaflet-marker-icon").its("length").as("complaintCountInZone");
+      cy.get(".leaflet-marker-icon").its("length").as("complaintCountWithoutFilters");
 
       cy.get("#complaint-filter-image-id").click({ force: true });
 
@@ -67,11 +67,11 @@ describe("Complaints on map tests", () => {
       // count the markers again, they should now have a different count
       cy.get(".leaflet-marker-icon")
         .its("length")
-        .as("complaintCountInZoneAndRegion");
+        .as("complaintCountWithFilters");
 
-      cy.wrap("@complaintCountInZone").should(
+      cy.wrap("@complaintCountWithoutFilters").should(
         "not.eq",
-        "@complaintCountInZoneAndRegion"
+        "@complaintCountWithFilters"
       );
 
       // switch back to list view to verify filters are still applied
