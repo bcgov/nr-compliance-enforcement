@@ -63,9 +63,9 @@ describe("Complaints on map tests", () => {
         // add the region filter
         cy.selectItemById("region-select-filter-id", "Omineca");
         cy.selectItemById("zone-select-id", "Nechako-Lakes");
-        cy.selectItemById("community-select-id", "Fort St. James");
+        cy.selectItemById("community-select-id", "Danskin");
 
-        cy.selectItemById("violation-type-select-id", "Wildlife");
+        cy.selectItemById("violation-type-select-id", "Other");
       }
 
       // count the markers again, they should now have a different count
