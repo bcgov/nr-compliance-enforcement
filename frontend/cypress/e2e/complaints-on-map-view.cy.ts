@@ -26,6 +26,10 @@ describe("Complaints on map tests", () => {
       // wait for the map to load
       cy.waitForSpinner();
 
+      // verify default filters
+      cy.get("#comp-status-filter").should("exist");
+      cy.get("#comp-zone-filter").should("exist");
+
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
       // verify no other filters exist
