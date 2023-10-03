@@ -6,7 +6,7 @@ import Select from 'react-select';
 interface ValidationMultiSelectProps {
     className: string,
     options: Option[],
-    defaultValue: Option[],
+    defaultValue?: Option[],
     placeholder: string,
     id: string,
     classNamePrefix: string,

@@ -6,7 +6,7 @@ import Select from 'react-select';
 interface ValidationSelectProps {
     className: string,
     options: Option[],
-    defaultValue: Option | undefined,
+    defaultValue?: Option | undefined,
     placeholder: string,
     id: string,
     classNamePrefix: string,

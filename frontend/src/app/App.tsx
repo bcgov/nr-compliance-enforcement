@@ -21,6 +21,7 @@ import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
+import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -49,6 +50,7 @@ const App: FC = () => {
             element={<ComplaintDetails />}
           />
           <Route path="/zone/at-a-glance" element={<ZoneAtAGlance />} />
+          <Route path="/complaint/createComplaint" element={<CreateComplaint />} />
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />
         <Route path="*" element={<NotFound />} />

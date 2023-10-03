@@ -24,6 +24,8 @@ import { DropdownOption } from '../../../types/code-tables/option';
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
+import { useNavigate } from "react-router-dom";
+import createIcon from "../../../../assets/images/create-icon.png";
 
 type Props = {
   defaultComplaintType: string;
@@ -33,6 +35,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const dispatch = useAppDispatch();
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
+  const navigate = useNavigate();
+
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
@@ -103,6 +107,12 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     filterDispatch(resetFilters(payload));
   };
 
+  const handleCreateClick = (
+  ) => {
+
+    navigate(`/complaint/createComplaint`);
+  };
+
   const toggleViewType = (view: "list" | "map") => {
     setViewType(view);
   };
@@ -137,8 +147,19 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           })}
 
           {/* <!-- dynamic tabs end --> */}
-          <Nav.Item
-            className="ms-auto"
+          <Nav.Item className="ms-auto">
+            <div onClick={() => handleCreateClick()}>
+              <div
+                className="complaint-filter-image-container"
+                id="complaint-create-image-id"
+              >
+                <img src={createIcon}></img>
+              </div>
+              <div className="left-float">Create</div>
+              <div className="clear-left-float"></div>
+            </div>
+          </Nav.Item>
+          <Nav.Item 
             {...getToggleProps({
               onClick: () => setExpanded((prevExpanded) => !prevExpanded),
             })}

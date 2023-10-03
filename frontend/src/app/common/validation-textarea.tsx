@@ -3,7 +3,7 @@ import { FC } from "react";
 
 interface ValidationTextAreaProps {
     className: string,
-    defaultValue: string,
+    defaultValue?: string,
     id: string,
     onChange: Function,
     errMsg: string,

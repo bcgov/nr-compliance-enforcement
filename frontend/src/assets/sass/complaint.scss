@@ -90,6 +90,16 @@
   color: $white;
   flex: 1;
 }
+
+.comp-details-create-header {
+  padding: 8px 34px 0px;
+  height: 60px;
+  background: $bc-gov-primary-400;
+
+  color: $white;
+  flex: 1;
+}
+
 .comp-violation-cell {
   width: 306px;
 }
@@ -296,6 +306,10 @@
     background-color: $gray-200;
     color: $black;
   }
+}
+
+.header-spacing {
+  padding-top: 30px;
 }
 
 .comp-complaint-details-location-block {
@@ -885,13 +899,21 @@
   float: left;
 }
 
+.right-float {
+  float: right;
+}
+
+.clear-right-float {
+  clear: right;
+}
+
 .complaint-tab-container-width {
   width: 1330px;
 }
 
 .complaint-filter-image-container {
   float: left;
-  margin: 0px 5px 0px 0px;
+  margin: 0px 5px 0px 10px;
 }
 
 .filter-image-spacing {
