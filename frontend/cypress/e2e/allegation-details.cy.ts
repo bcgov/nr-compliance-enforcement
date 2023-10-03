@@ -1,3 +1,5 @@
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+
 describe("COMPENF-37 Display ECR Details", () => {
 
   const callDetails = { 
@@ -27,8 +29,7 @@ describe("COMPENF-37 Display ECR Details", () => {
     //-- click on Allegation tab
     cy.get("#ers-tab").click({ force: true });
 
-    cy.get('.comp-loader-overlay').should('exist');
-    cy.get('.comp-loader-overlay').should('not.exist');
+    cy.waitForSpinner();
 
     //-- check to make sure there are items in the table
     cy.get("#complaint-list")
@@ -39,14 +40,14 @@ describe("COMPENF-37 Display ECR Details", () => {
   });
 
   it("it can select record", () => {
-    cy.navigateToAllegationDetailsScreen("23-007890");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS,"23-007890");
 
     //-- verify the right complaint identifier is selected and the animal type
     cy.get(".comp-box-complaint-id").contains("23-007890")
   });
 
   it("it has correct call details", () => {
-    cy.navigateToAllegationDetailsScreen("23-007890");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS,"23-007890");
 
     //-- verify the call details block
     cy.get('p[id="comp-details-description"]').contains(callDetails.description)
@@ -61,7 +62,7 @@ describe("COMPENF-37 Display ECR Details", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToAllegationDetailsScreen("23-006888");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS,"23-006888");
     cy.verifyMapMarkerExists();
   });
 

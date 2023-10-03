@@ -1,3 +1,5 @@
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+
 /*
 Test to verify that the user is able to click the edit button
 on the wildlife contacts details page and see all the inputs
@@ -9,7 +11,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
   });
 
   it("Navigate to the Complaint Edit page & check inputs", function() {
-    cy.navigateToHWLCEditScreen("23-007023");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-007023");
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs
@@ -167,7 +169,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", () => {
-    cy.navigateToHWLCEditScreen("23-007023");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-007023");
 
     cy.verifyMapMarkerExists();
 

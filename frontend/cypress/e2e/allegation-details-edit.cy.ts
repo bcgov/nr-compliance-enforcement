@@ -1,3 +1,5 @@
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+
 /*
 Test to verify that the user is able to click the edit button
 on the wildlife contacts details page and see all the inputs
@@ -9,7 +11,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("Navigate to the Complaint Edit page & check inputs", () => {
-    cy.navigateToAllegationEditScreen("23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
     
 
     // Note: if the layout of this page changes, these selectors that use classes may break
@@ -186,7 +188,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToAllegationEditScreen("23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
     cy.verifyMapMarkerExists();
   });
 
