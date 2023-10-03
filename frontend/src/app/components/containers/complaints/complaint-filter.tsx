@@ -86,6 +86,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="nature-of-complaint-select-id"
                 value={natureOfComplaint}
               />
@@ -102,6 +106,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="species-select-id"
                 value={species}
               />
@@ -187,6 +195,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="status-select-id"
                 value={status}
               />
@@ -215,6 +227,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="violation-type-select-id"
                 value={violationType}
               />
@@ -300,6 +316,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="status-select-id"
                 value={status}
               />
@@ -336,6 +356,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 value={region}
                 id="region-select-filter-id"
               />
@@ -352,6 +376,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="zone-select-id"
                 value={zone}
               />
@@ -369,6 +397,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="community-select-id"
                 value={community}
               />
@@ -386,6 +418,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
+                classNames={{
+                  menu: () =>
+                    'top-layer-select',  
+                }}
                 id="officer-select-id"
                 value={officer}
               />
