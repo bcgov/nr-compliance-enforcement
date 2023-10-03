@@ -1,3 +1,5 @@
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+
 /*
 Test to verify that the user is able to change the status both the
 HWLC and Enforcement details screens
@@ -13,9 +15,9 @@ describe("Complaint Change Status spec - Details View", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Changes status of complaint to open, closed, and back to open", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
-        cy.navigateToHWLCDetailsScreen("23-000076");
+        cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR,"23-000076");
       } else {
-        cy.navigateToAllegationDetailsScreen("23-006888");
+        cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS,"23-006888");
       }
 
       cy.get("#details-screen-update-status-button").click({ force: true });
@@ -27,8 +29,7 @@ describe("Complaint Change Status spec - Details View", () => {
 
       cy.get("#update_complaint_status_button").click();
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("#comp-details-status-text-id").contains("Closed").should("exist");
 
@@ -41,8 +42,7 @@ describe("Complaint Change Status spec - Details View", () => {
 
       cy.get("#update_complaint_status_button").click();
 
-      cy.get(".comp-loader-overlay").should("exist");
-      cy.get(".comp-loader-overlay").should("not.exist");
+      cy.waitForSpinner();
 
       cy.get("#comp-details-status-text-id").contains("Open").should("exist");
     });

@@ -17,15 +17,13 @@ describe('Complaint Assign and Status Popover spec', { scrollBehavior: false }, 
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.waitForSpinner();
 
       cy.get('.popover').should('not.exist');
 
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
     
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.waitForSpinner();
 
       // Find the number of closed complaints
       // This number should change if a complaint is changed from closed to open
@@ -50,8 +48,7 @@ describe('Complaint Assign and Status Popover spec', { scrollBehavior: false }, 
 
       cy.get('#update_complaint_status_button').click();
 
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.waitForSpinner();
 
       cy.get('table tr').filter(':contains("Closed")').should('have.length.at.least', 1);
 
