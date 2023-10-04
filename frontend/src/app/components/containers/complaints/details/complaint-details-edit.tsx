@@ -320,7 +320,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   options={hwcrNatureOfComplaintCodes}
                   placeholder="Select"
                   className="comp-details-input"
-                  classNamePrefix='comp-nature-select'
+                  classNamePrefix='comp-select'
                   defaultValue={selectedNatureOfComplaint}
                   onChange={(e) => handleNOCChange(e)}
                   errMsg={nocErrorMsg}
@@ -341,7 +341,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
-                  classNamePrefix='comp-species-select'
+                  classNamePrefix='comp-select'
                   onChange={e => handleSpeciesChange(e)}
                   errMsg={speciesErrorMsg}
                 />
@@ -362,7 +362,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   placeholder="Select"
                   id="violation-type-select-id"
                   onChange={e => handleViolationTypeChange(e)}
-                  classNamePrefix='comp-violation-select'
+                  classNamePrefix='comp-select'
                 />
               </div>
             )}
@@ -376,7 +376,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                classNamePrefix='comp-status-select'
+                classNamePrefix='comp-select'
                 onChange={e => handleStatusChange(e)}
                 errMsg={statusErrorMsg}
               />
@@ -390,7 +390,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               </label>
               <CompSelect
                 id="officer-assigned-select-id"
-                classNamePrefix='comp-officer-select'
+                classNamePrefix='comp-select'
                 onChange={e => handleAssignedOfficerChange(e)}
                 className="comp-details-input"
                 options={assignableOfficers}
@@ -494,7 +494,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
-                      classNamePrefix='comp-attractants-select'
+                      classNamePrefix='comp-select'
                       onChange={handleAttractantsChange}
                       errMsg={attractantsErrorMsg}
                     />
@@ -513,7 +513,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationInProgress}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      classNamePrefix="comp-violation-ip-select"
+                      classNamePrefix="comp-select"
                       onChange={(e) => handleViolationInProgessChange(e)}
                     />
                   </div>
@@ -531,7 +531,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationObserved}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      classNamePrefix="comp-violation-observed-select"
+                      classNamePrefix="comp-select"
                       onChange={(e) => handleViolationObservedChange(e)}
                     />
                   </div>
@@ -618,7 +618,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedAreaCode}
                   placeholder="Select"
                   id="community-select-id"
-                  classNamePrefix='comp-community-select'
+                  classNamePrefix='comp-select'
                   onChange={(e) => handleCommunityChange(e)}
                   errMsg={communityErrorMsg}
                 />
@@ -806,7 +806,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="referred-select-id"
-                    classNamePrefix='comp-referred-select'
+                    classNamePrefix='comp-select'
                     className="comp-details-edit-input"
                     options={referredByAgencyCodes}
                     defaultOption={{ label: "None", value: undefined }}

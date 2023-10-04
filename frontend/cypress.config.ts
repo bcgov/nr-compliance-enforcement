@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './.env' });
 
 export default defineConfig({
-  defaultCommandTimeout: 15000,
+  defaultCommandTimeout: 15000,  
   e2e: {
-    baseUrl: 'http://localhost:3001',
+    baseUrl: 'http://localhost:3000',
     experimentalStudio: true,
     setupNodeEvents(on, config) {
       // implement node event listeners here

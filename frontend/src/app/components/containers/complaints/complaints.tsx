@@ -153,8 +153,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           >
             <div onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
             <div
-              className="complaint-filter-image-container"
-              id="complaint-filter-image-id"
+              className="complaint-create-image-container"
+              id="complaint-create-image-id"
             >
               <i className="bi bi-filter filter-image-spacing"></i>
             </div>

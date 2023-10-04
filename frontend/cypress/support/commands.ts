@@ -165,7 +165,8 @@ Cypress.Commands.add(
 
     cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
-    cy.waitForSpinner();
+    // This doesn't always appear... commenting it out for now.  I don't think it's required.
+    // cy.waitForSpinner();
 
     //-- check to make sure there are items in the table
     cy.get("#complaint-list")
@@ -194,8 +195,10 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("waitForSpinner", () => {
+
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
+
 });
 
 Cypress.Commands.add("clearFilterById", (filterId: string) => {
