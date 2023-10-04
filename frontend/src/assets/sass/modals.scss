@@ -43,4 +43,13 @@ $modal-content-border-radius: "5px";
 // $modal-scale-transform:             scale(1.02) !default;
 // scss-docs-end modal-variables
 
+
 @import "../../../node_modules/bootstrap/scss/variables";
+
+.modal {
+    z-index:                         10000;
+}
+
+.modal-backdrop {
+    z-index:                         9000 !important;
+}
