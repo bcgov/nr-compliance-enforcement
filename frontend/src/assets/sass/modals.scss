@@ -47,7 +47,7 @@ $modal-content-border-radius: "5px";
 @import "../../../node_modules/bootstrap/scss/variables";
 
 .modal {
-    z-index:                         10000;
+    z-index:                         10000 !important;
 }
 
 .modal-backdrop {
