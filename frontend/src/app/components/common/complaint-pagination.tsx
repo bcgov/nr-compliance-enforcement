@@ -62,7 +62,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     // Render the ellipsis if necessary
     if (startPage > 1) {
       items.push(
-        <Pagination.Item id="pagination_first_page_id" onClick={() => onPageChange(1)}>{1}</Pagination.Item>
+        <Pagination.Item key="pagination_first_page" id="pagination_first_page_id" onClick={() => onPageChange(1)}>{1}</Pagination.Item>
       );
     }
 
@@ -97,7 +97,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
         />
       );
       items.push(
-        <Pagination.Item id="pagination_last_page_id" onClick={() => onPageChange(lastPage)}>
+        <Pagination.Item key="pagination_last_page" id="pagination_last_page_id" onClick={() => onPageChange(lastPage)}>
           {lastPage}
         </Pagination.Item>
       );

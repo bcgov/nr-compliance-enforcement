@@ -1,3 +1,5 @@
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+
 const originalCallDetails = { 
   description: "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS.",
   location: "Keefes Landing Rd and Danskin Rd",
@@ -492,7 +494,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("Navigate to the Complaint Edit page & check inputs", () => {
-    cy.navigateToAllegationEditScreen("23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
     
 
     // Note: if the layout of this page changes, these selectors that use classes may break
@@ -669,7 +671,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToAllegationEditScreen("23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
     cy.verifyMapMarkerExists();
   });
 

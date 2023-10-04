@@ -644,6 +644,14 @@ export const ComplaintDetails: FC = () => {
         Coordinates.Latitude
       ] = parseFloat(latitude);
       setUpdateComplaint(complaint);
+    } else if (latitude === "" && longitude === "") {
+      complaint.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Longitude
+      ] = 0
+      complaint.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Latitude
+      ] = 0
+      setUpdateComplaint(complaint);
     }
   };
 
