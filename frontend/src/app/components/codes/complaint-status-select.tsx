@@ -1,7 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import config from "../../../config";
-import { CodeTable } from "../../constants/code-table.enum";
+import React, { useState } from "react";
 import Select from "react-select";
 import { useAppSelector } from "../../hooks/hooks";
 import { selectComplaintStatusCodeDropdown } from '../../store/reducers/code-table';

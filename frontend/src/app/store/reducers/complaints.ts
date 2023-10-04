@@ -20,7 +20,6 @@ import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
