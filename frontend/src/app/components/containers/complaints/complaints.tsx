@@ -151,7 +151,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 		  
           <Nav.Item className="ms-auto"
           >
-            <div onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
+            <div hidden onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
             <div
               className="complaint-create-image-container"
               id="complaint-create-image-id"
