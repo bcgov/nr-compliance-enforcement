@@ -183,13 +183,6 @@ INSERT INTO public.office
 VALUES('9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'WLMSLK', 'COS')
 ON CONFLICT DO NOTHING;
 
--- Reset offices to nr-compliance-enforcement values
-
-UPDATE public.officer SET office_guid = 'cdd9964e-7878-44c1-b4a2-0290c6345dec' WHERE office_guid = '914f8725-7100-4f56-a39b-1c18b0eccb55';
-UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '39e7ad0a-20b1-48b4-be70-dfcc5bc01c3c';
-UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '05633ab9-1502-4566-9364-4b3dac7c1354';
-UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '7da19946-4525-43ff-b4b6-d243a2addaaa';
-UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '4b3a8974-1975-4aaf-9e0a-2d3f5d217805';
 
 -------------------------
 -- Insert PERSON records
@@ -1285,3 +1278,14 @@ update complaint set incident_reported_datetime  = CURRENT_TIMESTAMP
 where complaint_identifier in ('23-007890','23-006888','23-007023','23-000076');
 update complaint set caller_phone_1 = '+12505561234'
 where complaint_identifier  = '23-000076';
+
+-- Reset offices to nr-compliance-enforcement values
+
+UPDATE public.officer SET office_guid = 'cdd9964e-7878-44c1-b4a2-0290c6345dec' WHERE office_guid = '914f8725-7100-4f56-a39b-1c18b0eccb55';
+UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '39e7ad0a-20b1-48b4-be70-dfcc5bc01c3c';
+UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '05633ab9-1502-4566-9364-4b3dac7c1354';
+UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '7da19946-4525-43ff-b4b6-d243a2addaaa';
+UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '4b3a8974-1975-4aaf-9e0a-2d3f5d217805';
+
+--- Change Chris' Office to Kamloops to align with Unit tests
+UPDATE officer set office_guid = '3a070028-2c6f-4ea9-a548-271cf076280a' WHERE user_id = 'CNESMITH';
