@@ -20,7 +20,6 @@ import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
@@ -221,7 +220,6 @@ export const getComplaints =
     }
   };
 
-
 export const getWildlifeComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
@@ -233,7 +231,6 @@ export const getWildlifeComplaintByComplaintIdentifier =
         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
-
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -283,8 +280,8 @@ export const getAllegationComplaintByComplaintIdentifier =
       dispatch(toggleLoading(false));
     }
   };
-              
-  export const getAllegationComplaintByComplaintIdentifierSetUpdate =
+
+export const getAllegationComplaintByComplaintIdentifierSetUpdate =
   (id: string, setUpdateComplaint: Function): AppThunk =>
   async (dispatch) => {
     try {
@@ -347,8 +344,8 @@ export const getComplaintLocationByAddress =
     }
   };
 
-  // Used to get the complaint location by area and address
-  export const getComplaintLocation =
+// Used to get the complaint location by area and address
+export const getComplaintLocation =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
     try {
@@ -386,23 +383,30 @@ const updateComplaintStatus = async (
   await patch<Complaint>(dispatch, parameters);
 };
 
-
 export const updateAllegationComplaint =
   (allegationComplaint: AllegationComplaint): AppThunk =>
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      await axios.patch(`${config.API_BASE_URL}/v1/allegation-complaint/` + allegationComplaint.allegation_complaint_guid, {allegationComplaint: JSON.stringify(allegationComplaint)});
+      const updateParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaint.allegation_complaint_guid}`,
+        { allegationComplaint: JSON.stringify(allegationComplaint) }
+      );
 
-      await updateComplaintAssignee(
+      patch<AllegationComplaint>(dispatch, updateParams);
+
+      updateComplaintAssignee(
         allegationComplaint.complaint_identifier.create_user_id,
         allegationComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.ERS,
-        (allegationComplaint.complaint_identifier.person_complaint_xref[0] !== undefined ? allegationComplaint.complaint_identifier.person_complaint_xref[0].person_guid.person_guid as UUID : undefined)
-      )
+        allegationComplaint.complaint_identifier.person_complaint_xref[0] !==
+          undefined
+          ? (allegationComplaint.complaint_identifier.person_complaint_xref[0]
+              .person_guid.person_guid as UUID)
+          : undefined
+      );
 
       //-- get the updated wildlife conflict
-
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
       );
@@ -417,19 +421,19 @@ export const updateAllegationComplaint =
     }
   };
 
-
 export const updateWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): AppThunk =>
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      await axios.patch(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/` +
-          hwcrComplaint.hwcr_complaint_guid,
+      const updateParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
         { hwcrComplaint: JSON.stringify(hwcrComplaint) }
       );
 
-      await updateComplaintAssignee(
+      patch<HwcrComplaint>(dispatch, updateParams);
+
+      updateComplaintAssignee(
         hwcrComplaint.complaint_identifier.create_user_id,
         hwcrComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.HWCR,
@@ -441,7 +445,6 @@ export const updateWildlifeComplaint =
       );
 
       //-- get the updated wildlife conflict
-
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${hwcrComplaint.complaint_identifier.complaint_identifier}`
       );
@@ -654,7 +657,7 @@ export const selectComplaintHeader =
               ceComplaint.person_complaint_xref[0].person_guid.last_name;
             officerAssigned = `${firstName} ${lastName}`;
             personGuid =
-                ceComplaint.person_complaint_xref[0].person_guid.person_guid;
+              ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
           const { long_description: status } = ceStatusCode;
@@ -672,7 +675,10 @@ export const selectComplaintHeader =
         }
 
         if (ceViolation) {
-          const { long_description: violationType, violation_code: violationTypeCode } = ceViolation;
+          const {
+            long_description: violationType,
+            violation_code: violationTypeCode,
+          } = ceViolation;
           result = { ...result, violationType, violationTypeCode };
         }
       }
@@ -882,6 +888,5 @@ export const selectComplaintsByType =
         return selectWildlifeComplaints(state);
     }
   };
-
 
 export default complaintSlice.reducer;
