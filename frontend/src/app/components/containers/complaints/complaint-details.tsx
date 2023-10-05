@@ -769,9 +769,9 @@ export const ComplaintDetails: FC = () => {
       const updatedEntity = value
         ? {
             ...source,
-            short_description: value as string,
+            short_description: value,
             long_description: label as string,
-            agency_code: value as string,
+            agency_code: value,
           }
         : {
             agency_code: "",
