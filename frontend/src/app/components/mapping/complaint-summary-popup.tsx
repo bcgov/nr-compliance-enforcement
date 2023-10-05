@@ -38,7 +38,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
     selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
 
-  const { location, area } = useAppSelector(
+  const { location, zone } = useAppSelector(
     selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
 
@@ -52,7 +52,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
   return (
-    <Popup className="map-comp-popup">
+    <Popup keepInView={true} className="map-comp-popup">
       <div className="map-comp-summary-popup-container">
         <div className="map-comp-summary-popup-details">
           <div className="map-comp-popup-header-container">
@@ -61,7 +61,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               <div className="complaint-assignee">
                 <div
                   data-initials-sm={getAvatarInitials(officerAssigned)}
-                  className="comp-orange-avatar-sm"
+                  className={"Not Assigned" === officerAssigned ? "leaflet-popup-not-assigned" : "comp-orange-avatar-sm"}
                 >
                   <span
                     id="comp-details-assigned-officer-name-text-id"
@@ -113,7 +113,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               </div>
               <div>
                 <label>Community</label>
-                {area}
+                {zone}
               </div>
               <div className="map-comp-popup-address">
                 <label>Location/Address</label>
@@ -138,6 +138,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({
           <Button id="view-complaint-details-button-id" variant="primary">View Details</Button>
         </Link>
       </div>
-      </Popup>
+    </Popup>
   );
 };
