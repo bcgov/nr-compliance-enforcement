@@ -11,6 +11,7 @@ import {
   setComplaintLocation,
   updateAllegationComplaint,
   updateWildlifeComplaint,
+  selectComplaintDetails
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
@@ -22,17 +23,12 @@ import { ComplaintLocation } from "./details/complaint-location";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import { cloneDeep } from "lodash";
-import axios from "axios";
-import config from "../../../../config";
 import { bcBoundaries } from "../../../common/methods";
 import Option from "../../../types/app/option";
-import { PersonComplaintXref } from "../../../types/complaints/person-complaint-xref";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Coordinates } from "../../../types/app/coordinate-type";
-import { AgencyCode } from "../../../types/code-tables/agency-code";
 import { from } from "linq-to-typescript";
-import { selectComplaintDetails } from "../../../store/reducers/complaints";
 import { selectOfficersByZone } from "../../../store/reducers/officer";
 
 type ComplaintParams = {
@@ -44,7 +40,6 @@ export const ComplaintDetails: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
-
 
   const complaint = useAppSelector(selectComplaint);
   const userid = useAppSelector(userId);
@@ -136,8 +131,6 @@ export const ComplaintDetails: FC = () => {
       }
     }
   };
-
-
 
   useEffect(() => {
     if (
@@ -440,83 +433,72 @@ export const ComplaintDetails: FC = () => {
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
     if (selectedOptions !== null && selectedOptions !== undefined) {
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = {
-          ...updateComplaint,
-        } as HwcrComplaint;
-        const formerAttractants = hwcrComplaint.attractant_hwcr_xref;
-        let newAttractants = [];
-        //this is ugly - might want a refactor, maybe there's a way to parametertize the changed option instead of the entire array?
-       
-       selectedOptions.forEach(item => { 
-        
-       })
-        for (var i = 0; i < selectedOptions.length; i++) {
-          const selectedOption = selectedOptions[i];
+        let update = { ...updateComplaint } as HwcrComplaint;
+        const { attractant_hwcr_xref: currentAttactants } = update;
+
+        let newAttractants = new Array<any>();
+
+        selectedOptions.forEach((selectedOption) => {
           let match = false;
-          for (var j = 0; j < formerAttractants.length; j++) {
-            //keep same xref
+
+          currentAttactants.forEach((item) => {
             if (
-              selectedOption.value ===
-              formerAttractants[j].attractant_code?.attractant_code
+              selectedOption.value === item.attractant_code?.attractant_code
             ) {
               match = true;
               const attractant = {
-                attractant_hwcr_xref_guid:
-                  formerAttractants[j].attractant_hwcr_xref_guid,
-                attractant_code: formerAttractants[j].attractant_code,
-                hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
+                attractant_hwcr_xref_guid: item.attractant_hwcr_xref_guid,
+                attractant_code: item.attractant_code,
+                hwcr_complaint_guid: update.hwcr_complaint_guid,
                 create_user_id: userid,
                 active_ind: true,
               };
               newAttractants.push(attractant);
-              break;
             }
-          }
-          //create new xref
+          });
+
           if (!match) {
-            await axios
-              .get(
-                `${config.API_BASE_URL}/v1/attractant-code/` +
-                  selectedOptions[i].value
-              )
-              .then((response) => {
-                const attractant = {
-                  attractant_hwcr_xref_guid: undefined,
-                  attractant_code: response.data,
-                  hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
-                  create_user_id: userid,
-                  active_ind: true,
-                };
-                newAttractants.push(attractant);
-              });
-          }
-        }
-        for (i = 0; i < formerAttractants.length; i++) {
-          let match = false;
-          for (j = 0; j < newAttractants.length; j++) {
-            if (
-              formerAttractants[i].attractant_code ===
-              newAttractants[j].attractant_code
-            ) {
-              match = true;
-              break;
-            }
-          }
-          //deactivate xref
-          if (!match) {
+            const { label, value } = selectedOption;
+
             const attractant = {
-              attractant_hwcr_xref_guid:
-                formerAttractants[i].attractant_hwcr_xref_guid,
-              attractant_code: formerAttractants[i].attractant_code,
-              hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
+              attractant_hwcr_xref_guid: undefined,
+              attractant_code: {
+                active_ind: true,
+                attractant_code: value as string,
+                short_description: label as string,
+                long_description: label as string,
+              },
+              hwcr_complaint_guid: update.hwcr_complaint_guid,
+              create_user_id: userid,
+              active_ind: true,
+            };
+            newAttractants.push(attractant);
+          }
+        });
+
+        currentAttactants.forEach((current) => {
+          let match = false;
+
+          newAttractants.forEach((item) => {
+            if (current.attractant_code === item.attractant_code) {
+              match = true;
+            }
+          });
+
+          if(!match){
+            const attractant = {
+              attractant_hwcr_xref_guid: current.attractant_hwcr_xref_guid,
+              attractant_code: current.attractant_code,
+              hwcr_complaint_guid: update.hwcr_complaint_guid,
               create_user_id: userid,
               active_ind: false,
             };
             newAttractants.push(attractant);
           }
-        }
-        hwcrComplaint.attractant_hwcr_xref = newAttractants;
-        setUpdateComplaint(hwcrComplaint);
+        });
+
+        update.attractant_hwcr_xref = newAttractants;
+        setUpdateComplaint(update);
       }
     }
   }
@@ -776,39 +758,41 @@ export const ComplaintDetails: FC = () => {
   const handleReferredByChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
-debugger
+      debugger;
       let update = cloneDeep(updateComplaint) as
         | HwcrComplaint
         | AllegationComplaint;
 
-        const { complaint_identifier: identifier } = update;
-        const { referred_by_agency_code: source } = identifier;
+      const { complaint_identifier: identifier } = update;
+      const { referred_by_agency_code: source } = identifier;
 
-        const updatedEntity = value ? {
-          ...source,
-          short_description: value as string,
-          long_description: label as string,
-          agency_code: value as string,
-        } : {
-          agency_code: "",
-          short_description: "",
-          long_description: "",
-          display_order: 0,
-          active_ind: true,
-          create_user_id: "",
-          create_timestamp: "",
-          update_user_id: "",
-          update_timestamp: "",
-        }
+      const updatedEntity = value
+        ? {
+            ...source,
+            short_description: value as string,
+            long_description: label as string,
+            agency_code: value as string,
+          }
+        : {
+            agency_code: "",
+            short_description: "",
+            long_description: "",
+            display_order: 0,
+            active_ind: true,
+            create_user_id: "",
+            create_timestamp: "",
+            update_user_id: "",
+            update_timestamp: "",
+          };
 
-        const updatedParent = {
-          ...identifier,
-          referred_by_agency_code: updatedEntity,
-        };
+      const updatedParent = {
+        ...identifier,
+        referred_by_agency_code: updatedEntity,
+      };
 
-        update.complaint_identifier = updatedParent;
+      update.complaint_identifier = updatedParent;
 
-        setUpdateComplaint(update);
+      setUpdateComplaint(update);
     }
   };
 
