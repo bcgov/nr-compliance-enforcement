@@ -8,6 +8,7 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 type Props = {
   complaint_identifier: string;
   complaint_type: string;
+  complaint_zone: string;
   sortColumn: string,
   sortOrder: string,
   assigned_ind: boolean;
@@ -21,6 +22,7 @@ type Props = {
 export const ComplaintEllipsisPopover: FC<Props> = ({
   complaint_identifier,
   complaint_type,
+  complaint_zone,
   assigned_ind,
   sortColumn,
   sortOrder
@@ -31,7 +33,6 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
 
   const { state: filters } = useContext(ComplaintFilterContext);
   const {
-    zone,
     species: speciesCodeFilter,
     natureOfComplaint: natureOfComplaintFilter,
     status: complaintStatusFilter,
@@ -96,7 +97,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
-          zone: zone,
+          zone: complaint_zone,
         },
       })
     );
