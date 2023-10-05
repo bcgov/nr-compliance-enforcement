@@ -25,7 +25,6 @@ import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
 import { useNavigate } from "react-router-dom";
-import createIcon from "../../../../assets/images/create-icon.png";
 
 type Props = {
   defaultComplaintType: string;
@@ -147,13 +146,13 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           })}
 
           {/* <!-- dynamic tabs end --> */}
-          <Nav.Item className="ms-auto">
+          <Nav.Item className="ms-auto" role="button">
             <div onClick={() => handleCreateClick()}>
               <div
                 className="complaint-filter-image-container"
                 id="complaint-create-image-id"
               >
-                <img src={createIcon}></img>
+                 <i className="bi bi-plus-circle filter-image-spacing"></i>
               </div>
               <div className="left-float">Create</div>
               <div className="clear-left-float"></div>

@@ -28,6 +28,7 @@ const initialState: CodeTableState = {
   regions: [],
   zones: [],
   communities: [],
+  complaintCodes: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -190,6 +191,22 @@ export const codeTableSlice = createSlice({
       );
       return { ...state, communities: data };
     },
+    setComplaintCodes: (
+      state: CodeTableState,
+      action: PayloadAction<Array<GeoOrganizationCode>>
+    ) => {
+      const { payload } = action;
+      const data = payload.map(
+        ({
+          geo_organization_unit_code: value,
+          long_description: label,
+          short_description: description,
+        }) => {
+          return { value, label, description } as CodeTable;
+        }
+      );
+      return { ...state, complaintCodes: data };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -208,6 +225,7 @@ export const {
   setRegions,
   setZones,
   setCommunities,
+  setComplaintCodes,
 } = codeTableSlice.actions;
 
 export const fetchCodeTables = (): AppThunk => async (dispatch) => {
@@ -223,7 +241,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       attractantCodes,
       regions,
       zones,
-      communities
+      communities,
+      complaintCodes,
     },
   } = state;
 
@@ -269,6 +288,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if(!from(communities).any()){
       dispatch(fetchCommunities())
     }
+
+    //TODO: Fetch complaint codes 
   } catch (error) {
   } finally {
     dispatch(toggleLoading(false));
@@ -500,6 +521,15 @@ export const selectCommunityCodeDropdown = (
     codeTables: { communities },
   } = state;
   return communities;
+};
+
+export const selectComplaintCodesDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    codeTables: { complaintCodes },
+  } = state;
+  return complaintCodes;
 };
 
 export default codeTableSlice.reducer;

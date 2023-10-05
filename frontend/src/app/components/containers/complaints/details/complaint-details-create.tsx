@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
-import { bcBoundaries, formatDate, formatTime } from "../../../../common/methods";
+import { bcBoundaries } from "../../../../common/methods";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
@@ -19,19 +19,23 @@ import { AllegationComplaint } from "../../../../types/complaints/allegation-com
 import { cloneDeep } from "lodash";
 import { PersonComplaintXref } from "../../../../types/complaints/person-complaint-xref";
 import { Coordinates } from "../../../../types/app/coordinate-type";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { userId } from "../../../../store/reducers/app";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
+import { openModal, userId } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { useSelector } from "react-redux";
 import { selectAgencyDropdown, selectAreaCodeDropdown, selectAttractantCodeDropdown, selectComplaintStatusCodeDropdown, selectHwcrNatureOfComplaintCodeDropdown, selectSpeciesCodeDropdown, selectViolationCodeDropdown } from "../../../../store/reducers/code-table";
 import { Officer } from "../../../../types/person/person";
 import { selectOfficersByZone } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
+import { Button } from "react-bootstrap";
+import { CancelConfirm } from "../../../../types/modal/modal-types";
+import { useNavigate } from "react-router-dom";
+import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate } from "../../../../store/reducers/complaints";
 
 export const CreateComplaint: FC = () => {
+  const dispatch = useAppDispatch();
   const complaintType = COMPLAINT_TYPES.HWCR;
   const userid = useAppSelector(userId);
-
 
   const emptyComplaint: HwcrComplaint = 
   {
@@ -142,7 +146,7 @@ export const CreateComplaint: FC = () => {
   const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>(new Date());
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -867,6 +871,9 @@ export const CreateComplaint: FC = () => {
   const hwcrNatureOfComplaintCodes = useSelector(
     selectHwcrNatureOfComplaintCodeDropdown
   ) as Option[];
+  const hwcrOption: Option = {value: "HWCR", label: "Human Wildlife Conflicts"};
+  const allegationOption: Option = {value: "ERS", label: "Enforcement"};
+  const complaintTypeCodes = [hwcrOption, allegationOption]
   const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
@@ -881,6 +888,7 @@ export const CreateComplaint: FC = () => {
 
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
@@ -892,11 +900,61 @@ export const CreateComplaint: FC = () => {
     }
   };
 
+  const cancelConfirmed = () => {
+    navigate(`/`);
+  };
+
+  const cancelButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CancelConfirm,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed,
+        },
+      })
+    );
+  };
+
+  const saveButtonClick = async () => {
+    if (createComplaint !== null && createComplaint !== undefined) {
+        if (noErrors()) {
+          if (complaintType === COMPLAINT_TYPES.HWCR) {
+            let hwcrComplaint = createComplaint as HwcrComplaint;
+            hwcrComplaint.complaint_identifier.complaint_identifier = "TEST-11";
+            hwcrComplaint.complaint_identifier.create_timestamp = hwcrComplaint.complaint_identifier.update_timestamp = (new Date()).toDateString();
+            hwcrComplaint.complaint_identifier.create_user_id = hwcrComplaint.complaint_identifier.update_user_id = userid;
+            await dispatch(createWildlifeComplaint(hwcrComplaint));
+            await dispatch(
+              getWildlifeComplaintByComplaintIdentifierSetUpdate(
+                "TEST-11",
+                setCreateComplaint
+              )
+            );
+          } 
+          /*else if (complaintType === COMPLAINT_TYPES.ERS) {
+            let allegationComplaint = createComplaint as AllegationComplaint;
+            const complaint_identifier = await dispatch(createAllegationComplaint(allegationComplaint));
+            await dispatch(
+              getAllegationComplaintByComplaintIdentifierSetUpdate(
+                complaint_identifier,
+                setCreateComplaint
+              )
+            );
+          }*/
+        }
+      }
+  };
+
 
   return <div className="comp-complaint-details">
         <CreateComplaintHeader
-            complaintType={COMPLAINT_TYPES.HWCR}
-            />
+          complaintType={COMPLAINT_TYPES.HWCR}
+          cancelButtonClick={cancelButtonClick} 
+          saveButtonClick={saveButtonClick}            
+          />
   {/* edit header block */}
   <div id="complaint-error-notification" className={errorNotificationClass}>
     <img
@@ -921,7 +979,7 @@ export const CreateComplaint: FC = () => {
             </label>
             <Select
               id="complaint-type-select-id"
-              options={hwcrNatureOfComplaintCodes}
+              options={complaintTypeCodes}
               placeholder="Select"
               className="comp-details-input"
               classNamePrefix='comp-complaint-type-select'
@@ -1419,9 +1477,26 @@ export const CreateComplaint: FC = () => {
       </div>
     </div>
   )}
+   <div className="comp-box-footer">
+          <div className="comp-box-footer-actions">
+            <Button
+              id="details_screen_cancel_edit_button_footer"
+              title="Cancel Create Complaint"
+              variant="outline-primary"
+              onClick={cancelButtonClick}
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              id="details_screen_cancel_save_button_footer"
+              title="Save Complaint"
+              variant="primary"
+              onClick={saveButtonClick}
+            >
+              <span>Save Changes</span>
+            </Button>
+          </div>
+        </div>
 </div>
 };
-function getEditableCoordinates(coordinates: any, Longitude: Coordinates): string | (() => string) {
-    throw new Error("Function not implemented.");
-}
 

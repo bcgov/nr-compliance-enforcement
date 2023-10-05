@@ -39,15 +39,20 @@ export class HwcrComplaintService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    console.log("dasfasdfasdfaweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+    console.log("hwcrComplaint: " + JSON.stringify(hwcrComplaint));
     let newHwcrComplaintString;
     try {
+      console.log("qqq: " + JSON.stringify(<CreateComplaintDto>hwcrComplaint));
       await this.complaintService.create(
         <CreateComplaintDto>hwcrComplaint,
         queryRunner
       );
+      console.log("wwwwww");
       newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
         <CreateHwcrComplaintDto>hwcrComplaint
       );
+      console.log("newHwcrComplaintString: " + JSON.stringify(newHwcrComplaintString));
       let newHwcrComplaint: HwcrComplaint;
       newHwcrComplaint = <HwcrComplaint>(
         await queryRunner.manager.save(newHwcrComplaintString)

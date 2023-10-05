@@ -13,4 +13,5 @@ export interface CodeTableState {
   regions: Array<CodeTable>;
   zones: Array<CodeTable>;
   communities: Array<CodeTable>;
+  complaintCodes: Array<CodeTable>;
 }

@@ -23,6 +23,12 @@ export const SideBar: FC = () => {
       route: "/complaints",
     },
     {
+      id: "create-complaints-link",
+      name: "Create Complaint",
+      icon: "bi bi-plus-circle",
+      route: "complaint/createComplaint",
+    },
+    {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
