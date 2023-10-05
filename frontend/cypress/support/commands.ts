@@ -209,10 +209,11 @@ Cypress.Commands.add("clearFilterById", (filterId: string) => {
 
 
 Cypress.Commands.add("selectItemById", (selectId: string, optionText: string) => {
-  cy.get(`#${selectId}`)
-    .find("div")
-    .first()
-    .click({ force: true });
+    cy.get(`#${selectId}`)
+      .find("div")
+      .first()
+      .click({ force: true });
+    cy.get('.comp-select__menu-list').should('exist'); //Wait for the options to show
     cy.contains(`.comp-select__option`,optionText).click({force: true});
 });
 

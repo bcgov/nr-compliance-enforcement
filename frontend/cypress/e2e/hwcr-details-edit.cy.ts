@@ -173,7 +173,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     //end edit
 
     //start checking edit changes saved
-    cy.get(".comp-loader-overlay").should("not.exist");
+    cy.waitForSpinner();
 
     cy.get('div[id="comp-details-name"]').contains(editCallerInformation.name);
     cy.get('div[id="comp-details-address"]').contains(
@@ -298,7 +298,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end reverting changes
     //start verifying changes are reverted
-    cy.get(".comp-loader-overlay").should("not.exist");
+    cy.waitForSpinner();
 
     cy.get('div[id="comp-details-name"]').contains(
       originalCallerInformation.name
