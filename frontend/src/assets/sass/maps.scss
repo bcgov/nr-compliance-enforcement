@@ -2,7 +2,7 @@
     color: red;
     font-size: 40px;
     text-align: center;
-    line-height: 20px;
+    line-height : 20px;
 }
 
 .map-container {
@@ -107,7 +107,7 @@
 .map-comp-popup-address {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
 }
 
 .popup-visible {
@@ -124,14 +124,15 @@
     display: none; /* Hide the default tip (pointer) */
 }
 
-.leaflet-popup {
-    bottom: 15px !important; /* requirement is to display the popup midway above marker, this does the trick.  Can't use transform because that's used for other magic by leaflet */
-}
-
 .leaflet-popup-content-wrapper {
     display: flex;
     justify-content: center;
     padding: 0px;
+}
+
+.leaflet-popup-not-assigned {
+    margin-top: 5px;
+  
 }
 
 .leaflet-popup-content {
