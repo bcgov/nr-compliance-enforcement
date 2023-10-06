@@ -3,12 +3,12 @@ export const COMPLAINT_TYPES = {
   ERS: "ERS",
 };
 
-export const complaintTypeToName = (complaintType: string | undefined | null, singular?: boolean) => {
+export const complaintTypeToName = (complaintType: string | undefined | null) => {
   switch (complaintType) {
     case COMPLAINT_TYPES.ERS:
       return "Enforcement";
     case COMPLAINT_TYPES.HWCR:
-      return singular ? "Human Wildlife Conflict" : "Human Wildlife Conflicts";
+      return "Human Wildlife Conflicts";
     default:
       return "";
   }
