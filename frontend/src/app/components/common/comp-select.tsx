@@ -1,4 +1,4 @@
-import { FC, ReactElement } from "react";
+import { FC } from "react";
 import Select, { StylesConfig } from "react-select";
 import Option from "../../types/app/option";
 
