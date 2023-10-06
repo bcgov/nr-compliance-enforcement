@@ -16,7 +16,7 @@ export const SuspectWitnessDetails: FC = () => {
           <div className="comp-details-content-label">
           Description (vehicle, license plate, features, clothing, weapons, name, address)
           </div>
-          <p>{details}</p>
+          <p id="comp-details-witness-details">{details}</p>
         </div>
       </div>
     </div>

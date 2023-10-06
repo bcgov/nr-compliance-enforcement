@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactElement } from "react";
 import Select, { StylesConfig } from "react-select";
 import Option from "../../types/app/option";
 
@@ -8,6 +8,7 @@ type Props = {
   options: Array<Option>;
   enableValidation: boolean;
   errorMessage?: string;
+  classNamePrefix?: string;
   placeholder: string;
   defaultOption?: Option;
   value?: Option | null;
@@ -23,6 +24,7 @@ export const CompSelect: FC<Props> = ({
   enableValidation,
   value,
   onChange,
+  classNamePrefix,
 }) => {
   let styles: StylesConfig = {};
 
@@ -56,6 +58,7 @@ export const CompSelect: FC<Props> = ({
         options={items}
         defaultValue={value}
         onChange={handleChange}
+        classNamePrefix={classNamePrefix}
       />
       {enableValidation && <div></div>}
     </>

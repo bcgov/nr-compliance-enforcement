@@ -128,6 +128,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
           <Select 
                 id="resultsPerPageSelect"
                 options={pageSizeOptions}
+                classNamePrefix="comp-select"
                 defaultValue={defaultOption}
                />
           </div>
