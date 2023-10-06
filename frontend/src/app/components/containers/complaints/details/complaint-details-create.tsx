@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
@@ -16,7 +16,7 @@ import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import config from "../../../../../config";
 import axios from "axios";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import { PersonComplaintXref } from "../../../../types/complaints/person-complaint-xref";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
@@ -30,12 +30,14 @@ import { CreateComplaintHeader } from "./create-complaint-header";
 import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import { useNavigate } from "react-router-dom";
-import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate } from "../../../../store/reducers/complaints";
+import { createWildlifeComplaint, selectComplaint } from "../../../../store/reducers/complaints";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
   const complaintType = COMPLAINT_TYPES.HWCR;
   const userid = useAppSelector(userId);
+
+  const navigate = useNavigate();
 
   const emptyComplaint: HwcrComplaint = 
   {
@@ -147,6 +149,19 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [complaintId, setComplaintId] = useState<string>("");
+
+  const complaintSelector = useAppSelector(selectComplaint);
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+        if(complaintSelector)
+        {
+            //setComplaintId(complaintSelector.complaint_identifier.complaint_identifier)
+            navigate("/complaint/HWCR/" + complaintSelector.complaint_identifier.complaint_identifier);
+        }
+    };
+  }, [dispatch,complaintSelector]);
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -806,7 +821,6 @@ export const CreateComplaint: FC = () => {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
           createComplaint
         ) as HwcrComplaint;
-        debugger;
         if (selectedOption.value) {
           axios
             .get(
@@ -888,7 +902,6 @@ export const CreateComplaint: FC = () => {
 
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
-  const navigate = useNavigate();
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
@@ -923,16 +936,27 @@ export const CreateComplaint: FC = () => {
         if (noErrors()) {
           if (complaintType === COMPLAINT_TYPES.HWCR) {
             let hwcrComplaint = createComplaint as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.complaint_identifier = "TEST-11";
             hwcrComplaint.complaint_identifier.create_timestamp = hwcrComplaint.complaint_identifier.update_timestamp = (new Date()).toDateString();
             hwcrComplaint.complaint_identifier.create_user_id = hwcrComplaint.complaint_identifier.update_user_id = userid;
-            await dispatch(createWildlifeComplaint(hwcrComplaint));
-            await dispatch(
-              getWildlifeComplaintByComplaintIdentifierSetUpdate(
-                "TEST-11",
-                setCreateComplaint
-              )
-            );
+            hwcrComplaint.complaint_identifier.location_geometry_point.type = "Point";
+            if(hwcrComplaint.complaint_identifier.location_geometry_point.coordinates.length === 0)
+            {
+                hwcrComplaint.complaint_identifier.location_geometry_point.coordinates = [0,0];
+            }
+            const complaint = await dispatch(createWildlifeComplaint(hwcrComplaint));
+            debugger;
+            console.log("tredsfadsfdasdfasf: " + complaint);
+            //navigate("/complaint/" + complaintType);
+
+            /*
+            if(complaintId !== null && complaintId !== undefined)
+            {
+                navigate("/complaint/" + complaintType + "/" + complaintId);
+            }
+            else
+            {
+                navigate("/");
+            }*/
           } 
           /*else if (complaintType === COMPLAINT_TYPES.ERS) {
             let allegationComplaint = createComplaint as AllegationComplaint;
@@ -944,6 +968,10 @@ export const CreateComplaint: FC = () => {
               )
             );
           }*/
+        }
+        else
+        {
+            setErrorNotificationClass("comp-complaint-error");
         }
       }
   };

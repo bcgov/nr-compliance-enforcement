@@ -14,10 +14,10 @@ export class AttractantHwcrXrefService {
     @InjectRepository(AttractantHwcrXref)
     private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>;
 
-  async create(createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
-      const newAttratantHwcrXref = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
-      //await queryRunner.manager.save(newAttratantHwcrXref);
-      return newAttratantHwcrXref;
+  async create(queryRunner: QueryRunner, createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
+      const createdValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
+      queryRunner.manager.save(createdValue);
+      return ;
   }
 
   async findAll(): Promise<AttractantHwcrXref[]> {
@@ -45,20 +45,10 @@ export class AttractantHwcrXrefService {
   }
 
   async updateComplaintAttractants(
-    //queryRunner: QueryRunner, 
+    queryRunner: QueryRunner, 
     hwcr_complaint_guid: HwcrComplaint, 
     updateAttractantCodes: AttractantHwcrXref[]) {
     
-      /*
-    await this.attractantHwcrXrefRepository.createQueryBuilder('attractant_hwcr_xref')
-    .delete()
-    .from(AttractantHwcrXref)
-    .where("hwcr_complaint_guid = :hwcr_complaint_guid", { hwcr_complaint_guid: hwcr_complaint_guid.hwcr_complaint_guid }).execute();*/
-    //queryRunner.manager.save(updatedValue);
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try
     {
       for(var i = 0; i < updateAttractantCodes.length; i++)
@@ -91,17 +81,11 @@ export class AttractantHwcrXrefService {
           queryRunner.manager.update(AttractantHwcrXref, updateAttractantHwcrXrefDto.attractant_hwcr_xref_guid, updateAttractantHwcrXrefDto);
         }
       }
-      await queryRunner.commitTransaction();
     } 
     catch (err) {
       this.logger.error(err);
-      await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
     } 
-    finally
-    {
-      await queryRunner.release();
-    }
     return ;
   }
 

@@ -39,7 +39,6 @@ const initialState: ComplaintState = {
     allegation: { assigned: 0, unassigned: 0, total: 0, offices: [] },
   },
 };
-
 export const complaintSlice = createSlice({
   name: "complaints",
   initialState,
@@ -419,19 +418,19 @@ export const updateAllegationComplaint =
 
 
   export const createWildlifeComplaint =
-  (hwcrComplaint: HwcrComplaint): AppThunk =>
-  async (dispatch) => {
+  (hwcrComplaint: HwcrComplaint): AppThunk => {
+  return async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
-      console.log("hwcrComplaint: " + JSON.stringify(hwcrComplaint));
+
       await axios.post(
         `${config.API_BASE_URL}/v1/hwcr-complaint/`,
         { hwcrComplaint: JSON.stringify(hwcrComplaint) }
       ).then(async res => {
-        console.log("bacon");
+        const newHwcrComplaint: HwcrComplaint = res.data;
         await updateComplaintAssignee(
           hwcrComplaint.complaint_identifier.create_user_id,
-          hwcrComplaint.complaint_identifier.complaint_identifier,
+          newHwcrComplaint.complaint_identifier.complaint_identifier,
           COMPLAINT_TYPES.HWCR,
           hwcrComplaint.complaint_identifier.person_complaint_xref[0] !==
             undefined
@@ -441,13 +440,13 @@ export const updateAllegationComplaint =
         );
   
         //-- get the created wildlife conflict
-  
         const parameters = generateApiParameters(
           `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${res}`
         );
         const response = await get<HwcrComplaint>(dispatch, parameters);
   
         dispatch(setComplaint({ ...response }));
+        
       });
     } catch (error) {
       console.log(error);
@@ -455,6 +454,7 @@ export const updateAllegationComplaint =
     } finally {
       dispatch(toggleLoading(false));
     }
+  }
   };
 
 export const updateWildlifeComplaint =

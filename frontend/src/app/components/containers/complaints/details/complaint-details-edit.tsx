@@ -574,7 +574,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               </div>
               <CompInput
                 id="comp-details-edit-x-coordinate-input"
-                divId="x-coordinate-pair-id"
+                divId="comp-details-edit-x-coordinate-input-div"
                 type="input"
                 label="X Coordinate"
                 containerClass="comp-details-edit-input"
@@ -591,8 +591,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 }
               />
               <CompInput
-                id="comp-details-edit-y-coordinate-input"
-                divId="y-coordinate-pair-id"
+                id="comp-details-edit-x-coordinate-input"
+                divId="comp-details-edit-x-coordinate-input-div"
                 type="input"
                 label="Y Coordinate"
                 containerClass="comp-details-edit-input"

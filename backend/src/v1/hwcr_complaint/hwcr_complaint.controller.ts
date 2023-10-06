@@ -19,7 +19,7 @@ export class HwcrComplaintController {
 
   @Post()
   @Roles(Role.COS_OFFICER)
-  create(@Body() createHwcrComplaintDto: CreateHwcrComplaintDto) {
+  create (@Body('hwcrComplaint') createHwcrComplaintDto: string) {
     return this.hwcrComplaintService.create(createHwcrComplaintDto);
   }
 

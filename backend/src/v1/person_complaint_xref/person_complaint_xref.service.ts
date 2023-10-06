@@ -3,6 +3,7 @@ import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, QueryRunner, Repository } from "typeorm";
+import { Complaint } from "../complaint/entities/complaint.entity";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -88,16 +89,14 @@ export class PersonComplaintXrefService {
    * create a new cross reference between the complaint and officer.
    */
   async assignOfficer(
+    queryRunner: QueryRunner,
     complaintIdentifier: string,
     createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
-    const queryRunner = this.dataSource.createQueryRunner();
+    //const queryRunner = this.dataSource.createQueryRunner();
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
     try {
       // unassign complaint if it's already assigned to an officer
@@ -111,7 +110,6 @@ export class PersonComplaintXrefService {
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
       }
-      this.logger.debug("test9");
       // create a new complaint assignment record
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
       this.logger.debug(
@@ -120,7 +118,6 @@ export class PersonComplaintXrefService {
 
       // save the transaction
       await queryRunner.manager.save(newPersonComplaintXref);
-      await queryRunner.commitTransaction();
       this.logger.debug(
         `Successfully assigned person to complaint ${complaintIdentifier}`
       );
@@ -129,10 +126,8 @@ export class PersonComplaintXrefService {
       this.logger.error(
         `Rolling back assignment on complaint ${complaintIdentifier}`
       );
-      await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
     } finally {
-      await queryRunner.release();
     }
     return newPersonComplaintXref;
   }

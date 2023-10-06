@@ -48,7 +48,7 @@ export class AllegationComplaintService {
     let newAllegationComplaint;
     try {
       await this.complaintService.create(
-        <CreateComplaintDto>allegationComplaint,
+        allegationComplaint,
         queryRunner
       );
       newAllegationComplaint = await this.allegationComplaintsRepository.create(
@@ -448,10 +448,10 @@ export class AllegationComplaintService {
     allegation_complaint_guid: UUID,
     updateAllegationComplaint: string
   ): Promise<AllegationComplaint> {
-    //const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    //await queryRunner.connect();
-    //await queryRunner.startTransaction();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try
     {
       const updateAllegationComplaintDto: UpdateAllegationComplaintDto = JSON.parse(updateAllegationComplaint);
@@ -475,17 +475,17 @@ export class AllegationComplaintService {
         //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         if(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
-          await this.personComplaintXrefService.assignOfficer(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+          await this.personComplaintXrefService.assignOfficer(queryRunner, updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
       } 
       catch (err) {
         this.logger.error(err);
-        //await queryRunner.rollbackTransaction();
+        await queryRunner.rollbackTransaction();
         throw new BadRequestException(err);
       } 
       finally
       {
-        //await queryRunner.release();
+        await queryRunner.release();
       }
       return this.findOne(allegation_complaint_guid);
     }
