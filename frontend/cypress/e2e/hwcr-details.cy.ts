@@ -64,7 +64,12 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.get(
       'div[id="comp-details-location"]'
     ).contains(callDetails.location);
-    
+
+    //-- verify that the conflict type is singular, not plural
+    cy.get("div.hwcr-conflict-type").should("exist");
+    cy.get("div.hwcr-conflict-type").should("have.text","Human Wildlife Conflict");
+    cy.get("div.hwcr-conflict-type").should("not.have.text","Human Wildlife Conflicts");
+
     cy.get(
       'p[id="comp-details-location-description"]'
     ).should('have.value', '');

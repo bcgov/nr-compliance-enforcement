@@ -124,6 +124,12 @@ describe("Complaints on map tests", () => {
 
       cy.get(".leaflet-popup").should("exist");
 
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        cy.get("div.hwcr-conflict-type").should("exist");
+        cy.get("div.hwcr-conflict-type").should("have.text","Human Wildlife Conflict");
+        cy.get("div.hwcr-conflict-type").should("not.have.text","Human Wildlife Conflicts");
+      }
+
       // click the "view details" button to navigate to the complaint
       cy.get("#view-complaint-details-button-id").click({ force: true });
 
