@@ -320,7 +320,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   options={hwcrNatureOfComplaintCodes}
                   placeholder="Select"
                   className="comp-details-input"
-                  classNamePrefix="comp-select"
+                  classNamePrefix='comp-select'
                   defaultValue={selectedNatureOfComplaint}
                   onChange={(e) => handleNOCChange(e)}
                   errMsg={nocErrorMsg}
@@ -341,8 +341,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedSpecies}
                   placeholder="Select"
                   id="species-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(e) => handleSpeciesChange(e)}
+                  classNamePrefix='comp-select'
+                  onChange={e => handleSpeciesChange(e)}
                   errMsg={speciesErrorMsg}
                 />
               </div>
@@ -361,8 +361,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   defaultValue={selectedViolationTypeCode}
                   placeholder="Select"
                   id="violation-type-select-id"
-                  onChange={(e) => handleViolationTypeChange(e)}
-                  classNamePrefix="comp-select"
+                  onChange={e => handleViolationTypeChange(e)}
+                  classNamePrefix='comp-select'
                 />
               </div>
             )}
@@ -376,8 +376,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 defaultValue={selectedStatus}
                 placeholder="Select"
                 id="status-select-id"
-                classNamePrefix="comp-select"
-                onChange={(e) => handleStatusChange(e)}
+                classNamePrefix='comp-select'
+                onChange={e => handleStatusChange(e)}
                 errMsg={statusErrorMsg}
               />
             </div>
@@ -390,13 +390,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               </label>
               <CompSelect
                 id="officer-assigned-select-id"
+                classNamePrefix='comp-select'
+                onChange={e => handleAssignedOfficerChange(e)}
                 className="comp-details-input"
                 options={assignableOfficers}
                 defaultOption={{ label: "None", value: "Unassigned" }}
                 placeholder="Select"
                 enableValidation={false}
                 value={selectedAssignedOfficer}
-                onChange={(e) => handleAssignedOfficerChange(e)}
               />
             </div>
           </div>
@@ -469,6 +470,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               >
                 <label>Incident Time</label>
                 <DatePicker
+                  id="complaint-incident-time"
                   showIcon
                   timeInputLabel="Time:"
                   onChange={handleIncidentDateTimeChange}
@@ -492,7 +494,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedAttractants}
                       placeholder="Select"
                       id="attractants-select-id"
-                      classNamePrefix="comp-select"
+                      classNamePrefix='comp-select'
                       onChange={handleAttractantsChange}
                       errMsg={attractantsErrorMsg}
                     />
@@ -610,16 +612,16 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   Community<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                  <ValidationSelect
-                    className="comp-details-input"
-                    options={areaCodes}
-                    defaultValue={selectedAreaCode}
-                    placeholder="Select"
-                    id="community-select-id"
-                    classNamePrefix="comp-select"
-                    onChange={(e) => handleCommunityChange(e)}
-                    errMsg={communityErrorMsg}
-                  />
+                <ValidationSelect
+                  className="comp-details-input"
+                  options={areaCodes}
+                  defaultValue={selectedAreaCode}
+                  placeholder="Select"
+                  id="community-select-id"
+                  classNamePrefix='comp-select'
+                  onChange={(e) => handleCommunityChange(e)}
+                  errMsg={communityErrorMsg}
+                />
                 </div>
               </div>
               <div
@@ -777,8 +779,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                     type="text"
                     className="comp-form-control"
                     defaultValue={address}
-                    id="comlaint-address-id"
-                    onChange={(e) => handleAddressChange(e.target.value)}
+                    id="complaint-address-id"
+                    onChange={e => handleAddressChange(e.target.value)}
                   />
                 </div>
               </div>
@@ -804,6 +806,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="referred-select-id"
+                    classNamePrefix='comp-select'
                     className="comp-details-edit-input"
                     options={referredByAgencyCodes}
                     defaultOption={{ label: "None", value: undefined }}
@@ -836,7 +839,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                   </label>
                   <textarea
                     className="comp-form-control"
-                    id="complaint-description-textarea-id"
+                    id="complaint-witness-details-textarea-id"
                     defaultValue={complaint_witness_details}
                     rows={4}
                     onChange={(e) => handleSuspectDetailsChange(e.target.value)}

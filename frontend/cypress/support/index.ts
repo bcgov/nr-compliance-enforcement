@@ -5,6 +5,7 @@ declare namespace Cypress {
     kcLogin(): Chainable<Element>;
     kcLogout(): Chainable<any>;
     verifyMapMarkerExists() : Chainable<any>;
+    typeAndTriggerChange(value: string): Chainable<void>;
     navigateToDetailsScreen(complaintType: string, complaintIdentifier: string) : Chainable<any>;
     navigateToEditScreen(complaintType: string, complaintIdentifier: string) : Chainable<any>;
     isInViewport() : Chainable<any>;

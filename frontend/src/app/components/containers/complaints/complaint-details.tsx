@@ -758,7 +758,6 @@ export const ComplaintDetails: FC = () => {
   const handleReferredByChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
-      debugger;
       let update = cloneDeep(updateComplaint) as
         | HwcrComplaint
         | AllegationComplaint;
