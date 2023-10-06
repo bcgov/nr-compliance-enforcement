@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UUID } from 'crypto';
 import { AgencyCode } from '../../agency_code/entities/agency_code.entity';
 import { ComplaintStatusCode } from '../../complaint_status_code/entities/complaint_status_code.entity';
 import { GeoOrganizationUnitCode } from '../../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
-import { Geometry, Point } from 'geojson';
+import { Point } from 'geojson';
 import { CosGeoOrgUnit } from '../../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { PersonComplaintXref } from '../../person_complaint_xref/entities/person_complaint_xref.entity';
 

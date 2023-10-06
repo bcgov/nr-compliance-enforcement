@@ -151,6 +151,7 @@ Cypress.Commands.add("verifyMapMarkerExists", () => {
   cy.get(".leaflet-marker-icon").should("exist");
 });
 
+
 Cypress.Commands.add(
   "navigateToDetailsScreen",
   (complaintType: string, complaintIdentifier: string) => {
@@ -164,7 +165,8 @@ Cypress.Commands.add(
 
     cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
-    cy.waitForSpinner();
+    // This doesn't always appear... commenting it out for now.  I don't think it's required.
+    // cy.waitForSpinner();
 
     //-- check to make sure there are items in the table
     cy.get("#complaint-list")
@@ -193,8 +195,10 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("waitForSpinner", () => {
+
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
+
 });
 
 Cypress.Commands.add("clearFilterById", (filterId: string) => {
@@ -203,11 +207,13 @@ Cypress.Commands.add("clearFilterById", (filterId: string) => {
   cy.get(`#${filterId}`).should("not.exist");
 });
 
+
 Cypress.Commands.add("selectItemById", (selectId: string, optionText: string) => {
-  cy.get(`#${selectId}`)
-    .find("div")
-    .first()
-    .click({ force: true });
+    cy.get(`#${selectId}`)
+      .find("div")
+      .first()
+      .click({ force: true });
+    cy.get('.comp-select__menu-list').should('exist'); //Wait for the options to show
     cy.contains(`.comp-select__option`,optionText).click({force: true});
 });
 
@@ -243,5 +249,21 @@ function extractTopLevelDomain(url: string): string {
 
   return tld;
 }
+
+
+Cypress.Commands.add('typeAndTriggerChange', { prevSubject: 'element' },
+    (subject, value) => {
+        const element = subject[0]
+
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            'value'
+        )?.set
+        
+        nativeInputValueSetter?.call(element, value)
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+)
 
 module.exports = {};

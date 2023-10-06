@@ -49,8 +49,8 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({
               </div>
               <div>
                 <div className="comp-details-content-label ">Incident Time</div>
-                <div className="comp-details-content">
-                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
+                <div className="comp-details-content" id="complaint-incident-date-time">
+                  <i className="bi bi-calendar comp-margin-right-xxs" id="complaint-incident-date"></i>
                   {formatDate(incidentDateTime)}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                   {formatTime(incidentDateTime)}

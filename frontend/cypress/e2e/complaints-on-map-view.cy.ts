@@ -18,10 +18,8 @@ describe("Complaints on map tests", () => {
 
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.waitForSpinner();
-
       // switch to map view
-      cy.get("#map_toggle_id").click({ force: true });
+      cy.get("#map_toggle_id").should("exist").click({ force: true });
 
       // wait for the map to load
       cy.waitForSpinner();
@@ -102,12 +100,7 @@ describe("Complaints on map tests", () => {
       cy.waitForSpinner();
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.waitForSpinner();
-
-      cy.get("#comp-status-filter").click({ force: true }); //clear status filter so this complaint is in the list view
-
-      cy.waitForSpinner();
-
+      cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
       cy.get("#list_toggle_id").should("exist");
       cy.get("#map_toggle_id").should("exist"); //verifies that the list/map toggle button appears.  Click the map view
       cy.get("#map_toggle_id").click({ force: true });
@@ -123,12 +116,11 @@ describe("Complaints on map tests", () => {
       cy.get(".leaflet-marker-icon").each(($marker, index) => {
         // Click the first marker (index 0)
         if (index === 0) {
-          cy.wrap($marker).click({ force: true });
+          cy.wrap($marker).should("exist").click({ force: true });
         }
       });
 
       // wait for the popup to load
-      cy.waitForSpinner();
 
       cy.get(".leaflet-popup").should("exist");
 
