@@ -308,7 +308,6 @@ export const ComplaintDetails: FC = () => {
       const { complaint_identifier: identifier } = update;
       let { person_complaint_xref: source, complaint_identifier: id } =
         identifier;
-
       if (value !== "Unassigned") {
         const selectedOfficer = officerList?.find(
           ({ person_guid: { person_guid: id } }) => {
@@ -759,6 +758,7 @@ export const ComplaintDetails: FC = () => {
   const handleReferredByChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
+
       let update = cloneDeep(updateComplaint) as
         | HwcrComplaint
         | AllegationComplaint;
