@@ -924,26 +924,31 @@ export const CreateComplaint: FC = () => {
     if (createComplaint !== null && createComplaint !== undefined) {
           if (complaintType === COMPLAINT_TYPES.HWCR) {
             let hwcrComplaint = createComplaint as HwcrComplaint;
-            let noError: boolean = false;
+            let noError: boolean = true;
             if(hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code === "")
             {
                 await setNOCErrorMsg("Required");
+                noError = false;
             }
             if(hwcrComplaint.species_code.species_code === "")
             {
                 await setSpeciesErrorMsg("Required");
+                noError = false;
             }
             if(hwcrComplaint.complaint_identifier.complaint_status_code.complaint_status_code === "")
             {
                 await setStatusErrorMsg("Required");
+                noError = false;
             }
             if(hwcrComplaint.complaint_identifier.geo_organization_unit_code.geo_organization_unit_code === "")
             {
                 await setCommunityErrorMsg("Required");
+                noError = false;
             }
             if(hwcrComplaint.complaint_identifier.detail_text === "")
             {
                 await setComplaintDescErrorMsg("Required");
+                noError = false;
             }
             if (noError && noErrors()) {
                 hwcrComplaint.complaint_identifier.create_timestamp = hwcrComplaint.complaint_identifier.update_timestamp = (new Date()).toDateString();
