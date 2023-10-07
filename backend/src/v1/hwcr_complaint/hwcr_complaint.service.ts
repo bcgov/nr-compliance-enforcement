@@ -59,10 +59,10 @@ export class HwcrComplaintService {
         await queryRunner.manager.save(newHwcrComplaintString)
       );
 
-
-      createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newHwcrComplaint.complaint_identifier;
       if(createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
+          
+        createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newHwcrComplaint.complaint_identifier;
           await this.personComplaintXrefService.assignOfficer(queryRunner, newHwcrComplaint.complaint_identifier.complaint_identifier, createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
       
