@@ -1,4 +1,4 @@
-import { Dispatch, PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { Action, Dispatch, PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import {
@@ -24,6 +24,7 @@ import axios from "axios";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
+import { useNavigate } from "react-router-dom";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -418,11 +419,12 @@ export const updateAllegationComplaint =
 
 
   export const createWildlifeComplaint =
-  (hwcrComplaint: HwcrComplaint): AppThunk => {
-  return async (dispatch) => {
+  (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => 
+  async dispatch => {
+    //const navigate = useNavigate();
+    let newComplaintId: string = "";
     try {
       dispatch(toggleLoading(true));
-
       await axios.post(
         `${config.API_BASE_URL}/v1/hwcr-complaint/`,
         { hwcrComplaint: JSON.stringify(hwcrComplaint) }
@@ -446,15 +448,16 @@ export const updateAllegationComplaint =
         const response = await get<HwcrComplaint>(dispatch, parameters);
   
         dispatch(setComplaint({ ...response }));
-        
-      });
+        newComplaintId = newHwcrComplaint.complaint_identifier.complaint_identifier;
+      })
+      console.log()
+      return newComplaintId;
     } catch (error) {
       console.log(error);
       //-- add error handling
     } finally {
       dispatch(toggleLoading(false));
     }
-  }
   };
 
 export const updateWildlifeComplaint =

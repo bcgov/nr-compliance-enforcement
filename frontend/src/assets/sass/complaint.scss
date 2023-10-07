@@ -928,7 +928,15 @@
 }
 
 .error-border {
-    border-color: $bc-gov-danger !important;
+  border-color: $bc-gov-danger;
+}
+
+.error-select-border {
+
+    .comp-validation-select__control
+    {
+      border-color: $bc-gov-danger;
+    }
 }
 
 .comp-complaint-error {

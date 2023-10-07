@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
@@ -30,7 +30,7 @@ import { CreateComplaintHeader } from "./create-complaint-header";
 import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import { useNavigate } from "react-router-dom";
-import { createWildlifeComplaint, selectComplaint } from "../../../../store/reducers/complaints";
+import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate, selectComplaint } from "../../../../store/reducers/complaints";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -149,19 +149,6 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
-  const [complaintId, setComplaintId] = useState<string>("");
-
-  const complaintSelector = useAppSelector(selectComplaint);
-  useEffect(() => {
-    //-- when the component unmounts clear the complaint from redux
-    return () => {
-        if(complaintSelector)
-        {
-            //setComplaintId(complaintSelector.complaint_identifier.complaint_identifier)
-            navigate("/complaint/HWCR/" + complaintSelector.complaint_identifier.complaint_identifier);
-        }
-    };
-  }, [dispatch,complaintSelector]);
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -895,6 +882,8 @@ export const CreateComplaint: FC = () => {
     selectViolationCodeDropdown
   ) as Option[];
 
+  
+
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
@@ -933,31 +922,55 @@ export const CreateComplaint: FC = () => {
 
   const saveButtonClick = async () => {
     if (createComplaint !== null && createComplaint !== undefined) {
-        if (noErrors()) {
           if (complaintType === COMPLAINT_TYPES.HWCR) {
             let hwcrComplaint = createComplaint as HwcrComplaint;
-            hwcrComplaint.complaint_identifier.create_timestamp = hwcrComplaint.complaint_identifier.update_timestamp = (new Date()).toDateString();
-            hwcrComplaint.complaint_identifier.create_user_id = hwcrComplaint.complaint_identifier.update_user_id = userid;
-            hwcrComplaint.complaint_identifier.location_geometry_point.type = "Point";
-            if(hwcrComplaint.complaint_identifier.location_geometry_point.coordinates.length === 0)
+            let noError: boolean = false;
+            if(hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code === "")
             {
-                hwcrComplaint.complaint_identifier.location_geometry_point.coordinates = [0,0];
+                await setNOCErrorMsg("Required");
             }
-            const complaint = await dispatch(createWildlifeComplaint(hwcrComplaint));
-            debugger;
-            console.log("tredsfadsfdasdfasf: " + complaint);
-            //navigate("/complaint/" + complaintType);
-
-            /*
-            if(complaintId !== null && complaintId !== undefined)
+            if(hwcrComplaint.species_code.species_code === "")
             {
-                navigate("/complaint/" + complaintType + "/" + complaintId);
+                await setSpeciesErrorMsg("Required");
+            }
+            if(hwcrComplaint.complaint_identifier.complaint_status_code.complaint_status_code === "")
+            {
+                await setStatusErrorMsg("Required");
+            }
+            if(hwcrComplaint.complaint_identifier.geo_organization_unit_code.geo_organization_unit_code === "")
+            {
+                await setCommunityErrorMsg("Required");
+            }
+            if(hwcrComplaint.complaint_identifier.detail_text === "")
+            {
+                await setComplaintDescErrorMsg("Required");
+            }
+            if (noError && noErrors()) {
+                hwcrComplaint.complaint_identifier.create_timestamp = hwcrComplaint.complaint_identifier.update_timestamp = (new Date()).toDateString();
+                hwcrComplaint.complaint_identifier.create_user_id = hwcrComplaint.complaint_identifier.update_user_id = userid;
+                hwcrComplaint.complaint_identifier.location_geometry_point.type = "Point";
+                if(hwcrComplaint.complaint_identifier.location_geometry_point.coordinates.length === 0)
+                {
+                    hwcrComplaint.complaint_identifier.location_geometry_point.coordinates = [0,0];
+                }
+                const complaintId = await dispatch(createWildlifeComplaint(hwcrComplaint));
+                if(complaintId)
+                {
+                    await dispatch(
+                        getWildlifeComplaintByComplaintIdentifierSetUpdate(
+                            complaintId,
+                        setCreateComplaint
+                        )
+                    );
+
+                    navigate("/complaint/" + complaintType + "/" + complaintId);
+                }
             }
             else
             {
-                navigate("/");
-            }*/
-          } 
+                setErrorNotificationClass("comp-complaint-error");
+            }
+
           /*else if (complaintType === COMPLAINT_TYPES.ERS) {
             let allegationComplaint = createComplaint as AllegationComplaint;
             const complaint_identifier = await dispatch(createAllegationComplaint(allegationComplaint));
@@ -968,10 +981,6 @@ export const CreateComplaint: FC = () => {
               )
             );
           }*/
-        }
-        else
-        {
-            setErrorNotificationClass("comp-complaint-error");
         }
       }
   };
@@ -1026,7 +1035,7 @@ export const CreateComplaint: FC = () => {
               options={hwcrNatureOfComplaintCodes}
               placeholder="Select"
               className="comp-details-input"
-              classNamePrefix='comp-nature-select'
+              classNamePrefix='comp-validation-select'
               onChange={(e) => handleNOCChange(e)}
               errMsg={nocErrorMsg}
             />
@@ -1087,7 +1096,7 @@ export const CreateComplaint: FC = () => {
               options={speciesCodes}
               placeholder="Select"
               id="species-select-id"
-              classNamePrefix='comp-species-select'
+              classNamePrefix='comp-validation-select'
               onChange={e => handleSpeciesChange(e)}
               errMsg={speciesErrorMsg}
             />
@@ -1101,7 +1110,7 @@ export const CreateComplaint: FC = () => {
                options={complaintStatusCodes}
                placeholder="Select"
                id="status-select-id"
-               classNamePrefix='comp-status-select'
+               classNamePrefix='comp-validation-select'
                onChange={e => handleStatusChange(e)}
                errMsg={statusErrorMsg}
              />
@@ -1282,7 +1291,7 @@ export const CreateComplaint: FC = () => {
               options={areaCodes}
               placeholder="Select"
               id="community-select-id"
-              classNamePrefix='comp-community-select'
+              classNamePrefix='comp-validation-select'
               onChange={(e) => handleCommunityChange(e)}
               errMsg={communityErrorMsg}
             />

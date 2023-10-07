@@ -25,6 +25,7 @@ interface ValidationSelectProps {
     errMsg,
   }) => {
     const calulatedClass = (errMsg === "" ? "" : "error-message");
+    const calulatedBorderClass = (errMsg === "" ? "" : "error-select-border");
     return (<div className={className}>
         <div>
         <Select 
@@ -33,6 +34,7 @@ interface ValidationSelectProps {
                 onChange={onChange} 
                 placeholder={placeholder} 
                 classNamePrefix={classNamePrefix}
+                className={calulatedBorderClass}
                 defaultValue={defaultValue}/>
         </div>
         <div className={calulatedClass}>
