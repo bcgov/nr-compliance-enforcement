@@ -355,11 +355,6 @@
   box-shadow: 0px 0px 0px 4px $blue-300 !important;
 }
 
-//Need these to make sure the filters show up on top of other frozen items
-.top-layer-select, .react-datepicker-popper {
-  z-index: 7000 !important;
-}
-
 .comp-details-edit-container {
   display: flex;
 }
@@ -724,7 +719,6 @@
   margin-top: -7px;
 }
 
-
 .no-bullets {
   list-style-type: none; /* Remove bullets */
   padding: 0; /* Remove padding */
@@ -956,12 +950,6 @@
 
 .display-none {
   display: none;
-}
-
-//Toasts Gets the top layer
-.Toastify {
-  z-index: 10000;
-  position: relative;
 }
 
 .Toastify__toast--error {

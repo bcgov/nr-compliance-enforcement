@@ -139,7 +139,6 @@ export const AllegationComplaintListItem: FC<Props> = ({
       <ComplaintEllipsisPopover
         complaint_identifier={id}
         complaint_type={type}
-        complaint_zone={cos_geo_org_unit.zone_code}
         assigned_ind={assigned_ind}
         sortColumn={sortKey}
         sortOrder={sortDirection}

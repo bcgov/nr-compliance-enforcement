@@ -98,7 +98,7 @@ export const post = <T, M = {}>(
 		axios
 			.post(url, params, config)
 			.then((response: AxiosResponse) => {
-        resolve(response.data as T);
+				resolve(response.data as T);
 			})
 			.catch((error: AxiosError) => {
 				if (parameters.enableNotification) {

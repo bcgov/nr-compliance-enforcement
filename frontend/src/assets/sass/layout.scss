@@ -9,27 +9,23 @@
   position: fixed;
   width: 100%;
   top: 0;
-  z-index: 9000;
 }
 
 .fixed-nav-header {
   position: sticky !important;
-  padding-bottom: 0px !important;
   top: 72px; // Header (72px)
   background-color: $white;
-  z-index: 8000;
 }
 
 .fixed-filter-header {
   position: sticky;
-  top: 120px; // Header (72px) + Tabs (48px) 
+  top: 130px; // Header (72px) + Tabs (58px) 
   background-color: $white;
-  z-index: 6000;
 }
 
 .fixed-table-header {
   position: sticky;
-  top: 166px; // Header (72px) + Tabs (48px) + filters (46px)
+  top: 176px; // Header (72px) + Tabs (58px) + filters (46px)
 }
 
 .comp-header {

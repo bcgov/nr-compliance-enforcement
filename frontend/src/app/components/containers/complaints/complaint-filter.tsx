@@ -86,11 +86,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="nature-of-complaint-select-id"
                 value={natureOfComplaint}
               />
             </div>
@@ -106,11 +101,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="species-select-id"
                 value={species}
               />
             </div>
@@ -195,11 +185,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="status-select-id"
                 value={status}
               />
             </div>
@@ -227,11 +212,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="violation-type-select-id"
                 value={violationType}
               />
             </div>
@@ -316,11 +296,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="status-select-id"
                 value={status}
               />
             </div>
@@ -356,12 +331,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
                 value={region}
-                id="region-select-filter-id"
               />
             </div>
           </div>
@@ -376,11 +346,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="zone-select-id"
                 value={zone}
               />
             </div>
@@ -397,11 +362,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="community-select-id"
                 value={community}
               />
             </div>
@@ -418,11 +378,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 }}
                 placeholder="Select"
                 classNamePrefix="comp-select"
-                classNames={{
-                  menu: () =>
-                    'top-layer-select',  
-                }}
-                id="officer-select-id"
                 value={officer}
               />
             </div>

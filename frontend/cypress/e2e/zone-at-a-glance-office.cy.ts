@@ -7,7 +7,8 @@ describe("COMPENF-258 Zone at a Glance - View Office Stats", () => {
     it("it should have an office with an officer", () => {
       cy.visit("/zone/at-a-glance");
 
-      cy.waitForSpinner();
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
       cy.get('#Clearwater\\ Office').should('exist'); //assumes cypress user's office is Clearwater
       //Expand the Clearwater Box
       cy.get('.comp-zag-office > div > img').eq(1).click();  //Assumes Clearwater is second office

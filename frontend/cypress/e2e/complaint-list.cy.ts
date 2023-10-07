@@ -14,7 +14,8 @@ describe('Complaint List Functionality', () => {
   
       it('Verifies the complaint tabs, filter and table header are sticky', {scrollBehavior: false}, () => {
         cy.visit("/");
-        cy.waitForSpinner();
+        cy.get('.comp-loader-overlay').should('exist');
+        cy.get('.comp-loader-overlay').should('not.exist');
         
         cy.get(complaintTypes[index]).click({ force: true });
 

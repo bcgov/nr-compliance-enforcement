@@ -1,5 +1,3 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types"
-
 /*
 Test to verify that the user is able to change the assignee both the
 HWLC and Enforcement details screens
@@ -15,16 +13,17 @@ describe("Complaint Change Assignee spec - Details View", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Changes assignee of a complaint", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
-        cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR,"23-000076");
+        cy.navigateToHWLCDetailsScreen("23-000076");
       } else {
-        cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS,"23-006888");
+        cy.navigateToAllegationDetailsScreen("23-006888");
       }
 
       cy.get("#details-screen-assign-button").click({ force: true });
 
       // self assign the complaint
       cy.get("#self_assign_button").click({ force: true });
-      cy.waitForSpinner();
+      cy.get(".comp-loader-overlay").should("exist");
+      cy.get(".comp-loader-overlay").should("not.exist");
       cy.get("#comp-details-assigned-officer-name-text-id")
         .contains("ENV TestAcct")
         .should("exist");

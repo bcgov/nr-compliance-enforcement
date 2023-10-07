@@ -15,7 +15,8 @@ describe('Complaint Change Status spec - Details View', () => {
 
     it('Verifies filters are available and defaults exist', () => {
       cy.visit("/");
-      cy.waitForSpinner();
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
       
       cy.get(complaintTypes[index]).click({ force: true });
       

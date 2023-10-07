@@ -21,7 +21,8 @@ describe("COMPENF-259 Zone at a Glance - View Complaint Stats", () => {
       //-- navigate back to complaints
       cy.get('#complaints-link').click({ force: true });
 
-      cy.waitForSpinner();
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
 
       cy.get("#root > div > div.comp-main-content > div.comp-sub-header").contains("Complaints")
     });

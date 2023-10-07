@@ -35,7 +35,8 @@ describe("COMPENF-138 - loading spinner", () => {
       sendResponse();
       // ...and assert the spinner is removed from the DOM and
       // the data is shown instead.
-      cy.waitForSpinner();
+      cy.get('.comp-loader-overlay').should('exist');
+      cy.get('.comp-loader-overlay').should('not.exist');
     });
 
   });
