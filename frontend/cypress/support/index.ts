@@ -5,11 +5,12 @@ declare namespace Cypress {
     kcLogin(): Chainable<Element>;
     kcLogout(): Chainable<any>;
     verifyMapMarkerExists() : Chainable<any>;
-    navigateToHWLCDetailsScreen(complaintIdentifier: string) : Chainable<any>;
-    navigateToHWLCEditScreen(complaintIdentifier: string) : Chainable<any>;
-    navigateToAllegationDetailsScreen(complaintIdentifier: string) : Chainable<any>;
-    navigateToAllegationEditScreen(complaintIdentifier: string) : Chainable<any>;
     typeAndTriggerChange(value: string): Chainable<void>;
+    navigateToDetailsScreen(complaintType: string, complaintIdentifier: string) : Chainable<any>;
+    navigateToEditScreen(complaintType: string, complaintIdentifier: string) : Chainable<any>;
     isInViewport() : Chainable<any>;
+    waitForSpinner(): Chainable<any>;
+    clearFilterById(filterId: string): Chainable<any>;
+    selectItemById(selectId: string, optionText: string) : Chainable<any>;
   }
 }

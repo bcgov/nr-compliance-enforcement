@@ -32,6 +32,7 @@ type Props = {
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
   const navigate = useNavigate();
@@ -91,6 +92,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       return `(${totalComplaints})`;
     }
   };
+
+  
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -160,7 +163,21 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           </Nav.Item>
           <Nav.Item 
             {...getToggleProps({
-              onClick: () => setExpanded((prevExpanded) => !prevExpanded),
+                onClick: () => {
+                  const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
+                  const rect = filterElem?.getBoundingClientRect();
+                  const bottom = rect?.bottom;
+
+                  if({isExpanded}.isExpanded && bottom !== undefined && bottom < 140) //page has been scrolled while filter is open... need to close it!
+                  {
+                    setExpanded((prevExpanded) => !prevExpanded);
+                  }
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                    });
+                  setExpanded((prevExpanded) => !prevExpanded);
+                },
             })}
           >
             <div

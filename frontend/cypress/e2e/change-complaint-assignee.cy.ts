@@ -2,7 +2,7 @@
 Test to verify that the status and assignment popover displays when clicking the vertical ellipsis on both the
 HWLC and Enforcement list screens
 */
-describe('Complaint Assign Popover spec', () => {
+describe('Complaint Assign Popover spec', { scrollBehavior: false }, () => {
 
   const complaintTypes = ['#hwcr-tab', '#ers-tab'];
 
@@ -13,19 +13,17 @@ describe('Complaint Assign Popover spec', () => {
 
   Cypress._.times(complaintTypes.length, ((index) => {
   
-    it('Changes assignee of complaint', () => {
+    it('Changes assignee of complaint',  () => {
       cy.visit("/");
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.waitForSpinner();
 
       cy.get('.popover').should('not.exist');
 
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so we have some complaint is in the list view
     
-      cy.get('.comp-loader-overlay').should('exist');
-      cy.get('.comp-loader-overlay').should('not.exist');
+      cy.waitForSpinner();
 
       cy.get('td.comp-ellipsis-cell').first() // finds the buttons cell of that row
             .click({force: true});
