@@ -197,7 +197,7 @@ export const updateComplaintAssignee =
 
 //-- selectors
 
-export const selectOfficers = (state: RootState): Array<any> => {
+export const selectOfficers = (state: RootState):  Officer[] | null => {
   const { officers: officerRoot } = state;
   const { officers } = officerRoot;
 
