@@ -9,7 +9,7 @@ import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.
 import { AllegationComplaint } from "./entities/allegation_complaint.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
-import { UUID } from "crypto";
+import { UUID, randomUUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
 import {
   OfficeStats,
@@ -20,6 +20,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { Complaint } from "../complaint/entities/complaint.entity";
 
 @Injectable()
 export class AllegationComplaintService {
@@ -44,16 +45,33 @@ export class AllegationComplaintService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    let newAllegationComplaint;
+
+    const createHwcrComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
+    createHwcrComplaintDto.allegation_complaint_guid = randomUUID();
+    createHwcrComplaintDto.update_timestamp = createHwcrComplaintDto.create_timestamp = new Date();
+    let newAllegationComplaintString;
     try {
-      await this.complaintService.create(
-        allegationComplaint,
+      const complaint: Complaint = await this.complaintService.create(
+        JSON.stringify(createHwcrComplaintDto.complaint_identifier),
         queryRunner
       );
-      newAllegationComplaint = await this.allegationComplaintsRepository.create(
-        <CreateAllegationComplaintDto>allegationComplaint
+      createHwcrComplaintDto.create_user_id = createHwcrComplaintDto.update_user_id = complaint.create_user_id;
+      createHwcrComplaintDto.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
+      newAllegationComplaintString = await this.allegationComplaintsRepository.create(
+        createHwcrComplaintDto
       );
-      await queryRunner.manager.save(newAllegationComplaint);
+      let newAllegationComplaint: AllegationComplaint;
+      newAllegationComplaint = <AllegationComplaint>(
+        await queryRunner.manager.save(newAllegationComplaintString)
+      );
+
+
+      createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
+      if(createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+        {
+          await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+      
       await queryRunner.commitTransaction();
     } catch (err) {
       this.logger.error(err);
@@ -62,7 +80,7 @@ export class AllegationComplaintService {
     } finally {
       await queryRunner.release();
     }
-    return newAllegationComplaint;
+    return newAllegationComplaintString;
   }
 
   async findAll(
