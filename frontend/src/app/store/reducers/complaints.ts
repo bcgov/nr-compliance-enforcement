@@ -18,7 +18,7 @@ import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stat
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
-import { generateApiParameters, get, patch } from "../../common/api";
+import { generateApiParameters, get, patch, post } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
@@ -428,11 +428,16 @@ export const updateAllegationComplaint =
     let newComplaintId: string = "";
     try {
       dispatch(toggleLoading(true));
-      await axios.post(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/`,
+
+      const postParameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/`, 
         { hwcrComplaint: JSON.stringify(hwcrComplaint) }
+      );
+      await post<HwcrComplaint>(
+        dispatch,
+        postParameters
       ).then(async res => {
-        const newHwcrComplaint: HwcrComplaint = res.data;
+        const newHwcrComplaint: HwcrComplaint = res;
         await updateComplaintAssignee(
           hwcrComplaint.complaint_identifier.create_user_id,
           newHwcrComplaint.complaint_identifier.complaint_identifier,

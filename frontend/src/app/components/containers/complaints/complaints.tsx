@@ -32,7 +32,6 @@ type Props = {
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
   const navigate = useNavigate();
