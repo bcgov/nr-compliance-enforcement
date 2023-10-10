@@ -513,7 +513,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationInProgress}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      classNamePrefix="comp-violation-ip-select"
+                      classNamePrefix="comp-select"
                       onChange={(e) => handleViolationInProgessChange(e)}
                     />
                   </div>
@@ -531,7 +531,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                       defaultValue={selectedViolationObserved}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      classNamePrefix="comp-violation-observed-select"
+                      classNamePrefix="comp-select"
                       onChange={(e) => handleViolationObservedChange(e)}
                     />
                   </div>
@@ -590,8 +590,8 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 }
               />
               <CompInput
-                id="comp-details-edit-x-coordinate-input"
-                divId="comp-details-edit-x-coordinate-input-div"
+                id="comp-details-edit-y-coordinate-input"
+                divId="comp-details-edit-y-coordinate-input-div"
                 type="input"
                 label="Y Coordinate"
                 containerClass="comp-details-edit-input"

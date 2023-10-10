@@ -21,12 +21,12 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import { useSelector } from "react-redux";
 import { selectAgencyDropdown, selectAreaCodeDropdown, selectAttractantCodeDropdown, selectComplaintStatusCodeDropdown, selectHwcrNatureOfComplaintCodeDropdown, selectSpeciesCodeDropdown, selectViolationCodeDropdown } from "../../../../store/reducers/code-table";
 import { Officer } from "../../../../types/person/person";
-import { selectOfficers, selectOfficersByZone } from "../../../../store/reducers/officer";
+import { selectOfficers } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import { useNavigate } from "react-router-dom";
-import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate, selectComplaintDetails } from "../../../../store/reducers/complaints";
+import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
 
 export const CreateComplaint: FC = () => {
@@ -192,7 +192,6 @@ export const CreateComplaint: FC = () => {
         let update = { ...createComplaint } as HwcrComplaint;
 
         const { hwcr_complaint_nature_code: source } = update;
-        console.log(source);
         const updatedEntity = {
           ...source,
           short_description: value,
@@ -475,6 +474,7 @@ export const CreateComplaint: FC = () => {
         });
 
         update.attractant_hwcr_xref = newAttractants;
+        setAttractantsErrorMsg("");
         setCreateComplaint(update);
       }
     }
@@ -963,7 +963,7 @@ export const CreateComplaint: FC = () => {
               options={hwcrNatureOfComplaintCodes}
               placeholder="Select"
               className="comp-details-input"
-              classNamePrefix='comp-validation-select'
+              classNamePrefix='comp-select'
               onChange={(e) => handleNOCChange(e)}
               errMsg={nocErrorMsg}
             />
@@ -1024,7 +1024,7 @@ export const CreateComplaint: FC = () => {
               options={speciesCodes}
               placeholder="Select"
               id="species-select-id"
-              classNamePrefix='comp-validation-select'
+              classNamePrefix='comp-select'
               onChange={e => handleSpeciesChange(e)}
               errMsg={speciesErrorMsg}
             />
@@ -1038,7 +1038,7 @@ export const CreateComplaint: FC = () => {
                options={complaintStatusCodes}
                placeholder="Select"
                id="status-select-id"
-               classNamePrefix='comp-validation-select'
+               classNamePrefix='comp-select'
                onChange={e => handleStatusChange(e)}
                errMsg={statusErrorMsg}
              />
@@ -1177,7 +1177,7 @@ export const CreateComplaint: FC = () => {
           </div>
           <CompInput
             id="comp-details-edit-x-coordinate-input"
-            divId="x-coordinate-pair-id"
+            divId="comp-details-edit-x-coordinate-div"
             type="input"
             label="X Coordinate"
             containerClass="comp-details-edit-input"
@@ -1193,8 +1193,8 @@ export const CreateComplaint: FC = () => {
             }
           />
           <CompInput
-            id="comp-details-edit-x-coordinate-input"
-            divId="y-coordinate-pair-id"
+            id="comp-details-edit-y-coordinate-input"
+            divId="comp-details-edit-y-coordinate-div"
             type="input"
             label="Y Coordinate"
             containerClass="comp-details-edit-input"
@@ -1219,7 +1219,7 @@ export const CreateComplaint: FC = () => {
               options={areaCodes}
               placeholder="Select"
               id="community-select-id"
-              classNamePrefix='comp-validation-select'
+              classNamePrefix='comp-select'
               onChange={(e) => handleCommunityChange(e)}
               errMsg={communityErrorMsg}
             />

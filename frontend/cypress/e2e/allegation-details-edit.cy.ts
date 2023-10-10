@@ -462,16 +462,16 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#attractants-pair-id input").should("not.exist");
 
     // X Coordinate
-    cy.get("#x-coordinate-pair-id label").should(($label) => {
+    cy.get('[for="comp-details-edit-x-coordinate-input"]').should(($label) => {
       expect($label).to.contain.text("X Coordinate");
     });
-    cy.get("#x-coordinate-pair-id input").should("exist");
+    cy.get("#comp-details-edit-x-coordinate-input-div").should("exist");
 
     // Y Coordinate
-    cy.get("#y-coordinate-pair-id label").should(($label) => {
+    cy.get('[for="comp-details-edit-y-coordinate-input"]').should(($label) => {
       expect($label).to.contain.text("Y Coordinate");
     });
-    cy.get("#y-coordinate-pair-id input").should("exist");
+    cy.get("#comp-details-edit-y-coordinate-input-div").should("exist");
 
     // Area/Community
     cy.get("#area-community-pair-id label").should(($label) => {

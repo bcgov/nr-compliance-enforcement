@@ -198,7 +198,6 @@ export const ComplaintDetails: FC = () => {
         let update = { ...updateComplaint } as HwcrComplaint;
 
         const { hwcr_complaint_nature_code: source } = update;
-        console.log(source);
         const updatedEntity = {
           ...source,
           short_description: value,
