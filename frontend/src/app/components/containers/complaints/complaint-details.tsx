@@ -11,6 +11,7 @@ import {
   setComplaintLocation,
   updateAllegationComplaint,
   updateWildlifeComplaint,
+  selectComplaintDetails
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
@@ -22,15 +23,14 @@ import { ComplaintLocation } from "./details/complaint-location";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import { cloneDeep } from "lodash";
-import axios from "axios";
-import config from "../../../../config";
 import { bcBoundaries } from "../../../common/methods";
 import Option from "../../../types/app/option";
 import { PersonComplaintXref } from "../../../types/complaints/person-complaint-xref";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Coordinates } from "../../../types/app/coordinate-type";
-import { AgencyCode } from "../../../types/code-tables/agency-code";
+import { from } from "linq-to-typescript";
+import { selectOfficersByZone } from "../../../store/reducers/officer";
 
 type ComplaintParams = {
   id: string;
@@ -39,10 +39,19 @@ type ComplaintParams = {
 
 export const ComplaintDetails: FC = () => {
   const dispatch = useAppDispatch();
-  const [readOnly, setReadOnly] = useState(true);
+
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+
   const complaint = useAppSelector(selectComplaint);
-  const [updateComplaint, setUpdateComplaint] = useState<HwcrComplaint | AllegationComplaint | null | undefined>(complaint);
   const userid = useAppSelector(userId);
+
+  const { zone_code } = useAppSelector(selectComplaintDetails(complaintType));
+  const officerList = useAppSelector(selectOfficersByZone(zone_code));
+
+  const [readOnly, setReadOnly] = useState(true);
+  const [updateComplaint, setUpdateComplaint] = useState<
+    HwcrComplaint | AllegationComplaint | null | undefined
+  >(complaint);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
@@ -97,14 +106,22 @@ export const ComplaintDetails: FC = () => {
         if(complaintType === COMPLAINT_TYPES.HWCR)
         {
           let hwcrComplaint = updateComplaint as HwcrComplaint;
-          await dispatch(updateWildlifeComplaint(hwcrComplaint));
-          //await dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(hwcrComplaint.complaint_identifier.complaint_identifier, setUpdateComplaint));
-        }
-        else if(complaintType === COMPLAINT_TYPES.ERS)
-        {
+          dispatch(updateWildlifeComplaint(hwcrComplaint));
+          dispatch(
+            getWildlifeComplaintByComplaintIdentifierSetUpdate(
+              hwcrComplaint.complaint_identifier.complaint_identifier,
+              setUpdateComplaint
+            )
+          );
+        } else if (complaintType === COMPLAINT_TYPES.ERS) {
           let allegationComplaint = updateComplaint as AllegationComplaint;
-          await dispatch(updateAllegationComplaint(allegationComplaint));
-          //await dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(allegationComplaint.complaint_identifier.complaint_identifier, setUpdateComplaint));
+          dispatch(updateAllegationComplaint(allegationComplaint));
+          dispatch(
+            getAllegationComplaintByComplaintIdentifierSetUpdate(
+              allegationComplaint.complaint_identifier.complaint_identifier,
+              setUpdateComplaint
+            )
+          );
         }
         setErrorNotificationClass("comp-complaint-error display-none");
         setReadOnly(true);
@@ -119,8 +136,6 @@ export const ComplaintDetails: FC = () => {
       }
     }
   }
-
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   useEffect(() => {
     if (
@@ -173,177 +188,166 @@ export const ComplaintDetails: FC = () => {
     return noErrors;
   }
 
-  async function handleNOCChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOption.value === "")
-        {
-          setNOCErrorMsg("Required");
-        }
-        else
-        {
-          setNOCErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/hwcr-complaint-nature-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.hwcr_complaint_nature_code = response.data;
-            setUpdateComplaint(hwcrComplaint);
-          });
+  const handleNOCChange = (selected: Option | null) => {
+    if (selected) {
+      const { label, value } = selected;
+      if (!value) {
+        setNOCErrorMsg("Required");
+      } else {
+        setNOCErrorMsg("");
 
+        let update = { ...updateComplaint } as HwcrComplaint;
+
+        const { hwcr_complaint_nature_code: source } = update;
+        console.log(source);
+        const updatedEntity = {
+          ...source,
+          short_description: value,
+          long_description: label as string,
+          hwcr_complaint_nature_code: value,
+        };
+
+        update.hwcr_complaint_nature_code = updatedEntity;
+        setUpdateComplaint(update);
+      }
+    }
+  };
+
+  const handleSpeciesChange = (selected: Option | null) => {
+    if (selected) {
+      const { label, value } = selected;
+      if (!value) {
+        setSpeciesErrorMsg("Required");
+      } else {
+        setSpeciesErrorMsg("");
+
+        let update = { ...updateComplaint } as HwcrComplaint;
+
+        const { species_code: source } = update;
+        const updatedEntity = {
+          ...source,
+          short_description: value,
+          long_description: label as string,
+          species_code: value,
+        };
+
+        update.species_code = updatedEntity;
+        setUpdateComplaint(update);
+      }
+    }
+  };
+
+  const handleViolationTypeChange = (selected: Option | null) => {
+    if (selected) {
+      const { label, value } = selected;
+
+      let update = { ...updateComplaint } as AllegationComplaint;
+
+      const { violation_code: source } = update;
+      const updatedEntity = {
+        ...source,
+        short_description: value as string,
+        long_description: label as string,
+        violation_code: value as string,
+      };
+
+      update.violation_code = updatedEntity;
+      setUpdateComplaint(update);
+    }
+  };
+
+  const handleStatusChange = (selected: Option | null) => {
+    if (selected) {
+      const { label, value } = selected;
+      if (!value) {
+        setStatusErrorMsg("Required");
+      } else {
+        setStatusErrorMsg("");
+
+        let update = { ...updateComplaint } as
+          | HwcrComplaint
+          | AllegationComplaint;
+
+        const { complaint_identifier: identifier } = update;
+        const { complaint_status_code: source } = identifier;
+
+        const updatedEntity = {
+          ...source,
+          short_description: value,
+          long_description: label as string,
+          complaint_status_code: value,
+        };
+
+        const updatedParent = {
+          ...identifier,
+          complaint_status_code: updatedEntity,
+        };
+        update.complaint_identifier = updatedParent;
+
+        setUpdateComplaint(update);
+      }
+    }
+  };
+
+  const handleAssignedOfficerChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      let update = { ...updateComplaint } as
+        | HwcrComplaint
+        | AllegationComplaint;
+
+      const { complaint_identifier: identifier } = update;
+      let { person_complaint_xref: source, complaint_identifier: id } =
+        identifier;
+      if (value !== "Unassigned") {
+        const selectedOfficer = officerList?.find(
+          ({ person_guid: { person_guid: id } }) => {
+            return id === value;
+          }
+        );
+
+        const { person_guid: officer } = selectedOfficer as any;
+
+        if (from(source).any() && from(source).elementAt(0)) {
+          const assigned = { ...source[0], person_guid: officer };
+          source = [assigned];
+        } else {
+          const assigned = {
+            person_guid: officer,
+            create_user_id: userid,
+            update_user_id: userid,
+            complaint_identifier: id,
+            active_ind: true,
+            person_complaint_xref_code: "ASSIGNEE",
+          };
+          source = [assigned];
+        }
+
+        const updatedParent = {
+          ...identifier,
+          person_complaint_xref: source,
+        };
+
+        update.complaint_identifier = updatedParent;
+
+        setUpdateComplaint(update);
+      } else {
+        if (from(source).any() && from(source).elementAt(0)) {
+          const assigned = { ...source[0], active_ind: false };
+          source = [assigned];
+
+          const updatedParent = {
+            ...identifier,
+            person_complaint_xref: source,
+          };
+
+          update.complaint_identifier = updatedParent;
+          setUpdateComplaint(update);
         }
       }
     }
-}
-  function handleSpeciesChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        if(selectedOption.value === "")
-        {
-          setSpeciesErrorMsg("Required");
-        }
-        else
-        {
-          setSpeciesErrorMsg("");
-          let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
-          axios.get(`${config.API_BASE_URL}/v1/species-code/` + selectedOption.value).then((response) => {
-            hwcrComplaint.species_code = response.data;
-            setUpdateComplaint(hwcrComplaint);
-          });
-
-        }
-      }
-    }
-}
-
-function handleViolationTypeChange(selectedOption: Option | null) {
-  if(selectedOption !== null && selectedOption !== undefined)
-  {
-    if(complaintType === COMPLAINT_TYPES.ERS)
-    {
-        let allegationComplaint: AllegationComplaint = {...updateComplaint} as AllegationComplaint;
-        axios.get(`${config.API_BASE_URL}/v1/violation-code/` + selectedOption.value).then((response) => {
-          allegationComplaint.violation_code = response.data;
-          setUpdateComplaint(allegationComplaint);
-        });
-    }
-  }
-}
-
-  function handleStatusChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-        if(selectedOption.value === "")
-        {
-          setStatusErrorMsg("Required");
-        }
-        else
-        {
-          setStatusErrorMsg("");
-          if(complaintType === COMPLAINT_TYPES.HWCR)
-          {
-            let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-            axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
-              hwcrComplaint.complaint_identifier.complaint_status_code = response.data;
-              setUpdateComplaint(hwcrComplaint);
-            }); 
-          }
-          else if(complaintType === COMPLAINT_TYPES.ERS)
-          {
-            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            axios.get(`${config.API_BASE_URL}/v1/complaint-status-code/` + selectedOption.value).then((response) => {
-              allegationComplaint.complaint_identifier.complaint_status_code = response.data;
-              setUpdateComplaint(allegationComplaint);
-            }); 
-          }
-        }
-      }
-  }
-
-  function handleAssignedOfficerChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          if(selectedOption.value !== "Unassigned")
-          {
-            axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
-                //change assignee
-                if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
-                {
-                  hwcrComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
-                }
-                // create new assignee
-                else
-                {
-                  let personComplaintXref: PersonComplaintXref = 
-                  {
-                    person_guid: response.data,
-                    create_user_id: userid,
-                    update_user_id: userid,
-                    complaint_identifier: hwcrComplaint.complaint_identifier.complaint_identifier,
-                    active_ind: true,
-                    person_complaint_xref_code: "ASSIGNEE"
-                  }
-                  hwcrComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
-                }
-                setUpdateComplaint(hwcrComplaint);
-            });
-          }
-          else
-          {
-            //unasignee complaint
-            if(hwcrComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
-            {
-              hwcrComplaint.complaint_identifier.person_complaint_xref[0].active_ind = false;
-              setUpdateComplaint(hwcrComplaint);
-            }
-          }
-      }
-      else if(complaintType === COMPLAINT_TYPES.ERS)
-      {
-          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-          if(selectedOption.value !== "Unassigned")
-          {
-            axios.get(`${config.API_BASE_URL}/v1/person/` + selectedOption.value).then((response) => {
-                //change assignee
-                if(allegationComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
-                {
-                  allegationComplaint.complaint_identifier.person_complaint_xref[0].person_guid = response.data;
-                }
-                // create new assignee
-                else
-                {
-                  let personComplaintXref: PersonComplaintXref = 
-                  {
-                    person_guid: response.data,
-                    create_user_id: userid,
-                    update_user_id: userid,
-                    complaint_identifier: allegationComplaint.complaint_identifier.complaint_identifier,
-                    active_ind: true,
-                    person_complaint_xref_code: "ASSIGNEE"
-                  }
-                  allegationComplaint.complaint_identifier.person_complaint_xref.push(personComplaintXref);
-                }
-                setUpdateComplaint(allegationComplaint);
-            });
-          }
-          else
-          {
-            //unasignee complaint
-            if(allegationComplaint.complaint_identifier.person_complaint_xref[0] !== undefined)
-            {
-              allegationComplaint.complaint_identifier.person_complaint_xref[0].active_ind = false;
-              setUpdateComplaint(allegationComplaint);
-            }
-          }
-        
-      }
-    }
-  }
+  };
 
   function handleComplaintDescChange(value: string) {
         if(value === "")
@@ -411,79 +415,74 @@ function handleViolationTypeChange(selectedOption: Option | null) {
 }
 
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if(selectedOptions !== null && selectedOptions !== undefined)
-    {
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-        let hwcrComplaint: HwcrComplaint = {...updateComplaint} as HwcrComplaint;
-          const formerAttractants = hwcrComplaint.attractant_hwcr_xref;
-          let newAttractants = [];
-          //this is ugly - might want a refactor, maybe there's a way to parametertize the changed option instead of the entire array?
-          for(var i = 0; i < selectedOptions.length; i++)
-          {
-            const selectedOption = selectedOptions[i];
-            let match = false;
-            for(var j = 0; j < formerAttractants.length; j++)
-            {
-              //keep same xref
-              if(selectedOption.value === formerAttractants[j].attractant_code?.attractant_code)
-              {
-                match = true;
-                const attractant = 
-                {
-                  attractant_hwcr_xref_guid: formerAttractants[j].attractant_hwcr_xref_guid,
-                  attractant_code: formerAttractants[j].attractant_code,
-                  hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
-                  create_user_id: userid,
-                  active_ind: true,
-                }
-                newAttractants.push(attractant);
-                break;
-              }
-            }
-            //create new xref
-            if(!match)
-            {
-              await axios.get(`${config.API_BASE_URL}/v1/attractant-code/` + selectedOptions[i].value).then((response) => {
-              const attractant = 
-              {
-                attractant_hwcr_xref_guid: undefined,
-                attractant_code: response.data,
-                hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
+    if (selectedOptions !== null && selectedOptions !== undefined) {
+      if (complaintType === COMPLAINT_TYPES.HWCR) {
+        let update = { ...updateComplaint } as HwcrComplaint;
+        const { attractant_hwcr_xref: currentAttactants } = update;
+
+        let newAttractants = new Array<any>();
+
+        selectedOptions.forEach((selectedOption) => {
+          let match = false;
+
+          currentAttactants.forEach((item) => {
+            if (
+              selectedOption.value === item.attractant_code?.attractant_code
+            ) {
+              match = true;
+              const attractant = {
+                attractant_hwcr_xref_guid: item.attractant_hwcr_xref_guid,
+                attractant_code: item.attractant_code,
+                hwcr_complaint_guid: update.hwcr_complaint_guid,
                 create_user_id: userid,
                 active_ind: true,
-              }
-              newAttractants.push(attractant);
-              });
-            }
-          }
-          for(i = 0; i < formerAttractants.length; i++)
-          {
-            let match = false;
-            for(j = 0; j < newAttractants.length; j++)
-            {
-              if(formerAttractants[i].attractant_code === newAttractants[j].attractant_code)
-              {
-                match = true;
-                break;
-              }
-            }
-            //deactivate xref
-            if(!match)
-            {
-              const attractant = 
-              {
-                attractant_hwcr_xref_guid: formerAttractants[i].attractant_hwcr_xref_guid,
-                attractant_code: formerAttractants[i].attractant_code,
-                hwcr_complaint_guid: hwcrComplaint.hwcr_complaint_guid,
-                create_user_id: userid,
-                active_ind: false,
-              }
+              };
               newAttractants.push(attractant);
             }
+          });
+
+          if (!match) {
+            const { label, value } = selectedOption;
+
+            const attractant = {
+              attractant_hwcr_xref_guid: undefined,
+              attractant_code: {
+                active_ind: true,
+                attractant_code: value as string,
+                short_description: label as string,
+                long_description: label as string,
+              },
+              hwcr_complaint_guid: update.hwcr_complaint_guid,
+              create_user_id: userid,
+              active_ind: true,
+            };
+            newAttractants.push(attractant);
           }
-          hwcrComplaint.attractant_hwcr_xref = newAttractants;
-          setUpdateComplaint(hwcrComplaint);
+        });
+
+        currentAttactants.forEach((current) => {
+          let match = false;
+
+          newAttractants.forEach((item) => {
+            if (current.attractant_code === item.attractant_code) {
+              match = true;
+            }
+          });
+
+          if(!match){
+            const attractant = {
+              attractant_hwcr_xref_guid: current.attractant_hwcr_xref_guid,
+              attractant_code: current.attractant_code,
+              hwcr_complaint_guid: update.hwcr_complaint_guid,
+              create_user_id: userid,
+              active_ind: false,
+            };
+            newAttractants.push(attractant);
+          }
+        });
+
+        update.attractant_hwcr_xref = newAttractants;
+        setUpdateComplaint(update);
       }
     }
   }
@@ -578,44 +577,30 @@ function handleViolationTypeChange(selectedOption: Option | null) {
         }
       }
 
-      if(lat !== "")
-      {
-        if(+lat > bcBoundaries.maxLatitude || +lat < bcBoundaries.minLatitude)
-        {
-          setGeoPointYMsg("Value must be between " + bcBoundaries.minLatitude + " and " + bcBoundaries.maxLatitude + " degrees");
-        }
-        else
-        {
-          setGeoPointYMsg("");
-          if(complaintType === COMPLAINT_TYPES.HWCR)
-          {
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
-            setUpdateComplaint(hwcrComplaint);
-          }
-          if(complaintType === COMPLAINT_TYPES.ERS)
-          {
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
-            setUpdateComplaint(allegationComplaint);
-          }
-        }
-      }
-      else
-      {
-          setGeoPointYMsg("");
-          if(complaintType === COMPLAINT_TYPES.HWCR)
-          {
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-            setUpdateComplaint(hwcrComplaint);
-          }
-          else if(complaintType === COMPLAINT_TYPES.ERS)
-          {
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-            setUpdateComplaint(allegationComplaint);
-          }
-      }
-  }
+    //-- update coordinates
+    if (
+      latitude &&
+      longitude &&
+      !Number.isNaN(latitude) &&
+      !Number.isNaN(longitude)
+    ) {
+      complaint.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Longitude
+      ] = parseFloat(longitude);
+      complaint.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Latitude
+      ] = parseFloat(latitude);
+      setUpdateComplaint(complaint);
+    } else if (latitude === "" && longitude === "") {
+      complaint.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Longitude
+      ] = 0;
+      complaint.complaint_identifier.location_geometry_point.coordinates[
+        Coordinates.Latitude
+      ] = 0;
+      setUpdateComplaint(complaint);
+    }
+  };
 
   function handleNameChange(value: string) {
     if(complaintType === COMPLAINT_TYPES.HWCR)
@@ -752,55 +737,46 @@ function handleViolationTypeChange(selectedOption: Option | null) {
       
   }
 
-  function handleReferredByChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
-    {
-      const emptyOption: AgencyCode = {
-        agency_code: "",
-        short_description: "",
-        long_description: "",
-        display_order: 0,
-        active_ind: true,
-        create_user_id: "",
-        create_timestamp: "",
-        update_user_id: "",
-        update_timestamp: "",
+  const handleReferredByChange = (selected: Option | null) => {
+    if (selected) {
+      const { label, value } = selected;
+
+      let update = cloneDeep(updateComplaint) as
+        | HwcrComplaint
+        | AllegationComplaint;
+
+      const { complaint_identifier: identifier } = update;
+      const { referred_by_agency_code: source } = identifier;
+
+      const updatedEntity = value
+        ? {
+            ...source,
+            short_description: value,
+            long_description: label as string,
+            agency_code: value,
+          }
+        : {
+            agency_code: "",
+            short_description: "",
+            long_description: "",
+            display_order: 0,
+            active_ind: true,
+            create_user_id: "",
+            create_timestamp: "",
+            update_user_id: "",
+            update_timestamp: "",
+          };
+
+      const updatedParent = {
+        ...identifier,
+        referred_by_agency_code: updatedEntity,
       };
-      if(complaintType === COMPLAINT_TYPES.HWCR)
-      {
-          let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-          debugger
-          if(selectedOption.value)
-          {
-            axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
-              hwcrComplaint.complaint_identifier.referred_by_agency_code = response.data;
-              setUpdateComplaint(hwcrComplaint);
-            });
-          }
-          else
-          {
-            hwcrComplaint.complaint_identifier.referred_by_agency_code = emptyOption;
-            setUpdateComplaint(hwcrComplaint);
-          }
-      }
-      else if(complaintType === COMPLAINT_TYPES.ERS)
-      {
-          let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-          if(selectedOption.value)
-          {
-            axios.get(`${config.API_BASE_URL}/v1/agency-code/` + selectedOption.value).then((response) => {
-              allegationComplaint.complaint_identifier.referred_by_agency_code = response.data;
-              setUpdateComplaint(allegationComplaint);
-            });
-          }
-          else
-          {
-            allegationComplaint.complaint_identifier.referred_by_agency_code = emptyOption;
-            setUpdateComplaint(allegationComplaint);
-          }
-      }
+
+      update.complaint_identifier = updatedParent;
+
+      setUpdateComplaint(update);
     }
-  }
+  };
 
   function handleSuspectDetailsChange(value: string) {
   if(complaintType === COMPLAINT_TYPES.ERS)

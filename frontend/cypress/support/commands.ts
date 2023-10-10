@@ -148,90 +148,87 @@ Cypress.Commands.add("kcLogout", () => {
 
 Cypress.Commands.add("verifyMapMarkerExists", () => {
   cy.get(".leaflet-container").should("exist");
-  cy.get('.leaflet-marker-icon').should("exist");
+  cy.get(".leaflet-marker-icon").should("exist");
 });
 
-Cypress.Commands.add("navigateToHWLCDetailsScreen", (complaintIdentifier: string) => {
-  //-- navigate to application root
-  cy.visit("/");
-  cy.get("#comp-status-filter").should("exist");
-  cy.get("#comp-zone-filter").should("exist");
+Cypress.Commands.add(
+  "navigateToDetailsScreen",
+  (complaintType: string, complaintIdentifier: string) => {
+    //-- navigate to application root
+    cy.visit("/");
 
-  //-- click on HWCR tab
-  cy.get("#hwcr-tab").click({ force: true });
+    //-- click on HWCR tab
+    cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
+    cy.waitForSpinner();
+
+    cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+
+    // This doesn't always appear... commenting it out for now.  I don't think it's required.
+    // cy.waitForSpinner();
+
+    //-- check to make sure there are items in the table
+    cy.get("#complaint-list")
+      .find("tr")
+      .then(({ length }) => {
+        expect(length, "rows N").to.be.gt(0);
+      });
+
+    cy.get("#complaint-list > tbody > tr")
+      .contains(complaintIdentifier)
+      .click({ force: true });
+
+    cy.waitForSpinner();
+  }
+);
+
+Cypress.Commands.add(
+  "navigateToEditScreen",
+  (complaintType: string, complaintIdentifier: string) => {
+    cy.navigateToDetailsScreen(
+      complaintType.toLowerCase(),
+      complaintIdentifier
+    );
+    cy.get("#details-screen-edit-button").click({ force: true });
+  }
+);
+
+Cypress.Commands.add("waitForSpinner", () => {
 
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
 
-  cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
-  cy.get("#comp-status-filter").click({ force: true }); 
-
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-
-
-  //-- check to make sure there are items in the table
-  cy.get("#complaint-list")
-    .find("tr")
-    .then(({ length }) => {
-      expect(length, "rows N").to.be.gt(0);
-    });
-
-  cy.get("#complaint-list > tbody > tr")
-    .contains(complaintIdentifier)
-    .click({ force: true });
-
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
 });
 
-Cypress.Commands.add("navigateToHWLCEditScreen", (complaintIdentifier: string) => {
-  cy.navigateToHWLCDetailsScreen(complaintIdentifier);
-  cy.get("#details-screen-edit-button").click({ force: true });
+Cypress.Commands.add("clearFilterById", (filterId: string) => {
+  cy.get(`#${filterId}`).should("exist");
+  cy.get(`#${filterId}`).click({ force: true }); //clear status filter in list view
+  cy.get(`#${filterId}`).should("not.exist");
 });
 
-Cypress.Commands.add("navigateToAllegationDetailsScreen", (complaintIdentifier: string) => {
-  //-- navigate to application root
-  cy.visit("/");
-  cy.get("#comp-status-filter").should("exist");
-  cy.get("#comp-zone-filter").should("exist");
 
-  //-- click on allegation tab
-  cy.get("#ers-tab").click({ force: true });
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-  cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
-  cy.get("#comp-status-filter").click({ force: true }); 
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
-  
-  //-- check to make sure there are items in the table
-  cy.get("#complaint-list")
-    .find("tr")
-    .then(({ length }) => {
-      expect(length, "rows N").to.be.gt(0);
-    });
-
-  cy.get("#complaint-list > tbody > tr > td")
-    .contains(complaintIdentifier)
-    .click({ force: true });
-  cy.get(".comp-loader-overlay").should("exist");
-  cy.get(".comp-loader-overlay").should("not.exist");
+Cypress.Commands.add("selectItemById", (selectId: string, optionText: string) => {
+    cy.get(`#${selectId}`)
+      .find("div")
+      .first()
+      .click({ force: true });
+    cy.get('.comp-select__menu-list').should('exist'); //Wait for the options to show
+    cy.contains(`.comp-select__option`,optionText).click({force: true});
 });
 
-Cypress.Commands.add("navigateToAllegationEditScreen", (complaintIdentifier: string) => {
-  cy.navigateToAllegationDetailsScreen(complaintIdentifier);
-  cy.get("#details-screen-edit-button").click({ force: true });
-});
-
-Cypress.Commands.add('isInViewport', { prevSubject: true },(subject) => {
-  const bottom = Cypress.$(cy.state('window')).height();
+Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
+  const bottom = Cypress.$(cy.state("window")).height();
   const rect = subject[0].getBoundingClientRect();
 
   console.log(rect.top);
 
-  expect(rect.top).not.to.be.greaterThan(bottom, `Expected element not to be below the visible scrolled area`);
-  expect(rect.top).to.be.greaterThan(0, `Expected element not to be above the visible scrolled area`);
+  expect(rect.top).not.to.be.greaterThan(
+    bottom,
+    `Expected element not to be below the visible scrolled area`
+  );
+  expect(rect.top).to.be.greaterThan(
+    0,
+    `Expected element not to be above the visible scrolled area`
+  );
 
   return subject;
 });
