@@ -40,7 +40,7 @@ export class AllegationComplaintService {
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
-  async create(allegationComplaint: any): Promise<AllegationComplaint> {
+  async create(allegationComplaint: string): Promise<AllegationComplaint> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();

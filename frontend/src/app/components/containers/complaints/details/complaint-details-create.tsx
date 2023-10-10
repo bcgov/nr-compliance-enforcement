@@ -324,8 +324,7 @@ export const CreateComplaint: FC = () => {
         update.complaint_identifier = updatedParent;
 
         setCreateComplaint(update);
-      } else {
-        if (from(source).any() && from(source).elementAt(0)) {
+      } else if (from(source).any() && from(source).elementAt(0)) {
           const assigned = { ...source[0], active_ind: false };
           source = [assigned];
 
@@ -337,7 +336,6 @@ export const CreateComplaint: FC = () => {
           update.complaint_identifier = updatedParent;
           setCreateComplaint(update);
         }
-      }
     }
   };
 
