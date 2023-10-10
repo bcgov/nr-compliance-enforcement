@@ -2,12 +2,11 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, QueryRunner, Repository } from "typeorm";
-import { Complaint } from "../complaint/entities/complaint.entity";
+import { QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
-  constructor(private dataSource: DataSource) {}
+  constructor() {}
   @InjectRepository(PersonComplaintXref)
   private personComplaintXrefRepository: Repository<PersonComplaintXref>;
 
@@ -94,7 +93,6 @@ export class PersonComplaintXrefService {
     createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
-    //const queryRunner = this.dataSource.createQueryRunner();
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
 
@@ -127,7 +125,6 @@ export class PersonComplaintXrefService {
         `Rolling back assignment on complaint ${complaintIdentifier}`
       );
       throw new BadRequestException(err);
-    } finally {
     }
     return newPersonComplaintXref;
   }

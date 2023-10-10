@@ -23,7 +23,6 @@ import { ComplaintQueryParams } from "../../types/api-params/complaint-query-par
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
-import { useNavigate } from "react-router-dom";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -424,7 +423,6 @@ export const updateAllegationComplaint =
   export const createWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => 
   async dispatch => {
-    //const navigate = useNavigate();
     let newComplaintId: string = "";
     try {
       dispatch(toggleLoading(true));

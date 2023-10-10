@@ -242,7 +242,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       regions,
       zones,
       communities,
-      complaintCodes,
     },
   } = state;
 
@@ -289,7 +288,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchCommunities())
     }
 
-    //TODO: Fetch complaint codes 
   } catch (error) {
   } finally {
     dispatch(toggleLoading(false));

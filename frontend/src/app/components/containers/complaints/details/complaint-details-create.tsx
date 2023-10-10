@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
@@ -16,7 +16,7 @@ import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import config from "../../../../../config";
 import axios from "axios";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import { cloneDeep, isEmpty } from "lodash";
+import { cloneDeep } from "lodash";
 import { PersonComplaintXref } from "../../../../types/complaints/person-complaint-xref";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
@@ -30,7 +30,7 @@ import { CreateComplaintHeader } from "./create-complaint-header";
 import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import { useNavigate } from "react-router-dom";
-import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate, selectComplaint } from "../../../../store/reducers/complaints";
+import { createWildlifeComplaint, getWildlifeComplaintByComplaintIdentifierSetUpdate } from "../../../../store/reducers/complaints";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -140,7 +140,7 @@ export const CreateComplaint: FC = () => {
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   const [complaintDescErrorMsg, setComplaintDescErrorMsg] =
     useState<string>("");
-  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
+  const [attractantsErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
   const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
@@ -334,9 +334,9 @@ export const CreateComplaint: FC = () => {
               }
               setCreateComplaint(hwcrComplaint);
             });
-        } else {
-          //unasignee complaint
-          if (
+        } 
+        //unasignee complaint
+        else if (
             hwcrComplaint.complaint_identifier.person_complaint_xref[0] !==
             undefined
           ) {
@@ -344,7 +344,6 @@ export const CreateComplaint: FC = () => {
               false;
             setCreateComplaint(hwcrComplaint);
           }
-        }
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
           createComplaint
@@ -379,9 +378,9 @@ export const CreateComplaint: FC = () => {
               }
               setCreateComplaint(allegationComplaint);
             });
-        } else {
-          //unasignee complaint
-          if (
+        } 
+        //unasignee complaint
+        else if (
             allegationComplaint.complaint_identifier
               .person_complaint_xref[0] !== undefined
           ) {
@@ -389,7 +388,6 @@ export const CreateComplaint: FC = () => {
               false;
             setCreateComplaint(allegationComplaint);
           }
-        }
       }
     }
   }
@@ -436,7 +434,7 @@ export const CreateComplaint: FC = () => {
       createComplaint
     ) as AllegationComplaint;
     allegationComplaint.in_progress_ind =
-      selectedOption?.value === "Yes" ? true : false;
+      selectedOption?.value === "Yes";
     setCreateComplaint(allegationComplaint);
   }
 
@@ -445,7 +443,7 @@ export const CreateComplaint: FC = () => {
       createComplaint
     ) as AllegationComplaint;
     allegationComplaint.observed_ind =
-      selectedOption?.value === "Yes" ? true : false;
+      selectedOption?.value === "Yes";
     setCreateComplaint(allegationComplaint);
   }
 
@@ -455,14 +453,14 @@ export const CreateComplaint: FC = () => {
         createComplaint
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.location_summary_text =
-        value === undefined ? "" : value;
+        value ?? "";
       setCreateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         createComplaint
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.location_summary_text =
-        value === undefined ? "" : value;
+        value ?? "";
       setCreateComplaint(allegationComplaint);
     }
   }
@@ -476,10 +474,12 @@ export const CreateComplaint: FC = () => {
         const formerAttractants = hwcrComplaint.attractant_hwcr_xref;
         let newAttractants = [];
         //this is ugly - might want a refactor, maybe there's a way to parametertize the changed option instead of the entire array?
-        for (var i = 0; i < selectedOptions.length; i++) {
+        let i = 0;
+        for (; i < selectedOptions.length; i++) {
           const selectedOption = selectedOptions[i];
           let match = false;
-          for (var j = 0; j < formerAttractants.length; j++) {
+          let j = 0;
+          for (; j < formerAttractants.length; j++) {
             //keep same xref
             if (
               selectedOption.value ===
@@ -517,9 +517,11 @@ export const CreateComplaint: FC = () => {
               });
           }
         }
-        for (i = 0; i < formerAttractants.length; i++) {
+        i = 0
+        for (; i < formerAttractants.length; i++) {
           let match = false;
-          for (j = 0; j < newAttractants.length; j++) {
+          let j = 0;
+          for (; j < newAttractants.length; j++) {
             if (
               formerAttractants[i].attractant_code ===
               newAttractants[j].attractant_code
@@ -699,14 +701,14 @@ export const CreateComplaint: FC = () => {
           createComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_1 =
-          value !== undefined ? value : "";
+          value ?? "";
         setCreateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
           createComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_1 =
-          value !== undefined ? value : "";
+          value ?? "";
         setCreateComplaint(allegationComplaint);
       }
     }
@@ -726,14 +728,14 @@ export const CreateComplaint: FC = () => {
           createComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_2 =
-          value !== undefined ? value : "";
+          value ?? "";
         setCreateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
           createComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_2 =
-          value !== undefined ? value : "";
+          value ?? "";
         setCreateComplaint(allegationComplaint);
       }
     }
@@ -754,14 +756,14 @@ export const CreateComplaint: FC = () => {
           createComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_3 =
-          value !== undefined ? value : "";
+          value ?? "";
         setCreateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
           createComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_3 =
-          value !== undefined ? value : "";
+          value ?? "";
         setCreateComplaint(allegationComplaint);
       }
     }
@@ -1002,8 +1004,7 @@ export const CreateComplaint: FC = () => {
     <img
       src={notificationInvalid}
       alt="error"
-      className="filter-image-spacing"
-    />
+      className="filter-image-spacing" />
     Errors in form
   </div>
   <div className="comp-complaint-details-block header-spacing">

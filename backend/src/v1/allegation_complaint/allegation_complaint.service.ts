@@ -11,7 +11,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
 import { UUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
-import { CreateComplaintDto } from "../complaint/dto/create-complaint.dto";
 import {
   OfficeStats,
   OfficerStats,

@@ -2,14 +2,14 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateAttractantHwcrXrefDto } from './dto/create-attractant_hwcr_xref.dto';
 import { UpdateAttractantHwcrXrefDto } from './dto/update-attractant_hwcr_xref.dto';
 import { AttractantHwcrXref } from './entities/attractant_hwcr_xref.entity';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity';
 
 @Injectable()
 
 export class AttractantHwcrXrefService {
-    constructor(private dataSource: DataSource) {}
+    constructor() {}
     private readonly logger = new Logger(AttractantHwcrXrefService.name);
     @InjectRepository(AttractantHwcrXref)
     private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>;
@@ -17,7 +17,7 @@ export class AttractantHwcrXrefService {
   async create(queryRunner: QueryRunner, createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
       const createdValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
       queryRunner.manager.save(createdValue);
-      return ;
+      return createdValue;
   }
 
   async findAll(): Promise<AttractantHwcrXref[]> {
