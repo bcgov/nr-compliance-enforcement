@@ -534,48 +534,38 @@ export const ComplaintDetails: FC = () => {
       }
   }
 
-  function handleGeoPointChange(lat: string, lng: string) {
-    let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+  const handleGeoPointChange = (latitude: string, longitude: string) => {
+    //-- clear errors
+    setGeoPointXMsg("");
+    setGeoPointYMsg("");
 
-      if(lng !== "")
-      {
-        if(+lng > bcBoundaries.maxLongitude || +lng < bcBoundaries.minLongitude)
-        {
-          setGeoPointXMsg("Value must be between " + bcBoundaries.minLongitude + " and " + bcBoundaries.maxLongitude + " degrees");
-        }
-        else
-        {
-          setGeoPointXMsg("");
-          if(complaintType === COMPLAINT_TYPES.HWCR)
-          {
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
-            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
-            setUpdateComplaint(hwcrComplaint);
-          }
-          else if(complaintType === COMPLAINT_TYPES.ERS)
-          {
-            let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +lng;
-            allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +lat;
-            setUpdateComplaint(allegationComplaint);
-          }
-        }
+    //-- clone the complaint
+    const complaint =
+      complaintType === COMPLAINT_TYPES.HWCR
+        ? (cloneDeep(updateComplaint) as HwcrComplaint)
+        : (cloneDeep(updateComplaint) as AllegationComplaint);
+
+    //-- verify latitude and longitude
+    if (latitude && !Number.isNaN(latitude)) {
+      const item = parseFloat(latitude);
+      if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
+        setGeoPointYMsg(
+          `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`
+        );
       }
-      else
-      {
-        setGeoPointXMsg("");
-        if(complaintType === COMPLAINT_TYPES.HWCR)
-        {
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
-          setUpdateComplaint(hwcrComplaint);
-        }
-        else if(complaintType === COMPLAINT_TYPES.ERS)
-        {
-          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
-          setUpdateComplaint(allegationComplaint);
-        }
+    }
+
+    if (longitude && !Number.isNaN(longitude)) {
+      const item = parseFloat(longitude);
+      if (
+        item > bcBoundaries.maxLongitude ||
+        item < bcBoundaries.minLongitude
+      ) {
+        setGeoPointXMsg(
+          `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`
+        );
       }
+    }
 
     //-- update coordinates
     if (
