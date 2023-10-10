@@ -9,7 +9,6 @@ import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity'
 @Injectable()
 
 export class AttractantHwcrXrefService {
-    constructor() {}
     private readonly logger = new Logger(AttractantHwcrXrefService.name);
     @InjectRepository(AttractantHwcrXref)
     private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>;

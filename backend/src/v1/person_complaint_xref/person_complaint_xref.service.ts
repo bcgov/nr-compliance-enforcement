@@ -6,7 +6,6 @@ import { QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
-  constructor() {}
   @InjectRepository(PersonComplaintXref)
   private personComplaintXrefRepository: Repository<PersonComplaintXref>;
 

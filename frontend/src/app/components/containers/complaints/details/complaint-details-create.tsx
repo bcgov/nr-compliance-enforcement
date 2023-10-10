@@ -140,7 +140,7 @@ export const CreateComplaint: FC = () => {
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   const [complaintDescErrorMsg, setComplaintDescErrorMsg] =
     useState<string>("");
-  const [attractantsErrorMsg] = useState<string>("");
+  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
   const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
@@ -545,6 +545,7 @@ export const CreateComplaint: FC = () => {
         }
         hwcrComplaint.attractant_hwcr_xref = newAttractants;
         setCreateComplaint(hwcrComplaint);
+        setAttractantsErrorMsg("");
       }
     }
   }
@@ -1004,8 +1005,8 @@ export const CreateComplaint: FC = () => {
     <img
       src={notificationInvalid}
       alt="error"
-      className="filter-image-spacing" />
-    Errors in form
+      className="filter-image-spacing" />{/* 
+      */}Errors in form
   </div>
   <div className="comp-complaint-details-block header-spacing">
     <h6>Complaint Details</h6>

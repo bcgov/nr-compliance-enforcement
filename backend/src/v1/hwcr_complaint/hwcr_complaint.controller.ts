@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Logger } from '@nestjs/common';
 import { HwcrComplaintService } from './hwcr_complaint.service';
-import { CreateHwcrComplaintDto } from './dto/create-hwcr_complaint.dto';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
