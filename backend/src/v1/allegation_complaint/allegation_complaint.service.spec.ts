@@ -405,7 +405,7 @@ describe("AllegationComplaintService", () => {
   });
 
   it("should successfully add a complaint", async() => {
-    await service.create(threeAllegationComplaint);
+    await service.create(JSON.stringify(threeAllegationComplaint));
     expect(dataSourceMock.createQueryRunner).toBeCalled();
   });
 
