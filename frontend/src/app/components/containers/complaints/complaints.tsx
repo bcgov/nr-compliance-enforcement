@@ -1,10 +1,10 @@
-import { FC, useState, useContext, useEffect, useCallback } from "react";
+import { FC, useState, useContext } from "react";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
@@ -16,16 +16,11 @@ import {
 } from "../../../providers/complaint-filter-provider";
 import {
   resetFilters,
-  ComplaintFilterPayload,
-  updateFilter,
+  ComplaintFilterPayload
 } from "../../../store/reducers/complaint-filters";
 import {
-  selectDefaultZone,
-  getOfficerDefaultZone,
-  profileZoneDescription,
-  profileZone,
+  selectDefaultZone
 } from "../../../store/reducers/app";
-import { DropdownOption } from "../../../types/code-tables/option";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
@@ -36,7 +31,6 @@ type Props = {
 };
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { dispatch: filterDispatch } = useContext(
     ComplaintFilterContext
