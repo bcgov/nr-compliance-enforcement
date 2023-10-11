@@ -11,7 +11,6 @@ import {
   Logger,
 } from "@nestjs/common";
 import { AllegationComplaintService } from "./allegation_complaint.service";
-import { CreateAllegationComplaintDto } from "./dto/create-allegation_complaint.dto";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/decorators/roles.decorator";
