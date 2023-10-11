@@ -46,19 +46,19 @@ export class AllegationComplaintService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const createHwcrComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
-    createHwcrComplaintDto.allegation_complaint_guid = randomUUID();
-    createHwcrComplaintDto.update_timestamp = createHwcrComplaintDto.create_timestamp = new Date();
+    const createAllegationComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
+    createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
+    createAllegationComplaintDto.update_timestamp = createAllegationComplaintDto.create_timestamp = new Date();
     let newAllegationComplaintString;
     try {
       const complaint: Complaint = await this.complaintService.create(
-        JSON.stringify(createHwcrComplaintDto.complaint_identifier),
+        JSON.stringify(createAllegationComplaintDto.complaint_identifier),
         queryRunner
       );
-      createHwcrComplaintDto.create_user_id = createHwcrComplaintDto.update_user_id = complaint.create_user_id;
-      createHwcrComplaintDto.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
+      createAllegationComplaintDto.create_user_id = createAllegationComplaintDto.update_user_id = complaint.create_user_id;
+      createAllegationComplaintDto.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
       newAllegationComplaintString = await this.allegationComplaintsRepository.create(
-        createHwcrComplaintDto
+        createAllegationComplaintDto
       );
       let newAllegationComplaint: AllegationComplaint;
       newAllegationComplaint = <AllegationComplaint>(
@@ -66,10 +66,10 @@ export class AllegationComplaintService {
       );
 
 
-      createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
-      if(createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+      createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
+      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
-          await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+          await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
       
       await queryRunner.commitTransaction();
