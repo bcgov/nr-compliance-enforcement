@@ -701,7 +701,7 @@ export const ComplaintDetails: FC = () => {
   }
 
   function handleEmailChange(value: string) {
-        let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if(value !== undefined && value !== "" && !re.test(value))
         {
           setEmailMsg("Please enter a vaild email");

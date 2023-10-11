@@ -54,21 +54,21 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const zone_name = useAppSelector(profileZone);
   const zone_descrption = useAppSelector(profileZoneDescription);
 
+  const setFilter = useCallback(
+    (name: string, value?: DropdownOption | Date | null) => {
+      let payload: ComplaintFilterPayload = { filter: name, value };
+      filterDispatch(updateFilter(payload));
+    },
+    [filterDispatch]
+  );
+
   useEffect(() => {
     if (defaultZone) {
       setFilter("zone", { value: zone_name, label: zone_descrption });
     } else {
       dispatch(getOfficerDefaultZone);
     }
-  }, [zone_name, zone_descrption]);
-
-  const setFilter = useCallback(
-    (name: string, value?: DropdownOption | Date | null) => {
-      let payload: ComplaintFilterPayload = { filter: name, value };
-      filterDispatch(updateFilter(payload));
-    },
-    []
-  );
+  }, [zone_name, zone_descrption, setFilter, dispatch]); //including defaultZone causes infinite loop
 
   const complaintTypes: Array<{ name: string; id: string; code: string }> =
     Object.keys(COMPLAINT_TYPES).map((item) => {
@@ -152,7 +152,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
           <Nav.Item className="ms-auto"
           >
-            <div onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
+            <div className="cursor-pointer" onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
             <div
               className="complaint-create-image-container left-float"
               id="complaint-create-image-id"

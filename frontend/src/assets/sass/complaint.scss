@@ -698,6 +698,10 @@
   cursor: pointer;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .comp-details-edit-calendar-input {
   width: 100%;
 }
@@ -939,7 +943,7 @@
 
 .error-select-border {
 
-    .comp-validation-select__control
+    .comp-select__control
     {
       border-color: $bc-gov-danger;
     }
