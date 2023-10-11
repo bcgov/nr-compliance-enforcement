@@ -149,22 +149,21 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           })}
 
           {/* <!-- dynamic tabs end --> */}		  
+
           <Nav.Item className="ms-auto"
           >
-            <div hidden onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
+            <div onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
             <div
-              className="complaint-create-image-container"
+              className="complaint-create-image-container left-float"
               id="complaint-create-image-id"
             >
-              <i className="bi bi-filter filter-image-spacing"></i>
+              <i className="bi bi-plus-circle filter-image-spacing"></i>
             </div>
             <div className="left-float">Create</div>
             <div className="clear-left-float"></div>
             </div>
           </Nav.Item>
-		  
           <Nav.Item
-            className="ms-auto"
             {...getToggleProps({
                 onClick: () => {
                   const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
