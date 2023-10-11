@@ -1,6 +1,7 @@
 import React, { FC, createContext, useReducer } from "react";
 import complaintFilterReducer from "../store/reducers/complaint-filters";
 import { ComplaintFilters } from "../types/complaints/complaint-filters/complaint-filters";
+import { ComplaintFilterPayload } from '../store/reducers/complaint-filters';
 
 interface ComplaintFilterContextType {
   state: ComplaintFilters;
@@ -9,9 +10,10 @@ interface ComplaintFilterContextType {
 
 type ProviderProps = {
   children: React.ReactNode;
+  zone: any
 };
 
-const initialState: ComplaintFilters = {
+let initialState: ComplaintFilters = {
   region: null,
   zone: null,
   community: null,
@@ -22,14 +24,19 @@ const initialState: ComplaintFilters = {
   species: null,
   natureOfComplaint: null,
   violationType: null,
+  filters: [],
 };
 
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   state: initialState,
-  dispatch: () => {},
+  dispatch: () => {}
 });
 
-const ComplaintFilterProvider: FC<ProviderProps> = ({ children }) => {
+const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone }) => {
+  if(zone){
+    initialState = {...initialState, zone}
+  }
+
   const [state, dispatch] = useReducer(complaintFilterReducer, initialState);
 
   const value = React.useMemo(

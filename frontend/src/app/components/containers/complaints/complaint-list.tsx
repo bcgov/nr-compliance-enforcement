@@ -5,7 +5,7 @@ import {
   getComplaints,
   selectComplaintsByType,
   setComplaints,
-  selectTotalComplaintsByType
+  selectTotalComplaintsByType,
 } from "../../../store/reducers/complaints";
 import { Table } from "react-bootstrap";
 import { SORT_TYPES } from "../../../constants/sort-direction";
@@ -14,7 +14,10 @@ import { ComplaintFilters } from "../../../types/complaints/complaint-filters/co
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
-import { selectDefaultPageSize } from "../../../store/reducers/app";
+import {
+  selectDefaultPageSize,
+  selectDefaultZone,
+} from "../../../store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +46,6 @@ export const ComplaintList: FC<Props> = ({ type }) => {
 
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize); // Default to 10 results per page
-
 
   const generateComplaintRequestPayload = (
     complaintType: string,
@@ -94,14 +96,19 @@ export const ComplaintList: FC<Props> = ({ type }) => {
     }
   };
 
+  const defaultZone = useAppSelector(selectDefaultZone);
+
   useEffect(() => {
-    const payload = generateComplaintRequestPayload(
-      type,
-      filters,
-      page,
-      pageSize
-    );
-    dispatch(getComplaints(type, payload));
+    if (defaultZone) {
+      const payload = generateComplaintRequestPayload(
+        type,
+        filters,
+        page,
+        pageSize
+      );
+
+      dispatch(getComplaints(type, payload));
+    }
   }, [filters, sortKey, sortDirection, page, pageSize]);
 
   useEffect(() => {
