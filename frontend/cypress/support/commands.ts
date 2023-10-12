@@ -159,7 +159,7 @@ Cypress.Commands.add(
     cy.visit("/");
 
     //I hate having this but I can't find a way to make sure the filters are there.
-    cy.wait(2000);
+    cy.wait(5000);
 
     //-- click on HWCR tab
     cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
