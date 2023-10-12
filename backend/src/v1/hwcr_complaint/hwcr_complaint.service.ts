@@ -54,7 +54,7 @@ export class HwcrComplaintService {
       newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
         createHwcrComplaintDto
       );
-      let newHwcrComplaint: HwcrComplaint = new HwcrComplaint();
+      let newHwcrComplaint: HwcrComplaint;
       newHwcrComplaint = <HwcrComplaint>(
         await queryRunner.manager.save(newHwcrComplaintString)
       );

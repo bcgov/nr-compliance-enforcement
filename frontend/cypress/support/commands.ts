@@ -192,6 +192,15 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add(
+  "navigateToCreateScreen",
+  () => {
+    cy.visit("/");
+    cy.waitForSpinner();
+    cy.get("#create-complaints-link").click({ force: true });
+  }
+);
+
 Cypress.Commands.add("waitForSpinner", () => {
 
   cy.get(".comp-loader-overlay").should("exist");

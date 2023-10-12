@@ -945,7 +945,7 @@ export const CreateComplaint: FC = () => {
               options={complaintTypeCodes}
               placeholder="Select"
               className="comp-details-input"
-              classNamePrefix='comp-complaint-type-select'
+              classNamePrefix='comp-select'
             />
           </div>
         {complaintType === COMPLAINT_TYPES.HWCR && (
@@ -981,7 +981,7 @@ export const CreateComplaint: FC = () => {
               placeholder="Select"
               id="violation-type-select-id"
               onChange={e => handleViolationTypeChange(e)}
-              classNamePrefix='comp-violation-select'
+              classNamePrefix='comp-select'
             />
           </div>
         )}
@@ -994,7 +994,7 @@ export const CreateComplaint: FC = () => {
           </label>
           <CompSelect
             id="officer-assigned-select-id"
-            classNamePrefix='comp-officer-select'
+            classNamePrefix='comp-select'
             onChange={e => handleAssignedOfficerChange(e)}
             className="comp-details-input"
             options={assignableOfficers}
@@ -1100,7 +1100,7 @@ export const CreateComplaint: FC = () => {
                   options={attractantCodes}
                   placeholder="Select"
                   id="attractants-select-id"
-                  classNamePrefix='comp-attractants-select'
+                  classNamePrefix='comp-select'
                   onChange={handleAttractantsChange}
                   errMsg={attractantsErrorMsg}
                 />
@@ -1397,7 +1397,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="referred-select-id"
-                classNamePrefix='comp-referred-select'
+                classNamePrefix='comp-select'
                 className="comp-details-edit-input"
                 options={referredByAgencyCodes}
                 defaultOption={{ label: "None", value: undefined }}
