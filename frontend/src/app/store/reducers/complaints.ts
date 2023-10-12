@@ -23,6 +23,7 @@ import { ComplaintQueryParams } from "../../types/api-params/complaint-query-par
 import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
+import { ToggleSuccess, ToggleError } from "../../common/toast";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -413,9 +414,10 @@ export const updateAllegationComplaint =
       const response = await get<AllegationComplaint>(dispatch, parameters);
 
       dispatch(setComplaint({ ...response }));
+      ToggleSuccess("Updates have been saved");
     } catch (error) {
+      ToggleError("Unable to update complaint");
       console.log(error);
-      //-- add error handling
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -451,9 +453,10 @@ export const updateWildlifeComplaint =
       const response = await get<HwcrComplaint>(dispatch, parameters);
 
       dispatch(setComplaint({ ...response }));
+      ToggleSuccess("Updates have been saved");
     } catch (error) {
+      ToggleError("Unable to update complaint");
       console.log(error);
-      //-- add error handling
     } finally {
       dispatch(toggleLoading(false));
     }
