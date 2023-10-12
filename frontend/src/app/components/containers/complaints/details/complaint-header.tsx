@@ -115,7 +115,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   : "allegation-conflict-type"
               }`}
             >
-              {complaintTypeToName(complaintType)}
+              {complaintTypeToName(complaintType,true)}
             </div>
           { readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
             <div className="comp-box-species-type">{species}</div>
