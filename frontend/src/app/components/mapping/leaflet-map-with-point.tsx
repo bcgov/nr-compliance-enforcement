@@ -12,13 +12,14 @@ type Props = {
   coordinates: { lat: number; lng: number };
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
+  hideMarker?: boolean;
 };
 
 /**
  * Renders a map with a marker at the supplied location
  *
  */
-const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }) => {
+const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, hideMarker }) => {
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />
   );
@@ -75,13 +76,14 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }
     >
       <Centerer />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {!hideMarker && (
       <Marker
         data-testid="complaint-location-marker"
         position={markerPosition}
         icon={customMarkerIcon}
         draggable={draggable}
         eventHandlers={{ dragend: handleMarkerDragEnd }}
-      ></Marker>
+      ></Marker>)}
     </MapContainer>
   );
 };
