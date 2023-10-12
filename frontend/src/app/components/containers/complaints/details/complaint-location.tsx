@@ -48,7 +48,6 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
   if (coordinates && isWithinBC(coordinates)) {
     lat = +coordinates[Coordinates.Latitude];
     lng = +coordinates[Coordinates.Longitude];
-    hideMarker = false;
   } else if (complaintLocation) {
     lat = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Latitude] : 0);
     lng = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] : 0);
