@@ -25,7 +25,7 @@ import { AllegationComplaint } from "../../../types/complaints/allegation-compla
 import { cloneDeep } from "lodash";
 import { bcBoundaries } from "../../../common/methods";
 import Option from "../../../types/app/option";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Coordinates } from "../../../types/app/coordinate-type";
 import { from } from "linq-to-typescript";
@@ -124,8 +124,6 @@ export const ComplaintDetails: FC = () => {
         }
         setErrorNotificationClass("comp-complaint-error display-none");
         setReadOnly(true);
-        // const notify = () => toast.success("Updates have been saved");
-        //notify();
       } else {
         ToggleError("Errors in form")
         setErrorNotificationClass("comp-complaint-error");
