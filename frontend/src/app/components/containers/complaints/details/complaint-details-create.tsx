@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { openModal, userId } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { useSelector } from "react-redux";
-import { selectAgencyDropdown, selectAreaCodeDropdown, selectAttractantCodeDropdown, selectComplaintStatusCodeDropdown, selectHwcrNatureOfComplaintCodeDropdown, selectSpeciesCodeDropdown, selectViolationCodeDropdown } from "../../../../store/reducers/code-table";
+import { selectAgencyDropdown, selectAreaCodeDropdown, selectAttractantCodeDropdown, selectHwcrNatureOfComplaintCodeDropdown, selectSpeciesCodeDropdown, selectViolationCodeDropdown } from "../../../../store/reducers/code-table";
 import { Officer } from "../../../../types/person/person";
 import { selectOfficers } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
@@ -248,39 +248,6 @@ export const CreateComplaint: FC = () => {
     }
   };
 
-  const handleStatusChange = (selected: Option | null) => {
-    if (selected) {
-      const { label, value } = selected;
-      if (!value) {
-        setStatusErrorMsg("Required");
-      } else {
-        setStatusErrorMsg("");
-
-        let update = { ...createComplaint } as
-          | HwcrComplaint
-          | AllegationComplaint;
-
-        const { complaint_identifier: identifier } = update;
-        const { complaint_status_code: source } = identifier;
-
-        const updatedEntity = {
-          ...source,
-          short_description: value,
-          long_description: label as string,
-          complaint_status_code: value,
-        };
-
-        const updatedParent = {
-          ...identifier,
-          complaint_status_code: updatedEntity,
-        };
-        update.complaint_identifier = updatedParent;
-
-        setCreateComplaint(update);
-      }
-    }
-  };
-
   const handleAssignedOfficerChange = (selected: Option | null) => {
     if (selected) {
       const { value } = selected;
@@ -297,9 +264,9 @@ export const CreateComplaint: FC = () => {
           ({ person_guid: { person_guid: id } }) => {
             return id === value;
           }
-        );
+        ) as any;
 
-        const { person_guid: officer } = selectedOfficer as any;
+        const { person_guid: officer } = selectedOfficer;
 
         if (from(source).any() && from(source).elementAt(0)) {
           const assigned = { ...source[0], person_guid: officer };
@@ -694,7 +661,7 @@ export const CreateComplaint: FC = () => {
   }
 
   function handleEmailChange(value: string) {
-        let re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        let re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if(value !== undefined && value !== "" && !re.test(value))
         {
           setEmailMsg("Please enter a vaild email");
@@ -768,9 +735,6 @@ export const CreateComplaint: FC = () => {
     }
   }
       // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(
-    selectComplaintStatusCodeDropdown
-  ) as Option[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(
     selectHwcrNatureOfComplaintCodeDropdown
@@ -846,6 +810,21 @@ export const CreateComplaint: FC = () => {
     if (createComplaint !== null && createComplaint !== undefined) {
           if (complaintType === COMPLAINT_TYPES.HWCR) {
             let hwcrComplaint = createComplaint as HwcrComplaint;
+
+        const openStatus = {
+          short_description: "OPEN",
+          long_description: "Open",
+          complaint_status_code: "OPEN",
+          display_order: 0,
+          active_ind: false,
+          create_user_id: "",
+          create_timestamp: "",
+          update_user_id: "",
+          update_timestamp: ""
+          };
+
+         hwcrComplaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
+
             let noError: boolean = true;
             if(hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code === "")
             {
@@ -1027,20 +1006,21 @@ export const CreateComplaint: FC = () => {
               errMsg={speciesErrorMsg}
             />
           </div>
-             <div className="comp-details-label-input-pair" id="status-pair-id">
-             <label id="status-label-id">
-               Status<span className="required-ind">*</span>
-             </label>
-             <ValidationSelect
-               className="comp-details-input"
-               options={complaintStatusCodes}
-               placeholder="Select"
-               id="status-select-id"
-               classNamePrefix='comp-select'
-               onChange={e => handleStatusChange(e)}
-               errMsg={statusErrorMsg}
-             />
-           </div>
+            <div
+                className="comp-details-label-input-pair"
+                id="office-pair-id"
+              >
+                <label>Status</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="status-readonly-id"
+                    className="comp-form-control"
+                    disabled
+                    defaultValue="Open"
+                  />
+                </div>
+            </div>
            </>
         )}
       </div>

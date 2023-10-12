@@ -801,7 +801,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   }
 
   function handleEmailChange(value: string) {
-        let re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        let re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if(value !== undefined && value !== "" && !re.test(value))
         {
           setEmailMsg("Please enter a vaild email");

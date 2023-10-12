@@ -105,8 +105,6 @@ describe("Complaint Create Page spec - Create View", () => {
 
     cy.selectItemById("species-select-id", createCallDetails.species);
 
-    cy.selectItemById("status-select-id", createCallDetails.status);
-
     cy.selectItemById("officer-assigned-select-id", createCallDetails.assigned);
 
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });

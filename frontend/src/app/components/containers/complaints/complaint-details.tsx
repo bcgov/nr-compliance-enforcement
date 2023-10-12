@@ -16,7 +16,7 @@ import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { SuspectWitnessDetails } from "./details/suspect-witness-details";
 import { Button } from "react-bootstrap";
 import { ComplaintDetailsEdit } from "./details/complaint-details-edit";
-import { openModal, userId } from "../../../store/reducers/app";
+import { openModal } from "../../../store/reducers/app";
 import { CancelConfirm } from "../../../types/modal/modal-types";
 import { ComplaintLocation } from "./details/complaint-location";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
