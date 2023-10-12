@@ -12,6 +12,20 @@ describe('Complaint List Functionality', () => {
   
     Cypress._.times(complaintTypes.length, ((index) => {
   
+      it('Verifies that the complaint tabs have specific text', () => {
+        cy.visit("/");
+        cy.waitForSpinner();
+        
+        cy.get(complaintTypes[index]).click({ force: true });
+
+        if ("#hwcr-tab".includes(complaintTypes[index])) {
+          cy.get("#hwcr-tab").should("contain.text","Human Wildlife Conflicts");
+        } else {
+          cy.get("#ers-tab").should("contain.text","Enforcement");
+        }
+
+      });
+
       it('Verifies the complaint tabs, filter and table header are sticky', {scrollBehavior: false}, () => {
         cy.visit("/");
         cy.waitForSpinner();

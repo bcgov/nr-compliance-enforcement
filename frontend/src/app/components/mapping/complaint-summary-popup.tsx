@@ -76,7 +76,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
             <div className="comp-complaint-info">
               <div className="map-comp-summary-popup-subheading">
                 <div className={`comp-box-conflict-type ${renderHWCRSection ? 'hwcr-conflict-type' : 'allegation-conflict-type'}`}>
-                  {complaintTypeToName(complaintType)}
+                  {complaintTypeToName(complaintType,true)}
                 </div>
                 {renderHWCRSection ? (
                   <div className="comp-box-species-type">{species}</div>

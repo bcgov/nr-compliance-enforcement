@@ -113,13 +113,8 @@ export const ComplaintDetails: FC = () => {
         }
         setErrorNotificationClass("comp-complaint-error display-none");
         setReadOnly(true);
-        const notify = () => toast.success("Updates have been saved");
-        notify();
-      }
-      else
-      {
-        const notify = () => toast.error("Errors in form");
-        notify();
+      } else {
+        ToggleError("Errors in form")
         setErrorNotificationClass("comp-complaint-error");
       }
     }
