@@ -159,21 +159,21 @@ Cypress.Commands.add(
     cy.visit("/");
 
     //I hate having this but I can't find a way to make sure the filters are there.
-    cy.wait(5000);
+    cy.wait(7000);
 
     //-- click on HWCR tab
     cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
 
     // This doesn't always appear... commenting it out for now.  I don't think it's required.
     //cy.waitForSpinner();
-    cy.get("#comp-zone-filter").should('exist');
     
-    cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.get("#comp-zone-filter").should('exist').click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.get("#comp-zone-filter").should('not.exist');
     
-    cy.get("#comp-status-filter").should('exist');
 
-    cy.get("#comp-status-filter").click({ force: true }); //clear status filter so this complaint is in the list view
 
+    cy.get("#comp-status-filter").should('exist').click({ force: true }); //clear status filter so this complaint is in the list view
+    cy.get("#comp-status-filter").should('not.exist');
 
     // This doesn't always appear... commenting it out for now.  I don't think it's required.
     // cy.waitForSpinner();
