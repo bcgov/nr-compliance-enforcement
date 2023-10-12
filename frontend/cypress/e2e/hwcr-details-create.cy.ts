@@ -143,7 +143,7 @@ describe("Complaint Create Page spec - Create View", () => {
     );
 
     cy.get('p[id="comp-details-location-description"]').should(
-      "have.value",
+      "have.text",
       createCallDetails.locationDescription
     );
 
