@@ -21,8 +21,9 @@ import { CancelConfirm } from "../../../types/modal/modal-types";
 import { ComplaintLocation } from "./details/complaint-location";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToggleError } from "../../../common/toast";
 
 type ComplaintParams = {
   id: string;

@@ -430,8 +430,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
         update.complaint_identifier = updatedParent;
 
         setUpdateComplaint(update);
-      } else {
-        if (from(source).any() && from(source).elementAt(0)) {
+      } else if (from(source).any() && from(source).elementAt(0)) {
           const assigned = { ...source[0], active_ind: false };
           source = [assigned];
 
@@ -443,7 +442,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
           update.complaint_identifier = updatedParent;
           setUpdateComplaint(update);
         }
-      }
     }
   };
 

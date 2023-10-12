@@ -1,5 +1,3 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
-
 /*
 Test to verify that the user is able to click the edit button
 on the wildlife contacts details page and see all the inputs
