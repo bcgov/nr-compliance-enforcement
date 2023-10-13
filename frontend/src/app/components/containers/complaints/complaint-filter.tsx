@@ -60,6 +60,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
     setFilter("startDate", start);
+    //set the time to be end of day to ensure that we also search for records after the beginning of the selected day.
     if (end) {
       end.setHours(23, 59, 59);
       end.setMilliseconds(999);
