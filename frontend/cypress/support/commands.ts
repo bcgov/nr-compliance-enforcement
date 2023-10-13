@@ -157,11 +157,22 @@ Cypress.Commands.add(
     //-- navigate to application root
     cy.visit("/");
 
-    //-- click on HWCR tab
-    cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
+    //Need to make sure the filters are loaded before switching tabs.
     cy.waitForSpinner();
 
-    cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+    //-- click on HWCR tab
+    cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
+
+
+    // This doesn't always appear... commenting it out for now.  I don't think it's required.
+    //cy.waitForSpinner();
+    
+    cy.get("#comp-zone-filter").should('exist').click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.get("#comp-zone-filter").should('not.exist');
+    
+
+    cy.get("#comp-status-filter").should('exist').click({ force: true }); //clear status filter so this complaint is in the list view
+    cy.get("#comp-status-filter").should('not.exist');
 
     // This doesn't always appear... commenting it out for now.  I don't think it's required.
     // cy.waitForSpinner();
