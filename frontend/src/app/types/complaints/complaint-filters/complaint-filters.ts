@@ -15,4 +15,6 @@ export type ComplaintFilters = {
    natureOfComplaint: DropdownOption | null;
  
    violationType: DropdownOption | null;
+
+   filters: Array<any>
  };

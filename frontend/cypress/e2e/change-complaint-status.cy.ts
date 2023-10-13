@@ -15,6 +15,10 @@ describe('Complaint Assign and Status Popover spec', { scrollBehavior: false }, 
   
     it('Changes status of open complaint to closed and back to open', () => {
       cy.visit("/");
+
+      //Need to make sure the filters are loaded before switching tabs.
+      cy.waitForSpinner();
+      
       cy.get(complaintTypes[index]).click({ force: true });
 
       cy.waitForSpinner();
