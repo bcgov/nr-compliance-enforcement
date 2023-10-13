@@ -158,7 +158,7 @@ Cypress.Commands.add(
     //-- navigate to application root
     cy.visit("/");
 
-    //I hate having this but I can't find a way to make sure the filters are there.
+    //Need to make sure the filters are loaded before switching tabs.
     cy.waitForSpinner();
 
     //-- click on HWCR tab
