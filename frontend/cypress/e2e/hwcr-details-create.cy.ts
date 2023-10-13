@@ -63,9 +63,11 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get("#complaint-email-id").clear().type(createCallerInformation.email);
 
     cy.get("#caller-primary-phone-id").click({ force: true });
-    cy.get("#caller-primary-phone-id").clear()
-    cy.get("#caller-primary-phone-id").typeAndTriggerChange(createCallerInformation.phoneInput);
-    
+    cy.get("#caller-primary-phone-id").clear();
+    cy.get("#caller-primary-phone-id").typeAndTriggerChange(
+      createCallerInformation.phoneInput,
+    );
+
     cy.get("#caller-info-secondary-phone-id")
       .clear()
       .typeAndTriggerChange(createCallerInformation.secondaryInput);
@@ -80,26 +82,40 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,
     });
-    cy.get("#complaint-location-description-textarea-id").clear().type(createCallDetails.locationDescription, {delay: 0});
+    cy.get("#complaint-location-description-textarea-id")
+      .clear()
+      .type(createCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
       .clear()
-      .type(createCallDetails.description, {delay: 0});
+      .type(createCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get("#complaint-incident-time")
       .click({ force: true })
       .get(".react-datepicker__day--019")
-      .should('exist')
+      .should("exist")
       .click({ force: true });
 
-    cy.selectItemById("attractants-select-id", createCallDetails.attractants[0]);
-    cy.selectItemById("attractants-select-id", createCallDetails.attractants[1]);
-    cy.selectItemById("attractants-select-id", createCallDetails.attractants[2]);
-    
+    cy.selectItemById(
+      "attractants-select-id",
+      createCallDetails.attractants[0],
+    );
+    cy.selectItemById(
+      "attractants-select-id",
+      createCallDetails.attractants[1],
+    );
+    cy.selectItemById(
+      "attractants-select-id",
+      createCallDetails.attractants[2],
+    );
+
     cy.selectItemById("community-select-id", createCallDetails.community);
 
-    cy.selectItemById("nature-of-complaint-select-id", createCallDetails.natureOfComplaint);
+    cy.selectItemById(
+      "nature-of-complaint-select-id",
+      createCallDetails.natureOfComplaint,
+    );
 
     cy.selectItemById("species-select-id", createCallDetails.species);
 
@@ -111,17 +127,17 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.waitForSpinner();
 
     cy.get('div[id="comp-details-name"]').contains(
-      createCallerInformation.name
+      createCallerInformation.name,
     );
     cy.get('div[id="comp-details-address"]').contains(
-        createCallerInformation.address
+      createCallerInformation.address,
     );
     cy.get('div[id="comp-details-email"]').contains(
-        createCallerInformation.email
+      createCallerInformation.email,
     );
 
     cy.get('div[id="comp-details-phone"]').contains(
-        createCallerInformation.phone
+      createCallerInformation.phone,
     );
     cy.get('div[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(createCallerInformation.secondary);
@@ -131,16 +147,16 @@ describe("Complaint Create Page spec - Create View", () => {
     });
 
     cy.get('div[id="comp-details-referred"]').contains(
-        createCallerInformation.referred
+      createCallerInformation.referred,
     );
 
     cy.get('div[id="comp-details-location"]').contains(
-        createCallDetails.location
+      createCallDetails.location,
     );
 
     cy.get('p[id="comp-details-location-description"]').should(
       "have.text",
-      createCallDetails.locationDescription
+      createCallDetails.locationDescription,
     );
 
     //Commented out until COMPENF-843 is Fixed
@@ -149,22 +165,18 @@ describe("Complaint Create Page spec - Create View", () => {
     //);
 
     cy.get('p[id="comp-details-description"]').contains(
-        createCallDetails.description
+      createCallDetails.description,
     );
 
     cy.get('span[id="comp-details-community"]').contains(
-        createCallDetails.community
+      createCallDetails.community,
     );
 
-    cy.get('span[id="comp-details-office"]').contains(
-        createCallDetails.office
-    );
+    cy.get('span[id="comp-details-office"]').contains(createCallDetails.office);
 
     cy.get('span[id="comp-details-zone"]').contains(createCallDetails.zone);
 
-    cy.get('span[id="comp-details-region"]').contains(
-        createCallDetails.region
-    );
+    cy.get('span[id="comp-details-region"]').contains(createCallDetails.region);
 
     //Commented out until COMPENF-987 is Fixed
     //cy.get(".comp-attactant-badge").then(function ($defaultValue) {

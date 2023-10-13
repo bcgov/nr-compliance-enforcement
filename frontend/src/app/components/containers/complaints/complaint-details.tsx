@@ -21,8 +21,8 @@ import { CancelConfirm } from "../../../types/modal/modal-types";
 import { ComplaintLocation } from "./details/complaint-location";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { ToggleError } from "../../../common/toast";
 
 type ComplaintParams = {
@@ -50,10 +50,9 @@ export const ComplaintDetails: FC = () => {
     };
   }, [dispatch]);
 
-
   const editButtonClick = () => {
     setReadOnly(false);
-  }
+  };
 
   const cancelConfirmed = () => {
     setReadOnly(true);
@@ -70,57 +69,56 @@ export const ComplaintDetails: FC = () => {
     setPrimaryPhoneMsg("");
     setSecondaryPhoneMsg("");
     setAlternatePhoneMsg("");
-  }
+  };
 
   const cancelButtonClick = () => {
-      dispatch(
-        openModal({
-          modalSize: "md",
-          modalType: CancelConfirm,
-          data: {
-            title: "Cancel Changes?",
-            description: "Your changes will be lost.",
-            cancelConfirmed,
-          }
-        })
-      );
-    };
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CancelConfirm,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed,
+        },
+      }),
+    );
+  };
 
-  const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
+  const [errorNotificationClass, setErrorNotificationClass] = useState(
+    "comp-complaint-error display-none",
+  );
   const saveButtonClick = async () => {
-    if(!updateComplaint)
-    {
+    if (!updateComplaint) {
       return;
     }
-      if(noErrors())
-      {
-        if(complaintType === COMPLAINT_TYPES.HWCR)
-        {
-          let hwcrComplaint = updateComplaint as HwcrComplaint;
-          dispatch(updateWildlifeComplaint(hwcrComplaint));
-          dispatch(
-            getWildlifeComplaintByComplaintIdentifierSetUpdate(
-              hwcrComplaint.complaint_identifier.complaint_identifier,
-              setUpdateComplaint
-            )
-          );
-        } else if (complaintType === COMPLAINT_TYPES.ERS) {
-          let allegationComplaint = updateComplaint as AllegationComplaint;
-          dispatch(updateAllegationComplaint(allegationComplaint));
-          dispatch(
-            getAllegationComplaintByComplaintIdentifierSetUpdate(
-              allegationComplaint.complaint_identifier.complaint_identifier,
-              setUpdateComplaint
-            )
-          );
-        }
-        setErrorNotificationClass("comp-complaint-error display-none");
-        setReadOnly(true);
-      } else {
-        ToggleError("Errors in form")
-        setErrorNotificationClass("comp-complaint-error");
+    if (noErrors()) {
+      if (complaintType === COMPLAINT_TYPES.HWCR) {
+        let hwcrComplaint = updateComplaint as HwcrComplaint;
+        dispatch(updateWildlifeComplaint(hwcrComplaint));
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifierSetUpdate(
+            hwcrComplaint.complaint_identifier.complaint_identifier,
+            setUpdateComplaint,
+          ),
+        );
+      } else if (complaintType === COMPLAINT_TYPES.ERS) {
+        let allegationComplaint = updateComplaint as AllegationComplaint;
+        dispatch(updateAllegationComplaint(allegationComplaint));
+        dispatch(
+          getAllegationComplaintByComplaintIdentifierSetUpdate(
+            allegationComplaint.complaint_identifier.complaint_identifier,
+            setUpdateComplaint,
+          ),
+        );
       }
-  }
+      setErrorNotificationClass("comp-complaint-error display-none");
+      setReadOnly(true);
+    } else {
+      ToggleError("Errors in form");
+      setErrorNotificationClass("comp-complaint-error");
+    }
+  };
 
   useEffect(() => {
     if (
@@ -130,10 +128,20 @@ export const ComplaintDetails: FC = () => {
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
-            dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
+            dispatch(
+              getAllegationComplaintByComplaintIdentifierSetUpdate(
+                id,
+                setUpdateComplaint,
+              ),
+            );
             break;
           case COMPLAINT_TYPES.HWCR:
-            dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
+            dispatch(
+              getWildlifeComplaintByComplaintIdentifierSetUpdate(
+                id,
+                setUpdateComplaint,
+              ),
+            );
             break;
         }
       }
@@ -143,7 +151,8 @@ export const ComplaintDetails: FC = () => {
   const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
-  const [complaintDescErrorMsg, setComplaintDescErrorMsg] = useState<string>("");
+  const [complaintDescErrorMsg, setComplaintDescErrorMsg] =
+    useState<string>("");
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
@@ -155,69 +164,99 @@ export const ComplaintDetails: FC = () => {
 
   function noErrors() {
     let noErrors = false;
-    if(nocErrorMsg === "" &&
-        speciesErrorMsg === "" &&
-        statusErrorMsg === "" &&
-        complaintDescErrorMsg === "" &&
-        attractantsErrorMsg === "" &&
-        communityErrorMsg === "" &&
-        geoPointXMsg === "" &&
-        geoPointYMsg === "" &&
-        emailMsg === "" &&
-        primaryPhoneMsg === "" &&
-        secondaryPhoneMsg === "" &&
-        alternatePhoneMsg === "")
-        {
-          noErrors = true;
-        }
+    if (
+      nocErrorMsg === "" &&
+      speciesErrorMsg === "" &&
+      statusErrorMsg === "" &&
+      complaintDescErrorMsg === "" &&
+      attractantsErrorMsg === "" &&
+      communityErrorMsg === "" &&
+      geoPointXMsg === "" &&
+      geoPointYMsg === "" &&
+      emailMsg === "" &&
+      primaryPhoneMsg === "" &&
+      secondaryPhoneMsg === "" &&
+      alternatePhoneMsg === ""
+    ) {
+      noErrors = true;
+    }
     return noErrors;
   }
 
   return (
-
     <div className="comp-complaint-details">
-      <ToastContainer 
+      <ToastContainer />
+      <ComplaintHeader
+        id={id}
+        complaintType={complaintType}
+        readOnly={readOnly}
+        editButtonClick={editButtonClick}
+        cancelButtonClick={cancelButtonClick}
+        saveButtonClick={saveButtonClick}
       />
-      <ComplaintHeader id={id} complaintType={complaintType} readOnly={readOnly} editButtonClick={editButtonClick} cancelButtonClick={cancelButtonClick} saveButtonClick={saveButtonClick} />
-      { readOnly &&
-       <CallDetails complaintType={complaintType}/>
-      }
-      { readOnly &&
-        <ComplaintLocation complaintType={complaintType} draggable={false}/>
-      }
-      { readOnly &&
-      <CallerInformation/>
-      }
-      { readOnly && complaintType === COMPLAINT_TYPES.ERS && (
+      {readOnly && <CallDetails complaintType={complaintType} />}
+      {readOnly && (
+        <ComplaintLocation complaintType={complaintType} draggable={false} />
+      )}
+      {readOnly && <CallerInformation />}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
         <SuspectWitnessDetails />
       )}
-      { !readOnly &&
-        <ComplaintDetailsEdit complaintType={complaintType} updateComplaint={updateComplaint} setUpdateComplaint={setUpdateComplaint}
-          nocErrorMsg={nocErrorMsg} setNOCErrorMsg={setNOCErrorMsg}
-          speciesErrorMsg={speciesErrorMsg} setSpeciesErrorMsg={setSpeciesErrorMsg}
-          statusErrorMsg={statusErrorMsg} setStatusErrorMsg={setStatusErrorMsg}
-          complaintDescErrorMsg={complaintDescErrorMsg} setComplaintDescErrorMsg={setComplaintDescErrorMsg}
-          attractantsErrorMsg={attractantsErrorMsg} setAttractantsErrorMsg={setAttractantsErrorMsg}
-          communityErrorMsg={communityErrorMsg} setCommunityErrorMsg={setCommunityErrorMsg}
-          geoPointXMsg={geoPointXMsg} setGeoPointXMsg={setGeoPointXMsg}
-          geoPointYMsg={geoPointYMsg} setGeoPointYMsg={setGeoPointYMsg}
-          emailMsg={emailMsg} setEmailMsg={setEmailMsg}
-          primaryPhoneMsg={primaryPhoneMsg} setPrimaryPhoneMsg={setPrimaryPhoneMsg}
-          secondaryPhoneMsg={secondaryPhoneMsg} setSecondaryPhoneMsg={setSecondaryPhoneMsg}
-          alternatePhoneMsg={alternatePhoneMsg} setAlternatePhoneMsg={setAlternatePhoneMsg}
-          errorNotificationClass={errorNotificationClass} setErrorNotificationClass={setErrorNotificationClass}
-          />
-      }
-      { !readOnly && 
+      {!readOnly && (
+        <ComplaintDetailsEdit
+          complaintType={complaintType}
+          updateComplaint={updateComplaint}
+          setUpdateComplaint={setUpdateComplaint}
+          nocErrorMsg={nocErrorMsg}
+          setNOCErrorMsg={setNOCErrorMsg}
+          speciesErrorMsg={speciesErrorMsg}
+          setSpeciesErrorMsg={setSpeciesErrorMsg}
+          statusErrorMsg={statusErrorMsg}
+          setStatusErrorMsg={setStatusErrorMsg}
+          complaintDescErrorMsg={complaintDescErrorMsg}
+          setComplaintDescErrorMsg={setComplaintDescErrorMsg}
+          attractantsErrorMsg={attractantsErrorMsg}
+          setAttractantsErrorMsg={setAttractantsErrorMsg}
+          communityErrorMsg={communityErrorMsg}
+          setCommunityErrorMsg={setCommunityErrorMsg}
+          geoPointXMsg={geoPointXMsg}
+          setGeoPointXMsg={setGeoPointXMsg}
+          geoPointYMsg={geoPointYMsg}
+          setGeoPointYMsg={setGeoPointYMsg}
+          emailMsg={emailMsg}
+          setEmailMsg={setEmailMsg}
+          primaryPhoneMsg={primaryPhoneMsg}
+          setPrimaryPhoneMsg={setPrimaryPhoneMsg}
+          secondaryPhoneMsg={secondaryPhoneMsg}
+          setSecondaryPhoneMsg={setSecondaryPhoneMsg}
+          alternatePhoneMsg={alternatePhoneMsg}
+          setAlternatePhoneMsg={setAlternatePhoneMsg}
+          errorNotificationClass={errorNotificationClass}
+          setErrorNotificationClass={setErrorNotificationClass}
+        />
+      )}
+      {!readOnly && (
         <div className="comp-box-footer">
           <div className="comp-box-footer-actions">
-            <Button id="details_screen_cancel_edit_button_footer" title="Cancel Edit Complaint" variant="outline-primary" onClick={cancelButtonClick}><span>Cancel</span></Button>
-            <Button id="details_screen_cancel_save_button_footer" title="Save Complaint" variant="primary" onClick={saveButtonClick}><span>Save Changes</span></Button>
+            <Button
+              id="details_screen_cancel_edit_button_footer"
+              title="Cancel Edit Complaint"
+              variant="outline-primary"
+              onClick={cancelButtonClick}
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              id="details_screen_cancel_save_button_footer"
+              title="Save Complaint"
+              variant="primary"
+              onClick={saveButtonClick}
+            >
+              <span>Save Changes</span>
+            </Button>
           </div>
         </div>
-      }
-
-
+      )}
     </div>
-
-)};
+  );
+};

@@ -1,5 +1,5 @@
-import React from 'react';
-import { FormControl, InputGroup } from 'react-bootstrap';
+import React from "react";
+import { FormControl, InputGroup } from "react-bootstrap";
 
 const SearchInput: React.FC = () => {
   return (
@@ -11,7 +11,6 @@ const SearchInput: React.FC = () => {
         aria-describedby="basic-addon2"
       />
     </InputGroup>
-    
   );
 };
 

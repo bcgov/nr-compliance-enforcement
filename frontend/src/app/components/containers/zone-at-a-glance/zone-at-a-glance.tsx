@@ -17,16 +17,16 @@ export const ZoneAtAGlance: FC = () => {
   const currentZone = useAppSelector<string>(profileZone);
   const hwcrOpenComplaints = useAppSelector(selectWildlifeZagOpenComplaints);
   const allegationOpenComplaints = useAppSelector(
-    selectAllegationZagOpenComplaints
+    selectAllegationZagOpenComplaints,
   );
 
   useEffect(() => {
     if (currentZone) {
       dispatch(
-        getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT)
+        getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT),
       );
       dispatch(
-        getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT)
+        getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT),
       );
     }
   }, [dispatch, currentZone]);

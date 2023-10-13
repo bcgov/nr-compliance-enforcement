@@ -27,7 +27,7 @@ const App: FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getOfficerDefaultZone())
+    dispatch(getOfficerDefaultZone());
     dispatch(fetchCodeTables());
     dispatch(getOfficers());
     dispatch(getConfigurations());
@@ -50,7 +50,10 @@ const App: FC = () => {
             element={<ComplaintDetails />}
           />
           <Route path="/zone/at-a-glance" element={<ZoneAtAGlance />} />
-          <Route path="/complaint/createComplaint" element={<CreateComplaint />} />
+          <Route
+            path="/complaint/createComplaint"
+            element={<CreateComplaint />}
+          />
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />
         <Route path="*" element={<NotFound />} />

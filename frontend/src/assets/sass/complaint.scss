@@ -206,7 +206,7 @@
   .comp-box-violation-in-progress {
     background-color: $red-300-80;
     color: $red-300;
-  
+
     padding: 4px 12px;
 
     border-radius: 60px;
@@ -356,7 +356,8 @@
 }
 
 //Need these to make sure the filters show up on top of other frozen items
-.top-layer-select, .react-datepicker-popper {
+.top-layer-select,
+.react-datepicker-popper {
   z-index: 7000 !important;
 }
 
@@ -728,7 +729,6 @@
   margin-top: -7px;
 }
 
-
 .no-bullets {
   list-style-type: none; /* Remove bullets */
   padding: 0; /* Remove padding */
@@ -942,19 +942,17 @@
 }
 
 .error-select-border {
-
-    .comp-select__control
-    {
-      border-color: $bc-gov-danger;
-    }
+  .comp-select__control {
+    border-color: $bc-gov-danger;
+  }
 }
 
 .comp-complaint-error {
   margin: 24px 24px;
   padding: 24px;
-  border: 1px solid #EEA8AB;
+  border: 1px solid #eea8ab;
   border-radius: 3px;
-  background-color: #FBEAEA;
+  background-color: #fbeaea;
   color: $bc-gov-danger;
 }
 
@@ -969,19 +967,19 @@
 }
 
 .Toastify__toast--error {
-  border: 1px solid #EEA8AB;
+  border: 1px solid #eea8ab;
   border-radius: 3px !important;
-  background: #FAE1E2 !important;
-  background-color: #FBEAEA !important;
+  background: #fae1e2 !important;
+  background-color: #fbeaea !important;
   color: $bc-gov-danger !important;
 }
 
 .Toastify__toast--success {
-  border: 1px solid #BADBCC;
+  border: 1px solid #badbcc;
   border-radius: 3px !important;
-  background: #D1E7DD !important;
-  background-color: #D1E7DD !important;
-  color: #0F5132 !important;
+  background: #d1e7dd !important;
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
 }
 
 .map-list-toggle {

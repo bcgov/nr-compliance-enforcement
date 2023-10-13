@@ -53,7 +53,7 @@ export const getOfficers =
       dispatch(toggleLoading(true));
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/`
+        `${config.API_BASE_URL}/v1/officer/`,
       );
       const response = await get<Array<Officer>>(dispatch, parameters);
 
@@ -61,7 +61,7 @@ export const getOfficers =
         dispatch(
           setOfficers({
             officers: response,
-          })
+          }),
         );
       }
     } catch (error) {
@@ -77,31 +77,31 @@ export const assignCurrentUserToComplaint =
     userId: string,
     userGuid: UUID,
     complaint_identifier: string,
-    complaint_type: string
+    complaint_type: string,
   ): AppThunk =>
   async (dispatch) => {
     try {
       dispatch(toggleLoading(true));
 
       let officerParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`
+        `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`,
       );
       let officerResponse = await get<Officer>(dispatch, officerParams);
 
       if (officerResponse.auth_user_guid === undefined) {
         officerParams = generateApiParameters(
-          `${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`
+          `${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`,
         );
 
         let officerByUserIdResponse = await get<Officer>(
           dispatch,
-          officerParams
+          officerParams,
         );
         const officerGuid = officerByUserIdResponse.officer_guid;
 
         officerParams = generateApiParameters(
           `${config.API_BASE_URL}/v1/officer/${officerGuid}`,
-          { auth_user_guid: userGuid }
+          { auth_user_guid: userGuid },
         );
 
         await patch<Officer>(dispatch, officerParams);
@@ -113,16 +113,16 @@ export const assignCurrentUserToComplaint =
           complaint_identifier,
           complaint_type,
           officerResponse.person_guid.person_guid as UUID,
-        )
+        ),
       );
 
       if (complaint_type === COMPLAINT_TYPES.HWCR) {
         dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier),
         );
       } else {
         dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier),
         );
       }
     } catch (error) {
@@ -158,34 +158,34 @@ export const updateComplaintAssignee =
       // assign a complaint to a person
       let personComplaintXrefGuidParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/person-complaint-xref/${complaint_identifier}`,
-        payload
+        payload,
       );
       await post<Array<PersonComplaintXref>>(
         dispatch,
-        personComplaintXrefGuidParams
+        personComplaintXrefGuidParams,
       );
 
       // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
         const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`,
         );
         const response = await get<HwcrComplaint>(dispatch, parameters);
 
         dispatch(updateWildlifeComplaintByRow(response));
         dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier),
         );
       } else {
         const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`,
         );
         const response = await get<AllegationComplaint>(dispatch, parameters);
 
         dispatch(updateAllegationComplaintByRow(response));
 
         dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier),
         );
       }
     } catch (error) {
@@ -197,7 +197,7 @@ export const updateComplaintAssignee =
 
 //-- selectors
 
-export const selectOfficers = (state: RootState):  Officer[] | null => {
+export const selectOfficers = (state: RootState): Officer[] | null => {
   const { officers: officerRoot } = state;
   const { officers } = officerRoot;
 
@@ -205,7 +205,7 @@ export const selectOfficers = (state: RootState):  Officer[] | null => {
 };
 
 export const selectOfficersDropdown = (
-  state: RootState
+  state: RootState,
 ): Array<DropdownOption> => {
   const { officers: officerRoot } = state;
   const { officers } = officerRoot;

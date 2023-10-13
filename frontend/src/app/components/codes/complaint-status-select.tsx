@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Select from "react-select";
 import { useAppSelector } from "../../hooks/hooks";
-import { selectComplaintStatusCodeDropdown } from '../../store/reducers/code-table';
+import { selectComplaintStatusCodeDropdown } from "../../store/reducers/code-table";
 
 interface Option {
   value: string | undefined;
@@ -15,7 +15,7 @@ type Props = {
 const ComplaintStatusSelect: React.FC<Props> = ({ onSelectChange }) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
-  const options = useAppSelector(selectComplaintStatusCodeDropdown)
+  const options = useAppSelector(selectComplaintStatusCodeDropdown);
 
   const handleChange = (selectedOption: Option | null) => {
     setSelectedOption(selectedOption);

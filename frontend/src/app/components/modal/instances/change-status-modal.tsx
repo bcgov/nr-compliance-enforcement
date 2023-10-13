@@ -52,13 +52,19 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
   const updateThunksSequentially = async () => {
     try {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        await dispatch(updateWildlifeComplaintStatus(complaint_identifier, status))
-        dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
+        await dispatch(
+          updateWildlifeComplaintStatus(complaint_identifier, status),
+        );
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier),
+        );
       } else {
         await dispatch(
-          updateAllegationComplaintStatus(complaint_identifier, status)
+          updateAllegationComplaintStatus(complaint_identifier, status),
         );
-        dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
+        dispatch(
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier),
+        );
       }
     } catch (error) {
       // Handle any errors that occurred during the dispatch

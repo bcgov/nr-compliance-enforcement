@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { store, persistor } from './app/store/store';
+import { store, persistor } from "./app/store/store";
 import "urlpattern-polyfill";
 
 import App from "./app/App";
@@ -22,7 +22,7 @@ const onAuthenticatedCallback = () =>
           <App />
         </PersistGate>
       </Provider>
-    </StrictMode>
+    </StrictMode>,
   );
 
 UserService.initKeycloak(onAuthenticatedCallback);
