@@ -445,8 +445,10 @@ export const CreateComplaint: FC = () => {
   }
 
   function handleCommunityChange(selectedOption: Option | null) {
-    if(selectedOption !== null && selectedOption !== undefined)
+    if(!selectedOption)
     {
+      return;
+    }
         if(selectedOption.value === "")
         {
           setCommunityErrorMsg("Required");
@@ -488,7 +490,6 @@ export const CreateComplaint: FC = () => {
           }
 
         }
-      }
   }
 
   const handleGeoPointChange = (latitude: string, longitude: string) => {
@@ -806,7 +807,10 @@ export const CreateComplaint: FC = () => {
   };
 
   const saveButtonClick = async () => {
-    if (createComplaint !== null && createComplaint !== undefined) {
+    if (!createComplaint) 
+    {
+      return;
+    }
           if (complaintType === COMPLAINT_TYPES.HWCR) {
             let hwcrComplaint = createComplaint as HwcrComplaint;
 
@@ -887,7 +891,6 @@ export const CreateComplaint: FC = () => {
             );
           }*/
         }
-      }
   };
 
 
