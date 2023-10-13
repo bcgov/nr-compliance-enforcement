@@ -135,27 +135,25 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         )}
 
         {COMPLAINT_TYPES.ERS === type && ( // wildlife only filter
-          <>
-            <div className="comp-filter-left" id="comp-filter-violation-id">
-              {/* <!-- violation types --> */}
-              <div className="comp-filter-label">Violation Type</div>
-              <div className="filter-select-padding">
-                <Select
-                  options={violationTypes}
-                  onChange={(option) => {
-                    setFilter("violationType", option);
-                  }}
-                  placeholder="Select"
-                  classNamePrefix="comp-select"
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  id="violation-type-select-id"
-                  value={violationType}
-                />
-              </div>
+          <div className="comp-filter-left" id="comp-filter-violation-id">
+            {/* <!-- violation types --> */}
+            <div className="comp-filter-label">Violation Type</div>
+            <div className="filter-select-padding">
+              <Select
+                options={violationTypes}
+                onChange={(option) => {
+                  setFilter("violationType", option);
+                }}
+                placeholder="Select"
+                classNamePrefix="comp-select"
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                id="violation-type-select-id"
+                value={violationType}
+              />
             </div>
-          </>
+          </div>
         )}
 
         {/* <!-- date logged --> */}
