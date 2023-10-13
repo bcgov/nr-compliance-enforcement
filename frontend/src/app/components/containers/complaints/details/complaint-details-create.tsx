@@ -264,9 +264,9 @@ export const CreateComplaint: FC = () => {
           ({ person_guid: { person_guid: id } }) => {
             return id === value;
           }
-        ) as any;
+        );
 
-        const { person_guid: officer } = selectedOfficer;
+        const { person_guid: officer } = selectedOfficer as any;
 
         if (from(source).any() && from(source).elementAt(0)) {
           const assigned = { ...source[0], person_guid: officer };
@@ -372,8 +372,8 @@ export const CreateComplaint: FC = () => {
 }
 
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if (selectedOptions !== null && selectedOptions !== undefined) {
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
+    if (!selectedOptions || complaintType !== COMPLAINT_TYPES.HWCR) { return; }
+    if (selectedOptions) {
         let update = { ...createComplaint } as HwcrComplaint;
         const { attractant_hwcr_xref: currentAttactants } = update;
 
@@ -442,7 +442,6 @@ export const CreateComplaint: FC = () => {
         setAttractantsErrorMsg("");
         setCreateComplaint(update);
       }
-    }
   }
 
   function handleCommunityChange(selectedOption: Option | null) {
