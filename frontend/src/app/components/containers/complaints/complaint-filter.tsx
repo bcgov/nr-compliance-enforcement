@@ -60,6 +60,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
     setFilter("startDate", start);
+
+    end.setHours(23, 59, 59);
+    end.setMilliseconds(999);
+
     setFilter("endDate", end);
   };
 
