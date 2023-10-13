@@ -60,9 +60,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
     setFilter("startDate", start);
-
-    end.setHours(23, 59, 59);
-    end.setMilliseconds(999);
+    if (end) {
+      end.setHours(23, 59, 59);
+      end.setMilliseconds(999);
+    }
 
     setFilter("endDate", end);
   };
@@ -80,6 +81,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         // Invalid date format
         return [null, null];
       } else {
+        startDate.setDate(startDate.getDate() + 1);
         endDate.setDate(endDate.getDate() + 1);
         handleDateRangeChange([startDate, endDate]);
       }
