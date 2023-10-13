@@ -63,6 +63,26 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
     setFilter("endDate", end);
   };
 
+  // manual entry of date change listener.  Looks for a date range format of {yyyy-mm-dd} - {yyyy-mm-dd}
+  const handleManualDateRangeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e?.target?.value?.includes(" - ")) {
+      const [startDateStr, endDateStr] = e.target.value.split(" - ");
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        // Invalid date format
+        return [null, null];
+      } else {
+        endDate.setDate(endDate.getDate() + 1);
+        handleDateRangeChange([startDate, endDate]);
+      }
+    }
+    return [null, null];
+  };
+
   ///--
   /// Render out the filter drawer by the complaint type passed from the parent complaint component
   /// Each type of compplaint needs to have its own unique second row of filters specified
@@ -75,7 +95,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       return (
         <div className="content filter-container">
           {/* <!-- wildlife filters --> */}
-          <div className="comp-filter-left" id="comp-filter-nature-of-complaint-id">
+          <div
+            className="comp-filter-left"
+            id="comp-filter-nature-of-complaint-id"
+          >
             {/* <!-- nature of complaints --> */}
             <div className="comp-filter-label">Nature of Complaint</div>
             <div className="filter-select-padding">
@@ -87,8 +110,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="nature-of-complaint-select-id"
                 value={natureOfComplaint}
@@ -107,8 +129,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="species-select-id"
                 value={species}
@@ -173,6 +194,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 )}
                 selected={startDate}
                 onChange={handleDateRangeChange}
+                onChangeRaw={handleManualDateRangeChange}
                 startDate={startDate}
                 endDate={endDate}
                 dateFormat="yyyy-MM-dd"
@@ -196,8 +218,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="status-select-id"
                 value={status}
@@ -228,8 +249,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="violation-type-select-id"
                 value={violationType}
@@ -294,6 +314,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 )}
                 selected={startDate}
                 onChange={handleDateRangeChange}
+                onChangeRaw={handleManualDateRangeChange}
                 startDate={startDate}
                 endDate={endDate}
                 dateFormat="yyyy-MM-dd"
@@ -317,8 +338,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="status-select-id"
                 value={status}
@@ -357,8 +377,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 value={region}
                 id="region-select-filter-id"
@@ -377,8 +396,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="zone-select-id"
                 value={zone}
@@ -398,8 +416,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="community-select-id"
                 value={community}
@@ -419,8 +436,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="officer-select-id"
                 value={officer}
