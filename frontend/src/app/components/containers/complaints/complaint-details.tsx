@@ -88,8 +88,10 @@ export const ComplaintDetails: FC = () => {
 
   const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
   const saveButtonClick = async () => {
-    if(updateComplaint !== null && updateComplaint !== undefined)
+    if(!updateComplaint)
     {
+      return;
+    }
       if(noErrors())
       {
         if(complaintType === COMPLAINT_TYPES.HWCR)
@@ -118,7 +120,6 @@ export const ComplaintDetails: FC = () => {
         ToggleError("Errors in form")
         setErrorNotificationClass("comp-complaint-error");
       }
-    }
   }
 
   useEffect(() => {

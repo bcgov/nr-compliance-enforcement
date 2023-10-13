@@ -4,7 +4,7 @@ import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";

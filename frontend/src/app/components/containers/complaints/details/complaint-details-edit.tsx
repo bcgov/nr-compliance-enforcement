@@ -511,7 +511,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 }
 
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if (selectedOptions !== null && selectedOptions !== undefined) {
+    if (!selectedOptions) {
+      return;
+    }
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let update = { ...updateComplaint } as HwcrComplaint;
         const { attractant_hwcr_xref: currentAttactants } = update;
@@ -580,7 +582,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
         update.attractant_hwcr_xref = newAttractants;
         setUpdateComplaint(update);
       }
-    }
   }
 
   function handleCommunityChange(selectedOption: Option | null) {
