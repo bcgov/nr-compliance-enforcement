@@ -109,7 +109,6 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   };
 
   const handleCreateClick = (
-    e: any,
   ) => {
 
     navigate(`/complaint/createComplaint`);
@@ -152,7 +151,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
           <Nav.Item className="ms-auto"
           >
-            <div className="cursor-pointer" onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
+            <div className="cursor-pointer" onClick={() => handleCreateClick()}>
             <div
               className="complaint-create-image-container left-float"
               id="complaint-create-image-id"
