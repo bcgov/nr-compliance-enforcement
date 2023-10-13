@@ -26,7 +26,7 @@ export class AttractantHwcrXref {
         description: "The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -40,7 +40,7 @@ export class AttractantHwcrXref {
         description: "The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
 
     @ManyToOne(() => AttractantCode, (attractant_code) => attractant_code.attractant_code)
     @JoinColumn({name: "attractant_code"})

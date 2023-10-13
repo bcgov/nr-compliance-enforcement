@@ -70,7 +70,7 @@ export class AttractantHwcrXrefService {
           createAttractantHwcrXrefDto.attractant_code = updateAttractantCodes[i].attractant_code;
           createAttractantHwcrXrefDto.hwcr_complaint_guid = hwcr_complaint_guid;
           createAttractantHwcrXrefDto.update_user_id = createAttractantHwcrXrefDto.create_user_id = updateAttractantCodes[i].create_user_id;
-          createAttractantHwcrXrefDto.create_timestamp = createAttractantHwcrXrefDto.update_timestamp = new Date();
+          createAttractantHwcrXrefDto.create_utc_timestamp = createAttractantHwcrXrefDto.update_utc_timestamp = new Date();
           createAttractantHwcrXrefDto.active_ind = updateAttractantCodes[i].active_ind;
 
           const updatedValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
@@ -84,7 +84,7 @@ export class AttractantHwcrXrefService {
           updateAttractantHwcrXrefDto.attractant_code = updateAttractantCodes[i].attractant_code;
           updateAttractantHwcrXrefDto.hwcr_complaint_guid = hwcr_complaint_guid;
           updateAttractantHwcrXrefDto.update_user_id = updateAttractantHwcrXrefDto.create_user_id = updateAttractantCodes[i].create_user_id;
-          updateAttractantHwcrXrefDto.create_timestamp = updateAttractantHwcrXrefDto.update_timestamp = new Date();
+          updateAttractantHwcrXrefDto.create_utc_timestamp = updateAttractantHwcrXrefDto.update_utc_timestamp = new Date();
           updateAttractantHwcrXrefDto.active_ind = updateAttractantCodes[i].active_ind;
 
           const updatedValue = await this.attractantHwcrXrefRepository.update(updateAttractantCodes[i].attractant_hwcr_xref_guid, updateAttractantHwcrXrefDto);

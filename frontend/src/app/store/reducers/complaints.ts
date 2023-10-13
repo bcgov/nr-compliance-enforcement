@@ -569,9 +569,9 @@ export const selectComplaintHeader =
           let officerAssigned = "Not Assigned";
           let personGuid = "";
           const {
-            incident_reported_datetime: loggedDate,
+            incident_reported_utc_timestmp: loggedDate,
             create_user_id: createdBy,
-            update_timestamp: lastUpdated,
+            update_utc_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
             cos_geo_org_unit: { zone_code },
           } = ceComplaint;
@@ -646,9 +646,9 @@ export const selectComplaintHeader =
           let officerAssigned = "Not Assigned";
           let personGuid = "";
           const {
-            incident_reported_datetime: loggedDate,
+            incident_reported_utc_timestmp: loggedDate,
             create_user_id: createdBy,
-            update_timestamp: lastUpdated,
+            update_utc_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
             cos_geo_org_unit: { zone_code },
           } = ceComplaint;

@@ -52,7 +52,7 @@ export class AllegationComplaint
         description: "The timestamp when the violation was created",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -66,18 +66,18 @@ export class AllegationComplaint
         description: "The timestamp when the violation was last updated",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
    
       constructor(complaint_identifier?: Complaint, violation_code?: ViolationCode, in_progress_ind?: boolean, observed_ind?: boolean, suspect_witnesss_dtl_text?: string, 
-        create_user_id?: string, create_timestamp?: Date, update_user_id?: string, update_timestamp?: Date) {
+        create_user_id?: string, create_utc_timestamp?: Date, update_user_id?: string, update_utc_timestamp?: Date) {
         this.complaint_identifier = complaint_identifier;
         this.violation_code = violation_code;
         this.in_progress_ind = in_progress_ind;
         this.observed_ind = observed_ind;
         this.suspect_witnesss_dtl_text = suspect_witnesss_dtl_text;
         this.create_user_id = create_user_id;
-        this.create_timestamp = create_timestamp;
+        this.create_utc_timestamp = create_utc_timestamp;
         this.update_user_id = update_user_id;
-        this.update_timestamp = update_timestamp;
+        this.update_utc_timestamp = update_utc_timestamp;
       }
 }

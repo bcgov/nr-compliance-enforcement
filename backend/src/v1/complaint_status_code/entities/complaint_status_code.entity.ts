@@ -39,7 +39,7 @@ export class ComplaintStatusCode {
     description: "The timestamp when the complaint was created",
   })
   @Column()
-  create_timestamp: Date;
+  create_utc_timestamp: Date;
 
   @ApiProperty({
     example: "IDIR\mburns",
@@ -53,7 +53,7 @@ export class ComplaintStatusCode {
     description: "The timestamp when the complaint was last updated",
   })
   @Column()
-  update_timestamp: Date;
+  update_utc_timestamp: Date;
 
   constructor(complaint_status_code?: string) {
     this.complaint_status_code = complaint_status_code;

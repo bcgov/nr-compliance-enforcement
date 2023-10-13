@@ -10,12 +10,12 @@ export interface Complaint {
     location_summary_text:         string;
     location_detailed_text:        string;
     incident_datetime:             Date;
-    incident_reported_datetime:    Date;
+    incident_reported_utc_timestmp:    Date;
     referred_by_agency_other_text: null;
     create_user_id:                string;
-    create_timestamp:              Date;
+    create_utc_timestamp:              Date;
     update_user_id:                string;
-    update_timestamp:              Date;
+    update_utc_timestamp:              Date;
     complaint_identifier:          string;
     complaint_status_code:         ComplaintStatusCode;
   }
@@ -27,9 +27,9 @@ export interface Complaint {
     display_order:         number;
     active_ind:            boolean;
     create_user_id:        string;
-    create_timestamp:      Date;
+    create_utc_timestamp:      Date;
     update_user_id:        string;
-    update_timestamp:      Date;
+    update_utc_timestamp:      Date;
   }
   
   export interface LocationGeometryPoint {

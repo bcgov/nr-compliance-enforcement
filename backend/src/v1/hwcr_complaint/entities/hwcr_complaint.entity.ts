@@ -55,7 +55,7 @@ export class HwcrComplaint
         description: "The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -69,18 +69,18 @@ export class HwcrComplaint
         description: "The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
    
       constructor(complaint_identifier?: Complaint, species_code?: SpeciesCode, hwcr_complaint_nature_code?: HwcrComplaintNatureCode, attractant_hwcr_xref?: AttractantHwcrXref[], other_attractants_text?: string, 
-        create_user_id?: string, create_timestamp?: Date, update_user_id?: string, update_timestamp?: Date) {
+        create_user_id?: string, create_utc_timestamp?: Date, update_user_id?: string, update_utc_timestamp?: Date) {
         this.complaint_identifier = complaint_identifier;
         this.species_code = species_code;
         this.hwcr_complaint_nature_code = hwcr_complaint_nature_code;
         this.attractant_hwcr_xref = attractant_hwcr_xref;
         this.other_attractants_text = other_attractants_text;
         this.create_user_id = create_user_id;
-        this.create_timestamp = create_timestamp;
+        this.create_utc_timestamp = create_utc_timestamp;
         this.update_user_id = update_user_id;
-        this.update_timestamp = update_timestamp;
+        this.update_utc_timestamp = update_utc_timestamp;
       }
 }

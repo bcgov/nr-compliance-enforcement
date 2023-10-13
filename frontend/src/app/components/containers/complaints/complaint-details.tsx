@@ -518,9 +518,9 @@ export const ComplaintDetails: FC = () => {
               display_order: "",
               active_ind: "",
               create_user_id: "",
-              create_timestamp: "",
+              create_utc_timestamp: "",
               update_user_id: "",
-              update_timestamp: "",
+              update_utc_timestamp: "",
             };
             hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
               selectedOption.value;
@@ -540,9 +540,9 @@ export const ComplaintDetails: FC = () => {
               display_order: "",
               active_ind: "",
               create_user_id: "",
-              create_timestamp: "",
+              create_utc_timestamp: "",
               update_user_id: "",
-              update_timestamp: "",
+              update_utc_timestamp: "",
             };
             allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
               selectedOption.value;
@@ -777,9 +777,9 @@ export const ComplaintDetails: FC = () => {
             display_order: 0,
             active_ind: true,
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
 
       const updatedParent = {

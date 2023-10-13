@@ -6,7 +6,7 @@ export class CreateOfficerDto extends PickType(OfficerDto, [
     "person_guid",
     "office_guid",
     "create_user_id",
-    "create_timestamp",
+    "create_utc_timestamp",
     "update_user_id",
-    "update_timestamp"
+    "update_utc_timestamp"
           ] as const) {}

@@ -9,7 +9,7 @@ export class CreateHwcrComplaintDto extends PickType(HwcrComplaintDto, [
     "other_attractants_text",
     "hwcr_complaint_guid",
     "create_user_id",
-    "create_timestamp",
+    "create_utc_timestamp",
     "update_user_id",
-    "update_timestamp"
+    "update_utc_timestamp"
           ] as const) {}

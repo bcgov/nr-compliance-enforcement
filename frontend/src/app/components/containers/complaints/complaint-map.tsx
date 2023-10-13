@@ -21,7 +21,7 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
 
-  const [sortKey, setSortKey] = useState("incident_reported_datetime");
+  const [sortKey, setSortKey] = useState("incident_reported_utc_timestmp");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
   const generateComplaintRequestPayload = (
