@@ -41,7 +41,6 @@ import { from } from "linq-to-typescript";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
-  const complaintType = COMPLAINT_TYPES.HWCR;
   const userid = useAppSelector(userId);
   const officerList = useAppSelector(selectOfficers);
   let assignableOfficers: Option[] =
@@ -149,6 +148,8 @@ export const CreateComplaint: FC = () => {
     HwcrComplaint | AllegationComplaint | null | undefined
   >(emptyComplaint);
 
+  const [complaintType, setComplaintType] = useState<string>("");
+  const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
@@ -189,6 +190,19 @@ export const CreateComplaint: FC = () => {
     }
     return noErrors;
   }
+
+  const handleComplaintChange = (selected: Option | null) => {
+    if (selected) {
+      const { label, value } = selected;
+      console.log("value: " + value);
+      if (!value) {
+        setComplaintTypeMsg("Required");
+      } else {
+        setComplaintTypeMsg("");
+        setComplaintType(value);
+      }
+    }
+  };
 
   const handleNOCChange = (selected: Option | null) => {
     if (selected) {
@@ -824,34 +838,40 @@ export const CreateComplaint: FC = () => {
     );
   };
 
-  const setErrors = async(hwcrComplaint: HwcrComplaint) => {
+  const setErrors = async (complaint: HwcrComplaint | AllegationComplaint) => {
     let noError = true;
-    if (
-      hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code ===
-      ""
-    ) {
-      await setNOCErrorMsg("Required");
-      noError = false;
+    if (!complaintType) {
+      setComplaintTypeMsg("Required");
     }
-    if (hwcrComplaint.species_code.species_code === "") {
-      await setSpeciesErrorMsg("Required");
-      noError = false;
+    if (complaintType === COMPLAINT_TYPES.HWCR) {
+      const hwcrComplaint = complaint as HwcrComplaint;
+      if (
+        hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code ===
+        ""
+      ) {
+        await setNOCErrorMsg("Required");
+        noError = false;
+      }
+      if (hwcrComplaint.species_code.species_code === "") {
+        await setSpeciesErrorMsg("Required");
+        noError = false;
+      }
     }
     if (
-      hwcrComplaint.complaint_identifier.complaint_status_code
+      complaint.complaint_identifier.complaint_status_code
         .complaint_status_code === ""
     ) {
       await setStatusErrorMsg("Required");
       noError = false;
     }
     if (
-      hwcrComplaint.complaint_identifier.geo_organization_unit_code
+      complaint.complaint_identifier.geo_organization_unit_code
         .geo_organization_unit_code === ""
     ) {
       await setCommunityErrorMsg("Required");
       noError = false;
     }
-    if (hwcrComplaint.complaint_identifier.detail_text === "") {
+    if (complaint.complaint_identifier.detail_text === "") {
       await setComplaintDescErrorMsg("Required");
       noError = false;
     }
@@ -862,42 +882,41 @@ export const CreateComplaint: FC = () => {
     if (!createComplaint) {
       return;
     }
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint = createComplaint as HwcrComplaint;
+    let complaint = createComplaint;
+    const openStatus = {
+      short_description: "OPEN",
+      long_description: "Open",
+      complaint_status_code: "OPEN",
+      display_order: 0,
+      active_ind: false,
+      create_user_id: "",
+      create_timestamp: "",
+      update_user_id: "",
+      update_timestamp: "",
+    };
 
-      const openStatus = {
-        short_description: "OPEN",
-        long_description: "Open",
-        complaint_status_code: "OPEN",
-        display_order: 0,
-        active_ind: false,
-        create_user_id: "",
-        create_timestamp: "",
-        update_user_id: "",
-        update_timestamp: "",
-      };
+    complaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
 
-      hwcrComplaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
+    const noError = await setErrors(complaint);
 
-      const noError = await setErrors(hwcrComplaint);
-      
-      if (noError && noErrors()) {
-        hwcrComplaint.complaint_identifier.create_timestamp =
-          hwcrComplaint.complaint_identifier.update_timestamp =
-            new Date().toDateString();
-        hwcrComplaint.complaint_identifier.create_user_id =
-          hwcrComplaint.complaint_identifier.update_user_id = userid;
-        hwcrComplaint.complaint_identifier.location_geometry_point.type =
-          "Point";
-        if (
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates
-            .length === 0
-        ) {
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates =
-            [0, 0];
-        }
+    if (noError && noErrors()) {
+      complaint.complaint_identifier.create_timestamp =
+        complaint.complaint_identifier.update_timestamp =
+          new Date().toDateString();
+      complaint.complaint_identifier.create_user_id =
+        complaint.complaint_identifier.update_user_id = userid;
+      complaint.complaint_identifier.location_geometry_point.type = "Point";
+      if (
+        complaint.complaint_identifier.location_geometry_point.coordinates
+          .length === 0
+      ) {
+        complaint.complaint_identifier.location_geometry_point.coordinates = [
+          0, 0,
+        ];
+      }
+      if (complaintType === COMPLAINT_TYPES.HWCR) {
         const complaintId = await dispatch(
-          createWildlifeComplaint(hwcrComplaint),
+          createWildlifeComplaint(complaint as HwcrComplaint),
         );
         if (complaintId) {
           await dispatch(
@@ -909,20 +928,9 @@ export const CreateComplaint: FC = () => {
 
           navigate("/complaint/" + complaintType + "/" + complaintId);
         }
-      } else {
-        setErrorNotificationClass("comp-complaint-error");
       }
-
-      /*else if (complaintType === COMPLAINT_TYPES.ERS) {
-            let allegationComplaint = createComplaint as AllegationComplaint;
-            const complaint_identifier = await dispatch(createAllegationComplaint(allegationComplaint));
-            await dispatch(
-              getAllegationComplaintByComplaintIdentifierSetUpdate(
-                complaint_identifier,
-                setCreateComplaint
-              )
-            );
-          }*/
+    } else {
+      setErrorNotificationClass("comp-complaint-error");
     }
   };
 
@@ -957,12 +965,14 @@ export const CreateComplaint: FC = () => {
               <label id="nature-of-complaint-label-id">
                 Complaint Type<span className="required-ind">*</span>
               </label>
-              <Select
+              <ValidationSelect
                 id="complaint-type-select-id"
                 options={complaintTypeCodes}
                 placeholder="Select"
                 className="comp-details-input"
                 classNamePrefix="comp-select"
+                onChange={(e) => handleComplaintChange(e)}
+                errMsg={complaintTypeMsg}
               />
             </div>
             {complaintType === COMPLAINT_TYPES.HWCR && (

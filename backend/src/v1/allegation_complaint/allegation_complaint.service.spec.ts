@@ -123,7 +123,7 @@ describe("AllegationComplaintService", () => {
   const threeReferredByAgencyOtherText = "other text3";
   const threeCreateUserId = "chris";
   const threeCreateTimestamp = new Date();
-  const threeUpdateUserId = "chis";
+  const threeUpdateUserId = "chris";
   const threeUpdateTimestamp = new Date();
   const threeCompliantIdentifier = "COS-1800";
   const threeReferredByAgencyCode = new AgencyCode("COS");
@@ -151,6 +151,7 @@ describe("AllegationComplaintService", () => {
     findOne: jest.fn(() => { return Promise.resolve(oneAllegationComplaint)}),
     create: jest.fn(() => { return Promise.resolve(threeAllegationComplaint)}),
     save: jest.fn(),
+    
     queryRunner:
       {
         connect: jest.fn(),
@@ -159,7 +160,10 @@ describe("AllegationComplaintService", () => {
         rollbackTransaction: jest.fn(),
         release: jest.fn(),
         manager: {
-          save: jest.fn()
+          save: jest.fn(),
+          query: jest.fn().mockImplementation(() => ({
+            then: jest.fn(),
+          }))
         }
       },
 
@@ -178,15 +182,15 @@ describe("AllegationComplaintService", () => {
     // as these do not actually use their return values in our sample
     // we just make sure that their resolve is true to not crash
     delete: jest.fn(() => { return Promise.resolve(true)}),
-  })
+  });
 
   const complaintRepositoryMockFactory = () => ({
     // mock repository functions for testing
     findAll: jest.fn(),
     find: jest.fn(),
     findOneOrFail: jest.fn(),
-    create: jest.fn(),
-    save: jest.fn(),
+    create: jest.fn(() => { return Promise.resolve(oneComplaint)}),
+    save: jest.fn(() => { return Promise.resolve(oneComplaint)}),
     queryRunner:
       {
         connect: jest.fn(),
@@ -195,7 +199,10 @@ describe("AllegationComplaintService", () => {
         rollbackTransaction: jest.fn(),
         release: jest.fn(),
         manager: {
-          save: jest.fn()
+          save: jest.fn(),
+          query: jest.fn().mockImplementation(() => ({
+            then: jest.fn(),
+          }))
         }
       },
 
@@ -222,7 +229,7 @@ describe("AllegationComplaintService", () => {
         rollbackTransaction: jest.fn(),
         release: jest.fn(),
         manager: {
-          save: jest.fn()
+          save: jest.fn(),
         }
       },
 
@@ -346,16 +353,16 @@ describe("AllegationComplaintService", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AllegationComplaintService,
-        ComplaintService,
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory
         },
+        AllegationComplaintService,
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: allegationComplaintRepositoryMockFactory
         },
+        ComplaintService,
         {
           provide: getRepositoryToken(Complaint),
           useFactory: complaintRepositoryMockFactory
