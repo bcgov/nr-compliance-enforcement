@@ -66,7 +66,7 @@ export class AllegationComplaintService {
       );
 
 
-      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref !== undefined && createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref?.[0])
         {
           createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
           await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);

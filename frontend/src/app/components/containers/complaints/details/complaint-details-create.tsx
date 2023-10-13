@@ -193,7 +193,7 @@ export const CreateComplaint: FC = () => {
 
   const handleComplaintChange = (selected: Option | null) => {
     if (selected) {
-      const { label, value } = selected;
+      const { value } = selected;
       console.log("value: " + value);
       if (!value) {
         setComplaintTypeMsg("Required");
