@@ -1,10 +1,10 @@
-import { FC, useState, useContext } from "react";
+import { FC, useState, useContext} from "react";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
-import { useAppSelector } from "../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
@@ -31,8 +31,6 @@ type Props = {
 };
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { dispatch: filterDispatch } = useContext(
     ComplaintFilterContext
   ); //-- make sure to keep this dispatch renamed
@@ -54,14 +52,6 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const { getToggleProps } = useCollapse({ isExpanded });
 
   const defaultZone = useAppSelector(selectDefaultZone);
-
-  useEffect(() => {
-    if (defaultZone) {
-      setFilter("zone", { value: zone_name, label: zone_descrption });
-    } else {
-      dispatch(getOfficerDefaultZone);
-    }
-  }, [zone_name, zone_descrption, setFilter, dispatch]); //including defaultZone causes infinite loop
 
   const complaintTypes: Array<{ name: string; id: string; code: string }> =
     Object.keys(COMPLAINT_TYPES).map((item) => {
