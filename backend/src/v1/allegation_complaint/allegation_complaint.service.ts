@@ -66,9 +66,9 @@ export class AllegationComplaintService {
       );
 
 
-      createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
-      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref !== undefined && createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
+          createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
           await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
       
@@ -481,15 +481,12 @@ export class AllegationComplaintService {
           violation_code: updateAllegationComplaintDto.violation_code,
           suspect_witnesss_dtl_text: updateAllegationComplaintDto.suspect_witnesss_dtl_text,
         };
-        const updatedValue = await this.allegationComplaintsRepository.update(
+        await this.allegationComplaintsRepository.update(
           { allegation_complaint_guid },
           updateData
         );
-        //queryRunner.manager.save(updatedValue);
-        //await this.complaintService.updateComplex(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
         await this.complaintService.updateComplex(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateAllegationComplaintDto.complaint_identifier));
         //Note: this needs a refactor for when we have more types of persons being loaded in
-        //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         if(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
           await this.personComplaintXrefService.assignOfficer(queryRunner, updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);

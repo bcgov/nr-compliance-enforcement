@@ -25,8 +25,6 @@ import { PersonComplaintXrefService } from '../person_complaint_xref/person_comp
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
   let repo: Repository<AllegationComplaint>;
-  let complaintService: ComplaintService;
-  let complaintsRepository: Repository<Complaint>;
   let dataSourceMock: MockType<DataSource>
 
   const createQueryBuilder: any = {
@@ -58,7 +56,9 @@ describe("AllegationComplaintService", () => {
     new AgencyCode("COS"),
     new AgencyCode("COS"),
     new ComplaintStatusCode("OPEN"),
-    new GeoOrganizationUnitCode("CRBOCHLCTN")
+    new GeoOrganizationUnitCode("CRBOCHLCTN"),
+    new CosGeoOrgUnit("CRBOCHLCTN"),
+    []
 );
   const oneAllegationComplaint = new AllegationComplaint(
     oneComplaint,
@@ -94,7 +94,9 @@ describe("AllegationComplaintService", () => {
     new AgencyCode("COS"),
     new AgencyCode("COS"),
     new ComplaintStatusCode("OPEN"),
-    new GeoOrganizationUnitCode("CRBOCHLCTN")
+    new GeoOrganizationUnitCode("CRBOCHLCTN"),
+    new CosGeoOrgUnit("CRBOCHLCTN"),
+    []
 );
   const twoAllegationComplaint = new AllegationComplaint(
     twoComplaint,
@@ -130,9 +132,12 @@ describe("AllegationComplaintService", () => {
   const threeOwnedByAgencyCode = new AgencyCode("COS");
   const threeComplaintStatusCode = new ComplaintStatusCode("OPEN");
   const threeGeoOrganizationUnitCode = new GeoOrganizationUnitCode("CRBOCHLCTN");
+  const threeCosGeoOrgUnit = new CosGeoOrgUnit("CRBOCHLCTN");
+  const threePersonXref = [];
+  
   const threeComplaint = new Complaint(threeDetailText, threeCallerName, threeCallerAddress, threeCallerEmail, threeCallerPhone1, threeCallerPhone2, threeCallerPhone3, threeLocationGeometryPoint,
     threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateTimestamp, threeUpdateUserId,
-    threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode);
+    threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode, threeCosGeoOrgUnit, threePersonXref);
     const threeViolationCode = new ViolationCode("AINVSPC");
     const threeInProgressInd = true;
     const threeObservedInd = true;
@@ -212,6 +217,7 @@ describe("AllegationComplaintService", () => {
     // as these do not actually use their return values in our sample
     // we just make sure that their resolve is true to not crash
     delete: jest.fn(() => { return Promise.resolve(true)}),
+    remove: jest.fn(() => { return Promise.resolve(true)}),
   });
 
   const cosGeoOrgUnitRepositoryMockFactory = () => ({
@@ -362,9 +368,8 @@ describe("AllegationComplaintService", () => {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: allegationComplaintRepositoryMockFactory
         },
-        ComplaintService,
         {
-          provide: getRepositoryToken(Complaint),
+          provide: ComplaintService,
           useFactory: complaintRepositoryMockFactory
         },
         CosGeoOrgUnitService,
@@ -402,8 +407,6 @@ describe("AllegationComplaintService", () => {
 
     service = module.get<AllegationComplaintService>(AllegationComplaintService);
     repo = module.get<Repository<AllegationComplaint>>(getRepositoryToken(AllegationComplaint));
-    complaintService = module.get<ComplaintService>(ComplaintService);
-    complaintsRepository = module.get<Repository<Complaint>>(getRepositoryToken(Complaint));
     dataSourceMock = module.get(DataSource);
   });
 
@@ -422,6 +425,7 @@ describe("AllegationComplaintService", () => {
   });
 
   describe("remove", () => {
+    
     it("should return {deleted: true}", () => {
       expect(service.remove(twoAllegationComplaint.allegation_complaint_guid)).resolves.toEqual({ deleted: true });
     });
