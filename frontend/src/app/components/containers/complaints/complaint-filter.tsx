@@ -82,6 +82,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         // Invalid date format
         return [null, null];
       } else {
+        //  add 1 to date because days start at 0
         startDate.setDate(startDate.getDate() + 1);
         endDate.setDate(endDate.getDate() + 1);
         handleDateRangeChange([startDate, endDate]);
