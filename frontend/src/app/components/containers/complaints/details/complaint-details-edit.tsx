@@ -1303,7 +1303,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 </label>
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
-                    country="CA"
                     className="comp-details-input"
                     defaultValue={primaryPhone}
                     onChange={handlePrimaryPhoneChange}
@@ -1326,7 +1325,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 </label>
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
-                    country="CA"
                     className="comp-details-input"
                     defaultValue={secondaryPhone}
                     onChange={handleSecondaryPhoneChange}
@@ -1349,7 +1347,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
                 </label>
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
-                    country="CA"
                     className="comp-details-input"
                     defaultValue={alternatePhone}
                     onChange={handleAlternatePhoneChange}

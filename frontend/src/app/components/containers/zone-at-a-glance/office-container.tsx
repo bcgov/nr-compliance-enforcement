@@ -119,7 +119,6 @@ export const OfficeContainer: FC<Props> = ({
     }
 
     return (
-      <>
         <div className="comp-zag-office-container">
           <Row className="comp-zag-flex-container">
             <Col className="comp-zag-office">
@@ -198,7 +197,6 @@ export const OfficeContainer: FC<Props> = ({
             </div>
           </div>
         </div>
-      </>
     );
   } else {
     return <></>;

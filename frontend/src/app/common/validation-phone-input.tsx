@@ -7,7 +7,6 @@ interface ValidationPhoneInputProps {
   onChange: Function;
   errMsg: string;
   defaultValue?: string;
-  country?: string;
   maxLength?: number;
   international?: boolean;
 }
@@ -19,6 +18,7 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
   onChange,
   errMsg,
   maxLength,
+  international,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass =
@@ -34,7 +34,7 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
           value={defaultValue}
           onChange={(e) => onChange(e)}
           maxLength={maxLength} //phone input counts () - space, so this is actually a 10 character number
-          international={false}
+          international={international}
           initialValueFormat="national"
         />
       </div>
