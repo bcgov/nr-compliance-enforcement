@@ -824,6 +824,40 @@ export const CreateComplaint: FC = () => {
     );
   };
 
+  const setErrors = async(hwcrComplaint: HwcrComplaint) => {
+    let noError = true;
+    if (
+      hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code ===
+      ""
+    ) {
+      await setNOCErrorMsg("Required");
+      noError = false;
+    }
+    if (hwcrComplaint.species_code.species_code === "") {
+      await setSpeciesErrorMsg("Required");
+      noError = false;
+    }
+    if (
+      hwcrComplaint.complaint_identifier.complaint_status_code
+        .complaint_status_code === ""
+    ) {
+      await setStatusErrorMsg("Required");
+      noError = false;
+    }
+    if (
+      hwcrComplaint.complaint_identifier.geo_organization_unit_code
+        .geo_organization_unit_code === ""
+    ) {
+      await setCommunityErrorMsg("Required");
+      noError = false;
+    }
+    if (hwcrComplaint.complaint_identifier.detail_text === "") {
+      await setComplaintDescErrorMsg("Required");
+      noError = false;
+    }
+    return noError;
+  };
+
   const saveButtonClick = async () => {
     if (!createComplaint) {
       return;
@@ -845,36 +879,8 @@ export const CreateComplaint: FC = () => {
 
       hwcrComplaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
 
-      let noError: boolean = true;
-      if (
-        hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code ===
-        ""
-      ) {
-        await setNOCErrorMsg("Required");
-        noError = false;
-      }
-      if (hwcrComplaint.species_code.species_code === "") {
-        await setSpeciesErrorMsg("Required");
-        noError = false;
-      }
-      if (
-        hwcrComplaint.complaint_identifier.complaint_status_code
-          .complaint_status_code === ""
-      ) {
-        await setStatusErrorMsg("Required");
-        noError = false;
-      }
-      if (
-        hwcrComplaint.complaint_identifier.geo_organization_unit_code
-          .geo_organization_unit_code === ""
-      ) {
-        await setCommunityErrorMsg("Required");
-        noError = false;
-      }
-      if (hwcrComplaint.complaint_identifier.detail_text === "") {
-        await setComplaintDescErrorMsg("Required");
-        noError = false;
-      }
+      const noError = await setErrors(hwcrComplaint);
+      
       if (noError && noErrors()) {
         hwcrComplaint.complaint_identifier.create_timestamp =
           hwcrComplaint.complaint_identifier.update_timestamp =
