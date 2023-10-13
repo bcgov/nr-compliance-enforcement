@@ -372,8 +372,7 @@ export const CreateComplaint: FC = () => {
 }
 
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if (!selectedOptions || complaintType !== COMPLAINT_TYPES.HWCR) { return; }
-    if (selectedOptions) {
+    if (!selectedOptions) { return; }
         let update = { ...createComplaint } as HwcrComplaint;
         const { attractant_hwcr_xref: currentAttactants } = update;
 
@@ -441,7 +440,6 @@ export const CreateComplaint: FC = () => {
         update.attractant_hwcr_xref = newAttractants;
         setAttractantsErrorMsg("");
         setCreateComplaint(update);
-      }
   }
 
   function handleCommunityChange(selectedOption: Option | null) {
