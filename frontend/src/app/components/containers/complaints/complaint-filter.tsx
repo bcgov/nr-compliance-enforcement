@@ -61,6 +61,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
     const [start, end] = dates;
     setFilter("startDate", start);
     //set the time to be end of day to ensure that we also search for records after the beginning of the selected day.
+    if (start) {
+      start.setHours(0, 0, 0);
+      start.setMilliseconds(0);
+    }
     if (end) {
       end.setHours(23, 59, 59);
       end.setMilliseconds(999);
