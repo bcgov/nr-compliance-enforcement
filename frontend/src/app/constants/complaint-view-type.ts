@@ -1,5 +1,4 @@
 export const COMPLAINT_VIEW_TYPES = {
-   LIST: "list",
-   MAP: "map",
- };
- 
+  LIST: "list",
+  MAP: "map",
+};

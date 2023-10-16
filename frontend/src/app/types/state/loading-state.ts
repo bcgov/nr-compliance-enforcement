@@ -1,4 +1,4 @@
-export interface LoadingState { 
-    isLoading: boolean;
-    count: number;
+export interface LoadingState {
+  isLoading: boolean;
+  count: number;
 }

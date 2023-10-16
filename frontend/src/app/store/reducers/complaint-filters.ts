@@ -31,7 +31,7 @@ export const resetFilters = (payload?: Array<ComplaintFilterPayload>) => ({
 //-- reducer
 const complaintFilterReducer = (
   state: ComplaintFilters,
-  action: any
+  action: any,
 ): ComplaintFilters => {
   switch (action.type) {
     case ComplaintFilterActionTypes.UPDATE_FILTER: {
@@ -61,7 +61,7 @@ const complaintFilterReducer = (
             const x: ComplaintFilterPayload = payload.find(
               (filter: ComplaintFilterPayload) => {
                 return filter.filter === item;
-              }
+              },
             );
             if (x) {
               update[item] = x.value;

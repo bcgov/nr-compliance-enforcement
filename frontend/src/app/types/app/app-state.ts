@@ -13,7 +13,7 @@ export interface AppState {
 
   //-- notifications
   notifications: NotificationState;
-  
+
   //-- modal properties
   modalSize?: "sm" | "lg" | "xl";
   modalIsOpen: boolean;

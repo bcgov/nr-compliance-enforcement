@@ -18,12 +18,19 @@ type Props = {
  * Renders a map with a marker at the supplied location
  *
  */
-const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }) => {
+const LeafletMapWithPoint: FC<Props> = ({
+  coordinates,
+  draggable,
+  onMarkerMove,
+}) => {
   const iconHTML = ReactDOMServer.renderToString(
-    <FontAwesomeIcon icon={faMapMarkerAlt} />
+    <FontAwesomeIcon icon={faMapMarkerAlt} />,
   );
 
-  const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number }>(coordinates);
+  const [markerPosition, setMarkerPosition] = useState<{
+    lat: number;
+    lng: number;
+  }>(coordinates);
 
   // update the marker poisition when the coordinates are updated (occurs when geocoded).
   // but don't update them if the marker position has already been set manually
@@ -37,10 +44,10 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove }
     const marker = e.target;
     if (marker?.getLatLng) {
       const newPosition = marker.getLatLng();
-      
+
       if (onMarkerMove) {
         onMarkerMove(newPosition.lat, newPosition.lng);
-        setMarkerPosition({lat: newPosition.lat, lng: newPosition.lng});
+        setMarkerPosition({ lat: newPosition.lat, lng: newPosition.lng });
       }
     }
   };

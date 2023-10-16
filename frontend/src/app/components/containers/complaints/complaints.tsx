@@ -1,10 +1,10 @@
-import { FC, useState, useContext, useEffect, useCallback } from "react";
+import { FC, useState, useContext } from "react";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
@@ -17,10 +17,8 @@ import {
 import {
   resetFilters,
   ComplaintFilterPayload,
-  updateFilter
 } from "../../../store/reducers/complaint-filters";
-import { selectDefaultZone, getOfficerDefaultZone, profileZoneDescription, profileZone } from '../../../store/reducers/app';
-import { DropdownOption } from '../../../types/code-tables/option';
+import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
@@ -31,43 +29,24 @@ type Props = {
 };
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
+  const navigate = useNavigate();
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
   const totalComplaints = useAppSelector(
-    selectTotalComplaintsByType(complaintType)
+    selectTotalComplaintsByType(complaintType),
   );
 
   const totalComplaintsOnMap = useAppSelector(
-    selectTotalComplaintsOnMapByType(complaintType)
+    selectTotalComplaintsOnMapByType(complaintType),
   );
 
   const [isExpanded, setExpanded] = useState(false);
   const { getToggleProps } = useCollapse({ isExpanded });
 
   const defaultZone = useAppSelector(selectDefaultZone);
-  const zone_name = useAppSelector(profileZone);
-  const zone_descrption = useAppSelector(profileZoneDescription);
-
-  useEffect(() => {
-    if (defaultZone) {
-      setFilter("zone", { value: zone_name, label: zone_descrption });
-    } else {
-      dispatch(getOfficerDefaultZone);
-    }
-  }, [zone_name, zone_descrption]);
-
-  const setFilter = useCallback(
-    (name: string, value?: DropdownOption | Date | null) => {
-      let payload: ComplaintFilterPayload = { filter: name, value };
-      filterDispatch(updateFilter(payload));
-    },
-    []
-  );
 
   const complaintTypes: Array<{ name: string; id: string; code: string }> =
     Object.keys(COMPLAINT_TYPES).map((item) => {
@@ -79,19 +58,17 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     });
 
   // renders the complaint count on the list and map views, for the selected complaint type
-  const renderComplaintTotal = (selectedComplaintType: string): string | undefined => {
-    
+  const renderComplaintTotal = (
+    selectedComplaintType: string,
+  ): string | undefined => {
     if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
       if (complaintType === selectedComplaintType) {
         return `(${totalComplaintsOnMap})`;
       }
-    } else 
-    if (complaintType === selectedComplaintType) {
+    } else if (complaintType === selectedComplaintType) {
       return `(${totalComplaints})`;
     }
   };
-
-  
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -107,10 +84,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     filterDispatch(resetFilters(payload));
   };
 
-  const handleCreateClick = (
-    e: any,
-  ) => {
-
+  const handleCreateClick = () => {
     navigate(`/complaint/createComplaint`);
   };
 
@@ -148,39 +122,42 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           })}
 
           {/* <!-- dynamic tabs end --> */}
-		  
-          <Nav.Item className="ms-auto"
-          >
-            <div hidden onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
-            <div
-              className="complaint-create-image-container"
-              id="complaint-create-image-id"
-            >
-              <i className="bi bi-filter filter-image-spacing"></i>
-            </div>
-            <div className="left-float">Create</div>
-            <div className="clear-left-float"></div>
+
+          <Nav.Item className="ms-auto">
+            <div className="cursor-pointer" onClick={() => handleCreateClick()}>
+              <div
+                className="complaint-create-image-container left-float"
+                id="complaint-create-image-id"
+              >
+                <i className="bi bi-plus-circle filter-image-spacing"></i>
+              </div>
+              <div className="left-float">Create</div>
+              <div className="clear-left-float"></div>
             </div>
           </Nav.Item>
-		  
           <Nav.Item
-            className="ms-auto"
             {...getToggleProps({
-                onClick: () => {
-                  const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
-                  const rect = filterElem?.getBoundingClientRect();
-                  const bottom = rect?.bottom;
+              onClick: () => {
+                const filterElem = document.querySelector(
+                  "#collapsible-complaints-list-filter-id",
+                );
+                const rect = filterElem?.getBoundingClientRect();
+                const bottom = rect?.bottom;
 
-                  if({isExpanded}.isExpanded && bottom !== undefined && bottom < 140) //page has been scrolled while filter is open... need to close it!
-                  {
-                    setExpanded((prevExpanded) => !prevExpanded);
-                  }
-                  window.scrollTo({
-                    top: 0,
-                    behavior: "smooth",
-                    });
+                if (
+                  { isExpanded }.isExpanded &&
+                  bottom !== undefined &&
+                  bottom < 140
+                ) {
+                  //page has been scrolled while filter is open... need to close it!
                   setExpanded((prevExpanded) => !prevExpanded);
-                },
+                }
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
+                setExpanded((prevExpanded) => !prevExpanded);
+              },
             })}
           >
             <div
@@ -212,8 +189,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 };
 
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
+  const defaultZone = useAppSelector(selectDefaultZone);
+
   return (
-    <ComplaintFilterProvider>
+    <ComplaintFilterProvider zone={defaultZone}>
       <Complaints defaultComplaintType={defaultComplaintType} />
     </ComplaintFilterProvider>
   );

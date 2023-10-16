@@ -30,16 +30,22 @@ export interface HwcrComplaint {
     caller_phone_3: string;
     referred_by_agency_code: AgencyCode;
     cos_geo_org_unit: {
-            zone_code: string;
-            office_location_name: string;
-            area_name: string;
-            area_code: string;
-    },
+      zone_code: string;
+      office_location_name: string;
+      area_name: string;
+      area_code: string;
+    };
     person_complaint_xref: PersonComplaintXref[];
-  }
+  };
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
-  species_code: SpeciesCode
+  species_code: SpeciesCode;
   update_timestamp: string;
   hwcr_complaint_guid: string;
-  attractant_hwcr_xref: {attractant_hwcr_xref_guid?: string, attractant_code?: AttractantCode, hwcr_complaint_guid: string, create_user_id: string, active_ind: boolean}[];
+  attractant_hwcr_xref: {
+    attractant_hwcr_xref_guid?: string;
+    attractant_code?: AttractantCode;
+    hwcr_complaint_guid: string;
+    create_user_id: string;
+    active_ind: boolean;
+  }[];
 }

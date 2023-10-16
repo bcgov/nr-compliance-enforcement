@@ -24,13 +24,11 @@ describe("Test Mapping functionality", () => {
           attribution: '<a href="http://mascots.work">Mascots</a>',
         }).addTo(map);
 
-
         map.zoomIn();
         map.zoomOut();
 
         contentWindow.map = map;
       },
     });
-
   });
 });

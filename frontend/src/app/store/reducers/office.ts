@@ -34,9 +34,8 @@ export const { setOfficesInZone } = officeSlice.actions;
 export const getOfficesInZone =
   (zone?: string): AppThunk =>
   async (dispatch) => {
-
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/office/by-zone/${zone}`
+      `${config.API_BASE_URL}/v1/office/by-zone/${zone}`,
     );
     const response = await get<Array<Office>>(dispatch, parameters);
 
@@ -44,7 +43,7 @@ export const getOfficesInZone =
       dispatch(
         setOfficesInZone({
           officesInZone: response,
-        })
+        }),
       );
     }
   };

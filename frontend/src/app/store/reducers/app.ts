@@ -49,7 +49,7 @@ export const toggleLoading = (loading: boolean) => ({
 
 export const toggleNotification = (
   type: "success" | "info" | "warning" | "error",
-  message: string
+  message: string,
 ) => ({
   type: ActionTypes.TOGGLE_NOTIFICATION,
   payload: { type, message },
@@ -57,7 +57,7 @@ export const toggleNotification = (
 
 export const toggleToast = (
   type: "success" | "info" | "warning" | "error",
-  message: string
+  message: string,
 ) => ({
   type: ActionTypes.TOGGLE_NOTIFICATION,
   payload: { type, message },
@@ -107,7 +107,7 @@ export const profileInitials = (state: RootState) => {
   const { profile } = state.app;
   return `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(
     0,
-    1
+    1,
   )}`;
 };
 
@@ -155,7 +155,7 @@ export const selectModalOpenState = (state: RootState): boolean => {
 };
 
 export const selectModalSize = (
-  state: RootState
+  state: RootState,
 ): "sm" | "lg" | "xl" | undefined => {
   const { app } = state;
   return app.modalSize;
@@ -196,7 +196,7 @@ export const isLoading = (state: RootState) => {
 export const selectDefaultPageSize = (state: RootState): any => {
   const { app } = state;
   const configuration = app.configurations?.configurations?.find(
-    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode
+    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode,
   );
   if (configuration?.configurationValue) {
     return +configuration.configurationValue;
@@ -218,7 +218,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       idir_user_guid_transformed = idir_user_guid as UUID;
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`,
       );
       const response = await get<Officer>(dispatch, parameters);
 
@@ -262,7 +262,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const getOfficerDefaultZone  = (): AppThunk => async (dispatch) => {
+export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
 
   if (token) {
@@ -272,7 +272,7 @@ export const getOfficerDefaultZone  = (): AppThunk => async (dispatch) => {
       const { idir_username } = decoded;
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`,
       );
       const response = await get<Officer>(dispatch, parameters);
 
@@ -294,7 +294,7 @@ export const getOfficerDefaultZone  = (): AppThunk => async (dispatch) => {
     //-- the user is not logged in redirect them to the login
     window.location = config.KEYCLOAK_URL;
   }
-}
+};
 
 // Get list of the officers and update store
 export const getConfigurations = (): AppThunk => async (dispatch) => {
@@ -302,7 +302,7 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
     dispatch(toggleLoading(true));
 
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/configuration/`
+      `${config.API_BASE_URL}/v1/configuration/`,
     );
     const response = await get<Array<ConfigurationType>>(dispatch, parameters);
 
@@ -310,7 +310,7 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
       dispatch(
         setConfigurations({
           configurations: response,
-        })
+        }),
       );
     }
   } catch (error) {
@@ -371,7 +371,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
       };
-      
+
       return { ...state, profile };
     }
     case ActionTypes.TOGGLE_SIDEBAR: {
@@ -450,9 +450,9 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       } = action;
 
       const { profile } = state;
-      const update = { ...profile, zone: name, zoneDescription: description }
+      const update = { ...profile, zone: name, zoneDescription: description };
 
-      return { ...state, profile: update}
+      return { ...state, profile: update };
     }
     case ActionTypes.SET_CONFIGURATIONS: {
       const {

@@ -2,7 +2,7 @@ import { FC } from "react";
 
 interface ValidationInputProps {
   className: string;
-  defaultValue: string;
+  defaultValue?: string;
   id: string;
   onChange: Function;
   errMsg: string;

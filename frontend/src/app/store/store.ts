@@ -6,7 +6,7 @@ import { rootReducer } from "./reducers";
 const persistConfig = {
   key: "enforcement",
   storage,
-  whitelist: ["app", "codeTables"]
+  whitelist: ["app", "codeTables"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -24,4 +24,4 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action<string>
 >;
 
-export const persistor = persistStore(store)
+export const persistor = persistStore(store);

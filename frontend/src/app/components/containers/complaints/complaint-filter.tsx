@@ -43,7 +43,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const communities = useAppSelector(selectCodeTable("communities"));
   const officers = useAppSelector(selectOfficersDropdown);
   const natureOfComplaintTypes = useAppSelector(
-    selectCodeTable("wildlifeNatureOfComplaintCodes")
+    selectCodeTable("wildlifeNatureOfComplaintCodes"),
   );
   const speciesTypes = useAppSelector(selectCodeTable("speciesCodes"));
   const statusTypes = useAppSelector(selectCodeTable("complaintStatusCodes"));
@@ -54,7 +54,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
       dispatch(updateFilter(payload));
     },
-    []
+    [],
   );
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
@@ -75,7 +75,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       return (
         <div className="content filter-container">
           {/* <!-- wildlife filters --> */}
-          <div className="comp-filter-left" id="comp-filter-nature-of-complaint-id">
+          <div
+            className="comp-filter-left"
+            id="comp-filter-nature-of-complaint-id"
+          >
             {/* <!-- nature of complaints --> */}
             <div className="comp-filter-label">Nature of Complaint</div>
             <div className="filter-select-padding">
@@ -87,8 +90,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="nature-of-complaint-select-id"
                 value={natureOfComplaint}
@@ -107,8 +109,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="species-select-id"
                 value={species}
@@ -196,8 +197,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="status-select-id"
                 value={status}
@@ -228,8 +228,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="violation-type-select-id"
                 value={violationType}
@@ -317,8 +316,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="status-select-id"
                 value={status}
@@ -357,8 +355,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 value={region}
                 id="region-select-filter-id"
@@ -377,8 +374,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="zone-select-id"
                 value={zone}
@@ -398,8 +394,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="community-select-id"
                 value={community}
@@ -419,8 +414,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 placeholder="Select"
                 classNamePrefix="comp-select"
                 classNames={{
-                  menu: () =>
-                    'top-layer-select',  
+                  menu: () => "top-layer-select",
                 }}
                 id="officer-select-id"
                 value={officer}
