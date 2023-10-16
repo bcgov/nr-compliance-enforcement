@@ -16,7 +16,9 @@ export const SampleModal: FC<SampleModalProps> = ({ close, submit }) => {
   return (
     <>
       {title && (
-        <Modal.Header closeButton={true}> {/* set true / false to display the close button */}
+        <Modal.Header closeButton={true}>
+          {" "}
+          {/* set true / false to display the close button */}
           <Modal.Title>{title}</Modal.Title>
           {/* <!-- additional header content should go here --> */}
         </Modal.Header>
@@ -30,7 +32,9 @@ export const SampleModal: FC<SampleModalProps> = ({ close, submit }) => {
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary" onClick={close}>Close</Button>
+        <Button variant="outline-primary" onClick={close}>
+          Close
+        </Button>
         <Button onClick={submit}>OK</Button>
       </Modal.Footer>
     </>

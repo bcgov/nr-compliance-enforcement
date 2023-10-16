@@ -1,4 +1,3 @@
-
 export interface SpeciesCode {
   species_code: string;
   legacy_code: string | null;

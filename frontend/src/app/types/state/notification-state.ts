@@ -1,4 +1,4 @@
-export interface NotificationState { 
-    type?: string,
-    message?: string
+export interface NotificationState {
+  type?: string;
+  message?: string;
 }

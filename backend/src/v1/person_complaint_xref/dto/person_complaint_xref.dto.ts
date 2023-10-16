@@ -46,7 +46,7 @@ export class PersonComplaintXrefDto
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "System generated unique key for a hwcr complaint.",
   })
-  public complaint: Complaint;
+  public complaint_identifier: Complaint;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",

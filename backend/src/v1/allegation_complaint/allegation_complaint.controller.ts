@@ -11,8 +11,6 @@ import {
   Logger,
 } from "@nestjs/common";
 import { AllegationComplaintService } from "./allegation_complaint.service";
-import { CreateAllegationComplaintDto } from "./dto/create-allegation_complaint.dto";
-import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.dto";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -34,7 +32,7 @@ export class AllegationComplaintController {
 
   @Post()
   @Roles(Role.COS_OFFICER)
-  create(@Body() createAllegationComplaintDto: CreateAllegationComplaintDto) {
+  create(@Body('allegationComplaint') createAllegationComplaintDto: string) {
     return this.allegationComplaintService.create(createAllegationComplaintDto);
   }
 

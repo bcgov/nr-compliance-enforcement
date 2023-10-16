@@ -16,11 +16,9 @@ import {
 } from "../../../providers/complaint-filter-provider";
 import {
   resetFilters,
-  ComplaintFilterPayload
+  ComplaintFilterPayload,
 } from "../../../store/reducers/complaint-filters";
-import {
-  selectDefaultZone
-} from "../../../store/reducers/app";
+import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
@@ -31,20 +29,18 @@ type Props = {
 };
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
-  const navigate = useNavigate();
-  const { dispatch: filterDispatch } = useContext(
-    ComplaintFilterContext
-  ); //-- make sure to keep this dispatch renamed
+  const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
+  const navigate = useNavigate();
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
   const totalComplaints = useAppSelector(
-    selectTotalComplaintsByType(complaintType)
+    selectTotalComplaintsByType(complaintType),
   );
 
   const totalComplaintsOnMap = useAppSelector(
-    selectTotalComplaintsOnMapByType(complaintType)
+    selectTotalComplaintsOnMapByType(complaintType),
   );
 
   const [isExpanded, setExpanded] = useState(false);
@@ -63,7 +59,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   // renders the complaint count on the list and map views, for the selected complaint type
   const renderComplaintTotal = (
-    selectedComplaintType: string
+    selectedComplaintType: string,
   ): string | undefined => {
     if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
       if (complaintType === selectedComplaintType) {
@@ -88,7 +84,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     filterDispatch(resetFilters(payload));
   };
 
-  const handleCreateClick = (e: any) => {
+  const handleCreateClick = () => {
     navigate(`/complaint/createComplaint`);
   };
 
@@ -128,24 +124,22 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           {/* <!-- dynamic tabs end --> */}
 
           <Nav.Item className="ms-auto">
-            <div hidden onClick={() => handleCreateClick(COMPLAINT_TYPES.ERS)}>
+            <div className="cursor-pointer" onClick={() => handleCreateClick()}>
               <div
-                className="complaint-create-image-container"
+                className="complaint-create-image-container left-float"
                 id="complaint-create-image-id"
               >
-                <i className="bi bi-filter filter-image-spacing"></i>
+                <i className="bi bi-plus-circle filter-image-spacing"></i>
               </div>
               <div className="left-float">Create</div>
               <div className="clear-left-float"></div>
             </div>
           </Nav.Item>
-
           <Nav.Item
-            className="ms-auto"
             {...getToggleProps({
               onClick: () => {
                 const filterElem = document.querySelector(
-                  "#collapsible-complaints-list-filter-id"
+                  "#collapsible-complaints-list-filter-id",
                 );
                 const rect = filterElem?.getBoundingClientRect();
                 const bottom = rect?.bottom;

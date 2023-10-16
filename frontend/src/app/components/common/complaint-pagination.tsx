@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
-import Select from 'react-select';
+import Select from "react-select";
 import Pagination from "react-bootstrap/Pagination";
 import Option from "../../types/app/option";
 
@@ -23,19 +23,22 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   onPageChange,
   resultsPerPage,
 }) => {
-
   const [specificPage, setSpecificPage] = useState<string>("");
-  const pageSizeOptions: Option[] = [{label: `${resultsPerPage } / page`, value: `${resultsPerPage}`}];
-  const defaultOption: Option = {label: `${resultsPerPage } / page`, value: `${resultsPerPage}`};
+  const pageSizeOptions: Option[] = [
+    { label: `${resultsPerPage} / page`, value: `${resultsPerPage}` },
+  ];
+  const defaultOption: Option = {
+    label: `${resultsPerPage} / page`,
+    value: `${resultsPerPage}`,
+  };
 
   useEffect(() => {
     // Update the local state whenever selectedValue changes so that the pagination starts at 1 again.
     onPageChange(1);
   }, [totalItems]);
 
-
   const handleEnterKeyPress = (
-    event: React.KeyboardEvent<HTMLInputElement>
+    event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === "Enter") {
       handleSpecificPageChange();
@@ -51,7 +54,6 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     }
   };
 
-  
   const renderPaginationItems = () => {
     const items = [];
 
@@ -62,7 +64,13 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     // Render the ellipsis if necessary
     if (startPage > 1) {
       items.push(
-        <Pagination.Item key="pagination_first_page" id="pagination_first_page_id" onClick={() => onPageChange(1)}>{1}</Pagination.Item>
+        <Pagination.Item
+          key="pagination_first_page"
+          id="pagination_first_page_id"
+          onClick={() => onPageChange(1)}
+        >
+          {1}
+        </Pagination.Item>,
       );
     }
 
@@ -71,7 +79,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
         <Pagination.Ellipsis
           key="ellipsis-start"
           onClick={() => onPageChange(startPage - 1)}
-        />
+        />,
       );
     }
 
@@ -79,13 +87,13 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     for (let page = startPage; page <= endPage; page++) {
       items.push(
         <Pagination.Item
-        id={`pagination_page_${page}_id`}
+          id={`pagination_page_${page}_id`}
           key={page}
           active={page === currentPage}
           onClick={() => onPageChange(page)}
         >
           {page}
-        </Pagination.Item>
+        </Pagination.Item>,
       );
     }
 
@@ -94,12 +102,16 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
         <Pagination.Ellipsis
           key="ellipsis-end"
           onClick={() => onPageChange(endPage + 1)}
-        />
+        />,
       );
       items.push(
-        <Pagination.Item key="pagination_last_page" id="pagination_last_page_id" onClick={() => onPageChange(lastPage)}>
+        <Pagination.Item
+          key="pagination_last_page"
+          id="pagination_last_page_id"
+          onClick={() => onPageChange(lastPage)}
+        >
           {lastPage}
-        </Pagination.Item>
+        </Pagination.Item>,
       );
     }
 
@@ -107,7 +119,10 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   };
 
   return (
-    <div id="complaint_pagination_container_id" className="pagination_container">
+    <div
+      id="complaint_pagination_container_id"
+      className="pagination_container"
+    >
       <div className="pagination_total">Total {totalItems} items</div>
       {totalItems > resultsPerPage && (
         <>
@@ -125,12 +140,12 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
             </Pagination>
           </div>
           <div>
-          <Select 
-                id="resultsPerPageSelect"
-                options={pageSizeOptions}
-                classNamePrefix="comp-select"
-                defaultValue={defaultOption}
-               />
+            <Select
+              id="resultsPerPageSelect"
+              options={pageSizeOptions}
+              classNamePrefix="comp-select"
+              defaultValue={defaultOption}
+            />
           </div>
           <div>
             <Form.Label>Go to</Form.Label>

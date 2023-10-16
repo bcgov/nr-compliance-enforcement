@@ -9,8 +9,8 @@ type Props = {
   complaint_identifier: string;
   complaint_type: string;
   complaint_zone: string;
-  sortColumn: string,
-  sortOrder: string,
+  sortColumn: string;
+  sortOrder: string;
   assigned_ind: boolean;
 };
 
@@ -25,7 +25,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
   complaint_zone,
   assigned_ind,
   sortColumn,
-  sortOrder
+  sortOrder,
 }) => {
   /*
    */
@@ -82,7 +82,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
           endDateFilter: endDateFilter,
           complaintStatusFilter: complaintStatusFilter,
         },
-      })
+      }),
     );
   };
 
@@ -99,7 +99,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
           complaint_type: complaint_type,
           zone: complaint_zone,
         },
-      })
+      }),
     );
   };
 
