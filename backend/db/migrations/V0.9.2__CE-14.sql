@@ -82,7 +82,7 @@ alter table public.complaint add column timezone_code varchar(10);
 alter table public.complaint add constraint fk_complaint_timezone_code FOREIGN KEY (timezone_code) REFERENCES public.timezone_code(timezone_code);
 
 -- The data was stored with a PDT offset.  Change this to UTC by subtracting 7 hours
-update public.complaint set incident_utc_datetime_temp = incident_datetime  - interval '7 hours';
+update public.complaint set incident_utc_datetime = incident_datetime  - interval '7 hours';
 
 alter table public.complaint drop column incident_utc_datetime;
 
