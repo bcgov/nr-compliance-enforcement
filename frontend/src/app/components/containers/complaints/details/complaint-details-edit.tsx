@@ -129,7 +129,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     createdBy,
     lastUpdated,
     personGuid,
-    status,
+    statusCode,
     natureOfComplaintCode,
     speciesCode,
     violationTypeCode,
@@ -193,9 +193,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   ];
 
   // Used to set selected values in the dropdowns
-  console.log("status: " + status);
+  console.log("status: " + statusCode);
   const selectedStatus = complaintStatusCodes.find(
-    (option) => option.value === status,
+    (option) => option.value === statusCode,
   );
   console.log("selectedStatus: " + JSON.stringify(selectedStatus));
   const selectedSpecies = speciesCodes.find(
