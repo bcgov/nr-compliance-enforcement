@@ -40,7 +40,7 @@ export class GeoOrgUnitTypeCode
         description: "The timestamp when the geo org unit type was created",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -54,7 +54,7 @@ export class GeoOrgUnitTypeCode
         description: "The timestamp when the geo org unit type was last updated",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
       constructor(geo_org_unit_type_code?: string) {
         this.geo_org_unit_type_code = geo_org_unit_type_code;

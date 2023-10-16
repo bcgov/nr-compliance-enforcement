@@ -40,7 +40,7 @@ export class AgencyCode
         description: "The timestamp when the agency was created",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -54,7 +54,7 @@ export class AgencyCode
         description: "The timestamp when the agency was last updated",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
       constructor(agency_code?:string) {
         this.agency_code = agency_code;
