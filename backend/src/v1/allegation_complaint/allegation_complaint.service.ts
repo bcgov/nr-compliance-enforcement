@@ -48,7 +48,7 @@ export class AllegationComplaintService {
 
     const createAllegationComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
     createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
-    createAllegationComplaintDto.update_timestamp = createAllegationComplaintDto.create_timestamp = new Date();
+    createAllegationComplaintDto.update_utc_timestamp = createAllegationComplaintDto.create_utc_timestamp = new Date();
     let newAllegationComplaintString;
     try {
       const complaint: Complaint = await this.complaintService.create(

@@ -10,7 +10,7 @@ export interface Complaint {
   location_summary_text: string;
   location_detailed_text: string;
   incident_datetime: Date;
-  incident_reported_datetime: Date;
+  incident_reported_utc_timestmp: Date;
   referred_by_agency_other_text: null;
   create_user_id: string;
   create_utc_timestamp: Date;

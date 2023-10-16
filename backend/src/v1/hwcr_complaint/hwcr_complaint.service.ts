@@ -42,7 +42,7 @@ export class HwcrComplaintService {
 
     const createHwcrComplaintDto: CreateHwcrComplaintDto = JSON.parse(hwcrComplaint);
     createHwcrComplaintDto.hwcr_complaint_guid = randomUUID();
-    createHwcrComplaintDto.update_timestamp = createHwcrComplaintDto.create_timestamp = new Date();
+    createHwcrComplaintDto.update_utc_timestamp = createHwcrComplaintDto.create_utc_timestamp = new Date();
     let newHwcrComplaintString;
     try {
       const complaint: Complaint = await this.complaintService.create(
