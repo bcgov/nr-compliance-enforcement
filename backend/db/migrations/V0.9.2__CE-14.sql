@@ -89,6 +89,9 @@ alter table public.complaint drop column incident_datetime;
 -- popupulate the timezone codes, assume everything created up to this point was in PDT
 update public.complaint set timezone_code = 'PDT';
 
+-- set the timezone code to required
+alter table public.complaint alter column timezone_code DROP NULL;
+
 comment on
 column public.complaint.incident_utc_datetime is 'The date and time at which the complaint occurred, in UTC.';
 comment on
