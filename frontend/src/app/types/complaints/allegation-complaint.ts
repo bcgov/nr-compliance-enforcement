@@ -10,7 +10,7 @@ export interface AllegationComplaint {
     complaint_identifier: string;
     geo_organization_unit_code: GeoOrganizationUnitCode;
     location_geometry_point: LocationGeometryPoint;
-    incident_datetime: string;
+    incident_utc_datetime: string;
     incident_reported_utc_timestmp: string;
     location_summary_text: string;
     location_detailed_text: string;

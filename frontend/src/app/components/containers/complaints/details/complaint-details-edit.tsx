@@ -269,14 +269,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         updateComplaint,
       ) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_datetime =
+      hwcrComplaint.complaint_identifier.incident_utc_datetime =
         date.toDateString();
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         updateComplaint,
       ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_datetime =
+      allegationComplaint.complaint_identifier.incident_utc_datetime =
         date.toDateString();
       setUpdateComplaint(allegationComplaint);
     }

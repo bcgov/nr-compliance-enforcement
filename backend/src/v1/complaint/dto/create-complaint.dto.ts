@@ -13,7 +13,7 @@ export class CreateComplaintDto extends PickType(ComplaintDto, [
   "location_summary_text",
   "location_detailed_text",
   "incident_reported_utc_timestmp",
-  "incident_datetime",
+  "incident_utc_datetime",
   "referred_by_agency_other_text",
   "create_user_id",
   "create_utc_timestamp",

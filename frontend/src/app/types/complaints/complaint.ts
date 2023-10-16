@@ -9,7 +9,7 @@ export interface Complaint {
   location_geometry_point: LocationGeometryPoint;
   location_summary_text: string;
   location_detailed_text: string;
-  incident_datetime: Date;
+  incident_utc_datetime: Date;
   incident_reported_utc_timestmp: Date;
   referred_by_agency_other_text: null;
   create_user_id: string;
