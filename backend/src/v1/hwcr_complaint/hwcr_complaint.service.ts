@@ -5,14 +5,14 @@ import { HwcrComplaint } from './entities/hwcr_complaint.entity';
 import { ComplaintService } from '../complaint/complaint.service';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UUID } from 'crypto';
-import { CreateComplaintDto } from '../complaint/dto/create-complaint.dto';
+import { UUID, randomUUID } from 'crypto';
 import { AttractantHwcrXrefService } from '../attractant_hwcr_xref/attractant_hwcr_xref.service';
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from 'src/types/zone_at_a_glance/zone_at_a_glance_stats';
 import { CosGeoOrgUnit } from '../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
 import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
+import { Complaint } from '../complaint/entities/complaint.entity';
 
 @Injectable()
 export class HwcrComplaintService {
@@ -34,24 +34,37 @@ export class HwcrComplaintService {
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
-  async create(hwcrComplaint: any): Promise<HwcrComplaint> {
+  async create(hwcrComplaint: string): Promise<HwcrComplaint> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
+
+    const createHwcrComplaintDto: CreateHwcrComplaintDto = JSON.parse(hwcrComplaint);
+    createHwcrComplaintDto.hwcr_complaint_guid = randomUUID();
+    createHwcrComplaintDto.update_utc_timestamp = createHwcrComplaintDto.create_utc_timestamp = new Date();
     let newHwcrComplaintString;
     try {
-      await this.complaintService.create(
-        <CreateComplaintDto>hwcrComplaint,
+      const complaint: Complaint = await this.complaintService.create(
+        JSON.stringify(createHwcrComplaintDto.complaint_identifier),
         queryRunner
       );
+      createHwcrComplaintDto.create_user_id = createHwcrComplaintDto.update_user_id = complaint.create_user_id;
+      createHwcrComplaintDto.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
       newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
-        <CreateHwcrComplaintDto>hwcrComplaint
+        createHwcrComplaintDto
       );
       let newHwcrComplaint: HwcrComplaint;
       newHwcrComplaint = <HwcrComplaint>(
         await queryRunner.manager.save(newHwcrComplaintString)
       );
+
+      if(createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+      { 
+          createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newHwcrComplaint.complaint_identifier;
+          await this.personComplaintXrefService.assignOfficer(queryRunner, newHwcrComplaint.complaint_identifier.complaint_identifier, createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+      }
+      
       if (newHwcrComplaint.attractant_hwcr_xref != null) {
         for (let i = 0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
           const blankHwcrComplaint = new HwcrComplaint();
@@ -60,7 +73,7 @@ export class HwcrComplaintService {
           newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint_guid =
             blankHwcrComplaint;
           await this.attractantHwcrXrefService.create(
-            //queryRunner,
+            queryRunner,
             newHwcrComplaint.attractant_hwcr_xref[i]
           );
         }
@@ -111,12 +124,12 @@ export class HwcrComplaintService {
     }
 
     const sortString =
-      sortColumn !== "update_timestamp"
+      sortColumn !== "update_utc_timestamp"
         ? sortTable + sortColumn
-        : "_update_timestamp";
+        : "_update_utc_timestamp";
 
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
-      .addSelect("GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)","_update_timestamp")
+      .addSelect("GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)","_update_utc_timestamp")
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
@@ -129,7 +142,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
-      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
+      .addOrderBy('complaint_identifier.incident_reported_utc_timestmp', sortColumn === 'incident_reported_utc_timestmp' ? sortOrderString : "DESC");
       
 
       if(community !== null && community !== undefined && community !== '')
@@ -163,11 +176,11 @@ export class HwcrComplaintService {
       }
       if(incidentReportedStart !== null && incidentReportedStart !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
       }
       if(incidentReportedEnd !== null && incidentReportedEnd !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
       }
       if(status !== null && status !== undefined && status !== "")
       {
@@ -236,11 +249,11 @@ export class HwcrComplaintService {
       }
       if(incidentReportedStart !== null && incidentReportedStart !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
       }
       if(incidentReportedEnd !== null && incidentReportedEnd !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
       }
       if(status !== null && status !== undefined && status !== "")
       {
@@ -258,7 +271,7 @@ export class HwcrComplaintService {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
-      const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
+      const sortString =  sortColumn !== 'update_utc_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)';
 
 
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
@@ -275,8 +288,8 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
       .addOrderBy(
-        "complaint_identifier.incident_reported_datetime",
-        sortColumn === "incident_reported_datetime" ? sortOrderString : "DESC"
+        "complaint_identifier.incident_reported_utc_timestmp",
+        sortColumn === "incident_reported_utc_timestmp" ? sortOrderString : "DESC"
       );
 
 
@@ -305,12 +318,13 @@ export class HwcrComplaintService {
     updateHwcrComplaint: string
   ): Promise<HwcrComplaint> {
 
-    //const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    //await queryRunner.connect();
-    //await queryRunner.startTransaction();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try
     {
+      
       const updateHwcrComplaintDto: UpdateHwcrComplaintDto = JSON.parse(updateHwcrComplaint);
       const updateData = 
         {
@@ -321,27 +335,24 @@ export class HwcrComplaintService {
           { hwcr_complaint_guid },
           updateData
         );
-        //queryRunner.manager.save(updatedValue);
-        //await this.complaintService.updateComplex(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
         await this.complaintService.updateComplex(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
         //Note: this needs a refactor for when we have more types of persons being loaded in
-        //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        
         if(updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
-          await this.personComplaintXrefService.assignOfficer(updateHwcrComplaintDto.complaint_identifier.complaint_identifier, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
+          await this.personComplaintXrefService.assignOfficer(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
-        //await this.attractantHwcrXrefService.updateComplaintAttractants(queryRunner, updateHwcrComplaintDto.hwcr_complaint_guid, updateHwcrComplaintDto.attractant_hwcr_xref);
-        await this.attractantHwcrXrefService.updateComplaintAttractants(updateHwcrComplaintDto as HwcrComplaint, updateHwcrComplaintDto.attractant_hwcr_xref);
-        //await queryRunner.commitTransaction();
+        await this.attractantHwcrXrefService.updateComplaintAttractants(queryRunner, updateHwcrComplaintDto as HwcrComplaint, updateHwcrComplaintDto.attractant_hwcr_xref);
+        await queryRunner.commitTransaction();
       } 
       catch (err) {
         this.logger.error(err);
-        //await queryRunner.rollbackTransaction();
+        await queryRunner.rollbackTransaction();
         throw new BadRequestException(err);
       } 
       finally
       {
-        //await queryRunner.release();
+        await queryRunner.release();
       }
       return this.findOne(hwcr_complaint_guid);
     }

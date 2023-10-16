@@ -26,15 +26,15 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   const {
     complaint_identifier: id,
-    incident_reported_datetime,
+    incident_reported_utc_timestmp,
     cos_geo_org_unit,
     location_summary_text: locationSummary,
     person_complaint_xref,
     complaint_status_code,
-    update_timestamp,
+    update_utc_timestamp,
   } = complaintIdentifier;
 
-  const incidentReportedDatetime = formatDateTime(incident_reported_datetime);
+  const incidentReportedDatetime = formatDateTime(incident_reported_utc_timestmp);
   const natureCode =
     hwcr_complaint_nature_code !== null
       ? hwcr_complaint_nature_code.long_description
@@ -44,12 +44,13 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   const firstName = person_complaint_xref[0]?.person_guid?.first_name;
   const lastName = person_complaint_xref[0]?.person_guid?.last_name;
-  
+
   const firstInitial = firstName?.length > 0 ? firstName.substring(0, 1) : "";
   const lastInitial = lastName?.length > 0 ? lastName.substring(0, 1) : "";
   const initials = firstInitial + lastInitial;
-  
-  const displayName = firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
+
+  const displayName =
+    firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
 
   const statusButtonClass =
     complaint_status_code.long_description === "Closed"
@@ -57,7 +58,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       : "btn btn-primary comp-status-open-btn";
   const status = complaint_status_code.long_description;
 
-  const updateDate = formatDateTime(update_timestamp);
+  const updateDate = formatDateTime(update_utc_timestamp);
 
   const assigned_ind =
     person_complaint_xref.length > 0 && person_complaint_xref[0].active_ind;

@@ -6,7 +6,11 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
-import { getComplaintsOnMap, selectComplaintLocations, setComplaintsOnMap } from "../../../store/reducers/complaint-locations";
+import {
+  getComplaintsOnMap,
+  selectComplaintLocations,
+  setComplaintsOnMap,
+} from "../../../store/reducers/complaint-locations";
 
 type Props = {
   type: string;
@@ -21,12 +25,12 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
 
-  const [sortKey, setSortKey] = useState("incident_reported_datetime");
+  const [sortKey, setSortKey] = useState("incident_reported_utc_timestmp");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
   const generateComplaintRequestPayload = (
     complaintType: string,
-    filters: ComplaintFilters
+    filters: ComplaintFilters,
   ): ComplaintRequestPayload => {
     const {
       region,
@@ -81,5 +85,10 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
     };
   }, []);
 
-  return <LeafletMapWithMultiplePoints complaint_type={type} markers={coordinatesArray} />;
+  return (
+    <LeafletMapWithMultiplePoints
+      complaint_type={type}
+      markers={coordinatesArray}
+    />
+  );
 };

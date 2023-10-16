@@ -41,7 +41,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
 
-  const [sortKey, setSortKey] = useState("incident_reported_datetime");
+  const [sortKey, setSortKey] = useState("incident_reported_utc_timestmp");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
   const [page, setPage] = useState<number>(1);
@@ -51,7 +51,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
     complaintType: string,
     filters: ComplaintFilters,
     page: number,
-    pageSize: number
+    pageSize: number,
   ): ComplaintRequestPayload => {
     const {
       region,
@@ -104,7 +104,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
         type,
         filters,
         page,
-        pageSize
+        pageSize,
       );
 
       dispatch(getComplaints(type, payload));
@@ -127,7 +127,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {
       setSortDirection(
-        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC
+        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC,
       );
     } else {
       setSortKey(sortInput);
@@ -137,7 +137,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
-    id: string
+    id: string,
   ) => {
     e.preventDefault();
 

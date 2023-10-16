@@ -7,7 +7,7 @@ export class CreatePersonDto extends PickType(PersonDto, [
     "middle_name_2",
     "last_name",
     "create_user_id",
-    "create_timestamp",
+    "create_utc_timestamp",
     "update_user_id",
-    "update_timestamp"
+    "update_utc_timestamp"
           ] as const) {}

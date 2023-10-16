@@ -43,7 +43,7 @@ export class PersonDto
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the person was created",
       })
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -55,6 +55,6 @@ export class PersonDto
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the person was last updated",
       })
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
 }

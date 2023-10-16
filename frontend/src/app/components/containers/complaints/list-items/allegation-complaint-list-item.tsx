@@ -26,15 +26,15 @@ export const AllegationComplaintListItem: FC<Props> = ({
 
   const {
     complaint_identifier: id,
-    incident_reported_datetime,
+    incident_reported_utc_timestmp,
     cos_geo_org_unit,
     location_summary_text: locationSummary,
     person_complaint_xref,
     complaint_status_code,
-    update_timestamp,
+    update_utc_timestamp,
   } = complaintIdentifier;
 
-  const incidentReportedDatetime = formatDateTime(incident_reported_datetime);
+  const incidentReportedDatetime = formatDateTime(incident_reported_utc_timestmp);
 
   const location = cos_geo_org_unit ? cos_geo_org_unit.area_name : null;
 
@@ -54,7 +54,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
       : "btn btn-primary comp-status-open-btn";
   const status = complaint_status_code.long_description;
 
-  const updateDate = formatDateTime(update_timestamp);
+  const updateDate = formatDateTime(update_utc_timestamp);
 
   const assigned_ind =
     person_complaint_xref.length > 0 && person_complaint_xref[0].active_ind;
@@ -130,7 +130,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
           {status}
         </button>
       </td>
-      <td 
+      <td
         className="sortableHeader comp-cell-width-110 comp-header-right-border"
         onClick={(event) => complaintClick(event, id)}
       >

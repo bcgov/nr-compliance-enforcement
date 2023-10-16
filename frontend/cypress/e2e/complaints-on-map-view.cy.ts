@@ -43,7 +43,9 @@ describe("Complaints on map tests", () => {
       }
 
       // find how many markers there are, we'll compare this to the count after another filter is applied
-      cy.get(".leaflet-marker-icon").its("length").as("complaintCountWithoutFilters");
+      cy.get(".leaflet-marker-icon")
+        .its("length")
+        .as("complaintCountWithoutFilters");
 
       cy.get("#complaint-filter-image-id").click({ force: true });
 
@@ -73,7 +75,7 @@ describe("Complaints on map tests", () => {
 
       cy.wrap("@complaintCountWithoutFilters").should(
         "not.eq",
-        "@complaintCountWithFilters"
+        "@complaintCountWithFilters",
       );
 
       // switch back to list view to verify filters are still applied
@@ -126,8 +128,14 @@ describe("Complaints on map tests", () => {
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.get("div.hwcr-conflict-type").should("exist");
-        cy.get("div.hwcr-conflict-type").should("have.text","Human Wildlife Conflict");
-        cy.get("div.hwcr-conflict-type").should("not.have.text","Human Wildlife Conflicts");
+        cy.get("div.hwcr-conflict-type").should(
+          "have.text",
+          "Human Wildlife Conflict",
+        );
+        cy.get("div.hwcr-conflict-type").should(
+          "not.have.text",
+          "Human Wildlife Conflicts",
+        );
       }
 
       // click the "view details" button to navigate to the complaint

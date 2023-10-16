@@ -25,8 +25,6 @@ import { PersonComplaintXrefService } from '../person_complaint_xref/person_comp
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;
   let repo: Repository<AllegationComplaint>;
-  let complaintService: ComplaintService;
-  let complaintsRepository: Repository<Complaint>;
   let dataSourceMock: MockType<DataSource>
 
   const createQueryBuilder: any = {
@@ -58,7 +56,9 @@ describe("AllegationComplaintService", () => {
     new AgencyCode("COS"),
     new AgencyCode("COS"),
     new ComplaintStatusCode("OPEN"),
-    new GeoOrganizationUnitCode("CRBOCHLCTN")
+    new GeoOrganizationUnitCode("CRBOCHLCTN"),
+    new CosGeoOrgUnit("CRBOCHLCTN"),
+    []
 );
   const oneAllegationComplaint = new AllegationComplaint(
     oneComplaint,
@@ -94,7 +94,9 @@ describe("AllegationComplaintService", () => {
     new AgencyCode("COS"),
     new AgencyCode("COS"),
     new ComplaintStatusCode("OPEN"),
-    new GeoOrganizationUnitCode("CRBOCHLCTN")
+    new GeoOrganizationUnitCode("CRBOCHLCTN"),
+    new CosGeoOrgUnit("CRBOCHLCTN"),
+    []
 );
   const twoAllegationComplaint = new AllegationComplaint(
     twoComplaint,
@@ -123,16 +125,19 @@ describe("AllegationComplaintService", () => {
   const threeReferredByAgencyOtherText = "other text3";
   const threeCreateUserId = "chris";
   const threeCreateTimestamp = new Date();
-  const threeUpdateUserId = "chis";
+  const threeUpdateUserId = "chris";
   const threeUpdateTimestamp = new Date();
   const threeCompliantIdentifier = "COS-1800";
   const threeReferredByAgencyCode = new AgencyCode("COS");
   const threeOwnedByAgencyCode = new AgencyCode("COS");
   const threeComplaintStatusCode = new ComplaintStatusCode("OPEN");
   const threeGeoOrganizationUnitCode = new GeoOrganizationUnitCode("CRBOCHLCTN");
+  const threeCosGeoOrgUnit = new CosGeoOrgUnit("CRBOCHLCTN");
+  const threePersonXref = [];
+  
   const threeComplaint = new Complaint(threeDetailText, threeCallerName, threeCallerAddress, threeCallerEmail, threeCallerPhone1, threeCallerPhone2, threeCallerPhone3, threeLocationGeometryPoint,
     threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateTimestamp, threeUpdateUserId,
-    threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode);
+    threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode, threeCosGeoOrgUnit, threePersonXref);
     const threeViolationCode = new ViolationCode("AINVSPC");
     const threeInProgressInd = true;
     const threeObservedInd = true;
@@ -151,6 +156,7 @@ describe("AllegationComplaintService", () => {
     findOne: jest.fn(() => { return Promise.resolve(oneAllegationComplaint)}),
     create: jest.fn(() => { return Promise.resolve(threeAllegationComplaint)}),
     save: jest.fn(),
+    
     queryRunner:
       {
         connect: jest.fn(),
@@ -159,7 +165,10 @@ describe("AllegationComplaintService", () => {
         rollbackTransaction: jest.fn(),
         release: jest.fn(),
         manager: {
-          save: jest.fn()
+          save: jest.fn(),
+          query: jest.fn().mockImplementation(() => ({
+            then: jest.fn(),
+          }))
         }
       },
 
@@ -178,15 +187,15 @@ describe("AllegationComplaintService", () => {
     // as these do not actually use their return values in our sample
     // we just make sure that their resolve is true to not crash
     delete: jest.fn(() => { return Promise.resolve(true)}),
-  })
+  });
 
   const complaintRepositoryMockFactory = () => ({
     // mock repository functions for testing
     findAll: jest.fn(),
     find: jest.fn(),
     findOneOrFail: jest.fn(),
-    create: jest.fn(),
-    save: jest.fn(),
+    create: jest.fn(() => { return Promise.resolve(oneComplaint)}),
+    save: jest.fn(() => { return Promise.resolve(oneComplaint)}),
     queryRunner:
       {
         connect: jest.fn(),
@@ -195,7 +204,10 @@ describe("AllegationComplaintService", () => {
         rollbackTransaction: jest.fn(),
         release: jest.fn(),
         manager: {
-          save: jest.fn()
+          save: jest.fn(),
+          query: jest.fn().mockImplementation(() => ({
+            then: jest.fn(),
+          }))
         }
       },
 
@@ -205,6 +217,7 @@ describe("AllegationComplaintService", () => {
     // as these do not actually use their return values in our sample
     // we just make sure that their resolve is true to not crash
     delete: jest.fn(() => { return Promise.resolve(true)}),
+    remove: jest.fn(() => { return Promise.resolve(true)}),
   });
 
   const cosGeoOrgUnitRepositoryMockFactory = () => ({
@@ -222,7 +235,7 @@ describe("AllegationComplaintService", () => {
         rollbackTransaction: jest.fn(),
         release: jest.fn(),
         manager: {
-          save: jest.fn()
+          save: jest.fn(),
         }
       },
 
@@ -346,18 +359,17 @@ describe("AllegationComplaintService", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AllegationComplaintService,
-        ComplaintService,
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory
         },
+        AllegationComplaintService,
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: allegationComplaintRepositoryMockFactory
         },
         {
-          provide: getRepositoryToken(Complaint),
+          provide: ComplaintService,
           useFactory: complaintRepositoryMockFactory
         },
         CosGeoOrgUnitService,
@@ -395,8 +407,6 @@ describe("AllegationComplaintService", () => {
 
     service = module.get<AllegationComplaintService>(AllegationComplaintService);
     repo = module.get<Repository<AllegationComplaint>>(getRepositoryToken(AllegationComplaint));
-    complaintService = module.get<ComplaintService>(ComplaintService);
-    complaintsRepository = module.get<Repository<Complaint>>(getRepositoryToken(Complaint));
     dataSourceMock = module.get(DataSource);
   });
 
@@ -405,16 +415,17 @@ describe("AllegationComplaintService", () => {
   });
 
   it("should successfully add a complaint", async() => {
-    await service.create(threeAllegationComplaint);
+    await service.create(JSON.stringify(threeAllegationComplaint));
     expect(dataSourceMock.createQueryRunner).toBeCalled();
   });
 
   it("should return an array of complaints", async () => {
-    const complaints = await service.findAll('incident_reported_datetime', 'DESC');
+    const complaints = await service.findAll('incident_reported_utc_timestmp', 'DESC');
     expect(complaints).toEqual(allegationComplaintArray);
   });
 
   describe("remove", () => {
+    
     it("should return {deleted: true}", () => {
       expect(service.remove(twoAllegationComplaint.allegation_complaint_guid)).resolves.toEqual({ deleted: true });
     });

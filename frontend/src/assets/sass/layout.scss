@@ -22,7 +22,7 @@
 
 .fixed-filter-header {
   position: sticky;
-  top: 120px; // Header (72px) + Tabs (48px) 
+  top: 120px; // Header (72px) + Tabs (48px)
   background-color: $white;
   z-index: 6000;
 }
@@ -99,12 +99,12 @@
   padding: 16px;
   z-index: 8;
   overflow: hidden;
-  
-  ul > li:first-child { 
+
+  ul > li:first-child {
     margin-top: 0px;
   }
 
-  ul > li:last-child { 
+  ul > li:last-child {
     margin-bottom: 0px;
   }
 
@@ -155,7 +155,7 @@
 
 .comp-nav-item-name {
   color: $bc-gov-primary;
-  
+
   a {
     text-decoration: none;
     color: $bc-gov-primary;
@@ -164,7 +164,7 @@
 
 .comp-nav-item-icon {
   color: $bc-gov-primary;
-  
+
   a {
     text-decoration: none;
     color: $bc-gov-primary;
@@ -188,7 +188,7 @@
     color: $bc-gov-primary;
   }
 
-  li { 
+  li {
     margin-top: 12px;
     margin-bottom: 12px;
   }
@@ -256,7 +256,7 @@ button.modal-buttons {
   align-items: flex-start;
   padding: 16px 24px;
   gap: 24px;
-  
+
   width: 498px;
   height: 88px;
 
@@ -265,7 +265,6 @@ button.modal-buttons {
   align-self: stretch;
   flex-grow: 0;
   cursor: pointer;
-
 }
 
 .selected {
@@ -283,7 +282,7 @@ button.modal-buttons {
   align-items: flex-start;
   padding: 7px 8px 9px 8px;
   gap: 8px;
-  
+
   width: 56px;
   height: 56px;
 
@@ -292,7 +291,6 @@ button.modal-buttons {
   flex: none;
   order: 0;
   flex-grow: 0;
-  
 }
 .change_status_modal {
   padding: 0px 16px 16px 16px;
@@ -315,7 +313,6 @@ button.modal-buttons {
   line-height: 150%;
 
   color: $gray-500;
-
 
   /* Inside auto layout */
 
@@ -359,7 +356,7 @@ button.modal-buttons {
   Hitbox makes whole element selectable when press & hold Ctrl key
   It also be used in case we want to apply drop shadow effect but still want to keep the transparent background.
   */
-  background: rgba(255, 255, 255, 1e-06);
+  background: rgba(255, 255, 255, 1e-6);
 
   /* Inside auto layout */
 

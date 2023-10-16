@@ -90,6 +90,16 @@
   color: $white;
   flex: 1;
 }
+
+.comp-details-create-header {
+  padding: 8px 34px 0px;
+  height: 60px;
+  background: $bc-gov-primary-400;
+
+  color: $white;
+  flex: 1;
+}
+
 .comp-violation-cell {
   width: 306px;
 }
@@ -196,7 +206,7 @@
   .comp-box-violation-in-progress {
     background-color: $red-300-80;
     color: $red-300;
-  
+
     padding: 4px 12px;
 
     border-radius: 60px;
@@ -298,6 +308,10 @@
   }
 }
 
+.header-spacing {
+  padding-top: 30px;
+}
+
 .comp-complaint-details-location-block {
   margin-left: 24px;
   margin-right: 24px;
@@ -342,7 +356,8 @@
 }
 
 //Need these to make sure the filters show up on top of other frozen items
-.top-layer-select, .react-datepicker-popper {
+.top-layer-select,
+.react-datepicker-popper {
   z-index: 7000 !important;
 }
 
@@ -684,6 +699,10 @@
   cursor: pointer;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .comp-details-edit-calendar-input {
   width: 100%;
 }
@@ -709,7 +728,6 @@
   top: 0;
   margin-top: -7px;
 }
-
 
 .no-bullets {
   list-style-type: none; /* Remove bullets */
@@ -891,13 +909,21 @@
   float: left;
 }
 
+.right-float {
+  float: right;
+}
+
+.clear-right-float {
+  clear: right;
+}
+
 .complaint-tab-container-width {
   width: 1330px;
 }
 
 .complaint-filter-image-container {
   float: left;
-  margin: 0px 5px 0px 0px;
+  margin: 0px 5px 0px 10px;
 }
 
 .filter-image-spacing {
@@ -912,15 +938,21 @@
 }
 
 .error-border {
-    border-color: $bc-gov-danger !important;
+  border-color: $bc-gov-danger;
+}
+
+.error-select-border {
+  .comp-select__control {
+    border-color: $bc-gov-danger;
+  }
 }
 
 .comp-complaint-error {
   margin: 24px 24px;
   padding: 24px;
-  border: 1px solid #EEA8AB;
+  border: 1px solid #eea8ab;
   border-radius: 3px;
-  background-color: #FBEAEA;
+  background-color: #fbeaea;
   color: $bc-gov-danger;
 }
 
@@ -935,19 +967,19 @@
 }
 
 .Toastify__toast--error {
-  border: 1px solid #EEA8AB;
+  border: 1px solid #eea8ab;
   border-radius: 3px !important;
-  background: #FAE1E2 !important;
-  background-color: #FBEAEA !important;
+  background: #fae1e2 !important;
+  background-color: #fbeaea !important;
   color: $bc-gov-danger !important;
 }
 
 .Toastify__toast--success {
-  border: 1px solid #BADBCC;
+  border: 1px solid #badbcc;
   border-radius: 3px !important;
-  background: #D1E7DD !important;
-  background-color: #D1E7DD !important;
-  color: #0F5132 !important;
+  background: #d1e7dd !important;
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
 }
 
 .map-list-toggle {

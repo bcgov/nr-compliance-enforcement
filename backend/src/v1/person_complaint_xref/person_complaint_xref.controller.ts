@@ -5,6 +5,7 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
+import { DataSource } from "typeorm";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("person-complaint-xref")
@@ -14,7 +15,8 @@ import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref
 })
 export class PersonComplaintXrefController {
   constructor(
-    private readonly personComplaintXrefService: PersonComplaintXrefService
+    private readonly personComplaintXrefService: PersonComplaintXrefService,
+    private dataSource: DataSource
   ) {}
 
   @Post(":complaint_id")
@@ -23,7 +25,9 @@ export class PersonComplaintXrefController {
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ) {
+    const queryRunner = this.dataSource.createQueryRunner();
     return this.personComplaintXrefService.assignOfficer(
+      queryRunner,
       complaintId,
       createPersonComplaintXrefDto
     );

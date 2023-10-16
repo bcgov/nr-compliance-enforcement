@@ -2,11 +2,10 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, QueryRunner, Repository } from "typeorm";
+import { QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
-  constructor(private dataSource: DataSource) {}
   @InjectRepository(PersonComplaintXref)
   private personComplaintXrefRepository: Repository<PersonComplaintXref>;
 
@@ -88,16 +87,13 @@ export class PersonComplaintXrefService {
    * create a new cross reference between the complaint and officer.
    */
   async assignOfficer(
+    queryRunner: QueryRunner,
     complaintIdentifier: string,
     createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
-    const queryRunner = this.dataSource.createQueryRunner();
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
     try {
       // unassign complaint if it's already assigned to an officer
@@ -119,7 +115,6 @@ export class PersonComplaintXrefService {
 
       // save the transaction
       await queryRunner.manager.save(newPersonComplaintXref);
-      await queryRunner.commitTransaction();
       this.logger.debug(
         `Successfully assigned person to complaint ${complaintIdentifier}`
       );
@@ -128,10 +123,7 @@ export class PersonComplaintXrefService {
       this.logger.error(
         `Rolling back assignment on complaint ${complaintIdentifier}`
       );
-      await queryRunner.rollbackTransaction();
       throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
     }
     return newPersonComplaintXref;
   }
