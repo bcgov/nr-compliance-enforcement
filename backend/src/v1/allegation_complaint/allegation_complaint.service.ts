@@ -48,7 +48,7 @@ export class AllegationComplaintService {
 
     const createAllegationComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
     createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
-    createAllegationComplaintDto.update_timestamp = createAllegationComplaintDto.create_timestamp = new Date();
+    createAllegationComplaintDto.update_utc_timestamp = createAllegationComplaintDto.create_utc_timestamp = new Date();
     let newAllegationComplaintString;
     try {
       const complaint: Complaint = await this.complaintService.create(
@@ -96,9 +96,9 @@ export class AllegationComplaintService {
         ? "allegation_complaint."
         : "complaint_identifier.";
     const sortString =
-      sortColumn !== "update_timestamp"
+      sortColumn !== "update_utc_timestamp"
         ? sortTable + sortColumn
-        : "GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)";
+        : "GREATEST(complaint_identifier.update_utc_timestamp, allegation_complaint.update_utc_timestamp)";
     return this.allegationComplaintsRepository
       .createQueryBuilder("allegation_complaint")
       .leftJoinAndSelect(
@@ -135,8 +135,8 @@ export class AllegationComplaintService {
 
       .orderBy(sortString, sortOrderString)
       .addOrderBy(
-        "complaint_identifier.incident_reported_datetime",
-        sortColumn === "incident_reported_datetime" ? sortOrderString : "DESC"
+        "complaint_identifier.incident_reported_utc_timestmp",
+        sortColumn === "incident_reported_utc_timestmp" ? sortOrderString : "DESC"
       )
       .getMany();
   }
@@ -174,13 +174,13 @@ export class AllegationComplaintService {
       sortTable = "person.";
     }
     const sortString =
-      sortColumn !== "update_timestamp"
+      sortColumn !== "update_utc_timestamp"
         ? sortTable + sortColumn
-        : "_update_timestamp";
+        : "_update_utc_timestamp";
 
     const queryBuilder = this.allegationComplaintsRepository
       .createQueryBuilder("allegation_complaint")
-      .addSelect("GREATEST(complaint_identifier.update_timestamp, allegation_complaint.update_timestamp)","_update_timestamp")
+      .addSelect("GREATEST(complaint_identifier.update_utc_timestamp, allegation_complaint.update_utc_timestamp)","_update_utc_timestamp")
       .leftJoinAndSelect(
         "allegation_complaint.complaint_identifier",
         "complaint_identifier"
@@ -217,8 +217,8 @@ export class AllegationComplaintService {
       )
       .orderBy(sortString, sortOrderString)
       .addOrderBy(
-        "complaint_identifier.incident_reported_datetime",
-        sortColumn === "incident_reported_datetime" ? sortOrderString : "DESC"
+        "complaint_identifier.incident_reported_utc_timestmp",
+        sortColumn === "incident_reported_utc_timestmp" ? sortOrderString : "DESC"
       );
     if (community !== null && community !== undefined && community !== "") {
       queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
@@ -267,7 +267,7 @@ export class AllegationComplaintService {
       incidentReportedStart !== ""
     ) {
       queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_datetime >= :IncidentReportedStart",
+        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
         { IncidentReportedStart: incidentReportedStart }
       );
     }
@@ -277,7 +277,7 @@ export class AllegationComplaintService {
       incidentReportedEnd !== ""
     ) {
       queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd",
+        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
         { IncidentReportedEnd: incidentReportedEnd }
       );
     }
@@ -393,7 +393,7 @@ export class AllegationComplaintService {
       incidentReportedStart !== ""
     ) {
       queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_datetime >= :IncidentReportedStart",
+        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
         { IncidentReportedStart: incidentReportedStart }
       );
     }
@@ -403,7 +403,7 @@ export class AllegationComplaintService {
       incidentReportedEnd !== ""
     ) {
       queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd",
+        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
         { IncidentReportedEnd: incidentReportedEnd }
       );
     }

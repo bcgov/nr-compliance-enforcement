@@ -56,9 +56,9 @@ describe('PersonController', () => {
                         middle_name_2: null,
                         last_name: 'Marple',
                         create_user_id: 'JEST',
-                        create_timestamp: new Date(),
+                        create_utc_timestamp: new Date(),
                         update_user_id: null,
-                        update_timestamp: null
+                        update_utc_timestamp: null
                       };
 
      return request(app.getHttpServer())
@@ -105,9 +105,9 @@ describe('PersonController', () => {
                         middle_name_2: 'Angela',
                         last_name: 'Marple',
                         create_user_id: 'JEST',
-                        create_timestamp: new Date(),
+                        create_utc_timestamp: new Date(),
                         update_user_id: null,
-                        update_timestamp: null
+                        update_utc_timestamp: null
                       };
 
      return request(app.getHttpServer())

@@ -45,7 +45,7 @@ export class AttractantCode
         description: "The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -59,7 +59,7 @@ export class AttractantCode
         description: "The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
       constructor(attractant_code?:string) {
         this.attractant_code = attractant_code;

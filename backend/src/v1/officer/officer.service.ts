@@ -46,9 +46,9 @@ export class OfficerService {
         officeObject.agency_code = agencyObject;
         officeObject.cos_geo_org_unit = officer.geo_organization_unit_code;
         officeObject.create_user_id = officer.create_user_id;
-        officeObject.create_timestamp = officer.create_timestamp;
+        officeObject.create_utc_timestamp = officer.create_utc_timestamp;
         officeObject.update_user_id = officer.update_user_id;
-        officeObject.update_timestamp = officer.update_timestamp;
+        officeObject.update_utc_timestamp = officer.update_utc_timestamp;
 
         officeObject = await this.officeService.create(officeObject);
         officer.office_guid = officeObject.office_guid;

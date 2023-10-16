@@ -605,6 +605,7 @@ export const selectComplaintHeader =
         officerAssigned: "",
         personGuid: "",
         status: "",
+        statusCode: "",
         natureOfComplaint: "", //-- needs to be violation as well
         natureOfComplaintCode: "",
         species: "", //-- not available for ers
@@ -625,9 +626,9 @@ export const selectComplaintHeader =
           let officerAssigned = "Not Assigned";
           let personGuid = "";
           const {
-            incident_reported_datetime: loggedDate,
+            incident_reported_utc_timestmp: loggedDate,
             create_user_id: createdBy,
-            update_timestamp: lastUpdated,
+            update_utc_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
             cos_geo_org_unit: { zone_code },
           } = ceComplaint;
@@ -642,7 +643,7 @@ export const selectComplaintHeader =
               ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
-          const { complaint_status_code: status } = ceStatusCode;
+          const { complaint_status_code: statusCode, long_description:status } = ceStatusCode;
 
           result = {
             ...result,
@@ -651,6 +652,7 @@ export const selectComplaintHeader =
             lastUpdated,
             officerAssigned: officerAssigned,
             status,
+            statusCode,
             zone: zone_code,
             personGuid,
           };
@@ -686,6 +688,7 @@ export const selectComplaintHeader =
         lastUpdated: "",
         officerAssigned: "",
         status: "",
+        statusCode: "",
         zone: "",
         violationType: "", //-- needs to be violation as well
         personGuid: "",
@@ -702,9 +705,9 @@ export const selectComplaintHeader =
           let officerAssigned = "Not Assigned";
           let personGuid = "";
           const {
-            incident_reported_datetime: loggedDate,
+            incident_reported_utc_timestmp: loggedDate,
             create_user_id: createdBy,
-            update_timestamp: lastUpdated,
+            update_utc_timestamp: lastUpdated,
             complaint_status_code: ceStatusCode,
             cos_geo_org_unit: { zone_code },
           } = ceComplaint;
@@ -719,7 +722,7 @@ export const selectComplaintHeader =
               ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
-          const { complaint_status_code: status } = ceStatusCode;
+          const { complaint_status_code: statusCode, long_description: status } = ceStatusCode;
 
           result = {
             ...result,
@@ -728,6 +731,7 @@ export const selectComplaintHeader =
             lastUpdated,
             officerAssigned: officerAssigned,
             status,
+            statusCode,
             zone: zone_code,
             personGuid,
           };

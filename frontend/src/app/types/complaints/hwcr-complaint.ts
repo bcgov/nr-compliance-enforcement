@@ -13,14 +13,14 @@ export interface HwcrComplaint {
     geo_organization_unit_code: GeoOrganizationUnitCode;
     location_geometry_point: LocationGeometryPoint;
     incident_datetime: string;
-    incident_reported_datetime: string;
+    incident_reported_utc_timestmp: string;
     location_summary_text: string;
     location_detailed_text: string;
     detail_text: string;
     create_user_id: string;
-    create_timestamp: string;
+    create_utc_timestamp: string;
     update_user_id: string;
-    update_timestamp: string;
+    update_utc_timestamp: string;
     complaint_status_code: ComplaintStatusCode;
     caller_name: string;
     caller_address: string;
@@ -39,7 +39,7 @@ export interface HwcrComplaint {
   };
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
   species_code: SpeciesCode;
-  update_timestamp: string;
+  update_utc_timestamp: string;
   hwcr_complaint_guid: string;
   attractant_hwcr_xref: {
     attractant_hwcr_xref_guid?: string;

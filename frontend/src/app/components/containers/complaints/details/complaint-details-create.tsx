@@ -63,23 +63,23 @@ export const CreateComplaint: FC = () => {
         display_order: "",
         active_ind: "",
         create_user_id: "",
-        create_timestamp: "",
+        create_utc_timestamp: "",
         update_user_id: "",
-        update_timestamp: "",
+        update_utc_timestamp: "",
       },
       location_geometry_point: {
         type: "",
         coordinates: [],
       },
       incident_datetime: "",
-      incident_reported_datetime: "",
+      incident_reported_utc_timestmp: "",
       location_summary_text: "",
       location_detailed_text: "",
       detail_text: "",
       create_user_id: "",
-      create_timestamp: "",
+      create_utc_timestamp: "",
       update_user_id: "",
-      update_timestamp: "",
+      update_utc_timestamp: "",
       complaint_status_code: {
         complaint_status_code: "",
         short_description: "",
@@ -87,9 +87,9 @@ export const CreateComplaint: FC = () => {
         display_order: 0,
         active_ind: false,
         create_user_id: "",
-        create_timestamp: "",
+        create_utc_timestamp: "",
         update_user_id: "",
-        update_timestamp: "",
+        update_utc_timestamp: "",
       },
       caller_name: "",
       caller_address: "",
@@ -104,9 +104,9 @@ export const CreateComplaint: FC = () => {
         display_order: 0,
         active_ind: false,
         create_user_id: "",
-        create_timestamp: "",
+        create_utc_timestamp: "",
         update_user_id: "",
-        update_timestamp: "",
+        update_utc_timestamp: "",
       },
       cos_geo_org_unit: {
         zone_code: "",
@@ -123,9 +123,9 @@ export const CreateComplaint: FC = () => {
       display_order: 0,
       active_ind: false,
       create_user_id: "",
-      create_timestamp: "",
+      create_utc_timestamp: "",
       update_user_id: "",
-      update_timestamp: "",
+      update_utc_timestamp: "",
     },
     species_code: {
       species_code: "",
@@ -135,11 +135,11 @@ export const CreateComplaint: FC = () => {
       display_order: 0,
       active_ind: false,
       create_user_id: "",
-      create_timestamp: "",
+      create_utc_timestamp: "",
       update_user_id: "",
-      update_timestamp: "",
+      update_utc_timestamp: "",
     },
-    update_timestamp: "",
+    update_utc_timestamp: "",
     hwcr_complaint_guid: "",
     attractant_hwcr_xref: [],
   };
@@ -490,9 +490,9 @@ export const CreateComplaint: FC = () => {
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
           hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -512,9 +512,9 @@ export const CreateComplaint: FC = () => {
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
           allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -741,9 +741,9 @@ export const CreateComplaint: FC = () => {
             display_order: 0,
             active_ind: true,
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
 
       const updatedParent = {
@@ -890,9 +890,9 @@ export const CreateComplaint: FC = () => {
       display_order: 0,
       active_ind: false,
       create_user_id: "",
-      create_timestamp: "",
+      create_utc_timestamp: "",
       update_user_id: "",
-      update_timestamp: "",
+      update_utc_timestamp: "",
     };
 
     complaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
@@ -900,8 +900,8 @@ export const CreateComplaint: FC = () => {
     const noError = await setErrors(complaint);
 
     if (noError && noErrors()) {
-      complaint.complaint_identifier.create_timestamp =
-        complaint.complaint_identifier.update_timestamp =
+      complaint.complaint_identifier.create_utc_timestamp =
+        complaint.complaint_identifier.update_utc_timestamp =
           new Date().toDateString();
       complaint.complaint_identifier.create_user_id =
         complaint.complaint_identifier.update_user_id = userid;

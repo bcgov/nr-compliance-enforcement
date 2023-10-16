@@ -129,7 +129,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     createdBy,
     lastUpdated,
     personGuid,
-    status,
+    statusCode,
     natureOfComplaintCode,
     speciesCode,
     violationTypeCode,
@@ -193,9 +193,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   ];
 
   // Used to set selected values in the dropdowns
-  console.log("status: " + status);
+  console.log("status: " + statusCode);
   const selectedStatus = complaintStatusCodes.find(
-    (option) => option.value === status,
+    (option) => option.value === statusCode,
   );
   console.log("selectedStatus: " + JSON.stringify(selectedStatus));
   const selectedSpecies = speciesCodes.find(
@@ -610,9 +610,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
           hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -632,9 +632,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
           allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -861,9 +861,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: 0,
             active_ind: true,
             create_user_id: "",
-            create_timestamp: "",
+            create_utc_timestamp: "",
             update_user_id: "",
-            update_timestamp: "",
+            update_utc_timestamp: "",
           };
 
       const updatedParent = {

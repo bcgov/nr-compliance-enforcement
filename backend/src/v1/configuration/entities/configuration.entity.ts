@@ -22,14 +22,14 @@ export class Configuration {
   @Column("character varying", { name: "create_user_id", length: 32 })
   createUserId: string;
 
-  @Column("timestamp without time zone", { name: "create_timestamp" })
+  @Column("timestamp without time zone", { name: "create_utc_timestamp" })
   createTimestamp: Date;
 
   @Column("character varying", { name: "update_user_id", length: 32 })
   updateUserId: string;
 
   @Column("timestamp without time zone", {
-    name: "update_timestamp",
+    name: "update_utc_timestamp",
     nullable: true,
   })
   updateTimestamp: Date | null;

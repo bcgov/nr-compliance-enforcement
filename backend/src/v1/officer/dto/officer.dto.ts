@@ -39,7 +39,7 @@ export class OfficerDto
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the officer was created",
       })
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -51,7 +51,7 @@ export class OfficerDto
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the officer was last updated",
       })
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
 
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",

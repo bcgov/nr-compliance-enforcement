@@ -114,7 +114,7 @@ export class ComplaintDto {
     example: "2023-11-22",
     description: "The date of the incident the complaint was filed about",
   })
-  incident_reported_datetime: Date;
+  incident_reported_utc_timestmp: Date;
 
   @ApiProperty({
     example: "2023-11-22",
@@ -138,7 +138,7 @@ export class ComplaintDto {
     example: "2003-04-12 04:05:06",
     description: "The timestamp when the complaint was created",
   })
-  create_timestamp: Date;
+  create_utc_timestamp: Date;
 
   @ApiProperty({
     example: "IDIR\mburns",
@@ -150,5 +150,5 @@ export class ComplaintDto {
     example: "2003-04-12 04:05:06",
     description: "The timestamp when the complaint was last updated",
   })
-  update_timestamp: Date;
+  update_utc_timestamp: Date;
 }
