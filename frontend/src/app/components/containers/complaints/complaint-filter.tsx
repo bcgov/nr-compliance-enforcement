@@ -43,7 +43,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const communities = useAppSelector(selectCodeTable("communities"));
   const officers = useAppSelector(selectOfficersDropdown);
   const natureOfComplaintTypes = useAppSelector(
-    selectCodeTable("wildlifeNatureOfComplaintCodes")
+    selectCodeTable("wildlifeNatureOfComplaintCodes"),
   );
   const speciesTypes = useAppSelector(selectCodeTable("speciesCodes"));
   const statusTypes = useAppSelector(selectCodeTable("complaintStatusCodes"));
@@ -54,7 +54,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
       dispatch(updateFilter(payload));
     },
-    []
+    [],
   );
 
   const handleDateRangeChange = (dates: [Date, Date]) => {

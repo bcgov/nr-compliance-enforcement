@@ -1,7 +1,6 @@
 @import "../../../node_modules/bootstrap/scss/functions";
 @import "./variables.scss";
 
-
 /* boostrap primary */
 $bc-gov-primary-100: #f0f6fd;
 $bc-gov-primary-200: #96abc0;
@@ -128,7 +127,7 @@ $bc-standard-01-variants: (
   "600": $bc-standard-01-600,
   "700": $bc-standard-01-700,
   "800": $bc-standard-01-800,
-  "900": $bc-standard-01-900
+  "900": $bc-standard-01-900,
 );
 
 $bc-standard-02-100: tint-color($bc-standard-02, 80%);
@@ -150,7 +149,7 @@ $bc-standard-02-variants: (
   "600": $bc-standard-02-600,
   "700": $bc-standard-02-700,
   "800": $bc-standard-02-800,
-  "900": $bc-standard-02-900
+  "900": $bc-standard-02-900,
 );
 
 $bc-standard-03-100: tint-color($bc-standard-03, 80%);
@@ -172,9 +171,8 @@ $bc-standard-03-variants: (
   "600": $bc-standard-03-600,
   "700": $bc-standard-03-700,
   "800": $bc-standard-03-800,
-  "900": $bc-standard-03-900
+  "900": $bc-standard-03-900,
 );
-
 
 $bc-standard-04-100: tint-color($bc-standard-04, 80%);
 $bc-standard-04-200: tint-color($bc-standard-04, 60%);
@@ -195,9 +193,8 @@ $bc-standard-04-variants: (
   "600": $bc-standard-04-600,
   "700": $bc-standard-04-700,
   "800": $bc-standard-04-800,
-  "900": $bc-standard-04-900
+  "900": $bc-standard-04-900,
 );
-
 
 $bc-standard-05-100: tint-color($bc-standard-05, 80%);
 $bc-standard-05-200: tint-color($bc-standard-05, 60%);
@@ -218,9 +215,8 @@ $bc-standard-05-variants: (
   "600": $bc-standard-05-600,
   "700": $bc-standard-05-700,
   "800": $bc-standard-05-800,
-  "900": $bc-standard-05-900
+  "900": $bc-standard-05-900,
 );
-
 
 $bc-standard-06-100: tint-color($bc-standard-06, 80%);
 $bc-standard-06-200: tint-color($bc-standard-06, 60%);
@@ -241,9 +237,8 @@ $bc-standard-06-variants: (
   "600": $bc-standard-06-600,
   "700": $bc-standard-06-700,
   "800": $bc-standard-06-800,
-  "900": $bc-standard-06-900
+  "900": $bc-standard-06-900,
 );
-
 
 $bc-standard-07-100: tint-color($bc-standard-07, 80%);
 $bc-standard-07-200: tint-color($bc-standard-07, 60%);
@@ -264,7 +259,7 @@ $bc-standard-07-variants: (
   "600": $bc-standard-07-600,
   "700": $bc-standard-07-700,
   "800": $bc-standard-07-800,
-  "900": $bc-standard-07-900
+  "900": $bc-standard-07-900,
 );
 
 $bc-standard-08-100: tint-color($bc-standard-08, 80%);
@@ -286,7 +281,7 @@ $bc-standard-08-variants: (
   "600": $bc-standard-08-600,
   "700": $bc-standard-08-700,
   "800": $bc-standard-08-800,
-  "900": $bc-standard-08-900
+  "900": $bc-standard-08-900,
 );
 
 $bc-standard-09-100: tint-color($bc-standard-09, 80%);
@@ -308,9 +303,8 @@ $bc-standard-09-variants: (
   "600": $bc-standard-09-600,
   "700": $bc-standard-09-700,
   "800": $bc-standard-09-800,
-  "900": $bc-standard-09-900
+  "900": $bc-standard-09-900,
 );
-
 
 $bc-standard-10-100: tint-color($bc-standard-10, 80%);
 $bc-standard-10-200: tint-color($bc-standard-10, 60%);
@@ -331,9 +325,8 @@ $bc-standard-10-variants: (
   "600": $bc-standard-10-600,
   "700": $bc-standard-10-700,
   "800": $bc-standard-10-800,
-  "900": $bc-standard-10-900
+  "900": $bc-standard-10-900,
 );
-
 
 $bc-standard-11-100: tint-color($bc-standard-11, 80%);
 $bc-standard-11-200: tint-color($bc-standard-11, 60%);
@@ -354,9 +347,8 @@ $bc-standard-11-variants: (
   "600": $bc-standard-11-600,
   "700": $bc-standard-11-700,
   "800": $bc-standard-11-800,
-  "900": $bc-standard-11-900
+  "900": $bc-standard-11-900,
 );
-
 
 $bc-standard-12-100: tint-color($bc-standard-12, 80%);
 $bc-standard-12-200: tint-color($bc-standard-12, 60%);
@@ -377,9 +369,8 @@ $bc-standard-12-variants: (
   "600": $bc-standard-12-600,
   "700": $bc-standard-12-700,
   "800": $bc-standard-12-800,
-  "900": $bc-standard-12-900
+  "900": $bc-standard-12-900,
 );
-
 
 $bc-standard-13-100: tint-color($bc-standard-13, 80%);
 $bc-standard-13-200: tint-color($bc-standard-13, 60%);
@@ -400,25 +391,23 @@ $bc-standard-13-variants: (
   "600": $bc-standard-13-600,
   "700": $bc-standard-13-700,
   "800": $bc-standard-13-800,
-  "900": $bc-standard-13-900
+  "900": $bc-standard-13-900,
 );
 
-//-- colors not specified explicitly 
-$orange-200: #FECBA1;
-$orange-600: #CA6510;
+//-- colors not specified explicitly
+$orange-200: #fecba1;
+$orange-600: #ca6510;
 
-$blue-100: #90b6F8;
-$blue-200: #9EC5FE;
-$blue-300: #CCDDFD;
-$blue-600: #0A58CA;
+$blue-100: #90b6f8;
+$blue-200: #9ec5fe;
+$blue-300: #ccddfd;
+$blue-600: #0a58ca;
 
-$green-100: #2E8540;
+$green-100: #2e8540;
 
 $green-100-80: tint-color($green-100, 80%);
 
+$red-300: #d8292f;
+$red-300-80: tint-color($red-300, 80%);
 
-
-$red-300: #D8292F;
-$red-300-80: tint-color($red-300,80%);
-
-$bc-gov-link-blue: #2464A4;
+$bc-gov-link-blue: #2464a4;

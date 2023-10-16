@@ -46,4 +46,10 @@ export class CosGeoOrgUnit {
   })
   @Column("character varying", { name: "area_name", length: 50 })
   area_name: string;
+
+  constructor(zone_code: string) {
+    this.zone_code = zone_code;    
+  }
 }
+
+

@@ -5,7 +5,7 @@ import { ComplaintSuspectWitness } from "../../../../types/complaints/details/co
 
 export const SuspectWitnessDetails: FC = () => {
   const { details } = useAppSelector(
-    selectComplaintSuspectWitnessDetails
+    selectComplaintSuspectWitnessDetails,
   ) as ComplaintSuspectWitness;
 
   return (
@@ -14,7 +14,8 @@ export const SuspectWitnessDetails: FC = () => {
       <div className="comp-complaint-call-information">
         <div>
           <div className="comp-details-content-label">
-          Description (vehicle, license plate, features, clothing, weapons, name, address)
+            Description (vehicle, license plate, features, clothing, weapons,
+            name, address)
           </div>
           <p id="comp-details-witness-details">{details}</p>
         </div>

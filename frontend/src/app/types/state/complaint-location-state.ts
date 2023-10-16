@@ -6,16 +6,15 @@ export interface ComplaintLocationsState {
 }
 
 export interface ComplaintLocationsCollection {
-  wildlife : Array<HwcrComplaint> | null;
+  wildlife: Array<HwcrComplaint> | null;
   allegations: Array<AllegationComplaint>;
 }
 
 export interface Coordinate {
   lat: number;
   lng: number;
-  
 }
 
 export interface MarkerCluster {
-coordinates: Array<Coordinate>
+  coordinates: Array<Coordinate>;
 }

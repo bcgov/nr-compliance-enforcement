@@ -94,7 +94,9 @@ export const SpaceReference: FC = () => {
               </li>
             </ul>
             <p>
-              In addition to applying maring and padding to specific sides maring and padding can be applied to a block without providing an orientation: <code> {`.comp-{property}-{size}`}</code>
+              In addition to applying maring and padding to specific sides
+              maring and padding can be applied to a block without providing an
+              orientation: <code> {`.comp-{property}-{size}`}</code>
             </p>
 
             <h2>Examples</h2>

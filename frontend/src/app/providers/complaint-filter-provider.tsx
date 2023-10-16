@@ -9,7 +9,7 @@ interface ComplaintFilterContextType {
 
 type ProviderProps = {
   children: React.ReactNode;
-  zone: any
+  zone: any;
 };
 
 let initialState: ComplaintFilters = {
@@ -28,12 +28,12 @@ let initialState: ComplaintFilters = {
 
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   state: initialState,
-  dispatch: () => {}
+  dispatch: () => {},
 });
 
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone }) => {
-  if(zone){
-    initialState = {...initialState, zone}
+  if (zone) {
+    initialState = { ...initialState, zone };
   }
 
   const [state, dispatch] = useReducer(complaintFilterReducer, initialState);
@@ -43,7 +43,7 @@ const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone }) => {
       state,
       dispatch,
     }),
-    [state]
+    [state],
   );
 
   return (

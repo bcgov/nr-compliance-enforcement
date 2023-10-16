@@ -5,7 +5,6 @@ import COMPLAINT_TYPES from "../types/app/complaint-types";
 type Coordinate = number[] | string[] | undefined;
 
 export const getAvatarInitials = (input: string): string => {
-
   const tokens = input.split(" ");
 
   if (tokens && tokens.length >= 1) {
@@ -20,20 +19,18 @@ export const getAvatarInitials = (input: string): string => {
 };
 
 export const getFirstInitialAndLastName = (fullName: string): string => {
-
   const NOT_ASSIGNED = "Not Assigned";
 
   if (NOT_ASSIGNED === fullName) {
     return NOT_ASSIGNED;
   }
 
-
   // Split the full name into an array of words
-  const words = fullName.trim().split(' ');
+  const words = fullName.trim().split(" ");
 
   if (words.length === 0) {
     // If there are no words, return an empty string
-    return '';
+    return "";
   } else if (words.length === 1) {
     // If there is only one word, return the entire word as the last name
     return words[0];
@@ -45,7 +42,7 @@ export const getFirstInitialAndLastName = (fullName: string): string => {
     // Concatenate the first initial and last name with a space
     return `${firstInitial}. ${lastName}`;
   }
-}
+};
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
@@ -73,7 +70,7 @@ export const formatDateTime = (input: string | undefined): string => {
 
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (
-  coordinates: Coordinate
+  coordinates: Coordinate,
 ): { lat: number; lng: number } => {
   if (!coordinates) {
     return { lat: 0, lng: 0 };
@@ -90,10 +87,7 @@ export const bcBoundaries = {
 };
 
 // given coordinates, return true if within BC or false if not within BC
-export const isWithinBC = (
-  coordinates: Coordinate
-): boolean => {
-
+export const isWithinBC = (coordinates: Coordinate): boolean => {
   if (!coordinates) {
     return false;
   }
@@ -111,7 +105,7 @@ export const isWithinBC = (
 
 export const parseCoordinates = (
   coordinates: Coordinate,
-  coordinateType: Coordinates
+  coordinateType: Coordinates,
 ): number | string => {
   if (!coordinates) {
     return 0;
@@ -135,7 +129,7 @@ export const getComplaintTypeFromUrl = (): number => {
 
 export const renderCoordinates = (
   coordinates: Coordinate,
-  coordinateType: Coordinates
+  coordinateType: Coordinates,
 ): JSX.Element => {
   const result = parseCoordinates(coordinates, coordinateType);
 
@@ -146,9 +140,9 @@ export const applyStatusClass = (state: string): string => {
   switch (state.toLowerCase()) {
     case "open":
       return "comp-status-badge-open";
-      case "closed": 
+    case "closed":
       return "comp-status-badge-closed";
-    default: 
-    return "";
+    default:
+      return "";
   }
 };

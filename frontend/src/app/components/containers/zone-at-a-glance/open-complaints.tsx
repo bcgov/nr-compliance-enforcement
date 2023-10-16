@@ -70,7 +70,7 @@ export const OpenComplaints: FC<Props> = ({
           <Col className="comp-zag-legend-value">{assigned}</Col>
         </Row>
         <Row>
-            <Col>View Complaints</Col>
+          <Col>View Complaints</Col>
         </Row>
       </div>
     </div>

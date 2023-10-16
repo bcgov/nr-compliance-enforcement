@@ -10,6 +10,9 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(() => (
       rollbackTransaction: jest.fn(),
       manager: {
         save: jest.fn(),
+        query: jest.fn().mockImplementation(() => ({
+          then: jest.fn(),
+        }))
      }
     }))
   }))
