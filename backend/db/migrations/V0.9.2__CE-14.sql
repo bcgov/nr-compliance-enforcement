@@ -76,19 +76,16 @@ values ('MDT','Mountain Daylight Time','UTC-6',1,true,'FLYWAY',CURRENT_TIMESTAMP
 -- Also add timezone_code.  We want these two columns to be together, so create the 
 -- new columns at the end of the table, copy the data over to the new column,
 -- rename the new column, and drop the old column
-alter table public.complaint add column incident_utc_datetime_temp timestamp;
+alter table public.complaint add column incident_utc_datetime timestamp;
 alter table public.complaint add column timezone_code varchar(10);
 
 -- add FK to new timezone code table
 alter table public.complaint add constraint fk_complaint_timezone_code FOREIGN KEY (timezone_code) REFERENCES public.timezone_code(timezone_code);
 
 -- The data was stored with a PDT offset.  Change this to UTC by subtracting 7 hours
-update public.complaint set incident_utc_datetime_temp = incident_utc_datetime  - interval '7 hours';
+update public.complaint set incident_utc_datetime_temp = incident_datetime  - interval '7 hours';
 
 alter table public.complaint drop column incident_utc_datetime;
-
--- rename temp column to its final form
-alter table public.complaint rename column incident_utc_datetime_temp to incident_utc_datetime;
 
 -- popupulate the timezone codes, assume everything created up to this point was in PDT
 update public.complaint set timezone_code = 'PDT';
