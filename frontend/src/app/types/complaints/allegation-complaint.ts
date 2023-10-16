@@ -11,7 +11,7 @@ export interface AllegationComplaint {
     geo_organization_unit_code: GeoOrganizationUnitCode;
     location_geometry_point: LocationGeometryPoint;
     incident_datetime: string;
-    incident_reported_utc_timestmp: string;
+    incident_reported_datetime: string;
     location_summary_text: string;
     location_detailed_text: string;
     detail_text: string;
@@ -28,17 +28,17 @@ export interface AllegationComplaint {
     caller_phone_3: string;
     referred_by_agency_code: AgencyCode;
     cos_geo_org_unit: {
-            zone_code: string;
-            office_location_name: string;
-            area_name: string;
-            area_code: string;
-    },
+      zone_code: string;
+      office_location_name: string;
+      area_name: string;
+      area_code: string;
+    };
     person_complaint_xref: PersonComplaintXref[];
-  }
+  };
   violation_code: ViolationCode;
   in_progress_ind: string | boolean;
   observed_ind: boolean;
   suspect_witnesss_dtl_text: string;
   update_utc_timestamp: string;
-  allegation_complaint_guid: string
+  allegation_complaint_guid: string;
 }
