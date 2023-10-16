@@ -1,4 +1,4 @@
-export enum Coordinates { 
-    Longitude,
-    Latitude
+export enum Coordinates {
+  Longitude,
+  Latitude,
 }

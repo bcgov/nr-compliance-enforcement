@@ -1,4 +1,3 @@
-
 export interface GeoOrganizationUnitCode
 {
         geo_organization_unit_code: string,

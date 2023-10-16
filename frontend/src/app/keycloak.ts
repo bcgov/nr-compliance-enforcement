@@ -1,4 +1,4 @@
-import Keycloak from 'keycloak-js';
+import Keycloak from "keycloak-js";
 import config from "../config.js";
 
 // Setup Keycloak instance as needed

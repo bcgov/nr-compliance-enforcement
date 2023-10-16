@@ -1,4 +1,3 @@
-
 export interface HwcrNatureOfComplaintCode
 {
         hwcr_complaint_nature_code: string,

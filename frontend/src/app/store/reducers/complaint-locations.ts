@@ -10,10 +10,12 @@ import { generateApiParameters, get } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import { Coordinates } from "../../types/app/coordinate-type";
 import { from } from "linq-to-typescript";
-import { ComplaintLocationsCollection, ComplaintLocationsState } from "../../types/state/complaint-location-state";
+import {
+  ComplaintLocationsCollection,
+  ComplaintLocationsState,
+} from "../../types/state/complaint-location-state";
 
 const initialState: ComplaintLocationsState = {
-
   complaintItemsOnMap: {
     wildlife: [],
     allegations: [],
@@ -31,7 +33,10 @@ export const complaintLocationsSlice = createSlice({
       } = action;
       const { complaintItemsOnMap } = state;
 
-      let update: ComplaintLocationsCollection = { wildlife: [], allegations: [] };
+      let update: ComplaintLocationsCollection = {
+        wildlife: [],
+        allegations: [],
+      };
 
       switch (type) {
         case COMPLAINT_TYPES.ERS:
@@ -44,7 +49,6 @@ export const complaintLocationsSlice = createSlice({
 
       return { ...state, complaintItemsOnMap: update };
     },
-
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -53,9 +57,7 @@ export const complaintLocationsSlice = createSlice({
 });
 
 // export the actions/reducers
-export const {
-  setComplaintsOnMap,
-} = complaintLocationsSlice.actions;
+export const { setComplaintsOnMap } = complaintLocationsSlice.actions;
 
 export const getComplaintsOnMap =
   (complaintType: string, payload: ComplaintFilters): AppThunk =>
@@ -100,7 +102,7 @@ export const getComplaintsOnMap =
           incidentReportedEnd: endDateFilter,
           violationCode: violationFilter?.value,
           status: complaintStatusFilter?.value,
-        }
+        },
       );
       const response = await get<
         HwcrComplaint | AllegationComplaint,
@@ -114,33 +116,45 @@ export const getComplaintsOnMap =
     }
   };
 
-export const selectTotalComplaintsOnMapByType = 
-(complaintType: string) =>
-(state: RootState): number => {
-  const {
-    complaintLocations: { complaintItemsOnMap },
-  } = state;
-  const { allegations, wildlife } = complaintItemsOnMap;
+export const selectTotalComplaintsOnMapByType =
+  (complaintType: string) =>
+  (state: RootState): number => {
+    const {
+      complaintLocations: { complaintItemsOnMap },
+    } = state;
+    const { allegations, wildlife } = complaintItemsOnMap;
 
-  switch (complaintType) {
-    case COMPLAINT_TYPES.ERS:
-      return allegations ? allegations.length : 0;
-    case COMPLAINT_TYPES.HWCR:
-      return wildlife ? wildlife.length : 0;
-    default:
-      return 0;
-  }
-};
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return allegations ? allegations.length : 0;
+      case COMPLAINT_TYPES.HWCR:
+        return wildlife ? wildlife.length : 0;
+      default:
+        return 0;
+    }
+  };
 export const selectComplaintLocations =
   (complaintType: string) =>
-  (state: RootState): Array<{ complaint_type: string; complaint_identifier: string; lat: number; lng: number }> => {
+  (
+    state: RootState,
+  ): Array<{
+    complaint_type: string;
+    complaint_identifier: string;
+    lat: number;
+    lng: number;
+  }> => {
     const {
       complaintLocations: { complaintItemsOnMap },
     } = state;
     const flattenCoordinates = (
       complaint_type: string,
-      collection: Array<HwcrComplaint> | Array<AllegationComplaint>
-    ): Array<{ complaint_type: string, complaint_identifier: string; lat: number; lng: number }> => {
+      collection: Array<HwcrComplaint> | Array<AllegationComplaint>,
+    ): Array<{
+      complaint_type: string;
+      complaint_identifier: string;
+      lat: number;
+      lng: number;
+    }> => {
       if (collection) {
         return collection.map((item) => ({
           complaint_type: complaint_type,
@@ -154,17 +168,27 @@ export const selectComplaintLocations =
         }));
       }
 
-      return new Array<{complaint_type: string; complaint_identifier: string; lat: number; lng: number }>();
+      return new Array<{
+        complaint_type: string;
+        complaint_identifier: string;
+        lat: number;
+        lng: number;
+      }>();
     };
 
-    let coordinates = new Array<{ complaint_type: string; complaint_identifier: string; lat: number; lng: number }>();
+    let coordinates = new Array<{
+      complaint_type: string;
+      complaint_identifier: string;
+      lat: number;
+      lng: number;
+    }>();
 
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         const { allegations } = complaintItemsOnMap;
 
         if (allegations && from(allegations).any()) {
-          coordinates = flattenCoordinates(COMPLAINT_TYPES.ERS,allegations);
+          coordinates = flattenCoordinates(COMPLAINT_TYPES.ERS, allegations);
         }
         break;
       case COMPLAINT_TYPES.HWCR:
@@ -172,7 +196,7 @@ export const selectComplaintLocations =
         const { wildlife } = complaintItemsOnMap;
 
         if (wildlife && from(wildlife).any()) {
-          coordinates = flattenCoordinates(COMPLAINT_TYPES.HWCR,wildlife);
+          coordinates = flattenCoordinates(COMPLAINT_TYPES.HWCR, wildlife);
         }
         break;
     }

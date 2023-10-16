@@ -9,9 +9,8 @@ import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.
 import { AllegationComplaint } from "./entities/allegation_complaint.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
-import { UUID } from "crypto";
+import { UUID, randomUUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
-import { CreateComplaintDto } from "../complaint/dto/create-complaint.dto";
 import {
   OfficeStats,
   OfficerStats,
@@ -21,6 +20,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { Complaint } from "../complaint/entities/complaint.entity";
 
 @Injectable()
 export class AllegationComplaintService {
@@ -40,21 +40,38 @@ export class AllegationComplaintService {
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
-  async create(allegationComplaint: any): Promise<AllegationComplaint> {
+  async create(allegationComplaint: string): Promise<AllegationComplaint> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    let newAllegationComplaint;
+
+    const createAllegationComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
+    createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
+    createAllegationComplaintDto.update_timestamp = createAllegationComplaintDto.create_timestamp = new Date();
+    let newAllegationComplaintString;
     try {
-      await this.complaintService.create(
-        <CreateComplaintDto>allegationComplaint,
+      const complaint: Complaint = await this.complaintService.create(
+        JSON.stringify(createAllegationComplaintDto.complaint_identifier),
         queryRunner
       );
-      newAllegationComplaint = await this.allegationComplaintsRepository.create(
-        <CreateAllegationComplaintDto>allegationComplaint
+      createAllegationComplaintDto.create_user_id = createAllegationComplaintDto.update_user_id = complaint.create_user_id;
+      createAllegationComplaintDto.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
+      newAllegationComplaintString = await this.allegationComplaintsRepository.create(
+        createAllegationComplaintDto
       );
-      await queryRunner.manager.save(newAllegationComplaint);
+      let newAllegationComplaint: AllegationComplaint;
+      newAllegationComplaint = <AllegationComplaint>(
+        await queryRunner.manager.save(newAllegationComplaintString)
+      );
+
+
+      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref?.[0])
+        {
+          createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
+          await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+      
       await queryRunner.commitTransaction();
     } catch (err) {
       this.logger.error(err);
@@ -63,7 +80,7 @@ export class AllegationComplaintService {
     } finally {
       await queryRunner.release();
     }
-    return newAllegationComplaint;
+    return newAllegationComplaintString;
   }
 
   async findAll(
@@ -448,10 +465,10 @@ export class AllegationComplaintService {
     allegation_complaint_guid: UUID,
     updateAllegationComplaint: string
   ): Promise<AllegationComplaint> {
-    //const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    //await queryRunner.connect();
-    //await queryRunner.startTransaction();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try
     {
       const updateAllegationComplaintDto: UpdateAllegationComplaintDto = JSON.parse(updateAllegationComplaint);
@@ -464,28 +481,25 @@ export class AllegationComplaintService {
           violation_code: updateAllegationComplaintDto.violation_code,
           suspect_witnesss_dtl_text: updateAllegationComplaintDto.suspect_witnesss_dtl_text,
         };
-        const updatedValue = await this.allegationComplaintsRepository.update(
+        await this.allegationComplaintsRepository.update(
           { allegation_complaint_guid },
           updateData
         );
-        //queryRunner.manager.save(updatedValue);
-        //await this.complaintService.updateComplex(queryRunner, updateHwcrComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateHwcrComplaintDto.complaint_identifier));
         await this.complaintService.updateComplex(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateAllegationComplaintDto.complaint_identifier));
         //Note: this needs a refactor for when we have more types of persons being loaded in
-        //await this.personComplaintXrefService.update(queryRunner, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].personComplaintXrefGuid, updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]);
         if(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
         {
-          await this.personComplaintXrefService.assignOfficer(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+          await this.personComplaintXrefService.assignOfficer(queryRunner, updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
         }
       } 
       catch (err) {
         this.logger.error(err);
-        //await queryRunner.rollbackTransaction();
+        await queryRunner.rollbackTransaction();
         throw new BadRequestException(err);
       } 
       finally
       {
-        //await queryRunner.release();
+        await queryRunner.release();
       }
       return this.findOne(allegation_complaint_guid);
     }

@@ -12,7 +12,6 @@ import {
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { UUID } from "crypto";
 import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
@@ -232,7 +231,8 @@ export class Complaint {
     owned_by_agency_code?: AgencyCode,
     complaint_status_code?: ComplaintStatusCode,
     geo_organization_unit_code?: GeoOrganizationUnitCode,
-    cos_geo_org_unit?: CosGeoOrgUnit
+    cos_geo_org_unit?: CosGeoOrgUnit,
+    person_complaint_xref?: PersonComplaintXref[],
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -257,5 +257,6 @@ export class Complaint {
     this.complaint_status_code = complaint_status_code;
     this.geo_organization_unit_code = geo_organization_unit_code;
     this.cos_geo_org_unit = cos_geo_org_unit;
+    this.person_complaint_xref = person_complaint_xref;
   }
 }

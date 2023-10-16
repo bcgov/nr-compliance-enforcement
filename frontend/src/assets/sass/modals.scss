@@ -1,5 +1,5 @@
 // scss-docs-start modal-variables
- $modal-inner-padding:               $spacer !default;
+$modal-inner-padding: $spacer !default;
 $modal-inner-padding: 0px 0px 0px 0px;
 
 // $modal-footer-margin-between:       .5rem !default;
@@ -33,7 +33,7 @@ $modal-content-border-radius: "5px";
 // $modal-footer-border-width:         $modal-header-border-width !default;
 
 // $modal-sm:                          300px !default;
- $modal-md:                          508px !default;
+$modal-md: 508px !default;
 // $modal-lg:                          800px !default;
 // $modal-xl:                          1140px !default;
 
@@ -43,13 +43,12 @@ $modal-content-border-radius: "5px";
 // $modal-scale-transform:             scale(1.02) !default;
 // scss-docs-end modal-variables
 
-
 @import "../../../node_modules/bootstrap/scss/variables";
 
 .modal {
-    z-index:                         10000 !important;
+  z-index: 10000 !important;
 }
 
 .modal-backdrop {
-    z-index:                         9000 !important;
+  z-index: 9000 !important;
 }

@@ -3,7 +3,10 @@ export const COMPLAINT_TYPES = {
   ERS: "ERS",
 };
 
-export const complaintTypeToName = (complaintType: string | undefined | null, singular?: boolean) => {
+export const complaintTypeToName = (
+  complaintType: string | undefined | null,
+  singular?: boolean,
+) => {
   switch (complaintType) {
     case COMPLAINT_TYPES.ERS:
       return "Enforcement";

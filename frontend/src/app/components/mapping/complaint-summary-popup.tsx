@@ -18,9 +18,8 @@ import COMPLAINT_TYPES, {
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Popup } from "react-leaflet";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface Props {
   complaint_identifier: string;
@@ -35,15 +34,15 @@ export const ComplaintSummaryPopup: FC<Props> = ({
     useAppSelector(selectComplaintHeader(complaintType));
 
   const { violationInProgress } = useAppSelector(
-    selectComplaintDetails(complaintType)
+    selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
   const { location, zone } = useAppSelector(
-    selectComplaintDetails(complaintType)
+    selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
   const { loggedDate, lastUpdated, status } = useAppSelector(
-    selectComplaintHeader(complaintType)
+    selectComplaintHeader(complaintType),
   );
 
   // used to indicate what sections should be rendered in the popup
@@ -61,7 +60,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               <div className="complaint-assignee">
                 <div
                   data-initials-sm={getAvatarInitials(officerAssigned)}
-                  className={"Not Assigned" === officerAssigned ? "leaflet-popup-not-assigned" : "comp-orange-avatar-sm"}
+                  className={
+                    "Not Assigned" === officerAssigned
+                      ? "leaflet-popup-not-assigned"
+                      : "comp-orange-avatar-sm"
+                  }
                 >
                   <span
                     id="comp-details-assigned-officer-name-text-id"
@@ -75,8 +78,14 @@ export const ComplaintSummaryPopup: FC<Props> = ({
 
             <div className="comp-complaint-info">
               <div className="map-comp-summary-popup-subheading">
-                <div className={`comp-box-conflict-type ${renderHWCRSection ? 'hwcr-conflict-type' : 'allegation-conflict-type'}`}>
-                  {complaintTypeToName(complaintType,true)}
+                <div
+                  className={`comp-box-conflict-type ${
+                    renderHWCRSection
+                      ? "hwcr-conflict-type"
+                      : "allegation-conflict-type"
+                  }`}
+                >
+                  {complaintTypeToName(complaintType, true)}
                 </div>
                 {renderHWCRSection ? (
                   <div className="comp-box-species-type">{species}</div>
@@ -86,7 +95,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                       id="comp-details-status-text-id"
                       className="comp-box-violation-in-progress"
                     >
-                      <FontAwesomeIcon id="violation-in-progress-icon" icon={faExclamationCircle} />{inProgressInd}
+                      <FontAwesomeIcon
+                        id="violation-in-progress-icon"
+                        icon={faExclamationCircle}
+                      />
+                      {inProgressInd}
                     </div>
                   )
                 )}
@@ -99,9 +112,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               </div>
             </div>
           </div>
-            <div className="map-comp-nature-of-complaint">
-              {renderHWCRSection ? natureOfComplaint : violationType}
-            </div>
+          <div className="map-comp-nature-of-complaint">
+            {renderHWCRSection ? natureOfComplaint : violationType}
+          </div>
           <div className="map-comp-summary-popup-details-section">
             <div className="comp-details-content">
               <div>
@@ -135,7 +148,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({
           </div>
         </div>
         <Link to={`/complaint/${complaintType}/${complaint_identifier}`}>
-          <Button id="view-complaint-details-button-id" variant="primary">View Details</Button>
+          <Button id="view-complaint-details-button-id" variant="primary">
+            View Details
+          </Button>
         </Link>
       </div>
     </Popup>

@@ -1,5 +1,5 @@
-export interface ComplaintDetailsAttractant { 
-    key: string,
-    code: string,
-    description: string
+export interface ComplaintDetailsAttractant {
+  key: string;
+  code: string;
+  description: string;
 }

@@ -31,7 +31,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
   markers,
 }) => {
   const iconHTML = ReactDOMServer.renderToString(
-    <FontAwesomeIcon icon={faMapMarkerAlt} />
+    <FontAwesomeIcon icon={faMapMarkerAlt} />,
   );
   const mapRef = useRef<Map | null>(null);
   const [markersState, setMarkersState] =
@@ -42,8 +42,8 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
       // Calculate the bounds of all markers
       const bounds = Leaflet.latLngBounds(
         markersState.map(
-          (marker) => [marker.lat, marker.lng] as LatLngExpression
-        )
+          (marker) => [marker.lat, marker.lng] as LatLngExpression,
+        ),
       );
 
       // Fit the map to the bounds
@@ -73,11 +73,11 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
     (complaint_identifier: string) => (e: L.PopupEvent) => {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
         dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+          getWildlifeComplaintByComplaintIdentifier(complaint_identifier),
         );
       } else {
         dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+          getAllegationComplaintByComplaintIdentifier(complaint_identifier),
         );
       }
     };

@@ -4,16 +4,16 @@ interface Props {
   id: string;
   label?: string;
   name: string;
-  clear: (name: string) => void
-};
+  clear: (name: string) => void;
+}
 
 export const FilterButton: FC<Props> = ({ id, label, name, clear }) => {
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
-    id: string
+    id: string,
   ) => {
     e.preventDefault();
-    clear(name)
+    clear(name);
   };
 
   return (

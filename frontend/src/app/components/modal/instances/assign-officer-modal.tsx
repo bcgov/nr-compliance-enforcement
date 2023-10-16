@@ -51,7 +51,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
 
   // assigns the selected officer to a complaint
   const handleSubmit = () => {
-
     if (selectedAssignee !== "") {
       dispatch(
         updateComplaintAssignee(
@@ -59,7 +58,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           complaint_identifier,
           complaint_type,
           selectedAssignee as UUID,
-        )
+        ),
       );
       submit();
     }
@@ -72,8 +71,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
         userid,
         idir,
         complaint_identifier,
-        complaint_type
-      )
+        complaint_type,
+      ),
     );
     submit();
   };

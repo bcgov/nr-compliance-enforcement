@@ -44,12 +44,13 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   const firstName = person_complaint_xref[0]?.person_guid?.first_name;
   const lastName = person_complaint_xref[0]?.person_guid?.last_name;
-  
+
   const firstInitial = firstName?.length > 0 ? firstName.substring(0, 1) : "";
   const lastInitial = lastName?.length > 0 ? lastName.substring(0, 1) : "";
   const initials = firstInitial + lastInitial;
-  
-  const displayName = firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
+
+  const displayName =
+    firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
 
   const statusButtonClass =
     complaint_status_code.long_description === "Closed"

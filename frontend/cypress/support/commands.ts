@@ -91,7 +91,7 @@ Cypress.Commands.add("kcLogin", () => {
       if (
         hasSameTopLevelDomain(
           Cypress.env("keycloak_login_url"),
-          Cypress.config().baseUrl
+          Cypress.config().baseUrl,
         )
       ) {
         cy.visit(url);
@@ -122,7 +122,7 @@ Cypress.Commands.add("kcLogin", () => {
             cy.get('[name="password"]').click();
             cy.get('[name="password"]').type(password, { log: false });
             cy.get('[name="btnSubmit"]').click();
-          }
+          },
         );
       }
     });
@@ -151,7 +151,6 @@ Cypress.Commands.add("verifyMapMarkerExists", () => {
   cy.get(".leaflet-marker-icon").should("exist");
 });
 
-
 Cypress.Commands.add(
   "navigateToDetailsScreen",
   (complaintType: string, complaintIdentifier: string) => {
@@ -166,14 +165,12 @@ Cypress.Commands.add(
 
     // This doesn't always appear... commenting it out for now.  I don't think it's required.
     //cy.waitForSpinner();
-    
-    cy.get("#comp-zone-filter").should('exist').click({ force: true }); //clear zone filter so this complaint is in the list view
-    cy.get("#comp-zone-filter").should('not.exist');
-    
 
+    cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear zone filter so this complaint is in the list view
+    cy.get("#comp-zone-filter").should("not.exist");
 
-    cy.get("#comp-status-filter").should('exist').click({ force: true }); //clear status filter so this complaint is in the list view
-    cy.get("#comp-status-filter").should('not.exist');
+    cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
+    cy.get("#comp-status-filter").should("not.exist");
 
     // This doesn't always appear... commenting it out for now.  I don't think it's required.
     // cy.waitForSpinner();
@@ -190,7 +187,7 @@ Cypress.Commands.add(
       .click({ force: true });
 
     cy.waitForSpinner();
-  }
+  },
 );
 
 Cypress.Commands.add(
@@ -198,17 +195,21 @@ Cypress.Commands.add(
   (complaintType: string, complaintIdentifier: string) => {
     cy.navigateToDetailsScreen(
       complaintType.toLowerCase(),
-      complaintIdentifier
+      complaintIdentifier,
     );
     cy.get("#details-screen-edit-button").click({ force: true });
-  }
+  },
 );
 
-Cypress.Commands.add("waitForSpinner", () => {
+Cypress.Commands.add("navigateToCreateScreen", () => {
+  cy.visit("/");
+  cy.waitForSpinner();
+  cy.get("#create-complaints-link").click({ force: true });
+});
 
+Cypress.Commands.add("waitForSpinner", () => {
   cy.get(".comp-loader-overlay").should("exist");
   cy.get(".comp-loader-overlay").should("not.exist");
-
 });
 
 Cypress.Commands.add("clearFilterById", (filterId: string) => {
@@ -217,15 +218,14 @@ Cypress.Commands.add("clearFilterById", (filterId: string) => {
   cy.get(`#${filterId}`).should("not.exist");
 });
 
-
-Cypress.Commands.add("selectItemById", (selectId: string, optionText: string) => {
-    cy.get(`#${selectId}`)
-      .find("div")
-      .first()
-      .click({ force: true });
-    cy.get('.comp-select__menu-list').should('exist'); //Wait for the options to show
-    cy.contains(`.comp-select__option`,optionText).click({force: true});
-});
+Cypress.Commands.add(
+  "selectItemById",
+  (selectId: string, optionText: string) => {
+    cy.get(`#${selectId}`).find("div").first().click({ force: true });
+    cy.get(".comp-select__menu-list").should("exist"); //Wait for the options to show
+    cy.contains(`.comp-select__option`, optionText).click({ force: true });
+  },
+);
 
 Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
   const bottom = Cypress.$(cy.state("window")).height();
@@ -235,11 +235,11 @@ Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
 
   expect(rect.top).not.to.be.greaterThan(
     bottom,
-    `Expected element not to be below the visible scrolled area`
+    `Expected element not to be below the visible scrolled area`,
   );
   expect(rect.top).to.be.greaterThan(
     0,
-    `Expected element not to be above the visible scrolled area`
+    `Expected element not to be above the visible scrolled area`,
   );
 
   return subject;
@@ -260,20 +260,21 @@ function extractTopLevelDomain(url: string): string {
   return tld;
 }
 
+Cypress.Commands.add(
+  "typeAndTriggerChange",
+  { prevSubject: "element" },
+  (subject, value) => {
+    const element = subject[0];
 
-Cypress.Commands.add('typeAndTriggerChange', { prevSubject: 'element' },
-    (subject, value) => {
-        const element = subject[0]
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype,
+      "value",
+    )?.set;
 
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-            window.HTMLInputElement.prototype,
-            'value'
-        )?.set
-        
-        nativeInputValueSetter?.call(element, value)
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-        element.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-)
+    nativeInputValueSetter?.call(element, value);
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  },
+);
 
 module.exports = {};

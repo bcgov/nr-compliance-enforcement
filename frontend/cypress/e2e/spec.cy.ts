@@ -1,11 +1,10 @@
-describe('template spec', () => {
-
-  beforeEach(function() {
+describe("template spec", () => {
+  beforeEach(function () {
     cy.kcLogout().kcLogin();
   });
 
-  it('passes', () => {
+  it("passes", () => {
     cy.visit("/");
     cy.contains("Complaints");
-  })
-})
+  });
+});
