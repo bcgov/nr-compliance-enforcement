@@ -47,13 +47,13 @@ comment on
 column public.timezone_code.create_user_id is 'The id of the user that created the timezone code.';
 
 comment on
-column public.timezone_code.create_timestamp is 'The timestamp when the timezone was created.  The timestamp is stored in UTC with no Offset.';
+column public.timezone_code.create_utc_timestamp is 'The timestamp when the timezone was created.  The timestamp is stored in UTC with no Offset.';
 
 comment on
 column public.timezone_code.update_user_id is 'The id of the user that updated the timezone code.';
 
 comment on
-column public.timezone_code.update_timestamp is 'The timestamp when the timezone was updated.  The timestamp is stored in UTC with no Offset.';
+column public.timezone_code.update_utc_timestamp is 'The timestamp when the timezone was updated.  The timestamp is stored in UTC with no Offset.';
 
 -- populate code table
 insert
@@ -64,9 +64,9 @@ insert
 	display_order,
 	active_ind,
 	create_user_id,
-	create_timestamp,
+	create_utc_timestamp,
 	update_user_id,
-	update_timestamp)
+	update_utc_timestamp)
 values ('MDT','Mountain Daylight Time','UTC-6',1,true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP),
 	('MST','Mountain Standard Time','UTC-7',2,true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP),
 	('PDT','Pacific Daylight Time','UTC-7',3,true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP),
