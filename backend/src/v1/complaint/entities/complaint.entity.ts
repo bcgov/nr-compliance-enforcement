@@ -170,7 +170,7 @@ export class Complaint {
     description: "The date of the incident the complaint was filed about",
   })
   @Column({ nullable: true })
-  incident_reported_datetime: Date;
+  incident_reported_utc_timestmp: Date;
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",
@@ -192,7 +192,7 @@ export class Complaint {
     description: "The timestamp when the complaint was created",
   })
   @Column()
-  create_timestamp: Date;
+  create_utc_timestamp: Date;
 
   @ApiProperty({
     example: "IDIRmburns",
@@ -206,7 +206,7 @@ export class Complaint {
     description: "The timestamp when the complaint was last updated",
   })
   @Column()
-  update_timestamp: Date;
+  update_utc_timestamp: Date;
 
   constructor(
     detail_text?: string,
@@ -220,12 +220,12 @@ export class Complaint {
     location_summary_text?: string,
     location_detailed_text?: string,
     incident_datetime?: Date,
-    incident_reported_datetime?: Date,
+    incident_reported_utc_timestmp?: Date,
     referred_by_agency_other_text?: string,
     create_user_id?: string,
-    create_timestamp?: Date,
+    create_utc_timestamp?: Date,
     update_user_id?: string,
-    update_timestamp?: Date,
+    update_utc_timestamp?: Date,
     complaint_identifier?: string,
     referred_by_agency_code?: AgencyCode,
     owned_by_agency_code?: AgencyCode,
@@ -245,12 +245,12 @@ export class Complaint {
     this.location_summary_text = location_summary_text;
     this.location_detailed_text = location_detailed_text;
     this.incident_datetime = incident_datetime;
-    this.incident_reported_datetime = incident_reported_datetime;
+    this.incident_reported_utc_timestmp = incident_reported_utc_timestmp;
     this.referred_by_agency_other_text = referred_by_agency_other_text;
     this.create_user_id = create_user_id;
-    this.create_timestamp = create_timestamp;
+    this.create_utc_timestamp = create_utc_timestamp;
     this.update_user_id = update_user_id;
-    this.update_timestamp = update_timestamp;
+    this.update_utc_timestamp = update_utc_timestamp;
     this.complaint_identifier = complaint_identifier;
     this.referred_by_agency_code = referred_by_agency_code;
     this.owned_by_agency_code = owned_by_agency_code;

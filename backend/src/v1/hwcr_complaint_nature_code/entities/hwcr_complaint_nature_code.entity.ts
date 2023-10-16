@@ -41,7 +41,7 @@ export class HwcrComplaintNatureCode
         description: "The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -55,7 +55,7 @@ export class HwcrComplaintNatureCode
         description: "The timestamp when the human wildlife conflict nature code was updated.  The timestamp is stored in UTC with no Offset.",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
       constructor(hwcr_complaint_nature_code?:string) {
         this.hwcr_complaint_nature_code = hwcr_complaint_nature_code;

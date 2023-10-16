@@ -27,7 +27,7 @@ export class ComplaintService {
         sequenceNumber = map(returnData, 'nextval');
       });
       const complaintId = (new Date()).getFullYear().toString().substring(2) + "-" + sequenceNumber;
-      createComplaintDto.incident_reported_datetime = new Date();
+      createComplaintDto.incident_reported_utc_timestmp = new Date();
       if(!createComplaintDto.incident_datetime)
       {
         createComplaintDto.incident_datetime = null;
@@ -44,7 +44,7 @@ export class ComplaintService {
           location_detailed_text: createComplaintDto.location_detailed_text,
           cos_geo_org_unit: createComplaintDto.cos_geo_org_unit,
           incident_datetime: createComplaintDto.incident_datetime,
-          incident_reported_datetime: createComplaintDto.incident_reported_datetime,
+          incident_reported_utc_timestmp: createComplaintDto.incident_reported_utc_timestmp,
           location_geometry_point: createComplaintDto.location_geometry_point,
           location_summary_text: createComplaintDto.location_summary_text,
           caller_name: createComplaintDto.caller_name,
@@ -55,8 +55,8 @@ export class ComplaintService {
           caller_phone_3: createComplaintDto.caller_phone_3,
           referred_by_agency_code: referredByAgencyCode,
           complaint_identifier: createComplaintDto.complaint_identifier,
-          create_timestamp: createComplaintDto.create_timestamp,
-          update_timestamp: createComplaintDto.update_timestamp,
+          create_utc_timestamp: createComplaintDto.create_utc_timestamp,
+          update_utc_timestamp: createComplaintDto.update_utc_timestamp,
           create_user_id: createComplaintDto.create_user_id,
           update_user_id: createComplaintDto.update_user_id,
         };

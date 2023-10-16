@@ -42,7 +42,7 @@ export class HwcrComplaintService {
 
     const createHwcrComplaintDto: CreateHwcrComplaintDto = JSON.parse(hwcrComplaint);
     createHwcrComplaintDto.hwcr_complaint_guid = randomUUID();
-    createHwcrComplaintDto.update_timestamp = createHwcrComplaintDto.create_timestamp = new Date();
+    createHwcrComplaintDto.update_utc_timestamp = createHwcrComplaintDto.create_utc_timestamp = new Date();
     let newHwcrComplaintString;
     try {
       const complaint: Complaint = await this.complaintService.create(
@@ -124,12 +124,12 @@ export class HwcrComplaintService {
     }
 
     const sortString =
-      sortColumn !== "update_timestamp"
+      sortColumn !== "update_utc_timestamp"
         ? sortTable + sortColumn
-        : "_update_timestamp";
+        : "_update_utc_timestamp";
 
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
-      .addSelect("GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)","_update_timestamp")
+      .addSelect("GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)","_update_utc_timestamp")
       .leftJoinAndSelect('hwcr_complaint.complaint_identifier', 'complaint_identifier')
       .leftJoinAndSelect('hwcr_complaint.species_code','species_code')
       .leftJoinAndSelect('hwcr_complaint.hwcr_complaint_nature_code', 'hwcr_complaint_nature_code')
@@ -142,7 +142,7 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('complaint_identifier.person_complaint_xref', 'person_complaint_xref', 'person_complaint_xref.active_ind = true')
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
-      .addOrderBy('complaint_identifier.incident_reported_datetime', sortColumn === 'incident_reported_datetime' ? sortOrderString : "DESC");
+      .addOrderBy('complaint_identifier.incident_reported_utc_timestmp', sortColumn === 'incident_reported_utc_timestmp' ? sortOrderString : "DESC");
       
 
       if(community !== null && community !== undefined && community !== '')
@@ -176,11 +176,11 @@ export class HwcrComplaintService {
       }
       if(incidentReportedStart !== null && incidentReportedStart !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
       }
       if(incidentReportedEnd !== null && incidentReportedEnd !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
       }
       if(status !== null && status !== undefined && status !== "")
       {
@@ -249,11 +249,11 @@ export class HwcrComplaintService {
       }
       if(incidentReportedStart !== null && incidentReportedStart !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart', { IncidentReportedStart: incidentReportedStart });
       }
       if(incidentReportedEnd !== null && incidentReportedEnd !== undefined)
       {
-        queryBuilder.andWhere('complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
+        queryBuilder.andWhere('complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd', { IncidentReportedEnd: incidentReportedEnd  });
       }
       if(status !== null && status !== undefined && status !== "")
       {
@@ -271,7 +271,7 @@ export class HwcrComplaintService {
       //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
       const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
       const sortTable = (sortColumn === 'complaint_identifier' || sortColumn === 'species_code' || sortColumn === 'hwcr_complaint_nature_code') ? 'hwcr_complaint.' : 'complaint_identifier.';
-      const sortString =  sortColumn !== 'update_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)';
+      const sortString =  sortColumn !== 'update_utc_timestamp' ? sortTable + sortColumn : 'GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)';
 
 
       const queryBuilder = this.hwcrComplaintsRepository.createQueryBuilder('hwcr_complaint')
@@ -288,8 +288,8 @@ export class HwcrComplaintService {
       .leftJoinAndSelect('person_complaint_xref.person_guid', 'person', 'person_complaint_xref.active_ind = true')
       .orderBy(sortString, sortOrderString)
       .addOrderBy(
-        "complaint_identifier.incident_reported_datetime",
-        sortColumn === "incident_reported_datetime" ? sortOrderString : "DESC"
+        "complaint_identifier.incident_reported_utc_timestmp",
+        sortColumn === "incident_reported_utc_timestmp" ? sortOrderString : "DESC"
       );
 
 

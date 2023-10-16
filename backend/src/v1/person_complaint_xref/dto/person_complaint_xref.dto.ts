@@ -22,7 +22,7 @@ export class PersonComplaintXrefDto
     example: "2003-04-12 04:05:06",
     description: "The timestamp when the cross reference was created.  The timestamp is stored in UTC with no Offset.",
   })
-  create_timestamp: Date;
+  create_utc_timestamp: Date;
 
   @ApiProperty({
     example: "mburns",
@@ -34,7 +34,7 @@ export class PersonComplaintXrefDto
     example: "2003-04-12 04:05:06",
     description: "The timestamp when the cross reference was updated.  The timestamp is stored in UTC with no Offset.",
   })
-  update_timestamp: Date;
+  update_utc_timestamp: Date;
 
   @ApiProperty({
     example: "MBURNS",
