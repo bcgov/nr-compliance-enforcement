@@ -15,11 +15,11 @@ active_ind bool not null,
 -- A boolean indicator to determine if the timezone code is active.
 create_user_id varchar(32) not null,
 -- The id of the user that created the timezone code.
-create_timestamp timestamp not null,
+create_utc_timestamp timestamp not null,
 -- The timestamp when the timezone code was created.  The timestamp is stored in UTC with no Offset.
 update_user_id varchar(32) not null,
 -- The id of the user that updated the timezone code.
-update_timestamp timestamp not null,
+update_utc_timestamp timestamp not null,
 -- The timestamp when the timezone code was updated.  The timestamp is stored in UTC with no Offset.
 	constraint "PK_timezonecode" primary key (timezone_code)
 );
