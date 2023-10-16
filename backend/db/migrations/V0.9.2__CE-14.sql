@@ -72,10 +72,9 @@ values ('MDT','Mountain Daylight Time','UTC-6',1,true,'FLYWAY',CURRENT_TIMESTAMP
 	('PDT','Pacific Daylight Time','UTC-7',3,true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP),
 	('PST','Pacific Standard Time','UTC-8',4,true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
 
--- rename the incident_utc_datetime column in the complaint table to incident_utc_datetime
+-- Add the incident_utc_datetime column in the complaint table (this will replace the existing incident_datetime column)
 -- Also add timezone_code.  We want these two columns to be together, so create the 
--- new columns at the end of the table, copy the data over to the new column,
--- rename the new column, and drop the old column
+-- new columns at the end of the table, copy the data over to the new column, and drop the old column
 alter table public.complaint add column incident_utc_datetime timestamp;
 alter table public.complaint add column timezone_code varchar(10);
 
