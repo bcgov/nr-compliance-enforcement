@@ -719,7 +719,7 @@ export const selectComplaintHeader =
               ceComplaint.person_complaint_xref[0].person_guid.person_guid;
           }
 
-          const { long_description: status } = ceStatusCode;
+          const { complaint_status_code: status } = ceStatusCode;
 
           result = {
             ...result,
