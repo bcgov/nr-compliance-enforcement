@@ -84,7 +84,7 @@ alter table public.complaint add constraint fk_complaint_timezone_code FOREIGN K
 -- The data was stored with a PDT offset.  Change this to UTC by subtracting 7 hours
 update public.complaint set incident_utc_datetime = incident_datetime  - interval '7 hours';
 
-alter table public.complaint drop column incident_utc_datetime;
+alter table public.complaint drop column incident_datetime;
 
 -- popupulate the timezone codes, assume everything created up to this point was in PDT
 update public.complaint set timezone_code = 'PDT';
