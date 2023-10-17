@@ -155,10 +155,10 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
-  const incidentDateTimeObject = new Date(incidentDateTime ?? "");
+  const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
-    incidentDateTimeObject,
+    incidentDateTimeObject
   );
 
   // Transform the fetched data into the DropdownOption type
@@ -261,20 +261,21 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   }
 
   function handleIncidentDateTimeChange(date: Date) {
+    console.log("date: " + date);
     setSelectedIncidentDateTime(date);
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         updateComplaint,
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.incident_datetime =
-        date.toDateString();
+        date;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         updateComplaint,
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.incident_datetime =
-        date.toDateString();
+        date;
       setUpdateComplaint(allegationComplaint);
     }
   }
