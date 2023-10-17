@@ -5,6 +5,7 @@ import { GeoOrganizationUnitCode } from '../../geo_organization_unit_code/entiti
 import { Point } from 'geojson';
 import { CosGeoOrgUnit } from '../../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { PersonComplaintXref } from '../../person_complaint_xref/entities/person_complaint_xref.entity';
+import { TimezoneCode } from 'src/v1/timezone_code/entities/timezone_code.entity';
 
 export class ComplaintDto {
   @ApiProperty({
@@ -121,6 +122,12 @@ export class ComplaintDto {
     description: "The date of the incident the complaint was filed about",
   })
   incident_utc_datetime: Date;
+
+  @ApiProperty({
+    example: "PST",
+    description: "The timezone in which the incident took place",
+  })
+  timezone_code: TimezoneCode;
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",

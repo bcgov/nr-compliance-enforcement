@@ -4,6 +4,7 @@ import { ComplaintStatusCode } from "../code-tables/complaint-status-code";
 import { GeoOrganizationUnitCode } from "../code-tables/geo-organization-unit-code";
 import { HwcrComplaintNatureCode } from "../code-tables/hwcr-complaint-nature-code";
 import { SpeciesCode } from "../code-tables/species-code";
+import { TimezoneCode } from "../code-tables/timezone-code";
 import { LocationGeometryPoint } from "./complaint";
 import { PersonComplaintXref } from "./person-complaint-xref";
 
@@ -13,6 +14,7 @@ export interface HwcrComplaint {
     geo_organization_unit_code: GeoOrganizationUnitCode;
     location_geometry_point: LocationGeometryPoint;
     incident_utc_datetime: string;
+    timezone_code: TimezoneCode;
     incident_reported_utc_timestmp: string;
     location_summary_text: string;
     location_detailed_text: string;

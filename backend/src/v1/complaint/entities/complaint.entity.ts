@@ -15,6 +15,7 @@ import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entiti
 import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { TimezoneCode } from "../../timezone_code/entities/timezone_code.entity";
 
 @Entity()
 export class Complaint {
@@ -166,6 +167,21 @@ export class Complaint {
   incident_utc_datetime: Date;
 
   @ApiProperty({
+    example: "PST",
+    description: "The timezone of the incident",
+  })
+  
+  @ApiProperty({
+    example: "PST",
+    description:
+      "The timezone of the person that set the incident time",
+  })
+  @ManyToOne(() => TimezoneCode, { nullable: true })
+  @JoinColumn({ name: "timezone_code" })
+  timezone_code: TimezoneCode;
+
+
+  @ApiProperty({
     example: "2023-11-22",
     description: "The date of the incident the complaint was filed about",
   })
@@ -220,6 +236,7 @@ export class Complaint {
     location_summary_text?: string,
     location_detailed_text?: string,
     incident_utc_datetime?: Date,
+    timezone_code?: TimezoneCode,
     incident_reported_utc_timestmp?: Date,
     referred_by_agency_other_text?: string,
     create_user_id?: string,
@@ -245,6 +262,7 @@ export class Complaint {
     this.location_summary_text = location_summary_text;
     this.location_detailed_text = location_detailed_text;
     this.incident_utc_datetime = incident_utc_datetime;
+    this.timezone_code = timezone_code;
     this.incident_reported_utc_timestmp = incident_reported_utc_timestmp;
     this.referred_by_agency_other_text = referred_by_agency_other_text;
     this.create_user_id = create_user_id;

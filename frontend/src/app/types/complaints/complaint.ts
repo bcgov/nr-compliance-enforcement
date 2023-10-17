@@ -1,3 +1,5 @@
+import { TimezoneCode } from "../code-tables/timezone-code";
+
 export interface Complaint {
   detail_text: string;
   caller_name: string;
@@ -10,6 +12,7 @@ export interface Complaint {
   location_summary_text: string;
   location_detailed_text: string;
   incident_utc_datetime: Date;
+  timezone_code: TimezoneCode;
   incident_reported_utc_timestmp: Date;
   referred_by_agency_other_text: null;
   create_user_id: string;
