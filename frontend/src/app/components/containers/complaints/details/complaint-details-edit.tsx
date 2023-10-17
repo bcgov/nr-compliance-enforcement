@@ -175,7 +175,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const complaintStatusCodes = useSelector(
     selectComplaintStatusCodeDropdown,
   ) as Option[];
-  console.log(JSON.stringify(complaintStatusCodes));
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(
     selectHwcrNatureOfComplaintCodeDropdown,
@@ -341,19 +340,21 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const handleViolationTypeChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
+      if(value)
+      {
+        let update = { ...updateComplaint } as AllegationComplaint;
 
-      let update = { ...updateComplaint } as AllegationComplaint;
+        const { violation_code: source } = update;
+        const updatedEntity = {
+          ...source,
+          short_description: value,
+          long_description: label as string,
+          violation_code: value,
+        };
 
-      const { violation_code: source } = update;
-      const updatedEntity = {
-        ...source,
-        short_description: value as string,
-        long_description: label as string,
-        violation_code: value as string,
-      };
-
-      update.violation_code = updatedEntity;
-      setUpdateComplaint(update);
+        update.violation_code = updatedEntity;
+        setUpdateComplaint(update);
+      }
     }
   };
 
@@ -608,9 +609,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
           hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -630,9 +631,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
           allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -859,9 +860,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: 0,
             active_ind: true,
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
 
       const updatedParent = {

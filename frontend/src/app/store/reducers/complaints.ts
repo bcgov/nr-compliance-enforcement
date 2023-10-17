@@ -430,10 +430,10 @@ export const createAllegationComplaint =
         newComplaintId =
         newAllegationComplaint.complaint_identifier.complaint_identifier;
       });
-      console.log();
+      ToggleSuccess("Complaint has been saved");
       return newComplaintId;
     } catch (error) {
-      console.log(error);
+      ToggleError("Unable to create complaint");
       //-- add error handling
     } finally {
       dispatch(toggleLoading(false));
@@ -473,7 +473,6 @@ export const updateAllegationComplaint =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
-      console.log(error);
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -520,10 +519,10 @@ export const createWildlifeComplaint =
         newComplaintId =
           newHwcrComplaint.complaint_identifier.complaint_identifier;
       });
-      console.log();
+      ToggleSuccess("Complaint has been saved");
       return newComplaintId;
     } catch (error) {
-      console.log(error);
+      ToggleError("Unable to create complaint");
       //-- add error handling
     } finally {
       dispatch(toggleLoading(false));

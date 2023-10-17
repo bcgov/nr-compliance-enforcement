@@ -41,6 +41,8 @@ import {
 } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { Complaint } from "../../../../types/complaints/complaint";
+import { ToggleError } from "../../../../common/toast";
+import { ToastContainer } from "react-toastify";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -65,9 +67,9 @@ export const CreateComplaint: FC = () => {
         display_order: "",
         active_ind: "",
         create_user_id: "",
-        create_utc_timestamp: "",
+        create_utc_timestamp: null,
         update_user_id: "",
-        update_utc_timestamp: "",
+        update_utc_timestamp: null
       },
       location_geometry_point: {
         type: "",
@@ -106,9 +108,9 @@ export const CreateComplaint: FC = () => {
         display_order: 0,
         active_ind: false,
         create_user_id: "",
-        create_utc_timestamp: "",
+        create_utc_timestamp: null,
         update_user_id: "",
-        update_utc_timestamp: "",
+        update_utc_timestamp: null,
       },
       cos_geo_org_unit: {
         zone_code: "",
@@ -306,9 +308,9 @@ export const CreateComplaint: FC = () => {
         const { violation_code: source } = update;
         const updatedEntity = {
           ...source,
-          short_description: value as string,
+          short_description: value,
           long_description: label as string,
-          violation_code: value as string,
+          violation_code: value,
         };
 
         update.violation_code = updatedEntity;
@@ -536,9 +538,9 @@ export const CreateComplaint: FC = () => {
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
           hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -558,9 +560,9 @@ export const CreateComplaint: FC = () => {
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
           allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -787,9 +789,9 @@ export const CreateComplaint: FC = () => {
             display_order: 0,
             active_ind: true,
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
 
       const updatedParent = {
@@ -999,13 +1001,16 @@ export const CreateComplaint: FC = () => {
           navigate("/complaint/" + complaintType + "/" + complaintId);
         }
       }
+      setErrorNotificationClass("comp-complaint-error display-none");
     } else {
+      ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
     }
   };
 
   return (
     <div className="comp-complaint-details">
+      <ToastContainer />
       <CreateComplaintHeader
         complaintType={COMPLAINT_TYPES.HWCR}
         cancelButtonClick={cancelButtonClick}
@@ -1105,7 +1110,6 @@ export const CreateComplaint: FC = () => {
           <div className="comp-details-edit-column comp-details-right-column">
             <div className="comp-details-label-input-pair"></div>
             {complaintType === COMPLAINT_TYPES.HWCR && (
-              <>
                 <div
                   className="comp-details-label-input-pair"
                   id="species-pair-id"
@@ -1123,7 +1127,6 @@ export const CreateComplaint: FC = () => {
                     errMsg={speciesErrorMsg}
                   />
                 </div>
-              </>
             )}
             <div
                   className="comp-details-label-input-pair"
