@@ -31,7 +31,7 @@ describe('HwcrComplaintService', () => {
         {
           provide: getRepositoryToken(HwcrComplaint),
           useValue: {
-
+            createQueryBuilder: () => { }
           },
         },
         ComplaintService,
@@ -84,5 +84,7 @@ describe('HwcrComplaintService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+
+    console.log(service)
   });
 });
