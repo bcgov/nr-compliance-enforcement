@@ -989,7 +989,5 @@ export class HwcrComplaintService {
       const [data, totalCount] = await queryBuilder.getManyAndCount();
       return { complaints: data, totalCount };
     }
-
-    return Promise.resolve({ complaints: [], totalCount: 0 });
   };
 }

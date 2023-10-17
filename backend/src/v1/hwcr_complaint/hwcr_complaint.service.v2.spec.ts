@@ -115,11 +115,11 @@ describe("Testing: HwcrComplaintService", () => {
     const result = await service.complaintSearch(payload);
 
     expect(result).not.toBe(null);
-   console.log("result: ", result)
+
     const { complaints, totalCount} = result;
     expect(complaints.length).toBeGreaterThanOrEqual(1)
     expect(totalCount).toBeGreaterThan(0)
-
+    
   });
 });
 
