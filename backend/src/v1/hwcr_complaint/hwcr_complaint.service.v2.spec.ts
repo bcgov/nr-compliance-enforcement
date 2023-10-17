@@ -80,7 +80,7 @@ describe("Testing: HwcrComplaintService", () => {
     })
       .compile()
       .catch((err) => {
-        // Helps catch ninja like errors from compilation
+        // Helps catch ninja like errors from compilation-*groa
         console.error("ERROR!", err);
         throw err;
       });
@@ -90,11 +90,12 @@ describe("Testing: HwcrComplaintService", () => {
   });
 
   it("should be defined", () => {
-    console.log(service)
     expect(service).toBeDefined();
   });
 
   it("should be able to search", async () => {
+    /* */
+
     const sortColumn = "last_name";
     const sortOrder = "test";
     const community = null;
@@ -114,10 +115,11 @@ describe("Testing: HwcrComplaintService", () => {
     const result = await service.complaintSearch(payload);
 
     expect(result).not.toBe(null);
-   
+   console.log("result: ", result)
     const { complaints, totalCount} = result;
     expect(complaints.length).toBeGreaterThanOrEqual(1)
     expect(totalCount).toBeGreaterThan(0)
+
   });
 });
 

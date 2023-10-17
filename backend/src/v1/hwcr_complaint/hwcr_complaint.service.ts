@@ -977,6 +977,19 @@ export class HwcrComplaintService {
       );
     }
 
+    if (skip !== undefined) {
+      // a page number was supplied, limit the results returned
+      const [data, totalCount] = await queryBuilder
+        .skip(skip)
+        .take(pageSize)
+        .getManyAndCount();
+      return { complaints: data, totalCount };
+    } else {
+      // not paginating results, just get them all
+      const [data, totalCount] = await queryBuilder.getManyAndCount();
+      return { complaints: data, totalCount };
+    }
+
     return Promise.resolve({ complaints: [], totalCount: 0 });
   };
 }

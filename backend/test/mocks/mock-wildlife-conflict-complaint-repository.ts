@@ -4,7 +4,9 @@ const createQueryBuilder: any = {
     getMany: () => createQueryBuilder,
     select: () => createQueryBuilder,
     addSelect: () => createQueryBuilder,
-    from: () => createQueryBuilder
+    from: () => createQueryBuilder,
+    orderBy: () => jest.fn().mockReturnThis(),
+    addOrderBy: () => createQueryBuilder,
   };
  
  const manyItems = [
@@ -19,8 +21,8 @@ const createQueryBuilder: any = {
  
  export const MockWildlifeConflictComplaintRepository = () => ({
   find: jest.fn().mockResolvedValue(manyItems),
-  findOneBy: jest.fn().mockResolvedValue({"hwcr_complaint_guid":"e14c4a9b-cdff-434c-9676-bc769255bf76","complaint_identifier":{"detail_text":"Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.","caller_name":"Stacy","caller_address":"791 Swallow Crossing","caller_email":"ssalasar0@acquirethisname.com","caller_phone_1":"279-141-1388","caller_phone_2":null,"caller_phone_3":null,"location_geometry_point":{"type":"Point","coordinates":"[-134.3752062828, 53.659295201]"},"location_summary_text":"Apt 1134","location_detailed_text":null,"incident_datetime":"error: invalid date \"2023-04-06T07:24:00.000Z\"","incident_reported_datetime":"error: invalid date \"2023-10-10T21:53:58.024Z\"","referred_by_agency_other_text":null,"complaint_identifier":"24-80959","owned_by_agency_code":{"agency_code":"COS","short_description":"COS","long_description":"Conservation Officer Service"},"complaint_status_code":{"complaint_status_code":"OPEN","short_description":"OPEN","long_description":"Open"},"cos_geo_org_unit":{"region_code":"TMPSNCRBO","region_name":"Thompson Cariboo","zone_code":"TMPSNNCLA","zone_name":"Thompson Nicola","office_location_code":"KMLPS","office_location_name":"Kamloops","area_code":"KAMLOOPS","area_name":"Kamloops"},"person_complaint_xref":[]},"species_code":{"species_code":"BLKBEAR","short_description":"Black Bear","long_description":"Black Bear"},"hwcr_complaint_nature_code":{"hwcr_complaint_nature_code":"AGGPRES","short_description":"AGGPRES","long_description":"Aggressive - present/recent"},"attractant_hwcr_xref":[],"other_attractants_text":null}),
-  findOneByOrFail: jest.fn().mockResolvedValue({"hwcr_complaint_guid":"e14c4a9b-cdff-434c-9676-bc769255bf76","complaint_identifier":{"detail_text":"Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.","caller_name":"Stacy","caller_address":"791 Swallow Crossing","caller_email":"ssalasar0@acquirethisname.com","caller_phone_1":"279-141-1388","caller_phone_2":null,"caller_phone_3":null,"location_geometry_point":{"type":"Point","coordinates":"[-134.3752062828, 53.659295201]"},"location_summary_text":"Apt 1134","location_detailed_text":null,"incident_datetime":"error: invalid date \"2023-04-06T07:24:00.000Z\"","incident_reported_datetime":"error: invalid date \"2023-10-10T21:53:58.024Z\"","referred_by_agency_other_text":null,"complaint_identifier":"24-80959","owned_by_agency_code":{"agency_code":"COS","short_description":"COS","long_description":"Conservation Officer Service"},"complaint_status_code":{"complaint_status_code":"OPEN","short_description":"OPEN","long_description":"Open"},"cos_geo_org_unit":{"region_code":"TMPSNCRBO","region_name":"Thompson Cariboo","zone_code":"TMPSNNCLA","zone_name":"Thompson Nicola","office_location_code":"KMLPS","office_location_name":"Kamloops","area_code":"KAMLOOPS","area_name":"Kamloops"},"person_complaint_xref":[]},"species_code":{"species_code":"BLKBEAR","short_description":"Black Bear","long_description":"Black Bear"},"hwcr_complaint_nature_code":{"hwcr_complaint_nature_code":"AGGPRES","short_description":"AGGPRES","long_description":"Aggressive - present/recent"},"attractant_hwcr_xref":[],"other_attractants_text":null}),
+  findOneBy: jest.fn().mockResolvedValue(singleItem),
+  findOneByOrFail: jest.fn().mockResolvedValue(singleItem),
   create: jest.fn(() => {
     return Promise.resolve(true);
   }),
@@ -34,14 +36,19 @@ const createQueryBuilder: any = {
     return Promise.resolve(true);
   }),
   createQueryBuilder: jest.fn(() => ({
+    orderBy: jest.fn().mockReturnThis(),
+    addOrderBy: jest.fn().mockReturnThis(),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(manyItems),
     getOne: jest.fn().mockResolvedValue(singleItem),
     getQuery: jest.fn(),
-    select: () => createQueryBuilder,
-    addSelect: () => createQueryBuilder,
-    from: () => createQueryBuilder
+    select: jest.fn().mockReturnThis(),
+    addSelect: jest.fn().mockReturnThis(),
+    from: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockResolvedValue(5),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn().mockResolvedValue({ data: [...manyItems], totalCount: 35})
+
     })),
  });
- 
