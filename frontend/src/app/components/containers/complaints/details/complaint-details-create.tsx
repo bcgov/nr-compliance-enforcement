@@ -1218,7 +1218,7 @@ export const CreateComplaint: FC = () => {
                       options={yesNoOptions}
                       placeholder="Select"
                       id="violation-in-progress-select-id"
-                      classNamePrefix="comp-violation-ip-select"
+                      classNamePrefix="comp-select"
                       onChange={(e) => handleViolationInProgessChange(e)}
                     />
                   </div>
@@ -1235,7 +1235,7 @@ export const CreateComplaint: FC = () => {
                       options={yesNoOptions}
                       placeholder="Select"
                       id="violation-observed-select-id"
-                      classNamePrefix="comp-violation-observed-select"
+                      classNamePrefix="comp-select"
                       onChange={(e) => handleViolationObservedChange(e)}
                     />
                   </div>

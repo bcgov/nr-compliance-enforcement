@@ -56,6 +56,8 @@ describe("Complaint Create Page spec - Create View", () => {
   it("Navigate to the Complaint Create page & create and verify data", function () {
     //start create
     cy.navigateToCreateScreen();
+
+    cy.selectItemById("complaint-type-select-id", "Human Wildlife Conflicts");
     cy.get("#caller-name-id").clear().type(createCallerInformation.name);
     cy.get("#complaint-address-id")
       .clear()

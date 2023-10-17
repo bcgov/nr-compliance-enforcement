@@ -135,7 +135,7 @@ export const codeTableSlice = createSlice({
       const data = payload.map(
         ({
           attractant_code: value,
-          long_description: label,
+          short_description: label,
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;

@@ -1300,3 +1300,9 @@ INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('49af7913-bfee-48f3-b1b7-51e2b6134b64'::uuid, 'JOCHARTR', 'FLYWAY', '2023-10-06 11:22:45.560', 'FLYWAY', '2023-10-06 11:25:55.828', '85484a31-5370-4763-81cc-f9c2b5f97110'::uuid, '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'b4bb40f5-ee23-4c99-b63c-e741ce61b589'::uuid)
 ON CONFLICT DO NOTHING;
+
+-- Fixing spelling issue
+UPDATE public.attractant_code SET long_description = 'Barbeque' WHERE short_description = 'BBQ' AND attractant_code = 'BBQ';
+UPDATE public.attractant_code SET short_description = 'Fruit/Berries' WHERE long_description = 'Residential Fruit/Berries' AND attractant_code = 'RESFRUIT';
+UPDATE public.attractant_code SET short_description = 'Hunter Kill' WHERE long_description = 'Wildlife:Hunter Kill' AND attractant_code = 'WLDLFEHK';
+
