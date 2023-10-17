@@ -261,7 +261,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   }
 
   function handleIncidentDateTimeChange(date: Date) {
-    console.log("date: " + date);
     setSelectedIncidentDateTime(date);
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
