@@ -34,10 +34,13 @@ import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import { useNavigate } from "react-router-dom";
 import {
+  createAllegationComplaint,
   createWildlifeComplaint,
+  getAllegationComplaintByComplaintIdentifierSetUpdate,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
 } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
+import { Complaint } from "../../../../types/complaints/complaint";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -53,8 +56,7 @@ export const CreateComplaint: FC = () => {
 
   const navigate = useNavigate();
 
-  const emptyComplaint: HwcrComplaint = {
-    complaint_identifier: {
+  const emptyComplaint: Complaint = {
       complaint_identifier: "",
       geo_organization_unit_code: {
         geo_organization_unit_code: "",
@@ -87,9 +89,9 @@ export const CreateComplaint: FC = () => {
         display_order: 0,
         active_ind: false,
         create_user_id: "",
-        create_utc_timestamp: "",
+        create_utc_timestamp: null,
         update_user_id: "",
-        update_utc_timestamp: "",
+        update_utc_timestamp: null,
       },
       caller_name: "",
       caller_address: "",
@@ -115,7 +117,10 @@ export const CreateComplaint: FC = () => {
         area_code: "",
       },
       person_complaint_xref: [],
-    },
+  }
+
+  const emptyHwcrComplaint: HwcrComplaint = {
+    complaint_identifier: emptyComplaint,
     hwcr_complaint_nature_code: {
       hwcr_complaint_nature_code: "",
       short_description: "",
@@ -123,9 +128,9 @@ export const CreateComplaint: FC = () => {
       display_order: 0,
       active_ind: false,
       create_user_id: "",
-      create_utc_timestamp: "",
+      create_utc_timestamp: null,
       update_user_id: "",
-      update_utc_timestamp: "",
+      update_utc_timestamp: null,
     },
     species_code: {
       species_code: "",
@@ -135,22 +140,45 @@ export const CreateComplaint: FC = () => {
       display_order: 0,
       active_ind: false,
       create_user_id: "",
-      create_utc_timestamp: "",
+      create_utc_timestamp: null,
       update_user_id: "",
-      update_utc_timestamp: "",
+      update_utc_timestamp: null,
     },
     update_utc_timestamp: "",
     hwcr_complaint_guid: "",
     attractant_hwcr_xref: [],
   };
 
+  const emptyAllegationComplaint: AllegationComplaint = {
+    complaint_identifier: emptyComplaint,
+    update_utc_timestamp: "",
+    allegation_complaint_guid: "",
+    violation_code: {
+      violation_code: "",
+      short_description: "",
+      long_description: "",
+      display_order: 0,
+      active_ind: false,
+      create_user_id: "",
+      create_utc_timestamp: null,
+      update_user_id: "",
+      update_utc_timestamp: null,
+    },
+    in_progress_ind: "",
+    observed_ind: false,
+    suspect_witnesss_dtl_text: ""
+  };
+
+  const newEmptyComplaint = (COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
+
   const [createComplaint, setCreateComplaint] = useState<
     HwcrComplaint | AllegationComplaint | null | undefined
-  >(emptyComplaint);
+  >(newEmptyComplaint);
 
   const [complaintType, setComplaintType] = useState<string>("");
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
+  const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   const [complaintDescErrorMsg, setComplaintDescErrorMsg] =
@@ -173,8 +201,6 @@ export const CreateComplaint: FC = () => {
   function noErrors() {
     let noErrors = false;
     if (
-      nocErrorMsg === "" &&
-      speciesErrorMsg === "" &&
       statusErrorMsg === "" &&
       complaintDescErrorMsg === "" &&
       attractantsErrorMsg === "" &&
@@ -186,7 +212,21 @@ export const CreateComplaint: FC = () => {
       secondaryPhoneMsg === "" &&
       alternatePhoneMsg === ""
     ) {
-      noErrors = true;
+      if(complaintType === COMPLAINT_TYPES.HWCR)
+      {
+        if(nocErrorMsg === "" &&
+          speciesErrorMsg === "")
+        {
+          noErrors = true;
+        }
+      }
+      else if(complaintType === COMPLAINT_TYPES.ERS)
+      {
+        if(violationTypeErrorMsg === "")
+        {
+          noErrors = true;
+        }
+      }
     }
     return noErrors;
   }
@@ -194,12 +234,12 @@ export const CreateComplaint: FC = () => {
   const handleComplaintChange = (selected: Option | null) => {
     if (selected) {
       const { value } = selected;
-      console.log("value: " + value);
       if (!value) {
         setComplaintTypeMsg("Required");
       } else {
         setComplaintTypeMsg("");
         setComplaintType(value);
+        setCreateComplaint(value === COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
       }
     }
   };
@@ -256,18 +296,24 @@ export const CreateComplaint: FC = () => {
     if (selected) {
       const { label, value } = selected;
 
-      let update = { ...createComplaint } as AllegationComplaint;
+      if (!value) {
+        setViolationTypeErrorMsg("Required");
+      } else {
+        setViolationTypeErrorMsg("");
 
-      const { violation_code: source } = update;
-      const updatedEntity = {
-        ...source,
-        short_description: value as string,
-        long_description: label as string,
-        violation_code: value as string,
-      };
+        let update = { ...createComplaint } as AllegationComplaint;
 
-      update.violation_code = updatedEntity;
-      setCreateComplaint(update);
+        const { violation_code: source } = update;
+        const updatedEntity = {
+          ...source,
+          short_description: value as string,
+          long_description: label as string,
+          violation_code: value as string,
+        };
+
+        update.violation_code = updatedEntity;
+        setCreateComplaint(update);
+      }
     }
   };
 
@@ -857,6 +903,15 @@ export const CreateComplaint: FC = () => {
         noError = false;
       }
     }
+    else if(complaintType === COMPLAINT_TYPES.ERS)
+    {
+      const allegationComplaint = complaint as AllegationComplaint;
+      if(allegationComplaint.violation_code.violation_code === "")
+      {
+        await setViolationTypeErrorMsg("Required");
+        noError = false;
+      }
+    }
     if (
       complaint.complaint_identifier.complaint_status_code
         .complaint_status_code === ""
@@ -890,9 +945,9 @@ export const CreateComplaint: FC = () => {
       display_order: 0,
       active_ind: false,
       create_user_id: "",
-      create_utc_timestamp: "",
+      create_utc_timestamp: null,
       update_user_id: "",
-      update_utc_timestamp: "",
+      update_utc_timestamp: null,
     };
 
     complaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
@@ -921,6 +976,21 @@ export const CreateComplaint: FC = () => {
         if (complaintId) {
           await dispatch(
             getWildlifeComplaintByComplaintIdentifierSetUpdate(
+              complaintId,
+              setCreateComplaint,
+            ),
+          );
+
+          navigate("/complaint/" + complaintType + "/" + complaintId);
+        }
+      }
+      else if (complaintType === COMPLAINT_TYPES.ERS) {
+        const complaintId = await dispatch(
+          createAllegationComplaint(complaint as AllegationComplaint),
+        );
+        if (complaintId) {
+          await dispatch(
+            getAllegationComplaintByComplaintIdentifierSetUpdate(
               complaintId,
               setCreateComplaint,
             ),
@@ -1002,13 +1072,14 @@ export const CreateComplaint: FC = () => {
                 <label id="violation-label-id">
                   Violation Type<span className="required-ind">*</span>
                 </label>
-                <Select
+                <ValidationSelect
                   className="comp-details-input"
                   options={violationTypeCodes}
                   placeholder="Select"
                   id="violation-type-select-id"
                   onChange={(e) => handleViolationTypeChange(e)}
                   classNamePrefix="comp-select"
+                  errMsg={violationTypeErrorMsg}
                 />
               </div>
             )}
@@ -1052,7 +1123,9 @@ export const CreateComplaint: FC = () => {
                     errMsg={speciesErrorMsg}
                   />
                 </div>
-                <div
+              </>
+            )}
+            <div
                   className="comp-details-label-input-pair"
                   id="office-pair-id"
                 >
@@ -1067,8 +1140,6 @@ export const CreateComplaint: FC = () => {
                     />
                   </div>
                 </div>
-              </>
-            )}
           </div>
         </div>
       </div>

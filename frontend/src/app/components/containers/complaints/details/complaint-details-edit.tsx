@@ -193,11 +193,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   ];
 
   // Used to set selected values in the dropdowns
-  console.log("status: " + statusCode);
   const selectedStatus = complaintStatusCodes.find(
     (option) => option.value === statusCode,
   );
-  console.log("selectedStatus: " + JSON.stringify(selectedStatus));
   const selectedSpecies = speciesCodes.find(
     (option) => option.value === speciesCode,
   );
