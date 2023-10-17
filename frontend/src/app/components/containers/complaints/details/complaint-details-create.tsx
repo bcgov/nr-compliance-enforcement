@@ -72,6 +72,18 @@ export const CreateComplaint: FC = () => {
         coordinates: [],
       },
       incident_utc_datetime: "",
+      timezone_code: {
+        timezone_code: "",
+        timezone_value: "",
+        long_description: "",
+        display_order: 0,
+        active_ind: false,
+        create_user_id: "",
+        create_utc_timestamp: "",
+        update_user_id: "",
+        update_utc_timestamp: "",
+ 
+      },
       incident_reported_utc_timestmp: "",
       location_summary_text: "",
       location_detailed_text: "",
