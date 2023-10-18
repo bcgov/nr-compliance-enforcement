@@ -1,7 +1,6 @@
 import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
-import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 import { TimezoneCode } from "../types/code-tables/timezone-code";
 
 type Coordinate = number[] | string[] | undefined;
