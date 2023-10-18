@@ -9,7 +9,7 @@ describe("Complaint Create Page spec - Create View", () => {
     location: "644 Pine Street ---- testing",
     locationDescription: " ---- testing",
     incidentDate: "2022-12-21",
-    attractants: ["Livestock", "Barbequeue", "Beehive"],
+    attractants: ["Livestock", "Barbeque", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
     xCoord: "-118",
