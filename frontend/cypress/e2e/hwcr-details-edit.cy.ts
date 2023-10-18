@@ -202,10 +202,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
       editCallDetails.locationDescription,
     );
 
-    //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  editCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDate
+    );
 
     cy.get('p[id="comp-details-description"]').contains(
       editCallDetails.description,

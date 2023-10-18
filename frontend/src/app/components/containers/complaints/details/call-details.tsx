@@ -2,9 +2,7 @@ import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
-  formatDate,
   formatDateWithOffset,
-  formatTime,
   formatTimeWithOffset,
   renderCoordinates,
 } from "../../../../common/methods";

@@ -805,7 +805,7 @@ export const CreateComplaint: FC = () => {
 
   function handleIncidentDateTimeChange(date: Date) {
     setSelectedIncidentDateTime(date);
-    var timeZoneCode = getTimezoneCode();
+    const timeZoneCode = getTimezoneCode();
     
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
