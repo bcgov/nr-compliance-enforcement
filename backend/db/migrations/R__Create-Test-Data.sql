@@ -1306,3 +1306,16 @@ UPDATE public.attractant_code SET long_description = 'Barbeque' WHERE short_desc
 UPDATE public.attractant_code SET short_description = 'Fruit/Berries' WHERE long_description = 'Residential Fruit/Berries' AND attractant_code = 'RESFRUIT';
 UPDATE public.attractant_code SET short_description = 'Hunter Kill' WHERE long_description = 'Wildlife:Hunter Kill' AND attractant_code = 'WLDLFEHK';
 
+-- Changing display order of attractants
+UPDATE public.attractant_code SET display_order=8 WHERE attractant_code='RESFRUIT';
+UPDATE public.attractant_code SET display_order=9 WHERE attractant_code='GARBAGE';
+UPDATE public.attractant_code SET display_order=10 WHERE attractant_code='WLDLFEHK';
+UPDATE public.attractant_code SET display_order=11 WHERE attractant_code='INDCAMP';
+UPDATE public.attractant_code SET display_order=12 WHERE attractant_code='LIVESTCK';
+UPDATE public.attractant_code SET display_order=13 WHERE attractant_code='LVSFEED';
+UPDATE public.attractant_code SET display_order=14 WHERE attractant_code='NA';
+UPDATE public.attractant_code SET display_order=15 WHERE attractant_code='OTHER';
+UPDATE public.attractant_code SET display_order=16 WHERE attractant_code='PETFOOD';
+UPDATE public.attractant_code SET display_order=17 WHERE attractant_code='PETS';
+UPDATE public.attractant_code SET display_order=18 WHERE attractant_code='VEGGARD';
+UPDATE public.attractant_code SET display_order=19 WHERE attractant_code='VNYDORCH';

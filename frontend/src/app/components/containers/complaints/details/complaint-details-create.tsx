@@ -23,6 +23,7 @@ import {
   selectAgencyDropdown,
   selectAreaCodeDropdown,
   selectAttractantCodeDropdown,
+  selectComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
@@ -818,12 +819,7 @@ export const CreateComplaint: FC = () => {
   const hwcrNatureOfComplaintCodes = useSelector(
     selectHwcrNatureOfComplaintCodeDropdown,
   ) as Option[];
-  const hwcrOption: Option = {
-    value: "HWCR",
-    label: "Human Wildlife Conflicts",
-  };
-  const allegationOption: Option = { value: "ERS", label: "Enforcement" };
-  const complaintTypeCodes = [hwcrOption, allegationOption];
+  const complaintTypeCodes = useSelector(selectComplaintTypeDropdown) as Option[];
   const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
