@@ -22,12 +22,6 @@ export class HwcrComplaintController {
     return this.hwcrComplaintService.create(createHwcrComplaintDto);
   }
 
-  @Get()
-  @Roles(Role.COS_OFFICER)
-  findAll(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string) {
-    return this.hwcrComplaintService.findAll(sortColumn, sortOrder);
-  }
-
   @Get('search')
   @Roles(Role.COS_OFFICER)
   search(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string, @Query('community') community: string, @Query('zone') zone: string,
