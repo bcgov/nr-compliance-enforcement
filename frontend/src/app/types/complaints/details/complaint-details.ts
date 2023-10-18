@@ -1,3 +1,4 @@
+import { TimezoneCode } from "../../code-tables/timezone-code";
 import { ComplaintDetailsAttractant } from "./complaint-attactant";
 
 export interface ComplaintDetails {
@@ -5,6 +6,7 @@ export interface ComplaintDetails {
   location?: string;
   locationDescription?: string;
   incidentDateTime?: string;
+  timezoneCode?: TimezoneCode;
   coordinates?: number[] | string[];
   area?: string;
   region?: string;

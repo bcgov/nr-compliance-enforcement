@@ -1,6 +1,8 @@
 import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { TimezoneCode } from "../types/code-tables/timezone-code";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -52,6 +54,61 @@ export const formatDate = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd");
 };
 
+export const formatDateWithOffset = (
+  input: string | undefined,
+  timezoneCode: TimezoneCode | undefined
+): string => {
+  if (!input) {
+    return "";
+  }
+
+  const offset = extractOffsetFromUTC(timezoneCode);
+
+  const date = new Date(new Date(input).getTime() + offset * 60 * 60 * 1000);
+
+  const isoDate = date.toISOString().split("T")[0]; // Split the string at 'T' to get the date portion
+
+  const [year, month, day] = isoDate.split("-"); // Split the date into year, month, and day
+
+  return `${year}-${month}-${day}`;
+};
+
+export const formatTimeWithOffset = (
+  input: string | undefined,
+  timezoneCode: TimezoneCode | undefined
+): string => {
+  if (!input) {
+    return "";
+  }
+  debugger;
+  const offset = extractOffsetFromUTC(timezoneCode);
+
+  const date = new Date(new Date(input).getTime() + offset * 60 * 60 * 1000);
+  const isoTime = date.toISOString().split("T")[1]; // Split the string at 'T' to get the date portion
+
+  const [time] = isoTime.split("."); // Split the time into hours, minutes, seconds, and timezone
+
+  const [hours, minutes] = time.split(":");
+
+  return `${hours}:${minutes}`;
+};
+
+function extractOffsetFromUTC(input: TimezoneCode | undefined): number {
+  if (input) {
+    const regex = /UTC(-?\d+)/;
+    const match = input.long_description?.match(regex);
+
+    if (match) {
+      const offset = parseInt(match[1], 10);
+      return offset;
+    } else {
+      return 0; // Return null if the string doesn't match the expected format
+    }
+  } else {
+    return 0;
+  }
+}
+
 export const formatTime = (input: string | undefined): string => {
   if (!input) {
     return "";
@@ -68,9 +125,17 @@ export const formatDateTime = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd HH:mm");
 };
 
+// returns the short timezone code for the user (e.g. PDT, PST, MDT, or MST)
+export const getTimezoneCode = (): string => {
+  const timeZoneCode = new Date()
+    .toLocaleTimeString("en-us", { timeZoneName: "short" })
+    .split(" ")[2];
+  return timeZoneCode;
+};
+
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (
-  coordinates: Coordinate,
+  coordinates: Coordinate
 ): { lat: number; lng: number } => {
   if (!coordinates) {
     return { lat: 0, lng: 0 };
@@ -105,7 +170,7 @@ export const isWithinBC = (coordinates: Coordinate): boolean => {
 
 export const parseCoordinates = (
   coordinates: Coordinate,
-  coordinateType: Coordinates,
+  coordinateType: Coordinates
 ): number | string => {
   if (!coordinates) {
     return 0;
@@ -129,7 +194,7 @@ export const getComplaintTypeFromUrl = (): number => {
 
 export const renderCoordinates = (
   coordinates: Coordinate,
-  coordinateType: Coordinates,
+  coordinateType: Coordinates
 ): JSX.Element => {
   const result = parseCoordinates(coordinates, coordinateType);
 

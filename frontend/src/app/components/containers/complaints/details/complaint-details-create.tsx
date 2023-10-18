@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
-import { bcBoundaries } from "../../../../common/methods";
+import { bcBoundaries, getTimezoneCode } from "../../../../common/methods";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
@@ -71,7 +71,7 @@ export const CreateComplaint: FC = () => {
         type: "",
         coordinates: [],
       },
-      incident_utc_datetime: "",
+      incident_utc_datetime: null,
       timezone_code: {
         timezone_code: "",
         timezone_value: "",
@@ -805,19 +805,23 @@ export const CreateComplaint: FC = () => {
 
   function handleIncidentDateTimeChange(date: Date) {
     setSelectedIncidentDateTime(date);
+    var timeZoneCode = getTimezoneCode();
+    
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         createComplaint,
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.incident_utc_datetime =
-        date.toDateString();
+        date;
+        hwcrComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
       setCreateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         createComplaint,
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.incident_utc_datetime =
-        date.toDateString();
+        date;
+        allegationComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
       setCreateComplaint(allegationComplaint);
     }
   }

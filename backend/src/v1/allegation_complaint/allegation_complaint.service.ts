@@ -127,6 +127,7 @@ export class AllegationComplaintService {
         "person_complaint_xref",
         "person_complaint_xref.active_ind = true"
       )
+      .leftJoinAndSelect('complaint_identifier.timezone_code', 'timezone_code')
       .leftJoinAndSelect(
         "person_complaint_xref.person_guid",
         "person",
@@ -341,6 +342,7 @@ export class AllegationComplaintService {
         "person_complaint_xref",
         "person_complaint_xref.active_ind = true"
       )
+      .leftJoinAndSelect('complaint_identifier.timezone_code', 'timezone_code')
       .leftJoin(
         "person_complaint_xref.person_guid",
         "person",
@@ -452,6 +454,7 @@ export class AllegationComplaintService {
         "person_complaint_xref",
         "person_complaint_xref.active_ind = true"
       )
+      .leftJoinAndSelect('complaint_identifier.timezone_code', 'timezone_code')
       .leftJoinAndSelect(
         "person_complaint_xref.person_guid",
         "person",
@@ -555,6 +558,7 @@ export class AllegationComplaintService {
         "person_complaint_xref",
         "person_complaint_xref.active_ind = true"
       )
+      .leftJoinAndSelect('complaint_identifier.timezone_code', 'timezone_code')
       .leftJoinAndSelect(
         "person_complaint_xref.person_guid",
         "person",

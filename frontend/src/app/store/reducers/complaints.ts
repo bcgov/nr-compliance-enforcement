@@ -772,6 +772,7 @@ export const selectComplaintDetails =
           location_summary_text,
           location_detailed_text,
           incident_utc_datetime,
+          timezone_code,
           location_geometry_point: { coordinates },
           cos_geo_org_unit: {
             area_name,
@@ -788,6 +789,7 @@ export const selectComplaintDetails =
           location: location_summary_text,
           locationDescription: location_detailed_text,
           incidentDateTime: incident_utc_datetime,
+          timezoneCode: timezone_code,
           coordinates,
           area: area_name,
           region: region_name,

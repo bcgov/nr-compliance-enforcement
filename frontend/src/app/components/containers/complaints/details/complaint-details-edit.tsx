@@ -4,6 +4,7 @@ import {
   bcBoundaries,
   formatDate,
   formatTime,
+  getTimezoneCode,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
@@ -155,7 +156,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
-  const incidentDateTimeObject = new Date(incidentDateTime ?? "");
+  const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
     incidentDateTimeObject,
@@ -263,21 +264,26 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     handleGeoPointChange(lat.toString(), lng.toString());
   }
 
+  // convert time to UTC, and store timezone code.  This allows users to see the time of the incident
+  // relative to the timezone in which the incident time was set.
   function handleIncidentDateTimeChange(date: Date) {
+    
     setSelectedIncidentDateTime(date);
+    var timeZoneCode = getTimezoneCode();
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         updateComplaint,
       ) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_utc_datetime =
-        date.toDateString();
+
+      hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
+      hwcrComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         updateComplaint,
       ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_utc_datetime =
-        date.toDateString();
+      allegationComplaint.complaint_identifier.incident_utc_datetime = date;
+      allegationComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
       setUpdateComplaint(allegationComplaint);
     }
   }

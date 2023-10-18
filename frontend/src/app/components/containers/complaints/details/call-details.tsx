@@ -3,7 +3,9 @@ import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
   formatDate,
+  formatDateWithOffset,
   formatTime,
+  formatTimeWithOffset,
   renderCoordinates,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
@@ -22,6 +24,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     location,
     locationDescription,
     incidentDateTime,
+    timezoneCode,
     coordinates,
     area,
     region,
@@ -55,9 +58,9 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   className="bi bi-calendar comp-margin-right-xxs"
                   id="complaint-incident-date"
                 ></i>
-                {formatDate(incidentDateTime)}
+                {formatDateWithOffset(incidentDateTime,timezoneCode)}
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(incidentDateTime)}
+                {formatTimeWithOffset(incidentDateTime,timezoneCode)}
               </div>
             </div>
 
