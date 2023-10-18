@@ -19,7 +19,9 @@ export class SpeciesCodeService {
   }
 
   async findAll(): Promise<SpeciesCode[]> {
-    return this.speciesCodeRepository.find();
+    return (await this.speciesCodeRepository.find(
+        {order: {display_order: "ASC"}}
+      ));
   }
 
   async findOne(id: string): Promise<SpeciesCode> {
