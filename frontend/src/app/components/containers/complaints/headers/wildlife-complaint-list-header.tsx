@@ -58,7 +58,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortDirection={sortDirection}
           className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border">
+        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
 
@@ -90,7 +90,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           className="comp-cell-width-110 comp-header-horizontal-border"
         />
 
-        <th className="comp-cell-width-30 comp-header-right-radius">
+        <th className="comp-cell-width-30 comp-header-right-radius unsortable">
           <div className="comp-header-label">
             <i className="bi bi-three-dots-vertical"></i>
           </div>
