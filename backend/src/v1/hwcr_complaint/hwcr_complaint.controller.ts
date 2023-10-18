@@ -80,6 +80,12 @@ export class HwcrComplaintController {
     );
   }
 
+  @Get("complaint-search")
+  @Roles(Role.COS_OFFICER)
+  complaintSearch(@Query() query: SearchPayload) {
+    return this.hwcrComplaintService.complaintSearch(query)
+  }
+
   @Get("map/search")
   @Roles(Role.COS_OFFICER)
   searchMap(
@@ -147,10 +153,4 @@ export class HwcrComplaintController {
     return this.hwcrComplaintService.getZoneAtAGlanceStatistics(zone);
   }
 
-  @Get("complaint-search")
-  @Roles(Role.COS_OFFICER)
-  test() {
-    this.logger.log("test");
-    return null;
-  }
 }
