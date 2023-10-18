@@ -461,7 +461,7 @@
 
   thead {
     font-weight: 600;
-
+    cursor: pointer;
     height: 38px;
     text-align: left;
 
@@ -470,6 +470,10 @@
       background-color: #e4e4e4;
       border-color: #8c8c8c;
     }
+    
+    th.unsortable {
+      cursor: default;
+     }
   }
 
   tbody {
