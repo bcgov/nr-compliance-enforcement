@@ -479,6 +479,14 @@
   tbody {
     font-weight: normal;
 
+    tr {
+      cursor: pointer;
+    }
+
+    tr:hover {
+      background-color: $gray-110;
+    }
+
     td {
       border-color: #8c8c8c;
     }
