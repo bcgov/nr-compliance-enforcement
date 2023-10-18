@@ -865,7 +865,7 @@ export class HwcrComplaintService {
         ? `${sortTable}.${sortColumn}`
         : "_update_timestamp";
 
-    const queryBuilder = this.hwcrComplaintsRepository
+    const builder = this.hwcrComplaintsRepository
       .createQueryBuilder("hwcr_complaint")
       .addSelect(
         "GREATEST(complaint_identifier.update_timestamp, hwcr_complaint.update_timestamp)",
@@ -922,71 +922,97 @@ export class HwcrComplaintService {
       );
 
     if (community) {
-      queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
+      builder.andWhere("cos_geo_org_unit.area_code = :Community", {
         Community: community,
       });
     }
     if (zone) {
-      queryBuilder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
+      builder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
         Zone: zone,
       });
     }
     if (region) {
-      queryBuilder.andWhere("cos_geo_org_unit.region_code = :Region", {
+      builder.andWhere("cos_geo_org_unit.region_code = :Region", {
         Region: region,
       });
     }
     if (officerAssigned) {
-      queryBuilder.andWhere(
+      builder.andWhere(
         "person_complaint_xref.person_complaint_xref_code = :Assignee",
         { Assignee: "ASSIGNEE" }
       );
-      queryBuilder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
+      builder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
         PersonGuid: officerAssigned,
       });
     } else if (officerAssigned === "null") {
-      queryBuilder.andWhere("person_complaint_xref.person_guid IS NULL");
+      builder.andWhere("person_complaint_xref.person_guid IS NULL");
     }
     if (natureOfComplaint) {
-      queryBuilder.andWhere(
+      builder.andWhere(
         "hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint",
         { NatureOfComplaint: natureOfComplaint }
       );
     }
     if (speciesCode) {
-      queryBuilder.andWhere("hwcr_complaint.species_code = :SpeciesCode", {
+      builder.andWhere("hwcr_complaint.species_code = :SpeciesCode", {
         SpeciesCode: speciesCode,
       });
     }
-    if (incidentReportedStart !== null && incidentReportedStart !== undefined) {
-      queryBuilder.andWhere(
+    if (incidentReportedStart) {
+      builder.andWhere(
         "complaint_identifier.incident_reported_datetime >= :IncidentReportedStart",
         { IncidentReportedStart: incidentReportedStart }
       );
     }
-    if (incidentReportedEnd !== null && incidentReportedEnd !== undefined) {
-      queryBuilder.andWhere(
+    if (incidentReportedEnd) {
+      builder.andWhere(
         "complaint_identifier.incident_reported_datetime <= :IncidentReportedEnd",
         { IncidentReportedEnd: incidentReportedEnd }
       );
     }
-    if (status !== null && status !== undefined && status !== "") {
-      queryBuilder.andWhere(
+    if (status) {
+      builder.andWhere(
         "complaint_identifier.complaint_status_code = :Status",
         { Status: status }
       );
     }
 
+    console.log("query: ", query)
+    if(query){ 
+      builder.orWhere("complaint.complaint_identifier like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.detail_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.caller_name like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.caller_address like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.caller_email like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.caller_phone_1 like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.caller_phone_2 like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.caller_phone_3 like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.location_summary_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.location_detailed_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.referred_by_agency_other_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint.location_geometry_point like :query", { query:`%${query}%` })
+      // builder.orWhere("agency_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("geo_organization_unit_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("allegation_complaint.suspect_witness_dtl_text like :query", { query:`%${query}%` })
+      // builder.orWhere("violation_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("hwcr_complaint.other_attractants_text like :query", { query:`%${query}%` })
+      // builder.orWhere("species_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("hwcr_complaint_nature_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("attractant_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("person.first_name like :query", { query:`%${query}%` })
+      // builder.orWhere("person.last_name like :query", { query:`%${query}%` })
+    }
+
     if (skip !== undefined) {
       // a page number was supplied, limit the results returned
-      const [data, totalCount] = await queryBuilder
+      const [data, totalCount] = await builder
         .skip(skip)
         .take(pageSize)
         .getManyAndCount();
       return { complaints: data, totalCount };
     } else {
       // not paginating results, just get them all
-      const [data, totalCount] = await queryBuilder.getManyAndCount();
+      const [data, totalCount] = await builder.getManyAndCount();
       return { complaints: data, totalCount };
     }
   };
