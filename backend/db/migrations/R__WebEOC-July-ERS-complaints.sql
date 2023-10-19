@@ -4511,5 +4511,8 @@ update complaint set location_geometry_point ='SRID=4326;POINT (-122.8650045 49.
 update complaint set location_geometry_point ='SRID=4326;POINT (-122.6558304 49.2072801)'::public.geometry where complaint_identifier = '23-031220';
 update complaint set location_geometry_point ='SRID=4326;POINT (-123.6031684 48.6880271)'::public.geometry where complaint_identifier = '23-031371';
 
--- popupulate the timezone codes, assume everything created up to this point was in PDT
-update public.complaint set timezone_code = 'PDT';
+-- CE-14 - Convert incident times to UTC format
+-- default to PDT in cases where the original timezones aren't known
+
+-- The data was stored with a PDT offset.  Change this to UTC by subtracting 7 hours
+update public.complaint set incident_utc_datetime = incident_utc_datetime  - interval '7 hours', update_utc_timestamp = update_utc_timestamp  - interval '7 hours', timezone_code = 'PDT' where timezone_code is null;
