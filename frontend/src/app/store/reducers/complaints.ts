@@ -389,6 +389,57 @@ const updateComplaintStatus = async (
   await patch<Complaint>(dispatch, parameters);
 };
 
+export const createAllegationComplaint =
+  (
+    allegationComplaint: AllegationComplaint,
+  ): ThunkAction<
+    Promise<string | undefined>,
+    RootState,
+    unknown,
+    Action<string>
+  > =>
+  async (dispatch) => {
+    let newComplaintId: string = "";
+    try {
+      dispatch(toggleLoading(true));
+
+      const postParameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/`,
+        { allegationComplaint: JSON.stringify(allegationComplaint) },
+      );
+      await post<AllegationComplaint>(dispatch, postParameters).then(async (res) => {
+        const newAllegationComplaint: AllegationComplaint = res;
+        await updateComplaintAssignee(
+          allegationComplaint.complaint_identifier.create_user_id,
+          newAllegationComplaint.complaint_identifier.complaint_identifier,
+          COMPLAINT_TYPES.HWCR,
+          allegationComplaint.complaint_identifier.person_complaint_xref[0] !==
+            undefined
+            ? (allegationComplaint.complaint_identifier.person_complaint_xref[0]
+                .person_guid.person_guid as UUID)
+            : undefined,
+        );
+
+        //-- get the created wildlife conflict
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${res}`,
+        );
+        const response = await get<AllegationComplaint>(dispatch, parameters);
+
+        dispatch(setComplaint({ ...response }));
+        newComplaintId =
+        newAllegationComplaint.complaint_identifier.complaint_identifier;
+      });
+      ToggleSuccess("Complaint has been saved");
+      return newComplaintId;
+    } catch (error) {
+      ToggleError("Unable to create complaint");
+      //-- add error handling
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
 export const updateAllegationComplaint =
   (allegationComplaint: AllegationComplaint): AppThunk =>
   async (dispatch) => {
@@ -422,7 +473,6 @@ export const updateAllegationComplaint =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
-      console.log(error);
     } finally {
       dispatch(toggleLoading(false));
     }
@@ -469,10 +519,10 @@ export const createWildlifeComplaint =
         newComplaintId =
           newHwcrComplaint.complaint_identifier.complaint_identifier;
       });
-      console.log();
+      ToggleSuccess("Complaint has been saved");
       return newComplaintId;
     } catch (error) {
-      console.log(error);
+      ToggleError("Unable to create complaint");
       //-- add error handling
     } finally {
       dispatch(toggleLoading(false));

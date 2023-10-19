@@ -19,7 +19,14 @@ export class AttractantCodeService {
   }
 
   async findAll(): Promise<AttractantCode[]> {
-    return this.attractantCodeRepository.find();
+    return this.attractantCodeRepository.find(
+      {
+        order: 
+        {
+          display_order: "ASC"
+        }
+      }
+    );
   }
 
   async findOne(id: any): Promise<AttractantCode> {
