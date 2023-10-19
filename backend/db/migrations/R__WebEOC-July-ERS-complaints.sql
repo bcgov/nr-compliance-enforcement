@@ -4510,3 +4510,6 @@ update complaint set location_geometry_point ='SRID=4326;POINT (-118.2498893 49.
 update complaint set location_geometry_point ='SRID=4326;POINT (-122.8650045 49.1576083)'::public.geometry where complaint_identifier = '23-031200';
 update complaint set location_geometry_point ='SRID=4326;POINT (-122.6558304 49.2072801)'::public.geometry where complaint_identifier = '23-031220';
 update complaint set location_geometry_point ='SRID=4326;POINT (-123.6031684 48.6880271)'::public.geometry where complaint_identifier = '23-031371';
+
+-- popupulate the timezone codes, assume everything created up to this point was in PDT
+update public.complaint set timezone_code = 'PDT';

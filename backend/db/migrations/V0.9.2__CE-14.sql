@@ -1,7 +1,3 @@
--- public.agency_code definition
--- Drop table
--- DROP TABLE public.agency_code;
-
 create table public.timezone_code (
 	timezone_code varchar(10) not null,
 -- A human readable code used to identify a timezone (e.g. MDT).
@@ -85,9 +81,6 @@ alter table public.complaint add constraint fk_complaint_timezone_code FOREIGN K
 update public.complaint set incident_utc_datetime = incident_datetime  - interval '7 hours';
 
 alter table public.complaint drop column incident_datetime;
-
--- popupulate the timezone codes, assume everything created up to this point was in PDT
-update public.complaint set timezone_code = 'PDT';
 
 comment on
 column public.complaint.incident_utc_datetime is 'The date and time at which the complaint occurred, in UTC.';
