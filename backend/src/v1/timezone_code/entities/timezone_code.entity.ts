@@ -32,4 +32,8 @@ export class TimezoneCode {
 
   @Column()
   update_utc_timestamp: Date;
+
+  constructor(timezone_code?: string) {
+    this.timezone_code = timezone_code;
+  }
 }

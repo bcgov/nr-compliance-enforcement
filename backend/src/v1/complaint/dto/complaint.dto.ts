@@ -5,7 +5,7 @@ import { GeoOrganizationUnitCode } from '../../geo_organization_unit_code/entiti
 import { Point } from 'geojson';
 import { CosGeoOrgUnit } from '../../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { PersonComplaintXref } from '../../person_complaint_xref/entities/person_complaint_xref.entity';
-import { TimezoneCode } from 'src/v1/timezone_code/entities/timezone_code.entity';
+import { TimezoneCode } from '../../timezone_code/entities/timezone_code.entity';
 
 export class ComplaintDto {
   @ApiProperty({
