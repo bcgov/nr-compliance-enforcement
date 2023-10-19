@@ -14,7 +14,7 @@ export interface HwcrComplaint {
     geo_organization_unit_code: GeoOrganizationUnitCode;
     location_geometry_point: LocationGeometryPoint;
     incident_utc_datetime: Date | null;
-    timezone_code: TimezoneCode;
+    timezone_code: TimezoneCode | null;
     incident_reported_utc_timestmp: string;
     location_summary_text: string;
     location_detailed_text: string;

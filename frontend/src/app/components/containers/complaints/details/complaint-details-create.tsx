@@ -915,6 +915,10 @@ export const CreateComplaint: FC = () => {
 
     const noError = await setErrors(complaint);
 
+    if (complaint.complaint_identifier.timezone_code?.timezone_code === "") {
+      complaint.complaint_identifier.timezone_code = null;
+    }
+
     if (noError && noErrors()) {
       complaint.complaint_identifier.create_utc_timestamp =
         complaint.complaint_identifier.update_utc_timestamp =
