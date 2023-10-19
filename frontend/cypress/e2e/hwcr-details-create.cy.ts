@@ -9,7 +9,7 @@ describe("Complaint Create Page spec - Create View", () => {
     location: "644 Pine Street ---- testing",
     locationDescription: " ---- testing",
     incidentDate: "2022-12-21",
-    attractants: ["Livestock", "Barbequeue", "Beehive"],
+    attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
     xCoord: "-118",
@@ -59,7 +59,6 @@ describe("Complaint Create Page spec - Create View", () => {
 
     // select complaint type
     cy.selectItemById("complaint-type-select-id", "Human Wildlife Conflicts");
-
     cy.get("#caller-name-id").clear().type(createCallerInformation.name);
     cy.get("#complaint-address-id")
       .clear()

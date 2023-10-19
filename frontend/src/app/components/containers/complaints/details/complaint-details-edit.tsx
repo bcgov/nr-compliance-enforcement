@@ -159,7 +159,7 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
-    incidentDateTimeObject,
+    incidentDateTimeObject
   );
 
   // Transform the fetched data into the DropdownOption type
@@ -176,7 +176,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const complaintStatusCodes = useSelector(
     selectComplaintStatusCodeDropdown,
   ) as Option[];
-  console.log(JSON.stringify(complaintStatusCodes));
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(
     selectHwcrNatureOfComplaintCodeDropdown,
@@ -194,11 +193,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   ];
 
   // Used to set selected values in the dropdowns
-  console.log("status: " + statusCode);
   const selectedStatus = complaintStatusCodes.find(
     (option) => option.value === statusCode,
   );
-  console.log("selectedStatus: " + JSON.stringify(selectedStatus));
   const selectedSpecies = speciesCodes.find(
     (option) => option.value === speciesCode,
   );
@@ -277,7 +274,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         updateComplaint,
       ) as HwcrComplaint;
-
       hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
       hwcrComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
       setUpdateComplaint(hwcrComplaint);
@@ -352,19 +348,21 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   const handleViolationTypeChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
+      if(value)
+      {
+        let update = { ...updateComplaint } as AllegationComplaint;
 
-      let update = { ...updateComplaint } as AllegationComplaint;
+        const { violation_code: source } = update;
+        const updatedEntity = {
+          ...source,
+          short_description: value,
+          long_description: label as string,
+          violation_code: value,
+        };
 
-      const { violation_code: source } = update;
-      const updatedEntity = {
-        ...source,
-        short_description: value as string,
-        long_description: label as string,
-        violation_code: value as string,
-      };
-
-      update.violation_code = updatedEntity;
-      setUpdateComplaint(update);
+        update.violation_code = updatedEntity;
+        setUpdateComplaint(update);
+      }
     }
   };
 
@@ -619,9 +617,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
           hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -641,9 +639,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: "",
             active_ind: "",
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
           allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
             selectedOption.value;
@@ -870,9 +868,9 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
             display_order: 0,
             active_ind: true,
             create_user_id: "",
-            create_utc_timestamp: "",
+            create_utc_timestamp: null,
             update_user_id: "",
-            update_utc_timestamp: "",
+            update_utc_timestamp: null,
           };
 
       const updatedParent = {
