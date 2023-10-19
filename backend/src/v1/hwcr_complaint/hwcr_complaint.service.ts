@@ -827,66 +827,141 @@ export class HwcrComplaintService {
     return results;
   }
 
+  // private _getSearchQueryBuilder(
+  //   sort: string,
+  //   column: string,
+  //   direction: "ASC" | "DESC"
+  // ) {
+  //   const builder = this.hwcrComplaintsRepository
+  //     .createQueryBuilder("hwcr_complaint")
+  //   // .select(["complaint_identifier.complaint_identifier"])
+  //     .addSelect(
+  //       "GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)",
+  //       "_update_utc_timestamp"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "hwcr_complaint.complaint_identifier",
+  //       "complaint_identifier"
+  //     )
+  //     .leftJoinAndSelect("hwcr_complaint.species_code", "species_code")
+  //     .leftJoinAndSelect(
+  //       "hwcr_complaint.hwcr_complaint_nature_code",
+  //       "hwcr_complaint_nature_code"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "hwcr_complaint.attractant_hwcr_xref",
+  //       "attractant_hwcr_xref",
+  //       "attractant_hwcr_xref.active_ind = true"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "complaint_identifier.complaint_status_code",
+  //       "complaint_status_code"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "complaint_identifier.referred_by_agency_code",
+  //       "referred_by_agency_code"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "complaint_identifier.owned_by_agency_code",
+  //       "owned_by_agency_code"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "complaint_identifier.cos_geo_org_unit",
+  //       "cos_geo_org_unit"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "attractant_hwcr_xref.attractant_code",
+  //       "attractant_code"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "complaint_identifier.person_complaint_xref",
+  //       "person_complaint_xref",
+  //       "person_complaint_xref.active_ind = true"
+  //     )
+  //     .leftJoinAndSelect(
+  //       "person_complaint_xref.person_guid",
+  //       "person",
+  //       "person_complaint_xref.active_ind = true"
+  //     )
+  //     .orderBy(sort, direction)
+  //     .addOrderBy(
+  //       "complaint_identifier.incident_reported_utc_timestmp",
+  //       column === "incident_reported_utc_timestmp" ? direction : "DESC"
+  //     );
+
+  //   return builder;
+  // }
+
   private _getSearchQueryBuilder(
     sort: string,
     column: string,
     direction: "ASC" | "DESC"
   ) {
     const builder = this.hwcrComplaintsRepository
-      .createQueryBuilder("hwcr_complaint")
+      .createQueryBuilder("wildlife")
+
       .addSelect(
-        "GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)",
+        "GREATEST(complaint.update_utc_timestamp, wildlife.update_utc_timestamp)",
         "_update_utc_timestamp"
       )
-      .leftJoinAndSelect(
-        "hwcr_complaint.complaint_identifier",
-        "complaint_identifier"
+
+      .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
+      .leftJoin("wildlife.species_code", "species_code")
+      .addSelect([
+        "species_code.species_code",
+        "species_code.short_description",
+        "species_code.long_description",
+      ])
+
+      .leftJoin("wildlife.hwcr_complaint_nature_code", "wildlife_nature_code")
+      .addSelect([
+        "wildlife_nature_code.hwcr_complaint_nature_code",
+        "wildlife_nature_code.short_description",
+        "wildlife_nature_code.long_description",
+      ])
+
+      .leftJoin(
+        "wildlife.attractant_hwcr_xref",
+        "attractants",
+        "attractants.active_ind = true"
       )
-      .leftJoinAndSelect("hwcr_complaint.species_code", "species_code")
+      .addSelect([
+        "attractants.attractant_hwcr_xref_guid",
+        "attractants.attractant_code",
+      ])
+
+      .leftJoin("attractants.attractant_code", "attractant_code")
+      .addSelect([
+        "attractant_code.attractant_code",
+        "attractant_code.short_description",
+        "attractant_code.long_description",
+      ])
+
+      .leftJoin("complaint.complaint_status_code", "complaint_status")
+      .addSelect([
+        "complaint_status.complaint_status_code",
+        "complaint_status.short_description",
+        "complaint_status.long_description",
+      ])
+
+      .leftJoin("complaint.referred_by_agency_code", "referred_by")
+      .addSelect([
+        "referred_by.agency_code",
+        "referred_by.short_description",
+        "referred_by.long_description",
+      ])
+
+      .leftJoin("complaint.owned_by_agency_code", "owned_by")
+      .addSelect([
+        "owned_by.agency_code",
+        "owned_by.short_description",
+        "owned_by.long_description",
+      ])
+
       .leftJoinAndSelect(
-        "hwcr_complaint.hwcr_complaint_nature_code",
-        "hwcr_complaint_nature_code"
+        "complaint.cos_geo_org_unit",
+        "cos_organization"
       )
-      .leftJoinAndSelect(
-        "hwcr_complaint.attractant_hwcr_xref",
-        "attractant_hwcr_xref",
-        "attractant_hwcr_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.cos_geo_org_unit",
-        "cos_geo_org_unit"
-      )
-      .leftJoinAndSelect(
-        "attractant_hwcr_xref.attractant_code",
-        "attractant_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .orderBy(sort, direction)
-      .addOrderBy(
-        "complaint_identifier.incident_reported_utc_timestmp",
-        column === "incident_reported_utc_timestmp" ? direction : "DESC"
-      );
 
     return builder;
   }
@@ -935,24 +1010,106 @@ export class HwcrComplaintService {
       sortDirection
     );
 
+    //-- add additional joins
+
     //-- apply filters if any
-    if (community) {
-      builder.andWhere("cos_geo_org_unit.area_code = :Community", {
-        Community: community,
-      });
+    // if (community) {
+    //   builder.andWhere("cos_geo_org_unit.area_code = :Community", {
+    //     Community: community,
+    //   });
+    // }
+
+    // if (zone) {
+    //   builder.andWhere("cos_geo_org_unit.zone_code = :Zone", { Zone: zone });
+    // }
+
+    // if (region) {
+    //   builder.andWhere("cos_geo_org_unit.region_code = :Region", {
+    //     Region: region,
+    //   });
+    // }
+
+    // if (officerAssigned && officerAssigned !== "null") {
+    //   builder.andWhere(
+    //     "person_complaint_xref.person_complaint_xref_code = :Assignee",
+    //     { Assignee: "ASSIGNEE" }
+    //   );
+    //   builder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
+    //     PersonGuid: officerAssigned,
+    //   });
+    // } else if (officerAssigned === "null") {
+    //   builder.andWhere("person_complaint_xref.person_guid IS NULL");
+    // }
+
+    // if (natureOfComplaint) {
+    //   builder.andWhere(
+    //     "hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint",
+    //     { NatureOfComplaint: natureOfComplaint }
+    //   );
+    // }
+    // if (speciesCode) {
+    //   builder.andWhere("hwcr_complaint.species_code = :SpeciesCode", {
+    //     SpeciesCode: speciesCode,
+    //   });
+    // }
+    // if (incidentReportedStart) {
+    //   builder.andWhere(
+    //     "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
+    //     { IncidentReportedStart: incidentReportedStart }
+    //   );
+    // }
+    // if (incidentReportedEnd) {
+    //   builder.andWhere(
+    //     "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
+    //     { IncidentReportedEnd: incidentReportedEnd }
+    //   );
+    // }
+    // if (status) {
+    //   builder.andWhere("complaint_identifier.complaint_status_code = :Status", {
+    //     Status: status,
+    //   });
+    // }
+
+    //-- apply search query
+    console.log(query);
+    if (query) {
+      // builder.leftJoinAndSelect(
+      //   "complaint_identifier.referred_by_agency_code",
+      //   "agency_code"
+      // )
+      // builder.leftJoinAndSelect(
+      //   "complaint_identifier.geo_organization_unit_code",
+      //   "geo_organization_unit_code"
+      // )
+      // builder.orWhere("complaint_identifier.complaint_identifier like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.detail_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.caller_name like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.caller_address like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.caller_email like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.caller_phone_1 like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.caller_phone_2 like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.caller_phone_3 like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.location_summary_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.location_detailed_text like :query", { query:`%${query}%` })
+      // builder.orWhere("complaint_identifier.referred_by_agency_other_text like :query", { query:`%${query}%` })
+      // builder.orWhere("agency_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("geo_organization_unit_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("allegation_complaint.suspect_witness_dtl_text like :query", { query:`%${query}%` })
+      // builder.orWhere("violation_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("hwcr_complaint.other_attractants_text like :query", { query:`%${query}%` })
+      // builder.orWhere("species_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("hwcr_complaint_nature_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("attractant_code.short_description like :query", { query:`%${query}%` })
+      // builder.orWhere("person.first_name like :query", { query:`%${query}%` })
+      // builder.orWhere("person.last_name like :query", { query:`%${query}%` })
     }
 
-    if (zone) {
-      builder.andWhere("cos_geo_org_unit.zone_code = :Zone", { Zone: zone });
-    }
+    console.log(builder.getQueryAndParameters());
 
     const [data, totalCount] = skip
       ? await builder.skip(skip).take(pageSize).getManyAndCount()
       : await builder.getManyAndCount();
 
-    console.log(data);
-    console.log(totalCount);
-
-    return {complaints: data, totalCount: totalCount};
+    return { complaints: data, totalCount: totalCount };
   };
 }
