@@ -2,6 +2,7 @@ import { FC } from "react";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { formatDateTime } from "../../../../common/methods";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
+import { Link } from "react-router-dom";
 
 type Props = {
   type: string;
@@ -66,10 +67,12 @@ export const WildlifeComplaintListItem: FC<Props> = ({
   return (
     <tr key={id}>
       <td
-        className="comp-cell-width-95 comp-header-left-border"
+        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name"
         onClick={(event) => complaintClick(event, id)}
       >
-        {id}
+        <Link to={`/complaint/HWCR/${id}`} id={id}>
+              {id}
+        </Link>
       </td>
       <td
         className="comp-cell-width-95 comp-header-vertical-border"
