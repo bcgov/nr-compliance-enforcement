@@ -264,11 +264,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     handleGeoPointChange(lat.toString(), lng.toString());
   }
 
-  // convert time to UTC, and store timezone code.  This allows users to see the time of the incident
-  // relative to the timezone in which the incident time was set.
   function handleIncidentDateTimeChange(date: Date) {
     
     setSelectedIncidentDateTime(date);
+
+    // get timezone code of the user updating the incidient time.  Used to store the
+    // timezone code along with the time so that other users in other timezones can view
+    // the incident time relative to the original timezone.  e.g. A complaint with an incident time
+    // of 14:00 MST when viewed by someone in PST, will still see the time as 14:00.
     const timeZoneCode = getTimezoneCode();
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
