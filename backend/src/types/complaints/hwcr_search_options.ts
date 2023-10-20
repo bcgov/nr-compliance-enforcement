@@ -1,4 +1,4 @@
-export interface SearchOptions {
+export interface HWCRSearchOptions {
     community: string;
     zone: string;
     region: string;

@@ -21,6 +21,7 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
+import { AllegationSearchOptions } from '../../types/complaints/allegation_search_options';
 
 @Injectable()
 export class AllegationComplaintService {
@@ -159,14 +160,7 @@ export class AllegationComplaintService {
   async search(
     sortColumn: string,
     sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    violationCode?: string,
-    incidentReportedStart?: string,
-    incidentReportedEnd?: string,
-    status?: string,
+    options: AllegationSearchOptions,
     page?: number,
     pageSize?: number
   ): Promise<{ complaints: AllegationComplaint[]; totalCount: number }> {
@@ -242,14 +236,7 @@ export class AllegationComplaintService {
 
     this.searchQueryBuilder(
       queryBuilder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status
+      options
     );
 
     if (skip !== undefined) {
@@ -269,14 +256,7 @@ export class AllegationComplaintService {
   async searchMap(
     sortColumn: string,
     sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    violationCode?: string,
-    incidentReportedStart?: string,
-    incidentReportedEnd?: string,
-    status?: string
+    options: AllegationSearchOptions
   ): Promise<AllegationComplaint[]> {
     // how many records to skip based on the current page and page size
 
@@ -314,14 +294,7 @@ export class AllegationComplaintService {
 
     this.searchQueryBuilder(
       queryBuilder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status
+      options
     );
 
     queryBuilder.andWhere(
@@ -335,15 +308,20 @@ export class AllegationComplaintService {
 
   private searchQueryBuilder(
     queryBuilder: SelectQueryBuilder<AllegationComplaint>,
-    community: string,
-    zone: string,
-    region: string,
-    officerAssigned: string,
-    violationCode: string,
-    incidentReportedStart: string,
-    incidentReportedEnd: string,
-    status: string
+    options: AllegationSearchOptions
   ) {
+
+    const {
+      community,
+      zone,
+      region,
+      officerAssigned,
+      violationCode,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status,
+    } = options;
+
     if (community !== null && community !== undefined && community !== "") {
       queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
         Community: community,

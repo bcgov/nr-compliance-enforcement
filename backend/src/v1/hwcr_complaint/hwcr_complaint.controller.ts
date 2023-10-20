@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UUID } from 'crypto';
-import { SearchOptions } from '../../types/complaints/search_options';
+import { HWCRSearchOptions } from '../../types/complaints/hwcr_search_options';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("hwcr-complaint")
@@ -29,7 +29,7 @@ export class HwcrComplaintController {
    @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('natureOfComplaint') natureOfComplaint: string, 
    @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status,
    @Query('page') page: number, @Query('pageSize') pageSize: number) {
-    const options: SearchOptions = {
+    const options: HWCRSearchOptions = {
       community: community,
       zone: zone,
       region: region,
@@ -50,7 +50,7 @@ export class HwcrComplaintController {
    @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status) {
 
 
-    const options: SearchOptions = {
+    const options: HWCRSearchOptions = {
       community: community,
       zone: zone,
       region: region,

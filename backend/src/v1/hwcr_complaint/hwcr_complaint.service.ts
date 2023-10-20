@@ -22,7 +22,7 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { SearchOptions } from "../../types/complaints/search_options";
+import { HWCRSearchOptions } from "../../types/complaints/hwcr_search_options";
 
 @Injectable()
 export class HwcrComplaintService {
@@ -113,7 +113,7 @@ export class HwcrComplaintService {
   async search(
     sortColumn: string,
     sortOrder: string,
-    options: SearchOptions,
+    options: HWCRSearchOptions,
     page?: number,
     pageSize?: number
   ): Promise<{ complaints: HwcrComplaint[]; totalCount: number }> {
@@ -183,7 +183,7 @@ export class HwcrComplaintService {
   async searchMap(
     sortColumn: string,
     sortOrder: string,
-    options: SearchOptions,
+    options: HWCRSearchOptions,
   ): Promise<HwcrComplaint[]> {
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
 
@@ -282,7 +282,7 @@ export class HwcrComplaintService {
   }
   private searchQueryBuilder(
     queryBuilder: SelectQueryBuilder<HwcrComplaint>,
-    options: SearchOptions
+    options: HWCRSearchOptions
   ) {
     const {
       community,
