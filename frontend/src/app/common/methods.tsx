@@ -126,10 +126,21 @@ export const formatDateTime = (input: string | undefined): string => {
 
 // returns the short timezone code for the user (e.g. PDT, PST, MDT, or MST)
 export const getTimezoneCode = (): string => {
-  const timeZoneCode = new Date()
-    .toLocaleTimeString("en-us", { timeZoneName: "short" })
+
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1; // Months are zero-indexed
+
+  const timeZoneCode = now.toLocaleTimeString("en-us", { timeZoneName: "short" })
     .split(" ")[2];
-  return timeZoneCode;
+    if (timeZoneCode === 'PST' || timeZoneCode === 'PDT' || timeZoneCode === 'MST' || timeZoneCode === 'MDT') {
+      return timeZoneCode;
+    } else if (currentMonth >= 3 && currentMonth <= 11) {
+      return 'PDT'; // Daylight Saving Time (DST) observed from March to November
+    } else if (currentMonth === 2 || currentMonth === 12) {
+      return 'PST'; // Standard Time (ST) observed in February and December
+    } else {
+      return 'PST'; // Default to PST for other months
+    }
 };
 
 // Used to retrieve the coordinates in the decimal format
