@@ -8,7 +8,7 @@ describe("Complaint Create Page spec - Create View", () => {
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves ---- testing",
     location: "644 Pine Street ---- testing",
     locationDescription: " ---- testing",
-    incidentDate: "2022-12-21",
+    incidentDateDay: "19",
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
@@ -94,11 +94,7 @@ describe("Complaint Create Page spec - Create View", () => {
       .type(createCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--019")
-      .should("exist")
-      .click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
 
     cy.selectItemById(
       "attractants-select-id",
@@ -163,9 +159,9 @@ describe("Complaint Create Page spec - Create View", () => {
     );
 
     //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  originalCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      createCallDetails.incidentDateDay
+    );
 
     cy.get('p[id="comp-details-description"]').contains(
       createCallDetails.description,
