@@ -39,12 +39,6 @@ export class HwcrComplaintController {
     return this.hwcrComplaintService.searchMap(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status);
   }
 
-  @Get(':id')
-  @Roles(Role.COS_OFFICER)
-  findOne(@Param('id') id: string) {
-    return this.hwcrComplaintService.findOne(id);
-  }
-
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   async update(@Param('id') id: UUID, @Body('hwcrComplaint') updateHwcrComplaintDto: string) {
