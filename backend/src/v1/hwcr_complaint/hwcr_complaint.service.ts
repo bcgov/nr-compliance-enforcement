@@ -8,7 +8,7 @@ import { CreateHwcrComplaintDto } from "./dto/create-hwcr_complaint.dto";
 import { UpdateHwcrComplaintDto } from "./dto/update-hwcr_complaint.dto";
 import { HwcrComplaint } from "./entities/hwcr_complaint.entity";
 import { ComplaintService } from "../complaint/complaint.service";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UUID, randomUUID } from "crypto";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
@@ -206,74 +206,18 @@ export class HwcrComplaintService {
           : "DESC"
       );
 
-    if (community !== null && community !== undefined && community !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
-        Community: community,
-      });
-    }
-    if (zone !== null && zone !== undefined && zone !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
-        Zone: zone,
-      });
-    }
-    if (region !== null && region !== undefined && region !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.region_code = :Region", {
-        Region: region,
-      });
-    }
-    if (
-      officerAssigned !== null &&
-      officerAssigned !== undefined &&
-      officerAssigned !== "" &&
-      officerAssigned !== "null"
-    ) {
-      queryBuilder.andWhere(
-        "person_complaint_xref.person_complaint_xref_code = :Assignee",
-        { Assignee: "ASSIGNEE" }
-      );
-      queryBuilder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
-        PersonGuid: officerAssigned,
-      });
-    } else if (officerAssigned === "null") {
-      queryBuilder.andWhere("person_complaint_xref.person_guid IS NULL");
-    }
-    if (
-      natureOfComplaint !== null &&
-      natureOfComplaint !== undefined &&
-      natureOfComplaint !== ""
-    ) {
-      queryBuilder.andWhere(
-        "hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint",
-        { NatureOfComplaint: natureOfComplaint }
-      );
-    }
-    if (
-      speciesCode !== null &&
-      speciesCode !== undefined &&
-      speciesCode !== ""
-    ) {
-      queryBuilder.andWhere("hwcr_complaint.species_code = :SpeciesCode", {
-        SpeciesCode: speciesCode,
-      });
-    }
-    if (incidentReportedStart !== null && incidentReportedStart !== undefined) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
-        { IncidentReportedStart: incidentReportedStart }
-      );
-    }
-    if (incidentReportedEnd !== null && incidentReportedEnd !== undefined) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
-        { IncidentReportedEnd: incidentReportedEnd }
-      );
-    }
-    if (status !== null && status !== undefined && status !== "") {
-      queryBuilder.andWhere(
-        "complaint_identifier.complaint_status_code = :Status",
-        { Status: status }
-      );
-    }
+    this.searchQueryBuilder(
+      queryBuilder,
+      community,
+      zone,
+      region,
+      officerAssigned,
+      natureOfComplaint,
+      speciesCode,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status
+    );
 
     if (skip !== undefined) {
       // a page number was supplied, limit the results returned
@@ -342,6 +286,41 @@ export class HwcrComplaintService {
         "person_complaint_xref.active_ind = true"
       );
 
+    this.searchQueryBuilder(
+      queryBuilder,
+      community,
+      zone,
+      region,
+      officerAssigned,
+      natureOfComplaint,
+      speciesCode,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status
+    );
+
+    queryBuilder.andWhere(
+      "ST_X(complaint_identifier.location_geometry_point) <> 0"
+    );
+    queryBuilder.andWhere(
+      "ST_Y(complaint_identifier.location_geometry_point) <> 0"
+    );
+
+    return queryBuilder.getMany();
+  }
+
+  private searchQueryBuilder(
+    queryBuilder: SelectQueryBuilder<HwcrComplaint>,
+    community: string,
+    zone: string,
+    region: string,
+    officerAssigned: string,
+    natureOfComplaint: string,
+    speciesCode: string,
+    incidentReportedStart: Date,
+    incidentReportedEnd: Date,
+    status: string
+  ) {
     if (community !== null && community !== undefined && community !== "") {
       queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
         Community: community,
@@ -410,15 +389,6 @@ export class HwcrComplaintService {
         { Status: status }
       );
     }
-
-    queryBuilder.andWhere(
-      "ST_X(complaint_identifier.location_geometry_point) <> 0"
-    );
-    queryBuilder.andWhere(
-      "ST_Y(complaint_identifier.location_geometry_point) <> 0"
-    );
-
-    return queryBuilder.getMany();
   }
 
   async findOne(id: any): Promise<HwcrComplaint> {
@@ -590,7 +560,7 @@ export class HwcrComplaintService {
       .where("complaint_identifier.complaint_identifier = :id", { id })
       .getOne();
 
-     return complaint;
+    return complaint;
   }
 
   async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {
