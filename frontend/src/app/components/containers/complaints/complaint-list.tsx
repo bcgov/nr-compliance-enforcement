@@ -29,6 +29,58 @@ type Props = {
   type: string;
 };
 
+
+export const generateComplaintRequestPayload = (
+  complaintType: string,
+  filters: ComplaintFilters,
+  page: number,
+  pageSize: number,
+  sortColumn: string,
+  sortOrder: string,
+): ComplaintRequestPayload => {
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+  } = filters;
+
+  const common = {
+    sortColumn,
+    sortOrder,
+    regionCodeFilter: region,
+    zoneCodeFilter: zone,
+    areaCodeFilter: community,
+    officerFilter: officer,
+    startDateFilter: startDate,
+    endDateFilter: endDate,
+    complaintStatusFilter: status,
+    page,
+    pageSize,
+  };
+
+  switch (complaintType) {
+    case COMPLAINT_TYPES.ERS:
+      return {
+        ...common,
+        violationFilter: violationType,
+      } as ComplaintRequestPayload;
+    case COMPLAINT_TYPES.HWCR:
+    default:
+      return {
+        ...common,
+        speciesCodeFilter: species,
+        natureOfComplaintFilter: natureOfComplaint,
+      } as ComplaintRequestPayload;
+  }
+};
+
 export const ComplaintList: FC<Props> = ({ type }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
@@ -47,55 +99,6 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize); // Default to 10 results per page
 
-  const generateComplaintRequestPayload = (
-    complaintType: string,
-    filters: ComplaintFilters,
-    page: number,
-    pageSize: number,
-  ): ComplaintRequestPayload => {
-    const {
-      region,
-      zone,
-      community,
-      officer,
-      startDate,
-      endDate,
-      status,
-      species,
-      natureOfComplaint,
-      violationType,
-    } = filters;
-
-    const common = {
-      sortColumn: sortKey,
-      sortOrder: sortDirection,
-      regionCodeFilter: region,
-      zoneCodeFilter: zone,
-      areaCodeFilter: community,
-      officerFilter: officer,
-      startDateFilter: startDate,
-      endDateFilter: endDate,
-      complaintStatusFilter: status,
-      page,
-      pageSize,
-    };
-
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return {
-          ...common,
-          violationFilter: violationType,
-        } as ComplaintRequestPayload;
-      case COMPLAINT_TYPES.HWCR:
-      default:
-        return {
-          ...common,
-          speciesCodeFilter: species,
-          natureOfComplaintFilter: natureOfComplaint,
-        } as ComplaintRequestPayload;
-    }
-  };
-
   const defaultZone = useAppSelector(selectDefaultZone);
 
   useEffect(() => {
@@ -105,6 +108,8 @@ export const ComplaintList: FC<Props> = ({ type }) => {
         filters,
         page,
         pageSize,
+        sortKey,
+        sortDirection
       );
 
       dispatch(getComplaints(type, payload));

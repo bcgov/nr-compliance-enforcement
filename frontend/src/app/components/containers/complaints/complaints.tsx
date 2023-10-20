@@ -177,6 +177,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
+          complaintType={complaintType}
         />
         {viewType === "list" ? (
           <ComplaintList type={complaintType} />

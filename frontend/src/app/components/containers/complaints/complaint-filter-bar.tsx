@@ -9,9 +9,10 @@ import SearchInput from "../../common/search-input";
 type Props = {
   toggleViewType: (view: "map" | "list") => void;
   viewType: "map" | "list";
+  complaintType: string
 };
 
-export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType }) => {
+export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType, complaintType }) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
   const {
@@ -67,7 +68,7 @@ export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType }) => {
           break;
       }
     },
-    [state],
+    [dispatch], //-- original: [state]
   );
 
   return (
@@ -160,7 +161,7 @@ export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType }) => {
         )}
 
         <div className="comp-filter-search">
-          <SearchInput />
+          <SearchInput complaintType={complaintType}/>
         </div>
       </div>
     </div>
