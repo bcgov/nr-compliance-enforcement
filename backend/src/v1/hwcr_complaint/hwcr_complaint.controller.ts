@@ -5,6 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UUID } from 'crypto';
+import { SearchOptions } from '../../types/complaints/search_options';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("hwcr-complaint")
@@ -28,7 +29,18 @@ export class HwcrComplaintController {
    @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('natureOfComplaint') natureOfComplaint: string, 
    @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status,
    @Query('page') page: number, @Query('pageSize') pageSize: number) {
-    return this.hwcrComplaintService.search(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status, page, pageSize);
+    const options: SearchOptions = {
+      community: community,
+      zone: zone,
+      region: region,
+      officerAssigned: officerAssigned,
+      natureOfComplaint: natureOfComplaint,
+      speciesCode: speciesCode,
+      incidentReportedStart: incidentReportedStart,
+      incidentReportedEnd: incidentReportedEnd,
+      status: status,
+    };
+    return this.hwcrComplaintService.search(sortColumn, sortOrder, options, page, pageSize);
   }
 
   @Get('map/search')
@@ -36,7 +48,20 @@ export class HwcrComplaintController {
   searchMap(@Query('sortColumn') sortColumn: string, @Query('sortOrder') sortOrder: string, @Query('community') community: string, @Query('zone') zone: string,
    @Query('region') region: string, @Query('officerAssigned') officerAssigned: string, @Query('natureOfComplaint') natureOfComplaint: string, 
    @Query('speciesCode') speciesCode: string, @Query('incidentReportedStart') incidentReportedStart: Date, @Query('incidentReportedEnd') incidentReportedEnd: Date, @Query('status') status) {
-    return this.hwcrComplaintService.searchMap(sortColumn, sortOrder, community, zone, region, officerAssigned, natureOfComplaint, speciesCode, incidentReportedStart, incidentReportedEnd, status);
+
+
+    const options: SearchOptions = {
+      community: community,
+      zone: zone,
+      region: region,
+      officerAssigned: officerAssigned,
+      natureOfComplaint: natureOfComplaint,
+      speciesCode: speciesCode,
+      incidentReportedStart: incidentReportedStart,
+      incidentReportedEnd: incidentReportedEnd,
+      status: status,
+    };
+    return this.hwcrComplaintService.searchMap(sortColumn, sortOrder, options);
   }
 
   @Patch(':id')

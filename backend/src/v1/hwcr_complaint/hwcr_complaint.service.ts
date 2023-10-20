@@ -22,6 +22,7 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
+import { SearchOptions } from "../../types/complaints/search_options";
 
 @Injectable()
 export class HwcrComplaintService {
@@ -112,15 +113,7 @@ export class HwcrComplaintService {
   async search(
     sortColumn: string,
     sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    natureOfComplaint?: string,
-    speciesCode?: string,
-    incidentReportedStart?: Date,
-    incidentReportedEnd?: Date,
-    status?: string,
+    options: SearchOptions,
     page?: number,
     pageSize?: number
   ): Promise<{ complaints: HwcrComplaint[]; totalCount: number }> {
@@ -171,18 +164,7 @@ export class HwcrComplaintService {
           : "DESC"
       );
 
-    this.searchQueryBuilder(
-      queryBuilder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      natureOfComplaint,
-      speciesCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status
-    );
+    this.searchQueryBuilder(queryBuilder, options);
 
     if (skip !== undefined) {
       // a page number was supplied, limit the results returned
@@ -201,15 +183,7 @@ export class HwcrComplaintService {
   async searchMap(
     sortColumn: string,
     sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    natureOfComplaint?: string,
-    speciesCode?: string,
-    incidentReportedStart?: Date,
-    incidentReportedEnd?: Date,
-    status?: string
+    options: SearchOptions,
   ): Promise<HwcrComplaint[]> {
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
 
@@ -251,18 +225,7 @@ export class HwcrComplaintService {
         "person_complaint_xref.active_ind = true"
       );
 
-    this.searchQueryBuilder(
-      queryBuilder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      natureOfComplaint,
-      speciesCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status
-    );
+    this.searchQueryBuilder(queryBuilder, options);
 
     queryBuilder.andWhere(
       "ST_X(complaint_identifier.location_geometry_point) <> 0"
@@ -319,16 +282,20 @@ export class HwcrComplaintService {
   }
   private searchQueryBuilder(
     queryBuilder: SelectQueryBuilder<HwcrComplaint>,
-    community: string,
-    zone: string,
-    region: string,
-    officerAssigned: string,
-    natureOfComplaint: string,
-    speciesCode: string,
-    incidentReportedStart: Date,
-    incidentReportedEnd: Date,
-    status: string
+    options: SearchOptions
   ) {
+    const {
+      community,
+      zone,
+      region,
+      officerAssigned,
+      natureOfComplaint,
+      speciesCode,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status,
+    } = options;
+
     if (community !== null && community !== undefined && community !== "") {
       queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
         Community: community,
