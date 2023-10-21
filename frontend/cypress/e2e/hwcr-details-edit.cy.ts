@@ -62,7 +62,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     incidentDateDay: "21",
     incidentDateHour: "17",
     incidentDateMinute: "49",
-    attractants: ["Livestock", "Barbequeue", "Beehive"],
+    attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
     xCoord: "-118",
@@ -106,18 +106,19 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.kcLogout().kcLogin();
   });
 
-
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only", function () {
     //start edit
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-000076");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
     cy.get("#caller-name-id").clear().type(editCallerInformation.name);
     cy.get("#complaint-address-id").clear().type(editCallerInformation.address);
     cy.get("#complaint-email-id").clear().type(editCallerInformation.email);
 
     cy.get("#caller-primary-phone-id").click({ force: true });
-    cy.get("#caller-primary-phone-id").clear()
-    cy.get("#caller-primary-phone-id").typeAndTriggerChange(editCallerInformation.phoneInput);
-    
+    cy.get("#caller-primary-phone-id").clear();
+    cy.get("#caller-primary-phone-id").typeAndTriggerChange(
+      editCallerInformation.phoneInput,
+    );
+
     cy.get("#caller-info-secondary-phone-id")
       .clear()
       .typeAndTriggerChange(editCallerInformation.secondaryInput);
@@ -134,36 +135,33 @@ describe("Complaint Edit Page spec - Edit View", () => {
     });
     cy.get("#complaint-location-description-textarea-id")
       .clear()
-      .type(editCallDetails.locationDescription, {delay: 0});
+      .type(editCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
       .clear()
-      .type(editCallDetails.description, {delay: 0});
+      .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.enterDateTimeInDatePicker("complaint-incident-time",editCallDetails.incidentDateDay,editCallDetails.incidentDateHour,editCallDetails.incidentDateMinute);
 
-    cy.get(".comp-select__multi-value__remove")
-      .first()
-      .click({ force: true });
-    cy.get(".comp-select__multi-value__remove")
-      .first()
-      .click({ force: true });
-    cy.get(".comp-select__multi-value__remove")
-      .first()
-      .click({ force: true });
-    
+    cy.get(".comp-select__multi-value__remove").first().click({ force: true });
+    cy.get(".comp-select__multi-value__remove").first().click({ force: true });
+    cy.get(".comp-select__multi-value__remove").first().click({ force: true });
+
     cy.selectItemById("attractants-select-id", editCallDetails.attractants[0]);
     cy.selectItemById("attractants-select-id", editCallDetails.attractants[1]);
     cy.selectItemById("attractants-select-id", editCallDetails.attractants[2]);
-      
+
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
-    cy.selectItemById("nature-of-complaint-select-id", editCallDetails.natureOfComplaint);
+    cy.selectItemById(
+      "nature-of-complaint-select-id",
+      editCallDetails.natureOfComplaint,
+    );
 
     cy.selectItemById("species-select-id", editCallDetails.species);
 
@@ -179,13 +177,13 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     cy.get('div[id="comp-details-name"]').contains(editCallerInformation.name);
     cy.get('div[id="comp-details-address"]').contains(
-      editCallerInformation.address
+      editCallerInformation.address,
     );
     cy.get('div[id="comp-details-email"]').contains(
-      editCallerInformation.email
+      editCallerInformation.email,
     );
     cy.get('div[id="comp-details-phone"]').contains(
-      editCallerInformation.phone
+      editCallerInformation.phone,
     );
     cy.get('div[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.secondary);
@@ -194,28 +192,35 @@ describe("Complaint Edit Page spec - Edit View", () => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
     cy.get('div[id="comp-details-referred"]').contains(
-      editCallerInformation.referred
+      editCallerInformation.referred,
     );
     cy.get('div[id="comp-details-email"]').contains(
-      editCallerInformation.email
+      editCallerInformation.email,
     );
     cy.get('div[id="comp-details-location"]').contains(
-      editCallDetails.location
+      editCallDetails.location,
     );
     cy.get('p[id="comp-details-location-description"]').contains(
-      editCallDetails.locationDescription
+      editCallDetails.locationDescription,
     );
 
     cy.get('div[id="complaint-incident-date-time"]').contains(
       editCallDetails.incidentDate
     );
 
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDateHour
+    );
+
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDateMinute
+    );
     cy.get('p[id="comp-details-description"]').contains(
-      editCallDetails.description
+      editCallDetails.description,
     );
 
     cy.get('span[id="comp-details-community"]').contains(
-      editCallDetails.community
+      editCallDetails.community,
     );
 
     cy.get('span[id="comp-details-office"]').contains(editCallDetails.office);
@@ -235,7 +240,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
   it("Puts everything back to the original details", function () {
     //start reverting changes
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-000076");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
     cy.get("#caller-name-id").clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
       .clear()
@@ -243,9 +248,11 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#complaint-email-id").clear().type(originalCallerInformation.email);
 
     cy.get("#caller-primary-phone-id").click({ force: true });
-    cy.get("#caller-primary-phone-id").clear()
-    cy.get("#caller-primary-phone-id").typeAndTriggerChange(originalCallerInformation.phoneInput);
-    
+    cy.get("#caller-primary-phone-id").clear();
+    cy.get("#caller-primary-phone-id").typeAndTriggerChange(
+      originalCallerInformation.phoneInput,
+    );
+
     cy.get("#caller-info-secondary-phone-id")
       .clear()
       .typeAndTriggerChange(originalCallerInformation.secondaryInput);
@@ -264,34 +271,43 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
       .clear()
-      .type(originalCallDetails.description, {delay: 0});
+      .type(originalCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.enterDateTimeInDatePicker("complaint-incident-time",originalCallDetails.incidentDateDay,originalCallDetails.incidentDateHour,originalCallDetails.incidentDateMinute);
 
-    cy.get(".comp-select__multi-value__remove")
-      .first()
-      .click({ force: true });
-    cy.get(".comp-select__multi-value__remove")
-      .first()
-      .click({ force: true });
-    cy.get(".comp-select__multi-value__remove")
-      .first()
-      .click({ force: true });
+    cy.get(".comp-select__multi-value__remove").first().click({ force: true });
+    cy.get(".comp-select__multi-value__remove").first().click({ force: true });
+    cy.get(".comp-select__multi-value__remove").first().click({ force: true });
 
-    cy.selectItemById("attractants-select-id", originalCallDetails.attractants[0]);
-    cy.selectItemById("attractants-select-id", originalCallDetails.attractants[1]);
-    cy.selectItemById("attractants-select-id", originalCallDetails.attractants[2]);
-    
+    cy.selectItemById(
+      "attractants-select-id",
+      originalCallDetails.attractants[0],
+    );
+    cy.selectItemById(
+      "attractants-select-id",
+      originalCallDetails.attractants[1],
+    );
+    cy.selectItemById(
+      "attractants-select-id",
+      originalCallDetails.attractants[2],
+    );
+
     cy.selectItemById("community-select-id", originalCallDetails.community);
 
-    cy.selectItemById("nature-of-complaint-select-id", originalCallDetails.natureOfComplaint);
+    cy.selectItemById(
+      "nature-of-complaint-select-id",
+      originalCallDetails.natureOfComplaint,
+    );
 
     cy.selectItemById("species-select-id", originalCallDetails.species);
 
     cy.selectItemById("status-select-id", originalCallDetails.status);
 
-    cy.selectItemById("officer-assigned-select-id", originalCallDetails.assigned);
+    cy.selectItemById(
+      "officer-assigned-select-id",
+      originalCallDetails.assigned,
+    );
 
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end reverting changes
@@ -299,17 +315,17 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.waitForSpinner();
 
     cy.get('div[id="comp-details-name"]').contains(
-      originalCallerInformation.name
+      originalCallerInformation.name,
     );
     cy.get('div[id="comp-details-address"]').contains(
-      originalCallerInformation.address
+      originalCallerInformation.address,
     );
     cy.get('div[id="comp-details-email"]').contains(
-      originalCallerInformation.email
+      originalCallerInformation.email,
     );
 
     cy.get('div[id="comp-details-phone"]').contains(
-      originalCallerInformation.phone
+      originalCallerInformation.phone,
     );
     cy.get('div[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.secondary);
@@ -319,37 +335,44 @@ describe("Complaint Edit Page spec - Edit View", () => {
     });
 
     cy.get('div[id="comp-details-referred"]').contains(
-      originalCallerInformation.referred
+      originalCallerInformation.referred,
     );
 
     cy.get('div[id="comp-details-location"]').contains(
-      originalCallDetails.location
+      originalCallDetails.location,
     );
     cy.get('p[id="comp-details-location-description"]').should(
       "have.value",
-      originalCallDetails.locationDescription
+      originalCallDetails.locationDescription,
     );
 
     cy.get('div[id="complaint-incident-date-time"]').contains(
       originalCallDetails.incidentDate
     );
 
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDateHour
+    );
+
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDateMinute
+    );
     cy.get('p[id="comp-details-description"]').contains(
-      originalCallDetails.description
+      originalCallDetails.description,
     );
 
     cy.get('span[id="comp-details-community"]').contains(
-      originalCallDetails.community
+      originalCallDetails.community,
     );
 
     cy.get('span[id="comp-details-office"]').contains(
-      originalCallDetails.office
+      originalCallDetails.office,
     );
 
     cy.get('span[id="comp-details-zone"]').contains(originalCallDetails.zone);
 
     cy.get('span[id="comp-details-region"]').contains(
-      originalCallDetails.region
+      originalCallDetails.region,
     );
 
     //Commented out until COMPENF-987 is Fixed
@@ -361,10 +384,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
     //end verifying changes are reverted
   });
 
-
-  it("Navigate to the Complaint Edit page & check inputs", function() {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-007023");
-
+  it("Navigate to the Complaint Edit page & check inputs", function () {
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-007023");
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs
@@ -436,16 +457,16 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#attractants-pair-id input").should("exist");
 
     // X Coordinate
-    cy.get("#x-coordinate-pair-id label").should(($label) => {
+    cy.get('[for="comp-details-edit-x-coordinate-input"]').should(($label) => {
       expect($label).to.contain.text("X Coordinate");
     });
-    cy.get("#x-coordinate-pair-id input").should("exist");
+    cy.get("#comp-details-edit-x-coordinate-input-div").should("exist");
 
     // Y Coordinate
-    cy.get("#y-coordinate-pair-id label").should(($label) => {
+    cy.get('[for="comp-details-edit-y-coordinate-input"]').should(($label) => {
       expect($label).to.contain.text("Y Coordinate");
     });
-    cy.get("#y-coordinate-pair-id input").should("exist");
+    cy.get("#comp-details-edit-y-coordinate-input-div").should("exist");
 
     // Area/Community
     cy.get("#area-community-pair-id label").should(($label) => {
