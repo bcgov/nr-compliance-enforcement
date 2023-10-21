@@ -5,7 +5,7 @@ const originalCallDetails = {
     "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS.",
   location: "Keefes Landing Rd and Danskin Rd",
   locationDescription: "tester call description 8",
-  incidentDateDay: "11",
+  incidentDate: "2030-04-11",
   xCoord: "-127.4810142",
   yCoord: "50.4217838",
   community: "Danskin",
@@ -50,7 +50,7 @@ const editCallDetails = {
     "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
   location: "Keefes Landing Rd and Danskin Rd ---- testing",
   locationDescription: "tester call description 8 ---- testing",
-  incidentDateDay: "19",
+  incidentDate: "2030-04-13",
   xCoord: "-118",
   yCoord: "49",
   community: "Blaeberry",
@@ -141,7 +141,9 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time","13","13","45");
+
+    cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
@@ -210,9 +212,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       editCallDetails.locationDescription,
     );
 
-    //Commented out until COMPENF-843 is Fixed
     cy.get('div[id="complaint-incident-date-time"]').contains(
-      editCallDetails.incidentDateDay
+      editCallDetails.incidentDate
     );
 
     cy.get('p[id="comp-details-description"]').should(($el) => {
@@ -283,11 +284,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(originalCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--011")
-      .should("exist")
-      .click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time","11","13","45");
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -359,7 +356,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     );
 
     cy.get('div[id="complaint-incident-date-time"]').contains(
-      originalCallDetails.incidentDateDay
+      originalCallDetails.incidentDate
     );
 
     cy.get('p[id="comp-details-description"]').should(($el) => {
@@ -567,8 +564,14 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
-    cy.verifyMapMarkerExists();
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
+    cy.verifyMapMarkerExists(true);
+    cy.get(".comp-complaint-details-alert").should("not.exist");
+  });
+
+  it("it has a map on screen with no marker", function () {
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-007890");
+    cy.verifyMapMarkerExists(false);
+    cy.get(".comp-complaint-details-alert").should("exist");
   });
 });
-);
