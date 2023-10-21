@@ -7,6 +7,7 @@ import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Leaflet from "leaflet";
+import NonDismissibleAlert from "../common/non-dismissible-alert";
 
 type Props = {
   coordinates: { lat: number; lng: number };
@@ -67,6 +68,10 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
   };
 
   return (
+    <>
+    {hideMarker && (
+      <NonDismissibleAlert/>
+    )}
     <MapContainer
       id="map"
       center={markerPosition}
@@ -85,6 +90,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
         eventHandlers={{ dragend: handleMarkerDragEnd }}
       ></Marker>)}
     </MapContainer>
+    </>
   );
 };
 

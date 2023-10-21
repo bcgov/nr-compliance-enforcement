@@ -9,7 +9,6 @@ import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { isWithinBC } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
-import NonDismissibleAlert from "../../../common/non-dismissible-alert";
 
 type Props = {
   complaintType: string;
@@ -59,7 +58,6 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
       <div className="comp-complaint-details-location-block">
         <h6>Complaint Location</h6>
         <div className="comp-complaint-location">
-          <NonDismissibleAlert/>
           <LeafletMapWithPoint
             coordinates={{ lat: lat, lng: lng }}
             draggable={draggable}
