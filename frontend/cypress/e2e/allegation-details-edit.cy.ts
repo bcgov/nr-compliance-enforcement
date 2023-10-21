@@ -5,7 +5,10 @@ const originalCallDetails = {
     "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS.",
   location: "Keefes Landing Rd and Danskin Rd",
   locationDescription: "tester call description 8",
-  incidentDate: "2030-04-11",
+  incidentDate: "2030-04-11"  , 
+  incidentDateDay: "11", 
+  incidentDateHour: "13",
+  incidentDateMinute: "45",
   xCoord: "-127.4810142",
   yCoord: "50.4217838",
   community: "Danskin",
@@ -51,6 +54,9 @@ const editCallDetails = {
   location: "Keefes Landing Rd and Danskin Rd ---- testing",
   locationDescription: "tester call description 8 ---- testing",
   incidentDate: "2030-04-13",
+  incidentDateDay: "13",
+  incidentDateHour: "19",
+  incidentDateMinute: "47",
   xCoord: "-118",
   yCoord: "49",
   community: "Blaeberry",
@@ -141,7 +147,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","13","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time",editCallDetails.incidentDateDay,editCallDetails.incidentDateHour,editCallDetails.incidentDateMinute);
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -216,6 +222,14 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       editCallDetails.incidentDate
     );
 
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDateHour
+    );
+
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDateMinute
+    );
+
     cy.get('p[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(editCallDetails.description);
     });
@@ -284,7 +298,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(originalCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","11","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time","11",originalCallDetails.incidentDateHour,originalCallDetails.incidentDateMinute);
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -357,6 +371,14 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.get('div[id="complaint-incident-date-time"]').contains(
       originalCallDetails.incidentDate
+    );
+
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDateHour
+    );
+
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDateMinute
     );
 
     cy.get('p[id="comp-details-description"]').should(($el) => {

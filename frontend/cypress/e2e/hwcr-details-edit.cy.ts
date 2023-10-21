@@ -11,6 +11,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
     location: "644 Pine Street",
     locationDescription: "",
     incidentDate: "2022-12-19",
+    incidentDateDay: "19",
+    incidentDateHour: "13",
+    incidentDateMinute: "45",
     attractants: ["Garbage", "Freezer", "Compost"],
     attractantCodes: ["GARBAGE", "FREEZER", "COMPOST"],
     attratantsIndex: [7, 6, 4],
@@ -56,6 +59,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
     location: "644 Pine Street ---- testing",
     locationDescription: " ---- testing",
     incidentDate: "2022-12-21",
+    incidentDateDay: "21",
+    incidentDateHour: "17",
+    incidentDateMinute: "49",
     attractants: ["Livestock", "Barbequeue", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
@@ -135,11 +141,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       .type(editCallDetails.description, {delay: 0});
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--021")
-      .should('exist')
-      .click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time",editCallDetails.incidentDateDay,editCallDetails.incidentDateHour,editCallDetails.incidentDateMinute);
 
     cy.get(".comp-select__multi-value__remove")
       .first()
@@ -204,10 +206,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
       editCallDetails.locationDescription
     );
 
-    //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  editCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDate
+    );
 
     cy.get('p[id="comp-details-description"]').contains(
       editCallDetails.description
@@ -266,11 +267,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       .type(originalCallDetails.description, {delay: 0});
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--019")
-      .should('exist')
-      .click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time",originalCallDetails.incidentDateDay,originalCallDetails.incidentDateHour,originalCallDetails.incidentDateMinute);
 
     cy.get(".comp-select__multi-value__remove")
       .first()
@@ -333,10 +330,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
       originalCallDetails.locationDescription
     );
 
-    //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  originalCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDate
+    );
 
     cy.get('p[id="comp-details-description"]').contains(
       originalCallDetails.description
