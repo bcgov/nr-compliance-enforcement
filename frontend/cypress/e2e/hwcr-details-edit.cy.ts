@@ -543,4 +543,5 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
+
 });
