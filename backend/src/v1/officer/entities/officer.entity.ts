@@ -50,7 +50,7 @@ export class Officer
         description: "The timestamp when the officer was created",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -64,7 +64,7 @@ export class Officer
         description: "The timestamp when the officer was last updated",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
       @ApiProperty({
         example: "903f87c8-76dd-427c-a1bb-4d179e443252",

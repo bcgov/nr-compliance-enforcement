@@ -49,7 +49,7 @@ export class GeoOrganizationUnitCode
         description: "The timestamp when the geo organization unit was created",
       })
       @Column()
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -63,7 +63,7 @@ export class GeoOrganizationUnitCode
         description: "The timestamp when the geo organization unit was last updated",
       })
       @Column()
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
     
       constructor(geo_organization_unit_code?: string) {
         this.geo_organization_unit_code = geo_organization_unit_code;    

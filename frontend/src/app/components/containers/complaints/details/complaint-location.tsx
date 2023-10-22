@@ -20,20 +20,23 @@ type Props = {
  * Component that displays a map with a marker representing the complaint location
  *
  */
-export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarkerMove }) => {
+export const ComplaintLocation: FC<Props> = ({
+  complaintType,
+  draggable,
+  onMarkerMove,
+}) => {
   const dispatch = useAppDispatch();
   const { coordinates, area, location } = useAppSelector(
-    selectComplaintDetails(complaintType)
+    selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
-  
+
   useEffect(() => {
     if (area) {
       // geocode the complaint using the area.  Used in case there are no coordinates
       dispatch(getComplaintLocation(area));
     }
-  
   }, [area, dispatch, location]);
-  
+
   const complaintLocation = useAppSelector(selectComplaintLocation);
   
   // if the complaint coordinates have been entered, then display the marker on the map.  
@@ -49,23 +52,36 @@ export const ComplaintLocation: FC<Props> = ({ complaintType, draggable, onMarke
     lat = +coordinates[Coordinates.Latitude];
     lng = +coordinates[Coordinates.Longitude];
   } else if (complaintLocation) {
-    lat = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Latitude] : 0);
-    lng = (complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined ? complaintLocation?.features[0]?.geometry?.coordinates[Coordinates.Longitude] : 0);
-    hideMarker = true;
+    hideMarker = true
+    lat =
+      complaintLocation?.features[0]?.geometry?.coordinates[
+        Coordinates.Latitude
+      ] !== undefined
+        ? complaintLocation?.features[0]?.geometry?.coordinates[
+            Coordinates.Latitude
+          ]
+        : 0;
+    lng =
+      complaintLocation?.features[0]?.geometry?.coordinates[
+        Coordinates.Longitude
+      ] !== undefined
+        ? complaintLocation?.features[0]?.geometry?.coordinates[
+            Coordinates.Longitude
+          ]
+        : 0;
   }
 
-    return (
-      <div className="comp-complaint-details-location-block">
-        <h6>Complaint Location</h6>
-        <div className="comp-complaint-location">
-          <LeafletMapWithPoint
-            coordinates={{ lat: lat, lng: lng }}
-            draggable={draggable}
-            onMarkerMove={onMarkerMove}
-            hideMarker={hideMarker}
-          />
-        </div>
+  return (
+    <div className="comp-complaint-details-location-block">
+      <h6>Complaint Location</h6>
+      <div className="comp-complaint-location">
+        <LeafletMapWithPoint
+          coordinates={{ lat: lat, lng: lng }}
+          draggable={draggable}
+          onMarkerMove={onMarkerMove}
+          hideMarker={hideMarker}
+        />
       </div>
-    );
-  
+    </div>
+  );
 };

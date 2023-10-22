@@ -33,7 +33,7 @@ export class OfficeDto
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the office was created",
       })
-      create_timestamp: Date;
+      create_utc_timestamp: Date;
     
       @ApiProperty({
         example: "IDIR\mburns",
@@ -45,5 +45,5 @@ export class OfficeDto
         example: "2003-04-12 04:05:06",
         description: "The timestamp when the office was last updated",
       })
-      update_timestamp: Date;
+      update_utc_timestamp: Date;
 }

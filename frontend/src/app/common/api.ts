@@ -1,9 +1,5 @@
 import { Dispatch } from "redux";
-import axios, {
-  AxiosResponse,
-  AxiosError,
-  AxiosRequestConfig,
-} from "axios";
+import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import config from "../../config";
 import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
@@ -27,7 +23,7 @@ export const generateApiParameters = <T = {}>(
   url: string,
   params?: T,
   enableNotification: boolean = false,
-  requiresAuthentication: boolean = true
+  requiresAuthentication: boolean = true,
 ): ApiRequestParameters<T> => {
   let result = {
     url,
@@ -44,7 +40,7 @@ export const generateApiParameters = <T = {}>(
 
 export const get = <T, M = {}>(
   dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>
+  parameters: ApiRequestParameters<M>,
 ): Promise<T> => {
   let config: AxiosRequestConfig = { headers: {} };
   return new Promise<T>((resolve, reject) => {
@@ -64,7 +60,7 @@ export const get = <T, M = {}>(
       .get(url, config)
       .then((response: AxiosResponse) => {
         const { data, status } = response;
-        
+
         if (status === STATUS_CODES.Unauthorized) {
           window.location = KEYCLOAK_URL;
         }
@@ -82,12 +78,12 @@ export const get = <T, M = {}>(
 };
 
 export const post = <T, M = {}>(
-	dispatch: Dispatch,
-	parameters: ApiRequestParameters<M>
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>,
 ): Promise<T> => {
-	let config: AxiosRequestConfig = { headers: {} };
-	return new Promise<T>((resolve, reject) => {
-		const { url, requiresAuthentication, params } = parameters;
+  let config: AxiosRequestConfig = { headers: {} };
+  return new Promise<T>((resolve, reject) => {
+    const { url, requiresAuthentication, params } = parameters;
 
     if (requiresAuthentication) {
       axios.defaults.headers.common[
@@ -95,23 +91,23 @@ export const post = <T, M = {}>(
       ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
-		axios
-			.post(url, params, config)
-			.then((response: AxiosResponse) => {
+    axios
+      .post(url, params, config)
+      .then((response: AxiosResponse) => {
         resolve(response.data as T);
-			})
-			.catch((error: AxiosError) => {
-				if (parameters.enableNotification) {
+      })
+      .catch((error: AxiosError) => {
+        if (parameters.enableNotification) {
           dispatch(toggleNotification("error", error.message));
         }
-				reject(error);
-			});
-	});
+        reject(error);
+      });
+  });
 };
 
 export const patch = <T, M = {}>(
   dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>
+  parameters: ApiRequestParameters<M>,
 ): Promise<T> => {
   let config: AxiosRequestConfig = { headers: {} };
   return new Promise<T>((resolve, reject) => {
@@ -145,7 +141,7 @@ export const patch = <T, M = {}>(
 
 export const put = <T, M = {}>(
   dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>
+  parameters: ApiRequestParameters<M>,
 ): Promise<T> => {
   let config: AxiosRequestConfig = { headers: {} };
   return new Promise<T>((resolve, reject) => {

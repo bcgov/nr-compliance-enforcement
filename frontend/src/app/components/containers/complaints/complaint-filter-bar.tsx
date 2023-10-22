@@ -6,12 +6,12 @@ import { ComplaintFilters } from "../../../types/complaints/complaint-filters/co
 import MapListToggle from "../../common/map-list-toggle";
 import SearchInput from "../../common/search-input";
 
-type Props = { 
+type Props = {
   toggleViewType: (view: "map" | "list") => void;
   viewType: "map" | "list";
-}
+};
 
-export const ComplaintFilterBar: FC<Props> = ({viewType, toggleViewType}) => {
+export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType }) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
   const {
@@ -67,7 +67,7 @@ export const ComplaintFilterBar: FC<Props> = ({viewType, toggleViewType}) => {
           break;
       }
     },
-    [state]
+    [state],
   );
 
   return (

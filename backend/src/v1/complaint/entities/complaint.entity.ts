@@ -12,7 +12,6 @@ import {
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { UUID } from "crypto";
 import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
@@ -171,7 +170,7 @@ export class Complaint {
     description: "The date of the incident the complaint was filed about",
   })
   @Column({ nullable: true })
-  incident_reported_datetime: Date;
+  incident_reported_utc_timestmp: Date;
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",
@@ -193,7 +192,7 @@ export class Complaint {
     description: "The timestamp when the complaint was created",
   })
   @Column()
-  create_timestamp: Date;
+  create_utc_timestamp: Date;
 
   @ApiProperty({
     example: "IDIRmburns",
@@ -207,7 +206,7 @@ export class Complaint {
     description: "The timestamp when the complaint was last updated",
   })
   @Column()
-  update_timestamp: Date;
+  update_utc_timestamp: Date;
 
   constructor(
     detail_text?: string,
@@ -221,18 +220,19 @@ export class Complaint {
     location_summary_text?: string,
     location_detailed_text?: string,
     incident_datetime?: Date,
-    incident_reported_datetime?: Date,
+    incident_reported_utc_timestmp?: Date,
     referred_by_agency_other_text?: string,
     create_user_id?: string,
-    create_timestamp?: Date,
+    create_utc_timestamp?: Date,
     update_user_id?: string,
-    update_timestamp?: Date,
+    update_utc_timestamp?: Date,
     complaint_identifier?: string,
     referred_by_agency_code?: AgencyCode,
     owned_by_agency_code?: AgencyCode,
     complaint_status_code?: ComplaintStatusCode,
     geo_organization_unit_code?: GeoOrganizationUnitCode,
-    cos_geo_org_unit?: CosGeoOrgUnit
+    cos_geo_org_unit?: CosGeoOrgUnit,
+    person_complaint_xref?: PersonComplaintXref[],
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -245,17 +245,18 @@ export class Complaint {
     this.location_summary_text = location_summary_text;
     this.location_detailed_text = location_detailed_text;
     this.incident_datetime = incident_datetime;
-    this.incident_reported_datetime = incident_reported_datetime;
+    this.incident_reported_utc_timestmp = incident_reported_utc_timestmp;
     this.referred_by_agency_other_text = referred_by_agency_other_text;
     this.create_user_id = create_user_id;
-    this.create_timestamp = create_timestamp;
+    this.create_utc_timestamp = create_utc_timestamp;
     this.update_user_id = update_user_id;
-    this.update_timestamp = update_timestamp;
+    this.update_utc_timestamp = update_utc_timestamp;
     this.complaint_identifier = complaint_identifier;
     this.referred_by_agency_code = referred_by_agency_code;
     this.owned_by_agency_code = owned_by_agency_code;
     this.complaint_status_code = complaint_status_code;
     this.geo_organization_unit_code = geo_organization_unit_code;
     this.cos_geo_org_unit = cos_geo_org_unit;
+    this.person_complaint_xref = person_complaint_xref;
   }
 }
