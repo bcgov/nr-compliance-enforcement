@@ -181,11 +181,11 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get('span[id="comp-details-region"]').contains(createCallDetails.region);
 
     //Commented out until COMPENF-987 is Fixed
-    //cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-    //  expect($defaultValue.eq(0)).to.contain("Garbage");
-    //  expect($defaultValue.eq(1)).to.contain("Freezer");
-    //  expect($defaultValue.eq(2)).to.contain("Compost");
-    //});
+    cy.get(".comp-attactant-badge").then(function ($defaultValue) {
+      expect($defaultValue.eq(0)).to.contain("Garbage");
+      expect($defaultValue.eq(1)).to.contain("Freezer");
+      expect($defaultValue.eq(2)).to.contain("Compost");
+    });
     //end verifying changes are created
   });
 });
