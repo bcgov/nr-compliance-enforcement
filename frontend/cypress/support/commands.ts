@@ -227,6 +227,24 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add("enterDateTimeInDatePicker", (datePickerId: string, day: string, hour: string, minute: string) => {
+
+  cy.get(`#${datePickerId}`)
+  .click({ force: true })
+  .get(`.react-datepicker__day--0${day}`)
+  .should("exist")
+  .click({ force: true });
+
+
+  // Locate the time input field and click it to open the time picker
+  cy.get(`#${datePickerId}`)
+  .click({ force: true })
+  .get('.react-datepicker-time__input')
+  .filter('input') 
+  .click({force: true})
+  .type(`${hour}:${minute}`);
+})
+
 Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
   const bottom = Cypress.$(cy.state("window")).height();
   const rect = subject[0].getBoundingClientRect();

@@ -20,5 +20,6 @@ declare namespace Cypress {
     waitForSpinner(): Chainable<any>;
     clearFilterById(filterId: string): Chainable<any>;
     selectItemById(selectId: string, optionText: string): Chainable<any>;
+    enterDateTimeInDatePicker(datePickerId: string, day: string, hour: string, minute: string): Chainable<any>;
   }
 }
