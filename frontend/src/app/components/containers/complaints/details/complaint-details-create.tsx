@@ -44,6 +44,7 @@ import { from } from "linq-to-typescript";
 import { Complaint } from "../../../../types/complaints/complaint";
 import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
