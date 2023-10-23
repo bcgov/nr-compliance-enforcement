@@ -21,7 +21,6 @@ import { PersonService } from '../person/person.service';
 import { Person } from '../person/entities/person.entity';
 import { PersonComplaintXref } from '../person_complaint_xref/entities/person_complaint_xref.entity';
 import { PersonComplaintXrefService } from '../person_complaint_xref/person_complaint_xref.service';
-import { TimezoneCode } from '../timezone_code/entities/timezone_code.entity';
 
 describe("AllegationComplaintService", () => {
   let service: AllegationComplaintService;

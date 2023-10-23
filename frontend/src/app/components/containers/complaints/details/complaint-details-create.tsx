@@ -76,7 +76,7 @@ export const CreateComplaint: FC = () => {
         type: "",
         coordinates: [],
       },
-      incident_datetime: null,
+      incident_utc_datetime: null,
       incident_reported_utc_timestmp: "",
       location_summary_text: "",
       location_detailed_text: "",
@@ -837,18 +837,19 @@ export const CreateComplaint: FC = () => {
 
   function handleIncidentDateTimeChange(date: Date) {
     setSelectedIncidentDateTime(date);
+    
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         createComplaint,
       ) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_datetime =
+      hwcrComplaint.complaint_identifier.incident_utc_datetime =
         date;
       setCreateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         createComplaint,
       ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_datetime =
+      allegationComplaint.complaint_identifier.incident_utc_datetime =
         date;
       setCreateComplaint(allegationComplaint);
     }

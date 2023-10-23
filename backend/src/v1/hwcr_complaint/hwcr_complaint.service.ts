@@ -212,7 +212,6 @@ export class HwcrComplaintService {
         "owned_by_agency_code"
       )
       .leftJoin("complaint_identifier.cos_geo_org_unit", "cos_geo_org_unit")
-      .leftJoin("complaint_identifier.timezone_code", "timezone_code")
       .leftJoin("attractant_hwcr_xref.attractant_code", "attractant_code")
       .leftJoin(
         "complaint_identifier.person_complaint_xref",
@@ -376,8 +375,6 @@ export class HwcrComplaintService {
     complaint
 
       .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
-      .leftJoinAndSelect("complaint_identifier.timezone_code", "timezone_code")
-
       .where("hwcr_complaint.hwcr_complaint_guid = :id", { id })
       .getOne();
 
@@ -484,7 +481,6 @@ export class HwcrComplaintService {
         "owned_by_agency_code"
       )
       .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
-      .leftJoinAndSelect("complaint_identifier.timezone_code", "timezone_code")
       .leftJoinAndSelect(
         "attractant_hwcr_xref.attractant_code",
         "attractant_code"
