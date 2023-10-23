@@ -30,6 +30,7 @@ import { updateComplaintAssignee } from "./officer";
 import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "../../common/toast";
+import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -177,6 +178,7 @@ export const getComplaints =
       complaintStatusFilter,
       page,
       pageSize,
+      query
     } = payload;
 
     try {
@@ -192,7 +194,7 @@ export const getComplaints =
         }
       };
 
-      const parameters = generateApiParameters(
+      let parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/search`,
         {
           sortColumn: sortColumn,
@@ -209,13 +211,11 @@ export const getComplaints =
           status: complaintStatusFilter?.value,
           page: page,
           pageSize: pageSize,
+          query: query
         },
       );
 
-      const { complaints, totalCount } = await get<
-        { complaints: HwcrComplaint | AllegationComplaint; totalCount: number },
-        ComplaintQueryParams
-      >(dispatch, parameters);
+      const { complaints, totalCount } = await get<ComplaintSearchResults, ComplaintQueryParams>(dispatch, parameters);
 
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));

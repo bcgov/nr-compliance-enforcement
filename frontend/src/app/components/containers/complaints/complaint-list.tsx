@@ -27,8 +27,8 @@ import ComplaintPagination from "../../common/complaint-pagination";
 
 type Props = {
   type: string;
+  searchQuery?: string;
 };
-
 
 export const generateComplaintRequestPayload = (
   complaintType: string,
@@ -81,7 +81,7 @@ export const generateComplaintRequestPayload = (
   }
 };
 
-export const ComplaintList: FC<Props> = ({ type }) => {
+export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
 
   useEffect(() => {
     if (defaultZone) {
-      const payload = generateComplaintRequestPayload(
+      let payload = generateComplaintRequestPayload(
         type,
         filters,
         page,
@@ -111,6 +111,10 @@ export const ComplaintList: FC<Props> = ({ type }) => {
         sortKey,
         sortDirection
       );
+
+      if(searchQuery) { 
+        payload = { ...payload, query: searchQuery }
+      }
 
       dispatch(getComplaints(type, payload));
     }

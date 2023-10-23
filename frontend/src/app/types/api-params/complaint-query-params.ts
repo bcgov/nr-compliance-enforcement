@@ -11,4 +11,5 @@ export interface ComplaintQueryParams {
   incidentReportedEnd?: Date;
   violationCode?: string;
   status?: string;
+  query?: string;
 }

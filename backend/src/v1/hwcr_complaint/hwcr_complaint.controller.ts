@@ -61,8 +61,10 @@ export class HwcrComplaintController {
     @Query("incidentReportedEnd") incidentReportedEnd: Date,
     @Query("status") status,
     @Query("page") page: number,
-    @Query("pageSize") pageSize: number
+    @Query("pageSize") pageSize: number,
+    @Query("query") query: string,
   ) {
+    console.log("page: ", page)
     return this.hwcrComplaintService.search(
       sortColumn,
       sortOrder,
@@ -76,14 +78,9 @@ export class HwcrComplaintController {
       incidentReportedEnd,
       status,
       page,
-      pageSize
+      pageSize,
+      query
     );
-  }
-
-  @Get("complaint-search")
-  @Roles(Role.COS_OFFICER)
-  complaintSearch(@Query() query: SearchPayload) {
-    return this.hwcrComplaintService.complaintSearch(query)
   }
 
   @Get("map/search")
@@ -152,5 +149,4 @@ export class HwcrComplaintController {
   statsByZone(@Param("zone") zone: string) {
     return this.hwcrComplaintService.getZoneAtAGlanceStatistics(zone);
   }
-
 }
