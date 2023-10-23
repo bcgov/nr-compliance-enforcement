@@ -16,6 +16,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
 import { UUID } from "crypto";
+import { AllegationSearchOptions } from "../../types/complaints/allegation_search_options";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("allegation-complaint")
@@ -60,17 +61,22 @@ export class AllegationComplaintController {
     @Query("status") status,
     @Query('page') page: number, 
     @Query('pageSize') pageSize: number) {
+
+    const options: AllegationSearchOptions = {
+      community: community,
+      zone: zone,
+      region: region,
+      officerAssigned: officerAssigned,
+      violationCode: violationCode,
+      incidentReportedStart: incidentReportedStart,
+      incidentReportedEnd: incidentReportedEnd,
+      status: status,
+    };
+
     return this.allegationComplaintService.search(
       sortColumn,
       sortOrder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status,
+      options,
       page,
       pageSize,
     );
@@ -90,17 +96,22 @@ export class AllegationComplaintController {
     @Query("incidentReportedEnd") incidentReportedEnd: string,
     @Query("status") status
   ) {
+
+    const options: AllegationSearchOptions = {
+      community: community,
+      zone: zone,
+      region: region,
+      officerAssigned: officerAssigned,
+      violationCode: violationCode,
+      incidentReportedStart: incidentReportedStart,
+      incidentReportedEnd: incidentReportedEnd,
+      status: status,
+    };
+
     return this.allegationComplaintService.searchMap(
       sortColumn,
       sortOrder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status,
+      options,
     );
   }
 

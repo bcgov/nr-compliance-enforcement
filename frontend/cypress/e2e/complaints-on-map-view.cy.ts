@@ -61,11 +61,11 @@ describe("Complaints on map tests", () => {
       } else {
         // add the alegation filters
         // add the region filter
-        cy.selectItemById("region-select-filter-id", "Omineca");
-        cy.selectItemById("zone-select-id", "Nechako-Lakes");
-        cy.selectItemById("community-select-id", "Danskin");
+        cy.selectItemById("region-select-filter-id", "Okanagan");
+        cy.selectItemById("zone-select-id", "North Okanagan");
+        cy.selectItemById("community-select-id", "Grindrod");
 
-        cy.selectItemById("violation-type-select-id", "Other");
+        cy.selectItemById("violation-type-select-id", "Dumping");
       }
 
       // count the markers again, they should now have a different count
