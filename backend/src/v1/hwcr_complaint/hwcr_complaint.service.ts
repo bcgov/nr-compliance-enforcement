@@ -452,51 +452,15 @@ export class HwcrComplaintService {
   }
 
   async findByComplaintIdentifier(id: any): Promise<HwcrComplaint> {
-    const complaint = await this.hwcrComplaintsRepository
-      .createQueryBuilder("hwcr_complaint")
-      .leftJoinAndSelect(
-        "hwcr_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect("hwcr_complaint.species_code", "species_code")
-      .leftJoinAndSelect(
-        "hwcr_complaint.hwcr_complaint_nature_code",
-        "hwcr_complaint_nature_code"
-      )
-      .leftJoinAndSelect(
-        "hwcr_complaint.attractant_hwcr_xref",
-        "attractant_hwcr_xref",
-        "attractant_hwcr_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
-      .leftJoinAndSelect(
-        "attractant_hwcr_xref.attractant_code",
-        "attractant_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .where("complaint_identifier.complaint_identifier = :id", { id })
-      .getOne();
+    const queryBuilder = await this.hwcrComplaintsRepository
+      .createQueryBuilder("hwcr_complaint");
+      this.commonSelects(queryBuilder);
+      
+      queryBuilder.leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code");
+
+      const complaint = queryBuilder
+        .where("complaint_identifier.complaint_identifier = :id", { id })
+        .getOne();
 
     return complaint;
   }
