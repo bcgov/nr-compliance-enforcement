@@ -153,7 +153,8 @@ export class AllegationComplaintService {
     incidentReportedEnd?: string,
     status?: string,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
+    query?: string
   ):Promise<{ complaints: AllegationComplaint[]; totalCount: number }> {
 
     let skip: number;
@@ -287,6 +288,95 @@ export class AllegationComplaintService {
         { Status: status }
       );
     }
+
+       //-- apply search query
+    if (query) {
+      queryBuilder.orWhere(
+        "complaint_identifier.complaint_identifier ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+      queryBuilder.orWhere("complaint_identifier.detail_text ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("complaint_identifier.caller_name ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("complaint_identifier.caller_address ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("complaint_identifier.caller_email ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("complaint_identifier.caller_phone_1 ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("complaint_identifier.caller_phone_2 ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("complaint_identifier.caller_phone_3 ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere(
+        "complaint_identifier.location_summary_text ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+      queryBuilder.orWhere(
+        "complaint_identifier.location_detailed_text ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+      queryBuilder.orWhere(
+        "complaint_identifier.referred_by_agency_other_text ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+
+      queryBuilder.orWhere(
+        "referred_by_agency_code.short_description ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+      queryBuilder.orWhere(
+        "owned_by_agency_code.short_description ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+
+      queryBuilder.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
+        query: `%${query}%`,
+      });
+
+      queryBuilder.orWhere(
+        "allegation_complaint.suspect_witness_dtl_text ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+
+      queryBuilder.orWhere(
+        "violation_code.short_description ILIKE :query",
+        {
+          query: `%${query}%`,
+        }
+      );
+
+      queryBuilder.orWhere("person.first_name ILIKE :query", {
+        query: `%${query}%`,
+      });
+      queryBuilder.orWhere("person.last_name ILIKE :query", {
+        query: `%${query}%`,
+      });
+    }
+
+
     if (skip !== undefined) {
       // a page number was supplied, limit the results returned
       const [data, totalCount] = await queryBuilder
