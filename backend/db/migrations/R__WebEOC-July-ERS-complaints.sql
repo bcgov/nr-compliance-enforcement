@@ -4514,5 +4514,5 @@ update complaint set location_geometry_point ='SRID=4326;POINT (-123.6031684 48.
 -- CE-14 - Convert incident times to UTC format
 -- default to PDT in cases where the original timezones aren't known
 
--- The data was stored with a PDT offset.  Change this to UTC by subtracting 7 hours
-update public.complaint set incident_utc_datetime = incident_utc_datetime  - interval '7 hours', incident_reported_utc_timestmp = incident_reported_utc_timestmp - interval '7 hours', update_utc_timestamp = update_utc_timestamp  - interval '7 hours', timezone_code = 'PDT' where timezone_code is null;
+-- The data was stored with a PDT offset.  Change this to UTC by adding 7 hours
+update public.complaint set incident_utc_datetime = incident_utc_datetime + interval '7 hours', incident_reported_utc_timestmp = incident_reported_utc_timestmp - interval '7 hours', update_utc_timestamp = update_utc_timestamp  - interval '7 hours', timezone_code = 'PDT' where timezone_code is null;
