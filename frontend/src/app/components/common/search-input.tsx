@@ -42,6 +42,8 @@ const SearchInput: FC<Props> = ({
       payload = { ...payload, query: value };
 
       dispatch(getComplaints(complaintType, payload));
+    } else if(!value){ 
+      applySearchQuery(undefined)
     }
   };
 
@@ -54,7 +56,6 @@ const SearchInput: FC<Props> = ({
         aria-describedby="basic-addon2"
         onChange={(evt) => handleSearch(evt)}
         value={searchQuery}
-        defaultValue={searchQuery}
       />
     </InputGroup>
   );

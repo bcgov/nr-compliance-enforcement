@@ -118,7 +118,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
       dispatch(getComplaints(type, payload));
     }
-  }, [filters, sortKey, sortDirection, page, pageSize]);
+  }, [filters, sortKey, sortDirection, page, pageSize, searchQuery, dispatch]);
 
   useEffect(() => {
     if (defaultPageSize) {
