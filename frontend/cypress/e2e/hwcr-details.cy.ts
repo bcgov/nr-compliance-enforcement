@@ -108,7 +108,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-007023");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032525");
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
