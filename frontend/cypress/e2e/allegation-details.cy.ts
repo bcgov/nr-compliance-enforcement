@@ -74,7 +74,7 @@ describe("COMPENF-37 Display ECR Details", () => {
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-007890");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032528");
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
