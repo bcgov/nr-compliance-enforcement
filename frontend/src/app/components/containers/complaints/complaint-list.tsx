@@ -36,7 +36,7 @@ export const generateComplaintRequestPayload = (
   page: number,
   pageSize: number,
   sortColumn: string,
-  sortOrder: string,
+  sortOrder: string
 ): ComplaintRequestPayload => {
   const {
     region,
@@ -112,13 +112,13 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         sortDirection
       );
 
-      if(searchQuery) { 
-        payload = { ...payload, query: searchQuery }
+      if (searchQuery) {
+        payload = { ...payload, query: searchQuery };
       }
 
       dispatch(getComplaints(type, payload));
     }
-  }, [filters, sortKey, sortDirection, page, pageSize, searchQuery, dispatch]);
+  }, [filters, sortKey, sortDirection, page, pageSize, searchQuery]);
 
   useEffect(() => {
     if (defaultPageSize) {
@@ -136,7 +136,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {
       setSortDirection(
-        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC,
+        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC
       );
     } else {
       setSortKey(sortInput);
@@ -146,7 +146,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
-    id: string,
+    id: string
   ) => {
     e.preventDefault();
 

@@ -278,77 +278,85 @@ export class HwcrComplaintService {
       );
     }
 
-  //-- apply search query
+    //-- apply search query
     if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.orWhere("complaint_identifier.complaint_identifier ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.detail_text ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_address ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_email ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_phone_1 ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_phone_2 ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_phone_3 ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere(
+            "complaint_identifier.location_summary_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
+          qb.orWhere(
+            "complaint_identifier.location_detailed_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
+          qb.orWhere(
+            "complaint_identifier.referred_by_agency_other_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
 
-      queryBuilder.andWhere(new Brackets((qb) => {
-        qb.orWhere("complaint_identifier.complaint_identifier ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.detail_text ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.caller_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.caller_address ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.caller_email ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.caller_phone_1 ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.caller_phone_2 ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.caller_phone_3 ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.location_summary_text ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.location_detailed_text ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("complaint_identifier.referred_by_agency_other_text ILIKE :query", {
-          query: `%${query}%`,
-        });
-  
-        qb.orWhere("referred_by_agency_code.short_description ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("owned_by_agency_code.short_description ILIKE :query", {
-          query: `%${query}%`,
-        });
-  
-        qb.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-  
-        qb.orWhere("hwcr_complaint.other_attractants_text ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("species_code.short_description ILIKE :query", {
-          query: `%${query}%`,
-        });
-  
-        qb.orWhere("hwcr_complaint.hwcr_complaint_nature_code ILIKE :query", {
-          query: `%${query}%`,
-        });
-  
-        qb.orWhere("attractant_code.short_description ILIKE :query", {
-          query: `%${query}%`,
-        });
-  
-        qb.orWhere("person.first_name ILIKE :query", { query: `%${query}%` });
-        qb.orWhere("person.last_name ILIKE :query", { query: `%${query}%` });
-      }))
+          qb.orWhere("referred_by_agency_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("owned_by_agency_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("hwcr_complaint.other_attractants_text ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("species_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("hwcr_complaint.hwcr_complaint_nature_code ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("attractant_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("person.first_name ILIKE :query", { query: `%${query}%` });
+          qb.orWhere("person.last_name ILIKE :query", { query: `%${query}%` });
+        })
+      );
     }
 
-    // console.log(queryBuilder.getQuery())
-    
     if (skip !== undefined) {
       // a page number was supplied, limit the results returned
       const [data, totalCount] = await queryBuilder
