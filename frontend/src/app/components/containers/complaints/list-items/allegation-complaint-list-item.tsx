@@ -72,7 +72,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
   return (
     <tr>
       <td
-        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name"
+        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name-underline"
         onClick={(event) => complaintClick(event, id)}
       >
         <Link to={`/complaint/ERS/${id}`} id={id}>

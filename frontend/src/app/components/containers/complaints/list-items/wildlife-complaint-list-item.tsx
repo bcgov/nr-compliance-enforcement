@@ -67,7 +67,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
   return (
     <tr key={id}>
       <td
-        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name"
+        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name-underline"
         onClick={(event) => complaintClick(event, id)}
       >
         <Link to={`/complaint/HWCR/${id}`} id={id}>

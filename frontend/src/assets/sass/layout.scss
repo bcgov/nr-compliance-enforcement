@@ -159,10 +159,20 @@
   color: $bc-brand-links;
 
   a {
-    text-decoration: underline;
+    text-decoration: none;
     color: $bc-brand-links;
   }
 
+}
+
+.comp-nav-item-name-underline {
+  color: $bc-brand-links;
+
+  a {
+    text-decoration: underline;
+    color: $bc-brand-links;
+  }
+  
   a:hover {
     font-weight: bold;
   }
@@ -179,6 +189,7 @@
     color: $white;
     font-weight: bold;
   }
+
 }
 
 .comp-nav-item-icon {
@@ -190,7 +201,7 @@
   }
 }
 
-.comp-nav-item-inverted {
+.comp-nav-item-icon-inverted {
   color: $bc-brand-links;
 
   a {

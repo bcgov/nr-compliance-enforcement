@@ -32,7 +32,7 @@ export const Header: FC = () => {
 
   return (
     <div className="comp-header">
-      <div className="comp-header-logo comp-nav-item-inverted">
+      <div className="comp-header-logo comp-nav-item-icon-inverted">
         <Link to="/">
           <img className="logo-src" src={logo} alt="logo" />
         </Link>
