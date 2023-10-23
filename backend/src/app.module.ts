@@ -27,7 +27,6 @@ import { PersonComplaintXrefModule } from "./v1/person_complaint_xref/person_com
 import { PersonComplaintXrefCodeModule } from "./v1/person_complaint_xref_code/person_complaint_xref_code.module";
 import { BcGeoCoderModule } from "./external_api/bc_geo_coder/bc_geo_coder.module";
 import { ConfigurationModule } from './v1/configuration/configuration.module';
-import { TimezoneCodeModule } from "./v1/timezone_code/timezone_code.module";
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
 
 
@@ -78,7 +77,6 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     PersonComplaintXrefCodeModule,
     BcGeoCoderModule,
     ConfigurationModule,
-    TimezoneCodeModule,
     ComplaintTypeCodeModule,
   ],
   controllers: [AppController],

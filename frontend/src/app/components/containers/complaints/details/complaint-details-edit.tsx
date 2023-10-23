@@ -3,10 +3,7 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import {
   bcBoundaries,
   formatDate,
-  formatDateWithOffset,
   formatTime,
-  formatTimeWithOffset,
-  getTimezoneCode,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
@@ -47,7 +44,6 @@ import { CompSelect } from "../../../common/comp-select";
 import { CompInput } from "../../../common/comp-input";
 import { from } from "linq-to-typescript";
 import { userId } from "../../../../store/reducers/app";
-import { parse } from 'date-fns';
 
 interface ComplaintDetailsProps {
   complaintType: string;
@@ -117,7 +113,6 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
     location,
     locationDescription,
     incidentDateTime,
-    timezoneCode,
     coordinates,
     area,
     region,
@@ -160,22 +155,14 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
-  // convert time the time that the original time was created as.  For example, if 14:24 MDT, then when edited the
-  // time should appear as 14:24 in any timezone.
-  let incidentDateTimeObject;
-  if (incidentDateTime) {
-    const incidientTimeOffsetString = `${formatDateWithOffset(incidentDateTime,timezoneCode)} ${formatTimeWithOffset(incidentDateTime,timezoneCode)}`;
-    const format = 'yyyy-MM-dd HH:mm'; // Define the format of your input date and time string
-
-    const date = parse(incidientTimeOffsetString, format, new Date());
-    incidentDateTimeObject = ((incidentDateTime) ? date : null);
-  }
+  const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
 
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
     incidentDateTimeObject
   );
 
   // Transform the fetched data into the DropdownOption type
+
   let assignableOfficers: Option[] =
     officersInZoneList !== null
       ? officersInZoneList.map((officer: Officer) => ({
@@ -274,27 +261,20 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   }
 
   function handleIncidentDateTimeChange(date: Date) {
-    
     setSelectedIncidentDateTime(date);
-
-    // get timezone code of the user updating the incidient time.  Used to store the
-    // timezone code along with the time so that other users in other timezones can view
-    // the incident time relative to the original timezone.  e.g. A complaint with an incident time
-    // of 14:00 MST when viewed by someone in PST, will still see the time as 14:00.
-    const timeZoneCode = getTimezoneCode();
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
         updateComplaint,
       ) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
-      hwcrComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
+      hwcrComplaint.complaint_identifier.incident_datetime =
+        date;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
         updateComplaint,
       ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_utc_datetime = date;
-      allegationComplaint.complaint_identifier.timezone_code = {timezone_code: timeZoneCode};
+      allegationComplaint.complaint_identifier.incident_datetime =
+        date;
       setUpdateComplaint(allegationComplaint);
     }
   }

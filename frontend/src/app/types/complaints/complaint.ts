@@ -1,15 +1,12 @@
 import { AgencyCode } from "../code-tables/agency-code";
 import { GeoOrganizationUnitCode } from "../code-tables/geo-organization-unit-code";
 import { PersonComplaintXref } from "./person-complaint-xref";
-import { TimezoneCode } from "../code-tables/timezone-code";
-
 
 export interface Complaint {
   complaint_identifier: string;
     geo_organization_unit_code: GeoOrganizationUnitCode;
     location_geometry_point: LocationGeometryPoint;
-    incident_utc_datetime: Date | null;
-    timezone_code: TimezoneCode | null;
+    incident_datetime: Date | null;
     incident_reported_utc_timestmp: string;
     location_summary_text: string;
     location_detailed_text: string;

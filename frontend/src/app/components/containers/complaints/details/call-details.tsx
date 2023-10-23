@@ -2,8 +2,8 @@ import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
 import {
-  formatDateWithOffset,
-  formatTimeWithOffset,
+  formatDate,
+  formatTime,
   renderCoordinates,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
@@ -22,7 +22,6 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     location,
     locationDescription,
     incidentDateTime,
-    timezoneCode,
     coordinates,
     area,
     region,
@@ -56,9 +55,9 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   className="bi bi-calendar comp-margin-right-xxs"
                   id="complaint-incident-date"
                 ></i>
-                {formatDateWithOffset(incidentDateTime,timezoneCode)}
+                {formatDate(incidentDateTime)}
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTimeWithOffset(incidentDateTime,timezoneCode)}
+                {formatTime(incidentDateTime)}
               </div>
             </div>
 

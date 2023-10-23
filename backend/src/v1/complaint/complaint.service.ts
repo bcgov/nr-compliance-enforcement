@@ -28,9 +28,9 @@ export class ComplaintService {
       });
       const complaintId = (new Date()).getFullYear().toString().substring(2) + "-" + sequenceNumber;
       createComplaintDto.incident_reported_utc_timestmp = new Date();
-      if(!createComplaintDto.incident_utc_datetime)
+      if(!createComplaintDto.incident_datetime)
       {
-        createComplaintDto.incident_utc_datetime = null;
+        createComplaintDto.incident_datetime = null;
       }
       createComplaintDto.complaint_identifier = complaintId;
       if(referredByAgencyCode !== null && referredByAgencyCode.agency_code === "")
@@ -43,8 +43,7 @@ export class ComplaintService {
           detail_text: createComplaintDto.detail_text,
           location_detailed_text: createComplaintDto.location_detailed_text,
           cos_geo_org_unit: createComplaintDto.cos_geo_org_unit,
-          incident_utc_datetime: createComplaintDto.incident_utc_datetime,
-          timezone_code: createComplaintDto.timezone_code,
+          incident_datetime: createComplaintDto.incident_datetime,
           incident_reported_utc_timestmp: createComplaintDto.incident_reported_utc_timestmp,
           location_geometry_point: createComplaintDto.location_geometry_point,
           location_summary_text: createComplaintDto.location_summary_text,
@@ -113,8 +112,7 @@ export class ComplaintService {
           detail_text: updateComplaintDto.detail_text,
           location_detailed_text: updateComplaintDto.location_detailed_text,
           cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
-          incident_utc_datetime: updateComplaintDto.incident_utc_datetime,
-          timezone_code: updateComplaintDto.timezone_code,
+          incident_datetime: updateComplaintDto.incident_datetime,
           location_geometry_point: updateComplaintDto.location_geometry_point,
           location_summary_text: updateComplaintDto.location_summary_text,
           caller_name: updateComplaintDto.caller_name,
