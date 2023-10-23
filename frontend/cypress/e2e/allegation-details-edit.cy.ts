@@ -5,7 +5,7 @@ const originalCallDetails = {
     "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS.",
   location: "Keefes Landing Rd and Danskin Rd",
   locationDescription: "tester call description 8",
-  incidentDate: "2030-04-11",
+  incidentDateDay: "11",
   xCoord: "-127.4810142",
   yCoord: "50.4217838",
   community: "Danskin",
@@ -50,7 +50,7 @@ const editCallDetails = {
     "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
   location: "Keefes Landing Rd and Danskin Rd ---- testing",
   locationDescription: "tester call description 8 ---- testing",
-  incidentDate: "2030-04-13",
+  incidentDateDay: "19",
   xCoord: "-118",
   yCoord: "49",
   community: "Blaeberry",
@@ -141,12 +141,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--013")
-      .should("exist")
-      .click({ force: true });
-    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
@@ -216,9 +211,9 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     );
 
     //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  editCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      editCallDetails.incidentDateDay
+    );
 
     cy.get('p[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(editCallDetails.description);
@@ -288,11 +283,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(originalCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--011")
-      .should("exist")
-      .click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time","11","13","45");
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -363,10 +354,9 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       originalCallDetails.locationDescription,
     );
 
-    //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  originalCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      originalCallDetails.incidentDateDay
+    );
 
     cy.get('p[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallDetails.description);

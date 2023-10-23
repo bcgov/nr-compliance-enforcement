@@ -821,7 +821,7 @@ export const selectComplaintDetails =
           detail_text,
           location_summary_text,
           location_detailed_text,
-          incident_datetime,
+          incident_utc_datetime,
           location_geometry_point: { coordinates },
           cos_geo_org_unit: {
             area_name,
@@ -837,7 +837,7 @@ export const selectComplaintDetails =
           details: detail_text,
           location: location_summary_text,
           locationDescription: location_detailed_text,
-          incidentDateTime: incident_datetime,
+          incidentDateTime: incident_utc_datetime,
           coordinates,
           area: area_name,
           region: region_name,
