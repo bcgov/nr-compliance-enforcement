@@ -579,7 +579,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032528");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-40004");
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
