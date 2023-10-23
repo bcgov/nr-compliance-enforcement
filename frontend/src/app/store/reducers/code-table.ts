@@ -16,6 +16,7 @@ import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
 import { GeoOrganizationCode } from "../../types/code-tables/geo-orginaization-code";
 import { DropdownOption } from "../../types/code-tables/option";
+import { ComplaintTypeCode } from "../../types/code-tables/complaint-type-code";
 
 const initialState: CodeTableState = {
   agencyCodes: [],
@@ -29,6 +30,7 @@ const initialState: CodeTableState = {
   zones: [],
   communities: [],
   complaintCodes: [],
+  complaintTypeCodes: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -135,7 +137,7 @@ export const codeTableSlice = createSlice({
       const data = payload.map(
         ({
           attractant_code: value,
-          long_description: label,
+          short_description: label,
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
@@ -207,6 +209,23 @@ export const codeTableSlice = createSlice({
       );
       return { ...state, complaintCodes: data };
     },
+    setComplaintTypeCodes: (
+      state: CodeTableState,
+      action: PayloadAction<Array<ComplaintTypeCode>>,
+    ) => {
+      const { payload } = action;
+      const data = payload.map(
+        ({
+          complaint_type_code: value,
+          long_description: label,
+          short_description: description,
+        }) => {
+          return { value, label, description } as CodeTable;
+        },
+      );
+
+      return { ...state, complaintTypeCodes: data };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -226,6 +245,7 @@ export const {
   setZones,
   setCommunities,
   setComplaintCodes,
+  setComplaintTypeCodes,
 } = codeTableSlice.actions;
 
 export const fetchCodeTables = (): AppThunk => async (dispatch) => {
@@ -242,6 +262,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       regions,
       zones,
       communities,
+      complaintTypeCodes,
     },
   } = state;
 
@@ -249,7 +270,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 
   try {
     if (!from(agencyCodes).any()) {
+      console.log("agencyCodes1");
       dispatch(fetchAgencyCodes());
+      console.log("agencyCodes2");
     }
 
     if (!from(complaintStatusCodes).any()) {
@@ -286,6 +309,12 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 
     if (!from(communities).any()) {
       dispatch(fetchCommunities());
+    }
+
+    if (!from(complaintTypeCodes).any()) {
+      console.log("complaintTypeCodes1");
+      dispatch(fetchComplaintTypeCodes());
+      console.log("complaintTypeCodes2");
     }
   } catch (error) {
   } finally {
@@ -407,6 +436,17 @@ export const fetchCommunities = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchComplaintTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/complaint-type-code`,
+  );
+  const response = await get<Array<ComplaintTypeCode>>(dispatch, parameters);
+
+  if (response && from(response).any()) {
+    dispatch(setComplaintTypeCodes(response));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<CodeTable> => {
@@ -427,6 +467,13 @@ export const selectSortedCodeTable =
     );
 
     return sorted;
+  };
+
+  export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => {
+    const {
+      codeTables: { complaintTypeCodes },
+    } = state;
+    return complaintTypeCodes as Array<Option>;
   };
 
 export const selectAgencyDropdown = (state: RootState): Array<Option> => {
