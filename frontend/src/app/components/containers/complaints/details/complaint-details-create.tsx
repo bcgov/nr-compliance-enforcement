@@ -242,6 +242,7 @@ export const CreateComplaint: FC = () => {
       } else {
         setComplaintTypeMsg("");
         setComplaintType(value);
+        //TODO: Copy common fields into empty complaints when switching
         setCreateComplaint(value === COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
       }
     }

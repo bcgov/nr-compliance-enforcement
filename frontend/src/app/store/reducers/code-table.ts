@@ -270,9 +270,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 
   try {
     if (!from(agencyCodes).any()) {
-      console.log("agencyCodes1");
       dispatch(fetchAgencyCodes());
-      console.log("agencyCodes2");
     }
 
     if (!from(complaintStatusCodes).any()) {
@@ -312,9 +310,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
 
     if (!from(complaintTypeCodes).any()) {
-      console.log("complaintTypeCodes1");
       dispatch(fetchComplaintTypeCodes());
-      console.log("complaintTypeCodes2");
     }
   } catch (error) {
   } finally {
