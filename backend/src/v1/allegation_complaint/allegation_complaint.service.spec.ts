@@ -46,7 +46,6 @@ describe("AllegationComplaintService", () => {
     "summary",
     "detail_text",
     new Date(),
-    new TimezoneCode('PDT'),
     new Date(),
     "other text",
     "chris",
@@ -85,7 +84,6 @@ describe("AllegationComplaintService", () => {
     "summary2",
     "detail_text2",
     new Date(),
-    new TimezoneCode('PDT'),
     new Date(),
     "other text2",
     "chris",
@@ -123,7 +121,6 @@ describe("AllegationComplaintService", () => {
   const threeLocationSummaryText = "summary3";
   const threeLocationDetailText = "detail_text3";
   const threeIncidentDatetime = new Date();
-  const threeIncidentTimezoneCode = new TimezoneCode('PDT');
   const threeIncidentReportedDatetime = new Date();
   const threeReferredByAgencyOtherText = "other text3";
   const threeCreateUserId = "chris";
@@ -139,7 +136,7 @@ describe("AllegationComplaintService", () => {
   const threePersonXref = [];
   
   const threeComplaint = new Complaint(threeDetailText, threeCallerName, threeCallerAddress, threeCallerEmail, threeCallerPhone1, threeCallerPhone2, threeCallerPhone3, threeLocationGeometryPoint,
-    threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentTimezoneCode, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateTimestamp, threeUpdateUserId,
+    threeLocationSummaryText, threeLocationDetailText, threeIncidentDatetime, threeIncidentReportedDatetime, threeReferredByAgencyOtherText, threeCreateUserId, threeCreateTimestamp, threeUpdateUserId,
     threeUpdateTimestamp, threeCompliantIdentifier, threeReferredByAgencyCode, threeOwnedByAgencyCode, threeComplaintStatusCode, threeGeoOrganizationUnitCode, threeCosGeoOrgUnit, threePersonXref);
     const threeViolationCode = new ViolationCode("AINVSPC");
     const threeInProgressInd = true;
