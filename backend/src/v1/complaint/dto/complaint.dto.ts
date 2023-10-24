@@ -120,7 +120,7 @@ export class ComplaintDto {
     example: "2023-11-22",
     description: "The date of the incident the complaint was filed about",
   })
-  incident_datetime: Date;
+  incident_utc_datetime: Date;
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",
