@@ -108,13 +108,13 @@ describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032525");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032525");
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032527");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032527");
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
