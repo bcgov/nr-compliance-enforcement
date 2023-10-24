@@ -153,23 +153,64 @@
   margin-left: 25%;
 }
 
+// Start of Hyperlink Styles
+
 .comp-nav-item-name {
-  color: $bc-gov-primary;
+  color: $bc-brand-links;
 
   a {
     text-decoration: none;
-    color: $bc-gov-primary;
+    color: $bc-brand-links;
   }
+
+}
+
+.comp-nav-item-name-underline {
+  color: $bc-brand-links;
+
+  a {
+    text-decoration: underline;
+    color: $bc-brand-links;
+  }
+  
+  a:hover {
+    font-weight: bold;
+  }
+}
+
+.comp-nav-item-name-inverted {
+  color: $bc-brand-links;
+  a {
+    text-decoration: underline;
+    color: $white;
+  }
+
+  a:hover {
+    color: $white;
+    font-weight: bold;
+  }
+
 }
 
 .comp-nav-item-icon {
-  color: $bc-gov-primary;
+  color: $bc-brand-links;
 
   a {
     text-decoration: none;
-    color: $bc-gov-primary;
+    color: $bc-brand-links;
   }
 }
+
+.comp-nav-item-icon-inverted {
+  color: $bc-brand-links;
+
+  a {
+    text-decoration: none;
+    color: $white;
+  }
+}
+
+// End of Hyperlink Styles
 
 .comp-side-bar.collapsed > ul > li > span.comp-nav-item-name {
   display: none;
