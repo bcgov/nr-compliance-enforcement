@@ -24,7 +24,6 @@ export class ComplaintTypeCodeController {
   @Get()
   @Roles(Role.COS_OFFICER)
   findAll() {
-    console.log("brrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
     return this.complaintTypeCodeService.findAll();
   }
 

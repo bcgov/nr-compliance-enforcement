@@ -19,7 +19,6 @@ export class ComplaintTypeCodeService {
   }
 
   async findAll(): Promise<ComplaintTypeCode[]> {
-    console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
     return this.complaintTypeCodeRepository.find(
       {
         order: 
