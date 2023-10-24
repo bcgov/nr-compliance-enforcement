@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource } from "typeorm";
 
 import { HwcrComplaint } from "./entities/hwcr_complaint.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
@@ -26,8 +26,6 @@ import { SearchPayload } from "../complaint/models/search-payload";
 
 describe("Testing: HwcrComplaintService", () => {
   let service: HwcrComplaintService;
-  let repository: Repository<HwcrComplaint>;
-  let dataSource: DataSource;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -86,7 +84,6 @@ describe("Testing: HwcrComplaintService", () => {
       });
 
     service = module.get<HwcrComplaintService>(HwcrComplaintService);
-    dataSource = module.get<DataSource>(DataSource);
   });
 
   it("should be defined", () => {

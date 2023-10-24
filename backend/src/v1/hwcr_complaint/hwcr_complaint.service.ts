@@ -22,8 +22,6 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { SearchPayload } from "../complaint/models/search-payload";
-import { SearchResults } from "../complaint/models/search-results";
 
 @Injectable()
 export class HwcrComplaintService {

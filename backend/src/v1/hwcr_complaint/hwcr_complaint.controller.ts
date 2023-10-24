@@ -9,7 +9,6 @@ import {
   UseGuards,
   Query,
   Logger,
-  Req,
 } from "@nestjs/common";
 import { HwcrComplaintService } from "./hwcr_complaint.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -17,7 +16,6 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { UUID } from "crypto";
-import { SearchPayload } from "../complaint/models/search-payload";
 
 @UseGuards(JwtRoleGuard)
 @ApiBearerAuth()
