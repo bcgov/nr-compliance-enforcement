@@ -172,13 +172,7 @@ export const CreateComplaint: FC = () => {
     suspect_witnesss_dtl_text: ""
   };
 
-  const newEmptyComplaint = (COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
-
-  const [createComplaint, setCreateComplaint] = useState<
-    HwcrComplaint | AllegationComplaint | null | undefined
-  >(newEmptyComplaint);
-
-  const [complaintType, setComplaintType] = useState<string>("");
+  const [complaintType, setComplaintType] = useState<string>(COMPLAINT_TYPES.HWCR);
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
@@ -200,6 +194,13 @@ export const CreateComplaint: FC = () => {
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none",
   );
+
+  
+  const newEmptyComplaint = (COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
+
+  const [createComplaint, setCreateComplaint] = useState<
+    HwcrComplaint | AllegationComplaint | null | undefined
+  >(newEmptyComplaint);
 
   function noErrors() {
     let noErrors = false;
@@ -241,8 +242,22 @@ export const CreateComplaint: FC = () => {
         setComplaintTypeMsg("Required");
       } else {
         setComplaintTypeMsg("");
-        setComplaintType(value);
-        setCreateComplaint(value === COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
+        if(value !== complaintType)
+        {
+          setComplaintType(value);
+          if(value === COMPLAINT_TYPES.HWCR && createComplaint && createComplaint.complaint_identifier)
+          {
+            let resetComplaint = emptyHwcrComplaint;
+            resetComplaint.complaint_identifier = cloneDeep(createComplaint.complaint_identifier);
+            setCreateComplaint(resetComplaint);
+          }
+          else if(value === COMPLAINT_TYPES.ERS && createComplaint && createComplaint.complaint_identifier)
+          {
+            let resetComplaint = emptyAllegationComplaint;
+            resetComplaint.complaint_identifier = cloneDeep(createComplaint.complaint_identifier);
+            setCreateComplaint(resetComplaint);
+          }
+        }
       }
     }
   };
@@ -1009,7 +1024,7 @@ export const CreateComplaint: FC = () => {
     <div className="comp-complaint-details">
       <ToastContainer />
       <CreateComplaintHeader
-        complaintType={COMPLAINT_TYPES.HWCR}
+        complaintType={complaintType}
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
       />
@@ -1043,6 +1058,7 @@ export const CreateComplaint: FC = () => {
                 placeholder="Select"
                 className="comp-details-input"
                 classNamePrefix="comp-select"
+                defaultValue={complaintTypeCodes.find((option) => option.value === complaintType,)}
                 onChange={(e) => handleComplaintChange(e)}
                 errMsg={complaintTypeMsg}
               />
