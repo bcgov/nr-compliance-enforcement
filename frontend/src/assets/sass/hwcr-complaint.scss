@@ -1,16 +1,3 @@
-.comp-complaint-breadcrumb {
-  background-color: $bc-gov-primary-400;
-  color: $white;
-
-  height: 43px;
-  padding: 8px 37px 8px 32px;
-
-  nav > ol > li:nth-child(2) > a {
-    text-decoration: underline;
-    color: $white;
-  }
-}
-
 .comp-complaint-details {
   position: absolute;
   left: 254px;

@@ -10,7 +10,7 @@ import Roles from "./constants/roles";
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
-import { ComplaintDetails } from "./components/containers/complaints/complaint-details";
+import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
 import ColorReference from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
@@ -47,7 +47,7 @@ const App: FC = () => {
           />
           <Route
             path="/complaint/:complaintType/:id"
-            element={<ComplaintDetails />}
+            element={<ComplaintDetailsEdit />}
           />
           <Route path="/zone/at-a-glance" element={<ZoneAtAGlance />} />
           <Route
