@@ -22,7 +22,6 @@ import { PersonComplaintXref } from "../person_complaint_xref/entities/person_co
 
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
-import { SearchPayload } from "../complaint/models/search-payload";
 
 describe("Testing: HwcrComplaintService", () => {
   let service: HwcrComplaintService;

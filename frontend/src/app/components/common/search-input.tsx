@@ -78,6 +78,7 @@ const SearchInput: FC<Props> = ({
   return (
     <InputGroup>
       <input
+        id="complaint-search"
         placeholder="Search..."
         aria-label="Search"
         className="comp-form-control"
