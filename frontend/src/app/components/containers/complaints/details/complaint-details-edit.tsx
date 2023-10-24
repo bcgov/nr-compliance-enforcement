@@ -1,5 +1,5 @@
-import { FC, useState } from "react";
-import { useAppSelector } from "../../../../hooks/hooks";
+import { FC, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import {
   bcBoundaries,
   formatDate,
@@ -11,6 +11,13 @@ import {
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
+  selectComplaint,
+  setComplaint,
+  setComplaintLocation,
+  updateWildlifeComplaint,
+  getWildlifeComplaintByComplaintIdentifierSetUpdate,
+  updateAllegationComplaint,
+  getAllegationComplaintByComplaintIdentifierSetUpdate,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -43,71 +50,176 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import { CompSelect } from "../../../common/comp-select";
 import { CompInput } from "../../../common/comp-input";
 import { from } from "linq-to-typescript";
-import { userId } from "../../../../store/reducers/app";
+import { openModal, userId } from "../../../../store/reducers/app";
+import { useParams } from "react-router-dom";
+import { CancelConfirm } from "../../../../types/modal/modal-types";
+import { ToggleError } from "../../../../common/toast";
+import { ToastContainer } from "react-toastify";
+import { ComplaintHeader } from "./complaint-header";
+import { CallDetails } from "./call-details";
+import { CallerInformation } from "./caller-information";
+import { SuspectWitnessDetails } from "./suspect-witness-details";
+import { Button } from "react-bootstrap";
 
-interface ComplaintDetailsProps {
+type ComplaintParams = {
+  id: string;
   complaintType: string;
-  updateComplaint: HwcrComplaint | AllegationComplaint | null | undefined;
-  setUpdateComplaint: Function;
-  nocErrorMsg: string;
-  setNOCErrorMsg: Function;
-  speciesErrorMsg: string;
-  setSpeciesErrorMsg: Function;
-  statusErrorMsg: string;
-  setStatusErrorMsg: Function;
-  complaintDescErrorMsg: string;
-  setComplaintDescErrorMsg: Function;
-  attractantsErrorMsg: string;
-  setAttractantsErrorMsg: Function;
-  communityErrorMsg: string;
-  setCommunityErrorMsg: Function;
-  geoPointXMsg: string;
-  setGeoPointXMsg: Function;
-  geoPointYMsg: string;
-  setGeoPointYMsg: Function;
-  emailMsg: string;
-  setEmailMsg: Function;
-  primaryPhoneMsg: string;
-  setPrimaryPhoneMsg: Function;
-  secondaryPhoneMsg: string;
-  setSecondaryPhoneMsg: Function;
-  alternatePhoneMsg: string;
-  setAlternatePhoneMsg: Function;
-  errorNotificationClass: string;
-  setErrorNotificationClass: Function;
-}
+};
 
-export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
-  complaintType,
-  updateComplaint,
-  setUpdateComplaint,
-  nocErrorMsg,
-  setNOCErrorMsg,
-  speciesErrorMsg,
-  setSpeciesErrorMsg,
-  statusErrorMsg,
-  setStatusErrorMsg,
-  complaintDescErrorMsg,
-  setComplaintDescErrorMsg,
-  attractantsErrorMsg,
-  setAttractantsErrorMsg,
-  communityErrorMsg,
-  setCommunityErrorMsg,
-  geoPointXMsg,
-  setGeoPointXMsg,
-  geoPointYMsg,
-  setGeoPointYMsg,
-  emailMsg,
-  setEmailMsg,
-  primaryPhoneMsg,
-  setPrimaryPhoneMsg,
-  secondaryPhoneMsg,
-  setSecondaryPhoneMsg,
-  alternatePhoneMsg,
-  setAlternatePhoneMsg,
-  errorNotificationClass,
-  setErrorNotificationClass,
-}) => {
+export const ComplaintDetailsEdit: FC = () => {
+
+  const dispatch = useAppDispatch();
+
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+
+  const complaint = useAppSelector(selectComplaint);
+
+  const [readOnly, setReadOnly] = useState(true);
+  const [updateComplaint, setUpdateComplaint] = useState<
+    HwcrComplaint | AllegationComplaint | null | undefined
+  >(complaint);
+
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+      dispatch(setComplaint(null));
+      dispatch(setComplaintLocation(null));
+    };
+  }, [dispatch]);
+
+  const editButtonClick = () => {
+    setReadOnly(false);
+  };
+
+  const cancelConfirmed = () => {
+    setReadOnly(true);
+    setErrorNotificationClass("comp-complaint-error display-none");
+    setNOCErrorMsg("");
+    setSpeciesErrorMsg("");
+    setStatusErrorMsg("");
+    setComplaintDescErrorMsg("");
+    setAttractantsErrorMsg("");
+    setCommunityErrorMsg("");
+    setGeoPointXMsg("");
+    setGeoPointYMsg("");
+    setEmailMsg("");
+    setPrimaryPhoneMsg("");
+    setSecondaryPhoneMsg("");
+    setAlternatePhoneMsg("");
+  };
+
+  const cancelButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CancelConfirm,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed,
+        },
+      }),
+    );
+  };
+
+  const [errorNotificationClass, setErrorNotificationClass] = useState(
+    "comp-complaint-error display-none",
+  );
+  const saveButtonClick = async () => {
+    if (!updateComplaint) {
+      return;
+    }
+    if (noErrors()) {
+      if (complaintType === COMPLAINT_TYPES.HWCR) {
+        let hwcrComplaint = updateComplaint as HwcrComplaint;
+        await dispatch(updateWildlifeComplaint(hwcrComplaint));
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifierSetUpdate(
+            hwcrComplaint.complaint_identifier.complaint_identifier,
+            setUpdateComplaint,
+          ),
+        );
+      } else if (complaintType === COMPLAINT_TYPES.ERS) {
+        let allegationComplaint = updateComplaint as AllegationComplaint;
+        await dispatch(updateAllegationComplaint(allegationComplaint));
+        dispatch(
+          getAllegationComplaintByComplaintIdentifierSetUpdate(
+            allegationComplaint.complaint_identifier.complaint_identifier,
+            setUpdateComplaint,
+          ),
+        );
+      }
+      setErrorNotificationClass("comp-complaint-error display-none");
+      setReadOnly(true);
+    } else {
+      ToggleError("Errors in form");
+      setErrorNotificationClass("comp-complaint-error");
+    }
+  };
+
+  useEffect(() => {
+    if (
+      !complaint ||
+      complaint.complaint_identifier.complaint_identifier !== id
+    ) {
+      if (id) {
+        switch (complaintType) {
+          case COMPLAINT_TYPES.ERS:
+            dispatch(
+              getAllegationComplaintByComplaintIdentifierSetUpdate(
+                id,
+                setUpdateComplaint,
+              ),
+            );
+            break;
+          case COMPLAINT_TYPES.HWCR:
+            dispatch(
+              getWildlifeComplaintByComplaintIdentifierSetUpdate(
+                id,
+                setUpdateComplaint,
+              ),
+            );
+            break;
+        }
+      }
+    }
+  }, [id, complaintType, complaint, dispatch]);
+
+  const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
+  const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
+  const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
+  const [complaintDescErrorMsg, setComplaintDescErrorMsg] =
+    useState<string>("");
+  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
+  const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
+  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
+  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
+  const [emailMsg, setEmailMsg] = useState<string>("");
+  const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
+  const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
+  const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
+
+  function noErrors() {
+    let noErrors = false;
+    if (
+      nocErrorMsg === "" &&
+      speciesErrorMsg === "" &&
+      statusErrorMsg === "" &&
+      complaintDescErrorMsg === "" &&
+      attractantsErrorMsg === "" &&
+      communityErrorMsg === "" &&
+      geoPointXMsg === "" &&
+      geoPointYMsg === "" &&
+      emailMsg === "" &&
+      primaryPhoneMsg === "" &&
+      secondaryPhoneMsg === "" &&
+      alternatePhoneMsg === ""
+    ) {
+      noErrors = true;
+    }
+    return noErrors;
+  }
+
   const {
     details,
     location,
@@ -886,150 +998,165 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
   }
 
   return (
-    <div>
-      {/* edit header block */}
+    <div className="comp-complaint-details">
+      <ToastContainer />
+      <ComplaintHeader
+        id={id}
+        complaintType={complaintType}
+        readOnly={readOnly}
+        editButtonClick={editButtonClick}
+        cancelButtonClick={cancelButtonClick}
+        saveButtonClick={saveButtonClick}
+      />
+      {readOnly && <CallDetails complaintType={complaintType} />}
+      {readOnly && (
+        <ComplaintLocation complaintType={complaintType} draggable={false} />
+      )}
+      {readOnly && <CallerInformation />}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
+        <SuspectWitnessDetails />
+      )}
+      {!readOnly && (
+      <>{/* edit header block */}
       <div id="complaint-error-notification" className={errorNotificationClass}>
         <img
           src={notificationInvalid}
           alt="error"
           className="filter-image-spacing"
         />
+        {/*
+         */}
         Errors in form
       </div>
       <div className="comp-complaint-header-edit-block">
-        <div className="comp-details-edit-container">
-          <div className="comp-details-edit-column">
-            {complaintType === COMPLAINT_TYPES.HWCR && (
-              <div
-                className="comp-details-label-input-pair"
-                id="nature-of-complaint-pair-id"
-              >
-                <label id="nature-of-complaint-label-id">
-                  Nature of Complaint<span className="required-ind">*</span>
-                </label>
-                <ValidationSelect
-                  id="nature-of-complaint-select-id"
-                  options={hwcrNatureOfComplaintCodes}
-                  placeholder="Select"
-                  className="comp-details-input"
-                  classNamePrefix="comp-select"
-                  defaultValue={selectedNatureOfComplaint}
-                  onChange={(e) => handleNOCChange(e)}
-                  errMsg={nocErrorMsg}
-                />
+            <div className="comp-details-edit-container">
+              <div className="comp-details-edit-column">
+                {complaintType === COMPLAINT_TYPES.HWCR && (
+                  <div
+                    className="comp-details-label-input-pair"
+                    id="nature-of-complaint-pair-id"
+                  >
+                    <label id="nature-of-complaint-label-id">
+                      Nature of Complaint<span className="required-ind">*</span>
+                    </label>
+                    <ValidationSelect
+                      id="nature-of-complaint-select-id"
+                      options={hwcrNatureOfComplaintCodes}
+                      placeholder="Select"
+                      className="comp-details-input"
+                      classNamePrefix="comp-select"
+                      defaultValue={selectedNatureOfComplaint}
+                      onChange={(e) => handleNOCChange(e)}
+                      errMsg={nocErrorMsg} />
+                  </div>
+                )}
+                {complaintType === COMPLAINT_TYPES.HWCR && (
+                  <div
+                    className="comp-details-label-input-pair"
+                    id="species-pair-id"
+                  >
+                    <label id="species-label-id">
+                      Species<span className="required-ind">*</span>
+                    </label>
+                    <ValidationSelect
+                      className="comp-details-input"
+                      options={speciesCodes}
+                      defaultValue={selectedSpecies}
+                      placeholder="Select"
+                      id="species-select-id"
+                      classNamePrefix="comp-select"
+                      onChange={(e) => handleSpeciesChange(e)}
+                      errMsg={speciesErrorMsg} />
+                  </div>
+                )}
+                {complaintType === COMPLAINT_TYPES.ERS && (
+                  <div
+                    className="comp-details-label-input-pair"
+                    id="violation-type-pair-id"
+                  >
+                    <label id="violation-label-id">
+                      Violation Type<span className="required-ind">*</span>
+                    </label>
+                    <Select
+                      className="comp-details-input"
+                      options={violationTypeCodes}
+                      defaultValue={selectedViolationTypeCode}
+                      placeholder="Select"
+                      id="violation-type-select-id"
+                      onChange={(e) => handleViolationTypeChange(e)}
+                      classNamePrefix="comp-select" />
+                  </div>
+                )}
+                <div className="comp-details-label-input-pair" id="status-pair-id">
+                  <label id="status-label-id">
+                    Status<span className="required-ind">*</span>
+                  </label>
+                  <ValidationSelect
+                    className="comp-details-input"
+                    options={complaintStatusCodes}
+                    defaultValue={selectedStatus}
+                    placeholder="Select"
+                    id="status-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handleStatusChange(e)}
+                    errMsg={statusErrorMsg} />
+                </div>
+                <div
+                  className="comp-details-label-input-pair"
+                  id="officer-assigned-pair-id"
+                >
+                  <label id="officer-assigned-select-label-id">
+                    Officer Assigned
+                  </label>
+                  <CompSelect
+                    id="officer-assigned-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handleAssignedOfficerChange(e)}
+                    className="comp-details-input"
+                    options={assignableOfficers}
+                    defaultOption={{ label: "None", value: "Unassigned" }}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={selectedAssignedOfficer} />
+                </div>
               </div>
-            )}
-            {complaintType === COMPLAINT_TYPES.HWCR && (
-              <div
-                className="comp-details-label-input-pair"
-                id="species-pair-id"
-              >
-                <label id="species-label-id">
-                  Species<span className="required-ind">*</span>
-                </label>
-                <ValidationSelect
-                  className="comp-details-input"
-                  options={speciesCodes}
-                  defaultValue={selectedSpecies}
-                  placeholder="Select"
-                  id="species-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(e) => handleSpeciesChange(e)}
-                  errMsg={speciesErrorMsg}
-                />
-              </div>
-            )}
-            {complaintType === COMPLAINT_TYPES.ERS && (
-              <div
-                className="comp-details-label-input-pair"
-                id="violation-type-pair-id"
-              >
-                <label id="violation-label-id">
-                  Violation Type<span className="required-ind">*</span>
-                </label>
-                <Select
-                  className="comp-details-input"
-                  options={violationTypeCodes}
-                  defaultValue={selectedViolationTypeCode}
-                  placeholder="Select"
-                  id="violation-type-select-id"
-                  onChange={(e) => handleViolationTypeChange(e)}
-                  classNamePrefix="comp-select"
-                />
-              </div>
-            )}
-            <div className="comp-details-label-input-pair" id="status-pair-id">
-              <label id="status-label-id">
-                Status<span className="required-ind">*</span>
-              </label>
-              <ValidationSelect
-                className="comp-details-input"
-                options={complaintStatusCodes}
-                defaultValue={selectedStatus}
-                placeholder="Select"
-                id="status-select-id"
-                classNamePrefix="comp-select"
-                onChange={(e) => handleStatusChange(e)}
-                errMsg={statusErrorMsg}
-              />
-            </div>
-            <div
-              className="comp-details-label-input-pair"
-              id="officer-assigned-pair-id"
-            >
-              <label id="officer-assigned-select-label-id">
-                Officer Assigned
-              </label>
-              <CompSelect
-                id="officer-assigned-select-id"
-                classNamePrefix="comp-select"
-                onChange={(e) => handleAssignedOfficerChange(e)}
-                className="comp-details-input"
-                options={assignableOfficers}
-                defaultOption={{ label: "None", value: "Unassigned" }}
-                placeholder="Select"
-                enableValidation={false}
-                value={selectedAssignedOfficer}
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-column comp-details-right-column">
-            <div
-              className="comp-details-label-input-pair"
-              id="date-time-pair-id"
-            >
-              <label id="date-time-logged-label-id">Date / Time Logged</label>
-              <div className="comp-details-input">
-                <i className="bi bi-calendar comp-margin-right-xs"></i>
-                {formatDate(loggedDate)}
-                <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
-                {formatTime(loggedDate)}
-              </div>
-            </div>
-            <div
-              className="comp-details-label-input-pair"
-              id="last-updated-pair-id"
-            >
-              <label id="last-updated-label-id">Last Updated</label>
-              <div className="comp-details-input">
-                <i className="bi bi-calendar comp-margin-right-xs"></i>
-                {formatDate(lastUpdated)}
-                <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
-                {formatTime(lastUpdated)}
-              </div>
-            </div>
-            <div
-              className="comp-details-label-input-pair"
-              id="created-by-pair-id"
-            >
-              <label id="created-by-label-id">Created By</label>
-              <div className="comp-padding-left-xs comp-padding-top-xs">
-                {createdBy}
+              <div className="comp-details-edit-column comp-details-right-column">
+                <div
+                  className="comp-details-label-input-pair"
+                  id="date-time-pair-id"
+                >
+                  <label id="date-time-logged-label-id">Date / Time Logged</label>
+                  <div className="comp-details-input">
+                    <i className="bi bi-calendar comp-margin-right-xs"></i>
+                    {formatDate(loggedDate)}
+                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
+                    {formatTime(loggedDate)}
+                  </div>
+                </div>
+                <div
+                  className="comp-details-label-input-pair"
+                  id="last-updated-pair-id"
+                >
+                  <label id="last-updated-label-id">Last Updated</label>
+                  <div className="comp-details-input">
+                    <i className="bi bi-calendar comp-margin-right-xs"></i>
+                    {formatDate(lastUpdated)}
+                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
+                    {formatTime(lastUpdated)}
+                  </div>
+                </div>
+                <div
+                  className="comp-details-label-input-pair"
+                  id="created-by-pair-id"
+                >
+                  <label id="created-by-label-id">Created By</label>
+                  <div className="comp-padding-left-xs comp-padding-top-xs">
+                    {createdBy}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* edit details block */}
       <div className="comp-complaint-details-block">
@@ -1437,6 +1564,31 @@ export const ComplaintDetailsEdit: FC<ComplaintDetailsProps> = ({
               </div>
               <div className="comp-details-edit-column" />
             </div>
+          </div>
+        </div>
+      )}
+      </>
+      )}
+      
+      {!readOnly && (
+        <div className="comp-box-footer">
+          <div className="comp-box-footer-actions">
+            <Button
+              id="details_screen_cancel_edit_button_footer"
+              title="Cancel Edit Complaint"
+              variant="outline-primary"
+              onClick={cancelButtonClick}
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              id="details_screen_cancel_save_button_footer"
+              title="Save Complaint"
+              variant="primary"
+              onClick={saveButtonClick}
+            >
+              <span>Save Changes</span>
+            </Button>
           </div>
         </div>
       )}

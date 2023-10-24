@@ -47,5 +47,22 @@ describe("Complaint List Functionality", () => {
         cy.get(".fixed-table-header").isInViewport();
       },
     );
+    
+    it("Verifies that the complaint link styles are applied correctly", () => {
+      cy.visit("/");
+      cy.waitForSpinner();
+
+      cy.get(complaintTypes[index]).click({ force: true });
+
+      // remove the open filter
+      cy.get("#comp-status-filter").click({ force: true });
+      cy.get("#comp-zone-filter").click({ force: true });
+
+
+      cy.get(".comp-nav-item-name-underline > a").should('have.css', 'text-decoration').should('include', 'underline');
+      cy.get(".comp-nav-item-name-underline > a").should('have.css', 'color').should('include', 'rgb(26, 90, 150)');
+
+    });
+
   });
 });

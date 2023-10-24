@@ -450,9 +450,9 @@ export const updateAllegationComplaint =
         { allegationComplaint: JSON.stringify(allegationComplaint) },
       );
 
-      patch<AllegationComplaint>(dispatch, updateParams);
+      await patch<AllegationComplaint>(dispatch, updateParams);
 
-      updateComplaintAssignee(
+      await updateComplaintAssignee(
         allegationComplaint.complaint_identifier.create_user_id,
         allegationComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.ERS,
@@ -539,9 +539,9 @@ export const updateWildlifeComplaint =
         { hwcrComplaint: JSON.stringify(hwcrComplaint) },
       );
 
-      patch<HwcrComplaint>(dispatch, updateParams);
+      await patch<HwcrComplaint>(dispatch, updateParams);
 
-      updateComplaintAssignee(
+      await updateComplaintAssignee(
         hwcrComplaint.complaint_identifier.create_user_id,
         hwcrComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.HWCR,

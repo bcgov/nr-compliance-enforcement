@@ -78,4 +78,12 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
+
+  it("validates breadcrumb styles", function () {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-007890");
+
+    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'text-decoration').should('include', 'underline');
+    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'color').should('include', 'rgb(255, 255, 255)');
+  });
+
 });
