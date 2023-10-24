@@ -328,18 +328,38 @@ export class HwcrComplaintService {
           qb.orWhere("referred_by_agency_code.short_description ILIKE :query", {
             query: `%${query}%`,
           });
+          qb.orWhere("referred_by_agency_code.long_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
           qb.orWhere("owned_by_agency_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("owned_by_agency_code.long_description ILIKE :query", {
             query: `%${query}%`,
           });
 
           qb.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
             query: `%${query}%`,
           });
+          qb.orWhere("cos_geo_org_unit.area_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("cos_geo_org_unit.zone_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("cos_geo_org_unit.offloc_name ILIKE :query", {
+            query: `%${query}%`,
+          });
 
           qb.orWhere("hwcr_complaint.other_attractants_text ILIKE :query", {
             query: `%${query}%`,
           });
+
           qb.orWhere("species_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("species_code.long_description ILIKE :query", {
             query: `%${query}%`,
           });
 
@@ -348,6 +368,9 @@ export class HwcrComplaintService {
           });
 
           qb.orWhere("attractant_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("attractant_code.long_description ILIKE :query", {
             query: `%${query}%`,
           });
 

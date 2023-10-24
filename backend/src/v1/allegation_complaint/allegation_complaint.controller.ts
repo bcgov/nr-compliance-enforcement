@@ -59,7 +59,8 @@ export class AllegationComplaintController {
     @Query("incidentReportedEnd") incidentReportedEnd: string,
     @Query("status") status,
     @Query('page') page: number, 
-    @Query('pageSize') pageSize: number) {
+    @Query('pageSize') pageSize: number,
+    @Query("query") query: string,) {
     return this.allegationComplaintService.search(
       sortColumn,
       sortOrder,
@@ -73,6 +74,7 @@ export class AllegationComplaintController {
       status,
       page,
       pageSize,
+      query
     );
   }
 

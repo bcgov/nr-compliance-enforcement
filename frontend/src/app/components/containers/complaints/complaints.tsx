@@ -188,7 +188,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           applySearchQuery={setSearch}
         />
         {viewType === "list" ? (
-          <ComplaintList type={complaintType} searchQuery={search}/>
+          <ComplaintList type={complaintType} searchQuery={search} />
         ) : (
           <ComplaintMap type={complaintType} />
         )}

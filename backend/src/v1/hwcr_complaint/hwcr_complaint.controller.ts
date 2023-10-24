@@ -64,7 +64,6 @@ export class HwcrComplaintController {
     @Query("pageSize") pageSize: number,
     @Query("query") query: string,
   ) {
-    console.log("page: ", page)
     return this.hwcrComplaintService.search(
       sortColumn,
       sortOrder,

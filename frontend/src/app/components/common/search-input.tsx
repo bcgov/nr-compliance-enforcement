@@ -1,5 +1,5 @@
-import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react";
-import { FormControl, InputGroup } from "react-bootstrap";
+import { ChangeEvent, FC, KeyboardEvent, useContext, useState, useEffect } from "react";
+import { InputGroup } from "react-bootstrap";
 import { ComplaintFilterContext } from "../../providers/complaint-filter-provider";
 import { getComplaints } from "../../store/reducers/complaints";
 import { generateComplaintRequestPayload } from "../containers/complaints/complaint-list";
@@ -21,6 +21,12 @@ const SearchInput: FC<Props> = ({
   const { state: filters } = useContext(ComplaintFilterContext);
 
   const [input, setInput] = useState<string>("");
+
+  useEffect(() => { 
+    if(!searchQuery){
+      setInput("")
+    } 
+  }, [searchQuery])
 
   const handleSearch = () => {
     if (input.length >= 3) {
@@ -69,45 +75,16 @@ const SearchInput: FC<Props> = ({
     setInput(value);
   };
 
-  // const handleSearch = (evt: any): void => {
-  //   const {
-  //     target: { value },
-  //   } = evt;
-
-  //   //-- apply the search query value and pass it up to the complaints component
-  //   //-- this is requried so that the pager has a query value it can use
-  //   applySearchQuery(value);
-
-  //   if (value.length >= 3) {
-  //     let payload = generateComplaintRequestPayload(
-  //       complaintType,
-  //       filters,
-  //       1,
-  //       50,
-  //       "incident_reported_utc_timestmp",
-  //       SORT_TYPES.DESC
-  //     );
-
-  //     payload = { ...payload, query: value };
-
-  //     dispatch(getComplaints(complaintType, payload));
-  //   }
-
-  //   if(!value){
-  //     applySearchQuery(undefined)
-  //   }
-  // };
-
   return (
     <InputGroup>
-      <FormControl
+      <input
         placeholder="Search..."
         aria-label="Search"
         className="comp-form-control"
         aria-describedby="basic-addon2"
         onChange={(evt) => handleInputChange(evt)}
         onKeyDown={(evt) => handleKeyPress(evt)}
-        defaultValue={input}
+        value={input}
       />
     </InputGroup>
   );
