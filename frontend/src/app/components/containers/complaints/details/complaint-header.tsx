@@ -93,7 +93,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             <li className="breadcrumb-item">
               <i className="bi bi-house-door"></i> Home
             </li>
-            <li className="breadcrumb-item">
+            <li className="breadcrumb-item comp-nav-item-name-inverted">
               <Link to={`/complaints/${complaintType}`}>
                 {complaintTypeToName(complaintType)}
               </Link>

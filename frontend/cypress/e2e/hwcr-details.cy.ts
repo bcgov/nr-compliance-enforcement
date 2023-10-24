@@ -123,4 +123,12 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
     cy.verifyMapMarkerExists();
   });
+
+  it("validates breadcrumb styles", function () {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-007023");
+
+    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'text-decoration').should('include', 'underline');
+    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'color').should('include', 'rgb(255, 255, 255)');
+  });
+
 });

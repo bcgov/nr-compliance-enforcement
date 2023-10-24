@@ -2,6 +2,7 @@ import { FC } from "react";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
 import { formatDateTime } from "../../../../common/methods";
+import { Link } from "react-router-dom";
 
 type Props = {
   type: string;
@@ -71,10 +72,12 @@ export const AllegationComplaintListItem: FC<Props> = ({
   return (
     <tr>
       <td
-        className="comp-cell-width-95 comp-header-left-border"
+        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name-underline"
         onClick={(event) => complaintClick(event, id)}
       >
-        {id}
+        <Link to={`/complaint/ERS/${id}`} id={id}>
+              {id}
+        </Link>
       </td>
       <td
         className="sortableHeader comp-cell-width-95 comp-header-vertical-border"
