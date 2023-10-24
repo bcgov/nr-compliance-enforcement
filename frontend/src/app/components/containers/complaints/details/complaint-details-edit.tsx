@@ -132,7 +132,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (noErrors()) {
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint = updateComplaint as HwcrComplaint;
-        dispatch(updateWildlifeComplaint(hwcrComplaint));
+        await dispatch(updateWildlifeComplaint(hwcrComplaint));
         dispatch(
           getWildlifeComplaintByComplaintIdentifierSetUpdate(
             hwcrComplaint.complaint_identifier.complaint_identifier,
@@ -141,7 +141,7 @@ export const ComplaintDetailsEdit: FC = () => {
         );
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint = updateComplaint as AllegationComplaint;
-        dispatch(updateAllegationComplaint(allegationComplaint));
+        await dispatch(updateAllegationComplaint(allegationComplaint));
         dispatch(
           getAllegationComplaintByComplaintIdentifierSetUpdate(
             allegationComplaint.complaint_identifier.complaint_identifier,
