@@ -563,7 +563,14 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
-    cy.verifyMapMarkerExists();
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
+    cy.verifyMapMarkerExists(true);
+    cy.get(".comp-complaint-details-alert").should("not.exist");
+  });
+
+  it("it has a map on screen with no marker", function () {
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-40004");
+    cy.verifyMapMarkerExists(false);
+    cy.get(".comp-complaint-details-alert").should("exist");
   });
 });
