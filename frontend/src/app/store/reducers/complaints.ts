@@ -26,8 +26,6 @@ import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import { updateComplaintAssignee } from "./officer";
-import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "../../common/toast";
 
