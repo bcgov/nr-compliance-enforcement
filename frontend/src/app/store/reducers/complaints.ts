@@ -26,8 +26,6 @@ import { Complaint } from "../../types/complaints/complaint";
 import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import { updateComplaintAssignee } from "./officer";
-import { UUID } from "crypto";
 import { Feature } from "../../types/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "../../common/toast";
 import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
@@ -409,16 +407,6 @@ export const createAllegationComplaint =
       );
       await post<AllegationComplaint>(dispatch, postParameters).then(async (res) => {
         const newAllegationComplaint: AllegationComplaint = res;
-        await updateComplaintAssignee(
-          allegationComplaint.complaint_identifier.create_user_id,
-          newAllegationComplaint.complaint_identifier.complaint_identifier,
-          COMPLAINT_TYPES.HWCR,
-          allegationComplaint.complaint_identifier.person_complaint_xref[0] !==
-            undefined
-            ? (allegationComplaint.complaint_identifier.person_complaint_xref[0]
-                .person_guid.person_guid as UUID)
-            : undefined,
-        );
 
         //-- get the created wildlife conflict
         const parameters = generateApiParameters(
@@ -451,17 +439,6 @@ export const updateAllegationComplaint =
       );
 
       await patch<AllegationComplaint>(dispatch, updateParams);
-
-      await updateComplaintAssignee(
-        allegationComplaint.complaint_identifier.create_user_id,
-        allegationComplaint.complaint_identifier.complaint_identifier,
-        COMPLAINT_TYPES.ERS,
-        allegationComplaint.complaint_identifier.person_complaint_xref[0] !==
-          undefined
-          ? (allegationComplaint.complaint_identifier.person_complaint_xref[0]
-              .person_guid.person_guid as UUID)
-          : undefined,
-      );
 
       //-- get the updated wildlife conflict
       const parameters = generateApiParameters(
@@ -498,16 +475,6 @@ export const createWildlifeComplaint =
       );
       await post<HwcrComplaint>(dispatch, postParameters).then(async (res) => {
         const newHwcrComplaint: HwcrComplaint = res;
-        await updateComplaintAssignee(
-          hwcrComplaint.complaint_identifier.create_user_id,
-          newHwcrComplaint.complaint_identifier.complaint_identifier,
-          COMPLAINT_TYPES.HWCR,
-          hwcrComplaint.complaint_identifier.person_complaint_xref[0] !==
-            undefined
-            ? (hwcrComplaint.complaint_identifier.person_complaint_xref[0]
-                .person_guid.person_guid as UUID)
-            : undefined,
-        );
 
         //-- get the created wildlife conflict
         const parameters = generateApiParameters(
@@ -540,17 +507,6 @@ export const updateWildlifeComplaint =
       );
 
       await patch<HwcrComplaint>(dispatch, updateParams);
-
-      await updateComplaintAssignee(
-        hwcrComplaint.complaint_identifier.create_user_id,
-        hwcrComplaint.complaint_identifier.complaint_identifier,
-        COMPLAINT_TYPES.HWCR,
-        hwcrComplaint.complaint_identifier.person_complaint_xref[0] !==
-          undefined
-          ? (hwcrComplaint.complaint_identifier.person_complaint_xref[0]
-              .person_guid.person_guid as UUID)
-          : undefined,
-      );
 
       //-- get the updated wildlife conflict
       const parameters = generateApiParameters(

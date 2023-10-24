@@ -7,11 +7,13 @@ import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Leaflet from "leaflet";
+import NonDismissibleAlert from "../common/non-dismissible-alert";
 
 type Props = {
   coordinates: { lat: number; lng: number };
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
+  hideMarker?: boolean;
 };
 
 /**
@@ -22,6 +24,7 @@ const LeafletMapWithPoint: FC<Props> = ({
   coordinates,
   draggable,
   onMarkerMove,
+  hideMarker,
 }) => {
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />,
@@ -73,6 +76,10 @@ const LeafletMapWithPoint: FC<Props> = ({
   };
 
   return (
+    <>
+    {hideMarker && (
+      <NonDismissibleAlert/>
+    )}
     <MapContainer
       id="map"
       center={markerPosition}
@@ -82,14 +89,16 @@ const LeafletMapWithPoint: FC<Props> = ({
     >
       <Centerer />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {!hideMarker && (
       <Marker
         data-testid="complaint-location-marker"
         position={markerPosition}
         icon={customMarkerIcon}
         draggable={draggable}
         eventHandlers={{ dragend: handleMarkerDragEnd }}
-      ></Marker>
+      ></Marker>)}
     </MapContainer>
+    </>
   );
 };
 

@@ -43,7 +43,7 @@ Cypress.Commands.add("kcLogin", () => {
     const authBaseUrl = Cypress.env("auth_base_url");
     const realm = Cypress.env("auth_realm");
     const client_id = Cypress.env("auth_client_id");
-    const redirect_uri = Cypress.config("baseUrl") + "/login";
+    const redirect_uri = Cypress.config("baseUrl");
 
     const scope = "openid";
     const state = "123456";
@@ -103,14 +103,6 @@ Cypress.Commands.add("kcLogin", () => {
         cy.get('[name="btnSubmit"]').click();
       } else {
         // different origin, so handle CORS errors
-        cy.visit("/");
-        cy.on("uncaught:exception", (e) => {
-          if (e.message.includes("Unexpected")) {
-            // we expected this error, so let's ignore it
-            // and let the test continue
-            return false;
-          }
-        });
         cy.origin(
           Cypress.env("keycloak_login_url"),
           { args: credentials },
@@ -123,7 +115,9 @@ Cypress.Commands.add("kcLogin", () => {
             cy.get('[name="password"]').type(password, { log: false });
             cy.get('[name="btnSubmit"]').click();
           },
-        );
+        ).then(() => {
+          cy.waitForSpinner();
+        });
       }
     });
   });
@@ -146,9 +140,9 @@ Cypress.Commands.add("kcLogout", () => {
   });
 });
 
-Cypress.Commands.add("verifyMapMarkerExists", () => {
+Cypress.Commands.add("verifyMapMarkerExists", (existIndicator: boolean) => {
   cy.get(".leaflet-container").should("exist");
-  cy.get(".leaflet-marker-icon").should("exist");
+  cy.get(".leaflet-marker-icon").should(existIndicator ? "exist" : "not.exist");
 });
 
 Cypress.Commands.add(
