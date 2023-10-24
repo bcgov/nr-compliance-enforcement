@@ -8,7 +8,7 @@ describe("Complaint Create Page spec - Create View", () => {
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves ---- testing",
     location: "644 Pine Street ---- testing",
     locationDescription: " ---- testing",
-    incidentDate: "2022-12-21",
+    incidentDateDay: "19",
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
@@ -57,6 +57,7 @@ describe("Complaint Create Page spec - Create View", () => {
     //start create
     cy.navigateToCreateScreen();
 
+    // select complaint type
     cy.selectItemById("complaint-type-select-id", "Human Wildlife Conflict");
     cy.get("#caller-name-id").clear().type(createCallerInformation.name);
     cy.get("#complaint-address-id")
@@ -93,11 +94,7 @@ describe("Complaint Create Page spec - Create View", () => {
       .type(createCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.get("#complaint-incident-time")
-      .click({ force: true })
-      .get(".react-datepicker__day--019")
-      .should("exist")
-      .click({ force: true });
+    cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
 
     cy.selectItemById(
       "attractants-select-id",
@@ -162,9 +159,9 @@ describe("Complaint Create Page spec - Create View", () => {
     );
 
     //Commented out until COMPENF-843 is Fixed
-    //cy.get('div[id="complaint-incident-date-time"]').contains(
-    //  originalCallDetails.incidentDate
-    //);
+    cy.get('div[id="complaint-incident-date-time"]').contains(
+      createCallDetails.incidentDateDay
+    );
 
     cy.get('p[id="comp-details-description"]').contains(
       createCallDetails.description,
@@ -180,12 +177,11 @@ describe("Complaint Create Page spec - Create View", () => {
 
     cy.get('span[id="comp-details-region"]').contains(createCallDetails.region);
 
-    //Commented out until COMPENF-987 is Fixed
-    //cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-    //  expect($defaultValue.eq(0)).to.contain("Garbage");
-    //  expect($defaultValue.eq(1)).to.contain("Freezer");
-    //  expect($defaultValue.eq(2)).to.contain("Compost");
-    //});
+    cy.get(".comp-attactant-badge").then(function ($defaultValue) {
+      expect($defaultValue.eq(0)).to.contain("Livestock");
+      expect($defaultValue.eq(1)).to.contain("BBQ");
+      expect($defaultValue.eq(2)).to.contain("Beehive");
+    });
     //end verifying changes are created
   });
 });

@@ -8,7 +8,8 @@ describe("Complaint Create Page spec - Create View", () => {
           "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
         location: "Keefes Landing Rd and Danskin Rd ---- testing",
         locationDescription: "tester call description 8 ---- testing",
-        incidentDate: "2030-04-13",
+        incidentDateDay: "19",
+        incidentTime: "13:45",
         xCoord: "-118",
         yCoord: "49",
         community: "Blaeberry",
@@ -93,15 +94,11 @@ describe("Complaint Create Page spec - Create View", () => {
         .type(createCallDetails.description, { delay: 0 });
       cy.get("#complaint-description-textarea-id").click({ force: true });
   
-      cy.get("#complaint-incident-time")
-        .click({ force: true })
-        .get(".react-datepicker__day--019")
-        .should("exist")
-        .click({ force: true });
+      cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
 
-        cy.selectItemById("violation-in-progress-select-id", createCallDetails.violationInProgressString);
+      cy.selectItemById("violation-in-progress-select-id", createCallDetails.violationInProgressString);
 
-        cy.selectItemById("violation-observed-select-id", createCallDetails.violationObservedString);
+      cy.selectItemById("violation-observed-select-id", createCallDetails.violationObservedString);
   
       cy.selectItemById("community-select-id", createCallDetails.community);
   
@@ -150,10 +147,13 @@ describe("Complaint Create Page spec - Create View", () => {
         createCallDetails.locationDescription,
       );
   
-      //Commented out until COMPENF-843 is Fixed
-      //cy.get('div[id="complaint-incident-date-time"]').contains(
-      //  originalCallDetails.incidentDate
-      //);
+      cy.get('div[id="complaint-incident-date-time"]').contains(
+        createCallDetails.incidentDateDay
+      );
+
+      cy.get('div[id="complaint-incident-date-time"]').contains(
+        createCallDetails.incidentTime
+      );
   
       cy.get('p[id="comp-details-description"]').should(
         "have.text",
@@ -178,12 +178,6 @@ describe("Complaint Create Page spec - Create View", () => {
   
       cy.get('span[id="comp-details-region"]').contains(createCallDetails.region);
   
-      //Commented out until COMPENF-987 is Fixed
-      //cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-      //  expect($defaultValue.eq(0)).to.contain("Garbage");
-      //  expect($defaultValue.eq(1)).to.contain("Freezer");
-      //  expect($defaultValue.eq(2)).to.contain("Compost");
-      //});
       //end verifying changes are created
     });
   });

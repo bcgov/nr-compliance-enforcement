@@ -10,6 +10,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.enableCors();
+  process.env.TZ='UTC';
   const config = new DocumentBuilder()
     .setTitle("Compliance and Enforcement API")
     .setDescription("The Complicance and Enforcement API")

@@ -450,9 +450,9 @@ export const updateAllegationComplaint =
         { allegationComplaint: JSON.stringify(allegationComplaint) },
       );
 
-      patch<AllegationComplaint>(dispatch, updateParams);
+      await patch<AllegationComplaint>(dispatch, updateParams);
 
-      updateComplaintAssignee(
+      await updateComplaintAssignee(
         allegationComplaint.complaint_identifier.create_user_id,
         allegationComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.ERS,
@@ -539,9 +539,9 @@ export const updateWildlifeComplaint =
         { hwcrComplaint: JSON.stringify(hwcrComplaint) },
       );
 
-      patch<HwcrComplaint>(dispatch, updateParams);
+      await patch<HwcrComplaint>(dispatch, updateParams);
 
-      updateComplaintAssignee(
+      await updateComplaintAssignee(
         hwcrComplaint.complaint_identifier.create_user_id,
         hwcrComplaint.complaint_identifier.complaint_identifier,
         COMPLAINT_TYPES.HWCR,
@@ -821,7 +821,7 @@ export const selectComplaintDetails =
           detail_text,
           location_summary_text,
           location_detailed_text,
-          incident_datetime,
+          incident_utc_datetime,
           location_geometry_point: { coordinates },
           cos_geo_org_unit: {
             area_name,
@@ -837,7 +837,7 @@ export const selectComplaintDetails =
           details: detail_text,
           location: location_summary_text,
           locationDescription: location_detailed_text,
-          incidentDateTime: incident_datetime,
+          incidentDateTime: incident_utc_datetime,
           coordinates,
           area: area_name,
           region: region_name,
