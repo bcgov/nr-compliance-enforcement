@@ -154,7 +154,7 @@ export class AllegationComplaintService {
     status?: string,
     page?: number,
     pageSize?: number,
-    query?: string
+    query?: string,
   ): Promise<{ complaints: AllegationComplaint[]; totalCount: number }> {
     let skip: number;
     if (page && pageSize) {
