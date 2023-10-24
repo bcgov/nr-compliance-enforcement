@@ -106,17 +106,29 @@ describe("Testing: HwcrComplaintService", () => {
     const status = null;
     const page = null;
     const pageSize = null;
+    const searchQuery = "test";
 
-    const payload = { sortColumn, sortOrder, search: "test" } as SearchPayload;
-
-    const result = await service.complaintSearch(payload);
+    const result = await service.search(
+      sortColumn,
+      sortOrder,
+      community,
+      zone,
+      region,
+      officerAssigned,
+      natureOfComplaint,
+      speciesCode,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status,
+      page,
+      pageSize,
+      searchQuery
+    );
 
     expect(result).not.toBe(null);
 
-    const { complaints, totalCount} = result;
-    expect(complaints.length).toBeGreaterThanOrEqual(1)
-    expect(totalCount).toBeGreaterThan(0)
-    
+    const { complaints, totalCount } = result;
+    expect(complaints.length).toBeGreaterThanOrEqual(1);
+    expect(totalCount).toBeGreaterThan(0);
   });
 });
-

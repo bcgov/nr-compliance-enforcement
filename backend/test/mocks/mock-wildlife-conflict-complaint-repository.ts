@@ -41,6 +41,7 @@ const createQueryBuilder: any = {
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     orWhere: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(manyItems),
     getOne: jest.fn().mockResolvedValue(singleItem),
     getQuery: jest.fn(),
