@@ -27,9 +27,61 @@ import ComplaintPagination from "../../common/complaint-pagination";
 
 type Props = {
   type: string;
+  searchQuery?: string;
 };
 
-export const ComplaintList: FC<Props> = ({ type }) => {
+export const generateComplaintRequestPayload = (
+  complaintType: string,
+  filters: ComplaintFilters,
+  page: number,
+  pageSize: number,
+  sortColumn: string,
+  sortOrder: string
+): ComplaintRequestPayload => {
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+  } = filters;
+
+  const common = {
+    sortColumn,
+    sortOrder,
+    regionCodeFilter: region,
+    zoneCodeFilter: zone,
+    areaCodeFilter: community,
+    officerFilter: officer,
+    startDateFilter: startDate,
+    endDateFilter: endDate,
+    complaintStatusFilter: status,
+    page,
+    pageSize,
+  };
+
+  switch (complaintType) {
+    case COMPLAINT_TYPES.ERS:
+      return {
+        ...common,
+        violationFilter: violationType,
+      } as ComplaintRequestPayload;
+    case COMPLAINT_TYPES.HWCR:
+    default:
+      return {
+        ...common,
+        speciesCodeFilter: species,
+        natureOfComplaintFilter: natureOfComplaint,
+      } as ComplaintRequestPayload;
+  }
+};
+
+export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
   const navigate = useNavigate();
@@ -47,69 +99,26 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize); // Default to 10 results per page
 
-  const generateComplaintRequestPayload = (
-    complaintType: string,
-    filters: ComplaintFilters,
-    page: number,
-    pageSize: number,
-  ): ComplaintRequestPayload => {
-    const {
-      region,
-      zone,
-      community,
-      officer,
-      startDate,
-      endDate,
-      status,
-      species,
-      natureOfComplaint,
-      violationType,
-    } = filters;
-
-    const common = {
-      sortColumn: sortKey,
-      sortOrder: sortDirection,
-      regionCodeFilter: region,
-      zoneCodeFilter: zone,
-      areaCodeFilter: community,
-      officerFilter: officer,
-      startDateFilter: startDate,
-      endDateFilter: endDate,
-      complaintStatusFilter: status,
-      page,
-      pageSize,
-    };
-
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return {
-          ...common,
-          violationFilter: violationType,
-        } as ComplaintRequestPayload;
-      case COMPLAINT_TYPES.HWCR:
-      default:
-        return {
-          ...common,
-          speciesCodeFilter: species,
-          natureOfComplaintFilter: natureOfComplaint,
-        } as ComplaintRequestPayload;
-    }
-  };
-
   const defaultZone = useAppSelector(selectDefaultZone);
 
   useEffect(() => {
     if (defaultZone) {
-      const payload = generateComplaintRequestPayload(
+      let payload = generateComplaintRequestPayload(
         type,
         filters,
         page,
         pageSize,
+        sortKey,
+        sortDirection
       );
+
+      if (searchQuery) {
+        payload = { ...payload, query: searchQuery };
+      }
 
       dispatch(getComplaints(type, payload));
     }
-  }, [filters, sortKey, sortDirection, page, pageSize]);
+  }, [filters, sortKey, sortDirection, page, pageSize, searchQuery]);
 
   useEffect(() => {
     if (defaultPageSize) {
@@ -127,7 +136,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {
       setSortDirection(
-        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC,
+        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC
       );
     } else {
       setSortKey(sortInput);
@@ -137,7 +146,7 @@ export const ComplaintList: FC<Props> = ({ type }) => {
 
   const handleComplaintClick = (
     e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
-    id: string,
+    id: string
   ) => {
     e.preventDefault();
 

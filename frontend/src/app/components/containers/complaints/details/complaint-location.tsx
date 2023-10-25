@@ -32,11 +32,16 @@ export const ComplaintLocation: FC<Props> = ({
 
   useEffect(() => {
     if (area) {
-      dispatch(getComplaintLocation(area, location));
+      // geocode the complaint using the area.  Used in case there are no coordinates
+      dispatch(getComplaintLocation(area));
     }
   }, [area, dispatch, location]);
 
   const complaintLocation = useAppSelector(selectComplaintLocation);
+  
+  // if the complaint coordinates have been entered, then display the marker on the map.  
+  // If there are no coordinates, don't display the marker on the map
+  let hideMarker: boolean = false;
 
   // the lat and long of the marker we need to display on the map
   // Initialized to 0.  This will either be populated using the optionally supplied coordinates
@@ -47,6 +52,7 @@ export const ComplaintLocation: FC<Props> = ({
     lat = +coordinates[Coordinates.Latitude];
     lng = +coordinates[Coordinates.Longitude];
   } else if (complaintLocation) {
+    hideMarker = true
     lat =
       complaintLocation?.features[0]?.geometry?.coordinates[
         Coordinates.Latitude
@@ -73,6 +79,7 @@ export const ComplaintLocation: FC<Props> = ({
           coordinates={{ lat: lat, lng: lng }}
           draggable={draggable}
           onMarkerMove={onMarkerMove}
+          hideMarker={hideMarker}
         />
       </div>
     </div>

@@ -48,6 +48,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const defaultZone = useAppSelector(selectDefaultZone);
 
+  //-- this is used to apply the search to the pager component
+  const [search, setSearch] = useState("");
+
   const complaintTypes: Array<{ name: string; id: string; code: string }> =
     Object.keys(COMPLAINT_TYPES).map((item) => {
       return {
@@ -81,6 +84,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         { filter: "status", value: { value: "OPEN", label: "Open" } },
       ];
     }
+
+    setSearch("")
+
     filterDispatch(resetFilters(payload));
   };
 
@@ -177,9 +183,12 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
+          complaintType={complaintType}
+          searchQuery={search}
+          applySearchQuery={setSearch}
         />
         {viewType === "list" ? (
-          <ComplaintList type={complaintType} />
+          <ComplaintList type={complaintType} searchQuery={search} />
         ) : (
           <ComplaintMap type={complaintType} />
         )}

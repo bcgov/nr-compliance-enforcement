@@ -1,15 +1,16 @@
-export interface ComplaintQueryParams {
+export interface SearchPayload {
   sortColumn: string;
   sortOrder: string;
-  region?: string;
-  zone?: string;
   community?: string;
+  zone?: string;
+  region?: string;
   officerAssigned?: string;
   natureOfComplaint?: string;
   speciesCode?: string;
   incidentReportedStart?: Date;
   incidentReportedEnd?: Date;
-  violationCode?: string;
   status?: string;
+  page?: number;
+  pageSize?: number;
   query?: string;
 }

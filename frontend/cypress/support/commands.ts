@@ -140,9 +140,9 @@ Cypress.Commands.add("kcLogout", () => {
   });
 });
 
-Cypress.Commands.add("verifyMapMarkerExists", () => {
+Cypress.Commands.add("verifyMapMarkerExists", (existIndicator: boolean) => {
   cy.get(".leaflet-container").should("exist");
-  cy.get(".leaflet-marker-icon").should("exist");
+  cy.get(".leaflet-marker-icon").should(existIndicator ? "exist" : "not.exist");
 });
 
 Cypress.Commands.add(

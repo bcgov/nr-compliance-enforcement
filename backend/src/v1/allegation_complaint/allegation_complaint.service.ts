@@ -8,7 +8,7 @@ import { CreateAllegationComplaintDto } from "./dto/create-allegation_complaint.
 import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.dto";
 import { AllegationComplaint } from "./entities/allegation_complaint.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository, SelectQueryBuilder } from "typeorm";
+import { Brackets, DataSource, Repository } from "typeorm";
 import { UUID, randomUUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
 import {
@@ -17,11 +17,10 @@ import {
   ZoneAtAGlanceStats,
 } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { Officer } from "../officer/entities/officer.entity";
-import { Office } from "../office/entities/office.entity";
+import { Officer } from '../officer/entities/officer.entity';
+import { Office } from '../office/entities/office.entity';
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { AllegationSearchOptions } from '../../types/complaints/allegation_search_options';
 
 @Injectable()
 export class AllegationComplaintService {
@@ -47,44 +46,32 @@ export class AllegationComplaintService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const createAllegationComplaintDto: CreateAllegationComplaintDto =
-      JSON.parse(allegationComplaint);
+    const createAllegationComplaintDto: CreateAllegationComplaintDto = JSON.parse(allegationComplaint);
     createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
-    createAllegationComplaintDto.update_utc_timestamp =
-      createAllegationComplaintDto.create_utc_timestamp = new Date();
+    createAllegationComplaintDto.update_utc_timestamp = createAllegationComplaintDto.create_utc_timestamp = new Date();
     let newAllegationComplaintString;
     try {
       const complaint: Complaint = await this.complaintService.create(
         JSON.stringify(createAllegationComplaintDto.complaint_identifier),
         queryRunner
       );
-      createAllegationComplaintDto.create_user_id =
-        createAllegationComplaintDto.update_user_id = complaint.create_user_id;
-      createAllegationComplaintDto.complaint_identifier.complaint_identifier =
-        complaint.complaint_identifier;
-      newAllegationComplaintString =
-        await this.allegationComplaintsRepository.create(
-          createAllegationComplaintDto
-        );
+      createAllegationComplaintDto.create_user_id = createAllegationComplaintDto.update_user_id = complaint.create_user_id;
+      createAllegationComplaintDto.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
+      newAllegationComplaintString = await this.allegationComplaintsRepository.create(
+        createAllegationComplaintDto
+      );
       let newAllegationComplaint: AllegationComplaint;
       newAllegationComplaint = <AllegationComplaint>(
         await queryRunner.manager.save(newAllegationComplaintString)
       );
 
-      if (
-        createAllegationComplaintDto.complaint_identifier
-          .person_complaint_xref?.[0]
-      ) {
-        createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
-          newAllegationComplaint.complaint_identifier;
-        await this.personComplaintXrefService.assignOfficer(
-          queryRunner,
-          newAllegationComplaint.complaint_identifier.complaint_identifier,
-          createAllegationComplaintDto.complaint_identifier
-            .person_complaint_xref[0]
-        );
-      }
 
+      if(createAllegationComplaintDto.complaint_identifier.person_complaint_xref?.[0])
+        {
+          createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier = newAllegationComplaint.complaint_identifier;
+          await this.personComplaintXrefService.assignOfficer(queryRunner, newAllegationComplaint.complaint_identifier.complaint_identifier, createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+      
       await queryRunner.commitTransaction();
     } catch (err) {
       this.logger.error(err);
@@ -149,9 +136,7 @@ export class AllegationComplaintService {
       .orderBy(sortString, sortOrderString)
       .addOrderBy(
         "complaint_identifier.incident_reported_utc_timestmp",
-        sortColumn === "incident_reported_utc_timestmp"
-          ? sortOrderString
-          : "DESC"
+        sortColumn === "incident_reported_utc_timestmp" ? sortOrderString : "DESC"
       )
       .getMany();
   }
@@ -159,9 +144,17 @@ export class AllegationComplaintService {
   async search(
     sortColumn: string,
     sortOrder: string,
-    options: AllegationSearchOptions,
+    community?: string,
+    zone?: string,
+    region?: string,
+    officerAssigned?: string,
+    violationCode?: string,
+    incidentReportedStart?: string,
+    incidentReportedEnd?: string,
+    status?: string,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
+    query?: string,
   ): Promise<{ complaints: AllegationComplaint[]; totalCount: number }> {
     let skip: number;
     if (page && pageSize) {
@@ -232,94 +225,6 @@ export class AllegationComplaintService {
           ? sortOrderString
           : "DESC"
       );
-
-    this.searchQueryBuilder(
-      queryBuilder,
-      options
-    );
-
-    if (skip !== undefined) {
-      // a page number was supplied, limit the results returned
-      const [data, totalCount] = await queryBuilder
-        .skip(skip)
-        .take(pageSize)
-        .getManyAndCount();
-      return { complaints: data, totalCount: totalCount };
-    } else {
-      // not paginating results, just get them all
-      const [data, totalCount] = await queryBuilder.getManyAndCount();
-      return { complaints: data, totalCount: totalCount };
-    }
-  }
-
-  async searchMap(
-    sortColumn: string,
-    sortOrder: string,
-    options: AllegationSearchOptions
-  ): Promise<AllegationComplaint[]> {
-    // how many records to skip based on the current page and page size
-
-    const queryBuilder = this.allegationComplaintsRepository
-      .createQueryBuilder("allegation_complaint")
-      .leftJoinAndSelect(
-        "allegation_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoin("allegation_complaint.violation_code", "violation_code")
-      .leftJoin(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoin(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoin(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoin("complaint_identifier.cos_geo_org_unit", "cos_geo_org_unit")
-      .leftJoin(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoin(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      );
-
-    this.searchQueryBuilder(
-      queryBuilder,
-      options
-    );
-
-    queryBuilder.andWhere(
-      "ST_X(complaint_identifier.location_geometry_point) <> 0"
-    );
-    queryBuilder.andWhere(
-      "ST_Y(complaint_identifier.location_geometry_point) <> 0"
-    );
-    return queryBuilder.getMany();
-  }
-
-  private searchQueryBuilder(
-    queryBuilder: SelectQueryBuilder<AllegationComplaint>,
-    options: AllegationSearchOptions
-  ) {
-
-    const {
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status,
-    } = options;
-
     if (community !== null && community !== undefined && community !== "") {
       queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
         Community: community,
@@ -387,6 +292,238 @@ export class AllegationComplaintService {
         { Status: status }
       );
     }
+
+    //-- apply search query
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.orWhere("complaint_identifier.complaint_identifier ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.detail_text ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_address ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_email ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_phone_1 ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_phone_2 ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("complaint_identifier.caller_phone_3 ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere(
+            "complaint_identifier.location_summary_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
+          qb.orWhere(
+            "complaint_identifier.location_detailed_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
+          qb.orWhere(
+            "complaint_identifier.referred_by_agency_other_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
+
+          qb.orWhere("referred_by_agency_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("referred_by_agency_code.long_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("owned_by_agency_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("owned_by_agency_code.long_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("cos_geo_org_unit.area_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("cos_geo_org_unit.zone_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("cos_geo_org_unit.offloc_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+        
+          qb.orWhere(
+            "allegation_complaint.suspect_witnesss_dtl_text ILIKE :query",
+            {
+              query: `%${query}%`,
+            }
+          );
+
+          qb.orWhere("violation_code.short_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("violation_code.long_description ILIKE :query", {
+            query: `%${query}%`,
+          });
+
+          qb.orWhere("person.first_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+          qb.orWhere("person.last_name ILIKE :query", {
+            query: `%${query}%`,
+          });
+        })
+      );
+    }
+
+    if (skip !== undefined) {
+      // a page number was supplied, limit the results returned
+      const [data, totalCount] = await queryBuilder
+        .skip(skip)
+        .take(pageSize)
+        .getManyAndCount();
+      return { complaints: data, totalCount: totalCount };
+    } else {
+      // not paginating results, just get them all
+      const [data, totalCount] = await queryBuilder.getManyAndCount();
+      return { complaints: data, totalCount: totalCount };
+    }
+  }
+
+  async searchMap(
+    sortColumn: string,
+    sortOrder: string,
+    community?: string,
+    zone?: string,
+    region?: string,
+    officerAssigned?: string,
+    violationCode?: string,
+    incidentReportedStart?: string,
+    incidentReportedEnd?: string,
+    status?: string
+  ): Promise<AllegationComplaint[]> {
+    // how many records to skip based on the current page and page size
+
+    const queryBuilder = this.allegationComplaintsRepository
+      .createQueryBuilder("allegation_complaint")
+      .leftJoinAndSelect(
+        "allegation_complaint.complaint_identifier",
+        "complaint_identifier"
+      )
+      .leftJoin("allegation_complaint.violation_code", "violation_code")
+      .leftJoin(
+        "complaint_identifier.complaint_status_code",
+        "complaint_status_code"
+      )
+      .leftJoin(
+        "complaint_identifier.referred_by_agency_code",
+        "referred_by_agency_code"
+      )
+      .leftJoin(
+        "complaint_identifier.owned_by_agency_code",
+        "owned_by_agency_code"
+      )
+      .leftJoin("complaint_identifier.cos_geo_org_unit", "cos_geo_org_unit")
+      .leftJoin(
+        "complaint_identifier.person_complaint_xref",
+        "person_complaint_xref",
+        "person_complaint_xref.active_ind = true"
+      )
+      .leftJoin(
+        "person_complaint_xref.person_guid",
+        "person",
+        "person_complaint_xref.active_ind = true"
+      );
+    if (community !== null && community !== undefined && community !== "") {
+      queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
+        Community: community,
+      });
+    }
+    if (zone !== null && zone !== undefined && zone !== "") {
+      queryBuilder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
+        Zone: zone,
+      });
+    }
+    if (region !== null && region !== undefined && region !== "") {
+      queryBuilder.andWhere("cos_geo_org_unit.region_code = :Region", {
+        Region: region,
+      });
+    }
+    if (
+      officerAssigned !== null &&
+      officerAssigned !== undefined &&
+      officerAssigned !== "" &&
+      officerAssigned !== "null"
+    ) {
+      queryBuilder.andWhere(
+        "person_complaint_xref.person_complaint_xref_code = :Assignee",
+        { Assignee: "ASSIGNEE" }
+      );
+      queryBuilder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
+        PersonGuid: officerAssigned,
+      });
+    } else if (officerAssigned === "null") {
+      queryBuilder.andWhere("person_complaint_xref.person_guid IS NULL");
+    }
+    if (
+      violationCode !== null &&
+      violationCode !== undefined &&
+      violationCode !== ""
+    ) {
+      queryBuilder.andWhere(
+        "allegation_complaint.violation_code = :ViolationCode",
+        { ViolationCode: violationCode }
+      );
+    }
+    if (
+      incidentReportedStart !== null &&
+      incidentReportedStart !== undefined &&
+      incidentReportedStart !== ""
+    ) {
+      queryBuilder.andWhere(
+        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
+        { IncidentReportedStart: incidentReportedStart }
+      );
+    }
+    if (
+      incidentReportedEnd !== null &&
+      incidentReportedEnd !== undefined &&
+      incidentReportedEnd !== ""
+    ) {
+      queryBuilder.andWhere(
+        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
+        { IncidentReportedEnd: incidentReportedEnd }
+      );
+    }
+    if (status !== null && status !== undefined && status !== "") {
+      queryBuilder.andWhere(
+        "complaint_identifier.complaint_status_code = :Status",
+        { Status: status }
+      );
+    }
+
+    queryBuilder.andWhere(
+      "ST_X(complaint_identifier.location_geometry_point) <> 0"
+    );
+    queryBuilder.andWhere(
+      "ST_Y(complaint_identifier.location_geometry_point) <> 0"
+    );
+    return queryBuilder.getMany();      
   }
 
   async findOne(id: any): Promise<AllegationComplaint> {
@@ -435,49 +572,40 @@ export class AllegationComplaintService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    try {
-      const updateAllegationComplaintDto: UpdateAllegationComplaintDto =
-        JSON.parse(updateAllegationComplaint);
-
-      const updateData = {
-        allegation_complaint_guid:
-          updateAllegationComplaintDto.allegation_complaint_guid,
-        in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
-        observed_ind: updateAllegationComplaintDto.observed_ind,
-        violation_code: updateAllegationComplaintDto.violation_code,
-        suspect_witnesss_dtl_text:
-          updateAllegationComplaintDto.suspect_witnesss_dtl_text,
-      };
-      await this.allegationComplaintsRepository.update(
-        { allegation_complaint_guid },
-        updateData
-      );
-      await this.complaintService.updateComplex(
-        updateAllegationComplaintDto.complaint_identifier.complaint_identifier,
-        JSON.stringify(updateAllegationComplaintDto.complaint_identifier)
-      );
-      //Note: this needs a refactor for when we have more types of persons being loaded in
-      if (
-        updateAllegationComplaintDto.complaint_identifier
-          .person_complaint_xref[0] !== undefined
-      ) {
-        await this.personComplaintXrefService.assignOfficer(
-          queryRunner,
-          updateAllegationComplaintDto.complaint_identifier
-            .complaint_identifier,
-          updateAllegationComplaintDto.complaint_identifier
-            .person_complaint_xref[0]
+    try
+    {
+      const updateAllegationComplaintDto: UpdateAllegationComplaintDto = JSON.parse(updateAllegationComplaint);
+      
+      const updateData = 
+        {
+          allegation_complaint_guid: updateAllegationComplaintDto.allegation_complaint_guid,
+          in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
+          observed_ind: updateAllegationComplaintDto.observed_ind,
+          violation_code: updateAllegationComplaintDto.violation_code,
+          suspect_witnesss_dtl_text: updateAllegationComplaintDto.suspect_witnesss_dtl_text,
+        };
+        await this.allegationComplaintsRepository.update(
+          { allegation_complaint_guid },
+          updateData
         );
+        await this.complaintService.updateComplex(updateAllegationComplaintDto.complaint_identifier.complaint_identifier, JSON.stringify(updateAllegationComplaintDto.complaint_identifier));
+        //Note: this needs a refactor for when we have more types of persons being loaded in
+        if(updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0] !== undefined)
+        {
+          await this.personComplaintXrefService.assignOfficer(queryRunner, updateAllegationComplaintDto.complaint_identifier.complaint_identifier, updateAllegationComplaintDto.complaint_identifier.person_complaint_xref[0]);
+        }
+      } 
+      catch (err) {
+        this.logger.error(err);
+        await queryRunner.rollbackTransaction();
+        throw new BadRequestException(err);
+      } 
+      finally
+      {
+        await queryRunner.release();
       }
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
+      return this.findOne(allegation_complaint_guid);
     }
-    return this.findOne(allegation_complaint_guid);
-  }
 
   async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
     try {

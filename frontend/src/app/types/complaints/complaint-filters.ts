@@ -15,4 +15,5 @@ export interface ComplaintFilters {
   complaintStatusFilter?: Option;
   page?: number;
   pageSize?: number;
+  query?: string;
 }
