@@ -138,6 +138,8 @@ describe("Complaint Search Functionality", () => {
    cy.get("#complaint-search").click({ force: true });
    cy.get("#complaint-search").clear().type("Zebra{enter}"); //-- {enter} will perform an enter keypress
 
+   cy.waitForSpinner();
+
    //-- verify no complaints
    cy.get("#complaint-list tbody").find("tr").should("have.length", 0);
  });
