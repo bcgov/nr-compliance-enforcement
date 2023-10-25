@@ -31,7 +31,7 @@ describe('HwcrComplaintService', () => {
         {
           provide: getRepositoryToken(HwcrComplaint),
           useValue: {
-
+            createQueryBuilder: () => { }
           },
         },
         ComplaintService,
