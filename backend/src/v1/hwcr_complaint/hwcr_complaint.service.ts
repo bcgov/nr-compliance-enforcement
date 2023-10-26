@@ -22,6 +22,8 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
+import { SearchResults } from "../complaint/models/search-results";
+import { SearchPayload } from "../complaint/models/search-payload";
 
 @Injectable()
 export class HwcrComplaintService {
@@ -109,22 +111,22 @@ export class HwcrComplaintService {
     return newHwcrComplaintString;
   }
 
-  async search(
-    sortColumn: string,
-    sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    natureOfComplaint?: string,
-    speciesCode?: string,
-    incidentReportedStart?: Date,
-    incidentReportedEnd?: Date,
-    status?: string,
-    page?: number,
-    pageSize?: number,
-    query?: string
-  ): Promise<{ complaints: HwcrComplaint[]; totalCount: number }> {
+  async search({
+    sortColumn,
+    sortOrder,
+    community,
+    zone,
+    region,
+    officerAssigned,
+    natureOfComplaint,
+    speciesCode,
+    incidentReportedStart,
+    incidentReportedEnd,
+    status,
+    page,
+    pageSize,
+    query,
+  }: SearchPayload): Promise<SearchResults> {
     // how many records to skip based on the current page and page size
     let skip: number;
     if (page && pageSize) {
@@ -392,19 +394,17 @@ export class HwcrComplaintService {
     }
   }
 
-  async searchMap(
-    sortColumn: string,
-    sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    natureOfComplaint?: string,
-    speciesCode?: string,
-    incidentReportedStart?: Date,
-    incidentReportedEnd?: Date,
-    status?: string
-  ): Promise<HwcrComplaint[]> {
+  async searchMap({
+    community,
+    zone,
+    region,
+    officerAssigned,
+    natureOfComplaint,
+    speciesCode,
+    incidentReportedStart,
+    incidentReportedEnd,
+    status,
+  }: SearchPayload): Promise<HwcrComplaint[]> {
     //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
 
     const queryBuilder = this.hwcrComplaintsRepository
