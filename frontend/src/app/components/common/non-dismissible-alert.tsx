@@ -6,7 +6,7 @@ const NonDismissibleAlert: React.FC = () => {
   return (
     <div className="comp-complaint-details-alert">
           <FontAwesomeIcon icon={faInfoCircle} />
-          <span>The exact location of the complaint could not be determined</span>
+          <span>The exact location of the complaint could not be determined.</span>
         </div>
   );
 };
