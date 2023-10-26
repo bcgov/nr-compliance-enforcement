@@ -15,6 +15,10 @@
   }
 }
 
+p {
+  white-space: pre-wrap;
+}
+
 .comp-complaint-breadcrumb {
   background-color: $bc-gov-primary-400;
   color: $white;

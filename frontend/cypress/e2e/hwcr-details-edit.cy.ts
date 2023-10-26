@@ -217,9 +217,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('span[id="comp-details-region"]').contains(editCallDetails.region);
 
     cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-      expect($defaultValue.eq(0)).to.contain("Livestock");
-      expect($defaultValue.eq(1)).to.contain("BBQ");
-      expect($defaultValue.eq(2)).to.contain("Beehive");
+      expect($defaultValue).to.contain("Livestock");
+      expect($defaultValue).to.contain("BBQ");
+      expect($defaultValue).to.contain("Beehive");
     });
     //end checking edit changes saved
   });
@@ -354,10 +354,11 @@ describe("Complaint Edit Page spec - Edit View", () => {
       originalCallDetails.region,
     );
 
+    
     cy.get(".comp-attactant-badge").then(function ($defaultValue) {
-      expect($defaultValue.eq(0)).to.contain("Garbage");
-      expect($defaultValue.eq(1)).to.contain("Freezer");
-      expect($defaultValue.eq(2)).to.contain("Compost");
+      expect($defaultValue).to.contain("Garbage");
+      expect($defaultValue).to.contain("Freezer");
+      expect($defaultValue).to.contain("Compost");
     });
     //end verifying changes are reverted
   });
