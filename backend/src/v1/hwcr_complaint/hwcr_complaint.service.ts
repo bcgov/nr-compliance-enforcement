@@ -8,7 +8,7 @@ import { CreateHwcrComplaintDto } from "./dto/create-hwcr_complaint.dto";
 import { UpdateHwcrComplaintDto } from "./dto/update-hwcr_complaint.dto";
 import { HwcrComplaint } from "./entities/hwcr_complaint.entity";
 import { ComplaintService } from "../complaint/complaint.service";
-import { Brackets, DataSource, Repository } from "typeorm";
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UUID, randomUUID } from "crypto";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
@@ -24,6 +24,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchResults } from "../complaint/models/search-results";
 import { SearchPayload } from "../complaint/models/search-payload";
+import { ORDER_DIRECTION } from "../../types/constants";
 
 @Injectable()
 export class HwcrComplaintService {
@@ -111,417 +112,67 @@ export class HwcrComplaintService {
     return newHwcrComplaintString;
   }
 
-  async search({
-    sortColumn,
-    sortOrder,
-    community,
-    zone,
-    region,
-    officerAssigned,
-    natureOfComplaint,
-    speciesCode,
-    incidentReportedStart,
-    incidentReportedEnd,
-    status,
-    page,
-    pageSize,
-    query,
-  }: SearchPayload): Promise<SearchResults> {
-    // how many records to skip based on the current page and page size
-    let skip: number;
-    if (page && pageSize) {
-      skip = (page - 1) * pageSize;
-    }
+  search = async (model: SearchPayload): Promise<SearchResults> => {
+    const { sortColumn, sortOrder, page, pageSize, query, ...filters } = model;
 
-    //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
-    const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-    let sortTable = "complaint_identifier.";
-    if (
-      sortColumn === "complaint_identifier" ||
-      sortColumn === "species_code" ||
-      sortColumn === "hwcr_complaint_nature_code"
-    ) {
-      sortTable = "hwcr_complaint.";
-    } else if (sortColumn === "last_name") {
-      sortTable = "person.";
-    }
+    const skip = page && pageSize ? (page - 1) * pageSize : 0;
+    const sortTable = this._getSortTable(sortColumn);
+    const sortDirection = sortOrder === "DESC" ? "DESC" : "ASC";
 
     const sortString =
       sortColumn !== "update_utc_timestamp"
-        ? sortTable + sortColumn
+        ? `${sortTable}.${sortColumn}`
         : "_update_utc_timestamp";
 
-    const queryBuilder = this.hwcrComplaintsRepository
-      .createQueryBuilder("hwcr_complaint")
-      .addSelect(
-        "GREATEST(complaint_identifier.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)",
-        "_update_utc_timestamp"
-      )
-      .leftJoinAndSelect(
-        "hwcr_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect("hwcr_complaint.species_code", "species_code")
-      .leftJoinAndSelect(
-        "hwcr_complaint.hwcr_complaint_nature_code",
-        "hwcr_complaint_nature_code"
-      )
-      .leftJoinAndSelect(
-        "hwcr_complaint.attractant_hwcr_xref",
-        "attractant_hwcr_xref",
-        "attractant_hwcr_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.cos_geo_org_unit",
-        "cos_geo_org_unit"
-      )
-      .leftJoinAndSelect(
-        "attractant_hwcr_xref.attractant_code",
-        "attractant_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .orderBy(sortString, sortOrderString)
-      .addOrderBy(
-        "complaint_identifier.incident_reported_utc_timestmp",
-        sortColumn === "incident_reported_utc_timestmp"
-          ? sortOrderString
-          : "DESC"
-      );
+    //-- build generic wildlife query
+    let builder = this._getWildlifeQuery();
 
-    if (community !== null && community !== undefined && community !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
-        Community: community,
-      });
-    }
-    if (zone !== null && zone !== undefined && zone !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
-        Zone: zone,
-      });
-    }
-    if (region !== null && region !== undefined && region !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.region_code = :Region", {
-        Region: region,
-      });
-    }
-    if (
-      officerAssigned !== null &&
-      officerAssigned !== undefined &&
-      officerAssigned !== "" &&
-      officerAssigned !== "null"
-    ) {
-      queryBuilder.andWhere(
-        "person_complaint_xref.person_complaint_xref_code = :Assignee",
-        { Assignee: "ASSIGNEE" }
-      );
-      queryBuilder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
-        PersonGuid: officerAssigned,
-      });
-    } else if (officerAssigned === "null") {
-      queryBuilder.andWhere("person_complaint_xref.person_guid IS NULL");
-    }
-    if (
-      natureOfComplaint !== null &&
-      natureOfComplaint !== undefined &&
-      natureOfComplaint !== ""
-    ) {
-      queryBuilder.andWhere(
-        "hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint",
-        { NatureOfComplaint: natureOfComplaint }
-      );
-    }
-    if (
-      speciesCode !== null &&
-      speciesCode !== undefined &&
-      speciesCode !== ""
-    ) {
-      queryBuilder.andWhere("hwcr_complaint.species_code = :SpeciesCode", {
-        SpeciesCode: speciesCode,
-      });
-    }
-    if (incidentReportedStart !== null && incidentReportedStart !== undefined) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
-        { IncidentReportedStart: incidentReportedStart }
-      );
-    }
-    if (incidentReportedEnd !== null && incidentReportedEnd !== undefined) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
-        { IncidentReportedEnd: incidentReportedEnd }
-      );
-    }
-    if (status !== null && status !== undefined && status !== "") {
-      queryBuilder.andWhere(
-        "complaint_identifier.complaint_status_code = :Status",
-        { Status: status }
-      );
-    }
+    //-- apply filters
+    builder = this._applyWildlifeQueryFilters(
+      builder,
+      filters as SearchPayload
+    );
 
-    //-- apply search query
     if (query) {
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          qb.orWhere("complaint_identifier.complaint_identifier ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.detail_text ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_address ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_email ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_phone_1 ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_phone_2 ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_phone_3 ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere(
-            "complaint_identifier.location_summary_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-          qb.orWhere(
-            "complaint_identifier.location_detailed_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-          qb.orWhere(
-            "complaint_identifier.referred_by_agency_other_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-
-          qb.orWhere("referred_by_agency_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("referred_by_agency_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("owned_by_agency_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("owned_by_agency_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("cos_geo_org_unit.area_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("cos_geo_org_unit.zone_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("cos_geo_org_unit.offloc_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("hwcr_complaint.other_attractants_text ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("species_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("species_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("hwcr_complaint.hwcr_complaint_nature_code ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("attractant_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("attractant_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("person.first_name ILIKE :query", { query: `%${query}%` });
-          qb.orWhere("person.last_name ILIKE :query", { query: `%${query}%` });
-        })
-      );
+      builder = this._applySearch(builder, query);
     }
 
-    if (skip !== undefined) {
-      // a page number was supplied, limit the results returned
-      const [data, totalCount] = await queryBuilder
-        .skip(skip)
-        .take(pageSize)
-        .getManyAndCount();
-      return { complaints: data, totalCount: totalCount };
-    } else {
-      // not paginating results, just get them all
-      const [data, totalCount] = await queryBuilder.getManyAndCount();
-      return { complaints: data, totalCount: totalCount };
-    }
-  }
-
-  async searchMap({
-    community,
-    zone,
-    region,
-    officerAssigned,
-    natureOfComplaint,
-    speciesCode,
-    incidentReportedStart,
-    incidentReportedEnd,
-    status,
-  }: SearchPayload): Promise<HwcrComplaint[]> {
-    //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
-
-    const queryBuilder = this.hwcrComplaintsRepository
-      .createQueryBuilder("hwcr_complaint")
-      .leftJoinAndSelect(
-        "hwcr_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoin("hwcr_complaint.species_code", "species_code")
-      .leftJoin(
-        "hwcr_complaint.hwcr_complaint_nature_code",
-        "hwcr_complaint_nature_code"
-      )
-      .leftJoin("hwcr_complaint.attractant_hwcr_xref", "attractant_hwcr_xref")
-      .leftJoin(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoin(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoin(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoin("complaint_identifier.cos_geo_org_unit", "cos_geo_org_unit")
-      .leftJoin("attractant_hwcr_xref.attractant_code", "attractant_code")
-      .leftJoin(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoin(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
+    //-- apply sort
+    builder
+      .orderBy(sortString, sortDirection)
+      .addOrderBy(
+        "complaint.incident_reported_utc_timestmp",
+        sortColumn === "incident_reported_utc_timestmp" ? sortDirection : "DESC"
       );
 
-    if (community !== null && community !== undefined && community !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
-        Community: community,
-      });
-    }
-    if (zone !== null && zone !== undefined && zone !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
-        Zone: zone,
-      });
-    }
-    if (region !== null && region !== undefined && region !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.region_code = :Region", {
-        Region: region,
-      });
-    }
-    if (
-      officerAssigned !== null &&
-      officerAssigned !== undefined &&
-      officerAssigned !== "" &&
-      officerAssigned !== "null"
-    ) {
-      queryBuilder.andWhere(
-        "person_complaint_xref.person_complaint_xref_code = :Assignee",
-        { Assignee: "ASSIGNEE" }
-      );
-      queryBuilder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
-        PersonGuid: officerAssigned,
-      });
-    } else if (officerAssigned === "null") {
-      queryBuilder.andWhere("person_complaint_xref.person_guid IS NULL");
-    }
-    if (
-      natureOfComplaint !== null &&
-      natureOfComplaint !== undefined &&
-      natureOfComplaint !== ""
-    ) {
-      queryBuilder.andWhere(
-        "hwcr_complaint.hwcr_complaint_nature_code = :NatureOfComplaint",
-        { NatureOfComplaint: natureOfComplaint }
-      );
-    }
-    if (
-      speciesCode !== null &&
-      speciesCode !== undefined &&
-      speciesCode !== ""
-    ) {
-      queryBuilder.andWhere("hwcr_complaint.species_code = :SpeciesCode", {
-        SpeciesCode: speciesCode,
-      });
-    }
-    if (incidentReportedStart !== null && incidentReportedStart !== undefined) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
-        { IncidentReportedStart: incidentReportedStart }
-      );
-    }
-    if (incidentReportedEnd !== null && incidentReportedEnd !== undefined) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
-        { IncidentReportedEnd: incidentReportedEnd }
-      );
-    }
-    if (status !== null && status !== undefined && status !== "") {
-      queryBuilder.andWhere(
-        "complaint_identifier.complaint_status_code = :Status",
-        { Status: status }
-      );
-    }
+    const [data, totalCount] = await builder
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount();
 
-    queryBuilder.andWhere(
-      "ST_X(complaint_identifier.location_geometry_point) <> 0"
-    );
-    queryBuilder.andWhere(
-      "ST_Y(complaint_identifier.location_geometry_point) <> 0"
+    return { complaints: data, totalCount: totalCount };
+  };
+
+  searchMap = async (model: SearchPayload): Promise<HwcrComplaint[]> => {
+    //-- build generic wildlife query
+    let builder = this._getWildlifeQuery();
+
+    //-- apply filters
+    builder = this._applyWildlifeQueryFilters(
+      builder,
+      model as SearchPayload
     );
 
-    return queryBuilder.getMany();
-  }
+    //-- filter locations without coordinates
+    builder.andWhere(
+      "ST_X(complaint.location_geometry_point) <> 0"
+    );
+    builder.andWhere(
+      "ST_Y(complaint.location_geometry_point) <> 0"
+    );
+
+    return builder.getMany();
+  };
 
   async findAll(
     sortColumn: string,
@@ -929,21 +580,28 @@ export class HwcrComplaintService {
     return results;
   }
 
-  //-- DONT REMOVE - can be used for  refactoring to simplify the query builder
-  /*private _getSearchQueryBuilder(
-    sort: string,
-    column: string,
-    direction: "ASC" | "DESC"
-  ) {
-    const builder = this.hwcrComplaintsRepository
-      .createQueryBuilder("wildlife")
+  private _getSortTable = (column: string): string => {
+    switch (column) {
+      case "complaint": //-- complaint_identifier
+      case "species_code":
+      case "hwcr_complaint_nature_code":
+        return "hwcr_complaint";
+      case "last_name":
+        return "person";
+      default:
+        return "complaint"; //-- complaint_identifier
+    }
+  };
 
+  private _getWildlifeQuery = (): SelectQueryBuilder<HwcrComplaint> => {
+    const builder = this.hwcrComplaintsRepository
+      .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
       .addSelect(
-        "GREATEST(complaint.update_utc_timestamp, wildlife.update_utc_timestamp)",
+        "GREATEST(complaint.update_utc_timestamp,  wildlife.update_utc_timestamp)",
         "_update_utc_timestamp"
       )
-
       .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
+
       .leftJoin("wildlife.species_code", "species_code")
       .addSelect([
         "species_code.species_code",
@@ -951,11 +609,11 @@ export class HwcrComplaintService {
         "species_code.long_description",
       ])
 
-      .leftJoin("wildlife.hwcr_complaint_nature_code", "wildlife_nature_code")
+      .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
       .addSelect([
-        "wildlife_nature_code.hwcr_complaint_nature_code",
-        "wildlife_nature_code.short_description",
-        "wildlife_nature_code.long_description",
+        "complaint_nature_code.hwcr_complaint_nature_code",
+        "complaint_nature_code.short_description",
+        "complaint_nature_code.long_description",
       ])
 
       .leftJoin(
@@ -996,13 +654,7 @@ export class HwcrComplaintService {
         "owned_by.long_description",
       ])
 
-      .leftJoin("complaint.cos_geo_org_unit", "organizaton")
-      .addSelect([
-        "organizaton.region_name",
-        "organizaton.zone_name",
-        "organizaton.offloc_name",
-        "organizaton.area_name",
-      ])
+      .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
 
       .leftJoinAndSelect(
         "complaint.person_complaint_xref",
@@ -1021,27 +673,182 @@ export class HwcrComplaintService {
         "person.middle_name_1",
         "person.middle_name_2",
         "person.last_name",
-      ])
+      ]);
+    return builder;
+  };
 
-      .orderBy(sort, direction)
-      .addOrderBy(
-        "complaint.incident_reported_utc_timestmp",
-        column === "incident_reported_utc_timestmp" ? direction : "DESC"
+  private _applyWildlifeQueryFilters = (
+    builder: SelectQueryBuilder<HwcrComplaint>,
+    {
+      community,
+      zone,
+      region,
+      officerAssigned,
+      natureOfComplaint,
+      speciesCode,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status,
+    }: SearchPayload
+  ): SelectQueryBuilder<HwcrComplaint> => {
+    if (community) {
+      builder.andWhere("cos_organization.area_code = :Community", {
+        Community: community,
+      });
+    }
+
+    if (zone) {
+      builder.andWhere("cos_organization.zone_code = :Zone", {
+        Zone: zone,
+      });
+    }
+
+    if (region) {
+      builder.andWhere("cos_organization.region_code = :Region", {
+        Region: region,
+      });
+    }
+
+    if (officerAssigned) {
+      builder.andWhere("people.person_complaint_xref_code = :Assignee", {
+        Assignee: "ASSIGNEE",
+      });
+      builder.andWhere("people.person_guid = :PersonGuid", {
+        PersonGuid: officerAssigned,
+      });
+    } else if (officerAssigned === "null") {
+      builder.andWhere("people.person_guid IS NULL");
+    }
+
+    if (natureOfComplaint) {
+      builder.andWhere(
+        "wildlife.hwcr_complaint_nature_code = :NatureOfComplaint",
+        { NatureOfComplaint: natureOfComplaint }
       );
+    }
+
+    if (speciesCode) {
+      builder.andWhere("wildlife.species_code = :SpeciesCode", {
+        SpeciesCode: speciesCode,
+      });
+    }
+
+    if (incidentReportedStart !== null && incidentReportedStart !== undefined) {
+      builder.andWhere(
+        "complaint.incident_reported_utc_timestmp >= :IncidentReportedStart",
+        { IncidentReportedStart: incidentReportedStart }
+      );
+    }
+    if (incidentReportedEnd !== null && incidentReportedEnd !== undefined) {
+      builder.andWhere(
+        "complaint.incident_reported_utc_timestmp <= :IncidentReportedEnd",
+        { IncidentReportedEnd: incidentReportedEnd }
+      );
+    }
+
+    if (status) {
+      builder.andWhere("complaint.complaint_status_code = :Status", {
+        Status: status,
+      });
+    }
 
     return builder;
-  }
+  };
 
-  private _getSortTable = (column: string): string => {
-    switch (column) {
-      case "complaint": //-- complaint_identifier
-      case "species_code":
-      case "hwcr_complaint_nature_code":
-        return "hwcr_complaint";
-      case "last_name":
-        return "person";
-      default:
-        return "complaint"; //-- complaint_identifier
-    }
-  };*/
+  private _applySearch = (
+    builder: SelectQueryBuilder<HwcrComplaint>,
+    query: string
+  ): SelectQueryBuilder<HwcrComplaint> => {
+    builder.andWhere(
+      new Brackets((qb) => {
+        qb.orWhere("complaint.complaint_identifier ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.detail_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_address ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_email ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_phone_1 ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_phone_2 ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_phone_3 ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.location_summary_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.location_detailed_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.referred_by_agency_other_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("referred_by.short_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("referred_by.long_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("owned_by.short_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("owned_by.long_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("cos_organization.region_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("cos_organization.area_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("cos_organization.zone_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("cos_organization.offloc_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("wildlife.other_attractants_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("species_code.short_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("species_code.long_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("wildlife.hwcr_complaint_nature_code ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("attractant_code.short_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("attractant_code.long_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("person.first_name ILIKE :query", { query: `%${query}%` });
+        qb.orWhere("person.last_name ILIKE :query", { query: `%${query}%` });
+      })
+    );
+
+    return builder;
+  };
 }
