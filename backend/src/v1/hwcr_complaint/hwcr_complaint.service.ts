@@ -192,13 +192,21 @@ export class HwcrComplaintService {
     return builder.getMany();
   };
 
-  findOne = async (id: string): Promise<HwcrComplaint> => {
+  findOne = async (id: UUID): Promise<HwcrComplaint> => {
     //-- build generic wildlife query
     let builder = this._getWildlifeQuery();
     builder.where("wildlife.hwcr_complaint_guid = :id", { id });
 
     return builder.getOne();
   };
+
+  async findByComplaintIdentifier(id: string): Promise<HwcrComplaint> {
+    //-- build generic wildlife query
+    let builder = this._getWildlifeQuery();
+    builder.where("complaint.complaint_identifier = :id", { id });
+
+    return builder.getOne();
+  }
 
   async update(
     hwcr_complaint_guid: UUID,
@@ -268,54 +276,6 @@ export class HwcrComplaintService {
     } catch (err) {
       return { deleted: false, message: err.message };
     }
-  }
-
-  async findByComplaintIdentifier(id: any): Promise<HwcrComplaint> {
-    return this.hwcrComplaintsRepository
-      .createQueryBuilder("hwcr_complaint")
-      .leftJoinAndSelect(
-        "hwcr_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect("hwcr_complaint.species_code", "species_code")
-      .leftJoinAndSelect(
-        "hwcr_complaint.hwcr_complaint_nature_code",
-        "hwcr_complaint_nature_code"
-      )
-      .leftJoinAndSelect(
-        "hwcr_complaint.attractant_hwcr_xref",
-        "attractant_hwcr_xref",
-        "attractant_hwcr_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
-      .leftJoinAndSelect(
-        "attractant_hwcr_xref.attractant_code",
-        "attractant_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .where("complaint_identifier.complaint_identifier = :id", { id })
-      .getOne();
   }
 
   async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {

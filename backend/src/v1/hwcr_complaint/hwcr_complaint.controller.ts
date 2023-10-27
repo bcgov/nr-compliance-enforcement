@@ -61,7 +61,7 @@ export class HwcrComplaintController {
 
   @Get(":id")
   @Roles(Role.COS_OFFICER)
-  findOne(@Param("id") id: string) {
+  findOne(@Param("id") id: UUID) {
     return this.hwcrComplaintService.findOne(id);
   }
 
