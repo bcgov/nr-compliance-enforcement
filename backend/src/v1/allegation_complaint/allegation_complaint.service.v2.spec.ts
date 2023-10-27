@@ -22,6 +22,7 @@ import { AllegationComplaint } from "./entities/allegation_complaint.entity";
 
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { SearchPayload } from "../complaint/models/search-payload";
 
 describe("Testing: AllegationComplaintService", () => {
   let service: AllegationComplaintService;
@@ -104,7 +105,7 @@ describe("Testing: AllegationComplaintService", () => {
     const pageSize = null;
     const searchQuery = "test";
 
-    const result = await service.search(
+    const model = {
       sortColumn,
       sortOrder,
       community,
@@ -117,8 +118,10 @@ describe("Testing: AllegationComplaintService", () => {
       status,
       page,
       pageSize,
-      searchQuery
-    );
+      searchQuery,
+    } as SearchPayload;
+
+    const result = await service.search(model);
 
     expect(result).not.toBe(null);
 

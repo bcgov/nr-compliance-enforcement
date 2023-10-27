@@ -7,6 +7,7 @@ export interface SearchPayload {
   officerAssigned?: string;
   natureOfComplaint?: string;
   speciesCode?: string;
+  violationCode?: string;
   incidentReportedStart?: Date;
   incidentReportedEnd?: Date;
   status?: string;

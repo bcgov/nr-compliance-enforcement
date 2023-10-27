@@ -25,21 +25,22 @@ export const MockAllegationComplaintRepository = () => ({
      return Promise.resolve(true);
    }),
    createQueryBuilder: jest.fn(() => ({
-     orderBy: jest.fn().mockReturnThis(),
-     addOrderBy: jest.fn().mockReturnThis(),
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     orWhere: jest.fn().mockReturnThis(),
-     andWhere: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(manyItems),
-     getOne: jest.fn().mockResolvedValue(singleItem),
-     getQuery: jest.fn(),
-     select: jest.fn().mockReturnThis(),
-     addSelect: jest.fn().mockReturnThis(),
-     from: jest.fn().mockReturnThis(),
-     skip: jest.fn().mockReturnThis(),
-     take: jest.fn().mockReturnThis(),
-     getManyAndCount: jest.fn().mockResolvedValue([manyItems, 35])
- 
-     })),
+    orderBy: jest.fn().mockReturnThis(),
+    addOrderBy: jest.fn().mockReturnThis(),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    leftJoin: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    orWhere: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(manyItems),
+    getOne: jest.fn().mockResolvedValue(singleItem),
+    getQuery: jest.fn(),
+    select: jest.fn().mockReturnThis(),
+    addSelect: jest.fn().mockReturnThis(),
+    from: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn().mockResolvedValue([manyItems, 35])
+
+    })),
   });

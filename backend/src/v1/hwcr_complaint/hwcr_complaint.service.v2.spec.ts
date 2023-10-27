@@ -22,6 +22,7 @@ import { PersonComplaintXref } from "../person_complaint_xref/entities/person_co
 
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
+import { SearchPayload } from "../complaint/models/search-payload";
 
 describe("Testing: HwcrComplaintService", () => {
   let service: HwcrComplaintService;
@@ -107,7 +108,7 @@ describe("Testing: HwcrComplaintService", () => {
     const pageSize = null;
     const searchQuery = "test";
 
-    const result = await service.search(
+    const model = {
       sortColumn,
       sortOrder,
       community,
@@ -121,8 +122,10 @@ describe("Testing: HwcrComplaintService", () => {
       status,
       page,
       pageSize,
-      searchQuery
-    );
+      searchQuery,
+    } as SearchPayload;
+
+    const result = await service.search(model);
 
     expect(result).not.toBe(null);
 
