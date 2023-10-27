@@ -179,6 +179,8 @@ describe("AllegationComplaintService", () => {
         where: jest.fn().mockReturnValue(`allegation_complaint_guid = :id, ${oneAllegationComplaint.allegation_complaint_guid}`),
         getOne: jest.fn().mockResolvedValue(oneAllegationComplaint),
         getMany: jest.fn().mockResolvedValue(allegationComplaintArray),
+        addSelect: jest.fn().mockReturnThis(),
+        leftJoin: jest.fn().mockReturnThis(),
       })),
 
     // as these do not actually use their return values in our sample
