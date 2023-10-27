@@ -55,30 +55,8 @@ export class AllegationComplaintController {
 
   @Get("map/search")
   @Roles(Role.COS_OFFICER)
-  searchMap(
-    @Query("sortColumn") sortColumn: string,
-    @Query("sortOrder") sortOrder: string,
-    @Query("community") community: string,
-    @Query("zone") zone: string,
-    @Query("region") region: string,
-    @Query("officerAssigned") officerAssigned: string,
-    @Query("violationCode") violationCode: string,
-    @Query("incidentReportedStart") incidentReportedStart: string,
-    @Query("incidentReportedEnd") incidentReportedEnd: string,
-    @Query("status") status
-  ) {
-    return this.allegationComplaintService.searchMap(
-      sortColumn,
-      sortOrder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status,
-    );
+  searchMap(@Query() model) {
+    return this.allegationComplaintService.searchMap(model);
   }
 
   @Get(":id")

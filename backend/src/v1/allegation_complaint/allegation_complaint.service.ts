@@ -198,271 +198,21 @@ export class AllegationComplaintService {
     return { complaints: data, totalCount: totalCount };
   };
 
-  async _search(
-    sortColumn: string,
-    sortOrder: string,
-    community?: string,
-    zone?: string,
-    region?: string,
-    officerAssigned?: string,
-    violationCode?: string,
-    incidentReportedStart?: string,
-    incidentReportedEnd?: string,
-    status?: string,
-    page?: number,
-    pageSize?: number,
-    query?: string
-  ): Promise<{ complaints: AllegationComplaint[]; totalCount: number }> {
-    let skip: number;
-    if (page && pageSize) {
-      skip = (page - 1) * pageSize;
-    }
+  searchMap = async (model: SearchPayload): Promise<Array<AllegationComplaint>> => { 
+        //-- build generic wildlife query
+        let builder = this._getAllegationQuery();
 
-    //compiler complains if you don't explicitly set the sort order to 'DESC' or 'ASC' in the function
-    const sortOrderString = sortOrder === "DESC" ? "DESC" : "ASC";
-    let sortTable = "complaint_identifier.";
-    if (
-      sortColumn === "complaint_identifier" ||
-      sortColumn === "violation_code" ||
-      sortColumn === "in_progress_ind"
-    ) {
-      sortTable = "allegation_complaint.";
-    } else if (sortColumn === "last_name") {
-      sortTable = "person.";
-    }
-    const sortString =
-      sortColumn !== "update_utc_timestamp"
-        ? sortTable + sortColumn
-        : "_update_utc_timestamp";
-
-    const queryBuilder = this.allegationComplaintsRepository
-      .createQueryBuilder("allegation_complaint")
-      .addSelect(
-        "GREATEST(complaint_identifier.update_utc_timestamp, allegation_complaint.update_utc_timestamp)",
-        "_update_utc_timestamp"
-      )
-      .leftJoinAndSelect(
-        "allegation_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect(
-        "allegation_complaint.violation_code",
-        "violation_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.cos_geo_org_unit",
-        "cos_geo_org_unit"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .orderBy(sortString, sortOrderString)
-      .addOrderBy(
-        "complaint_identifier.incident_reported_utc_timestmp",
-        sortColumn === "incident_reported_utc_timestmp"
-          ? sortOrderString
-          : "DESC"
-      );
-    if (community !== null && community !== undefined && community !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.area_code = :Community", {
-        Community: community,
-      });
-    }
-    if (zone !== null && zone !== undefined && zone !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.zone_code = :Zone", {
-        Zone: zone,
-      });
-    }
-    if (region !== null && region !== undefined && region !== "") {
-      queryBuilder.andWhere("cos_geo_org_unit.region_code = :Region", {
-        Region: region,
-      });
-    }
-    if (
-      officerAssigned !== null &&
-      officerAssigned !== undefined &&
-      officerAssigned !== "" &&
-      officerAssigned !== "null"
-    ) {
-      queryBuilder.andWhere(
-        "person_complaint_xref.person_complaint_xref_code = :Assignee",
-        { Assignee: "ASSIGNEE" }
-      );
-      queryBuilder.andWhere("person_complaint_xref.person_guid = :PersonGuid", {
-        PersonGuid: officerAssigned,
-      });
-    } else if (officerAssigned === "null") {
-      queryBuilder.andWhere("person_complaint_xref.person_guid IS NULL");
-    }
-    if (
-      violationCode !== null &&
-      violationCode !== undefined &&
-      violationCode !== ""
-    ) {
-      queryBuilder.andWhere(
-        "allegation_complaint.violation_code = :ViolationCode",
-        { ViolationCode: violationCode }
-      );
-    }
-    if (
-      incidentReportedStart !== null &&
-      incidentReportedStart !== undefined &&
-      incidentReportedStart !== ""
-    ) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp >= :IncidentReportedStart",
-        { IncidentReportedStart: incidentReportedStart }
-      );
-    }
-    if (
-      incidentReportedEnd !== null &&
-      incidentReportedEnd !== undefined &&
-      incidentReportedEnd !== ""
-    ) {
-      queryBuilder.andWhere(
-        "complaint_identifier.incident_reported_utc_timestmp <= :IncidentReportedEnd",
-        { IncidentReportedEnd: incidentReportedEnd }
-      );
-    }
-    if (status !== null && status !== undefined && status !== "") {
-      queryBuilder.andWhere(
-        "complaint_identifier.complaint_status_code = :Status",
-        { Status: status }
-      );
-    }
-
-    //-- apply search query
-    if (query) {
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          qb.orWhere("complaint_identifier.complaint_identifier ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.detail_text ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_address ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_email ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_phone_1 ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_phone_2 ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("complaint_identifier.caller_phone_3 ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere(
-            "complaint_identifier.location_summary_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-          qb.orWhere(
-            "complaint_identifier.location_detailed_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-          qb.orWhere(
-            "complaint_identifier.referred_by_agency_other_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-
-          qb.orWhere("referred_by_agency_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("referred_by_agency_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("owned_by_agency_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("owned_by_agency_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("cos_geo_org_unit.region_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("cos_geo_org_unit.area_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("cos_geo_org_unit.zone_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("cos_geo_org_unit.offloc_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere(
-            "allegation_complaint.suspect_witnesss_dtl_text ILIKE :query",
-            {
-              query: `%${query}%`,
-            }
-          );
-
-          qb.orWhere("violation_code.short_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("violation_code.long_description ILIKE :query", {
-            query: `%${query}%`,
-          });
-
-          qb.orWhere("person.first_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-          qb.orWhere("person.last_name ILIKE :query", {
-            query: `%${query}%`,
-          });
-        })
-      );
-    }
-
-    if (skip !== undefined) {
-      // a page number was supplied, limit the results returned
-      const [data, totalCount] = await queryBuilder
-        .skip(skip)
-        .take(pageSize)
-        .getManyAndCount();
-      return { complaints: data, totalCount: totalCount };
-    } else {
-      // not paginating results, just get them all
-      const [data, totalCount] = await queryBuilder.getManyAndCount();
-      return { complaints: data, totalCount: totalCount };
-    }
+        //-- apply filters
+        builder = this._applyAllegationQueryFilters(builder, model as SearchPayload);
+    
+        //-- filter locations without coordinates
+        builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+        builder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+    
+        return builder.getMany();
   }
 
-  async searchMap(
+  async _searchMap(
     sortColumn: string,
     sortOrder: string,
     community?: string,
@@ -1070,24 +820,15 @@ export class AllegationComplaintService {
         qb.orWhere("complaint.caller_phone_3 ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere(
-          "complaint.location_summary_text ILIKE :query",
-          {
-            query: `%${query}%`,
-          }
-        );
-        qb.orWhere(
-          "complaint.location_detailed_text ILIKE :query",
-          {
-            query: `%${query}%`,
-          }
-        );
-        qb.orWhere(
-          "complaint.referred_by_agency_other_text ILIKE :query",
-          {
-            query: `%${query}%`,
-          }
-        );
+        qb.orWhere("complaint.location_summary_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.location_detailed_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.referred_by_agency_other_text ILIKE :query", {
+          query: `%${query}%`,
+        });
 
         qb.orWhere("referred_by.short_description ILIKE :query", {
           query: `%${query}%`,
@@ -1116,12 +857,9 @@ export class AllegationComplaintService {
           query: `%${query}%`,
         });
 
-        qb.orWhere(
-          "allegation.suspect_witnesss_dtl_text ILIKE :query",
-          {
-            query: `%${query}%`,
-          }
-        );
+        qb.orWhere("allegation.suspect_witnesss_dtl_text ILIKE :query", {
+          query: `%${query}%`,
+        });
 
         qb.orWhere("violation_code.short_description ILIKE :query", {
           query: `%${query}%`,
@@ -1139,6 +877,6 @@ export class AllegationComplaintService {
       })
     );
 
-    return builder
+    return builder;
   }
 }
