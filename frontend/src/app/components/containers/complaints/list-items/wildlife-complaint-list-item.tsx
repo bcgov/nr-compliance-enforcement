@@ -3,6 +3,8 @@ import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { formatDateTime } from "../../../../common/methods";
 import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import { Link } from "react-router-dom";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 type Props = {
   type: string;
@@ -124,11 +126,41 @@ export const WildlifeComplaintListItem: FC<Props> = ({
           {status}
         </button>
       </td>
-      <td
-        className="comp-cell-width-110 comp-header-right-border"
+      <td 
+        className="comp-cell-width-110 comp-header-right-border comp-list-update-date"
         onClick={(event) => complaintClick(event, id)}
       >
         {updateDate}
+      </td>
+      <td 
+        className="comp-cell-width-110 comp-header-right-border comp-list-update-icons"
+        onClick={(event) => complaintClick(event, id)}
+      >
+
+        <OverlayTrigger
+        key={`overlay-filter`}
+        placement="top"
+        overlay={
+          <Tooltip id={`tt-filter`} className="comp-tooltip comp-tooltip-top">
+            Filter
+          </Tooltip>
+        }
+        >
+          <i className="bi bi-filter filter-image-spacing"></i>
+        </OverlayTrigger>
+
+        <OverlayTrigger
+        key={`overlay-create`}
+        placement="top"
+        overlay={
+          <Tooltip id={`tt-create`} className="comp-tooltip comp-tooltip-top">
+            Create
+          </Tooltip>
+        }
+        >
+        <i className="bi bi-plus-circle filter-image spacing"></i>
+        </OverlayTrigger>
+
       </td>
       <ComplaintEllipsisPopover
         complaint_identifier={id}

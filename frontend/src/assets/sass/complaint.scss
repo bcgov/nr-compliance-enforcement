@@ -464,6 +464,22 @@ p {
 }
 // COMPLAINT DETAILS END
 
+#complaint-list > tbody > tr:hover > td.comp-list-update-date{
+  display: none;
+}
+
+#complaint-list > tbody > tr > td.comp-list-update-date{
+  display: table-cell;
+}
+
+#complaint-list > tbody > tr:hover > td.comp-list-update-icons{
+  display: table-cell;
+}
+
+#complaint-list > tbody > tr > td.comp-list-update-icons{
+  display: none;
+}
+
 #complaint-list {
   width: 1330px;
   border-collapse: initial;
