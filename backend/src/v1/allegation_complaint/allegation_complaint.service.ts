@@ -123,6 +123,14 @@ export class AllegationComplaintService {
     return builder.getMany();
   };
 
+  findOne = async (id: UUID): Promise<AllegationComplaint> => {
+    //-- build generic wildlife query
+    let builder = this._getAllegationQuery();
+    builder.where("allegation_complaint_guid = :id", { id }).getOne();
+
+    return builder.getOne();
+  };
+
   search = async (model: SearchPayload): Promise<SearchResults> => {
     const { sortColumn, sortOrder, page, pageSize, query, ...filters } = model;
 
@@ -182,44 +190,6 @@ export class AllegationComplaintService {
 
     return builder.getMany();
   };
-
-  async findOne(id: any): Promise<AllegationComplaint> {
-    return this.allegationComplaintsRepository
-      .createQueryBuilder("allegation_complaint")
-      .leftJoinAndSelect(
-        "allegation_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect(
-        "allegation_complaint.violation_code",
-        "violation_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .where("allegation_complaint_guid = :id", { id })
-      .getOne();
-  }
 
   async update(
     allegation_complaint_guid: UUID,
@@ -292,45 +262,11 @@ export class AllegationComplaintService {
   }
 
   async findByComplaintIdentifier(id: any): Promise<AllegationComplaint> {
-    return this.allegationComplaintsRepository
-      .createQueryBuilder("allegation_complaint")
-      .leftJoinAndSelect(
-        "allegation_complaint.complaint_identifier",
-        "complaint_identifier"
-      )
-      .leftJoinAndSelect(
-        "allegation_complaint.violation_code",
-        "violation_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.complaint_status_code",
-        "complaint_status_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.referred_by_agency_code",
-        "referred_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.owned_by_agency_code",
-        "owned_by_agency_code"
-      )
-      .leftJoinAndSelect(
-        "complaint_identifier.cos_geo_org_unit",
-        "geo_organization_unit_code"
-      )
-      .leftJoinAndSelect("complaint_identifier.cos_geo_org_unit", "area_code")
-      .leftJoinAndSelect(
-        "complaint_identifier.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
-      )
-      .leftJoinAndSelect(
-        "person_complaint_xref.person_guid",
-        "person",
-        "person_complaint_xref.active_ind = true"
-      )
-      .where("complaint_identifier.complaint_identifier = :id", { id })
-      .getOne();
+    //-- build generic wildlife query
+    let builder = this._getAllegationQuery();
+    builder.where("complaint.complaint_identifier = :id", { id });
+
+    return builder.getOne();
   }
 
   async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {
