@@ -997,6 +997,8 @@ export const ComplaintDetailsEdit: FC = () => {
     }
   }
 
+  const maxDate = new Date();
+
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -1198,6 +1200,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   dateFormat="yyyy-MM-dd HH:mm"
                   timeFormat="HH:mm"
                   wrapperClassName="comp-details-edit-calendar-input"
+                  maxDate={maxDate}
                 />
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (

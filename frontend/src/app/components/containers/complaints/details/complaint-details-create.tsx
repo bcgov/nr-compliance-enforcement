@@ -33,7 +33,6 @@ import { selectOfficers } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
-import { useNavigate } from "react-router-dom";
 import {
   createAllegationComplaint,
   createWildlifeComplaint,
@@ -45,6 +44,7 @@ import { Complaint } from "../../../../types/complaints/complaint";
 import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -852,23 +852,23 @@ export const CreateComplaint: FC = () => {
   const [longitude, setLongitude] = useState<string>("");
 
   function handleIncidentDateTimeChange(date: Date) {
-    setSelectedIncidentDateTime(date);
-    
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(
-        createComplaint,
-      ) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_utc_datetime =
-        date;
-      setCreateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(
-        createComplaint,
-      ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_utc_datetime =
-        date;
-      setCreateComplaint(allegationComplaint);
-    }
+      setSelectedIncidentDateTime(date);
+      
+      if (complaintType === COMPLAINT_TYPES.HWCR) {
+        let hwcrComplaint: HwcrComplaint = cloneDeep(
+          createComplaint,
+        ) as HwcrComplaint;
+        hwcrComplaint.complaint_identifier.incident_utc_datetime =
+          date;
+        setCreateComplaint(hwcrComplaint);
+      } else if (complaintType === COMPLAINT_TYPES.ERS) {
+        let allegationComplaint: AllegationComplaint = cloneDeep(
+          createComplaint,
+        ) as AllegationComplaint;
+        allegationComplaint.complaint_identifier.incident_utc_datetime =
+          date;
+        setCreateComplaint(allegationComplaint);
+      }
   }
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
@@ -1020,6 +1020,8 @@ export const CreateComplaint: FC = () => {
       setErrorNotificationClass("comp-complaint-error");
     }
   };
+
+  const maxDate = new Date();
 
   return (
     <div className="comp-complaint-details">
@@ -1191,15 +1193,16 @@ export const CreateComplaint: FC = () => {
               >
                 <label>Incident Time</label>
                 <DatePicker
+                  showTimeInput
                   id="complaint-incident-time"
                   showIcon
                   timeInputLabel="Time:"
                   onChange={handleIncidentDateTimeChange}
                   selected={selectedIncidentDateTime}
-                  showTimeInput
                   dateFormat="yyyy-MM-dd HH:mm"
                   timeFormat="HH:mm"
                   wrapperClassName="comp-details-edit-calendar-input"
+                  maxDate={maxDate}
                 />
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (
