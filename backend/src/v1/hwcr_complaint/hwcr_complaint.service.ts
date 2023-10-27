@@ -24,7 +24,6 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchResults } from "../complaint/models/search-results";
 import { SearchPayload } from "../complaint/models/search-payload";
-import { ORDER_DIRECTION } from "../../types/constants";
 
 @Injectable()
 export class HwcrComplaintService {
