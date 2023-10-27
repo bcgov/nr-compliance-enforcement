@@ -158,23 +158,42 @@ export class HwcrComplaintService {
     let builder = this._getWildlifeQuery();
 
     //-- apply filters
-    builder = this._applyWildlifeQueryFilters(
-      builder,
-      model as SearchPayload
-    );
+    builder = this._applyWildlifeQueryFilters(builder, model as SearchPayload);
 
     //-- filter locations without coordinates
-    builder.andWhere(
-      "ST_X(complaint.location_geometry_point) <> 0"
-    );
-    builder.andWhere(
-      "ST_Y(complaint.location_geometry_point) <> 0"
-    );
+    builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+    builder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
     return builder.getMany();
   };
 
-  async findAll(
+  findAll = async (
+    sortColumn: string,
+    sortOrder: string
+  ): Promise<Array<HwcrComplaint>> => {
+    const sortTable = this._getSortTable(sortColumn);
+    const sortDirection = sortOrder === "DESC" ? "DESC" : "ASC";
+
+    const sortString =
+      sortColumn !== "update_utc_timestamp"
+        ? `${sortTable}.${sortColumn}`
+        : "GREATEST(complaint.update_utc_timestamp, hwcr_complaint.update_utc_timestamp)";
+
+    //-- build generic wildlife query
+    let builder = this._getWildlifeQuery();
+
+    //-- order and sort
+    builder
+      .orderBy(sortString, sortDirection)
+      .addOrderBy(
+        "complaint.incident_reported_utc_timestmp",
+        sortColumn === "incident_reported_utc_timestmp" ? sortDirection : "DESC"
+      );
+
+    return builder.getMany();
+  };
+
+  async _findAll(
     sortColumn: string,
     sortOrder: string
   ): Promise<HwcrComplaint[]> {
