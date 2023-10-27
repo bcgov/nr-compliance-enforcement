@@ -16,6 +16,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
 import { UUID } from "crypto";
+import { SearchPayload } from "../complaint/models/search-payload";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("allegation-complaint")
@@ -48,34 +49,8 @@ export class AllegationComplaintController {
   @Get("search")
   @Roles(Role.COS_OFFICER)
   search(
-    @Query("sortColumn") sortColumn: string,
-    @Query("sortOrder") sortOrder: string,
-    @Query("community") community: string,
-    @Query("zone") zone: string,
-    @Query("region") region: string,
-    @Query("officerAssigned") officerAssigned: string,
-    @Query("violationCode") violationCode: string,
-    @Query("incidentReportedStart") incidentReportedStart: string,
-    @Query("incidentReportedEnd") incidentReportedEnd: string,
-    @Query("status") status,
-    @Query('page') page: number, 
-    @Query('pageSize') pageSize: number,
-    @Query("query") query: string,) {
-    return this.allegationComplaintService.search(
-      sortColumn,
-      sortOrder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      violationCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status,
-      page,
-      pageSize,
-      query
-    );
+    @Query() model: SearchPayload ) {
+    return this.allegationComplaintService.search(model);
   }
 
   @Get("map/search")

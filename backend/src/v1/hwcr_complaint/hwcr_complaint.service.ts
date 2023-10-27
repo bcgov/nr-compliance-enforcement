@@ -492,7 +492,7 @@ export class HwcrComplaintService {
       case "complaint": //-- complaint_identifier
       case "species_code":
       case "hwcr_complaint_nature_code":
-        return "hwcr_complaint";
+        return "wildlife";
       case "last_name":
         return "person";
       default:
