@@ -1424,6 +1424,7 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
                     className="comp-details-input"
+                    defaultValue=""
                     onChange={handlePrimaryPhoneChange}
                     maxLength={14}
                     international={false}
@@ -1445,6 +1446,7 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
                     className="comp-details-input"
+                    defaultValue=""
                     onChange={handleSecondaryPhoneChange}
                     maxLength={14}
                     international={false}
@@ -1466,6 +1468,7 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
                     className="comp-details-input"
+                    defaultValue=""
                     onChange={handleAlternatePhoneChange}
                     maxLength={14}
                     international={false}
