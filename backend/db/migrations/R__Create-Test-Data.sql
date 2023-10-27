@@ -1275,7 +1275,7 @@ where t.complaint_identifier  = '23-006888';
 
 -- update the test records so that we can sort by them and find them via cypress tests
 update complaint set incident_reported_utc_timestmp  = CURRENT_TIMESTAMP
-where complaint_identifier in ('23-007890','23-006888','23-007023','23-000076');
+where complaint_identifier in ('23-007890','23-006888','23-007023','23-000076', '23-032528');
 update complaint set caller_phone_1 = '+12505561234'
 where complaint_identifier  = '23-000076';
 

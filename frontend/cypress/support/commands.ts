@@ -157,17 +157,13 @@ Cypress.Commands.add(
     //-- click on HWCR tab
     cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
 
-    // This doesn't always appear... commenting it out for now.  I don't think it's required.
-    //cy.waitForSpinner();
-
     cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear zone filter so this complaint is in the list view
     cy.get("#comp-zone-filter").should("not.exist");
+    cy.waitForSpinner();
 
     cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
     cy.get("#comp-status-filter").should("not.exist");
-
-    // This doesn't always appear... commenting it out for now.  I don't think it's required.
-    // cy.waitForSpinner();
+    cy.waitForSpinner();
 
     //-- check to make sure there are items in the table
     cy.get("#complaint-list")
