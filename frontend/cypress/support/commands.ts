@@ -94,22 +94,19 @@ Cypress.Commands.add("kcLogin", () => {
           Cypress.config().baseUrl,
         )
       ) {
-        cy.session([],() => {
-          cy.visit(url);
-          // Log in the user and obtain an authorization code.
-          cy.get('[name="user"]').click();
-          cy.get('[name="user"]').type(credentials.username);
-          cy.get('[name="password"]').click();
-          cy.get('[name="password"]').type(credentials.password, { log: false });
-          cy.get('[name="btnSubmit"]').click();
-        });
+        cy.visit(url);
+        // Log in the user and obtain an authorization code.
+        cy.get('[name="user"]').click();
+        cy.get('[name="user"]').type(credentials.username);
+        cy.get('[name="password"]').click();
+        cy.get('[name="password"]').type(credentials.password, { log: false });
+        cy.get('[name="btnSubmit"]').click();
       } else {
         // different origin, so handle CORS errors
         cy.origin(
           Cypress.env("keycloak_login_url"),
           { args: credentials },
           ({ username, password, url }) => {
-          
             cy.visit(url);
             // Log in the user and obtain an authorization code.
             cy.get('[name="user"]').click();
