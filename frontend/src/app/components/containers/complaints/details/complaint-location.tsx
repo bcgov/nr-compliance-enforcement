@@ -1,9 +1,9 @@
 import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import {
-  getComplaintLocation,
+  getGeocodedComplaintCoordinates,
   selectComplaintDetails,
-  selectComplaintLocation,
+  selectGeocodedComplaintCoordinates,
 } from "../../../../store/reducers/complaints";
 import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
@@ -33,11 +33,11 @@ export const ComplaintLocation: FC<Props> = ({
   useEffect(() => {
     if (area) {
       // geocode the complaint using the area.  Used in case there are no coordinates
-      dispatch(getComplaintLocation(area));
+      dispatch(getGeocodedComplaintCoordinates(area));
     }
   }, [area, dispatch, location]);
 
-  const complaintLocation = useAppSelector(selectComplaintLocation);
+  const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
   
   // if the complaint coordinates have been entered, then display the marker on the map.  
   // If there are no coordinates, don't display the marker on the map
@@ -51,21 +51,20 @@ export const ComplaintLocation: FC<Props> = ({
   if (coordinates && isWithinBC(coordinates)) {
     lat = +coordinates[Coordinates.Latitude];
     lng = +coordinates[Coordinates.Longitude];
-  } else if (complaintLocation) {
+  } else if (geocodedComplaintCoordinates) {
     hideMarker = true
     lat =
-      complaintLocation?.features[0]?.geometry?.coordinates[
+    geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
         Coordinates.Latitude
       ] !== undefined
-        ? complaintLocation?.features[0]?.geometry?.coordinates[
+        ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
             Coordinates.Latitude
           ]
         : 0;
-    lng =
-      complaintLocation?.features[0]?.geometry?.coordinates[
+    lng = geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
         Coordinates.Longitude
       ] !== undefined
-        ? complaintLocation?.features[0]?.geometry?.coordinates[
+        ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
             Coordinates.Longitude
           ]
         : 0;

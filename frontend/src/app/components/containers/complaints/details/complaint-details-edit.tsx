@@ -13,7 +13,7 @@ import {
   selectComplaintSuspectWitnessDetails,
   selectComplaint,
   setComplaint,
-  setComplaintLocation,
+  setGeocodedComplaintCoordinates,
   updateWildlifeComplaint,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
   updateAllegationComplaint,
@@ -83,7 +83,7 @@ export const ComplaintDetailsEdit: FC = () => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
       dispatch(setComplaint(null));
-      dispatch(setComplaintLocation(null));
+      dispatch(setGeocodedComplaintCoordinates(null));
     };
   }, [dispatch]);
 
@@ -347,16 +347,21 @@ export const ComplaintDetailsEdit: FC = () => {
       return "";
     }
 
-    let result = type === Coordinates.Latitude ? input[0] : input[1];
+    let result = type === Coordinates.Longitude ? input[0] : input[1];
     return result === 0 || result === "0" ? "" : result.toString();
   };
 
   const [latitude, setLatitude] = useState<string>(
-    getEditableCoordinates(coordinates, Coordinates.Longitude),
+    '0'
   );
   const [longitude, setLongitude] = useState<string>(
-    getEditableCoordinates(coordinates, Coordinates.Latitude),
+    '0'
   );
+
+  useEffect(() => {
+    setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
+    setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
+  },[coordinates]);
 
   const handleMarkerMove = async (lat: number, lng: number) => {
     await updateCoordinates(lat, lng);

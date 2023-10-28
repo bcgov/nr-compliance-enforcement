@@ -12,7 +12,7 @@ export class BcGeoCoderService {
 
   // given a localityName (community, for example) and an address, return the Feature given by BC Geocoder
   async findAll(localityName: string, addressString: string): Promise<Feature> {
-    const maxResults = 10;
+    const maxResults = 1; // will need to update this for the purposes of autocomplete.
     let apiUrl: string;
     this.logger.debug(
       `Calling BC Geocoder.  Parameters sent to backend were localityName: ${localityName} and addressString: ${addressString}`
@@ -21,13 +21,13 @@ export class BcGeoCoderService {
       this.logger.debug(
         `Calling BC Geocoder with address ${addressString} and community ${localityName}`
       );
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2&localityName=${localityName}&provinceCode=BC`;
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
     } else if (localityName) {
       this.logger.debug(`Calling BC Geocoder with community ${localityName}`);
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2&localityName=${localityName}&provinceCode=BC`;
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=false&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
     } else if (addressString && addressString.length > 0) {
       this.logger.debug(`Calling BC Geocoder with address ${addressString}`);
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=2&provinceCode=BC`;
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=1&provinceCode=BC`;
     }
     if (apiUrl) {
       const apiKey = process.env.BC_GEOCODER_API_URL;
