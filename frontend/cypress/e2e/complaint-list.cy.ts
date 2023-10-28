@@ -6,7 +6,7 @@ describe("Complaint List Functionality", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   Cypress._.times(complaintTypes.length, (index) => {

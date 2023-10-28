@@ -5,7 +5,7 @@ describe("COMPENF-138 - loading spinner", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("should show the loading spinner when loading the data then hide it afterwards", () => {

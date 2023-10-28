@@ -50,7 +50,7 @@ describe("Complaint Create Page spec - Create View", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("Navigate to the Complaint Create page & create and verify data", function () {

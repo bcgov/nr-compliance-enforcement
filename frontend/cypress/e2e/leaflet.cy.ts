@@ -3,7 +3,7 @@ import { MapOptions } from "leaflet";
 describe("Test Mapping functionality", () => {
   before(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("tests basic leaflet functions", function () {

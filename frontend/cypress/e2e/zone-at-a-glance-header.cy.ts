@@ -1,7 +1,7 @@
 describe("COMPENF-259 Zone at a Glance - View Complaint Stats", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("it can navigate to zone at a glance", () => {

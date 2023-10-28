@@ -26,7 +26,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("it has records in table view", () => {

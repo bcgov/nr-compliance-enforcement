@@ -17,7 +17,7 @@ describe("COMPENF-37 Display ECR Details", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("it has records in table view", () => {

@@ -7,7 +7,7 @@ describe("Complaints on map tests", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   // perform the same test on each of the tabs (HWCR and ERS)

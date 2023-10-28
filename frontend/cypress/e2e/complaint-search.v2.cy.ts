@@ -6,7 +6,7 @@ describe("Complaint Search Functionality", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("Can search Wildlife complaints for 'siblings '", () => {

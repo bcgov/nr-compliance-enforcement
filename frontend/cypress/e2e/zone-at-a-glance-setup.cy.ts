@@ -1,7 +1,7 @@
 describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("it should have more than one link", () => {

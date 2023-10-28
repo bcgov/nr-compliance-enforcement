@@ -97,7 +97,7 @@ on the wildlife contacts details page and see all the inputs
 describe("Complaint Edit Page spec - Edit Allegation View", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data", function () {

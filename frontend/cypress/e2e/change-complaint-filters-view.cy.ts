@@ -7,7 +7,7 @@ describe("Complaint Change Status spec - Details View", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   Cypress._.times(complaintTypes.length, (index) => {

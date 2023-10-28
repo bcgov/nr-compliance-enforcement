@@ -6,7 +6,7 @@ describe("Complaint Paginate from list view", () => {
 
   beforeEach(function () {
     cy.viewport("macbook-16");
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   // test all types of complaints

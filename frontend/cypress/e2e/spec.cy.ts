@@ -1,6 +1,6 @@
 describe("template spec", () => {
   beforeEach(function () {
-    cy.kcLogout().kcLogin();
+    cy.kcLogin();
   });
 
   it("passes", () => {
