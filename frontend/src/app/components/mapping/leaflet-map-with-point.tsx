@@ -10,7 +10,7 @@ import Leaflet from "leaflet";
 import NonDismissibleAlert from "../common/non-dismissible-alert";
 
 type Props = {
-  coordinates: { lat: number; lng: number };
+  coordinates?: { lat: number; lng: number };
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
   hideMarker?: boolean;
@@ -29,19 +29,18 @@ const LeafletMapWithPoint: FC<Props> = ({
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />,
   );
-
   const [markerPosition, setMarkerPosition] = useState<{
     lat: number;
     lng: number;
-  }>(coordinates);
+  }>({lat: 0, lng: 0});
 
   // update the marker poisition when the coordinates are updated (occurs when geocoded).
   // but don't update them if the marker position has already been set manually
   useEffect(() => {
-    if (markerPosition.lat === 0 && markerPosition.lng === 0) {
+    if (coordinates) {
       setMarkerPosition(coordinates);
     }
-  }, [coordinates, markerPosition.lat, markerPosition.lng]);
+  }, [coordinates]);
 
   const handleMarkerDragEnd = (e: L.LeafletEvent) => {
     const marker = e.target;
@@ -50,7 +49,6 @@ const LeafletMapWithPoint: FC<Props> = ({
 
       if (onMarkerMove) {
         onMarkerMove(newPosition.lat, newPosition.lng);
-        setMarkerPosition({ lat: newPosition.lat, lng: newPosition.lng });
       }
     }
   };

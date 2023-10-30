@@ -76,7 +76,7 @@ export const complaintSlice = createSlice({
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
-    setComplaintLocation: (state, action) => {
+    setGeocodedComplaintCoordinates: (state, action) => {
       const { payload: complaintLocation } = action;
       return { ...state, complaintLocation };
     },
@@ -151,7 +151,7 @@ export const {
   setComplaints,
   setTotalCount,
   setComplaint,
-  setComplaintLocation,
+  setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
@@ -340,7 +340,7 @@ export const getComplaintLocationByAddress =
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`,
       );
       const response = await get<Feature>(dispatch, parameters);
-      dispatch(setComplaintLocation(response));
+      dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
       //-- handle the error message
     } finally {
@@ -349,7 +349,7 @@ export const getComplaintLocationByAddress =
   };
 
 // Used to get the complaint location by area and address
-export const getComplaintLocation =
+export const getGeocodedComplaintCoordinates =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
     try {
@@ -366,7 +366,7 @@ export const getComplaintLocation =
         );
       }
       const response = await get<Feature>(dispatch, parameters);
-      dispatch(setComplaintLocation(response));
+      dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
       //-- handle the error message
     } finally {
@@ -585,7 +585,7 @@ export const selectComplaint = (
   return complaint;
 };
 
-export const selectComplaintLocation = (
+export const selectGeocodedComplaintCoordinates = (
   state: RootState,
 ): Feature | null | undefined => {
   const {
