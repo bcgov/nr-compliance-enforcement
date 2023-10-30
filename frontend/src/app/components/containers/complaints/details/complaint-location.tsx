@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import {
   getGeocodedComplaintCoordinates,
@@ -11,9 +11,11 @@ import { isWithinBC } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 
 type Props = {
+  coordinates?: { lat: number; lng: number };
   complaintType: string;
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
+  hideMarker?: boolean;
 };
 
 /**
@@ -21,39 +23,38 @@ type Props = {
  *
  */
 export const ComplaintLocation: FC<Props> = ({
+  coordinates,
   complaintType,
   draggable,
   onMarkerMove,
+  hideMarker
 }) => {
   const dispatch = useAppDispatch();
-  const { coordinates, area, location } = useAppSelector(
+  const { area, location } = useAppSelector(
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
+  const [markerPosition, setMarkerPosition] = useState<{
+    lat: number;
+    lng: number;
+  }>({lat: 0, lng: 0});
+  
   useEffect(() => {
     if (area) {
       // geocode the complaint using the area.  Used in case there are no coordinates
       dispatch(getGeocodedComplaintCoordinates(area));
     }
-  }, [area, dispatch, location]);
+  }, [area, dispatch, location]); 
 
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
-  
-  // if the complaint coordinates have been entered, then display the marker on the map.  
-  // If there are no coordinates, don't display the marker on the map
-  let hideMarker: boolean = false;
 
-  // the lat and long of the marker we need to display on the map
-  // Initialized to 0.  This will either be populated using the optionally supplied coordinates
-  // or they'll be derived using the complaint's location and/or community.
-  let lat = 0;
-  let lng = 0;
-  if (coordinates && isWithinBC(coordinates)) {
-    lat = +coordinates[Coordinates.Latitude];
-    lng = +coordinates[Coordinates.Longitude];
-  } else if (geocodedComplaintCoordinates) {
-    hideMarker = true
-    lat =
+  useEffect(() => {
+    if (coordinates && isWithinBC([coordinates.lng, coordinates.lat])) {
+      setMarkerPosition(coordinates);
+    } else {
+   
+
+     const lat =
     geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
         Coordinates.Latitude
       ] !== undefined
@@ -61,21 +62,24 @@ export const ComplaintLocation: FC<Props> = ({
             Coordinates.Latitude
           ]
         : 0;
-    lng = geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
+    const lng = geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
         Coordinates.Longitude
       ] !== undefined
         ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
             Coordinates.Longitude
           ]
         : 0;
+        
+      setMarkerPosition({lat: lat, lng: lng});
   }
+  }, [coordinates, geocodedComplaintCoordinates?.features]);
 
   return (
     <div className="comp-complaint-details-location-block">
       <h6>Complaint Location</h6>
       <div className="comp-complaint-location">
         <LeafletMapWithPoint
-          coordinates={{ lat: lat, lng: lng }}
+          coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
           draggable={draggable}
           onMarkerMove={onMarkerMove}
           hideMarker={hideMarker}
