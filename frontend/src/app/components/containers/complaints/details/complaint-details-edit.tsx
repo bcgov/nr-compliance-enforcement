@@ -1200,8 +1200,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       id="complaint-description-edit-label-id"
                       className="col-auto"
                     >
-                      Complaint Description
-                      <span className="required-ind">*</span>
+                      Complaint Description<span className="required-ind">*</span>
                     </label>
                     <ValidationTextArea
                       className="comp-form-control"
