@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { OfficeService } from './office.service';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
@@ -6,6 +6,7 @@ import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
+import { UUID } from 'crypto';
 
 @ApiTags("office")
 @UseGuards(JwtRoleGuard)
@@ -36,8 +37,8 @@ export class OfficeController {
 
   @Get(':id')
   @Roles(Role.COS_OFFICER)
-  findOne(@Param('office_guid') id: string) {
-    return this.officeService.findOne(+id);
+  findOne(@Param('id') id: UUID) {
+    return this.officeService.findOne(id);
   }
 
   @Patch(':id')
