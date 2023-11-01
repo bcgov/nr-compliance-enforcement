@@ -22,10 +22,10 @@ export class OfficeController {
     return this.officeService.create(createOfficeDto);
   }
 
-  @Get()
+  @Get("/by-geo-code/:code")
   @Roles(Role.COS_OFFICER)
-  findByGeoOrgCode(@Param('geo_organization_code') geo_organization_code: string) {
-    return this.officeService.findByGeoOrgCode(+geo_organization_code);
+  findByGeoOrgCode(@Param('code') code: string) {
+    return this.officeService.findByGeoOrgCode(code);
   }
 
   @Get("/by-zone/:zone_code")

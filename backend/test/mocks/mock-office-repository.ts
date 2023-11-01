@@ -37,6 +37,7 @@ const single = (idx: number = 0) => {
 
 export const MockOfficeRepository = () => ({
   findOneByOrFail: jest.fn().mockResolvedValue(simpleSingle(2)),
+  find: jest.fn().mockResolvedValue(simpleSingle(4)),
   findAll: jest.fn().mockReturnThis(),
   findByGeoOrgCode: jest.fn().mockReturnThis(),
   findOfficesByZone: jest.fn().mockReturnThis(),
@@ -47,7 +48,8 @@ export const MockOfficeRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     distinctOn: jest.fn().mockReturnThis(),
-    getMany: jest.fn().mockResolvedValue(collection)
+    getMany: jest.fn().mockResolvedValue(collection),
+    
   })),
 });
 

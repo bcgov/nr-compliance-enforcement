@@ -37,12 +37,12 @@ export class OfficeService {
     return newOfficeString;
   }
 
-  findByGeoOrgCode(geo_org_code: any) {
+  findByGeoOrgCode = (geo_org_code: any) => {
     return this.officeRepository.find({
       where: { cos_geo_org_unit: geo_org_code },
       relations: {},
     });
-  }
+  };
 
   findOne = async (id: UUID): Promise<Office> => {
     return this.officeRepository.findOneByOrFail({ office_guid: id });
@@ -58,7 +58,7 @@ export class OfficeService {
       .distinctOn(["cos_geo_org_unit.offloc_code"]);
 
     return queryBuilder.getMany();
-  }
+  };
 
   update(id: number, updateOfficeDto: UpdateOfficeDto) {
     return `This action updates a #${id} office`;

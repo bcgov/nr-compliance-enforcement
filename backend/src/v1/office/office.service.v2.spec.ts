@@ -57,11 +57,10 @@ describe("Testing: OfficeService", () => {
   it("should return collection of offices by zone", async () => {
     const _zone = "NCHKOLKS";
     const _id = "5128179c-f622-499b-b8e5-b39199081f22";
-    const _zone_code = "NCHKOLKS"
-    const _region_code = "OMINECA"
-    const _officeLocation = "VNDHF"
-    const _area_code = "VANDERHF"
-    
+    const _zone_code = "NCHKOLKS";
+    const _region_code = "OMINECA";
+    const _officeLocation = "VNDHF";
+    const _area_code = "VANDERHF";
 
     const results = await service.findOfficesByZone(_zone);
 
@@ -80,12 +79,25 @@ describe("Testing: OfficeService", () => {
       officers,
     } = item;
 
-    expect(id).toBe(_id)
-    expect(zone_code).toBe(_zone_code)
-    expect(region_code).toBe(_region_code)
-    expect(officeLocation).toBe(_officeLocation)
-    expect(area_code).toBe(_area_code)
+    expect(id).toBe(_id);
+    expect(zone_code).toBe(_zone_code);
+    expect(region_code).toBe(_region_code);
+    expect(officeLocation).toBe(_officeLocation);
+    expect(area_code).toBe(_area_code);
 
-    expect(officers.length).toBe(1)
+    expect(officers.length).toBe(1);
+  });
+
+  it("should return collection of offices by geo-location-code", async () => {
+   const _id = "313f4ec3-e88a-41c2-9956-78c7b18cb71d";
+   const _unit = "QSNL";
+
+    const results: any = await service.findByGeoOrgCode(_unit);
+
+    expect(results).not.toBe(null);
+    const { office_guid: id, cos_geo_org_unit: unit} = results;
+
+    expect(id).toBe(_id);
+    expect(unit).toBe(_unit);
   });
 });
