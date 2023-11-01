@@ -9,22 +9,24 @@ const collection = [
   { officer_guid: "3eac2028-9e13-4a7f-af07-f0b8264f32c4", user_id: "VYATES", auth_user_guid: null, office_guid: { office_guid: "3f474308-68da-450a-b1ab-fb8a5b7a27ce", cos_geo_org_unit: { zone_code: "OMNCA", region_code: "OMINECA", region_name: "Omineca", zone_name: "Omineca", office_location_code: "PRCG", office_location_name: "Prince George", area_code: "DOMECRK", area_name: "Dome Creek/Cresent Spur", }, }, person_guid: { person_guid: "8743b973-1945-4227-9402-eacb167889b9", first_name: "Vita", middle_name_1: null, middle_name_2: null, last_name: "Yates", },},
  ];
  
- const single = () => {
-  return collection[2];
+ const single = (idx: number = 0) => {
+  return collection[idx];
  };
 
 export const MockOfficerRepository = () => ({
-  findOneByOrFail: jest.fn().mockReturnThis(),
-  find: jest.fn().mockReturnThis(),
   findAll: jest.fn().mockReturnThis(),
-  findByGeoOrgCode: jest.fn().mockReturnThis(),
-  findOfficesByZone: jest.fn().mockReturnThis(),
+  findByOffice: jest.fn().mockReturnThis(),
+  findByAuthUserGuid: jest.fn().mockReturnThis(),
+  findByUserId: jest.fn().mockReturnThis(),
+  findOne: jest.fn().mockResolvedValue(single(2)),
   update: jest.fn().mockReturnThis(),
   remove: jest.fn().mockReturnThis(),
+  find: jest.fn().mockResolvedValue(single(6)),
   createQueryBuilder: jest.fn(() => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     distinctOn: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(collection),
   })),
 });
