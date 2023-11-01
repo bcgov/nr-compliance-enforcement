@@ -16,6 +16,7 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { UUID } from "crypto";
+import { SearchPayload } from "../complaint/models/search-payload";
 
 @UseGuards(JwtRoleGuard)
 @ApiBearerAuth()
@@ -47,72 +48,20 @@ export class HwcrComplaintController {
   @Get("search")
   @Roles(Role.COS_OFFICER)
   search(
-    @Query("sortColumn") sortColumn: string,
-    @Query("sortOrder") sortOrder: string,
-    @Query("community") community: string,
-    @Query("zone") zone: string,
-    @Query("region") region: string,
-    @Query("officerAssigned") officerAssigned: string,
-    @Query("natureOfComplaint") natureOfComplaint: string,
-    @Query("speciesCode") speciesCode: string,
-    @Query("incidentReportedStart") incidentReportedStart: Date,
-    @Query("incidentReportedEnd") incidentReportedEnd: Date,
-    @Query("status") status,
-    @Query("page") page: number,
-    @Query("pageSize") pageSize: number,
-    @Query("query") query: string,
+    @Query() model: SearchPayload 
   ) {
-    return this.hwcrComplaintService.search(
-      sortColumn,
-      sortOrder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      natureOfComplaint,
-      speciesCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status,
-      page,
-      pageSize,
-      query
-    );
+    return this.hwcrComplaintService.search(model);
   }
 
   @Get("map/search")
   @Roles(Role.COS_OFFICER)
-  searchMap(
-    @Query("sortColumn") sortColumn: string,
-    @Query("sortOrder") sortOrder: string,
-    @Query("community") community: string,
-    @Query("zone") zone: string,
-    @Query("region") region: string,
-    @Query("officerAssigned") officerAssigned: string,
-    @Query("natureOfComplaint") natureOfComplaint: string,
-    @Query("speciesCode") speciesCode: string,
-    @Query("incidentReportedStart") incidentReportedStart: Date,
-    @Query("incidentReportedEnd") incidentReportedEnd: Date,
-    @Query("status") status
-  ) {
-    return this.hwcrComplaintService.searchMap(
-      sortColumn,
-      sortOrder,
-      community,
-      zone,
-      region,
-      officerAssigned,
-      natureOfComplaint,
-      speciesCode,
-      incidentReportedStart,
-      incidentReportedEnd,
-      status
-    );
+  searchMap(@Query() model) {
+    return this.hwcrComplaintService.searchMap(model);
   }
 
   @Get(":id")
   @Roles(Role.COS_OFFICER)
-  findOne(@Param("id") id: string) {
+  findOne(@Param("id") id: UUID) {
     return this.hwcrComplaintService.findOne(id);
   }
 

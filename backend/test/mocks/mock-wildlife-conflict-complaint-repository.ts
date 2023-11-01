@@ -39,6 +39,7 @@ const createQueryBuilder: any = {
     orderBy: jest.fn().mockReturnThis(),
     addOrderBy: jest.fn().mockReturnThis(),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
+    leftJoin: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     orWhere: jest.fn().mockReturnThis(),
     andWhere: jest.fn().mockReturnThis(),
