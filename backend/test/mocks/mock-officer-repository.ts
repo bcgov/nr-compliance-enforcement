@@ -13,7 +13,7 @@ const collection = [
   return collection[2];
  };
 
-export const MockOfficeRepository = () => ({
+export const MockOfficerRepository = () => ({
   findOneByOrFail: jest.fn().mockReturnThis(),
   find: jest.fn().mockReturnThis(),
   findAll: jest.fn().mockReturnThis(),
