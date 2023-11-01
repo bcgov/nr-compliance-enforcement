@@ -8,9 +8,12 @@ import { Office } from "./entities/office.entity";
 import { MockOfficeRepository } from "../../../test/mocks/mock-office-repository";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { UUID } from "crypto";
+import { AgencyCodeDto } from "../agency_code/dto/agency_code.dto";
+import { CreateOfficeDto } from "./dto/create-office.dto";
 
 describe("Testing: OfficeService", () => {
   let service: OfficeService;
+  let dataSource: DataSource;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,6 +37,7 @@ describe("Testing: OfficeService", () => {
       });
 
     service = module.get<OfficeService>(OfficeService);
+    dataSource = module.get<DataSource>(DataSource);
   });
 
   it("should be defined", () => {
@@ -89,15 +93,51 @@ describe("Testing: OfficeService", () => {
   });
 
   it("should return collection of offices by geo-location-code", async () => {
-   const _id = "313f4ec3-e88a-41c2-9956-78c7b18cb71d";
-   const _unit = "QSNL";
+    const _id = "313f4ec3-e88a-41c2-9956-78c7b18cb71d";
+    const _unit = "QSNL";
 
     const results: any = await service.findByGeoOrgCode(_unit);
 
     expect(results).not.toBe(null);
-    const { office_guid: id, cos_geo_org_unit: unit} = results;
+    const { office_guid: id, cos_geo_org_unit: unit } = results;
 
     expect(id).toBe(_id);
     expect(unit).toBe(_unit);
+  });
+
+  it("should create a new office record or throw an error", async () => {
+    const agency: AgencyCodeDto = {
+      agency_code: "TEST",
+      short_description: "Test",
+      long_description: "Test Agency",
+      display_order: 1,
+      active_ind: true,
+      create_user_id: "MSEARS",
+      update_user_id: "MSEARS",
+      create_utc_timestamp: new Date(),
+      update_utc_timestamp: new Date(),
+    };
+
+    const payload: CreateOfficeDto = {
+      geo_organization_unit_code: "TEST",
+      agency_code: agency,
+      create_user_id: "MSEARS",
+      update_user_id: "MSEARS",
+      create_utc_timestamp: new Date(),
+      update_utc_timestamp: new Date(),
+    };
+
+    let response = await service.create(payload);
+    expect(response).not.toBe(null);
+
+    const { create_user_id, update_user_id, agency_code, office_guid } =
+      response;
+    expect(create_user_id).toBe("TEST");
+    expect(update_user_id).toBe("TEST");
+    expect(agency_code).toBe("COS");
+    expect(office_guid).not.toBe(null);
+
+    response = await service.create(payload);
+    expect(response).toThrowError;
   });
 });
