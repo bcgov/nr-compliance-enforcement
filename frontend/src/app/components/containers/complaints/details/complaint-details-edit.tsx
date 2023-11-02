@@ -1301,6 +1301,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         className="comp-form-control"
                         defaultValue={location}
                         onChange={(e) => handleLocationChange(e.target.value)}
+                        maxLength={120}
                       />
                     </div>
                   </div>
