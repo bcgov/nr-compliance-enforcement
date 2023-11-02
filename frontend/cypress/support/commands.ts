@@ -223,6 +223,7 @@ Cypress.Commands.add("enterDateTimeInDatePicker", (datePickerId: string, day: st
   .click({ force: true })
   .get(`.react-datepicker__day--0${day}`)
   .should("exist")
+  .first()
   .click({ force: true });
 
 
@@ -238,8 +239,6 @@ Cypress.Commands.add("enterDateTimeInDatePicker", (datePickerId: string, day: st
 Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
   const bottom = Cypress.$(cy.state("window")).height();
   const rect = subject[0].getBoundingClientRect();
-
-  console.log(rect.top);
 
   expect(rect.top).not.to.be.least(
     bottom,

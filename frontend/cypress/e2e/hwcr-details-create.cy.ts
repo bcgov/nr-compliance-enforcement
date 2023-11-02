@@ -8,7 +8,7 @@ describe("Complaint Create Page spec - Create View", () => {
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves ---- testing",
     location: "644 Pine Street ---- testing",
     locationDescription: " ---- testing",
-    incidentDateDay: "19",
+    incidentDateDay: "01",
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
@@ -94,7 +94,7 @@ describe("Complaint Create Page spec - Create View", () => {
       .type(createCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time","01","13","45");
 
     cy.selectItemById(
       "attractants-select-id",
