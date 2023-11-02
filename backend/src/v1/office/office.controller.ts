@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode } from '@nestjs/common';
 import { OfficeService } from './office.service';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
@@ -6,6 +6,7 @@ import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
+import { UUID } from 'crypto';
 
 @ApiTags("office")
 @UseGuards(JwtRoleGuard)
@@ -15,16 +16,10 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 export class OfficeController {
   constructor(private readonly officeService: OfficeService) {}
 
-  @Post()
+  @Get(':id')
   @Roles(Role.COS_OFFICER)
-  create(@Body() createOfficeDto: CreateOfficeDto) {
-    return this.officeService.create(createOfficeDto);
-  }
-
-  @Get()
-  @Roles(Role.COS_OFFICER)
-  findByGeoOrgCode(@Param('geo_organization_code') geo_organization_code: string) {
-    return this.officeService.findByGeoOrgCode(+geo_organization_code);
+  findOne(@Param('id') id: UUID) {
+    return this.officeService.findOne(id);
   }
 
   @Get("/by-zone/:zone_code")
@@ -34,18 +29,26 @@ export class OfficeController {
     return this.officeService.findOfficesByZone(zone_code);
   }
 
-  @Get(':id')
+  @Get("/by-geo-code/:code")
   @Roles(Role.COS_OFFICER)
-  findOne(@Param('office_guid') id: string) {
-    return this.officeService.findOne(+id);
+  findByGeoOrgCode(@Param('code') code: string) {
+    return this.officeService.findByGeoOrgCode(code);
   }
 
+  @Post()
+  @Roles(Role.COS_OFFICER)
+  create(@Body() createOfficeDto: CreateOfficeDto) {
+    return this.officeService.create(createOfficeDto);
+  }
+
+  @HttpCode(501)
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateOfficeDto: UpdateOfficeDto) {
     return this.officeService.update(+id, updateOfficeDto);
   }
-
+  
+  @HttpCode(501)
   @Delete(':id')
   @Roles(Role.COS_OFFICER)
   remove(@Param('id') id: string) {

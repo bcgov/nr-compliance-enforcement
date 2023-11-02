@@ -50,7 +50,7 @@ const editCallDetails = {
     "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
   location: "Keefes Landing Rd and Danskin Rd ---- testing",
   locationDescription: "tester call description 8 ---- testing",
-  incidentDateDay: "19",
+  incidentDateDay: "01",
   xCoord: "-118",
   yCoord: "49",
   community: "Blaeberry",
@@ -141,7 +141,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","19","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time","01","13","45");
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
