@@ -282,8 +282,6 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
       }
     } catch (error) {
       //-- handler error
-    } finally {
-      
     }
   } else {
     //-- the user is not logged in redirect them to the login
