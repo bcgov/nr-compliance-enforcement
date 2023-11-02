@@ -37,7 +37,6 @@ describe("Testing: OfficeService", () => {
       });
 
     service = module.get<OfficeService>(OfficeService);
-    dataSource = module.get<DataSource>(DataSource);
   });
 
   it("should be defined", () => {

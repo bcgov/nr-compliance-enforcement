@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { UUID } from "crypto";
 
 import { OfficerService } from "./officer.service";
 import { Officer } from "./entities/officer.entity";
