@@ -189,7 +189,6 @@ export const selectClosingCallback = (state: RootState): any => {
 export const isLoading = (state: RootState) => {
   const { loading } = state.app;
   const { isLoading: _isLoading } = loading;
-
   return _isLoading;
 };
 
@@ -209,7 +208,6 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
 
   if (token) {
-    dispatch(toggleLoading(true));
     try {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
       const { given_name, family_name, email, idir_user_guid, idir_username } =
@@ -253,8 +251,6 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       dispatch(setTokenProfile(profile));
     } catch (error) {
       //-- handler error
-    } finally {
-      dispatch(toggleLoading(false));
     }
   } else {
     //-- the user is not logged in redirect them to the login
@@ -266,7 +262,6 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
 
   if (token) {
-    dispatch(toggleLoading(true));
     try {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
       const { idir_username } = decoded;
@@ -288,7 +283,7 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
     } catch (error) {
       //-- handler error
     } finally {
-      dispatch(toggleLoading(false));
+      
     }
   } else {
     //-- the user is not logged in redirect them to the login
@@ -299,7 +294,6 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
 // Get list of the officers and update store
 export const getConfigurations = (): AppThunk => async (dispatch) => {
   try {
-    dispatch(toggleLoading(true));
 
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/configuration/`,
@@ -315,8 +309,6 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
     }
   } catch (error) {
     console.log(error);
-  } finally {
-    dispatch(toggleLoading(false));
   }
 };
 
@@ -417,7 +409,6 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         loading: { count },
       } = state;
       const { payload } = action;
-
       if (payload) {
         let updateCount = count + 1;
         return { ...state, loading: { isLoading: true, count: updateCount } };

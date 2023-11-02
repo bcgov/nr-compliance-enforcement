@@ -3,7 +3,8 @@ import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import config from "../../config";
 import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
-import { toggleNotification } from "../store/reducers/app";
+import { toggleLoading, toggleNotification } from "../store/reducers/app";
+import { store } from '../../app/store/store';
 
 const STATUS_CODES = {
   Ok: 200,
@@ -16,6 +17,30 @@ const STATUS_CODES = {
   BadGateway: 502,
   ServiceUnavailable: 503,
 };
+
+
+// Request interceptor to enable the loading indicator
+axios.interceptors.request.use(
+  function (config) {
+    store.dispatch(toggleLoading(true));
+
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to hide the loading indicator
+axios.interceptors.response.use(
+  function (response) {
+    store.dispatch(toggleLoading(false));
+    return response;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
 
 const { KEYCLOAK_URL } = config;
 

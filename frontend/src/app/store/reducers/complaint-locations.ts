@@ -5,7 +5,6 @@ import { AllegationComplaint } from "../../types/complaints/allegation-complaint
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
-import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import { Coordinates } from "../../types/app/coordinate-type";
@@ -77,7 +76,6 @@ export const getComplaintsOnMap =
       complaintStatusFilter,
     } = payload;
     try {
-      dispatch(toggleLoading(true));
       const apiEndpoint = (type: string): string => {
         switch (type) {
           case COMPLAINT_TYPES.ERS:
@@ -111,8 +109,6 @@ export const getComplaintsOnMap =
       dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
