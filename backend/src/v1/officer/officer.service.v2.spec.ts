@@ -16,7 +16,6 @@ import { Office } from "../office/entities/office.entity";
 
 describe("Testing: OfficerService", () => {
   let service: OfficerService;
-  let dataSource: DataSource;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,7 +49,6 @@ describe("Testing: OfficerService", () => {
       });
 
     service = module.get<OfficerService>(OfficerService);
-    dataSource = module.get<DataSource>(DataSource);
   });
 
   it("should be defined", () => {

@@ -13,7 +13,6 @@ import { CreateOfficeDto } from "./dto/create-office.dto";
 
 describe("Testing: OfficeService", () => {
   let service: OfficeService;
-  let dataSource: DataSource;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
