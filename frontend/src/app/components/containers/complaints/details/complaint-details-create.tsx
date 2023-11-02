@@ -1185,6 +1185,7 @@ export const CreateComplaint: FC = () => {
                   rows={4}
                   errMsg={complaintDescErrorMsg}
                   onChange={handleComplaintDescChange}
+                  maxLength={4000}
                 />
               </div>
               <div
@@ -1273,6 +1274,7 @@ export const CreateComplaint: FC = () => {
                     id="location-edit-id"
                     className="comp-form-control"
                     onChange={(e) => handleLocationChange(e.target.value)}
+                    maxLength={120}
                   />
                 </div>
               </div>
@@ -1288,6 +1290,7 @@ export const CreateComplaint: FC = () => {
                   onChange={(e) =>
                     handleLocationDescriptionChange(e.target.value)
                   }
+                  maxLength={4000}
                 />
               </div>
               <CompInput
@@ -1408,6 +1411,7 @@ export const CreateComplaint: FC = () => {
                     className="comp-form-control"
                     id="caller-name-id"
                     onChange={(e) => handleNameChange(e.target.value)}
+                    maxLength={120}
                   />
                 </div>
               </div>
@@ -1490,6 +1494,7 @@ export const CreateComplaint: FC = () => {
                     className="comp-form-control"
                     id="complaint-address-id"
                     onChange={(e) => handleAddressChange(e.target.value)}
+                    maxLength={120}
                   />
                 </div>
               </div>
@@ -1503,6 +1508,7 @@ export const CreateComplaint: FC = () => {
                     id="complaint-email-id"
                     onChange={handleEmailChange}
                     errMsg={emailMsg}
+                    maxLength={120}
                   />
                 </div>
               </div>
@@ -1549,6 +1555,7 @@ export const CreateComplaint: FC = () => {
                     id="complaint-witness-details-textarea-id"
                     rows={4}
                     onChange={(e) => handleSuspectDetailsChange(e.target.value)}
+                    maxLength={4000}
                   />
                 </div>
               </div>

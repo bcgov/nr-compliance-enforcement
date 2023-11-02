@@ -1185,7 +1185,6 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           </div>
-
           {/* edit details block */}
           <div className="comp-complaint-details-block">
             <h6>Call Details</h6>
@@ -1209,6 +1208,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       rows={4}
                       errMsg={complaintDescErrorMsg}
                       onChange={handleComplaintDescChange}
+                      maxLength={4000}
                     />
                   </div>
                   <div
@@ -1301,6 +1301,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         className="comp-form-control"
                         defaultValue={location}
                         onChange={(e) => handleLocationChange(e.target.value)}
+                        maxLength={120}
                       />
                     </div>
                   </div>
@@ -1317,6 +1318,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       onChange={(e) =>
                         handleLocationDescriptionChange(e.target.value)
                       }
+                      maxLength={4000}
                     />
                   </div>
                   <CompInput
@@ -1456,6 +1458,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         defaultValue={name}
                         id="caller-name-id"
                         onChange={(e) => handleNameChange(e.target.value)}
+                        maxLength={120}
                       />
                     </div>
                   </div>
@@ -1539,6 +1542,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         defaultValue={address}
                         id="complaint-address-id"
                         onChange={(e) => handleAddressChange(e.target.value)}
+                        maxLength={120}
                       />
                     </div>
                   </div>
@@ -1556,6 +1560,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="complaint-email-id"
                         onChange={handleEmailChange}
                         errMsg={emailMsg}
+                        maxLength={120}
                       />
                     </div>
                   </div>
@@ -1606,6 +1611,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         onChange={(e) =>
                           handleSuspectDetailsChange(e.target.value)
                         }
+                        maxLength={4000}
                       />
                     </div>
                   </div>
