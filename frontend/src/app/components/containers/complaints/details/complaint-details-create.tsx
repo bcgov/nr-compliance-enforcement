@@ -31,7 +31,6 @@ import {
 import { Officer } from "../../../../types/person/person";
 import { selectOfficers } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
-import { Button } from "react-bootstrap";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import {
   createAllegationComplaint,

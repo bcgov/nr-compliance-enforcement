@@ -13,7 +13,6 @@ export const CreateComplaintHeader: FC<CreateComplaintHeaderProps> = ({
   saveButtonClick,
 }) => {
   return (
-    <>
       <div className="comp-create-header">
         {/* <!-- breadcrumb start --> */}
         <div className="comp-complaint-breadcrumb">

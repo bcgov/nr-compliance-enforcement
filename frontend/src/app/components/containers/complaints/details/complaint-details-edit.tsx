@@ -59,7 +59,6 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { Button } from "react-bootstrap";
 
 type ComplaintParams = {
   id: string;
