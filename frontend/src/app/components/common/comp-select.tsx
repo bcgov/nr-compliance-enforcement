@@ -38,7 +38,7 @@ export const CompSelect: FC<Props> = ({
       ...styles,
       option: (provided, state) => ({
         ...provided,
-        color: state.label === "None" ? "#a1a1a1" : "black",
+        color: state.label === "None" || state.label ===  "Unassigned" ? "#a1a1a1" : "black",
       }),
     };
   }

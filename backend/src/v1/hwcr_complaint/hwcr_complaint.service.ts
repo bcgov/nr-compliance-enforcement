@@ -583,7 +583,7 @@ export class HwcrComplaintService {
       builder.andWhere("people.person_guid = :PersonGuid", {
         PersonGuid: officerAssigned,
       });
-    } else if (officerAssigned === "null") {
+    } else if (officerAssigned === "null" || officerAssigned === "Unassigned") {
       builder.andWhere("people.person_guid IS NULL");
     }
 
@@ -618,6 +618,8 @@ export class HwcrComplaintService {
         Status: status,
       });
     }
+
+    console.log(builder.getSql());
 
     return builder;
   };

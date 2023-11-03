@@ -7,13 +7,14 @@ import { selectCodeTable } from "../../../store/reducers/code-table";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
+import { CompSelect } from "../../common/comp-select";
 import { useCollapse } from "react-collapsed";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import {
   ComplaintFilterPayload,
   updateFilter,
 } from "../../../store/reducers/complaint-filters";
-import { DropdownOption } from "../../../types/code-tables/option";
+import Option from "../../../types/app/option";
 
 type Props = {
   type: string;
@@ -50,7 +51,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const violationTypes = useAppSelector(selectCodeTable("violationCodes"));
 
   const setFilter = useCallback(
-    (name: string, value?: DropdownOption | Date | null) => {
+    (name: string, value?: Option | Date | null) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
       dispatch(updateFilter(payload));
     },
@@ -330,19 +331,17 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           <div className="comp-filter" id="comp-filter-officer-id">
             <div className="comp-filter-label">Officer Assigned</div>
             <div className="filter-select-padding">
-              <Select
-                options={officers}
-                onChange={(option) => {
-                  setFilter("officer", option);
-                }}
-                placeholder="Select"
-                classNamePrefix="comp-select"
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                id="officer-select-id"
-                value={officer}
-              />
+              <CompSelect
+                    id="officer-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {setFilter("officer", option);}}
+                    className="top-layer-select"
+                    options={officers}
+                    defaultOption={{ label: "Unassigned", value: "Unassigned" }}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={officer}
+                  />
             </div>
           </div>
           <div className="clear-left-float"></div>
