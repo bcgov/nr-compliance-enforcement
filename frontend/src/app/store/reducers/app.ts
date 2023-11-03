@@ -326,7 +326,7 @@ const initialState: AppState = {
   },
   isSidebarOpen: true,
 
-  loading: { isLoading: false, count: 0 },
+  loading: { isLoading: false },
 
   notifications: {
     type: "",
@@ -403,26 +403,9 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     }
 
     case ActionTypes.TOGGLE_LOADING: {
-      const {
-        loading: { count },
-      } = state;
+
       const { payload } = action;
-      if (payload) {
-        let updateCount = count + 1;
-        return { ...state, loading: { isLoading: true, count: updateCount } };
-      }
-
-      if (!payload) {
-        let updateCount = count !== 0 ? count - 1 : 0;
-        let updateIsLoading = updateCount !== 0;
-
-        return {
-          ...state,
-          loading: { isLoading: updateIsLoading, count: updateCount },
-        };
-      }
-
-      return { ...state };
+      return { ...state, loading: { isLoading: payload } };
     }
     case ActionTypes.TOGGLE_NOTIFICATION: {
       const {
