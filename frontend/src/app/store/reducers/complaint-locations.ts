@@ -75,6 +75,7 @@ export const getComplaintsOnMap =
       endDateFilter,
       violationFilter,
       complaintStatusFilter,
+      query
     } = payload;
     try {
       dispatch(toggleLoading(true));
@@ -102,6 +103,7 @@ export const getComplaintsOnMap =
           incidentReportedEnd: endDateFilter,
           violationCode: violationFilter?.value,
           status: complaintStatusFilter?.value,
+          query
         },
       );
       const response = await get<

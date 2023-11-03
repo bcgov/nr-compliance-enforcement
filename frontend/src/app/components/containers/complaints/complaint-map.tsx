@@ -14,9 +14,10 @@ import {
 
 type Props = {
   type: string;
+  searchQuery: string
 };
 
-export const ComplaintMap: FC<Props> = ({ type }) => {
+export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
 
   const coordinatesArray = useAppSelector(selectComplaintLocations(type));
@@ -27,6 +28,17 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
 
   const [sortKey, setSortKey] = useState("incident_reported_utc_timestmp");
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
+
+  useEffect(() => {
+    let payload = generateComplaintRequestPayload(type, filters);
+
+    if (searchQuery) {
+      payload = { ...payload, query: searchQuery };
+    }
+
+    dispatch(getComplaintsOnMap(type, payload));
+  }, [filters, searchQuery]);
+
 
   const generateComplaintRequestPayload = (
     complaintType: string,
@@ -72,11 +84,6 @@ export const ComplaintMap: FC<Props> = ({ type }) => {
         } as ComplaintRequestPayload;
     }
   };
-
-  useEffect(() => {
-    const payload = generateComplaintRequestPayload(type, filters);
-    dispatch(getComplaintsOnMap(type, payload));
-  }, [filters]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
