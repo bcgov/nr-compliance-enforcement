@@ -266,11 +266,14 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
-  const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
+  useEffect(() => {
+    const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
+    if (incidentDateTimeObject) {
+      setSelectedIncidentDateTime(incidentDateTimeObject);
+    }
+  },[incidentDateTime]);
 
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState(
-    incidentDateTimeObject
-  );
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
 
   // Transform the fetched data into the DropdownOption type
 

@@ -14,7 +14,6 @@ import {
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
 } from "./complaints";
-import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
@@ -50,8 +49,6 @@ export const getOfficers =
   (zone?: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
-
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/officer/`,
       );
@@ -66,8 +63,6 @@ export const getOfficers =
       }
     } catch (error) {
       //-- handle errors
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -81,7 +76,6 @@ export const assignCurrentUserToComplaint =
   ): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
 
       let officerParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`,
@@ -127,8 +121,6 @@ export const assignCurrentUserToComplaint =
       }
     } catch (error) {
       //-- handle error
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -142,7 +134,6 @@ export const updateComplaintAssignee =
   ): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
 
       // add new person complaint record
       const payload = {
@@ -190,8 +181,6 @@ export const updateComplaintAssignee =
       }
     } catch (error) {
       // console.log(error);
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 

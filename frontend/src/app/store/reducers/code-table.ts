@@ -12,7 +12,6 @@ import { HwcrNatureOfComplaintCode } from "../../types/code-tables/hwcr-nature-o
 import { CosGeoOrgUnit } from "../../types/person/person";
 import { AttractantCode } from "../../types/code-tables/attractant-code";
 import Option from "../../types/app/option";
-import { toggleLoading } from "./app";
 import { generateApiParameters, get } from "../../common/api";
 import { GeoOrganizationCode } from "../../types/code-tables/geo-orginaization-code";
 import { DropdownOption } from "../../types/code-tables/option";
@@ -266,8 +265,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     },
   } = state;
 
-  dispatch(toggleLoading(true));
-
   try {
     if (!from(agencyCodes).any()) {
       dispatch(fetchAgencyCodes());
@@ -313,8 +310,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchComplaintTypeCodes());
     }
   } catch (error) {
-  } finally {
-    dispatch(toggleLoading(false));
   }
 };
 

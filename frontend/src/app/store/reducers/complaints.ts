@@ -23,7 +23,6 @@ import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
 import { Complaint } from "../../types/complaints/complaint";
-import { toggleLoading } from "./app";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import { Feature } from "../../types/maps/bcGeocoderType";
@@ -180,7 +179,6 @@ export const getComplaints =
     } = payload;
 
     try {
-      dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
       const apiEndpoint = (type: string): string => {
@@ -219,8 +217,6 @@ export const getComplaints =
       dispatch(setTotalCount(totalCount));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -228,7 +224,6 @@ export const getWildlifeComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
       const parameters = generateApiParameters(
@@ -238,8 +233,6 @@ export const getWildlifeComplaintByComplaintIdentifier =
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -247,7 +240,6 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
   (id: string, setUpdateComplaint: Function): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
       const parameters = generateApiParameters(
@@ -260,8 +252,6 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -269,7 +259,6 @@ export const getAllegationComplaintByComplaintIdentifier =
   (id: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
       const parameters = generateApiParameters(
@@ -280,8 +269,6 @@ export const getAllegationComplaintByComplaintIdentifier =
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -289,7 +276,6 @@ export const getAllegationComplaintByComplaintIdentifierSetUpdate =
   (id: string, setUpdateComplaint: Function): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       dispatch(setComplaint(null));
 
       const parameters = generateApiParameters(
@@ -302,8 +288,6 @@ export const getAllegationComplaintByComplaintIdentifierSetUpdate =
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -311,7 +295,6 @@ export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
 
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/${
@@ -324,8 +307,6 @@ export const getZoneAtAGlanceStats =
       dispatch(setZoneAtAGlance({ ...response, type }));
     } catch (error) {
       //-- handle the error message
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -334,8 +315,6 @@ export const getComplaintLocationByAddress =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
-
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`,
       );
@@ -343,8 +322,6 @@ export const getComplaintLocationByAddress =
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
       //-- handle the error message
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -353,7 +330,6 @@ export const getGeocodedComplaintCoordinates =
   (area: string, address?: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       let parameters;
 
       if (address && area) {
@@ -369,8 +345,6 @@ export const getGeocodedComplaintCoordinates =
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
       //-- handle the error message
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -399,7 +373,6 @@ export const createAllegationComplaint =
   async (dispatch) => {
     let newComplaintId: string = "";
     try {
-      dispatch(toggleLoading(true));
 
       const postParameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/allegation-complaint/`,
@@ -423,8 +396,6 @@ export const createAllegationComplaint =
     } catch (error) {
       ToggleError("Unable to create complaint");
       //-- add error handling
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -432,7 +403,6 @@ export const updateAllegationComplaint =
   (allegationComplaint: AllegationComplaint): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       const updateParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaint.allegation_complaint_guid}`,
         { allegationComplaint: JSON.stringify(allegationComplaint) },
@@ -450,8 +420,6 @@ export const updateAllegationComplaint =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -467,7 +435,6 @@ export const createWildlifeComplaint =
   async (dispatch) => {
     let newComplaintId: string = "";
     try {
-      dispatch(toggleLoading(true));
 
       const postParameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/hwcr-complaint/`,
@@ -491,8 +458,6 @@ export const createWildlifeComplaint =
     } catch (error) {
       ToggleError("Unable to create complaint");
       //-- add error handling
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -500,7 +465,6 @@ export const updateWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
       const updateParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
         { hwcrComplaint: JSON.stringify(hwcrComplaint) },
@@ -519,8 +483,6 @@ export const updateWildlifeComplaint =
     } catch (error) {
       ToggleError("Unable to update complaint");
       console.log(error);
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -528,7 +490,6 @@ export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
 
       //-- update the status of the complaint
       await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
@@ -545,8 +506,6 @@ export const updateWildlifeComplaintStatus =
       dispatch(setComplaint({ ...result }));
     } catch (error) {
       //-- add error handling
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
@@ -554,7 +513,6 @@ export const updateAllegationComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(toggleLoading(true));
 
       //-- update the status of the complaint
       await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
@@ -571,8 +529,6 @@ export const updateAllegationComplaintStatus =
       dispatch(setComplaint({ ...result }));
     } catch (error) {
       //-- add error handling
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 
