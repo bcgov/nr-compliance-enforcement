@@ -49,98 +49,159 @@ describe("Complaint Search Functionality", () => {
   });
 
   it("Can search Allegations for 'RAPP'", () => {
-   cy.visit("/");
-   cy.waitForSpinner();
+    cy.visit("/");
+    cy.waitForSpinner();
 
-   //-- load the Enforcement conflicts
-   cy.get(complaintTypes[1]).click({ force: true });
+    //-- load the Enforcement conflicts
+    cy.get(complaintTypes[1]).click({ force: true });
 
-   //-- verify correct tab
-   cy.get("#ers-tab").should("contain.text", "Enforcement");
+    //-- verify correct tab
+    cy.get("#ers-tab").should("contain.text", "Enforcement");
 
-   //-- remove filters
-   cy.get("#comp-status-filter").click({ force: true });
-   cy.get("#comp-status-filter").should("not.exist");
+    //-- remove filters
+    cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-status-filter").should("not.exist");
 
-   //-- there should be 33 complaints
-   cy.get("#complaint-list tbody").find("tr").should("have.length", 33);
+    //-- there should be 33 complaints
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 33);
 
-   //-- search for RAPP and verify there's siz complaints
-   cy.get("#complaint-search").click({ force: true });
-   cy.get("#complaint-search").clear().type("RAPP{enter}"); //-- {enter} will perform an enter keypress
+    //-- search for RAPP and verify there's siz complaints
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("RAPP{enter}"); //-- {enter} will perform an enter keypress
 
-   //-- verify one complaint, and verify complaint-id
-   cy.get("#complaint-list tbody").find("tr").should("have.length", 6);
- });
+    //-- verify one complaint, and verify complaint-id
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 6);
+  });
 
- it("Search should clear when switching tabs", () => {
-   cy.visit("/");
-   cy.waitForSpinner();
+  it("Search should clear when switching tabs", () => {
+    cy.visit("/");
+    cy.waitForSpinner();
 
-   //-- load the Enforcement conflicts
-   cy.get(complaintTypes[1]).click({ force: true });
+    //-- load the Enforcement conflicts
+    cy.get(complaintTypes[1]).click({ force: true });
 
-   //-- verify correct tab
-   cy.get("#ers-tab").should("contain.text", "Enforcement");
+    //-- verify correct tab
+    cy.get("#ers-tab").should("contain.text", "Enforcement");
 
-   //-- remove filters
-   cy.get("#comp-status-filter").click({ force: true });
-   cy.get("#comp-status-filter").should("not.exist");
+    //-- remove filters
+    cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-status-filter").should("not.exist");
 
-   //-- there should be 33 complaints
-   cy.get("#complaint-list tbody").find("tr").should("have.length", 33);
+    //-- there should be 33 complaints
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 33);
 
-   //-- search for RAPP and verify there's siz complaints
-   cy.get("#complaint-search").click({ force: true });
-   cy.get("#complaint-search").clear().type("RAPP{enter}"); //-- {enter} will perform an enter keypress
+    //-- search for RAPP and verify there's siz complaints
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("RAPP{enter}"); //-- {enter} will perform an enter keypress
 
-   //-- verify one complaint, and verify complaint-id
-   cy.get("#complaint-list tbody").find("tr").should("have.length", 6);
+    //-- verify one complaint, and verify complaint-id
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 6);
 
-   //-- switch tabs
-   cy.get(complaintTypes[0]).click({ force: true });
+    //-- switch tabs
+    cy.get(complaintTypes[0]).click({ force: true });
 
-   //-- verify empty search
-   cy.get("#complaint-search").should('have.value', '');
- });
+    //-- verify empty search
+    cy.get("#complaint-search").should("have.value", "");
+  });
 
- it("Can't search Wildlife complaints for 'Zebra'", () => {
-   cy.visit("/");
-   cy.waitForSpinner();
+  it("Can't search Wildlife complaints for 'Zebra'", () => {
+    cy.visit("/");
+    cy.waitForSpinner();
 
-   //-- load the human wildlife conflicts
-   cy.get(complaintTypes[0]).click({ force: true });
+    //-- load the human wildlife conflicts
+    cy.get(complaintTypes[0]).click({ force: true });
 
-   //-- verify correct tab
-   cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
+    //-- verify correct tab
+    cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
 
-   //-- remove filters
-   cy.get("#comp-status-filter").click({ force: true });
-   cy.get("#comp-zone-filter").click({ force: true });
+    //-- remove filters
+    cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-zone-filter").click({ force: true });
 
-   cy.get("#comp-status-filter").should("not.exist");
-   cy.get("#comp-zone-filter").should("not.exist");
+    cy.get("#comp-status-filter").should("not.exist");
+    cy.get("#comp-zone-filter").should("not.exist");
 
-   //-- open the filter tab
-   cy.get("#complaint-filter-image-id").click({ force: true });
+    //-- open the filter tab
+    cy.get("#complaint-filter-image-id").click({ force: true });
 
-   //-- select 70 mile house community
-   cy.selectItemById("community-select-id", "70 Mile House");
-   
-   cy.get("#comp-community-filter").should("exist");
+    //-- select 70 mile house community
+    cy.selectItemById("community-select-id", "70 Mile House");
 
-   //-- close the filter
-   cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-community-filter").should("exist");
 
-   //-- there should be 3 complaints
-  //  cy.get("#complaint-list tbody").find("tr").should("have.length", 3);
+    //-- close the filter
+    cy.get("#complaint-filter-image-id").click({ force: true });
 
-   //-- search for sibling and verify there's one complaint
-   cy.get("#complaint-search").click({ force: true });
-   cy.get("#complaint-search").clear().type("Zebra{enter}"); //-- {enter} will perform an enter keypress
+    //-- search for sibling and verify there's one complaint
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("Zebra{enter}"); //-- {enter} will perform an enter keypress
 
-   //-- verify no complaints
-   cy.get("#complaint-list tbody").find("tr").should("have.length", 0);
- });
+    //-- verify no complaints
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 0);
+  });
 
+  it("Can search wildlife map complaints by complaint-id: 23-031562", () => {
+    cy.visit("/");
+    cy.waitForSpinner();
+
+    //-- load the human wildlife conflicts
+    cy.get(complaintTypes[0]).click({ force: true });
+
+    //-- verify correct tab
+    cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
+
+    //-- search for sibling and verify there's one complaint
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("23-031562{enter}"); //-- {enter} will perform an enter keypress
+
+    //-- verify only one complaint
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 1);
+
+    cy.get("#map_toggle_id").click({ force: true });
+    cy.verifyMapMarkerExists(true);
+
+    cy.get("#multi-point-map")
+      .find(".leaflet-marker-icon")
+      .should(({ length }) => {
+        expect(length).to.eq(1);
+      });
+  });
+
+  it("Can search multiple allegation map complaints: ", () => {
+    cy.visit("/");
+    cy.waitForSpinner();
+
+    //-- load the human wildlife conflicts
+    cy.get(complaintTypes[1]).click({ force: true });
+
+    //-- verify correct tab
+    cy.get("#ers-tab").should("contain.text", "Enforcement"); //comp-zone-filter
+
+    //-- remove the zone filter
+    cy.get("#comp-zone-filter").click({ force: true });
+    cy.get("#comp-zone-filter").should("not.exist");
+
+    //-- open the filter tab
+    cy.get("#complaint-filter-image-id").click({ force: true });
+
+    //-- select east kootenay zone
+    cy.selectItemById("zone-select-id", "East Kootenay");
+    cy.get("#comp-zone-filter").should("exist");
+
+    cy.get("#complaint-filter-image-id").click({ force: true });
+
+    //-- search for fire and verify there's multiple complaints
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("fire{enter}"); //-- {enter} will perform an enter keypress
+
+    cy.get("#map_toggle_id").click({ force: true });
+    cy.verifyMapMarkerExists(true);
+
+    cy.get("#multi-point-map")
+      .find("div.leaflet-marker-icon")
+      .should(({ length }) => {
+        console.log(length);
+        expect(length).to.eq(5);
+      });
+  });
 });

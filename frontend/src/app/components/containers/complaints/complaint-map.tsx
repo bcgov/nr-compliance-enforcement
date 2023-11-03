@@ -17,6 +17,53 @@ type Props = {
   searchQuery: string
 };
 
+export const generateMapComplaintRequestPayload = (
+  complaintType: string,
+  filters: ComplaintFilters,
+  sortKey: string,
+  sortDirection: string
+): ComplaintRequestPayload => {
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+  } = filters;
+
+  const common = {
+    sortColumn: sortKey,
+    sortOrder: sortDirection,
+    regionCodeFilter: region,
+    zoneCodeFilter: zone,
+    areaCodeFilter: community,
+    officerFilter: officer,
+    startDateFilter: startDate,
+    endDateFilter: endDate,
+    complaintStatusFilter: status,
+  };
+
+  switch (complaintType) {
+    case COMPLAINT_TYPES.ERS:
+      return {
+        ...common,
+        violationFilter: violationType,
+      } as ComplaintRequestPayload;
+    case COMPLAINT_TYPES.HWCR:
+    default:
+      return {
+        ...common,
+        speciesCodeFilter: species,
+        natureOfComplaintFilter: natureOfComplaint,
+      } as ComplaintRequestPayload;
+  }
+};
+
 export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
 
@@ -30,7 +77,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
   useEffect(() => {
-    let payload = generateComplaintRequestPayload(type, filters);
+    let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
 
     if (searchQuery) {
       payload = { ...payload, query: searchQuery };
@@ -38,52 +85,6 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
 
     dispatch(getComplaintsOnMap(type, payload));
   }, [filters, searchQuery]);
-
-
-  const generateComplaintRequestPayload = (
-    complaintType: string,
-    filters: ComplaintFilters,
-  ): ComplaintRequestPayload => {
-    const {
-      region,
-      zone,
-      community,
-      officer,
-      startDate,
-      endDate,
-      status,
-      species,
-      natureOfComplaint,
-      violationType,
-    } = filters;
-
-    const common = {
-      sortColumn: sortKey,
-      sortOrder: sortDirection,
-      regionCodeFilter: region,
-      zoneCodeFilter: zone,
-      areaCodeFilter: community,
-      officerFilter: officer,
-      startDateFilter: startDate,
-      endDateFilter: endDate,
-      complaintStatusFilter: status,
-    };
-
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return {
-          ...common,
-          violationFilter: violationType,
-        } as ComplaintRequestPayload;
-      case COMPLAINT_TYPES.HWCR:
-      default:
-        return {
-          ...common,
-          speciesCodeFilter: species,
-          natureOfComplaintFilter: natureOfComplaint,
-        } as ComplaintRequestPayload;
-    }
-  };
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux

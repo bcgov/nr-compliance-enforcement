@@ -5,15 +5,19 @@ import { getComplaints } from "../../store/reducers/complaints";
 import { generateComplaintRequestPayload } from "../containers/complaints/complaint-list";
 import { useAppDispatch } from "../../hooks/hooks";
 import { SORT_TYPES } from "../../constants/sort-direction";
+import { getComplaintsOnMap } from "../../store/reducers/complaint-locations";
+import { generateMapComplaintRequestPayload } from "../containers/complaints/complaint-map";
 
 type Props = {
   complaintType: string;
+  viewType: "map" | "list";
   searchQuery: string | undefined;
   applySearchQuery: Function;
 };
 
 const SearchInput: FC<Props> = ({
   complaintType,
+  viewType,
   searchQuery,
   applySearchQuery,
 }) => {
@@ -43,7 +47,18 @@ const SearchInput: FC<Props> = ({
 
       payload = { ...payload, query: input };
 
-      dispatch(getComplaints(complaintType, payload));
+      if(viewType === "list"){ 
+        dispatch(getComplaints(complaintType, payload));
+      }
+      else { 
+        let payload = generateMapComplaintRequestPayload(complaintType, filters, "", "");
+
+        if (searchQuery) {
+          payload = { ...payload, query: searchQuery };
+        }
+
+        dispatch(getComplaintsOnMap(complaintType, payload));
+      }
     }
   };
 
