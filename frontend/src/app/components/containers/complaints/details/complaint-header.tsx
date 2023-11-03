@@ -86,107 +86,108 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   return (
     <>
-      {/* <!-- breadcrumb start --> */}
-      <div className="comp-complaint-breadcrumb">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item">
-              <i className="bi bi-house-door"></i> Home
-            </li>
-            <li className="breadcrumb-item comp-nav-item-name-inverted">
-              <Link to={`/complaints/${complaintType}`}>
-                {complaintTypeToName(complaintType)}
-              </Link>
-            </li>
-            <li className="breadcrumb-item" aria-current="page">
-              {id}
-            </li>
-          </ol>
-        </nav>
-      </div>
-      {/* <!-- breadcrumb end --> */}
-
-      {/* <!-- complaint info start --> */}
       <div className="comp-details-header">
-        <div className="comp-complaint-info">
-          <div className="comp-box-complaint-id">Complaint #{id}</div>
-          <div
-            className={`comp-box-conflict-type ${
-              complaintType !== COMPLAINT_TYPES.ERS
-                ? "hwcr-conflict-type"
-                : "allegation-conflict-type"
-            }`}
-          >
-            {complaintTypeToName(complaintType, true)}
-          </div>
-          {readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
-            <div className="comp-box-species-type">{species}</div>
-          )}
-          {readOnly && (
-            <div className="comp-box-actions">
-              <Button
-                id="details-screen-assign-button"
-                title="Assign to Officer"
-                variant="outline-primary"
-                onClick={openAsignOfficerModal}
-                className=""
-              >
-                <span>{assignText}</span>
-                <BsPersonPlus />
-              </Button>
-              <Button
-                id="details-screen-update-status-button"
-                title="Update Status"
-                variant="outline-primary"
-                onClick={openStatusChangeModal}
-              >
-                Update Status
-              </Button>
-              <Button
-                id="details-screen-edit-button"
-                title="Edit Complaint"
-                variant="outline-primary"
-                onClick={editButtonClick}
-              >
-                <span>Edit</span>
-                <BsPencil />
-              </Button>
+        {/* <!-- breadcrumb start --> */}
+        <div className="comp-complaint-breadcrumb">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <i className="bi bi-house-door"></i> Home
+              </li>
+              <li className="breadcrumb-item comp-nav-item-name-inverted">
+                <Link to={`/complaints/${complaintType}`}>
+                  {complaintTypeToName(complaintType)}
+                </Link>
+              </li>
+              <li className="breadcrumb-item" aria-current="page">
+                {id}
+              </li>
+            </ol>
+          </nav>
+        </div>
+        {/* <!-- breadcrumb end --> */}
+
+        {/* <!-- complaint info start --> */}
+        <div className="comp-details-subheader">
+          <div className="comp-complaint-info">
+            <div className="comp-box-complaint-id">Complaint #{id}</div>
+            <div
+              className={`comp-box-conflict-type ${
+                complaintType !== COMPLAINT_TYPES.ERS
+                  ? "hwcr-conflict-type"
+                  : "allegation-conflict-type"
+              }`}
+            >
+              {complaintTypeToName(complaintType, true)}
             </div>
-          )}
-          {!readOnly && (
-            <div className="comp-box-actions">
-              <Button
-                id="details-screen-cancel-edit-button-top"
-                title="Cancel Edit Complaint"
-                variant="outline-primary"
-                onClick={cancelButtonClick}
-              >
-                Cancel
-              </Button>
-              <Button
-                id="details-screen-cancel-save-button-top"
-                title="Save Complaint"
-                variant="outline-primary"
-                onClick={saveButtonClick}
-              >
-                Save Changes
-              </Button>
+            {readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
+              <div className="comp-box-species-type">{species}</div>
+            )}
+            {readOnly && (
+              <div className="comp-box-actions">
+                <Button
+                  id="details-screen-assign-button"
+                  title="Assign to Officer"
+                  variant="outline-primary"
+                  onClick={openAsignOfficerModal}
+                  className=""
+                >
+                  <span>{assignText}</span>
+                  <BsPersonPlus />
+                </Button>
+                <Button
+                  id="details-screen-update-status-button"
+                  title="Update Status"
+                  variant="outline-primary"
+                  onClick={openStatusChangeModal}
+                >
+                  Update Status
+                </Button>
+                <Button
+                  id="details-screen-edit-button"
+                  title="Edit Complaint"
+                  variant="outline-primary"
+                  onClick={editButtonClick}
+                >
+                  <span>Edit</span>
+                  <BsPencil />
+                </Button>
+              </div>
+            )}
+            {!readOnly && (
+              <div className="comp-box-actions">
+                <Button
+                  id="details-screen-cancel-edit-button-top"
+                  title="Cancel Edit Complaint"
+                  variant="outline-primary"
+                  onClick={cancelButtonClick}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  id="details-screen-cancel-save-button-top"
+                  title="Save Complaint"
+                  variant="outline-primary"
+                  onClick={saveButtonClick}
+                >
+                  Save Changes
+                </Button>
+              </div>
+            )}
+          </div>
+          {readOnly && (
+            <div
+              className="comp-nature-of-complaint"
+              id="comp-nature-of-complaint"
+            >
+              {complaintType !== COMPLAINT_TYPES.ERS
+                ? natureOfComplaint
+                : violationType}
             </div>
           )}
         </div>
-        {readOnly && (
-          <div
-            className="comp-nature-of-complaint"
-            id="comp-nature-of-complaint"
-          >
-            {complaintType !== COMPLAINT_TYPES.ERS
-              ? natureOfComplaint
-              : violationType}
-          </div>
-        )}
+        {/* <!-- complaint info end --> */}
       </div>
-      {/* <!-- complaint info end --> */}
-
       {/* <!-- complaint status details start --> */}
       {readOnly && (
         <div className="comp-details-status">

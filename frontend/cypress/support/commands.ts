@@ -240,11 +240,11 @@ Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
   const bottom = Cypress.$(cy.state("window")).height();
   const rect = subject[0].getBoundingClientRect();
 
-  expect(rect.top).not.to.be.greaterThan(
+  expect(rect.top).not.to.be.least(
     bottom,
     `Expected element not to be below the visible scrolled area`,
   );
-  expect(rect.top).to.be.greaterThan(
+  expect(rect.top).to.be.least(
     0,
     `Expected element not to be above the visible scrolled area`,
   );
