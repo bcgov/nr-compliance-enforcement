@@ -59,7 +59,6 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { Button } from "react-bootstrap";
 
 type ComplaintParams = {
   id: string;
@@ -1621,29 +1620,6 @@ export const ComplaintDetailsEdit: FC = () => {
             </div>
           )}
         </>
-      )}
-
-      {!readOnly && (
-        <div className="comp-box-footer">
-          <div className="comp-box-footer-actions">
-            <Button
-              id="details_screen_cancel_edit_button_footer"
-              title="Cancel Edit Complaint"
-              variant="outline-primary"
-              onClick={cancelButtonClick}
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              id="details_screen_cancel_save_button_footer"
-              title="Save Complaint"
-              variant="primary"
-              onClick={saveButtonClick}
-            >
-              <span>Save Changes</span>
-            </Button>
-          </div>
-        </div>
       )}
     </div>
   );
