@@ -1,4 +1,11 @@
-import { ChangeEvent, FC, KeyboardEvent, useContext, useState, useEffect } from "react";
+import {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { InputGroup } from "react-bootstrap";
 import { ComplaintFilterContext } from "../../providers/complaint-filter-provider";
 import { getComplaints } from "../../store/reducers/complaints";
@@ -26,32 +33,36 @@ const SearchInput: FC<Props> = ({
 
   const [input, setInput] = useState<string>("");
 
-  useEffect(() => { 
-    if(!searchQuery){
-      setInput("")
-    } 
-  }, [searchQuery])
+  useEffect(() => {
+    if (!searchQuery) {
+      setInput("");
+    }
+  }, [searchQuery]);
 
   const handleSearch = () => {
     if (input.length >= 3) {
       applySearchQuery(input);
 
-      let payload = generateComplaintRequestPayload(
-        complaintType,
-        filters,
-        1,
-        50,
-        "incident_reported_utc_timestmp",
-        SORT_TYPES.DESC
-      );
+      if (viewType === "list") {
+        let payload = generateComplaintRequestPayload(
+          complaintType,
+          filters,
+          1,
+          50,
+          "incident_reported_utc_timestmp",
+          SORT_TYPES.DESC
+        );
 
-      payload = { ...payload, query: input };
+        payload = { ...payload, query: input };
 
-      if(viewType === "list"){ 
         dispatch(getComplaints(complaintType, payload));
-      }
-      else { 
-        let payload = generateMapComplaintRequestPayload(complaintType, filters, "", "");
+      } else {
+        let payload = generateMapComplaintRequestPayload(
+          complaintType,
+          filters,
+          "",
+          ""
+        );
 
         if (searchQuery) {
           payload = { ...payload, query: searchQuery };
@@ -85,8 +96,8 @@ const SearchInput: FC<Props> = ({
 
     if (!value) {
       handleClear();
-    } 
-    
+    }
+
     setInput(value);
   };
 
