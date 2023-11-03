@@ -32,6 +32,18 @@
   top: 166px; // Header (72px) + Tabs (48px) + filters (46px)
 }
 
+.comp-create-header {
+  top: 72px;
+  position: sticky !important;
+  z-index: 8000;
+}
+
+.comp-details-header {
+  top: 72px;
+  position: sticky !important;
+  z-index: 8000;
+}
+
 .comp-header {
   height: 72px;
   padding: 0 0 0 12px;
