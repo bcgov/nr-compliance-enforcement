@@ -1,19 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
 import { CodeTableService } from "./code-table.service";
-import { CreateCodeTableDto } from "./dto/create-code-table.dto";
-import { UpdateCodeTableDto } from "./dto/update-code-table.dto";
 import { JwtRoleGuard } from "src/auth/jwtrole.guard";
+import { Roles } from "src/auth/decorators/roles.decorator";
+import { Role } from "src/enum/role.enum";
+import CodeTable, { AvailableCodeTables } from "../../types/models/code-tables"
+
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("code-table")
@@ -21,8 +14,16 @@ import { JwtRoleGuard } from "src/auth/jwtrole.guard";
 export class CodeTableController {
   constructor(private readonly service: CodeTableService) {}
 
-  @Get()
-  findAll() {
-    return this.service.findAll();
+  @Get(":table")
+  @Roles(Role.COS_OFFICER)
+  async getCodeTableByName(
+    @Param("table") table: string
+  ): Promise<CodeTable[]> {
+    if(!AvailableCodeTables.includes(table)){ 
+      throw new NotFoundException();
+    }
+
+    const result = await this.service.getCodeTableByName(table);
+    return result;
   }
 }
