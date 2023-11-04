@@ -53,4 +53,15 @@ describe("Testing: CodeTable Controller", () => {
     );
     expect(response.statusCode).toBe(200);
   });
+
+  it("should return 404 when a requesting code table that doesn't exist", async () => {
+    //-- arrange
+    const _tableName = "test";
+
+    //-- act
+    let response = await request(app.getHttpServer()).get(
+      `/code-table/${_tableName}`
+    );
+    expect(response.statusCode).toBe(404);
+  });
 });
