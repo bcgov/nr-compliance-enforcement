@@ -1,20 +1,56 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CodeTableController } from './code-table.controller';
-import { CodeTableService } from './code-table.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
 
-describe('CodeTableController', () => {
+import { authGuardMock } from "../../../test/mocks/authGuardMock";
+import { roleGuardMock } from "../../../test/mocks/roleGuardMock";
+import { JwtAuthGuard } from "../../auth/jwtauth.guard";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+
+import { CodeTableController } from "./code-table.controller";
+import { CodeTableService } from "./code-table.service";
+import { MockAgencyCodeTableRepository } from "../../../test/mocks/mock-code-table-repositories";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+
+describe("Testing: CodeTable Controller", () => {
+  let app: INestApplication;
   let controller: CodeTableController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CodeTableController],
-      providers: [CodeTableService],
-    }).compile();
+      providers: [
+        CodeTableService,
+        {
+          provide: getRepositoryToken(AgencyCode),
+          useFactory: MockAgencyCodeTableRepository,
+        },
+      ],
+    })      .overrideGuard(JwtAuthGuard)
+    .useValue({ authGuardMock })
+    .overrideGuard(JwtRoleGuard)
+    .useValue({ roleGuardMock })
+    .compile();
+
+    app = module.createNestApplication();
+    await app.init();
 
     controller = module.get<CodeTableController>(CodeTableController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
+  });
+
+  it("should return 200 when a GET is called successfully", async () => {
+    //-- arrange
+    const _tableName = "agency";
+
+    //-- act
+    let response = await request(app.getHttpServer()).get(
+      `/code-table/${_tableName}`
+    );
+    expect(response.statusCode).toBe(200);
   });
 });

@@ -2,11 +2,11 @@ import { Controller, Get, NotFoundException, Param, UseGuards } from "@nestjs/co
 import { ApiTags } from "@nestjs/swagger";
 
 import { CodeTableService } from "./code-table.service";
-import { JwtRoleGuard } from "src/auth/jwtrole.guard";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { Role } from "src/enum/role.enum";
-import CodeTable, { AvailableCodeTables } from "../../types/models/code-tables"
+import { Role } from '../../enum/role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 
+import CodeTable, { AvailableCodeTables } from "../../types/models/code-tables"
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("code-table")
