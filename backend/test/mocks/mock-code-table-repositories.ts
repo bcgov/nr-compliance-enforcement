@@ -36,6 +36,13 @@ const natureOfComplaints = [
    { "hwcr_complaint_nature_code": "DEADNV", "short_description": "DEADNV", "long_description": "Dead wildlife - no violation suspected", "display_order": 6, "active_ind": true   }
 ]
 
+const organizationUnitTypes = [
+   { "geo_org_unit_type_code": "ZONE", "short_description": "Zone", "long_description": null, "display_order": 1, "active_ind": true   },
+   { "geo_org_unit_type_code": "REGION", "short_description": "Region", "long_description": null, "display_order": 2, "active_ind": true   },
+   { "geo_org_unit_type_code": "OFFLOC", "short_description": "Office Location", "long_description": null, "display_order": 3, "active_ind": true   },
+   { "geo_org_unit_type_code": "AREA", "short_description": "Area", "long_description": null, "display_order": 4, "active_ind": true   }
+]
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
@@ -98,5 +105,14 @@ export const MockAttractantCodeTableRepository = () => ({
      leftJoinAndSelect: jest.fn().mockReturnThis(),
      where: jest.fn().mockReturnThis(),
      getMany: jest.fn().mockResolvedValue(natureOfComplaints),
+   })),
+ });
+
+ export const MockOrganizationUnitTypeCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(organizationUnitTypes),
+   createQueryBuilder: jest.fn(() => ({
+     leftJoinAndSelect: jest.fn().mockReturnThis(),
+     where: jest.fn().mockReturnThis(),
+     getMany: jest.fn().mockResolvedValue(organizationUnitTypes),
    })),
  });

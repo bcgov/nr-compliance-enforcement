@@ -2,11 +2,12 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import CodeTable, { Agency, Attractant, ComplaintStatus, NatureOfComplaint } from "../../types/models/code-tables";
+import CodeTable, { Agency, Attractant, ComplaintStatus, NatureOfComplaint, OrganizationUnitType } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
+import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -20,6 +21,8 @@ export class CodeTableService {
   private _complaintStatusRepository: Repository<ComplaintStatusCode>;
   @InjectRepository(HwcrComplaintNatureCode)
   private _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
+  @InjectRepository(GeoOrgUnitTypeCode)
+  private _organizationUnitTypeRepository: Repository<GeoOrgUnitTypeCode>;
 
   getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
     switch (table) {
@@ -102,6 +105,28 @@ export class CodeTableService {
           }) => {
             let table: NatureOfComplaint = {
               natureOfComplaint: hwcr_complaint_nature_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+            };
+            return table;
+          }
+        );
+        return results;
+      }
+      case "organization-unit-type": { 
+        const data = await this._organizationUnitTypeRepository.find();
+        let results = data.map(
+          ({
+            geo_org_unit_type_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+          }) => {
+            let table: OrganizationUnitType = {
+              organizationUnitType: geo_org_unit_type_code,
               shortDescription: short_description,
               longDescription: long_description,
               displayOrder: display_order,

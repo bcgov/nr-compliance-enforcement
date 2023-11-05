@@ -6,6 +6,7 @@ import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
+import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/
     TypeOrmModule.forFeature([AttractantCode]),
     TypeOrmModule.forFeature([ComplaintStatusCode]),
     TypeOrmModule.forFeature([HwcrComplaintNatureCode]),
+    TypeOrmModule.forFeature([GeoOrgUnitTypeCode]),
   ],
   controllers: [CodeTableController],
   providers: [CodeTableService],
