@@ -175,8 +175,15 @@ export class AllegationComplaintService {
   searchMap = async (
     model: SearchPayload
   ): Promise<Array<AllegationComplaint>> => {
+    const { query } = model;
+
     //-- build generic wildlife query
     let builder = this._getAllegationQuery();
+
+    //-- apply search
+    if (query) {
+      builder = this._applySearch(builder, query);
+    }
 
     //-- apply filters
     builder = this._applyAllegationQueryFilters(
