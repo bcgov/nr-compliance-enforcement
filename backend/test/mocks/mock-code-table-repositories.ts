@@ -12,22 +12,27 @@ const agencyCollection = [
 ]
 
 const attractants = [
-   { "attractantCode": "BEEHIVE", "shortDescription": "Beehive", "longDescription": "Beehive", "displayOrder": 2, "isActive": true},
-   { "attractantCode": "BIRD FDR", "shortDescription": "Bird Feeder", "longDescription": "Bird Feeder", "displayOrder": 3, "isActive": true    },
-   { "attractantCode": "CAMP FD", "shortDescription": "Campground Food", "longDescription": "Campground Food", "displayOrder": 4, "isActive": true    },
-   { "attractantCode": "COMPOST", "shortDescription": "Compost", "longDescription": "Compost", "displayOrder": 5, "isActive": true    },
-   { "attractantCode": "CROPS", "shortDescription": "Crops", "longDescription": "Crops", "displayOrder": 6, "isActive": true    },
-   { "attractantCode": "FREEZER", "shortDescription": "Freezer", "longDescription": "Freezer", "displayOrder": 7, "isActive": true    },
-   { "attractantCode": "BBQ", "shortDescription": "BBQ", "longDescription": "Barbeque", "displayOrder": 1, "isActive": true    },
-   { "attractantCode": "RESFRUIT", "shortDescription": "Fruit/Berries", "longDescription": "Residential Fruit/Berries", "displayOrder": 8, "isActive": true    }
+   { "attractant_code": "BEEHIVE", "short_description": "Beehive", "long_description": "Beehive", "display_order": 2, "active_ind": true},
+   { "attractant_code": "BIRD FDR", "short_description": "Bird Feeder", "long_description": "Bird Feeder", "display_order": 3, "active_ind": true    },
+   { "attractant_code": "CAMP FD", "short_description": "Campground Food", "long_description": "Campground Food", "display_order": 4, "active_ind": true    },
+   { "attractant_code": "COMPOST", "short_description": "Compost", "long_description": "Compost", "display_order": 5, "active_ind": true    },
+   { "attractant_code": "CROPS", "short_description": "Crops", "long_description": "Crops", "display_order": 6, "active_ind": true    },
+   { "attractant_code": "FREEZER", "short_description": "Freezer", "long_description": "Freezer", "display_order": 7, "active_ind": true    },
+   { "attractant_code": "BBQ", "short_description": "BBQ", "long_description": "Barbeque", "display_order": 1, "active_ind": true    },
+   { "attractant_code": "RESFRUIT", "short_description": "Fruit/Berries", "long_description": "Residential Fruit/Berries", "display_order": 8, "active_ind": true    }
 ];
+
+const complaitStatus = [
+   { "complaint_status_code": "OPEN", "short_description": "OPEN", "long_description": "Open", "display_order": 1, "active_ind": true   },
+   { "complaint_status_code": "CLOSED", "short_description": "CLOSED", "long_description": "Closed", "display_order": 1, "active_ind": true   }
+]
 
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
       return idx <= agencyCollection.length
-        ? agencyCollection[idx]
-        : agencyCollection[0];
+  ? agencyCollection[idx]
+  : agencyCollection[0];
     }
     case "attractant": { 
       return idx <= attractants.length
@@ -59,3 +64,11 @@ export const MockAttractantCodeTableRepository = () => ({
    })),
  });
  
+ export const MockComplaintStatusCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(complaitStatus),
+   createQueryBuilder: jest.fn(() => ({
+     leftJoinAndSelect: jest.fn().mockReturnThis(),
+     where: jest.fn().mockReturnThis(),
+     getMany: jest.fn().mockResolvedValue(complaitStatus),
+   })),
+ });

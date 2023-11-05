@@ -2,13 +2,14 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CodeTableService } from "./code-table.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
+import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 
 import {
   MockAgencyCodeTableRepository,
   MockAttractantCodeTableRepository,
+  MockComplaintStatusCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
-
-import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -24,6 +25,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintStatusCode),
+          useFactory: MockComplaintStatusCodeTableRepository,
         },
       ],
     }).compile();
@@ -59,5 +64,18 @@ describe("Testing: CodeTable Service", () => {
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(8);
+  });
+
+  it("should return collection of complaint status types", async () => {
+    //-- arrange
+    const _tableName = "complaint-status";
+
+    //-- act
+    const results = await service.getCodeTableByName(_tableName);
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(2);
   });
 });
