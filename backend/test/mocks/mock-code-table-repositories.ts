@@ -111,8 +111,6 @@ export const MockNatureOfComplaintCodeTableRepository = () => ({
   })),
 });
 
-organizationUnits
-
 export const MockOrganizationUnitTypeCodeTableRepository = () => ({
   find: jest.fn().mockResolvedValue(organizationUnitTypes),
   createQueryBuilder: jest.fn(() => ({
