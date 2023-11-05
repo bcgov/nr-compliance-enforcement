@@ -2,7 +2,7 @@ import { CodeTable } from "./code-table";
 import { Agency } from "./agency";
 import { Attractant } from "./attractant";
 import { ComplaintStatus } from "./complaint-status";
-
+import { NatureOfComplaint } from "./nature-of-complaint";
 
 
 
@@ -20,4 +20,4 @@ export const AvailableCodeTables = [
 ];
 
 export default CodeTable;
-export { Agency, Attractant, ComplaintStatus };
+export { Agency, Attractant, ComplaintStatus, NatureOfComplaint };

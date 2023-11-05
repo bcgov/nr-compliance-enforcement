@@ -27,6 +27,15 @@ const complaitStatus = [
    { "complaint_status_code": "CLOSED", "short_description": "CLOSED", "long_description": "Closed", "display_order": 1, "active_ind": true   }
 ]
 
+const natureOfComplaints = [
+   { "hwcr_complaint_nature_code": "AGGNOT", "short_description": "AGGNOT", "long_description": "Aggressive - not present", "display_order": 1, "active_ind": true   },
+   { "hwcr_complaint_nature_code": "AGGPRES", "short_description": "AGGPRES", "long_description": "Aggressive - present/recent", "display_order": 2, "active_ind": true   },
+   { "hwcr_complaint_nature_code": "CONFINED", "short_description": "CONFINED", "long_description": "Confined", "display_order": 3, "active_ind": true   },
+   { "hwcr_complaint_nature_code": "COUGARN", "short_description": "COUGARN", "long_description": "Cougar suspected - killed/injured livestock/pets - not present", "display_order": 4, "active_ind": true   },
+   { "hwcr_complaint_nature_code": "DAMNP", "short_description": "DAMNP", "long_description": "Damage to property - not present", "display_order": 5, "active_ind": true   },
+   { "hwcr_complaint_nature_code": "DEADNV", "short_description": "DEADNV", "long_description": "Dead wildlife - no violation suspected", "display_order": 6, "active_ind": true   }
+]
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
@@ -38,6 +47,16 @@ const single = (name: string = "default", idx: number = 0): any => {
       return idx <= attractants.length
       ? attractants[idx]
       : attractants[0];
+    }
+    case "complaint-status": { 
+      return idx <= complaitStatus.length
+      ? complaitStatus[idx]
+      : complaitStatus[0];
+    }
+    case "nature-of-complaint": { 
+      return idx <= natureOfComplaints.length
+      ? natureOfComplaints[idx]
+      : natureOfComplaints[0];
     }
     case "default":
     default:
@@ -70,5 +89,14 @@ export const MockAttractantCodeTableRepository = () => ({
      leftJoinAndSelect: jest.fn().mockReturnThis(),
      where: jest.fn().mockReturnThis(),
      getMany: jest.fn().mockResolvedValue(complaitStatus),
+   })),
+ });
+
+ export const MockNatureOfComplaintCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(natureOfComplaints),
+   createQueryBuilder: jest.fn(() => ({
+     leftJoinAndSelect: jest.fn().mockReturnThis(),
+     where: jest.fn().mockReturnThis(),
+     getMany: jest.fn().mockResolvedValue(natureOfComplaints),
    })),
  });

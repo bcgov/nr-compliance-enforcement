@@ -9,7 +9,9 @@ import {
   MockAgencyCodeTableRepository,
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
+  MockNatureOfComplaintCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
+import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -29,6 +31,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(ComplaintStatusCode),
           useFactory: MockComplaintStatusCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(HwcrComplaintNatureCode),
+          useFactory: MockNatureOfComplaintCodeTableRepository,
         },
       ],
     }).compile();
@@ -77,5 +83,18 @@ describe("Testing: CodeTable Service", () => {
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(2);
+  });
+
+  it("should return collection of nature of complaints", async () => {
+    //-- arrange
+    const _tableName = "nature-of-complaint";
+
+    //-- act
+    const results = await service.getCodeTableByName(_tableName);
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(6);
   });
 });
