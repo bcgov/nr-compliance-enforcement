@@ -1,5 +1,6 @@
 import { CodeTable } from "./code-table";
 import { Agency } from "./agency";
+import { Attractant } from "./attractant";
 
 export const AvailableCodeTables = [
   "agency",
@@ -15,4 +16,4 @@ export const AvailableCodeTables = [
 ];
 
 export default CodeTable;
-export { Agency };
+export { Agency, Attractant };

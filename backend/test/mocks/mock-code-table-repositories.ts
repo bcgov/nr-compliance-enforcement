@@ -11,12 +11,28 @@ const agencyCollection = [
    { "agency_code": "OTHER", "short_description": "Other", "long_description": "Other", "display_order": 8, "active_ind": true   }
 ]
 
+const attractants = [
+   { "attractantCode": "BEEHIVE", "shortDescription": "Beehive", "longDescription": "Beehive", "displayOrder": 2, "isActive": true},
+   { "attractantCode": "BIRD FDR", "shortDescription": "Bird Feeder", "longDescription": "Bird Feeder", "displayOrder": 3, "isActive": true    },
+   { "attractantCode": "CAMP FD", "shortDescription": "Campground Food", "longDescription": "Campground Food", "displayOrder": 4, "isActive": true    },
+   { "attractantCode": "COMPOST", "shortDescription": "Compost", "longDescription": "Compost", "displayOrder": 5, "isActive": true    },
+   { "attractantCode": "CROPS", "shortDescription": "Crops", "longDescription": "Crops", "displayOrder": 6, "isActive": true    },
+   { "attractantCode": "FREEZER", "shortDescription": "Freezer", "longDescription": "Freezer", "displayOrder": 7, "isActive": true    },
+   { "attractantCode": "BBQ", "shortDescription": "BBQ", "longDescription": "Barbeque", "displayOrder": 1, "isActive": true    },
+   { "attractantCode": "RESFRUIT", "shortDescription": "Fruit/Berries", "longDescription": "Residential Fruit/Berries", "displayOrder": 8, "isActive": true    }
+];
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
       return idx <= agencyCollection.length
         ? agencyCollection[idx]
         : agencyCollection[0];
+    }
+    case "attractant": { 
+      return idx <= attractants.length
+      ? attractants[idx]
+      : attractants[0];
     }
     case "default":
     default:
@@ -32,3 +48,14 @@ export const MockAgencyCodeTableRepository = () => ({
     getMany: jest.fn().mockResolvedValue(agencyCollection),
   })),
 });
+
+
+export const MockAttractantCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(attractants),
+   createQueryBuilder: jest.fn(() => ({
+     leftJoinAndSelect: jest.fn().mockReturnThis(),
+     where: jest.fn().mockReturnThis(),
+     getMany: jest.fn().mockResolvedValue(attractants),
+   })),
+ });
+ 

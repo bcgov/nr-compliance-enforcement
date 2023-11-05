@@ -3,7 +3,12 @@ import { CodeTableService } from "./code-table.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 
-import { MockAgencyCodeTableRepository } from "../../../test/mocks/mock-code-table-repositories";
+import {
+  MockAgencyCodeTableRepository,
+  MockAttractantCodeTableRepository,
+} from "../../../test/mocks/mock-code-table-repositories";
+
+import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -15,6 +20,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(AgencyCode),
           useFactory: MockAgencyCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(AttractantCode),
+          useFactory: MockAttractantCodeTableRepository,
         },
       ],
     }).compile();
@@ -29,6 +38,19 @@ describe("Testing: CodeTable Service", () => {
   it("should return collection of agency codes", async () => {
     //-- arrange
     const _tableName = "agency";
+
+    //-- act
+    const results = await service.getCodeTableByName(_tableName);
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(8);
+  });
+
+  it("should return collection of attractants", async () => {
+    //-- arrange
+    const _tableName = "attractant";
 
     //-- act
     const results = await service.getCodeTableByName(_tableName);
