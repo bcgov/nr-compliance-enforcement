@@ -2,12 +2,20 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import CodeTable, { Agency, Attractant, ComplaintStatus, NatureOfComplaint, OrganizationUnitType } from "../../types/models/code-tables";
+import CodeTable, {
+  Agency,
+  Attractant,
+  ComplaintStatus,
+  NatureOfComplaint,
+  OrganizationUnitType,
+} from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
+import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
+import { OrganizationUnit } from "src/types/models/code-tables/organization-unit";
 
 @Injectable()
 export class CodeTableService {
@@ -23,6 +31,8 @@ export class CodeTableService {
   private _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
   @InjectRepository(GeoOrgUnitTypeCode)
   private _organizationUnitTypeRepository: Repository<GeoOrgUnitTypeCode>;
+  @InjectRepository(GeoOrganizationUnitCode)
+  private _organizationUnitRepository: Repository<GeoOrganizationUnitCode>;
 
   getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
     switch (table) {
@@ -71,7 +81,7 @@ export class CodeTableService {
         );
         return results;
       }
-      case "complaint-status": { 
+      case "complaint-status": {
         const data = await this._complaintStatusRepository.find();
         let results = data.map(
           ({
@@ -93,7 +103,7 @@ export class CodeTableService {
         );
         return results;
       }
-      case "nature-of-complaint": { 
+      case "nature-of-complaint": {
         const data = await this._natureOfComplaintRepository.find();
         let results = data.map(
           ({
@@ -115,7 +125,7 @@ export class CodeTableService {
         );
         return results;
       }
-      case "organization-unit-type": { 
+      case "organization-unit-type": {
         const data = await this._organizationUnitTypeRepository.find();
         let results = data.map(
           ({
@@ -132,6 +142,41 @@ export class CodeTableService {
               displayOrder: display_order,
               isActive: active_ind,
             };
+            return table;
+          }
+        );
+        return results;
+      }
+      case "organization-unit": {
+        const builder = this._organizationUnitRepository
+          .createQueryBuilder("organization_unit")
+          .leftJoinAndSelect(
+            "organization_unit.geo_org_unit_type_code",
+            "organization_unit_type"
+          );
+
+        const data = await builder.getMany();
+
+        let results = data.map(
+          ({
+            geo_organization_unit_code,
+            short_description,
+            long_description,
+            geo_org_unit_type_code: organizationUnitType,
+          }) => {
+            let table: OrganizationUnit = {
+              organizationUnit: geo_organization_unit_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+            };
+
+            if (organizationUnitType) {
+              const { geo_org_unit_type_code } = organizationUnitType;
+              return {
+                ...table,
+                organizationUnitType: geo_org_unit_type_code,
+              };
+            }
             return table;
           }
         );

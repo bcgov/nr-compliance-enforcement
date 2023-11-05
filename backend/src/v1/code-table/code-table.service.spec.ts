@@ -10,10 +10,12 @@ import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
+  MockOrganizationUnitCodeTableRepository,
   MockOrganizationUnitTypeCodeTableRepository
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
+import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -41,6 +43,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(GeoOrgUnitTypeCode),
           useFactory: MockOrganizationUnitTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GeoOrganizationUnitCode),
+          useFactory: MockOrganizationUnitCodeTableRepository,
         },
       ],
     }).compile();
@@ -104,7 +110,7 @@ describe("Testing: CodeTable Service", () => {
     expect(results.length).toBe(6);
   });
 
-  it("should return collection of organization types", async () => {
+  it("should return collection of organization unit types", async () => {
     //-- arrange
     const _tableName = "organization-unit-type";
 
@@ -115,5 +121,18 @@ describe("Testing: CodeTable Service", () => {
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(4);
+  });
+
+  it("should return collection of organization types", async () => {
+    //-- arrange
+    const _tableName = "organization-unit";
+
+    //-- act
+    const results = await service.getCodeTableByName(_tableName);
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(5);
   });
 });

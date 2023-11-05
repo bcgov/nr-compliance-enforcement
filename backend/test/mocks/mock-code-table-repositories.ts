@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto";
-
 const agencyCollection = [
    { "agency_code": "BCWF", "short_description": "BCWF", "long_description": "BC Wildlife Federation", "display_order": 1, "active_ind": true   },
    { "agency_code": "BYLAW", "short_description": "Bylaw Enforcement", "long_description": "Bylaw Enforcement", "display_order": 2, "active_ind": true   },
@@ -13,13 +11,13 @@ const agencyCollection = [
 
 const attractants = [
    { "attractant_code": "BEEHIVE", "short_description": "Beehive", "long_description": "Beehive", "display_order": 2, "active_ind": true},
-   { "attractant_code": "BIRD FDR", "short_description": "Bird Feeder", "long_description": "Bird Feeder", "display_order": 3, "active_ind": true    },
-   { "attractant_code": "CAMP FD", "short_description": "Campground Food", "long_description": "Campground Food", "display_order": 4, "active_ind": true    },
-   { "attractant_code": "COMPOST", "short_description": "Compost", "long_description": "Compost", "display_order": 5, "active_ind": true    },
-   { "attractant_code": "CROPS", "short_description": "Crops", "long_description": "Crops", "display_order": 6, "active_ind": true    },
-   { "attractant_code": "FREEZER", "short_description": "Freezer", "long_description": "Freezer", "display_order": 7, "active_ind": true    },
-   { "attractant_code": "BBQ", "short_description": "BBQ", "long_description": "Barbeque", "display_order": 1, "active_ind": true    },
-   { "attractant_code": "RESFRUIT", "short_description": "Fruit/Berries", "long_description": "Residential Fruit/Berries", "display_order": 8, "active_ind": true    }
+   { "attractant_code": "BIRD FDR", "short_description": "Bird Feeder", "long_description": "Bird Feeder", "display_order": 3, "active_ind": true },
+   { "attractant_code": "CAMP FD", "short_description": "Campground Food", "long_description": "Campground Food", "display_order": 4, "active_ind": true },
+   { "attractant_code": "COMPOST", "short_description": "Compost", "long_description": "Compost", "display_order": 5, "active_ind": true },
+   { "attractant_code": "CROPS", "short_description": "Crops", "long_description": "Crops", "display_order": 6, "active_ind": true },
+   { "attractant_code": "FREEZER", "short_description": "Freezer", "long_description": "Freezer", "display_order": 7, "active_ind": true },
+   { "attractant_code": "BBQ", "short_description": "BBQ", "long_description": "Barbeque", "display_order": 1, "active_ind": true },
+   { "attractant_code": "RESFRUIT", "short_description": "Fruit/Berries", "long_description": "Residential Fruit/Berries", "display_order": 8, "active_ind": true }
 ];
 
 const complaitStatus = [
@@ -43,27 +41,33 @@ const organizationUnitTypes = [
    { "geo_org_unit_type_code": "AREA", "short_description": "Area", "long_description": null, "display_order": 4, "active_ind": true   }
 ]
 
+const organizationUnits = [
+  { organizationUnit: "OKNGN", shortDescription: "Okanagan", longDescription: "Okanagan", organizationUnitType: "REGION",  },
+  { organizationUnit: "OMINECA", shortDescription: "Omineca", longDescription: "Omineca", organizationUnitType: "REGION",  },
+  { organizationUnit: "BLKYCSR", shortDescription: "Bulkley-Cassiar", longDescription: "Bulkley-Cassiar", organizationUnitType: "ZONE",  },
+  { organizationUnit: "CRBOCHLCTN", shortDescription: "Cariboo Chilcotin", longDescription: "Cariboo Chilcotin", organizationUnitType: "ZONE",  },
+  { organizationUnit: "CHTWD", shortDescription: "Chetwynd", longDescription: "Chetwynd", organizationUnitType: "OFFLOC",  },
+];
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
       return idx <= agencyCollection.length
-  ? agencyCollection[idx]
-  : agencyCollection[0];
+        ? agencyCollection[idx]
+        : agencyCollection[0];
     }
-    case "attractant": { 
-      return idx <= attractants.length
-      ? attractants[idx]
-      : attractants[0];
+    case "attractant": {
+      return idx <= attractants.length ? attractants[idx] : attractants[0];
     }
-    case "complaint-status": { 
+    case "complaint-status": {
       return idx <= complaitStatus.length
-      ? complaitStatus[idx]
-      : complaitStatus[0];
+        ? complaitStatus[idx]
+        : complaitStatus[0];
     }
-    case "nature-of-complaint": { 
+    case "nature-of-complaint": {
       return idx <= natureOfComplaints.length
-      ? natureOfComplaints[idx]
-      : natureOfComplaints[0];
+        ? natureOfComplaints[idx]
+        : natureOfComplaints[0];
     }
     case "default":
     default:
@@ -80,39 +84,49 @@ export const MockAgencyCodeTableRepository = () => ({
   })),
 });
 
-
 export const MockAttractantCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(attractants),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(attractants),
-   })),
- });
- 
- export const MockComplaintStatusCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(complaitStatus),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(complaitStatus),
-   })),
- });
+  find: jest.fn().mockResolvedValue(attractants),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(attractants),
+  })),
+});
 
- export const MockNatureOfComplaintCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(natureOfComplaints),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(natureOfComplaints),
-   })),
- });
+export const MockComplaintStatusCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(complaitStatus),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(complaitStatus),
+  })),
+});
 
- export const MockOrganizationUnitTypeCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(organizationUnitTypes),
+export const MockNatureOfComplaintCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(natureOfComplaints),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(natureOfComplaints),
+  })),
+});
+
+organizationUnits
+
+export const MockOrganizationUnitTypeCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(organizationUnitTypes),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(organizationUnitTypes),
+  })),
+});
+
+export const MockOrganizationUnitCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(organizationUnits),
    createQueryBuilder: jest.fn(() => ({
      leftJoinAndSelect: jest.fn().mockReturnThis(),
      where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(organizationUnitTypes),
+     getMany: jest.fn().mockResolvedValue(organizationUnits),
    })),
  });
