@@ -89,6 +89,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
 
   return (
     <MapContainer
+      id="multi-point-map"
       style={{ height: "652px", width: "1330px", zIndex: 0 }}
       className="map-container"
       center={[53.7267, -127.6476]}

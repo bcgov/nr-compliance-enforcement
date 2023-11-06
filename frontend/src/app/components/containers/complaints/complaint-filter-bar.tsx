@@ -163,7 +163,7 @@ export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType, compla
         )}
 
         <div className="comp-filter-search">
-          <SearchInput complaintType={complaintType} searchQuery={searchQuery} applySearchQuery={applySearchQuery}/>
+          <SearchInput viewType={viewType} complaintType={complaintType} searchQuery={searchQuery} applySearchQuery={applySearchQuery} />
         </div>
       </div>
     </div>
