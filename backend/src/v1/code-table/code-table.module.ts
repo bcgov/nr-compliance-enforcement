@@ -9,6 +9,8 @@ import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { SpeciesCode } from "../species_code/entities/species_code.entity";
+import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
     TypeOrmModule.forFeature([GeoOrgUnitTypeCode]),
     TypeOrmModule.forFeature([GeoOrganizationUnitCode]),
     TypeOrmModule.forFeature([PersonComplaintXrefCode]),
+    TypeOrmModule.forFeature([SpeciesCode]),
+    TypeOrmModule.forFeature([ViolationCode]),
   ],
   controllers: [CodeTableController],
   providers: [CodeTableService],

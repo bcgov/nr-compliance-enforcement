@@ -9,6 +9,7 @@ import CodeTable, {
   NatureOfComplaint,
   OrganizationUnitType,
   PersonComplaintType,
+  Species,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -18,6 +19,7 @@ import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_u
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { OrganizationUnit } from "src/types/models/code-tables/organization-unit";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { SpeciesCode } from "../species_code/entities/species_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -37,6 +39,9 @@ export class CodeTableService {
   private _organizationUnitRepository: Repository<GeoOrganizationUnitCode>;
   @InjectRepository(PersonComplaintXrefCode)
   private _personComplaintTypeRepository: Repository<PersonComplaintXrefCode>;
+  @InjectRepository(SpeciesCode)
+  private _speciesRepository: Repository<SpeciesCode>;
+
 
   getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
     switch (table) {
@@ -200,6 +205,30 @@ export class CodeTableService {
               shortDescription: short_description,
               longDescription: long_description,
               displayOrder: display_order,
+            };
+            return table;
+          }
+        );
+        return results; 
+      }
+      case "species": {
+        const data = await this._speciesRepository.find();
+        let results = data.map(
+          ({
+            species_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+            legacy_code
+          }) => {
+            let table: Species = {
+              species: species_code,
+              legacy: legacy_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
             };
             return table;
           }

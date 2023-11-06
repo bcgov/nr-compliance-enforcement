@@ -10,7 +10,16 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 
 import { CodeTableController } from "./code-table.controller";
 import { CodeTableService } from "./code-table.service";
-import { MockAgencyCodeTableRepository, MockAttractantCodeTableRepository, MockComplaintStatusCodeTableRepository, MockNatureOfComplaintCodeTableRepository, MockOrganizationUnitCodeTableRepository, MockOrganizationUnitTypeCodeTableRepository, MockPersonComplaintCodeTableRepository } from "../../../test/mocks/mock-code-table-repositories";
+import {
+  MockAgencyCodeTableRepository,
+  MockAttractantCodeTableRepository,
+  MockComplaintStatusCodeTableRepository,
+  MockNatureOfComplaintCodeTableRepository,
+  MockOrganizationUnitCodeTableRepository,
+  MockOrganizationUnitTypeCodeTableRepository,
+  MockPersonComplaintCodeTableRepository,
+  MockSpeciesCodeTableRepository,
+} from "../../../test/mocks/mock-code-table-repositories";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
@@ -18,6 +27,7 @@ import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { SpeciesCode } from "../species_code/entities/species_code.entity";
 
 describe("Testing: CodeTable Controller", () => {
   let app: INestApplication;
@@ -56,12 +66,17 @@ describe("Testing: CodeTable Controller", () => {
           provide: getRepositoryToken(PersonComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
+        {
+          provide: getRepositoryToken(SpeciesCode),
+          useFactory: MockSpeciesCodeTableRepository,
+        },
       ],
-    })      .overrideGuard(JwtAuthGuard)
-    .useValue({ authGuardMock })
-    .overrideGuard(JwtRoleGuard)
-    .useValue({ roleGuardMock })
-    .compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ authGuardMock })
+      .overrideGuard(JwtRoleGuard)
+      .useValue({ roleGuardMock })
+      .compile();
 
     app = module.createNestApplication();
     await app.init();
