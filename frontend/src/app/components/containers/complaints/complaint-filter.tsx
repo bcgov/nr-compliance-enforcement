@@ -111,36 +111,34 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
             >
               <div className="comp-filter-label">Nature of Complaint</div>
               <div className="filter-select-padding">
-                <Select
-                  options={natureOfComplaintTypes}
-                  onChange={(option) => {
-                    setFilter("natureOfComplaint", option);
-                  }}
-                  placeholder="Select"
-                  classNamePrefix="comp-select"
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  id="nature-of-complaint-select-id"
-                  value={natureOfComplaint}
-                />
+              <CompSelect
+                    id="nature-of-complaint-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {setFilter("natureOfComplaint", option);}}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={natureOfComplaintTypes}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={natureOfComplaint}
+                  />
               </div>
             </div>
             <div className="comp-filter" id="comp-species-filter-id">
               <div className="comp-filter-label">Species</div>
               <div className="filter-select-padding">
-                <Select
-                  options={speciesTypes}
-                  onChange={(option) => {
-                    setFilter("species", option);
-                  }}
-                  placeholder="Select"
-                  classNamePrefix="comp-select"
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  id="species-select-id"
-                  value={species}
+                <CompSelect
+                    id="species-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {setFilter("species", option);}}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={speciesTypes}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={species}
                 />
               </div>
             </div>
@@ -152,19 +150,18 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
             {/* <!-- violation types --> */}
             <div className="comp-filter-label">Violation Type</div>
             <div className="filter-select-padding">
-              <Select
-                options={violationTypes}
-                onChange={(option) => {
-                  setFilter("violationType", option);
-                }}
-                placeholder="Select"
-                classNamePrefix="comp-select"
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                id="violation-type-select-id"
-                value={violationType}
-              />
+              <CompSelect
+                      id="violation-type-select-id"
+                      classNamePrefix="comp-select"
+                      onChange={(option) => {setFilter("violationType", option);}}
+                      classNames={{
+                        menu: () => "top-layer-select",
+                      }}
+                      options={violationTypes}
+                      placeholder="Select"
+                      enableValidation={false}
+                      value={violationType}
+                />
             </div>
           </div>
         )}
@@ -242,17 +239,16 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         <div className="comp-filter" id="comp-filter-status-id">
           <div className="comp-filter-label">Status</div>
           <div className="filter-select-padding">
-            <Select
-              options={statusTypes}
-              onChange={(option) => {
-                setFilter("status", option);
-              }}
-              placeholder="Select"
+            <CompSelect
+              id="status-select-id"
               classNamePrefix="comp-select"
+              onChange={(option) => {setFilter("status", option);}}
               classNames={{
                 menu: () => "top-layer-select",
               }}
-              id="status-select-id"
+              options={statusTypes}
+              placeholder="Select"
+              enableValidation={false}
               value={status}
             />
           </div>
@@ -272,18 +268,17 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
             {/* <!-- region --> */}
             <div className="comp-filter-label">Region</div>
             <div className="filter-select-padding">
-              <Select
-                options={regions}
-                onChange={(option) => {
-                  setFilter("region", option);
-                }}
-                placeholder="Select"
+              <CompSelect
+                id="region-select-filter-id"
                 classNamePrefix="comp-select"
+                onChange={(option) => {setFilter("region", option);}}
                 classNames={{
                   menu: () => "top-layer-select",
                 }}
+                options={regions}
+                placeholder="Select"
+                enableValidation={false}
                 value={region}
-                id="region-select-filter-id"
               />
             </div>
           </div>
@@ -291,18 +286,17 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           <div className="comp-filter" id="comp-filter-zone-id">
             <div className="comp-filter-label">Zone</div>
             <div className="filter-select-padding">
-              <Select
-                options={zones}
-                onChange={(option) => {
-                  setFilter("zone", option);
-                }}
-                placeholder="Select"
-                classNamePrefix="comp-select"
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                id="zone-select-id"
-                value={zone}
+              <CompSelect
+                  id="zone-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {setFilter("zone", option);}}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={zones}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={zone}
               />
             </div>
           </div>
@@ -311,18 +305,17 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           <div className="comp-filter" id="comp-filter-community-id">
             <div className="comp-filter-label">Community</div>
             <div className="filter-select-padding">
-              <Select
-                options={communities}
-                onChange={(option) => {
-                  setFilter("community", option);
-                }}
-                placeholder="Select"
-                classNamePrefix="comp-select"
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                id="community-select-id"
-                value={community}
+              <CompSelect
+                    id="community-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {setFilter("community", option);}}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={communities}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={community}
               />
             </div>
           </div>
@@ -335,7 +328,9 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                     id="officer-select-id"
                     classNamePrefix="comp-select"
                     onChange={(option) => {setFilter("officer", option);}}
-                    className="top-layer-select"
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
                     options={officers}
                     defaultOption={{ label: "Unassigned", value: "Unassigned" }}
                     placeholder="Select"
