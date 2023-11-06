@@ -74,6 +74,7 @@ export const getComplaintsOnMap =
       endDateFilter,
       violationFilter,
       complaintStatusFilter,
+      query
     } = payload;
     try {
       const apiEndpoint = (type: string): string => {
@@ -100,6 +101,7 @@ export const getComplaintsOnMap =
           incidentReportedEnd: endDateFilter,
           violationCode: violationFilter?.value,
           status: complaintStatusFilter?.value,
+          query
         },
       );
       const response = await get<

@@ -190,7 +190,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         {viewType === "list" ? (
           <ComplaintList type={complaintType} searchQuery={search} />
         ) : (
-          <ComplaintMap type={complaintType} />
+          <ComplaintMap type={complaintType} searchQuery={search} />
         )}
       </div>
     </>
