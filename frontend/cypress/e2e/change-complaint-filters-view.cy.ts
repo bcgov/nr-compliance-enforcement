@@ -45,7 +45,7 @@ describe("Complaint Change Status spec - Details View", () => {
       cy.get("#comp-zone-filter").should("exist");
       cy.get("#comp-status-filter").should("exist");
 
-      cy.get("#comp-zone-filter").contains("Cariboo Chilcotin"); //assumes cypress user's office roles up to Cariboo Thompson zone
+      cy.get("#comp-zone-filter").contains("Cariboo Thompson"); //assumes cypress user's office roles up to Cariboo Thompson zone
       cy.get("#comp-status-filter").contains("Open");
 
       cy.get("#complaint-filter-image-id").click({ force: true });
