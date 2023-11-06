@@ -8,8 +8,10 @@ import CodeTable, {
   ComplaintStatus,
   NatureOfComplaint,
   OrganizationUnitType,
+  OrganizationUnit,
   PersonComplaintType,
   Species,
+  Violation,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -17,9 +19,9 @@ import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { OrganizationUnit } from "src/types/models/code-tables/organization-unit";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
+import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -41,6 +43,8 @@ export class CodeTableService {
   private _personComplaintTypeRepository: Repository<PersonComplaintXrefCode>;
   @InjectRepository(SpeciesCode)
   private _speciesRepository: Repository<SpeciesCode>;
+  @InjectRepository(ViolationCode)
+  private _violationsRepository: Repository<ViolationCode>;
 
 
   getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
@@ -234,6 +238,28 @@ export class CodeTableService {
           }
         );
         return results; 
+      }
+      case "violation": {
+        const data = await this._violationsRepository.find();
+        let results = data.map(
+          ({
+            violation_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+          }) => {
+            let table: Violation = {
+              violation: violation_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+            };
+            return table;
+          }
+        );
+        return results;
       }
     }
   };

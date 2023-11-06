@@ -13,13 +13,15 @@ import {
   MockOrganizationUnitCodeTableRepository,
   MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
-  MockSpeciesCodeTableRepository
+  MockSpeciesCodeTableRepository,
+  MockViolationsCodeTableRepository
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
+import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -59,6 +61,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(SpeciesCode),
           useFactory: MockSpeciesCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ViolationCode),
+          useFactory: MockViolationsCodeTableRepository,
         },
       ],
     }).compile();
@@ -172,5 +178,18 @@ describe("Testing: CodeTable Service", () => {
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(6);
+  });
+
+  it("should return collection of violations", async () => {
+    //-- arrange
+    const _tableName = "violation";
+
+    //-- act
+    const results = await service.getCodeTableByName(_tableName);
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(9);
   });
 });

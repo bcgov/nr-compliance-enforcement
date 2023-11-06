@@ -19,6 +19,7 @@ import {
   MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockSpeciesCodeTableRepository,
+  MockViolationsCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -28,6 +29,7 @@ import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_u
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
+import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 
 describe("Testing: CodeTable Controller", () => {
   let app: INestApplication;
@@ -69,6 +71,10 @@ describe("Testing: CodeTable Controller", () => {
         {
           provide: getRepositoryToken(SpeciesCode),
           useFactory: MockSpeciesCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ViolationCode),
+          useFactory: MockViolationsCodeTableRepository,
         },
       ],
     })

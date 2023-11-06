@@ -62,6 +62,18 @@ const species = [
    { "species_code": "COYOTE", "short_description": "Coyote", "long_description": "Coyote", "display_order": 5, "active_ind": true, "legacy_code": null,   },
    { "species_code": "DEER", "short_description": "Deer", "long_description": "Deer", "display_order": 6, "active_ind": true, "legacy_code": null,   }]
 
+const violations = [
+   { "violation_code": "AINVSPC", "short_description": "AINVSPC", "long_description": "Aquatic: Invasive Species", "display_order": 1, "active_ind": true,   },
+   { "violation_code": "BOATING", "short_description": "BOATING", "long_description": "Boating", "display_order": 2, "active_ind": true,   },
+   { "violation_code": "DUMPING", "short_description": "DUMPING", "long_description": "Dumping", "display_order": 3, "active_ind": true,   },
+   { "violation_code": "FISHERY", "short_description": "FISHERY", "long_description": "Fisheries", "display_order": 4, "active_ind": true,   },
+   { "violation_code": "ORV", "short_description": "ORV", "long_description": "Off-road vehicles (ORV)", "display_order": 5, "active_ind": true,   },
+   { "violation_code": "OPENBURN", "short_description": "OPENBURN", "long_description": "Open Burning", "display_order": 6, "active_ind": true,   },
+   { "violation_code": "OTHER", "short_description": "OTHER", "long_description": "Other", "display_order": 7, "active_ind": true,   },
+   { "violation_code": "PESTICDE", "short_description": "PESTICDE", "long_description": "Pesticide", "display_order": 8, "active_ind": true,   },
+   { "violation_code": "RECREATN", "short_description": "RECREATN", "long_description": "Recreation sites/ trails", "display_order": 9, "active_ind": true,   }
+]
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
@@ -163,6 +175,15 @@ export const MockSpeciesCodeTableRepository = () => ({
      leftJoinAndSelect: jest.fn().mockReturnThis(),
      where: jest.fn().mockReturnThis(),
      getMany: jest.fn().mockResolvedValue(species),
+   })),
+ });
+ 
+export const MockViolationsCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(violations),
+   createQueryBuilder: jest.fn(() => ({
+     leftJoinAndSelect: jest.fn().mockReturnThis(),
+     where: jest.fn().mockReturnThis(),
+     getMany: jest.fn().mockResolvedValue(violations),
    })),
  });
  
