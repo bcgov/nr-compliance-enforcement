@@ -576,14 +576,21 @@ export class HwcrComplaintService {
       });
     }
 
+
     if (officerAssigned) {
-      builder.andWhere("people.person_complaint_xref_code = :Assignee", {
-        Assignee: "ASSIGNEE",
-      });
-      builder.andWhere("people.person_guid = :PersonGuid", {
-        PersonGuid: officerAssigned,
-      });
-    } else if (officerAssigned === "null" || officerAssigned === "Unassigned") {
+      if (officerAssigned === "Unassigned")
+      {
+        //Special case for unassigned 
+        builder.andWhere("people.person_complaint_xref_guid IS NULL");
+      } else {
+        builder.andWhere("people.person_complaint_xref_code = :Assignee", {
+          Assignee: "ASSIGNEE",
+        });
+        builder.andWhere("people.person_guid = :PersonGuid", {
+          PersonGuid: officerAssigned,
+        });
+      }
+    } else if (officerAssigned === "null") {
       builder.andWhere("people.person_guid IS NULL");
     }
 
