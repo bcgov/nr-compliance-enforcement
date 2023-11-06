@@ -4,7 +4,7 @@ import { Attractant } from "./attractant";
 import { ComplaintStatus } from "./complaint-status";
 import { NatureOfComplaint } from "./nature-of-complaint";
 import { OrganizationUnitType } from "./organization-unit-type";
-
+import { PersonComplaintType } from "./person-complaint-type";
 
 export const AvailableCodeTables = [
   "agency",
@@ -20,4 +20,4 @@ export const AvailableCodeTables = [
 ];
 
 export default CodeTable;
-export { Agency, Attractant, ComplaintStatus, NatureOfComplaint, OrganizationUnitType };
+export { Agency, Attractant, ComplaintStatus, NatureOfComplaint, OrganizationUnitType, PersonComplaintType };

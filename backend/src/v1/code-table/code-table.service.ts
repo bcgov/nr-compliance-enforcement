@@ -8,6 +8,7 @@ import CodeTable, {
   ComplaintStatus,
   NatureOfComplaint,
   OrganizationUnitType,
+  PersonComplaintType,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -16,6 +17,7 @@ import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { OrganizationUnit } from "src/types/models/code-tables/organization-unit";
+import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -33,6 +35,8 @@ export class CodeTableService {
   private _organizationUnitTypeRepository: Repository<GeoOrgUnitTypeCode>;
   @InjectRepository(GeoOrganizationUnitCode)
   private _organizationUnitRepository: Repository<GeoOrganizationUnitCode>;
+  @InjectRepository(PersonComplaintXrefCode)
+  private _personComplaintTypeRepository: Repository<PersonComplaintXrefCode>;
 
   getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
     switch (table) {
@@ -181,6 +185,26 @@ export class CodeTableService {
           }
         );
         return results;
+      }
+      case "person-complaint": {
+        const data = await this._personComplaintTypeRepository.find();
+        let results = data.map(
+          ({
+            person_complaint_xref_code,
+            short_description,
+            long_description,
+            display_order,
+          }) => {
+            let table: PersonComplaintType = {
+              personComplaintType: person_complaint_xref_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+            };
+            return table;
+          }
+        );
+        return results; 
       }
     }
   };

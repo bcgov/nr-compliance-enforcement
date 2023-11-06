@@ -49,6 +49,11 @@ const organizationUnits = [
   { organizationUnit: "CHTWD", shortDescription: "Chetwynd", longDescription: "Chetwynd", organizationUnitType: "OFFLOC",  },
 ];
 
+const personTypes = [
+   { "person_complaint_xref_code": "ASSIGNEE", "short_description": "Officer Assigned", "long_description": "The person to whom the complaint is assigned to.", "display_order": 1,   },
+   { "person_complaint_xref_code": "TEST",      "short_description": "TEST",      "long_description": "Test person type",      "display_order": 2,  }
+]
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
@@ -68,6 +73,9 @@ const single = (name: string = "default", idx: number = 0): any => {
       return idx <= natureOfComplaints.length
         ? natureOfComplaints[idx]
         : natureOfComplaints[0];
+    }
+    case "person-complaint": {
+      return idx <= personTypes.length ? personTypes[idx] : personTypes[0];
     }
     case "default":
     default:
@@ -121,10 +129,19 @@ export const MockOrganizationUnitTypeCodeTableRepository = () => ({
 });
 
 export const MockOrganizationUnitCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(organizationUnits),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(organizationUnits),
-   })),
- });
+  find: jest.fn().mockResolvedValue(organizationUnits),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(organizationUnits),
+  })),
+});
+
+export const MockPersonComplaintCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(personTypes),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(personTypes),
+  })),
+});
