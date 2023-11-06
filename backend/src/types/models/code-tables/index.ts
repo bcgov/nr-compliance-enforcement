@@ -8,6 +8,7 @@ import { OrganizationUnit } from "./organization-unit";
 import { PersonComplaintType } from "./person-complaint-type";
 import { Species } from "./species";
 import { Violation } from "./violation";
+import { OrganizationCodeTable } from "./organization-code-table";
 
 export const AvailableCodeTables = [
   "agency",
@@ -20,7 +21,12 @@ export const AvailableCodeTables = [
   "person-complaint",
   "species",
   "violation",
+  "cos-organization-unit"
 ];
+
+export const AvailableAgencies = [
+   "cos"
+]
 
 export default CodeTable;
 export {
@@ -32,5 +38,6 @@ export {
   OrganizationUnit,
   PersonComplaintType,
   Species,
-  Violation
+  Violation,
+  OrganizationCodeTable
 };

@@ -6,7 +6,7 @@ import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 
-import CodeTable, { AvailableCodeTables } from "../../types/models/code-tables"
+import CodeTable, { AvailableAgencies, AvailableCodeTables, OrganizationCodeTable } from "../../types/models/code-tables"
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("code-table")
@@ -24,6 +24,19 @@ export class CodeTableController {
     }
 
     const result = await this.service.getCodeTableByName(table);
+    return result;
+  }
+
+  @Get("/organization-by-agency/:agency")
+  @Roles(Role.COS_OFFICER)
+  async getOrganizationsByAgency(
+    @Param("agency") agency: string
+  ): Promise<OrganizationCodeTable[]> {
+    if(!AvailableAgencies.includes(agency)){ 
+      throw new NotFoundException();
+    }
+
+    const result = await this.service.getOrganizationsByAgency(agency);
     return result;
   }
 }

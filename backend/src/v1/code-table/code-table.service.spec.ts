@@ -14,7 +14,8 @@ import {
   MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockSpeciesCodeTableRepository,
-  MockViolationsCodeTableRepository
+  MockViolationsCodeTableRepository,
+  MockCosOrganizationUnitCodeTableRepository
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
@@ -22,6 +23,7 @@ import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
+import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -65,6 +67,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(ViolationCode),
           useFactory: MockViolationsCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(CosGeoOrgUnit),
+          useFactory: MockCosOrganizationUnitCodeTableRepository,
         },
       ],
     }).compile();
@@ -191,5 +197,18 @@ describe("Testing: CodeTable Service", () => {
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(9);
+  });
+
+  it("should return collection of organization by agency", async () => {
+    //-- arrange
+    const _agency = "cos";
+
+    //-- act
+    const results = await service.getOrganizationsByAgency(_agency)
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(14);
   });
 });

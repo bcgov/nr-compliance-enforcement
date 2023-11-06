@@ -74,6 +74,23 @@ const violations = [
    { "violation_code": "RECREATN", "short_description": "RECREATN", "long_description": "Recreation sites/ trails", "display_order": 9, "active_ind": true,   }
 ]
 
+const cosOrganizationUnits = [
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "BLBRY", "area_name": "Blaeberry"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "BRS", "area_name": "Brisco"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "CMB", "area_name": "Cambie"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "CMRNE", "area_name": "Camborne"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "CRSRLAKE", "area_name": "Coursier Lake"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "DONALD", "area_name": "Donald"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "FTRESSLK", "area_name": "Fortress Lake"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "GOLDEN", "area_name": "Golden"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "GRIFFNLK", "area_name": "Griffin Lake"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "HARROGAT", "area_name": "Harrogate"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "KINABSKT", "area_name": "Kinabasket Lake"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "MCMURDO", "area_name": "McMurdo"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "NICHOLN", "area_name": "Nicholson"   },
+   { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "PARSON", "area_name": "Parson"   }
+]
+
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
     case "agency": {
@@ -184,6 +201,15 @@ export const MockViolationsCodeTableRepository = () => ({
      leftJoinAndSelect: jest.fn().mockReturnThis(),
      where: jest.fn().mockReturnThis(),
      getMany: jest.fn().mockResolvedValue(violations),
+   })),
+ });
+ 
+ export const MockCosOrganizationUnitCodeTableRepository = () => ({
+   find: jest.fn().mockResolvedValue(cosOrganizationUnits),
+   createQueryBuilder: jest.fn(() => ({
+     leftJoinAndSelect: jest.fn().mockReturnThis(),
+     where: jest.fn().mockReturnThis(),
+     getMany: jest.fn().mockResolvedValue(cosOrganizationUnits),
    })),
  });
  

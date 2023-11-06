@@ -12,6 +12,7 @@ import CodeTable, {
   PersonComplaintType,
   Species,
   Violation,
+  OrganizationCodeTable,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -22,6 +23,7 @@ import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
+import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -45,7 +47,8 @@ export class CodeTableService {
   private _speciesRepository: Repository<SpeciesCode>;
   @InjectRepository(ViolationCode)
   private _violationsRepository: Repository<ViolationCode>;
-
+  @InjectRepository(CosGeoOrgUnit)
+  private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
     switch (table) {
@@ -213,7 +216,7 @@ export class CodeTableService {
             return table;
           }
         );
-        return results; 
+        return results;
       }
       case "species": {
         const data = await this._speciesRepository.find();
@@ -224,7 +227,7 @@ export class CodeTableService {
             long_description,
             display_order,
             active_ind,
-            legacy_code
+            legacy_code,
           }) => {
             let table: Species = {
               species: species_code,
@@ -237,7 +240,7 @@ export class CodeTableService {
             return table;
           }
         );
-        return results; 
+        return results;
       }
       case "violation": {
         const data = await this._violationsRepository.find();
@@ -262,5 +265,39 @@ export class CodeTableService {
         return results;
       }
     }
+  };
+
+  getOrganizationsByAgency = async (
+    agency: string
+  ): Promise<OrganizationCodeTable[]> => {
+    const data = await this._cosOrganizationUnitRepository.find();
+
+    const results = data.map(
+      ({
+        area_code: area,
+        area_name: areaName,
+        office_location_code: officeLocation,
+        office_location_name: officeLocationName,
+        region_name: regionName,
+        region_code: region,
+        zone_name: zoneName,
+        zone_code: zone,
+      }) => {
+        let record: OrganizationCodeTable = {
+          area,
+          areaName,
+          officeLocation,
+          officeLocationName,
+          regionName,
+          region,
+          zone,
+          zoneName
+        };
+
+        return record;
+      }
+    );
+
+    return results;
   };
 }

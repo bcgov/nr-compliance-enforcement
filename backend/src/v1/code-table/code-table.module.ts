@@ -11,6 +11,7 @@ import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
+import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
     TypeOrmModule.forFeature([PersonComplaintXrefCode]),
     TypeOrmModule.forFeature([SpeciesCode]),
     TypeOrmModule.forFeature([ViolationCode]),
+    TypeOrmModule.forFeature([CosGeoOrgUnit]),
   ],
   controllers: [CodeTableController],
   providers: [CodeTableService],
