@@ -626,8 +626,6 @@ export class HwcrComplaintService {
       });
     }
 
-    console.log(builder.getSql());
-
     return builder;
   };
 

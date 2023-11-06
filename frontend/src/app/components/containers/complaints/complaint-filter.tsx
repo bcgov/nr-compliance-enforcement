@@ -1,5 +1,4 @@
 import { FC, useCallback, useContext } from "react";
-import Select from "react-select";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
 import { useAppSelector } from "../../../hooks/hooks";
