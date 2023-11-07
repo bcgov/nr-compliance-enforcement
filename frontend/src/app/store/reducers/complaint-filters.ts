@@ -1,9 +1,9 @@
-import { DropdownOption } from "../../types/code-tables/option";
+import Option from "../../types/app/option";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters/complaint-filters";
 
 export type ComplaintFilterPayload = {
   filter: string;
-  value?: DropdownOption | Date | null;
+  value?: Option | Date | null;
 };
 //--
 

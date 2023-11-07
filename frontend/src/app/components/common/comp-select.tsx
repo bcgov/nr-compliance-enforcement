@@ -4,7 +4,8 @@ import Option from "../../types/app/option";
 
 type Props = {
   id: string;
-  className: string;
+  className?: string;
+  classNames?: {};
   options: Array<Option>;
   enableValidation: boolean;
   errorMessage?: string;
@@ -18,6 +19,7 @@ type Props = {
 export const CompSelect: FC<Props> = ({
   id,
   className,
+  classNames,
   options,
   defaultOption,
   placeholder,
@@ -38,7 +40,7 @@ export const CompSelect: FC<Props> = ({
       ...styles,
       option: (provided, state) => ({
         ...provided,
-        color: state.label === "None" ? "#a1a1a1" : "black",
+        color: state.label === "None" || state.label ===  "Unassigned" ? "#a1a1a1" : "black",
       }),
     };
   }
@@ -53,10 +55,11 @@ export const CompSelect: FC<Props> = ({
       <Select
         id={id}
         className={className}
+        classNames={classNames}
         styles={styles}
         placeholder={placeholder}
         options={items}
-        defaultValue={value}
+        value={value}
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
       />
