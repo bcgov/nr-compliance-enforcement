@@ -17,7 +17,8 @@ import {
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
-import { DropdownOption } from "../../types/code-tables/option";
+import Option from "../../types/app/option";
+
 
 const initialState: OfficerState = {
   officers: [],
@@ -195,7 +196,7 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 
 export const selectOfficersDropdown = (
   state: RootState,
-): Array<DropdownOption> => {
+): Array<Option> => {
   const { officers: officerRoot } = state;
   const { officers } = officerRoot;
 

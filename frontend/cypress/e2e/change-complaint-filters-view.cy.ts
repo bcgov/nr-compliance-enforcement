@@ -50,5 +50,27 @@ describe("Complaint Change Status spec - Details View", () => {
 
       cy.get("#complaint-filter-image-id").click({ force: true });
     });
+
+    it("Can filter on Unassigned", () => {
+      cy.visit("/");
+      cy.waitForSpinner();
+
+      cy.get(complaintTypes[index]).click({ force: true });
+
+      //-- check to make sure there are items in the table
+      cy.get("#complaint-list")
+        .find("tr")
+        .then(({ length }) => {
+          expect(length, "rows N").to.be.gt(0);
+        });
+
+      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.selectItemById("officer-select-id", "Unassigned");
+      cy.get("#comp-officer-filter").should("exist");
+      cy.get("#comp-officer-filter").contains("Unassigned");
+
+    });
+
   });
+  
 });

@@ -545,16 +545,20 @@ export class AllegationComplaintService {
     }
 
     if (officerAssigned) {
-      builder.andWhere("people.person_complaint_xref_code = :Assignee", {
-        Assignee: "ASSIGNEE",
-      });
-      builder.andWhere("people.person_guid = :PersonGuid", {
-        PersonGuid: officerAssigned,
-      });
-    } else if (officerAssigned === "null") {
-      builder.andWhere("people.person_guid IS NULL");
-    }
-
+      if (officerAssigned === "Unassigned")
+      {
+        //Special case for unassigned 
+        builder.andWhere("people.person_complaint_xref_guid IS NULL");
+      } else {
+        builder.andWhere("people.person_complaint_xref_code = :Assignee", {
+          Assignee: "ASSIGNEE",
+        });
+        builder.andWhere("people.person_guid = :PersonGuid", {
+          PersonGuid: officerAssigned,
+        });
+      }
+    } 
+    
     if (violationCode) {
       builder.andWhere("allegation.violation_code = :ViolationCode", {
         ViolationCode: violationCode,
