@@ -1,4 +1,4 @@
-import { CodeTable } from "./code-table";
+import { BaseCodeTable } from "./code-table";
 import { Agency } from "./agency";
 import { Attractant } from "./attractant";
 import { ComplaintStatus } from "./complaint-status";
@@ -28,7 +28,7 @@ export const AvailableAgencies = [
    "cos"
 ]
 
-export default CodeTable;
+export default BaseCodeTable;
 export {
   Agency,
   Attractant,

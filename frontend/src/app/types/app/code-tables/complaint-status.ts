@@ -1,4 +1,4 @@
-import { BaseCodeTable } from "../../models/code-tables/code-table";
+import { BaseCodeTable } from "./base-code-table";
 
 export interface ComplaintStatus extends BaseCodeTable { 
    complaintStatus: string

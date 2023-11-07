@@ -1,5 +1,5 @@
-import { CodeTable } from "../../models/code-tables/code-table";
+import { BaseCodeTable } from "../../models/code-tables/code-table";
 
-export interface Attractant extends CodeTable { 
+export interface Attractant extends BaseCodeTable { 
    attractant: string
 }

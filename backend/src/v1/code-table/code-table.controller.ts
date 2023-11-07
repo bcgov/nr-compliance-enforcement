@@ -6,7 +6,7 @@ import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 
-import CodeTable, { AvailableAgencies, AvailableCodeTables, OrganizationCodeTable } from "../../types/models/code-tables"
+import BaseCodeTable, { AvailableAgencies, AvailableCodeTables, OrganizationCodeTable } from "../../types/models/code-tables"
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("code-table")
@@ -18,7 +18,7 @@ export class CodeTableController {
   @Roles(Role.COS_OFFICER)
   async getCodeTableByName(
     @Param("table") table: string
-  ): Promise<CodeTable[]> {
+  ): Promise<BaseCodeTable[]> {
     if(!AvailableCodeTables.includes(table)){ 
       throw new NotFoundException();
     }

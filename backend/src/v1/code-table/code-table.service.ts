@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import CodeTable, {
+import BaseCodeTable, {
   Agency,
   Attractant,
   ComplaintStatus,
@@ -50,7 +50,7 @@ export class CodeTableService {
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
-  getCodeTableByName = async (table: string): Promise<CodeTable[]> => {
+  getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find();
