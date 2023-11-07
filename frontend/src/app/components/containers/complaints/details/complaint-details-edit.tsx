@@ -88,6 +88,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const editButtonClick = () => {
     setReadOnly(false);
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   const cancelConfirmed = () => {
