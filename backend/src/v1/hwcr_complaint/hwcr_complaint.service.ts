@@ -597,10 +597,8 @@ export class HwcrComplaintService {
           PersonGuid: officerAssigned,
         });
       }
-    } else if (officerAssigned === "null") {
-      builder.andWhere("people.person_guid IS NULL");
-    }
-
+    } 
+    
     if (natureOfComplaint) {
       builder.andWhere(
         "wildlife.hwcr_complaint_nature_code = :NatureOfComplaint",

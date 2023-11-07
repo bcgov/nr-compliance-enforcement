@@ -557,10 +557,8 @@ export class AllegationComplaintService {
           PersonGuid: officerAssigned,
         });
       }
-    } else if (officerAssigned === "null") {
-      builder.andWhere("people.person_guid IS NULL");
-    }
-
+    } 
+    
     if (violationCode) {
       builder.andWhere("allegation.violation_code = :ViolationCode", {
         ViolationCode: violationCode,
