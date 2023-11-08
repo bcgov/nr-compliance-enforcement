@@ -553,6 +553,45 @@ export const selectGeocodedComplaintCoordinates = (
 export const selectComplaintHeader =
   (complaintType: string) =>
   (state: RootState): any => {
+    const  selectSharedHeader = (ceComplaint: Complaint, result: any) => {
+      let officerAssigned = "Not Assigned";
+      let personGuid = "";
+      const {
+        incident_reported_utc_timestmp: loggedDate,
+        create_user_id: createdBy,
+        update_utc_timestamp: lastUpdated,
+        complaint_status_code: ceStatusCode,
+      } = ceComplaint;
+
+      const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
+
+      if (ceComplaint.person_complaint_xref.length > 0) {
+        const firstName =
+          ceComplaint.person_complaint_xref[0].person_guid.first_name;
+        const lastName =
+          ceComplaint.person_complaint_xref[0].person_guid.last_name;
+        officerAssigned = `${firstName} ${lastName}`;
+        personGuid =
+          ceComplaint.person_complaint_xref[0].person_guid.person_guid;
+      }
+
+      const { complaint_status_code: statusCode, long_description:status } = ceStatusCode;
+
+      result = {
+        ...result,
+        loggedDate,
+        createdBy,
+        lastUpdated,
+        officerAssigned: officerAssigned,
+        status,
+        statusCode,
+        zone: zone_code,
+        personGuid,
+      };
+
+      return result;
+    }
+    
     const selectWildlifeComplaintHeader = (
       state: RootState,
     ): ComplaintHeader => {
@@ -585,40 +624,7 @@ export const selectComplaintHeader =
         } = complaint as HwcrComplaint;
 
         if (ceComplaint) {
-          let officerAssigned = "Not Assigned";
-          let personGuid = "";
-          const {
-            incident_reported_utc_timestmp: loggedDate,
-            create_user_id: createdBy,
-            update_utc_timestamp: lastUpdated,
-            complaint_status_code: ceStatusCode,
-          } = ceComplaint;
-
-          const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-
-          if (ceComplaint.person_complaint_xref.length > 0) {
-            const firstName =
-              ceComplaint.person_complaint_xref[0].person_guid.first_name;
-            const lastName =
-              ceComplaint.person_complaint_xref[0].person_guid.last_name;
-            officerAssigned = `${firstName} ${lastName}`;
-            personGuid =
-              ceComplaint.person_complaint_xref[0].person_guid.person_guid;
-          }
-
-          const { complaint_status_code: statusCode, long_description:status } = ceStatusCode;
-
-          result = {
-            ...result,
-            loggedDate,
-            createdBy,
-            lastUpdated,
-            officerAssigned: officerAssigned,
-            status,
-            statusCode,
-            zone: zone_code,
-            personGuid,
-          };
+          result = selectSharedHeader(ceComplaint, result);
 
           if (ceComplaintNatureCode) {
             const {
@@ -665,41 +671,7 @@ export const selectComplaintHeader =
         } = complaint as AllegationComplaint;
 
         if (ceComplaint) {
-          let officerAssigned = "Not Assigned";
-          let personGuid = "";
-        
-          const {
-            incident_reported_utc_timestmp: loggedDate,
-            create_user_id: createdBy,
-            update_utc_timestamp: lastUpdated,
-            complaint_status_code: ceStatusCode,
-          } = ceComplaint;
-
-          const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-
-          if (ceComplaint.person_complaint_xref.length > 0) {
-            const firstName =
-              ceComplaint.person_complaint_xref[0].person_guid.first_name;
-            const lastName =
-              ceComplaint.person_complaint_xref[0].person_guid.last_name;
-            officerAssigned = `${firstName} ${lastName}`;
-            personGuid =
-              ceComplaint.person_complaint_xref[0].person_guid.person_guid;
-          }
-
-          const { complaint_status_code: statusCode, long_description: status } = ceStatusCode;
-
-          result = {
-            ...result,
-            loggedDate,
-            createdBy,
-            lastUpdated,
-            officerAssigned: officerAssigned,
-            status,
-            statusCode,
-            zone: zone_code,
-            personGuid,
-          };
+          result = selectSharedHeader(ceComplaint, result);
         }
 
         if (ceViolation) {
