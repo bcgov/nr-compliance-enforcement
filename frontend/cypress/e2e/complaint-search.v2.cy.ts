@@ -48,7 +48,7 @@ describe("Complaint Search Functionality", () => {
     cy.contains("td", "23-029788");
   });
 
-  it("Can search Allegations for 'RAPP'", () => {
+  it("Can search Allegations for 'Oil' and clear search when done", () => {
     cy.visit("/");
     cy.waitForSpinner();
 
@@ -60,42 +60,20 @@ describe("Complaint Search Functionality", () => {
 
     //-- remove filters
     cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-zone-filter").click({ force: true });
+
     cy.get("#comp-status-filter").should("not.exist");
+    cy.get("#comp-zone-filter").should("not.exist");
 
-    //-- there should be 33 complaints
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 33);
+    //-- there should be a whole page of complaints
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 50);
 
-    //-- search for RAPP and verify there's siz complaints
+    //-- search for Oil and verify there's 31 complaints
     cy.get("#complaint-search").click({ force: true });
-    cy.get("#complaint-search").clear().type("RAPP{enter}"); //-- {enter} will perform an enter keypress
+    cy.get("#complaint-search").clear().type("Oil{enter}"); //-- {enter} will perform an enter keypress
 
     //-- verify one complaint, and verify complaint-id
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 6);
-  });
-
-  it("Search should clear when switching tabs", () => {
-    cy.visit("/");
-    cy.waitForSpinner();
-
-    //-- load the Enforcement conflicts
-    cy.get(complaintTypes[1]).click({ force: true });
-
-    //-- verify correct tab
-    cy.get("#ers-tab").should("contain.text", "Enforcement");
-
-    //-- remove filters
-    cy.get("#comp-status-filter").click({ force: true });
-    cy.get("#comp-status-filter").should("not.exist");
-
-    //-- there should be 33 complaints
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 33);
-
-    //-- search for RAPP and verify there's siz complaints
-    cy.get("#complaint-search").click({ force: true });
-    cy.get("#complaint-search").clear().type("RAPP{enter}"); //-- {enter} will perform an enter keypress
-
-    //-- verify one complaint, and verify complaint-id
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 6);
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 31);
 
     //-- switch tabs
     cy.get(complaintTypes[0]).click({ force: true });
@@ -149,6 +127,13 @@ describe("Complaint Search Functionality", () => {
 
     //-- verify correct tab
     cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
+
+    //-- remove filters
+    cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-zone-filter").click({ force: true });
+
+    cy.get("#comp-status-filter").should("not.exist");
+    cy.get("#comp-zone-filter").should("not.exist");
 
     //-- search for sibling and verify there's one complaint
     cy.get("#complaint-search").click({ force: true });
