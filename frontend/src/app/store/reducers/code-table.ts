@@ -20,16 +20,8 @@ import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
 
 const initialState: CodeTableState = {
-  agencyCodes: [],
-  attractantCodes: [],
-  complaintStatusCodes: [],
-  complaintTypeCodes: [],
-  wildlifeNatureOfComplaintCodes: [],
-  violationCodes: [],
-  speciesCodes: [],
-
   agency: [],
-  attractants: [],
+  attractant: [],
   "complaint-status": [],
   "complaint-type": [],
   "nature-of-complaint": [],
@@ -68,23 +60,22 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
   const state = store.getState();
   const {
     codeTables: {
-      agencyCodes,
-      violationCodes,
-      speciesCodes,
-      wildlifeNatureOfComplaintCodes,
-      attractantCodes,
+      "complaint-type": complaintType,
+      "area-codes": areaCodes,
+      "complaint-status": complaintStatus,
+      attractant,
+      agency,
+      violation,
+      species,
+      "nature-of-complaint": natureOfComplaint,
       regions,
       zones,
       communities,
-      complaintTypeCodes,
-
-      "area-codes": areaCodes,
-      "complaint-status": complaintStatus,
     },
   } = state;
 
   try {
-    if (!from(agencyCodes).any()) {
+    if (!from(agency).any()) {
       dispatch(fetchAgencies());
     }
 
@@ -92,19 +83,19 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchComplaintStatus());
     }
 
-    if (!from(violationCodes).any()) {
+    if (!from(violation).any()) {
       dispatch(fetchViolations());
     }
 
-    if (!from(speciesCodes).any()) {
+    if (!from(species).any()) {
       dispatch(fetchSpecies());
     }
 
-    if (!from(wildlifeNatureOfComplaintCodes).any()) {
+    if (!from(natureOfComplaint).any()) {
       dispatch(fetchNatureOfComplaints());
     }
 
-    if (!from(attractantCodes).any()) {
+    if (!from(attractant).any()) {
       dispatch(fetchAttractants());
     }
 
@@ -124,7 +115,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchAreaCodes());
     }
 
-    if (!from(complaintTypeCodes).any()) {
+    if (!from(complaintType).any()) {
       dispatch(fetchComplaintTypeCodes());
     }
   } catch (error) {}
@@ -324,16 +315,26 @@ export const selectComplaintTypeDropdown = (
   state: RootState
 ): Array<Option> => {
   const {
-    codeTables: { complaintTypeCodes },
+    codeTables: { "complaint-type": complaintTypes },
   } = state;
-  return complaintTypeCodes as Array<Option>;
+
+  const data = complaintTypes.map(({ complaintType, longDescription }) => {
+    const item: Option = { label: longDescription, value: complaintType };
+    return item;
+  });
+  return data;
 };
 
 export const selectAgencyDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { agencyCodes },
+    codeTables: { agency },
   } = state;
-  return agencyCodes as Array<Option>;
+
+  const data = agency.map(({ agency, longDescription }) => {
+    const item: Option = { label: longDescription, value: agency };
+    return item;
+  });
+  return data;
 };
 
 export const selectComplaintStatusCodeDropdown = (
@@ -409,9 +410,14 @@ export const selectAttractantCodeDropdown = (
   state: RootState
 ): Array<Option> => {
   const {
-    codeTables: { attractantCodes },
+    codeTables: { attractant },
   } = state;
-  return attractantCodes;
+
+  const data = attractant.map(({ attractant, longDescription }) => {
+    const item: Option = { label: longDescription, value: attractant };
+    return item;
+  });
+  return data;
 };
 
 export const selectZoneCodeDropdown = (

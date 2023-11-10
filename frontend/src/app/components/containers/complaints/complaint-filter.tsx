@@ -60,7 +60,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
       dispatch(updateFilter(payload));
     },
-    []
+    [dispatch]
   );
 
   const handleDateRangeChange = (dates: [Date, Date]) => {

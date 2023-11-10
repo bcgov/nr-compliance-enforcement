@@ -31,31 +31,14 @@ export interface CodeTableState {
     | Array<Region>
     | Array<Zone>
     | Array<Community>;
-    
 
-  //-- current tables
-  agencyCodes: Array<CodeTable>;
-  attractantCodes: Array<CodeTable>;
-  complaintStatusCodes: Array<CodeTable>;
-  complaintTypeCodes: Array<CodeTable>;
-  wildlifeNatureOfComplaintCodes: Array<CodeTable>;
-  speciesCodes: Array<CodeTable>;
-  violationCodes: Array<CodeTable>;
-
-  //-- updated tables
   agency: Array<Agency>;
-  attractants: Array<Attractant>;
+  attractant: Array<Attractant>;
   "complaint-status": Array<ComplaintStatus>;
   "complaint-type": Array<ComplaintType>;
   "nature-of-complaint": Array<NatureOfComplaint>;
   species: Array<Species>;
   violation: Array<Violation>;
-  // "organization-unit-type": Array<OrganizationUnitType>;
-  // "organization-unit": Array<OrganizationUnit>;
-  // "person-complaint": Array<PersonComplaintType>;
-
-  // "cos-organization-unit": Array<OrganizationCodeTable>;
-
   "area-codes": Array<OrganizationCodeTable>;
   regions: Array<Region>;
   zones: Array<Zone>;
