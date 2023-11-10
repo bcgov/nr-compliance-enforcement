@@ -10,6 +10,9 @@ import { Species } from "../app/code-tables/species";
 import { Violation } from "../app/code-tables/violation";
 import { OrganizationCodeTable } from "../app/code-tables/organization-code-table";
 import { ComplaintType } from "../app/code-tables/complaint-type";
+import { Region } from "../app/code-tables/region";
+import { Zone } from "../app/code-tables/zone";
+import { Community } from "../app/code-tables/community";
 
 export interface CodeTableState {
   [key: string]:
@@ -24,7 +27,11 @@ export interface CodeTableState {
     | Array<Species>
     | Array<Violation>
     | Array<OrganizationCodeTable>
-    | Array<ComplaintType>;
+    | Array<ComplaintType>
+    | Array<Region>
+    | Array<Zone>
+    | Array<Community>;
+    
 
   //-- current tables
   agencyCodes: Array<CodeTable>;
@@ -34,11 +41,6 @@ export interface CodeTableState {
   wildlifeNatureOfComplaintCodes: Array<CodeTable>;
   speciesCodes: Array<CodeTable>;
   violationCodes: Array<CodeTable>;
-
-  areaCodes: Array<CodeTable>;
-  regions: Array<CodeTable>;
-  zones: Array<CodeTable>;
-  communities: Array<CodeTable>;
 
   //-- updated tables
   agency: Array<Agency>;
@@ -53,4 +55,9 @@ export interface CodeTableState {
   // "person-complaint": Array<PersonComplaintType>;
 
   // "cos-organization-unit": Array<OrganizationCodeTable>;
+
+  "area-codes": Array<OrganizationCodeTable>;
+  regions: Array<Region>;
+  zones: Array<Zone>;
+  communities: Array<Community>;
 }

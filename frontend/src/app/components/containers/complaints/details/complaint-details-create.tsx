@@ -44,6 +44,7 @@ import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { DropdownOption } from "../../../../types/app/drop-down-option";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -835,7 +836,7 @@ export const CreateComplaint: FC = () => {
     selectHwcrNatureOfComplaintCodeDropdown,
   ) as Option[];
   const complaintTypeCodes = useSelector(selectComplaintTypeDropdown) as Option[];
-  const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
+  const areaCodes = useSelector(selectAreaCodeDropdown) as DropdownOption[];
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
   const violationTypeCodes = useSelector(

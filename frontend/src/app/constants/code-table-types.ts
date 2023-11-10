@@ -13,4 +13,5 @@ export const CODE_TABLE_TYPES = {
   REGIONS: "regions",
   ZONES: "zones",
   COMMUNITIES: "communities",
+  AREA_CODES: "area-codes"
 };

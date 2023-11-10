@@ -3,13 +3,10 @@ import { AppThunk, RootState, store } from "../store";
 import { from } from "linq-to-typescript";
 import config from "../../../config";
 import { CodeTableState } from "../../types/state/code-table-state";
-import { CodeTable } from "../../types/code-tables/code-table";
 import { ComplaintStatusCode } from "../../types/code-tables/complaint-status-code";
-import { CosGeoOrgUnit } from "../../types/person/person";
 import Option from "../../types/app/option";
 import { generateApiParameters, get } from "../../common/api";
-import { GeoOrganizationCode } from "../../types/code-tables/geo-orginaization-code";
-import { DropdownOption } from "../../types/code-tables/option";
+import { DropdownOption } from "../../types/app/drop-down-option";
 import { Agency } from "../../types/app/code-tables/agency";
 import { Attractant } from "../../types/app/code-tables/attactant";
 import { CODE_TABLE_TYPES } from "../../constants/code-table-types";
@@ -20,6 +17,7 @@ import { ComplaintType } from "../../types/app/code-tables/complaint-type";
 import { Region } from "../../types/app/code-tables/region";
 import { Zone } from "../../types/app/code-tables/zone";
 import { Community } from "../../types/app/code-tables/community";
+import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
 
 const initialState: CodeTableState = {
   agencyCodes: [],
@@ -29,8 +27,6 @@ const initialState: CodeTableState = {
   wildlifeNatureOfComplaintCodes: [],
   violationCodes: [],
   speciesCodes: [],
-
-  areaCodes: [],
 
   agency: [],
   attractants: [],
@@ -42,6 +38,7 @@ const initialState: CodeTableState = {
   regions: [],
   zones: [],
   communities: [],
+  "area-codes": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -58,17 +55,6 @@ export const codeTableSlice = createSlice({
       } = action;
       return { ...state, [key]: data };
     },
-
-    setAreaCodes: (
-      state: CodeTableState,
-      action: PayloadAction<Array<CosGeoOrgUnit>>
-    ) => {
-      const { payload } = action;
-      const data = payload.map(({ area_code: value, area_name: label }) => {
-        return { value, label, description: label } as CodeTable;
-      });
-      return { ...state, areaCodes: data };
-    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -76,7 +62,7 @@ export const codeTableSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
-export const { setCodeTable, setAreaCodes } = codeTableSlice.actions;
+export const { setCodeTable } = codeTableSlice.actions;
 
 export const fetchCodeTables = (): AppThunk => async (dispatch) => {
   const state = store.getState();
@@ -86,13 +72,13 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       violationCodes,
       speciesCodes,
       wildlifeNatureOfComplaintCodes,
-      areaCodes,
       attractantCodes,
       regions,
       zones,
       communities,
       complaintTypeCodes,
 
+      "area-codes": areaCodes,
       "complaint-status": complaintStatus,
     },
   } = state;
@@ -245,12 +231,19 @@ export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
   const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
 
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/cos-geo-org-unit`
+    `${config.API_BASE_URL}/v1/code-table/organization-by-agency/${agency}`
   );
-  const response = await get<Array<CosGeoOrgUnit>>(dispatch, parameters);
+  const response = await get<Array<OrganizationCodeTable>>(
+    dispatch,
+    parameters
+  );
 
   if (response && from(response).any()) {
-    dispatch(setAreaCodes(response));
+    const payload = {
+      key: CODE_TABLE_TYPES.AREA_CODES,
+      data: response,
+    };
+    dispatch(setCodeTable(payload));
   }
 };
 
@@ -347,41 +340,69 @@ export const selectComplaintStatusCodeDropdown = (
   state: RootState
 ): Array<Option> => {
   const {
-    codeTables: { complaintStatusCodes },
+    codeTables: { "complaint-status": complaintStatus },
   } = state;
-  return complaintStatusCodes;
+
+  const data = complaintStatus.map(({ complaintStatus, longDescription }) => {
+    const item: Option = { label: longDescription, value: complaintStatus };
+    return item;
+  });
+  return data;
 };
 
 export const selectSpeciesCodeDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { speciesCodes },
+    codeTables: { species },
   } = state;
-  return speciesCodes;
+
+  const data = species.map(({ species, longDescription }) => {
+    const item: Option = { label: longDescription, value: species };
+    return item;
+  });
+  return data;
 };
 
 export const selectViolationCodeDropdown = (
   state: RootState
 ): Array<Option> => {
   const {
-    codeTables: { violationCodes },
+    codeTables: { violation },
   } = state;
-  return violationCodes;
+
+  const data = violation.map(({ violation, longDescription }) => {
+    const item: Option = { label: longDescription, value: violation };
+    return item;
+  });
+  return data;
 };
 
 export const selectHwcrNatureOfComplaintCodeDropdown = (
   state: RootState
 ): Array<Option> => {
   const {
-    codeTables: { wildlifeNatureOfComplaintCodes },
+    codeTables: { "nature-of-complaint": natureOfComplaints },
   } = state;
-  return wildlifeNatureOfComplaintCodes;
+
+  const data = natureOfComplaints.map(
+    ({ natureOfComplaint, longDescription }) => {
+      const item: Option = { label: longDescription, value: natureOfComplaint };
+      return item;
+    }
+  );
+  return data;
 };
 
 export const selectAreaCodeDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { areaCodes },
+    codeTables: { "area-codes": areaCodes },
   } = state;
-  return areaCodes;
+
+  const data = areaCodes.map(({ area, areaName }) => {
+    const option: Option = { value: area, label: areaName };
+    return option;
+  });
+
+  return data;
 };
 
 export const selectAttractantCodeDropdown = (
@@ -393,22 +414,40 @@ export const selectAttractantCodeDropdown = (
   return attractantCodes;
 };
 
-export const selectedZoneCodeDropdown = (
+export const selectZoneCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
   const {
-    codeTables: { regions },
+    codeTables: { zones },
   } = state;
-  return regions;
+
+  const data = zones.map(({ code, name }) => {
+    const item: DropdownOption = {
+      label: name,
+      value: code,
+      description: name,
+    };
+    return item;
+  });
+  return data;
 };
 
 export const selectRegionCodeDropdown = (
   state: RootState
 ): Array<DropdownOption> => {
   const {
-    codeTables: { zones },
+    codeTables: { regions },
   } = state;
-  return zones;
+
+  const data = regions.map(({ code, name }) => {
+    const item: DropdownOption = {
+      label: name,
+      value: code,
+      description: name,
+    };
+    return item;
+  });
+  return data;
 };
 
 export const selectCommunityCodeDropdown = (
@@ -417,7 +456,15 @@ export const selectCommunityCodeDropdown = (
   const {
     codeTables: { communities },
   } = state;
-  return communities;
+  const data = communities.map(({ code, name }) => {
+    const item: DropdownOption = {
+      label: name,
+      value: code,
+      description: name,
+    };
+    return item;
+  });
+  return data;
 };
 
 export default codeTableSlice.reducer;
