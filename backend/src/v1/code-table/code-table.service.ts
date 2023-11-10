@@ -13,6 +13,10 @@ import BaseCodeTable, {
   Species,
   Violation,
   OrganizationCodeTable,
+  ComplaintType,
+  Sector,
+  Zone,
+  Community,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -24,6 +28,7 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -49,6 +54,8 @@ export class CodeTableService {
   private _violationsRepository: Repository<ViolationCode>;
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
+  @InjectRepository(ComplaintTypeCode)
+  private _complaintTypetRepository: Repository<ComplaintTypeCode>;
 
   getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
     switch (table) {
@@ -264,6 +271,28 @@ export class CodeTableService {
         );
         return results;
       }
+      case "complaint-type": {
+        const data = await this._complaintTypetRepository.find();
+        let results = data.map(
+          ({
+            complaint_type_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+          }) => {
+            let table: ComplaintType = {
+              complaintType: complaint_type_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+            };
+            return table;
+          }
+        );
+        return results;
+      }
     }
   };
 
@@ -291,7 +320,7 @@ export class CodeTableService {
           regionName,
           region,
           zone,
-          zoneName
+          zoneName,
         };
 
         return record;
@@ -300,4 +329,81 @@ export class CodeTableService {
 
     return results;
   };
+
+  getRegionsByAgency = async (agency: string): Promise<Array<Sector>> => {
+    const data = await this._cosOrganizationUnitRepository
+      .createQueryBuilder("cos_geo_org_unit")
+      .select(["region_name", "region_code"])
+      .distinctOn(["region_code"])
+      .getRawMany();
+
+      const results = data.map(({ region_name: name, region_code: code }) => {
+      let record: Sector = {
+        code,
+        name,
+      };
+      return record;
+    });
+
+    return results;
+  };
+
+  getZonesByAgency = async (agency: string): Promise<Array<Zone>> => {
+    const data = await this._cosOrganizationUnitRepository
+      .createQueryBuilder("cos_geo_org_unit")
+      .select(["zone_name", "zone_code", "region_code"])
+      .distinctOn(["zone_code"])
+      .getRawMany();
+
+    const results = data.map(
+      ({ zone_name: name, zone_code: code, region_code: region }) => {
+        let record: Zone = {
+          code,
+          name,
+          region,
+        };
+        return record;
+      }
+    );
+
+    return results;
+  };
+
+  getCommunitiesByAgency = async (
+    agency: string
+  ): Promise<Array<Community>> => {
+    const data = await this._cosOrganizationUnitRepository
+      .createQueryBuilder("cos_geo_org_unit")
+      .select(["area_name", "area_code", "zone_code", "region_code"])
+      .distinctOn(["area_code"])
+      .getRawMany();
+
+    const results = data.map(
+      ({
+        area_name: name,
+        area_code: code,
+        zone_code: zone,
+        region_code: region,
+      }) => {
+        let record: Community = {
+          code,
+          name,
+          zone,
+          region,
+        };
+        return record;
+      }
+    );
+
+    return results;
+  };
 }
+
+/*
+    .createQueryBuilder("cos_geo_org_unit")
+      .where("cos_geo_org_unit.zone_code = :zone", { zone })
+      .distinctOn(["cos_geo_org_unit.offloc_code"])
+      .orderBy("cos_geo_org_unit.offloc_code");
+
+    const zoneOffices = await officeQuery.getMany();
+*/

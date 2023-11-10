@@ -9,6 +9,10 @@ import { PersonComplaintType } from "./person-complaint-type";
 import { Species } from "./species";
 import { Violation } from "./violation";
 import { OrganizationCodeTable } from "./organization-code-table";
+import { ComplaintType } from "./complaint-type";
+import { Sector } from "./sector";
+import { Community } from "./community";
+import { Zone } from "./zone";
 
 export const AvailableCodeTables = [
   "agency",
@@ -21,7 +25,8 @@ export const AvailableCodeTables = [
   "person-complaint",
   "species",
   "violation",
-  "cos-organization-unit"
+  "cos-organization-unit",
+  "complaint-type",
 ];
 
 export const AvailableAgencies = [
@@ -39,5 +44,9 @@ export {
   PersonComplaintType,
   Species,
   Violation,
-  OrganizationCodeTable
+  OrganizationCodeTable,
+  ComplaintType,
+  Sector,
+  Zone,
+  Community
 };

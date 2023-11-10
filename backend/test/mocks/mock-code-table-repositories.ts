@@ -51,7 +51,7 @@ const organizationUnits = [
 
 const personTypes = [
    { "person_complaint_xref_code": "ASSIGNEE", "short_description": "Officer Assigned", "long_description": "The person to whom the complaint is assigned to.", "display_order": 1,   },
-   { "person_complaint_xref_code": "TEST",      "short_description": "TEST",      "long_description": "Test person type",      "display_order": 2,  }
+   { "person_complaint_xref_code": "TEST", "short_description": "TEST", "long_description": "Test person type", "display_order": 2,  }
 ]
 
 const species = [
@@ -89,6 +89,48 @@ const cosOrganizationUnits = [
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "MCMURDO", "area_name": "McMurdo"   },
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "NICHOLN", "area_name": "Nicholson"   },
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "PARSON", "area_name": "Parson"   }
+]
+
+const complaintTypes = [
+   { "complaint_type_code": "HWCR", "short_description": "HWCR", "long_description": "Human Wildlife Conflict", "display_order": 1, "active_ind": true,   },
+   { "complaint_type_code": "ERS", "short_description": "ERS", "long_description": "Enforcement", "display_order": 2, "active_ind": true,   }
+]
+
+const regions = [
+  { "code": "KTNY", "name": "Kootenay"  },
+  { "code": "OKNGN", "name": "Okanagan"  },
+  { "code": "OMINECA", "name": "Omineca"  },
+  { "code": "PCLRD", "name": "Peace Liard"  },
+  { "code": "SKNA", "name": "Skeena"  },
+  { "code": "STHCST", "name": "South Coast"  },
+  { "code": "TMPSNCRBO", "name": "Thompson Cariboo"  },
+  { "code": "WSTCST", "name": "West Coast"  }
+]
+
+const zones = [    
+{  "code": "NOKNGN",  "name": "North Okanagan",  "region": "OKNGN"},
+{  "code": "NPCE", "name": "North Peace",  "region": "PCLRD"},
+{  "code": "OMNCA",  "name": "Omineca", "region": "OMINECA"},
+{  "code": "SEA2SKY",  "name": "Sea to Sky",  "region": "STHCST"},
+{  "code": "SISL",  "name": "South Island",  "region": "WSTCST"},
+{  "code": "SNSHNCST",  "name": "Sunshine Coast",  "region": "STHCST"},
+{  "code": "SOKNGN",  "name": "South Okanagan",  "region": "OKNGN"},
+{  "code": "SPCE",  "name": "South Peace",  "region": "PCLRD"},
+{  "code": "TMPSNNCLA",  "name": "Thompson Nicola",  "region": "TMPSNCRBO"},
+]
+
+const communities = [
+  { "code": "100MHHS", "name": "100 Mile House", "zone": "CRBOTMPSN", "region": "TMPSNCRBO"  },
+  { "code": "108MLRNH", "name": "108 Mile Ranch", "zone": "CRBOTMPSN", "region": "TMPSNCRBO"  },
+  { "code": "140MHHS", "name": "140 Mile House", "zone": "CRBOCHLCTN", "region": "TMPSNCRBO"  },
+  { "code": "150MHHS", "name": "150 Mile House", "zone": "CRBOCHLCTN", "region": "TMPSNCRBO"  },
+  { "code": "16MIL", "name": "16 Mile", "zone": "CRBOTMPSN", "region": "TMPSNCRBO"  },
+  { "code": "40MLFLTZ", "name": "40 Mile Flats", "zone": "CRBOCHLCTN", "region": "TMPSNCRBO"  },
+  { "code": "70MLHS", "name": "70 Mile House", "zone": "CRBOTMPSN", "region": "TMPSNCRBO"  },
+  { "code": "ABTFRD", "name": "Abbotsford", "zone": "FRSRS", "region": "STHCST"  },
+  { "code": "ADMSLKHS", "name": "Adams Lake", "zone": "TMPSNNCLA", "region": "TMPSNCRBO"  },
+  { "code": "AGSSZHS", "name": "Agassiz", "zone": "FRSRS", "region": "STHCST"  },
+  { "code": "AHST", "name": "Ahousat", "zone": "CENISL", "region": "WSTCST"  }
 ]
 
 const single = (name: string = "default", idx: number = 0): any => {
@@ -187,29 +229,80 @@ export const MockPersonComplaintCodeTableRepository = () => ({
 });
 
 export const MockSpeciesCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(species),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(species),
-   })),
- });
- 
+  find: jest.fn().mockResolvedValue(species),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(species),
+  })),
+});
+
 export const MockViolationsCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(violations),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(violations),
-   })),
- });
- 
- export const MockCosOrganizationUnitCodeTableRepository = () => ({
-   find: jest.fn().mockResolvedValue(cosOrganizationUnits),
-   createQueryBuilder: jest.fn(() => ({
-     leftJoinAndSelect: jest.fn().mockReturnThis(),
-     where: jest.fn().mockReturnThis(),
-     getMany: jest.fn().mockResolvedValue(cosOrganizationUnits),
-   })),
- });
- 
+  find: jest.fn().mockResolvedValue(violations),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(violations),
+  })),
+});
+
+export const MockCosOrganizationUnitCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(cosOrganizationUnits),
+  map: jest.fn().mockReturnThis(),
+  createQueryBuilder: jest.fn(() => ({
+    select: jest.fn().mockReturnThis(),
+    distinctOn: jest.fn().mockReturnThis(),
+    getRawMany: jest.fn().mockReturnThis(),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(cosOrganizationUnits),
+  })),
+});
+
+export const MockComplaintTypeCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(complaintTypes),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(complaintTypes),
+  })),
+});
+
+export const MockRegionCodeTableServiceRepository = () => ({
+  find: jest.fn().mockReturnThis(),
+  map: jest.fn().mockReturnThis(),
+  createQueryBuilder: jest.fn(() => ({
+    select: jest.fn().mockReturnThis(),
+    distinctOn: jest.fn().mockReturnThis(),
+    getRawMany: jest.fn().mockResolvedValue(regions),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockReturnThis(),
+  })),
+});
+
+export const MockZoneCodeTableServiceRepository = () => ({
+  find: jest.fn().mockReturnThis(),
+  map: jest.fn().mockReturnThis(),
+  createQueryBuilder: jest.fn(() => ({
+    select: jest.fn().mockReturnThis(),
+    distinctOn: jest.fn().mockReturnThis(),
+    getRawMany: jest.fn().mockResolvedValue(zones),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockReturnThis(),
+  })),
+});
+
+export const MockCommunityCodeTableServiceRepository = () => ({
+  find: jest.fn().mockReturnThis(),
+  map: jest.fn().mockReturnThis(),
+  createQueryBuilder: jest.fn(() => ({
+    select: jest.fn().mockReturnThis(),
+    distinctOn: jest.fn().mockReturnThis(),
+    getRawMany: jest.fn().mockResolvedValue(communities),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockReturnThis(),
+  })),
+});

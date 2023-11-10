@@ -13,8 +13,9 @@ import { CodeTableService } from "./code-table.service";
 import {
   MockAgencyCodeTableRepository,
   MockAttractantCodeTableRepository,
+  MockCommunityCodeTableServiceRepository,
   MockComplaintStatusCodeTableRepository,
-  MockCosOrganizationUnitCodeTableRepository,
+  MockComplaintTypeCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
   MockOrganizationUnitCodeTableRepository,
   MockOrganizationUnitTypeCodeTableRepository,
@@ -32,6 +33,7 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 
 describe("Testing: CodeTable Controller", () => {
   let app: INestApplication;
@@ -80,7 +82,11 @@ describe("Testing: CodeTable Controller", () => {
         },
         {
           provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: MockCosOrganizationUnitCodeTableRepository,
+          useFactory: MockCommunityCodeTableServiceRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintTypeCode),
+          useFactory: MockComplaintTypeCodeTableRepository,
         },
       ],
     })
@@ -115,6 +121,21 @@ describe("Testing: CodeTable Controller", () => {
       `/code-table/organization-by-agency/${_agency}`
     );
     expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/code-table/regions-by-agency/${_agency}`
+    );
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/code-table/zones-by-agency/${_agency}`
+    );
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/code-table/communities-by-agency/${_agency}`
+    );
+    expect(response.statusCode).toBe(200);
   });
 
   it("should return 404 when a requesting code table that doesn't exist", async () => {
@@ -135,6 +156,21 @@ describe("Testing: CodeTable Controller", () => {
     //-- act
     let response = await request(app.getHttpServer()).get(
       `/code-table/organization-by-agency/${_agency}`
+    );
+    expect(response.statusCode).toBe(404);
+
+    response = await request(app.getHttpServer()).get(
+      `/code-table/regions-by-agency/${_agency}`
+    );
+    expect(response.statusCode).toBe(404);
+
+    response = await request(app.getHttpServer()).get(
+      `/code-table/zones-by-agency/${_agency}`
+    );
+    expect(response.statusCode).toBe(404);
+
+    response = await request(app.getHttpServer()).get(
+      `/code-table/communities-by-agency/${_agency}`
     );
     expect(response.statusCode).toBe(404);
   });
