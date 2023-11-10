@@ -733,8 +733,14 @@ export const ComplaintDetailsEdit: FC = () => {
             update_user_id: "",
             update_utc_timestamp: null,
           };
-          hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
-            selectedOption.value;
+
+          hwcrComplaint.complaint_identifier.cos_geo_org_unit = {
+            zone_code: "",
+            office_location_name: "",
+            area_code: selectedOption.value,
+            area_name: ""
+          };
+
           hwcrComplaint.complaint_identifier.geo_organization_unit_code =
             geoOrgCode;
         }
@@ -755,8 +761,14 @@ export const ComplaintDetailsEdit: FC = () => {
             update_user_id: "",
             update_utc_timestamp: null,
           };
-          allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
-            selectedOption.value;
+
+          allegationComplaint.complaint_identifier.cos_geo_org_unit = {
+            zone_code: "",
+            office_location_name: "",
+            area_code: selectedOption.value,
+            area_name: ""
+          };
+          
           allegationComplaint.complaint_identifier.geo_organization_unit_code =
             geoOrgCode;
         }
