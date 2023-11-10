@@ -6,7 +6,6 @@ declare namespace Cypress {
     kcLogout(): Chainable<any>;
     verifyMapMarkerExists(existIndicator: boolean) : Chainable<any>;
     typeAndTriggerChange(value: string): Chainable<void>;
-    typeAndTriggerChange(value: string): Chainable<void>;
     navigateToDetailsScreen(
       complaintType: string,
       complaintIdentifier: string,
@@ -21,6 +20,8 @@ declare namespace Cypress {
     clearFilterById(filterId: string): Chainable<any>;
     selectItemById(selectId: string, optionText: string): Chainable<any>;
     enterDateTimeInDatePicker(datePickerId: string, day: string, hour: string, minute: string): Chainable<any>;
-    removeFilters(): Chainable<any>;
+    navigateToTab(
+      complaintTab: string,
+      removeFilters: boolean): Chainable<void>;
   }
 }

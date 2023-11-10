@@ -284,12 +284,29 @@ Cypress.Commands.add(
   },
 );
 
-Cypress.Commands.add("removeFilters", () => {
-  cy.get("#comp-status-filter").click({ force: true });
-  cy.get("#comp-zone-filter").click({ force: true });
+Cypress.Commands.add("navigateToTab", (complaintTab: string, removeFilters: boolean) => {
 
-  cy.get("#comp-status-filter").should("not.exist");
-  cy.get("#comp-zone-filter").should("not.exist");
+  //-- load the human wildlife conflicts
+  cy.get(complaintTab).click({ force: true });
+
+  //-- verify correct tab
+  if (complaintTab === "#hwcr-tab")
+  {
+    cy.get(complaintTab).should("contain.text", "Human Wildlife Conflicts");
+  } else {
+    cy.get(complaintTab).should("contain.text", "Enforcement");
+  }
+  
+  if(removeFilters)
+  {
+    cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-zone-filter").click({ force: true });
+  
+    cy.get("#comp-status-filter").should("not.exist");
+    cy.get("#comp-zone-filter").should("not.exist");
+  }
 });
+
+
 
 module.exports = {};

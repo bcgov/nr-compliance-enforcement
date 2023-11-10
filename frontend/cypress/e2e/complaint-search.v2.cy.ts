@@ -7,20 +7,14 @@ describe("Complaint Search Functionality", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
+    cy.visit("/");
+    cy.waitForSpinner();
   });
 
   it("Can search Wildlife complaints for 'siblings '", () => {
-    cy.visit("/");
-    cy.waitForSpinner();
 
-    //-- load the human wildlife conflicts
-    cy.get(complaintTypes[0]).click({ force: true });
-
-    //-- verify correct tab
-    cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
-
-    //-- remove filters
-    cy.removeFilters();
+   //-- load the human wildlife conflicts
+   cy.navigateToTab(complaintTypes[0], true);
 
     //-- open the filter tab
     cy.get("#complaint-filter-image-id").click({ force: true });
@@ -45,17 +39,9 @@ describe("Complaint Search Functionality", () => {
   });
 
   it("Can search Allegations for 'Oil' and clear search when done", () => {
-    cy.visit("/");
-    cy.waitForSpinner();
 
-    //-- load the Enforcement conflicts
-    cy.get(complaintTypes[1]).click({ force: true });
-
-    //-- verify correct tab
-    cy.get("#ers-tab").should("contain.text", "Enforcement");
-
-    //-- remove filters
-    cy.removeFilters();
+    //-- load the human wildlife conflicts
+    cy.navigateToTab(complaintTypes[1], true);
 
     //-- there should be a whole page of complaints
     cy.get("#complaint-list tbody").find("tr").should("have.length", 50);
@@ -75,17 +61,9 @@ describe("Complaint Search Functionality", () => {
   });
 
   it("Can't search Wildlife complaints for 'Zebra'", () => {
-    cy.visit("/");
-    cy.waitForSpinner();
 
     //-- load the human wildlife conflicts
-    cy.get(complaintTypes[0]).click({ force: true });
-
-    //-- verify correct tab
-    cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
-
-    //-- remove filters
-    cy.removeFilters();
+    cy.navigateToTab(complaintTypes[0], true);
 
     //-- open the filter tab
     cy.get("#complaint-filter-image-id").click({ force: true });
@@ -107,17 +85,9 @@ describe("Complaint Search Functionality", () => {
   });
 
   it("Can search wildlife map complaints by complaint-id: 23-031562", () => {
-    cy.visit("/");
-    cy.waitForSpinner();
 
     //-- load the human wildlife conflicts
-    cy.get(complaintTypes[0]).click({ force: true });
-
-    //-- verify correct tab
-    cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
-
-    //-- remove filters
-    cy.removeFilters();
+    cy.navigateToTab(complaintTypes[0], true);
 
     //-- search for sibling and verify there's one complaint
     cy.get("#complaint-search").click({ force: true });
@@ -137,14 +107,9 @@ describe("Complaint Search Functionality", () => {
   });
 
   it("Can search multiple allegation map complaints: ", () => {
-    cy.visit("/");
-    cy.waitForSpinner();
 
     //-- load the human wildlife conflicts
-    cy.get(complaintTypes[1]).click({ force: true });
-
-    //-- verify correct tab
-    cy.get("#ers-tab").should("contain.text", "Enforcement"); //comp-zone-filter
+    cy.navigateToTab(complaintTypes[1], false);
 
     //-- remove the zone filter
     cy.get("#comp-zone-filter").click({ force: true });
