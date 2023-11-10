@@ -284,4 +284,12 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add("removeFilters", () => {
+  cy.get("#comp-status-filter").click({ force: true });
+  cy.get("#comp-zone-filter").click({ force: true });
+
+  cy.get("#comp-status-filter").should("not.exist");
+  cy.get("#comp-zone-filter").should("not.exist");
+});
+
 module.exports = {};

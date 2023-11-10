@@ -20,11 +20,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
 
     //-- remove filters
-    cy.get("#comp-status-filter").click({ force: true });
-    cy.get("#comp-zone-filter").click({ force: true });
-
-    cy.get("#comp-status-filter").should("not.exist");
-    cy.get("#comp-zone-filter").should("not.exist");
+    cy.removeFilters();
 
     //-- open the filter tab
     cy.get("#complaint-filter-image-id").click({ force: true });
@@ -59,11 +55,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#ers-tab").should("contain.text", "Enforcement");
 
     //-- remove filters
-    cy.get("#comp-status-filter").click({ force: true });
-    cy.get("#comp-zone-filter").click({ force: true });
-
-    cy.get("#comp-status-filter").should("not.exist");
-    cy.get("#comp-zone-filter").should("not.exist");
+    cy.removeFilters();
 
     //-- there should be a whole page of complaints
     cy.get("#complaint-list tbody").find("tr").should("have.length", 50);
@@ -93,11 +85,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
 
     //-- remove filters
-    cy.get("#comp-status-filter").click({ force: true });
-    cy.get("#comp-zone-filter").click({ force: true });
-
-    cy.get("#comp-status-filter").should("not.exist");
-    cy.get("#comp-zone-filter").should("not.exist");
+    cy.removeFilters();
 
     //-- open the filter tab
     cy.get("#complaint-filter-image-id").click({ force: true });
@@ -129,11 +117,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
 
     //-- remove filters
-    cy.get("#comp-status-filter").click({ force: true });
-    cy.get("#comp-zone-filter").click({ force: true });
-
-    cy.get("#comp-status-filter").should("not.exist");
-    cy.get("#comp-zone-filter").should("not.exist");
+    cy.removeFilters();
 
     //-- search for sibling and verify there's one complaint
     cy.get("#complaint-search").click({ force: true });
