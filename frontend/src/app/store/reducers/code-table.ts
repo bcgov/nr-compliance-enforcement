@@ -17,6 +17,9 @@ import { NatureOfComplaint } from "../../types/app/code-tables/nature-of-complai
 import { Species } from "../../types/app/code-tables/species";
 import { Violation } from "../../types/app/code-tables/violation";
 import { ComplaintType } from "../../types/app/code-tables/complaint-type";
+import { Region } from "../../types/app/code-tables/region";
+import { Zone } from "../../types/app/code-tables/zone";
+import { Community } from "../../types/app/code-tables/community";
 
 const initialState: CodeTableState = {
   agencyCodes: [],
@@ -26,10 +29,8 @@ const initialState: CodeTableState = {
   wildlifeNatureOfComplaintCodes: [],
   violationCodes: [],
   speciesCodes: [],
+
   areaCodes: [],
-  regions: [],
-  zones: [],
-  communities: [],
 
   agency: [],
   attractants: [],
@@ -38,6 +39,9 @@ const initialState: CodeTableState = {
   "nature-of-complaint": [],
   species: [],
   violation: [],
+  regions: [],
+  zones: [],
+  communities: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -65,54 +69,6 @@ export const codeTableSlice = createSlice({
       });
       return { ...state, areaCodes: data };
     },
-    setRegions: (
-      state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>
-    ) => {
-      const { payload } = action;
-      const data = payload.map(
-        ({
-          geo_organization_unit_code: value,
-          long_description: label,
-          short_description: description,
-        }) => {
-          return { value, label, description } as CodeTable;
-        }
-      );
-      return { ...state, regions: data };
-    },
-    setZones: (
-      state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>
-    ) => {
-      const { payload } = action;
-      const data = payload.map(
-        ({
-          geo_organization_unit_code: value,
-          long_description: label,
-          short_description: description,
-        }) => {
-          return { value, label, description } as CodeTable;
-        }
-      );
-      return { ...state, zones: data };
-    },
-    setCommunities: (
-      state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>
-    ) => {
-      const { payload } = action;
-      const data = payload.map(
-        ({
-          geo_organization_unit_code: value,
-          long_description: label,
-          short_description: description,
-        }) => {
-          return { value, label, description } as CodeTable;
-        }
-      );
-      return { ...state, communities: data };
-    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -120,13 +76,7 @@ export const codeTableSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
-export const {
-  setCodeTable,
-  setAreaCodes,
-  setRegions,
-  setZones,
-  setCommunities,
-} = codeTableSlice.actions;
+export const { setCodeTable, setAreaCodes } = codeTableSlice.actions;
 
 export const fetchCodeTables = (): AppThunk => async (dispatch) => {
   const state = store.getState();
@@ -168,10 +118,6 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchNatureOfComplaints());
     }
 
-    if (!from(areaCodes).any()) {
-      dispatch(fetchAreaCodes());
-    }
-
     if (!from(attractantCodes).any()) {
       dispatch(fetchAttractants());
     }
@@ -186,6 +132,10 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 
     if (!from(communities).any()) {
       dispatch(fetchCommunities());
+    }
+
+    if (!from(areaCodes).any()) {
+      dispatch(fetchAreaCodes());
     }
 
     if (!from(complaintTypeCodes).any()) {
@@ -292,6 +242,8 @@ export const fetchComplaintTypeCodes = (): AppThunk => async (dispatch) => {
 
 //-- these are going to need to come from the organizations
 export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
+  const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
+
   const parameters = generateApiParameters(
     `${config.API_BASE_URL}/v1/cos-geo-org-unit`
   );
@@ -303,35 +255,53 @@ export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchRegions = (): AppThunk => async (dispatch) => {
+  const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
+
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`
+    `${config.API_BASE_URL}/v1/code-table/regions-by-agency/${agency}`
   );
-  const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
+  const response = await get<Array<Region>>(dispatch, parameters);
 
   if (response && from(response).any()) {
-    dispatch(setRegions(response));
+    const payload = {
+      key: CODE_TABLE_TYPES.REGIONS,
+      data: response,
+    };
+    dispatch(setCodeTable(payload));
   }
 };
 
 export const fetchZones = (): AppThunk => async (dispatch) => {
+  const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
+
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-zones`
+    `${config.API_BASE_URL}/v1/code-table/zones-by-agency/${agency}`
   );
-  const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
+  const response = await get<Array<Zone>>(dispatch, parameters);
 
   if (response && from(response).any()) {
-    dispatch(setZones(response));
+    const payload = {
+      key: CODE_TABLE_TYPES.ZONES,
+      data: response,
+    };
+    dispatch(setCodeTable(payload));
   }
 };
 
 export const fetchCommunities = (): AppThunk => async (dispatch) => {
+  const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
+
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-areas`
+    `${config.API_BASE_URL}/v1/code-table/communities-by-agency/${agency}`
   );
-  const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
+  const response = await get<Array<Community>>(dispatch, parameters);
 
   if (response && from(response).any()) {
-    dispatch(setCommunities(response));
+    const payload = {
+      key: CODE_TABLE_TYPES.COMMUNITIES,
+      data: response,
+    };
+    dispatch(setCodeTable(payload));
   }
 };
 
