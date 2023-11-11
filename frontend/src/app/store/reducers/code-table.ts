@@ -39,7 +39,7 @@ export const codeTableSlice = createSlice({
   reducers: {
     setAgencyCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<AgencyCode>>,
+      action: PayloadAction<Array<AgencyCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -49,14 +49,14 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
 
       return { ...state, agencyCodes: data };
     },
     setComplaintStatusCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<ComplaintStatusCode>>,
+      action: PayloadAction<Array<ComplaintStatusCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -66,13 +66,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, complaintStatusCodes: data };
     },
     setViolationCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<ViolationCode>>,
+      action: PayloadAction<Array<ViolationCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -82,13 +82,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, violationCodes: data };
     },
     setSpeciesCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<SpeciesCode>>,
+      action: PayloadAction<Array<SpeciesCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -98,13 +98,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, speciesCodes: data };
     },
     setWildlifeNatureOfComplaintCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<HwcrNatureOfComplaintCode>>,
+      action: PayloadAction<Array<HwcrNatureOfComplaintCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -114,13 +114,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, wildlifeNatureOfComplaintCodes: data };
     },
     setAreaCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<CosGeoOrgUnit>>,
+      action: PayloadAction<Array<CosGeoOrgUnit>>
     ) => {
       const { payload } = action;
       const data = payload.map(({ area_code: value, area_name: label }) => {
@@ -130,7 +130,7 @@ export const codeTableSlice = createSlice({
     },
     setAttractantCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<AttractantCode>>,
+      action: PayloadAction<Array<AttractantCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -140,13 +140,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, attractantCodes: data };
     },
     setRegions: (
       state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>,
+      action: PayloadAction<Array<GeoOrganizationCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -156,13 +156,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, regions: data };
     },
     setZones: (
       state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>,
+      action: PayloadAction<Array<GeoOrganizationCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -172,13 +172,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, zones: data };
     },
     setCommunities: (
       state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>,
+      action: PayloadAction<Array<GeoOrganizationCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -188,13 +188,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, communities: data };
     },
     setComplaintCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<GeoOrganizationCode>>,
+      action: PayloadAction<Array<GeoOrganizationCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -204,13 +204,13 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
       return { ...state, complaintCodes: data };
     },
     setComplaintTypeCodes: (
       state: CodeTableState,
-      action: PayloadAction<Array<ComplaintTypeCode>>,
+      action: PayloadAction<Array<ComplaintTypeCode>>
     ) => {
       const { payload } = action;
       const data = payload.map(
@@ -220,7 +220,7 @@ export const codeTableSlice = createSlice({
           short_description: description,
         }) => {
           return { value, label, description } as CodeTable;
-        },
+        }
       );
 
       return { ...state, complaintTypeCodes: data };
@@ -309,13 +309,12 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(complaintTypeCodes).any()) {
       dispatch(fetchComplaintTypeCodes());
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 export const fetchAgencyCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/agency-code`,
+    `${config.API_BASE_URL}/v1/agency-code`
   );
   const response = await get<Array<AgencyCode>>(dispatch, parameters);
 
@@ -326,7 +325,7 @@ export const fetchAgencyCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchViolationCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/violation-code`,
+    `${config.API_BASE_URL}/v1/violation-code`
   );
   const response = await get<Array<ViolationCode>>(dispatch, parameters);
 
@@ -337,7 +336,7 @@ export const fetchViolationCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchSpeciesCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/species-code`,
+    `${config.API_BASE_URL}/v1/species-code`
   );
   const response = await get<Array<SpeciesCode>>(dispatch, parameters);
 
@@ -349,11 +348,11 @@ export const fetchSpeciesCodes = (): AppThunk => async (dispatch) => {
 export const fetchWildlifeNatureOfComplaintCodes =
   (): AppThunk => async (dispatch) => {
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/hwcr-complaint-nature-code`,
+      `${config.API_BASE_URL}/v1/hwcr-complaint-nature-code`
     );
     const response = await get<Array<HwcrNatureOfComplaintCode>>(
       dispatch,
-      parameters,
+      parameters
     );
 
     if (response && from(response).any()) {
@@ -363,7 +362,7 @@ export const fetchWildlifeNatureOfComplaintCodes =
 
 export const fetchComplaintStatusCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/complaint-status-code`,
+    `${config.API_BASE_URL}/v1/complaint-status-code`
   );
   const response = await get<Array<ComplaintStatusCode>>(dispatch, parameters);
 
@@ -374,7 +373,7 @@ export const fetchComplaintStatusCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/cos-geo-org-unit`,
+    `${config.API_BASE_URL}/v1/cos-geo-org-unit`
   );
   const response = await get<Array<CosGeoOrgUnit>>(dispatch, parameters);
 
@@ -385,7 +384,7 @@ export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchAttractantCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/attractant-code`,
+    `${config.API_BASE_URL}/v1/attractant-code`
   );
   const response = await get<Array<AttractantCode>>(dispatch, parameters);
 
@@ -396,7 +395,7 @@ export const fetchAttractantCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchRegions = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`,
+    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-regions`
   );
   const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
 
@@ -407,7 +406,7 @@ export const fetchRegions = (): AppThunk => async (dispatch) => {
 
 export const fetchZones = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-zones`,
+    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-zones`
   );
   const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
 
@@ -418,7 +417,7 @@ export const fetchZones = (): AppThunk => async (dispatch) => {
 
 export const fetchCommunities = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-areas`,
+    `${config.API_BASE_URL}/v1/geo-organization-unit-code/find-all-areas`
   );
   const response = await get<Array<GeoOrganizationCode>>(dispatch, parameters);
 
@@ -429,7 +428,7 @@ export const fetchCommunities = (): AppThunk => async (dispatch) => {
 
 export const fetchComplaintTypeCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/complaint-type-code`,
+    `${config.API_BASE_URL}/v1/complaint-type-code`
   );
   const response = await get<Array<ComplaintTypeCode>>(dispatch, parameters);
 
@@ -453,19 +452,21 @@ export const selectSortedCodeTable =
     const { codeTables } = state;
     const data = codeTables[table as keyof CodeTableState];
 
-    let sorted = data.sort((a: any, b: any) =>
-      a[sortBy].localeCompare(b[sortBy]),
+    let sorted = Array.from(data).sort((a: any, b: any) =>
+      a[sortBy].localeCompare(b[sortBy])
     );
 
-    return sorted;
+    return sorted as Array<CodeTable>;
   };
 
-  export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => {
-    const {
-      codeTables: { complaintTypeCodes },
-    } = state;
-    return complaintTypeCodes as Array<Option>;
-  };
+export const selectComplaintTypeDropdown = (
+  state: RootState
+): Array<Option> => {
+  const {
+    codeTables: { complaintTypeCodes },
+  } = state;
+  return complaintTypeCodes as Array<Option>;
+};
 
 export const selectAgencyDropdown = (state: RootState): Array<Option> => {
   const {
@@ -475,7 +476,7 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
 };
 
 export const selectComplaintStatusCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<Option> => {
   const {
     codeTables: { complaintStatusCodes },
@@ -491,7 +492,7 @@ export const selectSpeciesCodeDropdown = (state: RootState): Array<Option> => {
 };
 
 export const selectViolationCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<Option> => {
   const {
     codeTables: { violationCodes },
@@ -500,7 +501,7 @@ export const selectViolationCodeDropdown = (
 };
 
 export const selectHwcrNatureOfComplaintCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<Option> => {
   const {
     codeTables: { wildlifeNatureOfComplaintCodes },
@@ -512,11 +513,27 @@ export const selectAreaCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { areaCodes },
   } = state;
+
+  /*
+  const data = areaCodes.sort((left, right) => {
+    const leftLabel = left.label.toUpperCase(); // ignore upper and lowercase
+    const righLabel = right.label.toUpperCase(); // ignore upper and lowercase
+    if (leftLabel < righLabel) {
+      return -1;
+    }
+    if (leftLabel > righLabel) {
+      return 1;
+    }
+
+    return 0;
+  });
+*/
+
   return areaCodes;
 };
 
 export const selectAttractantCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<Option> => {
   const {
     codeTables: { attractantCodes },
@@ -525,7 +542,7 @@ export const selectAttractantCodeDropdown = (
 };
 
 export const selectedZoneCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<DropdownOption> => {
   const {
     codeTables: { regions },
@@ -534,7 +551,7 @@ export const selectedZoneCodeDropdown = (
 };
 
 export const selectRegionCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<DropdownOption> => {
   const {
     codeTables: { zones },
@@ -543,7 +560,7 @@ export const selectRegionCodeDropdown = (
 };
 
 export const selectCommunityCodeDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<DropdownOption> => {
   const {
     codeTables: { communities },
@@ -552,7 +569,7 @@ export const selectCommunityCodeDropdown = (
 };
 
 export const selectComplaintCodesDropdown = (
-  state: RootState,
+  state: RootState
 ): Array<DropdownOption> => {
   const {
     codeTables: { complaintCodes },
