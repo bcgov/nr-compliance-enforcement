@@ -413,10 +413,11 @@ export const selectAttractantCodeDropdown = (
     codeTables: { attractant },
   } = state;
 
-  const data = attractant.map(({ attractant, longDescription }) => {
-    const item: Option = { label: longDescription, value: attractant };
+  const data = attractant.map(({ attractant, shortDescription }) => {
+    const item: Option = { label: shortDescription, value: attractant };
     return item;
   });
+  
   return data;
 };
 
