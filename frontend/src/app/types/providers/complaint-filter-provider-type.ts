@@ -1,4 +1,4 @@
-import { DropdownOption } from "../code-tables/option";
+import { DropdownOption } from "../app/drop-down-option";
 
 export interface ComplaintFilterState {
   [key: string]: any;

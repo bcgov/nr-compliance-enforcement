@@ -26,8 +26,8 @@ export class PersonComplaintXrefCode {
   @Column("integer", { name: "display_order" })
   display_order: number;
 
-  @Column("boolean", { name: "active_ind" })
-  active_ind: boolean;
+  // @Column("boolean", { name: "active_ind" })
+  // active_ind: boolean;
 
   @Column("character varying", { name: "create_user_id", length: 32 })
   create_user_id: string;

@@ -1,0 +1,16 @@
+export const CODE_TABLE_TYPES = {
+  AGENCY: "agency",
+  ATTRACTANT: "attractant",
+  COMPLAINT_STATUS: "complaint-status",
+  COMPLAINT_TYPE: "complaint-type",
+  NATURE_OF_COMPLAINT: "nature-of-complaint",
+  SPECIES: "species",
+  VIOLATIONS: "violation",
+  REGIONS: "regions",
+  ZONES: "zones",
+  COMMUNITIES: "communities",
+  AREA_CODES: "area-codes",
+  //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
+  //  ORGANIZATION_UNIT: "organization-unit",
+  //  PERSON_TYPE: "person-complaint",
+};
