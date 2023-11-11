@@ -28,6 +28,7 @@ import { PersonComplaintXrefCodeModule } from "./v1/person_complaint_xref_code/p
 import { BcGeoCoderModule } from "./external_api/bc_geo_coder/bc_geo_coder.module";
 import { ConfigurationModule } from './v1/configuration/configuration.module';
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
+import { CodeTableModule } from './v1/code-table/code-table.module';
 
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
@@ -78,6 +79,7 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
     BcGeoCoderModule,
     ConfigurationModule,
     ComplaintTypeCodeModule,
+    CodeTableModule,
   ],
   controllers: [AppController],
   providers: [AppService],

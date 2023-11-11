@@ -9,7 +9,7 @@ import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
 import { AUTH_TOKEN } from "../../service/user-service";
 
-import { DropdownOption } from "../../types/code-tables/option";
+import { DropdownOption } from "../../types/app/drop-down-option";
 
 import { Configurations } from "../../constants/configurations";
 import { ConfigurationType } from "../../types/configurations/configuration";
