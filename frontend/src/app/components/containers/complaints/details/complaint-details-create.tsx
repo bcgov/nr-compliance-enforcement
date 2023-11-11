@@ -21,10 +21,10 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import { useSelector } from "react-redux";
 import {
   selectAgencyDropdown,
-  selectAreaCodeDropdown,
   selectAttractantCodeDropdown,
   selectComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
+  selectSortedCodeTable,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
 } from "../../../../store/reducers/code-table";
@@ -835,7 +835,7 @@ export const CreateComplaint: FC = () => {
     selectHwcrNatureOfComplaintCodeDropdown,
   ) as Option[];
   const complaintTypeCodes = useSelector(selectComplaintTypeDropdown) as Option[];
-  const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
+  const areaCodes = useSelector(selectSortedCodeTable("areaCodes", "description")) as Option[];
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
   const violationTypeCodes = useSelector(
