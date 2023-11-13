@@ -47,9 +47,3 @@ export const MockOfficeRepository = () => ({
     getMany: jest.fn().mockResolvedValue(collection),
   })),
 });
-
-/*
-
-
-
-*/
