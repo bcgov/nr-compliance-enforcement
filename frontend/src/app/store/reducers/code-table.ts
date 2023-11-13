@@ -514,21 +514,6 @@ export const selectAreaCodeDropdown = (state: RootState): Array<Option> => {
     codeTables: { areaCodes },
   } = state;
 
-  /*
-  const data = areaCodes.sort((left, right) => {
-    const leftLabel = left.label.toUpperCase(); // ignore upper and lowercase
-    const righLabel = right.label.toUpperCase(); // ignore upper and lowercase
-    if (leftLabel < righLabel) {
-      return -1;
-    }
-    if (leftLabel > righLabel) {
-      return 1;
-    }
-
-    return 0;
-  });
-*/
-
   return areaCodes;
 };
 
