@@ -1,7 +1,6 @@
 import { Agency } from "../app/code-tables/agency";
 import { Attractant } from "../app/code-tables/attactant";
 import { ComplaintStatus } from "../app/code-tables/complaint-status";
-import { CodeTable } from "../code-tables/code-table";
 import { NatureOfComplaint } from "../app/code-tables/nature-of-complaint";
 import { OrganizationUnitType } from "../app/code-tables/organization-unit-type";
 import { OrganizationUnit } from "../app/code-tables/organization-unit";
@@ -16,7 +15,6 @@ import { Community } from "../app/code-tables/community";
 
 export interface CodeTableState {
   [key: string]:
-    // | Array<CodeTable>
     | Array<Agency>
     | Array<Attractant>
     | Array<ComplaintStatus>

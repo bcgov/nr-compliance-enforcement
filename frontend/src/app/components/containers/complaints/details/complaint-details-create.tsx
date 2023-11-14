@@ -44,8 +44,6 @@ import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { DropdownOption } from "../../../../types/app/drop-down-option";
-import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();

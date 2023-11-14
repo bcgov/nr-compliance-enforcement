@@ -59,7 +59,6 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
 
 type ComplaintParams = {
   id: string;
