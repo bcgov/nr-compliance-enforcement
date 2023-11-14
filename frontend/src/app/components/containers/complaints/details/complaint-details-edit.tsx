@@ -29,7 +29,7 @@ import {
   selectViolationCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectAttractantCodeDropdown,
-  selectSortedCodeTable,
+  selectCommunityCodeDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -59,6 +59,7 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
+import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
 
 type ComplaintParams = {
   id: string;
@@ -297,7 +298,7 @@ export const ComplaintDetailsEdit: FC = () => {
     selectHwcrNatureOfComplaintCodeDropdown
   ) as Option[];
 
-  const areaCodes = useSelector(selectSortedCodeTable("areaCodes", "description")) as Option[];
+  const areaCodes = useAppSelector(selectCommunityCodeDropdown);
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];

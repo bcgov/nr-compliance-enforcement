@@ -22,9 +22,9 @@ import { useSelector } from "react-redux";
 import {
   selectAgencyDropdown,
   selectAttractantCodeDropdown,
+  selectCommunityCodeDropdown,
   selectComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
-  selectSortedCodeTable,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
 } from "../../../../store/reducers/code-table";
@@ -45,6 +45,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { DropdownOption } from "../../../../types/app/drop-down-option";
+import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -836,8 +837,8 @@ export const CreateComplaint: FC = () => {
     selectHwcrNatureOfComplaintCodeDropdown,
   ) as Option[];
   const complaintTypeCodes = useSelector(selectComplaintTypeDropdown) as Option[];
-  const areaCodes = useSelector(selectSortedCodeTable("areaCodes", "description")) as Option[];
-
+  const areaCodes = useAppSelector(selectCommunityCodeDropdown)
+  
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
   const violationTypeCodes = useSelector(

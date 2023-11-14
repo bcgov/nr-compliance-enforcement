@@ -18,6 +18,7 @@ import { Region } from "../../types/app/code-tables/region";
 import { Zone } from "../../types/app/code-tables/zone";
 import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
+import { CodeTable } from "../../types/code-tables/code-table";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -298,18 +299,18 @@ export const selectCodeTable =
     return selected;
   };
 
-export const selectSortedCodeTable =
-  (table: string, sortBy: string) =>
-  (state: RootState): Array<any> => {
-    const { codeTables } = state;
-    const data = codeTables[table as keyof CodeTableState];
+// export const selectSortedCodeTable =
+//   (table: string, sortBy: string) =>
+//   (state: RootState): Array<any> => {
+//     const { codeTables } = state;
+//     const data = codeTables[table as keyof CodeTableState];
 
-    let sorted = Array.from(data).sort((a: any, b: any) =>
-      a[sortBy].localeCompare(b[sortBy])
-    );
+//     let sorted = Array.from(data).sort((a: any, b: any) =>
+//       a[sortBy].localeCompare(b[sortBy])
+//     );
 
-    return sorted as Array<CodeTable>;
-  };
+//     return sorted as Array<any>;
+//   };
 
 export const selectComplaintTypeDropdown = (
   state: RootState

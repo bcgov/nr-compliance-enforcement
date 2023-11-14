@@ -16,7 +16,7 @@ import { Community } from "../app/code-tables/community";
 
 export interface CodeTableState {
   [key: string]:
-    | Array<CodeTable>
+    // | Array<CodeTable>
     | Array<Agency>
     | Array<Attractant>
     | Array<ComplaintStatus>
