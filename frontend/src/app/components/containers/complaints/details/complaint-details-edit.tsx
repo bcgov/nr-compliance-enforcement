@@ -28,8 +28,8 @@ import {
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
-  selectAreaCodeDropdown,
   selectAttractantCodeDropdown,
+  selectCommunityCodeDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -66,7 +66,6 @@ type ComplaintParams = {
 };
 
 export const ComplaintDetailsEdit: FC = () => {
-
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
@@ -118,12 +117,12 @@ export const ComplaintDetailsEdit: FC = () => {
           description: "Your changes will be lost.",
           cancelConfirmed,
         },
-      }),
+      })
     );
   };
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
-    "comp-complaint-error display-none",
+    "comp-complaint-error display-none"
   );
   const saveButtonClick = async () => {
     if (!updateComplaint) {
@@ -136,8 +135,8 @@ export const ComplaintDetailsEdit: FC = () => {
         dispatch(
           getWildlifeComplaintByComplaintIdentifierSetUpdate(
             hwcrComplaint.complaint_identifier.complaint_identifier,
-            setUpdateComplaint,
-          ),
+            setUpdateComplaint
+          )
         );
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint = updateComplaint as AllegationComplaint;
@@ -145,8 +144,8 @@ export const ComplaintDetailsEdit: FC = () => {
         dispatch(
           getAllegationComplaintByComplaintIdentifierSetUpdate(
             allegationComplaint.complaint_identifier.complaint_identifier,
-            setUpdateComplaint,
-          ),
+            setUpdateComplaint
+          )
         );
       }
       setErrorNotificationClass("comp-complaint-error display-none");
@@ -168,16 +167,16 @@ export const ComplaintDetailsEdit: FC = () => {
             dispatch(
               getAllegationComplaintByComplaintIdentifierSetUpdate(
                 id,
-                setUpdateComplaint,
-              ),
+                setUpdateComplaint
+              )
             );
             break;
           case COMPLAINT_TYPES.HWCR:
             dispatch(
               getWildlifeComplaintByComplaintIdentifierSetUpdate(
                 id,
-                setUpdateComplaint,
-              ),
+                setUpdateComplaint
+              )
             );
             break;
         }
@@ -262,19 +261,22 @@ export const ComplaintDetailsEdit: FC = () => {
   const officerList = useAppSelector(selectOfficersByZone(zone_code));
 
   const { details: complaint_witness_details } = useAppSelector(
-    selectComplaintSuspectWitnessDetails,
+    selectComplaintSuspectWitnessDetails
   ) as ComplaintSuspectWitness;
 
   const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
 
   useEffect(() => {
-    const incidentDateTimeObject = ((incidentDateTime) ? new Date(incidentDateTime) : null);
+    const incidentDateTimeObject = incidentDateTime
+      ? new Date(incidentDateTime)
+      : null;
     if (incidentDateTimeObject) {
       setSelectedIncidentDateTime(incidentDateTimeObject);
     }
-  },[incidentDateTime]);
+  }, [incidentDateTime]);
 
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] =
+    useState<Date>();
 
   // Transform the fetched data into the DropdownOption type
 
@@ -288,17 +290,19 @@ export const ComplaintDetailsEdit: FC = () => {
 
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(
-    selectComplaintStatusCodeDropdown,
+    selectComplaintStatusCodeDropdown
   ) as Option[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(
-    selectHwcrNatureOfComplaintCodeDropdown,
+    selectHwcrNatureOfComplaintCodeDropdown
   ) as Option[];
-  const areaCodes = useSelector(selectAreaCodeDropdown) as Option[];
+
+  const areaCodes = useAppSelector(selectCommunityCodeDropdown);
+
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
   const violationTypeCodes = useSelector(
-    selectViolationCodeDropdown,
+    selectViolationCodeDropdown
   ) as Option[];
 
   const yesNoOptions: Option[] = [
@@ -308,43 +312,43 @@ export const ComplaintDetailsEdit: FC = () => {
 
   // Used to set selected values in the dropdowns
   const selectedStatus = complaintStatusCodes.find(
-    (option) => option.value === statusCode,
+    (option) => option.value === statusCode
   );
   const selectedSpecies = speciesCodes.find(
-    (option) => option.value === speciesCode,
+    (option) => option.value === speciesCode
   );
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find(
-    (option) => option.value === natureOfComplaintCode,
+    (option) => option.value === natureOfComplaintCode
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
   const selectedAssignedOfficer = assignableOfficers?.find(
-    (option) => option.value === personGuid,
+    (option) => option.value === personGuid
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
       option.value ===
       (referredByAgencyCode?.agency_code === undefined
         ? ""
-        : referredByAgencyCode.agency_code),
+        : referredByAgencyCode.agency_code)
   );
   const selectedAttractants = attractantCodes.filter(
     (option) =>
-      attractants?.some((attractant) => attractant.code === option.value),
+      attractants?.some((attractant) => attractant.code === option.value)
   );
   const selectedViolationTypeCode = violationTypeCodes.find(
-    (option) => option.value === violationTypeCode,
+    (option) => option.value === violationTypeCode
   );
   const selectedViolationInProgress = yesNoOptions.find(
-    (option) => option.value === (violationInProgress ? "Yes" : "No"),
+    (option) => option.value === (violationInProgress ? "Yes" : "No")
   );
   const selectedViolationObserved = yesNoOptions.find(
-    (option) => option.value === (violationObserved ? "Yes" : "No"),
+    (option) => option.value === (violationObserved ? "Yes" : "No")
   );
 
   //--
   const getEditableCoordinates = (
     input: Array<number> | Array<string> | undefined,
-    type: Coordinates,
+    type: Coordinates
   ): string => {
     if (!input) {
       return "";
@@ -354,17 +358,13 @@ export const ComplaintDetailsEdit: FC = () => {
     return result === 0 || result === "0" ? "" : result.toString();
   };
 
-  const [latitude, setLatitude] = useState<string>(
-    '0'
-  );
-  const [longitude, setLongitude] = useState<string>(
-    '0'
-  );
+  const [latitude, setLatitude] = useState<string>("0");
+  const [longitude, setLongitude] = useState<string>("0");
 
   useEffect(() => {
     setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
     setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
-  },[coordinates]);
+  }, [coordinates]);
 
   const handleMarkerMove = async (lat: number, lng: number) => {
     await updateCoordinates(lat, lng);
@@ -384,17 +384,15 @@ export const ComplaintDetailsEdit: FC = () => {
     setSelectedIncidentDateTime(date);
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_utc_datetime =
-        date;
+      hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_utc_datetime =
-        date;
+      allegationComplaint.complaint_identifier.incident_utc_datetime = date;
       setUpdateComplaint(allegationComplaint);
     }
   }
@@ -460,8 +458,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleViolationTypeChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
-      if(value)
-      {
+      if (value) {
         let update = { ...updateComplaint } as AllegationComplaint;
 
         const { violation_code: source } = update;
@@ -526,7 +523,7 @@ export const ComplaintDetailsEdit: FC = () => {
         const selectedOfficer = officerList?.find(
           ({ person_guid: { person_guid: id } }) => {
             return id === value;
-          },
+          }
         );
 
         const { person_guid: officer } = selectedOfficer as any;
@@ -576,13 +573,13 @@ export const ComplaintDetailsEdit: FC = () => {
       setComplaintDescErrorMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.detail_text = value;
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.detail_text = value;
         setUpdateComplaint(allegationComplaint);
@@ -593,13 +590,13 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleLocationDescriptionChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.location_detailed_text = value;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.location_detailed_text = value;
       setUpdateComplaint(allegationComplaint);
@@ -608,7 +605,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   function handleViolationInProgessChange(selectedOption: Option | null) {
     let allegationComplaint: AllegationComplaint = cloneDeep(
-      updateComplaint,
+      updateComplaint
     ) as AllegationComplaint;
     allegationComplaint.in_progress_ind = selectedOption?.value === "Yes";
     setUpdateComplaint(allegationComplaint);
@@ -616,7 +613,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   function handleViolationObservedChange(selectedOption: Option | null) {
     let allegationComplaint: AllegationComplaint = cloneDeep(
-      updateComplaint,
+      updateComplaint
     ) as AllegationComplaint;
     allegationComplaint.observed_ind = selectedOption?.value === "Yes";
     setUpdateComplaint(allegationComplaint);
@@ -625,13 +622,13 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleLocationChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.location_summary_text = value ?? "";
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.location_summary_text =
         value ?? "";
@@ -719,7 +716,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setCommunityErrorMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as HwcrComplaint;
         if (selectedOption.value !== undefined) {
           const geoOrgCode = {
@@ -738,7 +735,7 @@ export const ComplaintDetailsEdit: FC = () => {
             zone_code: "",
             office_location_name: "",
             area_code: selectedOption.value,
-            area_name: ""
+            area_name: "",
           };
 
           hwcrComplaint.complaint_identifier.geo_organization_unit_code =
@@ -747,7 +744,7 @@ export const ComplaintDetailsEdit: FC = () => {
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as AllegationComplaint;
         if (selectedOption.value !== undefined) {
           const geoOrgCode = {
@@ -766,9 +763,9 @@ export const ComplaintDetailsEdit: FC = () => {
             zone_code: "",
             office_location_name: "",
             area_code: selectedOption.value,
-            area_name: ""
+            area_name: "",
           };
-          
+
           allegationComplaint.complaint_identifier.geo_organization_unit_code =
             geoOrgCode;
         }
@@ -793,7 +790,7 @@ export const ComplaintDetailsEdit: FC = () => {
       const item = parseFloat(latitude);
       if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
         setGeoPointYMsg(
-          `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
+          `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`
         );
       }
     }
@@ -805,7 +802,7 @@ export const ComplaintDetailsEdit: FC = () => {
         item < bcBoundaries.minLongitude
       ) {
         setGeoPointXMsg(
-          `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
+          `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`
         );
       }
     }
@@ -838,13 +835,13 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleNameChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.caller_name = value;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.caller_name = value;
       setUpdateComplaint(allegationComplaint);
@@ -854,13 +851,13 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleAddressChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
       let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.caller_address = value;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
       let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint,
+        updateComplaint
       ) as AllegationComplaint;
       allegationComplaint.complaint_identifier.caller_address = value;
       setUpdateComplaint(allegationComplaint);
@@ -879,13 +876,13 @@ export const ComplaintDetailsEdit: FC = () => {
       setPrimaryPhoneMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_1 = value ?? "";
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_1 = value ?? "";
         setUpdateComplaint(allegationComplaint);
@@ -904,13 +901,13 @@ export const ComplaintDetailsEdit: FC = () => {
       setSecondaryPhoneMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_2 = value ?? "";
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_2 = value ?? "";
         setUpdateComplaint(allegationComplaint);
@@ -930,13 +927,13 @@ export const ComplaintDetailsEdit: FC = () => {
       setAlternatePhoneMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_3 = value ?? "";
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_3 = value ?? "";
         setUpdateComplaint(allegationComplaint);
@@ -952,14 +949,14 @@ export const ComplaintDetailsEdit: FC = () => {
       setEmailMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_email = value;
         setUpdateComplaint(hwcrComplaint);
       }
       if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint,
+          updateComplaint
         ) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_email = value;
         setUpdateComplaint(allegationComplaint);
@@ -1214,7 +1211,8 @@ export const ComplaintDetailsEdit: FC = () => {
                       id="complaint-description-edit-label-id"
                       className="col-auto"
                     >
-                      Complaint Description<span className="required-ind">*</span>
+                      Complaint Description
+                      <span className="required-ind">*</span>
                     </label>
                     <ValidationTextArea
                       className="comp-form-control"
