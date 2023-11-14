@@ -64,10 +64,8 @@ const SearchInput: FC<Props> = ({
           ""
         );
 
-        if (searchQuery) {
-          payload = { ...payload, query: searchQuery };
-        }
-
+        payload = { ...payload, query: input };
+        
         dispatch(getComplaintsOnMap(complaintType, payload));
       }
     }

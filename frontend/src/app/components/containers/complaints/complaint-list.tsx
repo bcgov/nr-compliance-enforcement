@@ -118,7 +118,23 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
       dispatch(getComplaints(type, payload));
     }
-  }, [filters, sortKey, sortDirection, page, pageSize, searchQuery]);
+  }, [filters, sortKey, sortDirection, page, pageSize]);
+
+  useEffect(() => {
+    //Refresh the list with the current filters when the search is cleared
+    if (!searchQuery && defaultZone) {
+      let payload = generateComplaintRequestPayload(
+        type,
+        filters,
+        page,
+        pageSize,
+        sortKey,
+        sortDirection
+      );
+      payload = { ...payload, query: searchQuery };
+      dispatch(getComplaints(type, payload));
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
     if (defaultPageSize) {

@@ -77,6 +77,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
 
   useEffect(() => {
+    //Update map when filters change
     let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
 
     if (searchQuery) {
@@ -84,7 +85,16 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
     }
 
     dispatch(getComplaintsOnMap(type, payload));
-  }, [filters, searchQuery]);
+  }, [filters]);
+
+  useEffect(() => {
+    //when the search Query is cleared refresh the map
+    if (!searchQuery) {
+      let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
+      payload = { ...payload, query: searchQuery };
+      dispatch(getComplaintsOnMap(type, payload));
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
