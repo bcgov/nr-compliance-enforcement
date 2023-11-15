@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect } from "react";
+import { FC, useCallback, useContext } from "react";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
 import { useAppSelector } from "../../../hooks/hooks";
@@ -65,13 +65,6 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
     },
     [dispatch]
   );
-
-  useEffect(() => {
-    if (region) {
-      console.log("casecade zone and communities");
-    } else {
-    }
-  }, [region]);
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
