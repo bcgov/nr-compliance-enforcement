@@ -5,7 +5,6 @@ communities filter options are filtered to only display options associated with
 the selected region
 */
 describe("Complaint Filter Cascading spec", () => {
-  const complaintTypes = ["#hwcr-tab"];
   const maxRegions = 8;
   const maxZones = 22;
   const maxCommunities = 970;
@@ -102,7 +101,7 @@ describe("Complaint Filter Cascading spec", () => {
     cy.get(
       "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
     ).click({ force: true });
-    
+
     cy.get(
       "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
     ).click({ force: true });
