@@ -298,19 +298,6 @@ export const selectCodeTable =
     return selected;
   };
 
-export const selectSortedCodeTable =
-  (table: string, sortBy: string) =>
-  (state: RootState): Array<any> => {
-    const { codeTables } = state;
-    const data = codeTables[table as keyof CodeTableState];
-
-    let sorted = data.sort((a: any, b: any) =>
-      a[sortBy].localeCompare(b[sortBy])
-    );
-
-    return sorted;
-  };
-
 export const selectComplaintTypeDropdown = (
   state: RootState
 ): Array<Option> => {
@@ -463,6 +450,7 @@ export const selectCommunityCodeDropdown = (
   const {
     codeTables: { communities },
   } = state;
+
   const data = communities.map(({ code, name }) => {
     const item: DropdownOption = {
       label: name,
