@@ -19,12 +19,19 @@ describe("Complaint Filter Cascading spec", () => {
     cy.visit("/");
     cy.waitForSpinner();
 
-    cy.get("#comp-zone-filter").should("exist");
-    cy.get("#comp-status-filter").should("exist");
+    cy.get("body").then($body => {
+      if ($body.find("button[data-cy=appDrawerOpener]").length > 0) {   
+          //evaluates as true
+      }
+  });
 
-    cy.get("#comp-zone-filter").click({ force: true });
-    cy.get("#comp-status-filter").click({ force: true });
-
+    cy.get("#comp-zone-filter").then($elm => { 
+      cy.get("#comp-zone-filter").click({ force: true });
+    })
+    cy.get("#comp-status-filter").then(() => { 
+      cy.get("#comp-status-filter").click({ force: true });
+    })
+  
     //--
     cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
 
@@ -77,11 +84,12 @@ describe("Complaint Filter Cascading spec", () => {
     cy.visit("/");
     cy.waitForSpinner();
 
-    cy.get("#comp-zone-filter").should("exist");
-    cy.get("#comp-status-filter").should("exist");
-
-    cy.get("#comp-zone-filter").click({ force: true });
-    cy.get("#comp-status-filter").click({ force: true });
+    cy.get("#comp-zone-filter").then($elm => { 
+      cy.get("#comp-zone-filter").click({ force: true });
+    })
+    cy.get("#comp-status-filter").then(() => { 
+      cy.get("#comp-status-filter").click({ force: true });
+    })
 
     //--
     cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
@@ -139,11 +147,12 @@ describe("Complaint Filter Cascading spec", () => {
    cy.visit("/");
    cy.waitForSpinner();
 
-   cy.get("#comp-zone-filter").should("exist");
-   cy.get("#comp-status-filter").should("exist");
-
-   cy.get("#comp-zone-filter").click({ force: true });
-   cy.get("#comp-status-filter").click({ force: true });
+   cy.get("#comp-zone-filter").then($elm => { 
+    cy.get("#comp-zone-filter").click({ force: true });
+  })
+  cy.get("#comp-status-filter").then(() => { 
+    cy.get("#comp-status-filter").click({ force: true });
+  })
 
    //--
    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
@@ -201,11 +210,12 @@ describe("Complaint Filter Cascading spec", () => {
    cy.visit("/");
    cy.waitForSpinner();
 
-   cy.get("#comp-zone-filter").should("exist");
-   cy.get("#comp-status-filter").should("exist");
-
-   cy.get("#comp-zone-filter").click({ force: true });
-   cy.get("#comp-status-filter").click({ force: true });
+   cy.get("#comp-zone-filter").then($elm => { 
+    cy.get("#comp-zone-filter").click({ force: true });
+  })
+  cy.get("#comp-status-filter").then(() => { 
+    cy.get("#comp-status-filter").click({ force: true });
+  })
 
    //--
    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
