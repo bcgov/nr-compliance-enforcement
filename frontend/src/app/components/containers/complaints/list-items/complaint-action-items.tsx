@@ -1,14 +1,21 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { faPaperPlane, faUser } from "@fortawesome/free-regular-svg-icons";
-
+import {
+  BsPersonPlus,
+  BsPersonPlusFill,
+  BsCursor,
+  BsCursorFill,
+  BsArrowRepeat,
+  BsFillPersonPlusFill,
+} from "react-icons/bs";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
 import {
   AssignOfficer,
   ChangeStatus,
 } from "../../../../types/modal/modal-types";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 type Props = {
   complaint_identifier: string;
@@ -21,6 +28,10 @@ export const ComplaintActionItems: FC<Props> = ({
   complaint_type,
   zone,
 }) => {
+  const [isReferHovered, setIsReferHovered] = useState(false);
+  const [isAssignHovered, setIsAssignHovered] = useState(false);
+  const [isUpdateHovered, setIsUpdateHovered] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const openAsignOfficerModal = () => {
@@ -58,22 +69,62 @@ export const ComplaintActionItems: FC<Props> = ({
 
   return (
     <>
-      <FontAwesomeIcon
-        icon={faPaperPlane}
-        className="comp-table-row-hover-icons comp-table-icon"
-      />
-      <FontAwesomeIcon
-        title="Assign Officer"
-        onClick={openAsignOfficerModal}
-        icon={faUser}
-        className="comp-table-row-hover-icons comp-table-icon"
-      />
-      <FontAwesomeIcon
-        title="Change Status"
-        onClick={openStatusChangeModal}
-        icon={faSync}
-        className="comp-table-row-hover-icons comp-table-icon"
-      />
+      <OverlayTrigger
+        placement="top"
+        overlay={
+          <Tooltip id="tt-assign" className="comp-tooltip">
+            Refer
+          </Tooltip>
+        }
+      >
+        <span
+          onMouseEnter={() => setIsReferHovered(true)}
+          onMouseLeave={() => setIsReferHovered(false)}
+          onClick={openAsignOfficerModal}
+        >
+          {isReferHovered ? (
+            <BsCursorFill className="comp-table-row-hover-icons comp-table-icon" />
+          ) : (
+            <BsCursor className="comp-table-row-hover-icons comp-table-icon" />
+          )}
+          
+        </span>
+      </OverlayTrigger>
+      <OverlayTrigger
+        placement="top"
+        overlay={
+          <Tooltip id="tt-assign" className="comp-tooltip">
+            Assign
+          </Tooltip>
+        }
+      >
+        <span
+          onMouseEnter={() => setIsAssignHovered(true)}
+          onMouseLeave={() => setIsAssignHovered(false)}
+          onClick={openAsignOfficerModal}
+        >
+          {isAssignHovered ? (
+            <BsFillPersonPlusFill className="comp-table-row-hover-icons comp-table-icon" />
+          ) : (
+            <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon" />
+          )}
+        </span>
+      </OverlayTrigger>
+      <OverlayTrigger
+        placement="top"
+        overlay={
+          <Tooltip id="tt-assign" className="comp-tooltip">
+            Update
+          </Tooltip>
+        }
+      >
+        <span>
+          <BsArrowRepeat
+            onClick={openStatusChangeModal}
+            className="comp-table-row-hover-icons comp-table-icon"
+          />
+        </span>
+      </OverlayTrigger>
     </>
   );
 };

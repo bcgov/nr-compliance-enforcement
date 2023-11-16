@@ -115,6 +115,14 @@ export const AllegationComplaintListItem: FC<Props> = ({
         {locationSummary}
       </td>
       <td
+        className={`sortableHeader comp-cell-width-75 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
+      >
+        <div className={statusButtonClass}>
+          {status}
+        </div>
+      </td>
+      <td
         className={`comp-cell-width-130 ${isExpanded && "comp-cell-parent-expanded"}`}
         onClick={toggleExpand}
       >
@@ -123,14 +131,6 @@ export const AllegationComplaintListItem: FC<Props> = ({
           className="comp-profile-avatar"
         ></div>
         {displayName}
-      </td>
-      <td
-        className={`sortableHeader comp-cell-width-75 ${isExpanded && "comp-cell-parent-expanded"}`}
-        onClick={toggleExpand}
-      >
-        <div className={statusButtonClass}>
-          {status}
-        </div>
       </td>
       <td
         className={`comp-cell-width-110 ${isExpanded && "comp-cell-parent-expanded"}`}

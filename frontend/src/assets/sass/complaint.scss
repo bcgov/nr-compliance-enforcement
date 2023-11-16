@@ -244,8 +244,11 @@ p {
   line-height: normal;
   gap: 10px;
   font-size: 12px;
-  border: 1px solid $gray-300;
+  font-weight: 700;
+  border: solid black;
+  border-width: 0.5px;
   margin-right: 10px;
+  border-radius: 4px;
 }
 
 .comp-status-badge-open {
@@ -533,8 +536,11 @@ p {
     }
 
     .comp-table-icon:hover {
-      color: black;
-      font-weight: 900 !important;
+      font-weight: 3000;
+    }
+
+    .comp-cell-action-icon {
+      margin-right: 15px;
     }
 
     .comp-cell-expanded-truncated {
@@ -552,7 +558,6 @@ p {
     .comp-cell-child-actions {
       vertical-align: bottom !important;
       text-align: right !important;
-      margin-bottom: 10px;
     }
 
     .comp-cell-child-actions div {
@@ -941,9 +946,10 @@ p {
 }
 
 .comp-table-row-hover-icons {
-  font-size: 15px;
+  font-size: 16px;
   color: $gray-800;
-  margin-right: 10px; 
+  margin-right: 10px;
+  margin-bottom: 4px; 
 }
 
 .popover-body {

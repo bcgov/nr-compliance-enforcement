@@ -63,21 +63,21 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
         </th>
 
         <SortableHeader
-          title="Officer Assigned"
-          sortFnc={handleSort}
-          sortKey="last_name"
-          currentSort={sortKey}
-          sortDirection={sortDirection}
-          className="comp-cell-width-130 comp-header-horizontal-border"
-        />
-
-        <SortableHeader
           title="Status"
           sortFnc={handleSort}
           sortKey="complaint_status_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
           className="comp-cell-width-75 comp-header-horizontal-border comp-header-vertical-border"
+        />
+
+        <SortableHeader
+          title="Officer Assigned"
+          sortFnc={handleSort}
+          sortKey="last_name"
+          currentSort={sortKey}
+          sortDirection={sortDirection}
+          className="comp-cell-width-130 comp-header-horizontal-border"
         />
 
         <SortableHeader

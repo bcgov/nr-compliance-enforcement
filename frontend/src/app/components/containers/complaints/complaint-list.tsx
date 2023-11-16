@@ -20,7 +20,6 @@ import {
 } from "../../../store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
-import { useNavigate } from "react-router-dom";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import ComplaintPagination from "../../common/complaint-pagination";

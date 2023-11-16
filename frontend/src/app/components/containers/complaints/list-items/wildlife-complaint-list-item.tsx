@@ -107,6 +107,14 @@ export const WildlifeComplaintListItem: FC<Props> = ({
         {locationSummary}
       </td>
       <td
+        className={`comp-cell-width-75 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
+      >
+        <div className={statusButtonClass}>
+          {status}
+        </div>
+      </td>
+      <td
         className={`comp-cell-width-130 ${isExpanded && "comp-cell-parent-expanded"}`}
         onClick={toggleExpand}
       >
@@ -115,14 +123,6 @@ export const WildlifeComplaintListItem: FC<Props> = ({
           className="comp-profile-avatar"
         ></div>
         {displayName}
-      </td>
-      <td
-        className={`comp-cell-width-75 ${isExpanded && "comp-cell-parent-expanded"}`}
-        onClick={toggleExpand}
-      >
-        <div className={statusButtonClass}>
-          {status}
-        </div>
       </td>
       <td
         className={`comp-cell-width-110 ${isExpanded && "comp-cell-parent-expanded"}`}
@@ -148,7 +148,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
             {location_detailed_text}
           </td>
           <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
-            <div>
+            <div className="comp-cell-action-icon">
               <Link to={`/complaint/HWCR/${id}`} id={id}>
                 <span className="badge comp-view-complaint-badge">View Details</span>
               </Link>
