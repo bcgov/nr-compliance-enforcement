@@ -166,7 +166,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   ) => {
     e.preventDefault();
 
-    navigate(`/complaint/${type}/${id}`);
+//    navigate(`/complaint/${type}/${id}`);
   };
 
   const handlePageChange = (page: number) => {

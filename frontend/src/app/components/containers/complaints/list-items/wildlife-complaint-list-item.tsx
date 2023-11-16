@@ -1,8 +1,11 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { formatDateTime } from "../../../../common/methods";
-import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
 import { Link } from "react-router-dom";
+import { useAppDispatch } from "../../../../hooks/hooks";
+import { openModal } from "../../../../store/reducers/app";
+import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
+import { ComplaintActionItems } from "./complaint-action-items";
 
 type Props = {
   type: string;
@@ -15,9 +18,6 @@ type Props = {
 export const WildlifeComplaintListItem: FC<Props> = ({
   type,
   complaint,
-  complaintClick,
-  sortKey,
-  sortDirection,
 }) => {
   const {
     complaint_identifier: complaintIdentifier,
@@ -29,7 +29,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({
     complaint_identifier: id,
     incident_reported_utc_timestmp,
     cos_geo_org_unit,
+    detail_text,
     location_summary_text: locationSummary,
+    location_detailed_text,
     person_complaint_xref,
     complaint_status_code,
     update_utc_timestamp,
@@ -55,60 +57,64 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   const statusButtonClass =
     complaint_status_code.long_description === "Closed"
-      ? "btn btn-primary comp-status-closed-btn"
-      : "btn btn-primary comp-status-open-btn";
+      ? "badge comp-status-badge-closed"
+      : "badge comp-status-badge-open";
   const status = complaint_status_code.long_description;
 
   const updateDate = formatDateTime(update_utc_timestamp);
 
-  const assigned_ind =
-    person_complaint_xref.length > 0 && person_complaint_xref[0].active_ind;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   return (
-    <tr key={id}>
+    <>
+    <tr key={id} className={`${isExpanded && "comp-table-row-expanded"}`}>
       <td
-        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name-underline"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         <Link to={`/complaint/HWCR/${id}`} id={id}>
               {id}
         </Link>
       </td>
       <td
-        className="comp-cell-width-95 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-95 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         {incidentReportedDatetime}
       </td>
       <td
-        className="comp-cell-width-330"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-330 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         {natureCode}
       </td>
       <td
-        className="comp-cell-width-130 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-130 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         <button type="button" className="btn btn-primary comp-species-btn">
           {species}
         </button>
       </td>
       <td
-        className="comp-cell-width-165"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-165 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         {location}
       </td>
       <td
-        className="comp-cell-width-170 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-170 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         {locationSummary}
       </td>
       <td
-        className="comp-cell-width-130"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-130 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
         <div
           data-initials-listview={initials}
@@ -117,27 +123,44 @@ export const WildlifeComplaintListItem: FC<Props> = ({
         {displayName}
       </td>
       <td
-        className="comp-cell-width-75 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-75 ${isExpanded && "comp-cell-parent-expanded"}`}
+        onClick={toggleExpand}
       >
-        <button type="button" className={statusButtonClass}>
+        <div className={statusButtonClass}>
           {status}
-        </button>
+        </div>
       </td>
       <td
-        className="comp-cell-width-110 comp-header-right-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-110 ${isExpanded && "comp-cell-parent-expanded"}`}
+        
       >
-        {updateDate}
+        {!isExpanded && (
+          <div className="comp-table-icons">
+            <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+            <span className={!isExpanded ? "comp-table-update-date" : ""}>{updateDate}</span>          
+          </div> 
+        )}
+        <span  className={!isExpanded ? "comp-table-update-date" : ""}>{updateDate}</span>          
       </td>
-      <ComplaintEllipsisPopover
-        complaint_identifier={id}
-        complaint_type={type}
-        complaint_zone={cos_geo_org_unit?.zone_code ?? ""}
-        assigned_ind={assigned_ind}
-        sortColumn={sortKey}
-        sortOrder={sortDirection}
-      ></ComplaintEllipsisPopover>
-    </tr>
+      </tr>
+      {isExpanded && (
+        <tr className="">
+          <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
+          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded">
+            {detail_text}
+          </td>
+          <td onClick={toggleExpand} className="comp-cell-child-expanded"/>
+          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded" colSpan={2}>
+            {location_detailed_text}
+          </td>
+          <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
+            <div>
+              <span className="badge comp-view-complaint-badge">View Details</span>
+              <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+            </div>
+          </td>
+        </tr>
+      )}
+      </>
   );
 };
