@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import { formatDateTime } from "../../../../common/methods";
+import { formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
 
@@ -67,6 +67,9 @@ export const AllegationComplaintListItem: FC<Props> = ({
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+
+  const truncatedComplaintDetailText = truncateString(detail_text, 200);
+  const truncatedLocationDetailedText = truncateString(location_detailed_text,220);
 
   return (
     <>
@@ -149,11 +152,11 @@ export const AllegationComplaintListItem: FC<Props> = ({
         <tr className="">
           <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
           <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded">
-            {detail_text}
+            {truncatedComplaintDetailText}
           </td>
           <td onClick={toggleExpand} className="comp-cell-child-expanded"/>
           <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded" colSpan={2}>
-            {location_detailed_text}
+            {truncatedLocationDetailedText}
           </td>
           <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
             <div>
