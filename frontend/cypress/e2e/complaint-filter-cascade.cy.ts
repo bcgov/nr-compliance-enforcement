@@ -1,6 +1,5 @@
+//This is probably only useful for this test, so it's not a command.
 function verifyFilters (expectedZones: number, expectedRegions: number, expectedCommunities: number) {
-    
-    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
 
     cy.get(
       "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
@@ -63,6 +62,8 @@ describe("Complaint Filter Cascading spec", () => {
 
     cy.navigateToTab(complaintTypes[0], true);
 
+    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+
     verifyFilters (maxRegions, maxZones, maxCommunities);
 
   });
@@ -81,7 +82,12 @@ describe("Complaint Filter Cascading spec", () => {
 
     cy.navigateToTab(complaintTypes[0], true);
 
-    verifyFilters (maxRegions, maxZones, maxCommunities);
+    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+
+    //-- select region
+    cy.selectItemById("region-select-filter-id", _selected);
+
+    verifyFilters (_totalRegions, _totalZones, _totalCommunities);
   });
 
   it("Verifies communities are cascaded when selecting a zone", () => {
@@ -98,7 +104,12 @@ describe("Complaint Filter Cascading spec", () => {
 
    cy.navigateToTab(complaintTypes[0], true);
 
-   verifyFilters (maxRegions, maxZones, maxCommunities);
+   cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+
+   //-- select region
+   cy.selectItemById("zone-select-id", _selected);
+
+   verifyFilters (_totalRegions, _totalZones, _totalCommunities);
  });
 
  it("Verifies regions and zones are cascaded when selecting a community", () => {
@@ -115,7 +126,12 @@ describe("Complaint Filter Cascading spec", () => {
 
    cy.navigateToTab(complaintTypes[0], true);
 
-   verifyFilters (maxRegions, maxZones, maxCommunities);
+   cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+
+   //-- select region
+   cy.selectItemById("community-select-id", _selected);
+
+   verifyFilters (_totalRegions, _totalZones, _totalCommunities);
  });
 
 });
