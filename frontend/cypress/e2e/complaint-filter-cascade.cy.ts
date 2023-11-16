@@ -62,7 +62,7 @@ describe("Complaint Filter Cascading spec", () => {
 
     cy.navigateToTab(complaintTypes[0], true);
 
-    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+    cy.get("#complaint-filter-image-id").click({ force: true });
 
     verifyFilters (maxRegions, maxZones, maxCommunities);
 
@@ -82,7 +82,7 @@ describe("Complaint Filter Cascading spec", () => {
 
     cy.navigateToTab(complaintTypes[0], true);
 
-    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+    cy.get("#complaint-filter-image-id").click({ force: true });
 
     //-- select region
     cy.selectItemById("region-select-filter-id", _selected);
@@ -104,7 +104,7 @@ describe("Complaint Filter Cascading spec", () => {
 
    cy.navigateToTab(complaintTypes[0], true);
 
-   cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+   cy.get("#complaint-filter-image-id").click({ force: true });
 
    //-- select region
    cy.selectItemById("zone-select-id", _selected);
@@ -126,7 +126,7 @@ describe("Complaint Filter Cascading spec", () => {
 
    cy.navigateToTab(complaintTypes[0], true);
 
-   cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+   cy.get("#complaint-filter-image-id").click({ force: true });
 
    //-- select region
    cy.selectItemById("community-select-id", _selected);
