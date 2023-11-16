@@ -375,8 +375,18 @@ export class CodeTableService {
     const data = await this._cosOrganizationUnitRepository
       .createQueryBuilder("cos_geo_org_unit")
       .select(["area_name", "area_code", "zone_code", "region_code"])
-      .distinctOn(["area_code"])
+      // .distinctOn(["area_name"])
+      .orderBy("cos_geo_org_unit.area_name", "ASC")
       .getRawMany();
+
+      const sql = await this._cosOrganizationUnitRepository
+      .createQueryBuilder("cos_geo_org_unit")
+      .select(["area_name", "area_code", "zone_code", "region_code"])
+      .distinctOn(["area_name"])
+      .orderBy("cos_geo_org_unit.area_name", "ASC")
+      .getSql();
+
+console.log(sql)
 
     const results = data.map(
       ({

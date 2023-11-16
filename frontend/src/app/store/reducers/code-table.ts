@@ -415,17 +415,7 @@ export const selectZoneCodeDropdown = (
     codeTables: { zones },
   } = state;
 
-  const data = [...zones]
-    .sort((a, b) => {
-      if (a.name < b.name) {
-        return -1;
-      }
-      if (a.name > b.name) {
-        return 1;
-      }
-      return 0;
-    })
-    .map(({ code, name }) => {
+  const data = zones.map(({ code, name }) => {
       const item: DropdownOption = {
         label: name,
         value: code,
@@ -443,17 +433,7 @@ export const selectRegionCodeDropdown = (
     codeTables: { regions },
   } = state;
 
-  const data = [...regions]
-    .sort((a, b) => {
-      if (a.name < b.name) {
-        return -1;
-      }
-      if (a.name > b.name) {
-        return 1;
-      }
-      return 0;
-    })
-    .map(({ code, name }) => {
+  const data = regions.map(({ code, name }) => {
       const item: DropdownOption = {
         label: name,
         value: code,
@@ -471,16 +451,7 @@ export const selectCommunityCodeDropdown = (
     codeTables: { communities },
   } = state;
 
-  const data = [...communities]
-    .sort((a, b) => {
-      if (a.name < b.name) {
-        return -1;
-      }
-      if (a.name > b.name) {
-        return 1;
-      }
-      return 0;
-    })
+  const data = communities
     .map(({ code, name }) => {
       const item: DropdownOption = {
         label: name,
