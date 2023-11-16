@@ -583,7 +583,7 @@ p {
 
   .comp-header-left-radius {
     border-top-left-radius: 4px !important;
-    border-width: 1px;
+    border-width: 1px 0px 1px 1px;
   }
 
   .comp-header-right-radius {
@@ -599,6 +599,10 @@ p {
   .comp-header-vertical-border {
     border-left-width: 1px;
     border-right-width: 1px;
+  }
+
+  .comp-header-vertical-border-left {
+    border-left-width: 1px;
   }
 
   .comp-ellipsis-cell {
@@ -956,8 +960,7 @@ p {
 .comp-table-row-hover-icons {
   font-size: 16px;
   color: $gray-800;
-  margin-right: 10px;
-  margin-bottom: 4px; 
+  margin: 0px 5px 4px 5px;
 }
 
 .popover-body {

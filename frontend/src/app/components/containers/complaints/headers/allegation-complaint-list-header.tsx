@@ -60,7 +60,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortDirection={sortDirection}
           className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border unsortable">
+        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border-left unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
 
@@ -88,7 +88,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 comp-header-horizontal-border"
+          className="comp-cell-width-110 comp-header-horizontal-border comp-header-right-radius"
           id="update-date-column"
         />
       </tr>

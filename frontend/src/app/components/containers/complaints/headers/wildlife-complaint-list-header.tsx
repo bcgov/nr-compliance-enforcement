@@ -87,7 +87,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 comp-header-horizontal-border"
+          className="comp-cell-width-110 comp-header-horizontal-border comp-header-right-radius"
         />
       </tr>
     </thead>
