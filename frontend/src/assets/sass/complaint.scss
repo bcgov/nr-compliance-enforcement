@@ -543,6 +543,10 @@ p {
       margin-right: 15px;
     }
 
+    .comp-cell-expanded-truncated {
+      word-break: break-word;
+    }
+
     .comp-cell-expanded-location {
       max-width: 800px;
     }
