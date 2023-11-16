@@ -7,9 +7,6 @@ import { ComplaintActionItems } from "./complaint-action-items";
 type Props = {
   type: string;
   complaint: HwcrComplaint;
-  complaintClick: Function;
-  sortKey: string;
-  sortDirection: string;
 };
 
 export const WildlifeComplaintListItem: FC<Props> = ({

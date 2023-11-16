@@ -7,17 +7,11 @@ import { ComplaintActionItems } from "./complaint-action-items";
 type Props = {
   type: string;
   complaint: AllegationComplaint;
-  complaintClick: Function;
-  sortKey: string;
-  sortDirection: string;
 };
 
 export const AllegationComplaintListItem: FC<Props> = ({
   type,
   complaint,
-  complaintClick,
-  sortKey,
-  sortDirection,
 }) => {
   const {
     complaint_identifier: complaintIdentifier,
@@ -104,7 +98,6 @@ export const AllegationComplaintListItem: FC<Props> = ({
         <button
           type="button"
           className={inProgressButtonClass}
-          onClick={(event) => complaintClick(event, id)}
         >
           {inProgressInd}
         </button>

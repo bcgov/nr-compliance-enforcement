@@ -84,8 +84,7 @@ export const generateComplaintRequestPayload = (
 export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
-  const navigate = useNavigate();
-
+ 
   const totalComplaints = useAppSelector(selectTotalComplaintsByType(type));
   const defaultPageSize = useAppSelector(selectDefaultPageSize);
 
@@ -160,15 +159,6 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     }
   };
 
-  const handleComplaintClick = (
-    e: any, //-- this needs to be updated to use the correct type when updating <Row> to <tr>
-    id: string
-  ) => {
-    e.preventDefault();
-
-//    navigate(`/complaint/${type}/${id}`);
-  };
-
   const handlePageChange = (page: number) => {
     setPage(page);
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -211,10 +201,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
                   <AllegationComplaintListItem
                     key={complaint_identifier}
                     type={type}
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
                     complaint={item as AllegationComplaint}
-                    complaintClick={handleComplaintClick}
                   />
                 );
               case COMPLAINT_TYPES.HWCR:
@@ -223,10 +210,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
                   <WildlifeComplaintListItem
                     key={complaint_identifier}
                     type={type}
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
                     complaint={item as HwcrComplaint}
-                    complaintClick={handleComplaintClick}
                   />
                 );
             }
