@@ -3,6 +3,8 @@ import { AllegationComplaint } from "../../../../types/complaints/allegation-com
 import { formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   type: string;
@@ -98,12 +100,19 @@ export const AllegationComplaintListItem: FC<Props> = ({
         className={`sortableHeader comp-cell-width-155 ${isExpanded && "comp-cell-parent-expanded"}`}
         onClick={toggleExpand}
       >
-        <button
-          type="button"
-          className={inProgressButtonClass}
-        >
-          {inProgressInd}
-        </button>
+        {in_progress_ind && (
+        <div
+                      id="comp-details-status-text-id"
+                      className="comp-box-violation-in-progress"
+                    >
+                      <FontAwesomeIcon
+                        id="violation-in-progress-icon"
+                        className="comp-cell-violation-in-progress-icon"
+                        icon={faExclamationCircle}
+                      />
+                      {inProgressInd}
+                    </div>
+        )}
       </td>
       <td
         className={`sortableHeader comp-cell-width-165 ${isExpanded && "comp-cell-parent-expanded"}`}

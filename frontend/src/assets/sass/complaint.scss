@@ -202,19 +202,6 @@ p {
     background: $bc-standard-05;
   }
 
-  .comp-box-violation-in-progress {
-    background-color: $red-300-80;
-    color: $red-300;
-
-    padding: 4px 12px;
-
-    border-radius: 60px;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 16px;
-    display: flex;
-  }
-
   #violation-in-progress-icon {
     font-size: 16px;
     margin-right: 5px;
@@ -335,6 +322,27 @@ p {
     background-color: $gray-200;
     color: $black;
   }
+}
+
+.comp-cell-violation-in-progress-icon {
+  font-size: 15px;
+  margin-right: 4px;
+  margin-left: -5px;
+}
+
+.comp-box-violation-in-progress {
+  background-color: $red-300-80;
+  color: $red-300;
+
+  padding: 4px 12px;
+  width: 110px;
+  height: 24px;
+  border-radius: 60px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "BC Sans";
+  line-height: 16px;
+  display: flex;
 }
 
 .header-spacing {
@@ -535,8 +543,8 @@ p {
       border-color: #8c8c8c;
     }
 
-    .comp-table-icon:hover {
-      font-weight: 3000;
+    .comp-table-icon-weighted:hover {
+      stroke-width: 0.5;
     }
 
     .comp-cell-action-icon {

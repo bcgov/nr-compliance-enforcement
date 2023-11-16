@@ -27,7 +27,6 @@ export const ComplaintActionItems: FC<Props> = ({
 }) => {
   const [isReferHovered, setIsReferHovered] = useState(false);
   const [isAssignHovered, setIsAssignHovered] = useState(false);
-  const [isUpdateHovered, setIsUpdateHovered] = useState(false);
 
   const dispatch = useAppDispatch();
 
