@@ -80,7 +80,6 @@ export const ComplaintActionItems: FC<Props> = ({
         <span
           onMouseEnter={() => setIsReferHovered(true)}
           onMouseLeave={() => setIsReferHovered(false)}
-          onClick={openAsignOfficerModal}
         >
           {isReferHovered ? (
             <BsCursorFill className="comp-table-row-hover-icons comp-table-icon" />

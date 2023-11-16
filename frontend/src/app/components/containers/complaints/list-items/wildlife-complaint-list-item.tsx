@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
-import { formatDateTime } from "../../../../common/methods";
+import { formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
 
@@ -62,6 +62,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+
+  const truncatedComplaintDetailText = truncateString(detail_text, 205);
+  const truncatedLocationDetailedText = truncateString(location_detailed_text,220);
 
   return (
     <>
@@ -140,14 +143,15 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       {isExpanded && (
         <tr className="">
           <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
-          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded">
-            {detail_text}
+          <td onClick={toggleExpand} className="comp-cell-width-330 comp-cell-expanded-truncated comp-cell-child-expanded">
+            {truncatedComplaintDetailText}
           </td>
           <td onClick={toggleExpand} className="comp-cell-child-expanded"/>
           <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded" colSpan={2}>
-            {location_detailed_text}
+            {truncatedLocationDetailedText}
           </td>
-          <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
+          <td onClick={toggleExpand} className="comp-cell-child-expanded"/>
+          <td colSpan={2} className="comp-cell-child-expanded comp-cell-child-actions">
             <div className="comp-cell-action-icon">
               <Link to={`/complaint/HWCR/${id}`} id={id}>
                 <span className="badge comp-view-complaint-badge">View Details</span>
