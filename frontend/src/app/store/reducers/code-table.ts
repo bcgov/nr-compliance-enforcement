@@ -415,14 +415,24 @@ export const selectZoneCodeDropdown = (
     codeTables: { zones },
   } = state;
 
-  const data = zones.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+  const data = [...zones]
+    .sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    })
+    .map(({ code, name }) => {
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
   return data;
 };
 
@@ -433,14 +443,24 @@ export const selectRegionCodeDropdown = (
     codeTables: { regions },
   } = state;
 
-  const data = regions.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+  const data = [...regions]
+    .sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    })
+    .map(({ code, name }) => {
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
   return data;
 };
 
