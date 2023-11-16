@@ -1,9 +1,6 @@
 import { FC, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync } from "@fortawesome/free-solid-svg-icons";
 import {
   BsPersonPlus,
-  BsPersonPlusFill,
   BsCursor,
   BsCursorFill,
   BsArrowRepeat,
@@ -80,6 +77,7 @@ export const ComplaintActionItems: FC<Props> = ({
         <span
           onMouseEnter={() => setIsReferHovered(true)}
           onMouseLeave={() => setIsReferHovered(false)}
+          onFocus={() => setIsReferHovered(false)}
         >
           {isReferHovered ? (
             <BsCursorFill className="comp-table-row-hover-icons comp-table-icon" />
@@ -100,7 +98,9 @@ export const ComplaintActionItems: FC<Props> = ({
         <span
           onMouseEnter={() => setIsAssignHovered(true)}
           onMouseLeave={() => setIsAssignHovered(false)}
+          onFocus={() => setIsAssignHovered(true)}
           onClick={openAsignOfficerModal}
+          onKeyUp={openAsignOfficerModal}
         >
           {isAssignHovered ? (
             <BsFillPersonPlusFill className="comp-table-row-hover-icons comp-table-icon" />

@@ -68,7 +68,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
     setIsExpanded(!isExpanded);
   };
 
-  const truncatedComplaintDetailText = truncateString(detail_text, 200);
+  const truncatedComplaintDetailText = truncateString(detail_text, 185);
   const truncatedLocationDetailedText = truncateString(location_detailed_text,220);
 
   return (
