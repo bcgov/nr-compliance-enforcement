@@ -3,13 +3,13 @@ import "../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
 import { useAppSelector } from "../../../hooks/hooks";
 import {
-  selectRegionCodeDropdown,
-  selectZoneCodeDropdown,
-  selectCommunityCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
   selectComplaintStatusCodeDropdown,
   selectViolationCodeDropdown,
+  selectCascadedRegion,
+  selectCascadedZone,
+  selectCascadedCommunity,
 } from "../../../store/reducers/code-table";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -46,15 +46,17 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  const regions = useAppSelector(selectRegionCodeDropdown);
-  const zones = useAppSelector(selectZoneCodeDropdown);
-  const communities = useAppSelector(selectCommunityCodeDropdown);
-
   const officers = useAppSelector(selectOfficersDropdown);
-  const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
+  const natureOfComplaintTypes = useAppSelector(
+    selectHwcrNatureOfComplaintCodeDropdown
+  );
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown);
+
+  const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
+  const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
+  const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
