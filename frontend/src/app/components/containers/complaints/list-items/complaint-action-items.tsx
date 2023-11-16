@@ -1,8 +1,8 @@
 import { FC, useState } from "react";
 import {
   BsPersonPlus,
-  BsCursor,
-  BsCursorFill,
+  BsSend,
+  BsSendFill,
   BsArrowRepeat,
   BsFillPersonPlusFill,
 } from "react-icons/bs";
@@ -80,9 +80,9 @@ export const ComplaintActionItems: FC<Props> = ({
           onFocus={() => setIsReferHovered(false)}
         >
           {isReferHovered ? (
-            <BsCursorFill className="comp-table-row-hover-icons comp-table-icon" />
+            <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
           ) : (
-            <BsCursor className="comp-table-row-hover-icons comp-table-icon" />
+            <BsSend className="comp-table-row-hover-icons comp-table-icon" />
           )}
           
         </span>
@@ -120,7 +120,7 @@ export const ComplaintActionItems: FC<Props> = ({
         <span>
           <BsArrowRepeat
             onClick={openStatusChangeModal}
-            className="comp-table-row-hover-icons comp-table-icon"
+            className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted"
           />
         </span>
       </OverlayTrigger>
