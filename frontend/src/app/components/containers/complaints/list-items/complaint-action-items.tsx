@@ -69,27 +69,6 @@ export const ComplaintActionItems: FC<Props> = ({
         placement="top"
         overlay={
           <Tooltip id="tt-assign" className="comp-tooltip">
-            Refer
-          </Tooltip>
-        }
-      >
-        <span
-          onMouseEnter={() => setIsReferHovered(true)}
-          onMouseLeave={() => setIsReferHovered(false)}
-          onFocus={() => setIsReferHovered(false)}
-        >
-          {isReferHovered ? (
-            <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
-          ) : (
-            <BsSend className="comp-table-row-hover-icons comp-table-icon" />
-          )}
-          
-        </span>
-      </OverlayTrigger>
-      <OverlayTrigger
-        placement="top"
-        overlay={
-          <Tooltip id="tt-assign" className="comp-tooltip">
             Assign
           </Tooltip>
         }
@@ -123,6 +102,28 @@ export const ComplaintActionItems: FC<Props> = ({
           />
         </span>
       </OverlayTrigger>
+      <OverlayTrigger
+        placement="top"
+        overlay={
+          <Tooltip id="tt-assign" className="comp-tooltip">
+            Refer
+          </Tooltip>
+        }
+      >
+        <span
+          onMouseEnter={() => setIsReferHovered(true)}
+          onMouseLeave={() => setIsReferHovered(false)}
+          onFocus={() => setIsReferHovered(false)}
+        >
+          {isReferHovered ? (
+            <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
+          ) : (
+            <BsSend className="comp-table-row-hover-icons comp-table-icon" />
+          )}
+          
+        </span>
+      </OverlayTrigger>
+
     </>
   );
 };
