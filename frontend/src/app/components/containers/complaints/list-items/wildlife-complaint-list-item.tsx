@@ -2,9 +2,6 @@ import { FC, useState } from "react";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { formatDateTime } from "../../../../common/methods";
 import { Link } from "react-router-dom";
-import { useAppDispatch } from "../../../../hooks/hooks";
-import { openModal } from "../../../../store/reducers/app";
-import { AssignOfficer, ChangeStatus } from "../../../../types/modal/modal-types";
 import { ComplaintActionItems } from "./complaint-action-items";
 
 type Props = {
@@ -155,7 +152,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({
           </td>
           <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
             <div>
-              <span className="badge comp-view-complaint-badge">View Details</span>
+              <Link to={`/complaint/HWCR/${id}`} id={id}>
+                <span className="badge comp-view-complaint-badge">View Details</span>
+              </Link>
               <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
             </div>
           </td>
