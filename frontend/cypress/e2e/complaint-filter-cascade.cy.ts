@@ -1,3 +1,44 @@
+function verifyFilters (expectedZones: number, expectedRegions: number, expectedCommunities: number) {
+    
+    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+
+    cy.get(
+      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
+    ).click({ force: true });
+    cy.get(".comp-select__menu-list")
+      .find("div")
+      .then(({ length }) => {
+        expect(length, "rows N").to.be.eq(expectedZones);
+      });
+    cy.get(
+      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
+    ).click({ force: true });
+
+    cy.get(
+      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
+    ).click({ force: true });
+    cy.get(".comp-select__menu-list")
+      .find("div")
+      .then(({ length }) => {
+        expect(length, "rows N").to.be.eq(expectedRegions);
+      });
+    cy.get(
+      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
+    ).click({ force: true });
+
+    cy.get(
+      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
+    ).click({ force: true });
+    cy.get(".comp-select__menu-list")
+      .find("div")
+      .then(({ length }) => {
+        expect(length, "rows N").to.be.eq(expectedCommunities);
+      });
+    cy.get(
+      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
+    ).click({ force: true });
+};
+
 /*
 Test to verify that the filter types: region, zone, and communities cascade based
 on what is and isn't selected. ie when the region is selected, the zone and 
@@ -5,6 +46,7 @@ communities filter options are filtered to only display options associated with
 the selected region
 */
 describe("Complaint Filter Cascading spec", () => {
+  const complaintTypes = ["#hwcr-tab", "#ers-tab"];
   const maxRegions = 8;
   const maxZones = 22;
   const maxCommunities = 970;
@@ -19,57 +61,10 @@ describe("Complaint Filter Cascading spec", () => {
     cy.visit("/");
     cy.waitForSpinner();
 
-    cy.get("body").then($body => {
-      if ($body.find("button[data-cy=appDrawerOpener]").length > 0) {   
-          //evaluates as true
-      }
-  });
+    cy.navigateToTab(complaintTypes[0], true);
 
-    cy.get("#comp-zone-filter").then($elm => { 
-      cy.get("#comp-zone-filter").click({ force: true });
-    })
-    cy.get("#comp-status-filter").then(() => { 
-      cy.get("#comp-status-filter").click({ force: true });
-    })
-  
-    //--
-    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
+    verifyFilters (maxRegions, maxZones, maxCommunities);
 
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(maxRegions);
-      });
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-    cy.get(
-      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(maxZones);
-      });
-    cy.get(
-      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-    cy.get(
-      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(maxCommunities);
-      });
-    cy.get(
-      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
   });
 
   it("Verifies zone and communities are cascaded when selecting a region", () => {
@@ -84,55 +79,9 @@ describe("Complaint Filter Cascading spec", () => {
     cy.visit("/");
     cy.waitForSpinner();
 
-    cy.get("#comp-zone-filter").then($elm => { 
-      cy.get("#comp-zone-filter").click({ force: true });
-    })
-    cy.get("#comp-status-filter").then(() => { 
-      cy.get("#comp-status-filter").click({ force: true });
-    })
+    cy.navigateToTab(complaintTypes[0], true);
 
-    //--
-    cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
-
-    //-- select region
-    cy.selectItemById("region-select-filter-id", _selected);
-
-    //-- verify zone and community cascade
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(_totalRegions);
-      });
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-    cy.get(
-      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(_totalZones);
-      });
-    cy.get(
-      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-    cy.get(
-      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(_totalCommunities);
-      });
-    cy.get(
-      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
+    verifyFilters (maxRegions, maxZones, maxCommunities);
   });
 
   it("Verifies communities are cascaded when selecting a zone", () => {
@@ -147,55 +96,9 @@ describe("Complaint Filter Cascading spec", () => {
    cy.visit("/");
    cy.waitForSpinner();
 
-   cy.get("#comp-zone-filter").then($elm => { 
-    cy.get("#comp-zone-filter").click({ force: true });
-  })
-  cy.get("#comp-status-filter").then(() => { 
-    cy.get("#comp-status-filter").click({ force: true });
-  })
+   cy.navigateToTab(complaintTypes[0], true);
 
-   //--
-   cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
-
-   //-- select region
-   cy.selectItemById("zone-select-id", _selected);
-
-   //-- verify community cascade
-   cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(_totalRegions);
-      });
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-   cy.get(
-     "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
-   cy.get(".comp-select__menu-list")
-     .find("div")
-     .then(({ length }) => {
-       expect(length, "rows N").to.be.eq(_totalZones);
-     });
-   cy.get(
-     "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
-
-   cy.get(
-     "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
-   cy.get(".comp-select__menu-list")
-     .find("div")
-     .then(({ length }) => {
-       expect(length, "rows N").to.be.eq(_totalCommunities);
-     });
-   cy.get(
-     "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
+   verifyFilters (maxRegions, maxZones, maxCommunities);
  });
 
  it("Verifies regions and zones are cascaded when selecting a community", () => {
@@ -210,54 +113,10 @@ describe("Complaint Filter Cascading spec", () => {
    cy.visit("/");
    cy.waitForSpinner();
 
-   cy.get("#comp-zone-filter").then($elm => { 
-    cy.get("#comp-zone-filter").click({ force: true });
-  })
-  cy.get("#comp-status-filter").then(() => { 
-    cy.get("#comp-status-filter").click({ force: true });
-  })
+   cy.navigateToTab(complaintTypes[0], true);
 
-   //--
-   cy.get("#react-collapsed-toggle-\\:r1\\: > .left-float").click();
-
-   //-- select region
-   cy.selectItemById("community-select-id", _selected);
-
-   //-- verify community cascade
-   cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(_totalRegions);
-      });
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-   cy.get(
-     "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
-   cy.get(".comp-select__menu-list")
-     .find("div")
-     .then(({ length }) => {
-       expect(length, "rows N").to.be.eq(_totalZones);
-     });
-   cy.get(
-     "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
-
-   cy.get(
-     "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
-   cy.get(".comp-select__menu-list")
-     .find("div")
-     .then(({ length }) => {
-       expect(length, "rows N").to.be.eq(_totalCommunities);
-     });
-   cy.get(
-     "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-   ).click({ force: true });
+   verifyFilters (maxRegions, maxZones, maxCommunities);
  });
+
 });
+
