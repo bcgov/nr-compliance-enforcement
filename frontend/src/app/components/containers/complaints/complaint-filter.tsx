@@ -9,7 +9,7 @@ import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
   selectComplaintStatusCodeDropdown,
-  selectViolationCodeDropdown
+  selectViolationCodeDropdown,
 } from "../../../store/reducers/code-table";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -49,6 +49,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const regions = useAppSelector(selectRegionCodeDropdown);
   const zones = useAppSelector(selectZoneCodeDropdown);
   const communities = useAppSelector(selectCommunityCodeDropdown);
+
   const officers = useAppSelector(selectOfficersDropdown);
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);

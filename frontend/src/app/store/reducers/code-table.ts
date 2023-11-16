@@ -404,7 +404,7 @@ export const selectAttractantCodeDropdown = (
     const item: Option = { label: shortDescription, value: attractant };
     return item;
   });
-  
+
   return data;
 };
 
@@ -451,14 +451,25 @@ export const selectCommunityCodeDropdown = (
     codeTables: { communities },
   } = state;
 
-  const data = communities.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+  const data = [...communities]
+    .sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    })
+    .map(({ code, name }) => {
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
+
   return data;
 };
 
