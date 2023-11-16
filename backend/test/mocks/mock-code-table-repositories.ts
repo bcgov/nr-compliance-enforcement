@@ -278,6 +278,7 @@ export const MockRegionCodeTableServiceRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
   })),
 });
 
@@ -291,6 +292,7 @@ export const MockZoneCodeTableServiceRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
   })),
 });
 
@@ -304,5 +306,6 @@ export const MockCommunityCodeTableServiceRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
   })),
 });
