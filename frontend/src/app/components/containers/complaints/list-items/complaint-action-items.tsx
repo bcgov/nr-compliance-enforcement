@@ -12,8 +12,7 @@ import {
   AssignOfficer,
   ChangeStatus,
 } from "../../../../types/modal/modal-types";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import { Overlay, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 type Props = {
   complaint_identifier: string;

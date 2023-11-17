@@ -60,15 +60,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({
   const [isExpanded, setIsExpanded] = useState(false); // used to indicate if the row is in an expanded state or not (row is expanded/contracted when click)
   const [isRowHovered, setIsRowHovered] = useState(false); // we want to apply the hover highlighting to the parent row when the expanded child row is hovered over
 
-  let expandedRowStyleClass = ""; // used to derive the style class depending on the state of the row (e.g. is it expanded or not)
-  let hoveredStyleClass = ""; // used to derive the style class depending on whether or not the row is in a hovered state
-
-  const toggleExpand = () => {
+    const toggleExpand = () => {
     if (isExpanded) { // remove the hover state on parent row if the row is collapsed
       toggleHoverState(false);
-      expandedRowStyleClass = "comp-cell-parent-expanded"
-    } else {
-      expandedRowStyleClass = "";
     }
     
     setIsExpanded(!isExpanded);
