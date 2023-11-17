@@ -118,7 +118,7 @@ describe("Complaint Filter Cascading spec", () => {
 
    const _totalRegions = 1;
    const _totalZones = 1;
-   const _totalCommunities = 1;
+   const _totalCommunities = 49;
 
    //-- load the page and remove existing default filters
    cy.visit("/");
