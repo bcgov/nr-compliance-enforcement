@@ -60,9 +60,15 @@ export const WildlifeComplaintListItem: FC<Props> = ({
   const [isExpanded, setIsExpanded] = useState(false); // used to indicate if the row is in an expanded state or not (row is expanded/contracted when click)
   const [isRowHovered, setIsRowHovered] = useState(false); // we want to apply the hover highlighting to the parent row when the expanded child row is hovered over
 
+  const [isExpandedClass, setExpandedClass] = useState("");
+
     const toggleExpand = () => {
     if (isExpanded) { // remove the hover state on parent row if the row is collapsed
       toggleHoverState(false);
+      setExpandedClass("");
+    } else
+    {
+      setExpandedClass("comp-cell-parent-expanded");
     }
     
     setIsExpanded(!isExpanded);
@@ -77,9 +83,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   return (
     <>
-    <tr key={id} className={`${isExpanded ? "comp-cell-parent-expanded" : ""} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}>
+    <tr key={id} className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}>
       <td
-        className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         <Link to={`/complaint/HWCR/${id}`} id={id}>
@@ -87,19 +93,19 @@ export const WildlifeComplaintListItem: FC<Props> = ({
         </Link>
       </td>
       <td
-        className={`comp-cell-width-95 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-95 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         {incidentReportedDatetime}
       </td>
       <td
-        className={`comp-cell-width-330 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-330 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         {natureCode}
       </td>
       <td
-        className={`comp-cell-width-130 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-130 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         <button type="button" className="btn btn-primary comp-species-btn">
@@ -107,19 +113,19 @@ export const WildlifeComplaintListItem: FC<Props> = ({
         </button>
       </td>
       <td
-        className={`comp-cell-width-165 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-165 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         {location}
       </td>
       <td
-        className={`comp-cell-width-170 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-170 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         {locationSummary}
       </td>
       <td
-        className={`comp-cell-width-75 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-75 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         <div className={statusButtonClass}>
@@ -127,7 +133,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
         </div>
       </td>
       <td
-        className={`comp-cell-width-130 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-130 ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         <div
@@ -137,7 +143,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
         {displayName}
       </td>
       <td
-        className={`comp-cell-width-110 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
+        className={`comp-cell-width-110 ${isExpandedClass}`}
         
       >
         {!isExpanded && (
