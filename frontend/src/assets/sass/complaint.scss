@@ -503,9 +503,9 @@ p {
     text-align: left;
 
     th {
-      background: #8c8c8c;
+      background: $gray-400;
       background-color: #e4e4e4;
-      border-color: #8c8c8c;
+      border-color: $gray-400;
     }
     
     th.unsortable {
@@ -540,7 +540,7 @@ p {
     }
 
     td {
-      border-color: #8c8c8c;
+      border-color: $gray-300;
     }
 
     .comp-table-icon-weighted:hover {

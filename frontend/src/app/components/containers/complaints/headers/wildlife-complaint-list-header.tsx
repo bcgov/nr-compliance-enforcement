@@ -58,7 +58,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortDirection={sortDirection}
           className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border unsortable">
+        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border-left unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
 

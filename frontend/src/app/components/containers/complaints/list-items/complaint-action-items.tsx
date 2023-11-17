@@ -67,6 +67,7 @@ export const ComplaintActionItems: FC<Props> = ({
     <>
       <OverlayTrigger
         placement="top"
+        
         overlay={
           <Tooltip id="tt-assign" className="comp-tooltip">
             Assign
@@ -113,7 +114,7 @@ export const ComplaintActionItems: FC<Props> = ({
         <span
           onMouseEnter={() => setIsReferHovered(true)}
           onMouseLeave={() => setIsReferHovered(false)}
-          onFocus={() => setIsReferHovered(false)}
+          onFocus={() => setIsReferHovered(true)}
         >
           {isReferHovered ? (
             <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
