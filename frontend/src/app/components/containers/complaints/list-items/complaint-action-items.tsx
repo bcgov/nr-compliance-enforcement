@@ -12,7 +12,7 @@ import {
   AssignOfficer,
   ChangeStatus,
 } from "../../../../types/modal/modal-types";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 type Props = {
   complaint_identifier: string;
@@ -65,66 +65,59 @@ export const ComplaintActionItems: FC<Props> = ({
 
   return (
     <>
-      <OverlayTrigger
-        placement="top"
-        
-        overlay={
-          <Tooltip id="tt-assign" className="comp-tooltip">
-            Assign
-          </Tooltip>
-        }
+      <span
+        onMouseEnter={() => setIsAssignHovered(true)}
+        onMouseLeave={() => setIsAssignHovered(false)}
+        onFocus={() => setIsAssignHovered(true)}
+        onClick={openAsignOfficerModal}
+        onKeyUp={openAsignOfficerModal}
+        data-tooltip-id={`tt-assign-${complaint_identifier}`}
       >
-        <span
-          onMouseEnter={() => setIsAssignHovered(true)}
-          onMouseLeave={() => setIsAssignHovered(false)}
-          onFocus={() => setIsAssignHovered(true)}
-          onClick={openAsignOfficerModal}
-          onKeyUp={openAsignOfficerModal}
-        >
-          {isAssignHovered ? (
-            <BsFillPersonPlusFill className="comp-table-row-hover-icons comp-table-icon" />
-          ) : (
-            <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon" />
-          )}
-        </span>
-      </OverlayTrigger>
-      <OverlayTrigger
-        placement="top"
-        overlay={
-          <Tooltip id="tt-assign" className="comp-tooltip">
-            Update
-          </Tooltip>
-        }
+        {isAssignHovered ? (
+          <BsFillPersonPlusFill className="comp-table-row-hover-icons comp-table-icon" />
+        ) : (
+          <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon" />
+        )}
+      </span>
+      <span data-tooltip-id={`tt-update-${complaint_identifier}`}>
+        <BsArrowRepeat
+          onClick={openStatusChangeModal}
+          className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted"
+        />
+      </span>
+      <span
+        onMouseEnter={() => setIsReferHovered(true)}
+        onMouseLeave={() => setIsReferHovered(false)}
+        onFocus={() => setIsReferHovered(true)}
+        data-tooltip-id={`tt-refer-${complaint_identifier}`}
       >
-        <span>
-          <BsArrowRepeat
-            onClick={openStatusChangeModal}
-            className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted"
-          />
-        </span>
-      </OverlayTrigger>
-      <OverlayTrigger
-        placement="top"
-        overlay={
-          <Tooltip id="tt-assign" className="comp-tooltip">
-            Refer
-          </Tooltip>
-        }
-      >
-        <span
-          onMouseEnter={() => setIsReferHovered(true)}
-          onMouseLeave={() => setIsReferHovered(false)}
-          onFocus={() => setIsReferHovered(true)}
-        >
-          {isReferHovered ? (
-            <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
-          ) : (
-            <BsSend className="comp-table-row-hover-icons comp-table-icon" />
-          )}
-          
-        </span>
-      </OverlayTrigger>
-
+        {isReferHovered ? (
+          <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
+        ) : (
+          <BsSend className="comp-table-row-hover-icons comp-table-icon" />
+        )}
+      </span>
+      <ReactTooltip
+        id={`tt-assign-${complaint_identifier}`}
+        place="top"
+        content="Assign"
+        variant="info"
+        className="comp-tooltip"
+      />
+      <ReactTooltip
+        id={`tt-refer-${complaint_identifier}`}
+        place="top"
+        content="Refer"
+        variant="info"
+        className="comp-tooltip"
+      />
+      <ReactTooltip
+        id={`tt-update-${complaint_identifier}`}
+        place="top"
+        content="Update"
+        variant="info"
+        className="comp-tooltip"
+      />
     </>
   );
 };
