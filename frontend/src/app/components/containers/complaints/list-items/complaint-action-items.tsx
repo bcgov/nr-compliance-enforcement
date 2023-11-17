@@ -69,14 +69,11 @@ export const ComplaintActionItems: FC<Props> = ({
       <OverlayTrigger
         placement="top"
         key={`tt-assign-${complaint_identifier}`}
+        delay={{ show: 250, hide: 0 }}
         overlay={
-          isAssignHovered ? (
             <Tooltip id={`tt-assign-${complaint_identifier}`} className="comp-tooltip">
               Assign
             </Tooltip>
-          ) : (
-            <span></span>
-          )
         }
       >
         <span
@@ -94,6 +91,7 @@ export const ComplaintActionItems: FC<Props> = ({
       </OverlayTrigger>
       <OverlayTrigger
         placement="top"
+        delay={{ show: 250, hide: 0 }}
         key={`tt-update-${complaint_identifier}`}
         overlay={
           
@@ -111,6 +109,7 @@ export const ComplaintActionItems: FC<Props> = ({
       </OverlayTrigger>
       <OverlayTrigger
         placement="top"
+        delay={{ show: 250, hide: 0 }}
         key={`tt-refer-${complaint_identifier}`}
         overlay={
           isReferHovered ? (
