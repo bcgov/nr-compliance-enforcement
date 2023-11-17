@@ -274,6 +274,7 @@ export const MockRegionCodeTableServiceRepository = () => ({
   createQueryBuilder: jest.fn(() => ({
     select: jest.fn().mockReturnThis(),
     distinctOn: jest.fn().mockReturnThis(),
+    distinct: jest.fn().mockReturnThis(),
     getRawMany: jest.fn().mockResolvedValue(regions),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
@@ -288,6 +289,7 @@ export const MockZoneCodeTableServiceRepository = () => ({
   createQueryBuilder: jest.fn(() => ({
     select: jest.fn().mockReturnThis(),
     distinctOn: jest.fn().mockReturnThis(),
+    distinct: jest.fn().mockReturnThis(),
     getRawMany: jest.fn().mockResolvedValue(zones),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
@@ -302,6 +304,7 @@ export const MockCommunityCodeTableServiceRepository = () => ({
   createQueryBuilder: jest.fn(() => ({
     select: jest.fn().mockReturnThis(),
     distinctOn: jest.fn().mockReturnThis(),
+    distinct: jest.fn().mockReturnThis(),
     getRawMany: jest.fn().mockResolvedValue(communities),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
