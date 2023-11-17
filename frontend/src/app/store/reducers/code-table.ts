@@ -726,15 +726,10 @@ export const selectCascadedZone =
     let results = communities;
 
     if (community) {
-      return communities
-      .filter((item) => item.code === community)
-      .map(({ code, name }) => {
-        return {
-          label: name,
-          value: code,
-          description: name,
-        };
-      });
+      const selected = communities.find((item) => item.code === community);
+      if (selected) {
+        results = communities.filter((item) => item.zone === selected.zone);
+      }
     }
 
     if(zone){ 
