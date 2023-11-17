@@ -57,10 +57,15 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   const updateDate = formatDateTime(update_utc_timestamp);
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // used to indicate if the row is in an expanded state or not (row is expanded/contracted when click)
+  const [isRowHovered, setIsRowHovered] = useState(false); // we want to apply the hover highlighting to the parent row when the expanded child row is hovered over
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const toggleHoverState = (state: boolean) => {
+    setIsRowHovered(state);
   };
 
   const truncatedComplaintDetailText = truncateString(detail_text, 205);
@@ -68,7 +73,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
 
   return (
     <>
-    <tr key={id} className={`${isExpanded && "comp-table-row-expanded"}`}>
+    <tr key={id} className={`${isExpanded && "comp-table-row-expanded"} ${isRowHovered && "comp-table-row-hover-style"}`}>
       <td
         className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpanded && "comp-cell-parent-expanded"}`}
         onClick={toggleExpand}
@@ -141,7 +146,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       </td>
       </tr>
       {isExpanded && (
-        <tr className="">
+        <tr onMouseEnter={() => toggleHoverState(true)} onMouseLeave={() => toggleHoverState(false)}>
           <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
           <td onClick={toggleExpand} className="comp-cell-width-330 comp-cell-expanded-truncated comp-cell-child-expanded">
             {truncatedComplaintDetailText}

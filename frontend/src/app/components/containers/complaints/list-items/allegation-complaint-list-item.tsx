@@ -57,25 +57,27 @@ export const AllegationComplaintListItem: FC<Props> = ({
 
   const violationCode =
     violation_code != null ? violation_code.long_description : "";
-  const inProgressButtonClass =
-    String(in_progress_ind) === "true"
-      ? "btn btn-primary comp-in-progress-btn"
-      : "btn btn-primary comp-in-progress-btn btn-hidden";
 
   const inProgressInd = String(in_progress_ind) === "true" ? "In Progress" : "";
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isRowHovered, setIsRowHovered] = useState(false);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+
+  const toggleHoverState = (state: boolean) => {
+    setIsRowHovered(state);
+  };
+
 
   const truncatedComplaintDetailText = truncateString(detail_text, 185);
   const truncatedLocationDetailedText = truncateString(location_detailed_text,220);
 
   return (
     <>
-    <tr key={id} className={`${isExpanded && "comp-table-row-expanded"}`}>
+    <tr key={id} className={`${isExpanded && "comp-table-row-expanded"} ${isRowHovered && "comp-table-row-hover-style"}`}>
       <td
         className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpanded && "comp-cell-parent-expanded"}`}
         onClick={toggleExpand}
@@ -158,7 +160,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
       </td>
     </tr>
     {isExpanded && (
-        <tr className="">
+        <tr onMouseEnter={() => toggleHoverState(true)} onMouseLeave={() => toggleHoverState(false)}>
           <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
           <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded">
             {truncatedComplaintDetailText}
