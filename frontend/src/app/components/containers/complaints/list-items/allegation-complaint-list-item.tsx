@@ -64,6 +64,10 @@ export const AllegationComplaintListItem: FC<Props> = ({
   const [isRowHovered, setIsRowHovered] = useState(false);
 
   const toggleExpand = () => {
+    if (isExpanded) { // remove the hover state on parent row if the row is collapsed
+      toggleHoverState(false);
+    }
+
     setIsExpanded(!isExpanded);
   };
 
@@ -71,15 +75,14 @@ export const AllegationComplaintListItem: FC<Props> = ({
     setIsRowHovered(state);
   };
 
-
   const truncatedComplaintDetailText = truncateString(detail_text, 185);
   const truncatedLocationDetailedText = truncateString(location_detailed_text,220);
 
   return (
     <>
-    <tr key={id} className={`${isExpanded && "comp-table-row-expanded"} ${isRowHovered && "comp-table-row-hover-style"}`}>
+    <tr key={id} className={`${isExpanded ? "comp-cell-parent-expanded" : ""} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}>
       <td
-        className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         <Link to={`/complaint/ERS/${id}`} id={id}>
@@ -87,19 +90,19 @@ export const AllegationComplaintListItem: FC<Props> = ({
         </Link>
       </td>
       <td
-        className={`comp-cell-width-95 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`comp-cell-width-95 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         {incidentReportedDatetime}
       </td>
       <td
-        className={`comp-cell-width-305 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`comp-cell-width-305 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         {violationCode}
       </td>
       <td
-        className={`sortableHeader comp-cell-width-155 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`sortableHeader comp-cell-width-155 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         {in_progress_ind && (
@@ -117,19 +120,19 @@ export const AllegationComplaintListItem: FC<Props> = ({
         )}
       </td>
       <td
-        className={`sortableHeader comp-cell-width-165 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`sortableHeader comp-cell-width-165 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         {location}
       </td>
       <td
-        className={`comp-cell-width-170 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`comp-cell-width-170 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         {locationSummary}
       </td>
       <td
-        className={`sortableHeader comp-cell-width-75 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`sortableHeader comp-cell-width-75 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         <div className={statusButtonClass}>
@@ -137,7 +140,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
         </div>
       </td>
       <td
-        className={`comp-cell-width-130 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`comp-cell-width-130 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         onClick={toggleExpand}
       >
         <div
@@ -147,7 +150,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
         {displayName}
       </td>
       <td
-        className={`comp-cell-width-110 ${isExpanded && "comp-cell-parent-expanded"}`}
+        className={`comp-cell-width-110 ${isExpanded ? "comp-cell-parent-expanded" : ""}`}
         
       >
       {!isExpanded && (
