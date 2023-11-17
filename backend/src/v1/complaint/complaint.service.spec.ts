@@ -24,4 +24,13 @@ describe('Testing: Complaint Service', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it("should return return collecton of complaints by type", () => { 
+    //-- arrange
+    const _types: Array<string> = ["HWCR", "ERS"];
+
+    //-- act
+
+
+  })
 });
