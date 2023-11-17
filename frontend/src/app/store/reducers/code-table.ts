@@ -416,13 +416,13 @@ export const selectZoneCodeDropdown = (
   } = state;
 
   const data = zones.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
   return data;
 };
 
@@ -434,13 +434,13 @@ export const selectRegionCodeDropdown = (
   } = state;
 
   const data = regions.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
   return data;
 };
 
@@ -451,14 +451,16 @@ export const selectCommunityCodeDropdown = (
     codeTables: { communities },
   } = state;
 
-  const data = communities.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+  const data = communities
+    .map(({ code, name }) => {
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
+
   return data;
 };
 
