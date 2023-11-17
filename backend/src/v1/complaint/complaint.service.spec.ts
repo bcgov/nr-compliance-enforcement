@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComplaintService } from './complaint.service';
-import { DataSource } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Complaint } from '../complaint/entities/complaint.entity';
-import { dataSourceMockFactory } from '../../../test/mocks/datasource';
 
-describe('ComplaintService', () => {
+import { ComplaintService } from './complaint.service';
+import { Complaint } from '../complaint/entities/complaint.entity';
+import { MockComplaintRepository } from 'test/mocks/mock-complaint-repository';
+
+describe('Testing: Complaint Service', () => {
   let service: ComplaintService;
 
   beforeEach(async () => {
@@ -13,12 +13,9 @@ describe('ComplaintService', () => {
       providers: [ComplaintService,
         {
           provide: getRepositoryToken(Complaint),
-          useValue: {},
+          useFactory: MockComplaintRepository,
         },
-        {
-          provide: DataSource,
-          useFactory: dataSourceMockFactory
-        }],
+      ],
     }).compile();
 
     service = module.get<ComplaintService>(ComplaintService);
