@@ -334,7 +334,8 @@ export class CodeTableService {
     const data = await this._cosOrganizationUnitRepository
       .createQueryBuilder("cos_geo_org_unit")
       .select(["region_name", "region_code"])
-      .distinctOn(["region_code"])
+      .distinct(true)
+      .orderBy("cos_geo_org_unit.region_name", "ASC")
       .getRawMany();
 
       const results = data.map(({ region_name: name, region_code: code }) => {
@@ -352,7 +353,8 @@ export class CodeTableService {
     const data = await this._cosOrganizationUnitRepository
       .createQueryBuilder("cos_geo_org_unit")
       .select(["zone_name", "zone_code", "region_code"])
-      .distinctOn(["zone_code"])
+      .distinct(true)
+      .orderBy("cos_geo_org_unit.zone_name", "ASC")
       .getRawMany();
 
     const results = data.map(
@@ -375,7 +377,8 @@ export class CodeTableService {
     const data = await this._cosOrganizationUnitRepository
       .createQueryBuilder("cos_geo_org_unit")
       .select(["area_name", "area_code", "zone_code", "region_code"])
-      .distinctOn(["area_code"])
+      .distinct(true)
+      .orderBy("cos_geo_org_unit.area_name", "ASC")
       .getRawMany();
 
     const results = data.map(
@@ -398,12 +401,3 @@ export class CodeTableService {
     return results;
   };
 }
-
-/*
-    .createQueryBuilder("cos_geo_org_unit")
-      .where("cos_geo_org_unit.zone_code = :zone", { zone })
-      .distinctOn(["cos_geo_org_unit.offloc_code"])
-      .orderBy("cos_geo_org_unit.offloc_code");
-
-    const zoneOffices = await officeQuery.getMany();
-*/

@@ -404,7 +404,7 @@ export const selectAttractantCodeDropdown = (
     const item: Option = { label: shortDescription, value: attractant };
     return item;
   });
-  
+
   return data;
 };
 
@@ -416,13 +416,13 @@ export const selectZoneCodeDropdown = (
   } = state;
 
   const data = zones.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
   return data;
 };
 
@@ -434,13 +434,13 @@ export const selectRegionCodeDropdown = (
   } = state;
 
   const data = regions.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
   return data;
 };
 
@@ -451,15 +451,320 @@ export const selectCommunityCodeDropdown = (
     codeTables: { communities },
   } = state;
 
-  const data = communities.map(({ code, name }) => {
-    const item: DropdownOption = {
-      label: name,
-      value: code,
-      description: name,
-    };
-    return item;
-  });
+  const data = communities
+    .map(({ code, name }) => {
+      const item: DropdownOption = {
+        label: name,
+        value: code,
+        description: name,
+      };
+      return item;
+    });
+
   return data;
 };
+
+export const selectCascadedFilter =
+  (type: string, value?: string) =>
+  (state: RootState): Array<DropdownOption> => {
+    const {
+      codeTables: { regions, zones },
+    } = state;
+
+    switch (type) {
+      case "region": {
+        const data = regions.map(({ code, name }) => {
+          const item: DropdownOption = {
+            label: name,
+            value: code,
+            description: name,
+          };
+          return item;
+        });
+
+        if (value) {
+          return data.filter((item) => item.value === value);
+        }
+
+        return data;
+      }
+      case "zone": {
+        const data = zones.map(({ code, name }) => {
+          const item: DropdownOption = {
+            label: name,
+            value: code,
+            description: name,
+          };
+          return item;
+        });
+
+        if (value) {
+          const items = zones.filter(({ region }) => region === value);
+          return items.map(({ code, name }) => {
+            const item: DropdownOption = {
+              label: name,
+              value: code,
+              description: name,
+            };
+            return item;
+          });
+        }
+
+        return data;
+      }
+      case "community":
+      default:
+        break;
+    }
+
+    return [];
+  };
+
+export const selectCascadedFilters =
+  (region?: string, zone?: string, community?: string) =>
+  (state: RootState): any => {
+    const {
+      codeTables: { regions, zones, communities },
+    } = state;
+
+    let _regions: Array<DropdownOption> = [];
+    let _zones: Array<DropdownOption> = [];
+    let _communities: Array<DropdownOption> = [];
+
+    if (!region && zone && !community) {
+      const selected = zones.find((item) => item.code === zone);
+
+      if (selected) {
+        _regions = regions
+          .filter((item) => item.code === selected.region)
+          .map(({ code, name }) => {
+            return {
+              label: name,
+              value: code,
+              description: name,
+            };
+          });
+
+        _zones = [
+          {
+            label: selected.name,
+            value: selected.code,
+            description: selected.name,
+          },
+        ];
+
+        _communities = communities
+          .filter((item) => item.zone === zone)
+          .map(({ code, name }) => {
+            return {
+              label: name,
+              value: code,
+              description: name,
+            };
+          });
+      }
+    } else if (region && !zone && !community) {
+      const selected = regions.find((item) => item.code === region);
+      if (selected) {
+        _regions = [
+          {
+            label: selected.name,
+            value: selected.code,
+            description: selected.name,
+          },
+        ];
+
+        _zones = zones
+          .filter((item) => item.region === region)
+          .map(({ code, name }) => {
+            return {
+              label: name,
+              value: code,
+              description: name,
+            };
+          });
+
+        _communities = communities
+          .filter((item) => item.region === region)
+          .map(({ code, name }) => {
+            return {
+              label: name,
+              value: code,
+              description: name,
+            };
+          });
+      }
+    } else if (!region && !zone && !community) {
+      _regions = regions.map(({ code, name }) => {
+        return {
+          label: name,
+          value: code,
+          description: name,
+        };
+      });
+      _zones = zones.map(({ code, name }) => {
+        return {
+          label: name,
+          value: code,
+          description: name,
+        };
+      });
+
+      _communities = communities.map(({ code, name }) => {
+        return {
+          label: name,
+          value: code,
+          description: name,
+        };
+      });
+      return {
+        regions: _regions,
+        zones: _zones,
+        communities: _communities,
+      };
+    }
+
+    return {
+      regions: _regions,
+      zones: _zones,
+      communities: _communities,
+    };
+  };
+
+export const selectCascadedRegion =
+  (region?: string, zone?: string, community?: string) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { regions, zones, communities },
+    } = state;
+
+    let results = regions;
+
+    if (region) {
+      return regions
+        .filter((item) => item.code === region)
+        .map(({ code, name }) => {
+          return {
+            label: name,
+            value: code,
+            description: name,
+          };
+        });
+    }
+
+    if (zone) {
+      const selected = zones.find((item) => item.code === zone);
+
+      if (selected) {
+        results = regions.filter((item) => item.code === selected.region);
+      }
+    }
+
+    if (community) {
+      const selected = communities.find((item) => item.code === community);
+
+      if (selected) {
+        results = regions.filter((item) => item.code === selected.region);
+      }
+    }
+
+    return results.map(({ code, name }) => {
+      return {
+        label: name,
+        value: code,
+        description: name,
+      };
+    });
+  };
+
+export const selectCascadedZone =
+  (region?: string, zone?: string, community?: string) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { zones, communities },
+    } = state;
+
+    let results = zones;
+
+    if (zone) {
+      return zones
+        .filter((item) => item.code === zone)
+        .map(({ code, name }) => {
+          return {
+            label: name,
+            value: code,
+            description: name,
+          };
+        });
+    }
+
+    if (region) {
+      results = zones.filter((item) => item.region === region);
+    }
+
+    if (community) {
+      const selected = communities.find((item) => item.code === community);
+      if (selected) {
+        results = zones.filter((item) => item.code === selected.zone);
+      }
+    }
+
+    return results.map(({ code, name }) => {
+      return {
+        label: name,
+        value: code,
+        description: name,
+      };
+    });
+  };
+
+  export const selectCascadedCommunity =
+  (region?: string, zone?: string, community?: string) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { communities },
+    } = state;
+
+    let results = communities;
+
+    if (community) {
+      const selected = communities.find((item) => item.code === community);
+      if (selected) {
+        results = communities.filter((item) => item.zone === selected.zone);
+      }
+    }
+
+    if(zone){ 
+      return communities
+      .filter((item) => item.zone === zone)
+      .map(({ code, name }) => {
+        return {
+          label: name,
+          value: code,
+          description: name,
+        };
+      });
+    }
+
+    if(region){ 
+      return communities
+      .filter((item) => item.region === region)
+      .map(({ code, name }) => {
+        return {
+          label: name,
+          value: code,
+          description: name,
+        };
+      });
+    }
+
+    return results.map(({ code, name }) => {
+      return {
+        label: name,
+        value: code,
+        description: name,
+      };
+    });
+  };
 
 export default codeTableSlice.reducer;
