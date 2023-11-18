@@ -75,7 +75,7 @@ export const ComplaintActionItems: FC<Props> = ({
             </Tooltip>
         }
       >
-        <span
+        <span className="tt-assign-span"
           onMouseEnter={() => setIsAssignHovered(true)}
           onMouseLeave={() => setIsAssignHovered(false)}
           onClick={openAsignOfficerModal}
@@ -102,7 +102,7 @@ export const ComplaintActionItems: FC<Props> = ({
         <span>
           <BsArrowRepeat
             onClick={openStatusChangeModal}
-            className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted"
+            className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted tt-status-icon"
           />
         </span>
       </OverlayTrigger>

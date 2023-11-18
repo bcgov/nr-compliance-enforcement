@@ -21,18 +21,15 @@ describe("Complaint Assign Popover spec", { scrollBehavior: false }, () => {
 
       cy.waitForSpinner();
 
-      cy.get(".popover").should("not.exist");
-
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so we have some complaint is in the list view
 
       cy.waitForSpinner();
 
-      cy.get("td.comp-ellipsis-cell")
-        .first() // finds the buttons cell of that row
-        .click({ force: true });
+      cy.get("td")  
+      .first()
+      .click({force: true});
 
-      cy.get(".popover").should("exist");
-      cy.get(".popover").get("div#assign_complaint_link").click();
+      cy.get(".tt-assign-span").filter(':visible').click({force:true});
 
       // self assign the complaint
       cy.get("#self_assign_button").click();
