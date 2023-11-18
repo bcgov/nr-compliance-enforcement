@@ -58,18 +58,9 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
           sortDirection={sortDirection}
           className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border unsortable">
+        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border-left unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
-
-        <SortableHeader
-          title="Officer Assigned"
-          sortFnc={handleSort}
-          sortKey="last_name"
-          currentSort={sortKey}
-          sortDirection={sortDirection}
-          className="comp-cell-width-130 comp-header-horizontal-border"
-        />
 
         <SortableHeader
           title="Status"
@@ -81,20 +72,23 @@ export const WildlifeComplaintListHeader: FC<Props> = ({
         />
 
         <SortableHeader
+          title="Officer Assigned"
+          sortFnc={handleSort}
+          sortKey="last_name"
+          currentSort={sortKey}
+          sortDirection={sortDirection}
+          className="comp-cell-width-130 comp-header-horizontal-border"
+        />
+
+        <SortableHeader
           id="update-date-column"
           title="Last Updated"
           sortFnc={handleSort}
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 comp-header-horizontal-border"
+          className="comp-cell-width-110 comp-header-horizontal-border comp-header-right-radius"
         />
-
-        <th className="comp-cell-width-30 comp-header-right-radius unsortable">
-          <div className="comp-header-label">
-            <i className="bi bi-three-dots-vertical"></i>
-          </div>
-        </th>
       </tr>
     </thead>
   );

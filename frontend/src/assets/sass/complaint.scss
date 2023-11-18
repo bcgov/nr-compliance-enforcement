@@ -202,19 +202,6 @@ p {
     background: $bc-standard-05;
   }
 
-  .comp-box-violation-in-progress {
-    background-color: $red-300-80;
-    color: $red-300;
-
-    padding: 4px 12px;
-
-    border-radius: 60px;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 16px;
-    display: flex;
-  }
-
   #violation-in-progress-icon {
     font-size: 16px;
     margin-right: 5px;
@@ -239,16 +226,32 @@ p {
   }
 }
 
+.comp-view-complaint-badge {
+  color: black;
+  line-height: normal;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: solid black;
+  border-width: 0.5px;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
 .comp-status-badge-open {
   background-color: $green-100-80;
   color: $green-100;
   line-height: normal;
+  gap: 10px;
+  font-size: 12px;
 }
 
 .comp-status-badge-closed {
   background-color: $red-300-80;
   color: $red-300;
   line-height: normal;
+  gap: 10px;
+  font-size: 12px;
 }
 
 .comp-violation-in-progress {
@@ -319,6 +322,26 @@ p {
     background-color: $gray-200;
     color: $black;
   }
+}
+
+.comp-cell-violation-in-progress-icon {
+  font-size: 15px;
+  margin-right: 4px;
+  margin-left: -5px;
+}
+
+.comp-box-violation-in-progress {
+  background-color: $red-300-80;
+  color: $red-300;
+
+  padding: 4px 12px;
+  width: 110px;
+  height: 24px;
+  border-radius: 60px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 16px;
+  display: flex;
 }
 
 .header-spacing {
@@ -479,9 +502,9 @@ p {
     text-align: left;
 
     th {
-      background: #8c8c8c;
+      background: $gray-400;
       background-color: #e4e4e4;
-      border-color: #8c8c8c;
+      border-color: $gray-400;
     }
     
     th.unsortable {
@@ -496,12 +519,55 @@ p {
       cursor: pointer;
     }
 
+    tr .comp-table-icons { // don't display unless row is hovered on
+      display: none;
+    }
+
     tr:hover {
       background-color: $gray-110;
     }
 
+    .comp-table-row-hover-style {
+      background-color: $gray-110;
+    }
+
+    // display the interactive icons when the row is hovered on
+    tr:hover .comp-table-icons {
+      margin-top: 10px;
+      display: block;
+    }
+    
+    // hide the date when the row is hovered on
+    tr:hover .comp-table-update-date {
+      display: none;
+    }
+
     td {
-      border-color: #8c8c8c;
+      border-color: $gray-300;
+    }
+
+    .comp-table-icon-weighted:hover {
+      stroke-width: 0.5;
+    }
+
+    .comp-cell-action-icon {
+      margin-right: 15px;
+    }
+
+    .comp-cell-expanded-truncated {
+      word-break: break-word;
+    }
+
+    .comp-cell-expanded-location {
+      max-width: 800px;
+    }
+    .comp-cell-child-actions {
+      vertical-align: bottom !important;
+      text-align: right !important;
+    }
+
+    .comp-cell-child-actions div {
+      margin-right: 20px;
     }
   }
 
@@ -515,7 +581,7 @@ p {
 
   .comp-header-left-radius {
     border-top-left-radius: 4px !important;
-    border-width: 1px;
+    border-width: 1px 0px 1px 1px;
   }
 
   .comp-header-right-radius {
@@ -531,6 +597,10 @@ p {
   .comp-header-vertical-border {
     border-left-width: 1px;
     border-right-width: 1px;
+  }
+
+  .comp-header-vertical-border-left {
+    border-left-width: 1px;
   }
 
   .comp-ellipsis-cell {
@@ -683,6 +753,18 @@ p {
   order: 12;
   align-self: stretch;
   flex-grow: 0;
+}
+
+.comp-cell-parent-expanded {
+  border-bottom: none !important;
+}
+
+.comp-cell-parent-expanded:hover + tr{  
+  background-color: $gray-110;
+}
+
+.comp-cell-child-expanded {
+  border-top: none !important;
 }
 
 .comp-cell-left {
@@ -875,6 +957,12 @@ p {
   padding-top: 6px;
   padding-left: 6px;
   float: left;
+}
+
+.comp-table-row-hover-icons {
+  font-size: 16px;
+  color: $gray-800;
+  margin: 0px 5px 4px 5px;
 }
 
 .popover-body {

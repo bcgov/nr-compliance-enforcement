@@ -1,23 +1,19 @@
-import { FC } from "react";
-import ComplaintEllipsisPopover from "../complaint-ellipsis-popover";
+import { FC, useState } from "react";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import { formatDateTime } from "../../../../common/methods";
+import { formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
+import { ComplaintActionItems } from "./complaint-action-items";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   type: string;
   complaint: AllegationComplaint;
-  complaintClick: Function;
-  sortKey: string;
-  sortDirection: string;
 };
 
 export const AllegationComplaintListItem: FC<Props> = ({
   type,
   complaint,
-  complaintClick,
-  sortKey,
-  sortDirection,
 }) => {
   const {
     complaint_identifier: complaintIdentifier,
@@ -30,6 +26,8 @@ export const AllegationComplaintListItem: FC<Props> = ({
     incident_reported_utc_timestmp,
     cos_geo_org_unit,
     location_summary_text: locationSummary,
+    detail_text,
+    location_detailed_text,
     person_complaint_xref,
     complaint_status_code,
     update_utc_timestamp,
@@ -51,73 +49,106 @@ export const AllegationComplaintListItem: FC<Props> = ({
 
   const statusButtonClass =
     complaint_status_code.long_description === "Closed"
-      ? "btn btn-primary comp-status-closed-btn"
-      : "btn btn-primary comp-status-open-btn";
+      ? "badge comp-status-badge-closed"
+      : "badge comp-status-badge-open";
   const status = complaint_status_code.long_description;
 
   const updateDate = formatDateTime(update_utc_timestamp);
 
-  const assigned_ind =
-    person_complaint_xref.length > 0 && person_complaint_xref[0].active_ind;
-
   const violationCode =
     violation_code != null ? violation_code.long_description : "";
-  const inProgressButtonClass =
-    String(in_progress_ind) === "true"
-      ? "btn btn-primary comp-in-progress-btn"
-      : "btn btn-primary comp-in-progress-btn btn-hidden";
 
   const inProgressInd = String(in_progress_ind) === "true" ? "In Progress" : "";
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isRowHovered, setIsRowHovered] = useState(false);
+
+  const [isExpandedClass, setIsExpandedClass] = useState("");
+
+  const toggleExpand = () => {
+    if (isExpanded) { // remove the hover state on parent row if the row is collapsed
+      toggleHoverState(false);
+      setIsExpandedClass("");
+    } else
+    {
+      setIsExpandedClass("comp-cell-parent-expanded");
+    }
+    
+    setIsExpanded(!isExpanded);
+  };
+
+
+  const toggleHoverState = (state: boolean) => {
+    setIsRowHovered(state);
+  };
+
+  const truncatedComplaintDetailText = truncateString(detail_text, 185);
+  const truncatedLocationDetailedText = truncateString(location_detailed_text,220);
+
   return (
-    <tr>
+    <>
+    <tr key={id} className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}>
       <td
-        className="comp-cell-width-95 comp-header-left-border comp-nav-item-name-underline"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
         <Link to={`/complaint/ERS/${id}`} id={id}>
               {id}
         </Link>
       </td>
       <td
-        className="sortableHeader comp-cell-width-95 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-95 ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
         {incidentReportedDatetime}
       </td>
       <td
-        className="sortableHeader comp-cell-width-305"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-305 ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
         {violationCode}
       </td>
       <td
-        className="sortableHeader comp-cell-width-155 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`sortableHeader comp-cell-width-155 ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
-        <button
-          type="button"
-          className={inProgressButtonClass}
-          onClick={(event) => complaintClick(event, id)}
-        >
-          {inProgressInd}
-        </button>
+        {in_progress_ind && (
+        <div
+                      id="comp-details-status-text-id"
+                      className="comp-box-violation-in-progress"
+                    >
+                      <FontAwesomeIcon
+                        id="violation-in-progress-icon"
+                        className="comp-cell-violation-in-progress-icon"
+                        icon={faExclamationCircle}
+                      />
+                      {inProgressInd}
+                    </div>
+        )}
       </td>
       <td
-        className="sortableHeader comp-cell-width-165"
-        onClick={(event) => complaintClick(event, id)}
+        className={`sortableHeader comp-cell-width-165 ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
         {location}
       </td>
       <td
-        className="comp-cell-width-170 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-170 ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
         {locationSummary}
       </td>
       <td
-        className="sortableHeader comp-cell-width-130"
-        onClick={(event) => complaintClick(event, id)}
+        className={`sortableHeader comp-cell-width-75 ${isExpandedClass}`}
+        onClick={toggleExpand}
+      >
+        <div className={statusButtonClass}>
+          {status}
+        </div>
+      </td>
+      <td
+        className={`comp-cell-width-130 ${isExpandedClass}`}
+        onClick={toggleExpand}
       >
         <div
           data-initials-listview={initials}
@@ -126,27 +157,39 @@ export const AllegationComplaintListItem: FC<Props> = ({
         {displayName}
       </td>
       <td
-        className="sortableHeader comp-cell-width-75 comp-header-vertical-border"
-        onClick={(event) => complaintClick(event, id)}
+        className={`comp-cell-width-110 ${isExpandedClass}`}
+        
       >
-        <button type="button" className={statusButtonClass}>
-          {status}
-        </button>
+      {!isExpanded && (
+          <div className="comp-table-icons">
+            <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+            <span className={!isExpanded ? "comp-table-update-date" : ""}>{updateDate}</span>          
+          </div> 
+        )}
+        <span  className={!isExpanded ? "comp-table-update-date" : ""}>{updateDate}</span>          
       </td>
-      <td
-        className="sortableHeader comp-cell-width-110 comp-header-right-border"
-        onClick={(event) => complaintClick(event, id)}
-      >
-        {updateDate}
-      </td>
-      <ComplaintEllipsisPopover
-        complaint_identifier={id}
-        complaint_type={type}
-        complaint_zone={cos_geo_org_unit?.zone_code ?? ""}
-        assigned_ind={assigned_ind}
-        sortColumn={sortKey}
-        sortOrder={sortDirection}
-      />
     </tr>
+    {isExpanded && (
+        <tr onMouseEnter={() => toggleHoverState(true)} onMouseLeave={() => toggleHoverState(false)}>
+          <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
+          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded">
+            {truncatedComplaintDetailText}
+          </td>
+          <td onClick={toggleExpand} className="comp-cell-child-expanded"/>
+          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded" colSpan={2}>
+            {truncatedLocationDetailedText}
+          </td>
+          <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
+            <div>
+              <Link to={`/complaint/ERS/${id}`} id={id}>
+                <span className="badge comp-view-complaint-badge">View Details</span>
+              </Link>
+              <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+
   );
 };

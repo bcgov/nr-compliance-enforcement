@@ -65,7 +65,7 @@ export const formatDateTime = (input: string | undefined): string => {
     return "";
   }
 
-  return format(Date.parse(input), "yyyy-MM-dd HH:mm");
+  return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
 // Used to retrieve the coordinates in the decimal format
@@ -146,3 +146,11 @@ export const applyStatusClass = (state: string): string => {
       return "";
   }
 };
+
+export const truncateString = (str: string, maxLength: number): string=> {
+  if (str?.length > maxLength) {
+    return str.substring(0, maxLength) + '...'; // Adds an ellipsis to indicate truncation
+  } else {
+    return str;
+  }
+}

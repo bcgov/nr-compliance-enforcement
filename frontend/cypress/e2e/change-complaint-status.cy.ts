@@ -30,20 +30,17 @@ describe(
 
         cy.waitForSpinner();
 
-        // Find the number of closed complaints
-        // This number should change if a complaint is changed from closed to open
+        // Find the number of open complaints
+        // This number should change if a complaint is changed from open to closed
         cy.get("table tr").filter(':contains("Open")').as("openRows");
 
-        // Find the first closed complaint and click the ellipsis
+        // Click the complaint
         cy.get("@openRows")
+          .get("td")  
           .first()
-          .within(($tr) => {
-            // filters just that row
-            cy.get("td.comp-ellipsis-cell") // finds the buttons cell of that row
-              .click({ force: true });
-          });
-        cy.get(".popover").should("exist");
-        cy.get(".popover").get("div#update_status_link").click();
+          .click({force: true});
+
+        cy.get("svg.tt-status-icon").filter(':visible').click({force:true});
 
         cy.get("#complaint_status_dropdown").click();
 
@@ -62,16 +59,8 @@ describe(
         // This number should change if a complaint is changed from closed to open
         cy.get("table tr").filter(':contains("Closed")').as("closedRows");
 
-        // Find the first closed complaint and click the ellipsis
-        cy.get("@closedRows")
-          .first()
-          .within(($tr) => {
-            // filters just that row
-            cy.get("td.comp-ellipsis-cell") // finds the buttons cell of that row
-              .click({ force: true });
-          });
-        cy.get(".popover").should("exist");
-        cy.get(".popover").get("div#update_status_link").click();
+        cy.get("svg.tt-status-icon").filter(':visible').click({force:true});
+
 
         cy.get("#complaint_status_dropdown").click();
 
