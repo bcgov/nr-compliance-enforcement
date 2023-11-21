@@ -208,6 +208,9 @@ export const CreateComplaint: FC = () => {
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
       dispatch(setComplaint(null));
+      console.log("unmounting");
+      setLatitude("");
+      setLongitude("");
   }, []);
 
   function delay(ms: number) {
@@ -864,18 +867,37 @@ export const CreateComplaint: FC = () => {
     selectViolationCodeDropdown,
   ) as Option[];
 
+  const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
   const [geocodedComplaintCoordinatesState, setGeocodedComplaintCoordinatesState] = useState<
     Feature | null | undefined
   >(null);
-  const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
   useEffect(() => {
+    try
+    {
     console.log("hhhhhhhhhhhhhhhhhhhhhhhhhh: " + JSON.stringify(geocodedComplaintCoordinates));
     console.log("baconator1: " + JSON.stringify(geocodedComplaintCoordinatesState));
      setGeocodedComplaintCoordinatesState(geocodedComplaintCoordinates);
+     if(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude])
+     {
+      console.log("geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude].toString(): " + geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude].toString());
+      setLatitude(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude].toString());
+      console.log("useEffectLat: " + latitude);
+     }
+    if(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude])
+    {
+      console.log("geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude].toString(): " + geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude].toString());
+      setLongitude(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude].toString());
+      console.log("useEffectLong: " + longitude);
+    }
      console.log("baconator2: " + JSON.stringify(geocodedComplaintCoordinatesState));
      console.log("baconator3: " + JSON.stringify(geocodedComplaintCoordinates));
-  }, [dispatch, geocodedComplaintCoordinates]);
+    }
+    catch(e)
+    {
+      console.log("TRY CATCH ERROR: " + JSON.stringify(e));
+    }
+  }, [dispatch, geocodedComplaintCoordinates, latitude, longitude]);
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -904,9 +926,11 @@ export const CreateComplaint: FC = () => {
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
+      console.log("testing1");
       setLatitude(input);
       handleGeoPointChange(input, longitude);
     } else {
+      console.log("testing2");
       setLongitude(input);
       handleGeoPointChange(latitude, input);
     }
@@ -1001,10 +1025,13 @@ export const CreateComplaint: FC = () => {
     if((complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 || !complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude]) 
       && (complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0 || !complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude]))
     {
-      console.log("bacon: " + complaint.complaint_identifier.location_summary_text);
-      dispatch(getComplaintLocationByAddress(complaint.complaint_identifier.location_summary_text));
+      await dispatch(getComplaintLocationByAddress(complaint.complaint_identifier.location_summary_text));
       await delay(1000);
-      console.log("wtf: " + JSON.stringify(geocodedComplaintCoordinatesState));
+      console.log("latitude: " + latitude);
+      console.log("longitude: " + longitude);
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +latitude;
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +longitude;
+      console.log("complaint.complaint_identifier.location_geometry_point.coordinates22222222222: " + JSON.stringify(complaint.complaint_identifier.location_geometry_point.coordinates));
     }
 
     const noError = await setErrors(complaint);
@@ -1016,21 +1043,8 @@ export const CreateComplaint: FC = () => {
       complaint.complaint_identifier.create_user_id =
         complaint.complaint_identifier.update_user_id = userid;
       complaint.complaint_identifier.location_geometry_point.type = "Point";
-      console.log(complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0);
-      console.log(!complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude]);
-      console.log(complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0);
-      console.log(!complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude]);
-      console.log("baconator: " + JSON.stringify(geocodedComplaintCoordinatesState));
-      if((complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 || !complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude]) 
-      && (complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0 || !complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude])
-      && geocodedComplaintCoordinatesState)
-      {
-        await dispatch(getComplaintLocationByAddress(complaint.complaint_identifier.location_summary_text));
-        console.log("complaint.complaint_identifier.location_geometry_point.coordinates BEFORE: " + JSON.stringify(complaint.complaint_identifier.location_geometry_point.coordinates));
-        complaint.complaint_identifier.location_geometry_point.coordinates = geocodedComplaintCoordinatesState.features[0].geometry.coordinates;
-        console.log("complaint.complaint_identifier.location_geometry_point.coordinates AFTER: " + JSON.stringify(complaint.complaint_identifier.location_geometry_point.coordinates));
-      }
-      else if (
+      console.log("complaint.complaint_identifier.location_geometry_point.coordinates4444444: " + JSON.stringify(complaint.complaint_identifier.location_geometry_point.coordinates));
+      if (
         complaint.complaint_identifier.location_geometry_point.coordinates
           .length === 0
       ) {
