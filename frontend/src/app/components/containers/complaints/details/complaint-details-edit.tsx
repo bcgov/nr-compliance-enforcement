@@ -1036,6 +1036,7 @@ export const ComplaintDetailsEdit: FC = () => {
           hideMarker={
             !latitude || !longitude || +latitude === 0 || +longitude === 0
           }
+          editComponent={true}
         />
       )}
       {readOnly && <CallerInformation />}
@@ -1447,6 +1448,7 @@ export const ComplaintDetailsEdit: FC = () => {
             hideMarker={
               !latitude || !longitude || +latitude === 0 || +longitude === 0
             }
+            editComponent={true}
           />
           {/* edit caller info block */}
           <div className="comp-complaint-details-block">

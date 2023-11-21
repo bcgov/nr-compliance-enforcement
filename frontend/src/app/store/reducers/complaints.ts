@@ -319,9 +319,10 @@ export const getComplaintLocationByAddress =
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`,
       );
       const response = await get<Feature>(dispatch, parameters);
+      console.log("setGeocodedComplaintCoordinates(response)" + JSON.stringify(response));
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
-      //-- handle the error message
+      console.log("ERROR1: " + JSON.stringify(error));
     }
   };
 
@@ -331,7 +332,6 @@ export const getGeocodedComplaintCoordinates =
   async (dispatch) => {
     try {
       let parameters;
-
       if (address && area) {
         parameters = generateApiParameters(
           `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`,
@@ -344,7 +344,7 @@ export const getGeocodedComplaintCoordinates =
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
-      //-- handle the error message
+      console.log("ERROR2: " + JSON.stringify(error));
     }
   };
 
