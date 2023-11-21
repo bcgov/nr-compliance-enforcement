@@ -7,6 +7,20 @@ import { Complaint } from "../complaint/entities/complaint.entity";
 // import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import * as Complaints from "src/types/models/complaints";
 import { Delegate } from "src/types/models/people/delegate";
+import { InjectMapper } from "@automapper/nestjs";
+import {
+  Mapper,
+  createMap,
+  createMapper,
+  forMember,
+  mapFrom,
+} from "@automapper/core";
+import { pojos } from "@automapper/pojos";
+import { createComplaintMetaData } from "src/middleware/maps/automapper-meta-data";
+import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { OrganizationCodeTable } from "src/types/models/code-tables";
+import { applyComplaintMap } from "src/middleware/maps/automapper-maps";
+import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 
 @Injectable()
 export class ComplaintsService {
@@ -14,8 +28,17 @@ export class ComplaintsService {
 
   @InjectRepository(Complaint)
   private _complaintsRepository: Repository<Complaint>;
+
+  private mapper: Mapper;
   //   @InjectRepository(AllegationComplaint)
   //   private _allegationsRepository: Repository<AllegationComplaint>;
+
+  constructor(@InjectMapper() mapper) {
+    this.mapper = mapper;
+
+    createComplaintMetaData();
+    applyComplaintMap(mapper);
+  }
 
   private _generateQueryBuilder = (
     type: COMPLAINT_TYPE
@@ -68,6 +91,12 @@ export class ComplaintsService {
     const builder = this._generateQueryBuilder(complaintType);
     const items = await builder.getMany();
 
+    //  createComplaintMetaData();
+
+    //  const mapper = createMapper({ strategyInitializer: pojos() });
+
+    //  applyComplaintMap(mapper);
+
     const results = items.map((item) => {
       const {
         complaint_identifier: id,
@@ -114,15 +143,22 @@ export class ComplaintsService {
       };
 
       if (organization) {
-        const {
-          area_code: area,
-          zone_code: zone,
-          region_code: region,
-        } = organization;
-        record = { ...record, organization: { area, zone, region } };
+        const dto = this.mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
+          organization,
+          "CosGeoOrgUnit",
+          "OrganizationCodeTable"
+        );
+
+        record = { ...record, organization: dto };
       }
 
       if (rawDelegates && rawDelegates.length !== 0) {
+        const dto = this.mapper.mapArray<PersonComplaintXref, Delegate>(
+          rawDelegates,
+          "PersonComplaintXref",
+          "Delegate"
+        );
+        const test = 0;
         const delegates = rawDelegates.map(
           ({
             personComplaintXrefGuid: xrefId,
@@ -149,7 +185,7 @@ export class ComplaintsService {
                 middleName1,
                 middleName2,
               },
-            } as Delegate
+            } as Delegate;
           }
         );
 
@@ -161,4 +197,20 @@ export class ComplaintsService {
 
     return results;
   };
+}
+
+// export interface User {
+//   firstName: string;
+//   lastName: string;
+// }
+
+export class User {
+  firstName: string;
+  lastName: string;
+}
+
+export interface UserDto {
+  firstName: string;
+  lastName: string;
+  fullName: string;
 }

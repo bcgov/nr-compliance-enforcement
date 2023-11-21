@@ -40,6 +40,11 @@
   },
   "homepage": "https://github.com/bcgov/nr-compliance-enforcement#readme",
   "dependencies": {
+    "@automapper/classes": "^8.7.7",
+    "@automapper/core": "^8.7.7",
+    "@automapper/nestjs": "^8.7.7",
+    "@automapper/pojos": "^8.7.7",
+    "@automapper/types": "^6.3.1",
     "@nestjs/axios": "^3.0.0",
     "@nestjs/cli": "^9.3.0",
     "@nestjs/common": "^9.2.1",
