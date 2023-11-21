@@ -1,9 +1,9 @@
 import { UUID } from "crypto";
-import { Person } from "./person";
+import { PersonDto } from "./person";
 
-export interface Delegate { 
+export interface DelegateDto { 
    xrefId: UUID
    isActive: boolean
    type: string // -- this can be an ASSIGNE, SUSPECT, etc
-   person: Person
+   person: PersonDto
 }

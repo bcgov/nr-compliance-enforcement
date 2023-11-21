@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
-import { Complaint } from "./complaint";
+import { ComplaintDto } from "./complaint";
 
-export interface AllegationComplaint extends Complaint { 
+export interface AllegationComplaintDto extends ComplaintDto { 
    ersId: UUID
    violation: string
    isInProgress: boolean

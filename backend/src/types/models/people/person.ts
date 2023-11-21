@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 
-export interface Person {
+export interface PersonDto {
   id: UUID;
   firstName: string;
   lastName: string;

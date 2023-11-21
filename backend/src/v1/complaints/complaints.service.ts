@@ -4,23 +4,16 @@ import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { COMPLAINT_TYPE } from "src/types/complaints/complaint-type";
 import { Complaint } from "../complaint/entities/complaint.entity";
-// import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
-import * as Complaints from "src/types/models/complaints";
-import { Delegate } from "src/types/models/people/delegate";
+
+import { DelegateDto } from "src/types/models/people/delegate";
 import { InjectMapper } from "@automapper/nestjs";
-import {
-  Mapper,
-  createMap,
-  createMapper,
-  forMember,
-  mapFrom,
-} from "@automapper/core";
-import { pojos } from "@automapper/pojos";
+import { Mapper } from "@automapper/core";
 import { createComplaintMetaData } from "src/middleware/maps/automapper-meta-data";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { OrganizationCodeTable } from "src/types/models/code-tables";
 import { applyComplaintMap } from "src/middleware/maps/automapper-maps";
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
+import { ComplaintDto } from "src/types/models/complaints/complaint";
 
 @Injectable()
 export class ComplaintsService {
@@ -87,130 +80,16 @@ export class ComplaintsService {
 
   findAllByType = async (
     complaintType: COMPLAINT_TYPE
-  ): Promise<Array<Complaints.Complaint>> => {
+  ): Promise<Array<ComplaintDto>> => {
     const builder = this._generateQueryBuilder(complaintType);
-    const items = await builder.getMany();
+    const results = await builder.getMany();
 
-    //  createComplaintMetaData();
+    const items = this.mapper.mapArray<Complaint, ComplaintDto>(
+      results,
+      "Complaint",
+      "ComplaintDto"
+    );
 
-    //  const mapper = createMapper({ strategyInitializer: pojos() });
-
-    //  applyComplaintMap(mapper);
-
-    const results = items.map((item) => {
-      const {
-        complaint_identifier: id,
-        detail_text: details,
-        caller_name: name,
-        caller_address: address,
-        caller_email: email,
-        caller_phone_1: phone1,
-        caller_phone_2: phone2,
-        caller_phone_3: phone3,
-        location_geometry_point: { type: locationType, coordinates },
-        location_summary_text: locationSummary,
-        location_detailed_text: locationDetail,
-        complaint_status_code: { complaint_status_code: status },
-        referred_by_agency_code: referredBy,
-        owned_by_agency_code: ownedBy,
-        referred_by_agency_other_text: referredByAgencyOther,
-        incident_reported_utc_timestmp: incidentDateTime,
-        incident_utc_datetime: reportedOn,
-        cos_geo_org_unit: organization,
-        person_complaint_xref: rawDelegates,
-      } = item;
-
-      let record: Complaints.Complaint = {
-        id,
-        details,
-        name,
-        address,
-        email,
-        phone1,
-        phone2,
-        phone3,
-        location: { type: locationType, coordinates },
-        locationSummary,
-        locationDetail,
-        status,
-        referredBy: referredBy ? referredBy.agency_code : "",
-        ownedBy: ownedBy ? ownedBy.agency_code : "",
-        referredByAgencyOther,
-        reportedOn,
-        incidentDateTime,
-        organization: { area: "", region: "", zone: "" },
-        delegates: [],
-      };
-
-      if (organization) {
-        const dto = this.mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
-          organization,
-          "CosGeoOrgUnit",
-          "OrganizationCodeTable"
-        );
-
-        record = { ...record, organization: dto };
-      }
-
-      if (rawDelegates && rawDelegates.length !== 0) {
-        const dto = this.mapper.mapArray<PersonComplaintXref, Delegate>(
-          rawDelegates,
-          "PersonComplaintXref",
-          "Delegate"
-        );
-        const test = 0;
-        const delegates = rawDelegates.map(
-          ({
-            personComplaintXrefGuid: xrefId,
-            active_ind: isActive,
-            person_complaint_xref_code: {
-              person_complaint_xref_code: delegateType,
-            },
-            person_guid: {
-              person_guid: personId,
-              first_name: firstName,
-              last_name: lastName,
-              middle_name_1: middleName1,
-              middle_name_2: middleName2,
-            },
-          }) => {
-            return {
-              xrefId,
-              isActive,
-              type: delegateType,
-              person: {
-                id: personId,
-                firstName,
-                lastName,
-                middleName1,
-                middleName2,
-              },
-            } as Delegate;
-          }
-        );
-
-        record = { ...record, delegates };
-      }
-
-      return record;
-    });
-
-    return results;
+    return items;
   };
-}
-
-// export interface User {
-//   firstName: string;
-//   lastName: string;
-// }
-
-export class User {
-  firstName: string;
-  lastName: string;
-}
-
-export interface UserDto {
-  firstName: string;
-  lastName: string;
-  fullName: string;
 }

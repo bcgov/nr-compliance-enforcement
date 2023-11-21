@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
-import { Complaint } from "./complaint";
+import { ComplaintDto } from "./complaint";
 
-export interface WildlifeComplaint extends Complaint { 
+export interface WildlifeComplaintDto extends ComplaintDto { 
    hwcrId: UUID
    species: string
    natureOfComplaint: string

@@ -1,7 +1,6 @@
-import { ContactType } from "../general/contact-type";
-import { Delegate } from "../people/delegate";
+import { DelegateDto } from "../people/delegate";
 
-export interface Complaint {
+export interface ComplaintDto {
   id: string;
   details: string;
   name: string;
@@ -10,7 +9,7 @@ export interface Complaint {
   phone1: string;
   phone2: string;
   phone3: string;
-  // contacts: Array<ContactType> //-- for future use
+  // contacts: Array<ContactTypeDto> //-- for future use
   location: { type: string; coordinates: Array<number> };
   locationSummary: string;
   locationDetail: string;
@@ -25,5 +24,5 @@ export interface Complaint {
     zone: string;
     region: string;
   };
-  delegates: Array<Delegate>;
+  delegates: Array<DelegateDto>;
 }
