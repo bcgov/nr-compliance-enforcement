@@ -21,11 +21,14 @@ export class BcGeoCoderService {
       this.logger.debug(
         `Calling BC Geocoder with address ${addressString} and community ${localityName}`
       );
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
+      console.log("test1");
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90&localityName=${localityName}&provinceCode=BC`;
     } else if (localityName) {
+      console.log("test2");
       this.logger.debug(`Calling BC Geocoder with community ${localityName}`);
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=false&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
     } else if (addressString && addressString.length > 0) {
+      console.log("test3");
       this.logger.debug(`Calling BC Geocoder with address ${addressString}`);
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=1&provinceCode=BC`;
     }
@@ -50,6 +53,7 @@ export class BcGeoCoderService {
           })
         )
       );
+      console.log("geocoderData: " + JSON.stringify(data));
       return data;
     }
   }

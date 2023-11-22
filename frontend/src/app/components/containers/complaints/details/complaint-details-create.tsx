@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
@@ -36,7 +36,12 @@ import {
   createAllegationComplaint,
   createWildlifeComplaint,
   getAllegationComplaintByComplaintIdentifierSetUpdate,
+  getComplaintLocationByAddress,
+  getGeocodedComplaintCoordinates,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
+  selectGeocodedComplaintCoordinates,
+  setComplaint,
+  setGeocodedComplaintCoordinates,
 } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { Complaint } from "../../../../types/complaints/complaint";
@@ -44,6 +49,8 @@ import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { ComplaintLocation } from "./complaint-location";
+import { Feature } from "../../../../types/maps/bcGeocoderType";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -74,7 +81,7 @@ export const CreateComplaint: FC = () => {
       },
       location_geometry_point: {
         type: "",
-        coordinates: [],
+        coordinates: [0,0],
       },
       incident_utc_datetime: null,
       incident_reported_utc_timestmp: "",
@@ -195,11 +202,25 @@ export const CreateComplaint: FC = () => {
     "comp-complaint-error display-none",
   );
 
+  const [latitude, setLatitude] = useState<string>("");
+  const [longitude, setLongitude] = useState<string>("");
+
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+      dispatch(setComplaint(null));
+      console.log("unmounting");
+      setLatitude("");
+      setLongitude("");
+  }, []);
+
+  function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
   
   const newEmptyComplaint = (COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
 
   const [createComplaint, setCreateComplaint] = useState<
-    HwcrComplaint | AllegationComplaint | null | undefined
+    HwcrComplaint | AllegationComplaint
   >(newEmptyComplaint);
 
   function noErrors() {
@@ -590,7 +611,7 @@ export const CreateComplaint: FC = () => {
     }
   }
 
-  const handleGeoPointChange = (latitude: string, longitude: string) => {
+  const handleGeoPointChange = async (latitude: string, longitude: string) => {
     //-- clear errors
     setGeoPointXMsg("");
     setGeoPointYMsg("");
@@ -624,6 +645,9 @@ export const CreateComplaint: FC = () => {
     }
 
     //-- update coordinates
+    console.log("latituderrrrrrrrrrrrrrrrrrrrrrr: " + JSON.stringify(latitude));
+    console.log("longitudesssssssssssssssssssssss: " + JSON.stringify(longitude));
+
     if (
       latitude &&
       longitude &&
@@ -843,13 +867,42 @@ export const CreateComplaint: FC = () => {
     selectViolationCodeDropdown,
   ) as Option[];
 
+  const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
+  const [geocodedComplaintCoordinatesState, setGeocodedComplaintCoordinatesState] = useState<
+    Feature | null | undefined
+  >(null);
+
+  useEffect(() => {
+    try
+    {
+    console.log("hhhhhhhhhhhhhhhhhhhhhhhhhh: " + JSON.stringify(geocodedComplaintCoordinates));
+    console.log("baconator1: " + JSON.stringify(geocodedComplaintCoordinatesState));
+     setGeocodedComplaintCoordinatesState(geocodedComplaintCoordinates);
+     if(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude])
+     {
+      console.log("geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude].toString(): " + geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude].toString());
+      setLatitude(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Latitude].toString());
+      console.log("useEffectLat: " + latitude);
+     }
+    if(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude])
+    {
+      console.log("geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude].toString(): " + geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude].toString());
+      setLongitude(geocodedComplaintCoordinates?.features[0].geometry.coordinates[Coordinates.Longitude].toString());
+      console.log("useEffectLong: " + longitude);
+    }
+     console.log("baconator2: " + JSON.stringify(geocodedComplaintCoordinatesState));
+     console.log("baconator3: " + JSON.stringify(geocodedComplaintCoordinates));
+    }
+    catch(e)
+    {
+      console.log("TRY CATCH ERROR: " + JSON.stringify(e));
+    }
+  }, [dispatch, geocodedComplaintCoordinates, latitude, longitude]);
+
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
   ];
-
-  const [latitude, setLatitude] = useState<string>("");
-  const [longitude, setLongitude] = useState<string>("");
 
   function handleIncidentDateTimeChange(date: Date) {
       setSelectedIncidentDateTime(date);
@@ -873,9 +926,11 @@ export const CreateComplaint: FC = () => {
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
+      console.log("testing1");
       setLatitude(input);
       handleGeoPointChange(input, longitude);
     } else {
+      console.log("testing2");
       setLongitude(input);
       handleGeoPointChange(latitude, input);
     }
@@ -967,6 +1022,18 @@ export const CreateComplaint: FC = () => {
 
     complaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
 
+    if((complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 || !complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude]) 
+      && (complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0 || !complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude]))
+    {
+      await dispatch(getComplaintLocationByAddress(complaint.complaint_identifier.location_summary_text));
+      await delay(1000);
+      console.log("latitude: " + latitude);
+      console.log("longitude: " + longitude);
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = +latitude;
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = +longitude;
+      console.log("complaint.complaint_identifier.location_geometry_point.coordinates22222222222: " + JSON.stringify(complaint.complaint_identifier.location_geometry_point.coordinates));
+    }
+
     const noError = await setErrors(complaint);
 
     if (noError && noErrors()) {
@@ -976,6 +1043,7 @@ export const CreateComplaint: FC = () => {
       complaint.complaint_identifier.create_user_id =
         complaint.complaint_identifier.update_user_id = userid;
       complaint.complaint_identifier.location_geometry_point.type = "Point";
+      console.log("complaint.complaint_identifier.location_geometry_point.coordinates4444444: " + JSON.stringify(complaint.complaint_identifier.location_geometry_point.coordinates));
       if (
         complaint.complaint_identifier.location_geometry_point.coordinates
           .length === 0
@@ -984,6 +1052,7 @@ export const CreateComplaint: FC = () => {
           0, 0,
         ];
       }
+      setCreateComplaint(complaint);
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         const complaintId = await dispatch(
           createWildlifeComplaint(complaint as HwcrComplaint),
@@ -1386,12 +1455,17 @@ export const CreateComplaint: FC = () => {
           </div>
         </div>
       </div>
-      {/*
+      {
   <ComplaintLocation
-    complaintType={complaintType}
-    draggable={true}
-    onMarkerMove={handleMarkerMove}
-        />*/}
+          coordinates={{ lat: +latitude, lng: +longitude }}
+          complaintType={complaintType}
+          draggable={false}
+          hideMarker={
+            !latitude || !longitude || +latitude === 0 || +longitude === 0
+          }
+          editComponent={false}
+        />
+        }
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>
