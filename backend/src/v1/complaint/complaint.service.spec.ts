@@ -1,30 +1,42 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ComplaintService } from './complaint.service';
-import { DataSource } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Complaint } from '../complaint/entities/complaint.entity';
-import { dataSourceMockFactory } from '../../../test/mocks/datasource';
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
 
-describe('ComplaintService', () => {
-  let service: ComplaintService;
+import { ComplaintService } from "./complaint.service";
+import { Complaint } from "../complaint/entities/complaint.entity";
+import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ComplaintService,
-        {
-          provide: getRepositoryToken(Complaint),
-          useValue: {},
-        },
-        {
-          provide: DataSource,
-          useFactory: dataSourceMockFactory
-        }],
-    }).compile();
+describe("Testing: Complaint Service", () => {
+   let service: ComplaintService;
 
-    service = module.get<ComplaintService>(ComplaintService);
-  });
+   beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ComplaintService,
+          {
+            provide: getRepositoryToken(Complaint),
+            useFactory: MockComplaintsRepository,
+          },
+   
+        ],
+      }).compile();
+  
+      service = module.get<ComplaintService>(ComplaintService);
+    });
+  
+    it("should be defined", () => {
+      expect(service).toBeDefined();
+    });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+    it("should return collection of Complaints", async () => { 
+      //-- arrange
+      const _type = "HWCR";
+
+      //-- act
+      const results = await service.findAllByType(_type);
+
+      //-- assert
+      expect(results).not.toBe(null);
+      expect(results.length).not.toBe(0);
+      expect(results.length).toBe(8);
+    })
 });

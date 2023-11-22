@@ -7,10 +7,25 @@ import { Person } from "src/v1/person/entities/person.entity";
 import { Complaint } from "src/v1/complaint/entities/complaint.entity";
 
 //-- models
-import { OrganizationCodeTable } from "src/types/models/code-tables";
+import {
+  Attractant,
+  NatureOfComplaint,
+  OrganizationCodeTable,
+  Species,
+  Violation,
+} from "src/types/models/code-tables";
 import { DelegateDto } from "src/types/models/people/delegate";
 import { ComplaintDto } from "src/types/models/complaints/complaint";
-
+import { HwcrComplaint } from "src/v1/hwcr_complaint/entities/hwcr_complaint.entity";
+import { AttractantCode } from "src/v1/attractant_code/entities/attractant_code.entity";
+import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
+import { SpeciesCode } from "src/v1/species_code/entities/species_code.entity";
+import { HwcrComplaintNatureCode } from "src/v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
+import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
+import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
+import { ViolationCode } from "src/v1/violation_code/entities/violation_code.entity";
+import { AllegationComplaint } from "src/v1/allegation_complaint/entities/allegation_complaint.entity";
+import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
 
 const createOrganizationMetaData = () => {
   PojosMetadataMap.create<CosGeoOrgUnit>("CosGeoOrgUnit", {
@@ -36,32 +51,31 @@ const createOrganizationMetaData = () => {
   });
 };
 
-const createDelegateMetadata = () => { 
+const createDelegateMetadata = () => {
   PojosMetadataMap.create<Person>("Person", {
     person_guid: Object,
     first_name: String,
     middle_name_1: String,
     middle_name_2: String,
-    last_name: String
+    last_name: String,
   });
 
   PojosMetadataMap.create<PersonComplaintXref>("PersonComplaintXref", {
     personComplaintXrefGuid: String,
     active_ind: Boolean,
-    person_guid: Person
+    person_guid: Person,
   });
 
   PojosMetadataMap.create<DelegateDto>("Delegate", {
     xrefId: String,
     isActive: Boolean,
-    type: String ,
-    person: Object
+    type: String,
+    person: Object,
   });
-
-}
+};
 
 export const createComplaintMetaData = () => {
-  createDelegateMetadata()
+  createDelegateMetadata();
   createOrganizationMetaData();
 
   PojosMetadataMap.create<Complaint>("Complaint", {
@@ -107,7 +121,135 @@ export const createComplaintMetaData = () => {
     organization: Object,
     delegates: Array<DelegateDto>,
   });
-
 };
 
+export const createSpeciesCodeMetaData = () => {
+  PojosMetadataMap.create<SpeciesCode>("SpeciesCode", {
+    species_code: String,
+    short_description: String,
+    long_description: String,
+    display_order: Number,
+    active_ind: Boolean,
+    legacy_code: String,
+  });
 
+  PojosMetadataMap.create<Species>("SpeciesDto", {
+    species: String,
+    legacy: String,
+    shortDescription: String,
+    longDescription: String,
+    displayOrder: Number,
+    isActive: Boolean,
+  });
+};
+
+export const createNatureOfComplaintMetaData = () => {
+  PojosMetadataMap.create<HwcrComplaintNatureCode>("NatureOfComplaintCode", {
+    hwcr_complaint_nature_code: String,
+    short_description: String,
+    long_description: String,
+    display_order: Number,
+    active_ind: Boolean,
+  });
+
+  PojosMetadataMap.create<NatureOfComplaint>("NatureOfComplaintDto", {
+    natureOfComplaint: String,
+    shortDescription: String,
+    longDescription: String,
+    displayOrder: Number,
+    isActive: Boolean,
+  });
+};
+
+export const createAttractantCodeMetaData = () => {
+  PojosMetadataMap.create<AttractantCode>("AttractantCode", {
+    attractant_code: String,
+    short_description: String,
+    long_description: String,
+    display_order: Number,
+    active_ind: Boolean,
+  });
+
+  PojosMetadataMap.create<Attractant>("AttractantDto", {
+    attractant: String,
+    shortDescription: String,
+    longDescription: String,
+    displayOrder: Number,
+    isActive: Boolean,
+  });
+
+  PojosMetadataMap.create<AttractantHwcrXref>("AttractantXref", {
+    hwcr_complaint_guid: String,
+    attractant_code: String,
+    active_ind: Boolean,
+  });
+
+  PojosMetadataMap.create<AttractantXrefDto>("AttractantXrefDto", {
+    xrefId: String,
+    attractant: String,
+    isActive: Boolean,
+  });
+};
+
+export const createViolationCodeMetadata = () => { 
+  PojosMetadataMap.create<ViolationCode>("VioltionCode", {
+    violation_code: String,
+    short_description: String,
+    long_description: String,
+    display_order: Number,
+    active_ind: Boolean,
+  });
+
+  PojosMetadataMap.create<Violation>("ViolationCodeDto", {
+    violation: String,
+    shortDescription: String,
+    longDescription: String,
+    displayOrder: Number,
+    isActive: Boolean,
+  });
+}
+
+export const createWildlifeComplaintMetadata = () => {
+  createComplaintMetaData();
+  createSpeciesCodeMetaData();
+  createNatureOfComplaintMetaData();
+  createAttractantCodeMetaData();
+
+  PojosMetadataMap.create<HwcrComplaint>("WildlifeComplaint", {
+    complaint_identifier: Complaint,
+    species_code: SpeciesCode,
+    hwcr_complaint_nature_code: HwcrComplaintNatureCode,
+    other_attractants_text: String,
+    attractant_hwcr_xref: Array<AttractantCode>,
+  });
+
+  PojosMetadataMap.create<WildlifeComplaintDto>("WildlifeComplaintDto", {
+    hwcrId: Complaint,
+    species: String,
+    natureOfComplaint: String,
+    otherAttractants: String,
+    attractants: Array<String>,
+  });
+};
+
+export const createAllegationComplaintMetaData = () => { 
+  createComplaintMetaData();
+  createViolationCodeMetadata();
+
+  PojosMetadataMap.create<AllegationComplaint>("AllegationComplaint", {
+    complaint_identifier: Complaint,
+    violation_code: ViolationCode,
+    in_progress_ind: Boolean,
+    observed_ind: Boolean,
+    allegation_complaint_guid: String,
+    suspect_witnesss_dtl_text: String
+  });
+
+  PojosMetadataMap.create<AllegationComplaintDto>("AllegationComplaintDto", {
+    ersId: Complaint,
+    violation: String,
+    isInProgress: Boolean,
+    wasObserved: Boolean,
+    violationDetails: String
+  });
+}

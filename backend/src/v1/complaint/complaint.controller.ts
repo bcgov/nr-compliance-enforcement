@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UseGuards } from '@nestjs/common';
 import { ComplaintService } from './complaint.service';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
@@ -6,6 +6,9 @@ import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { COMPLAINT_TYPE } from 'src/types/complaints/complaint-type';
+import { WildlifeComplaintDto } from 'src/types/models/complaints/wildlife-complaint';
+import { AllegationComplaintDto } from 'src/types/models/complaints/allegation-complaint';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -13,7 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
   path: 'complaint',
   version: '1'})
 export class ComplaintController {
-  constructor(private readonly complaintService: ComplaintService) {}
+  constructor(private readonly service: ComplaintService) {}
 
   create(createComplaintDto: CreateComplaintDto) {
     return 'This action adds a new geoOrgUnitStructure';
@@ -22,22 +25,31 @@ export class ComplaintController {
   @Get()
   @Roles(Role.COS_OFFICER)
   findAll() {
-    return this.complaintService.findAll();
+    return this.service.findAll();
   }
 
-  @Get(':id')
-  @Roles(Role.COS_OFFICER)
-  findOne(@Param('id') id: string) {
-    return this.complaintService.findOne(id);
-  }
+  // @Get(':id')
+  // @Roles(Role.COS_OFFICER)
+  // findOne(@Param('id') id: string) {
+  //   return this.service.findOne(id);
+  // }
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
   update(@Param('id') id: string, @Body() updateComplaintDto: UpdateComplaintDto) {
-    return this.complaintService.update(id, updateComplaintDto);
+    return this.service.update(id, updateComplaintDto);
   }
 
   remove(id: number) {
     return `This action removes a #${id} geoOrgUnitStructure`;
+  }
+
+  //-- refactors starts here
+  @Get(":complaintType")
+  @Roles(Role.COS_OFFICER)
+  async findAllByType(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE
+  ): Promise<Array<WildlifeComplaintDto | AllegationComplaintDto>> {
+    return await this.service.findAllByType(complaintType);
   }
 }

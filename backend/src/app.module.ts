@@ -31,7 +31,6 @@ import { BcGeoCoderModule } from "./external_api/bc_geo_coder/bc_geo_coder.modul
 import { ConfigurationModule } from "./v1/configuration/configuration.module";
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
 import { CodeTableModule } from "./v1/code-table/code-table.module";
-import { ComplaintsModule } from "./v1/complaints/complaints.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -82,7 +81,6 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     ConfigurationModule,
     ComplaintTypeCodeModule,
     CodeTableModule,
-    ComplaintsModule,
     AutomapperModule.forRoot({
       strategyInitializer: pojos(),
     }),
