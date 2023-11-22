@@ -228,7 +228,7 @@ export const createWildlifeComplaintMetadata = () => {
     species: String,
     natureOfComplaint: String,
     otherAttractants: String,
-    attractants: Array<String>,
+    attractants: Array<string>,
   });
 };
 
