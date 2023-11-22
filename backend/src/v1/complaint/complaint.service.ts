@@ -8,8 +8,6 @@ import { createWildlifeComplaintMetadata } from "../../middleware/maps/automappe
 
 import {
   applyAllegationComplaintMap,
-  applyComplaintMap,
-  applyOrganizationMap,
   applyWildlifeComplaintMap,
 } from "../../middleware/maps/automapper-maps";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
@@ -40,9 +38,6 @@ export class ComplaintService {
   constructor(@InjectMapper() mapper) {
     this.mapper = mapper;
 
-    createWildlifeComplaintMetadata();
-    applyOrganizationMap(mapper);
-    applyComplaintMap(mapper);
     applyWildlifeComplaintMap(mapper);
     applyAllegationComplaintMap(mapper);
   }
