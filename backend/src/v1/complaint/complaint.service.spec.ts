@@ -4,10 +4,14 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { ComplaintService } from "./complaint.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
-import { createWildlifeComplaintMetadata } from "src/middleware/maps/automapper-meta-data";
+import { createWildlifeComplaintMetadata } from "../../middleware/maps/automapper-meta-data";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { Mapper, createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
+import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
+import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { MockAllegationComplaintRepository  } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
 
 describe("Testing: Complaint Service", () => {
    let service: ComplaintService;
@@ -31,6 +35,14 @@ describe("Testing: Complaint Service", () => {
             provide: getRepositoryToken(Complaint),
             useFactory: MockComplaintsRepository,
           },
+          {
+            provide: getRepositoryToken(AllegationComplaint),
+            useFactory: MockAllegationComplaintRepository
+          },
+          {
+            provide: getRepositoryToken(HwcrComplaint),
+            useFactory: MockWildlifeConflictComplaintRepository
+          },
         ],
       }).compile();
   
@@ -41,7 +53,7 @@ describe("Testing: Complaint Service", () => {
       expect(service).toBeDefined();
     });
 
-    it("should return collection of Complaints", async () => { 
+    it("should return collection of HWCR Complaints", async () => { 
       //-- arrange
       const _type = "HWCR";
 
@@ -51,6 +63,20 @@ describe("Testing: Complaint Service", () => {
       //-- assert
       expect(results).not.toBe(null);
       expect(results.length).not.toBe(0);
-      expect(results.length).toBe(8);
+      expect(results.length).toBe(5);
+    })
+
+    it("should return collection of ERS Complaints", async () => { 
+      //-- arrange
+      const _type = "ERS";
+
+      //-- act
+      const results = await service.findAllByType(_type);
+
+      //-- assert
+      expect(results).not.toBe(null);
+      expect(results.length).not.toBe(0);
+      expect(results.length).toBe(5);
     })
 });
+

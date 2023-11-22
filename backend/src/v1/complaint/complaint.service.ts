@@ -304,8 +304,6 @@ export class ComplaintService {
     try {
       switch (complaintType) {
         case "ERS":
-          let test = 0;
-          console.log(results[10]);
           return this.mapper.mapArray<
             AllegationComplaint,
             AllegationComplaintDto

@@ -5,14 +5,18 @@ import { ComplaintService } from './complaint.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Complaint } from './entities/complaint.entity';
 import { INestApplication } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwtauth.guard';
-import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
-import { authGuardMock } from 'test/mocks/authGuardMock';
-import { roleGuardMock } from 'test/mocks/roleGuardMock';
+import { JwtAuthGuard } from '../../auth/jwtauth.guard';
+import { JwtRoleGuard } from '../../auth/jwtrole.guard';
+import { authGuardMock } from '../../../test/mocks/authGuardMock';
+import { roleGuardMock } from '../../../test/mocks/roleGuardMock';
 import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
 import { getMapperToken } from '@automapper/nestjs';
 import { createMapper } from '@automapper/core';
 import { pojos } from "@automapper/pojos";
+import { AllegationComplaint } from '../allegation_complaint/entities/allegation_complaint.entity';
+import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity';
+import { MockAllegationComplaintRepository } from '../../../test/mocks/mock-allegation-complaint-repository';
+import { MockWildlifeConflictComplaintRepository } from '../../../test/mocks/mock-wildlife-conflict-complaint-repository';
 
 describe("Testing: Complaint Controller", () => {
   let app: INestApplication;
@@ -32,6 +36,14 @@ describe("Testing: Complaint Controller", () => {
           useValue: createMapper({
             strategyInitializer: pojos(),
           }),
+        },
+        {
+          provide: getRepositoryToken(AllegationComplaint),
+          useFactory: MockAllegationComplaintRepository
+        },
+        {
+          provide: getRepositoryToken(HwcrComplaint),
+          useFactory: MockWildlifeConflictComplaintRepository
         },
       ],
     })

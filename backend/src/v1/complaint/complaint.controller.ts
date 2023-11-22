@@ -6,9 +6,9 @@ import { Role } from '../../enum/role.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { COMPLAINT_TYPE } from 'src/types/complaints/complaint-type';
-import { WildlifeComplaintDto } from 'src/types/models/complaints/wildlife-complaint';
-import { AllegationComplaintDto } from 'src/types/models/complaints/allegation-complaint';
+import { COMPLAINT_TYPE } from '../../types/complaints/complaint-type';
+import { WildlifeComplaintDto } from '../../types/models/complaints/wildlife-complaint';
+import { AllegationComplaintDto } from '../../types/models/complaints/allegation-complaint';
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -27,12 +27,6 @@ export class ComplaintController {
   findAll() {
     return this.service.findAll();
   }
-
-  // @Get(':id')
-  // @Roles(Role.COS_OFFICER)
-  // findOne(@Param('id') id: string) {
-  //   return this.service.findOne(id);
-  // }
 
   @Patch(':id')
   @Roles(Role.COS_OFFICER)
