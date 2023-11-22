@@ -10,6 +10,9 @@ import { JwtRoleGuard } from 'src/auth/jwtrole.guard';
 import { authGuardMock } from 'test/mocks/authGuardMock';
 import { roleGuardMock } from 'test/mocks/roleGuardMock';
 import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
+import { getMapperToken } from '@automapper/nestjs';
+import { createMapper } from '@automapper/core';
+import { pojos } from "@automapper/pojos";
 
 describe("Testing: Complaint Controller", () => {
   let app: INestApplication;
@@ -23,6 +26,12 @@ describe("Testing: Complaint Controller", () => {
         {
           provide: getRepositoryToken(Complaint),
           useFactory: MockComplaintsRepository,
+        },
+        {
+          provide: getMapperToken(),
+          useValue: createMapper({
+            strategyInitializer: pojos(),
+          }),
         },
       ],
     })
