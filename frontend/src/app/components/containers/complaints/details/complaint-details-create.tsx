@@ -553,49 +553,32 @@ export const CreateComplaint: FC = () => {
       setCommunityErrorMsg("Required");
     } else {
       setCommunityErrorMsg("");
+      if (selectedOption.value) {
+        const geoOrgCode = {
+          geo_organization_unit_code: selectedOption.value,
+          short_description: "",
+          long_description: selectedOption.label ? selectedOption.label : "",
+          display_order: "",
+          active_ind: "",
+          create_user_id: "",
+          create_utc_timestamp: null,
+          update_user_id: "",
+          update_utc_timestamp: null,
+        };
+        createComplaint.complaint_identifier.cos_geo_org_unit.area_code =
+          selectedOption.value;
+          createComplaint.complaint_identifier.geo_organization_unit_code =
+          geoOrgCode;
+      }
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
           createComplaint,
         ) as HwcrComplaint;
-        if (selectedOption.value !== undefined) {
-          const geoOrgCode = {
-            geo_organization_unit_code: selectedOption.value,
-            short_description: "",
-            long_description: selectedOption.label ? selectedOption.label : "",
-            display_order: "",
-            active_ind: "",
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-          hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
-            selectedOption.value;
-          hwcrComplaint.complaint_identifier.geo_organization_unit_code =
-            geoOrgCode;
-        }
         setCreateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
           createComplaint,
         ) as AllegationComplaint;
-        if (selectedOption.value !== undefined) {
-          const geoOrgCode = {
-            geo_organization_unit_code: selectedOption.value,
-            short_description: "",
-            long_description: selectedOption.label ? selectedOption.label : "",
-            display_order: "",
-            active_ind: "",
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-          allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
-            selectedOption.value;
-          allegationComplaint.complaint_identifier.geo_organization_unit_code =
-            geoOrgCode;
-        }
         setCreateComplaint(allegationComplaint);
       }
     }

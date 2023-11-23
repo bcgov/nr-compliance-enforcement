@@ -54,8 +54,7 @@ export const ComplaintLocation: FC<Props> = ({
   useEffect(() => {
     if (coordinates && isWithinBC([coordinates.lng, coordinates.lat])) {
       setMarkerPosition(coordinates);
-    } else {
-      if(geocodedComplaintCoordinates?.features)
+    } else if(geocodedComplaintCoordinates?.features)
       {
         const lat =
         geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
@@ -75,7 +74,6 @@ export const ComplaintLocation: FC<Props> = ({
             
           setMarkerPosition({lat: lat, lng: lng});
         }
-  }
   }, [coordinates, geocodedComplaintCoordinates?.features]);
 
   const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";
