@@ -4,7 +4,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { createWildlifeComplaintMetadata } from "../../middleware/maps/automapper-meta-data"
 
 import {
   applyAllegationComplaintMap,
