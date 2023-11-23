@@ -379,7 +379,7 @@ export const createAllegationComplaint =
           `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${allegationComplaint.complaint_identifier.location_summary_text}&localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}`,
         );
         const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-        if (geocodeResponse && geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
           const coordinates = geocodeResponse?.features[0].geometry.coordinates;
           allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
           allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
@@ -450,14 +450,11 @@ export const createWildlifeComplaint =
       if(hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 
         && hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0)
       {
-        console.log("hwcrComplaint.complaint_identifier: " + JSON.stringify(hwcrComplaint.complaint_identifier));
         const geocodeParameters = generateApiParameters(
           `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${hwcrComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`,
         );
-        console.log("geocodeParameters: " + JSON.stringify(geocodeParameters));
         const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-        console.log("geocodeResponse: " + JSON.stringify(geocodeResponse));
-        if (geocodeResponse && geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
           const coordinates = geocodeResponse?.features[0].geometry.coordinates;
             hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
             hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];

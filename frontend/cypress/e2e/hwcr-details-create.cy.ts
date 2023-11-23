@@ -12,8 +12,8 @@ describe("Complaint Create Page spec - Create View", () => {
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
-    xCoord: "-118",
-    yCoord: "49",
+    xCoord: "-123.3776552",
+    yCoord: "48.4406837",
     community: "Blaeberry",
     office: "Golden",
     zone: "Columbia/Kootenay",
@@ -156,6 +156,14 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get('p[id="comp-details-location-description"]').should(
       "have.text",
       createCallDetails.locationDescription,
+    );
+
+    cy.get('div[id="call-details-x-coordinate-div"]').contains(
+      createCallDetails.xCoord
+    );
+
+    cy.get('div[id="call-details-y-coordinate-div"]').contains(
+      createCallDetails.yCoord
     );
 
     //Commented out until COMPENF-843 is Fixed

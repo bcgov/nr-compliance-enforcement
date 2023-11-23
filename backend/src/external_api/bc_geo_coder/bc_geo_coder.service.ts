@@ -22,9 +22,7 @@ export class BcGeoCoderService {
         `Calling BC Geocoder with address ${addressString} and community ${localityName}`
       );
 
-      const splitAddress = addressString.split(" ");
-      //apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90&localityName=${localityName}&provinceCode=BC`;
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?civicNumber=${splitAddress[0]}&streetName=${splitAddress[1]}&streetType=${splitAddress[2]}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90&localityName=${localityName}&provinceCode=BC`;
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString},${localityName},bc&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90`;
     } else if (localityName) {
       this.logger.debug(`Calling BC Geocoder with community ${localityName}`);
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=false&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
