@@ -205,7 +205,7 @@ export const CreateComplaint: FC = () => {
       dispatch(setComplaint(null));
       setLatitude("");
       setLongitude("");
-  }, []);
+  }, [dispatch]);
   
   const newEmptyComplaint = (COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
 
@@ -583,7 +583,7 @@ export const CreateComplaint: FC = () => {
           const geoOrgCode = {
             geo_organization_unit_code: selectedOption.value,
             short_description: "",
-            long_description: "",
+            long_description: selectedOption.label ? selectedOption.label : "",
             display_order: "",
             active_ind: "",
             create_user_id: "",

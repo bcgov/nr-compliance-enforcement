@@ -376,7 +376,7 @@ export const createAllegationComplaint =
         && allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0)
       {
         const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${allegationComplaint.complaint_identifier.location_summary_text}&localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}`,
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${allegationComplaint.complaint_identifier.location_summary_text}`,
         );
         const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
         if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
