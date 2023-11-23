@@ -4,7 +4,6 @@ import {
   getGeocodedComplaintCoordinates,
   selectComplaintDetails,
   selectGeocodedComplaintCoordinates,
-  setGeocodedComplaintCoordinates,
 } from "../../../../store/reducers/complaints";
 import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
@@ -45,16 +44,14 @@ export const ComplaintLocation: FC<Props> = ({
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
   useEffect(() => {
-    if (editComponent && area ) {
+    if (editComponent && area) {
       // geocode the complaint using the area.  Used in case there are no coordinates
-      console.log("editComponent && area");
       dispatch(getGeocodedComplaintCoordinates(area));
     }
-  }, [area, dispatch, location]);
+  }, [area, dispatch, location, editComponent]);
 
 
   useEffect(() => {
-    console.log("useEffectcoordinates: " + JSON.stringify(coordinates));
     if (coordinates && isWithinBC([coordinates.lng, coordinates.lat])) {
       setMarkerPosition(coordinates);
     } else {

@@ -320,10 +320,8 @@ export const getComplaintLocationByAddress =
         `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`,
       );
       const response = await get<Feature>(dispatch, parameters);
-      console.log("setGeocodedComplaintCoordinates(response)" + JSON.stringify(response));
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
-      console.log("ERROR1: " + JSON.stringify(error));
     }
   };
 
@@ -345,7 +343,6 @@ export const getGeocodedComplaintCoordinates =
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
-      console.log("ERROR2: " + JSON.stringify(error));
     }
   };
 
@@ -375,14 +372,18 @@ export const createAllegationComplaint =
     let newComplaintId: string = "";
     try {
 
-      const geocodeParameters = generateApiParameters(
-        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${allegationComplaint.complaint_identifier.location_summary_text}`,
-      );
-      const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-      if (geocodeResponse && geocodeResponse?.features && geocodeResponse?.features.length === 1) {
-        const coordinates = geocodeResponse?.features[0].geometry.coordinates;
-        allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
-        allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
+      if(allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 
+        && allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0)
+      {
+        const geocodeParameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${allegationComplaint.complaint_identifier.location_summary_text}&localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}`,
+        );
+        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+        if (geocodeResponse && geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
+        }
       }
 
       const postParameters = generateApiParameters(
@@ -446,17 +447,22 @@ export const createWildlifeComplaint =
   async (dispatch) => {
     let newComplaintId: string = "";
     try {
-
-      const geocodeParameters = generateApiParameters(
-        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`,
-      );
-      const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-      if (geocodeResponse && geocodeResponse?.features && geocodeResponse?.features.length === 1) {
-        const coordinates = geocodeResponse?.features[0].geometry.coordinates;
-        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
-        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
+      if(hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 
+        && hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0)
+      {
+        console.log("hwcrComplaint.complaint_identifier: " + JSON.stringify(hwcrComplaint.complaint_identifier));
+        const geocodeParameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${hwcrComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`,
+        );
+        console.log("geocodeParameters: " + JSON.stringify(geocodeParameters));
+        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+        console.log("geocodeResponse: " + JSON.stringify(geocodeResponse));
+        if (geocodeResponse && geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
+        }
       }
-
 
       const postParameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/hwcr-complaint/`,
@@ -504,7 +510,6 @@ export const updateWildlifeComplaint =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
-      console.log(error);
     }
   };
 
