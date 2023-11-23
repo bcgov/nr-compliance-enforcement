@@ -1028,16 +1028,6 @@ export const ComplaintDetailsEdit: FC = () => {
         saveButtonClick={saveButtonClick}
       />
       {readOnly && <CallDetails complaintType={complaintType} />}
-      {readOnly && (
-        <ComplaintLocation
-          coordinates={{ lat: +latitude, lng: +longitude }}
-          complaintType={complaintType}
-          draggable={false}
-          hideMarker={
-            !latitude || !longitude || +latitude === 0 || +longitude === 0
-          }
-        />
-      )}
       {readOnly && <CallerInformation />}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
         <SuspectWitnessDetails />
@@ -1439,15 +1429,6 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           </div>
-          <ComplaintLocation
-            coordinates={{ lat: +latitude, lng: +longitude }}
-            complaintType={complaintType}
-            draggable={true}
-            onMarkerMove={handleMarkerMove}
-            hideMarker={
-              !latitude || !longitude || +latitude === 0 || +longitude === 0
-            }
-          />
           {/* edit caller info block */}
           <div className="comp-complaint-details-block">
             <h6>Caller Information</h6>
@@ -1633,7 +1614,26 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
+          <ComplaintLocation
+            coordinates={{ lat: +latitude, lng: +longitude }}
+            complaintType={complaintType}
+            draggable={true}
+            onMarkerMove={handleMarkerMove}
+            hideMarker={
+              !latitude || !longitude || +latitude === 0 || +longitude === 0
+            }
+          />
         </>
+      )}
+      {readOnly && (
+        <ComplaintLocation
+          coordinates={{ lat: +latitude, lng: +longitude }}
+          complaintType={complaintType}
+          draggable={false}
+          hideMarker={
+            !latitude || !longitude || +latitude === 0 || +longitude === 0
+          }
+        />
       )}
     </div>
   );
