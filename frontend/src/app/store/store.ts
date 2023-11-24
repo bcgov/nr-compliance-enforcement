@@ -6,7 +6,7 @@ import { rootReducer } from "./reducers";
 const persistConfig = {
   key: "enforcement",
   storage,
-  blacklist: ["app"],
+  blacklist: ["app", "office"],
   whitelist: ["codeTables"],
 };
 

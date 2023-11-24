@@ -1,18 +1,38 @@
-import React, { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import { CompSelect } from "../../common/comp-select";
 import Option from "../../../types/app/option";
+import {
+  fetchOfficeAssignments,
+  selectOfficesForAssignmentDropdown,
+} from "../../../store/reducers/office";
+
 
 export const UserManagement: FC = () => {
+  const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficersDropdown);
+  const offices = useAppSelector(selectOfficesForAssignmentDropdown);
 
   const [officer, setOfficer] = useState<Option>();
+  const [office, setOffice] = useState<Option>();
+
+  useEffect(() => {
+    if(offices.length === 0){ 
+      dispatch(fetchOfficeAssignments());
+    }
+  }, [dispatch, offices]);
 
   const handleOfficerChange = (input: any) => {
     if (input.value) {
       setOfficer(input);
+    }
+  };
+
+  const handleOfficeChange = (input: any) => {
+    if (input.value) {
+      setOffice(input);
     }
   };
   return (
@@ -43,7 +63,22 @@ export const UserManagement: FC = () => {
             value={officer}
           />
         </Col>
-        <Col></Col>
+        <Col>
+          {" "}
+          Select Office
+          <CompSelect
+            id="species-select-id"
+            classNamePrefix="comp-select"
+            onChange={(evt) => handleOfficeChange(evt)}
+            classNames={{
+              menu: () => "top-layer-select",
+            }}
+            options={offices}
+            placeholder="Select"
+            enableValidation={false}
+            value={office}
+          />
+        </Col>
         <Col>dropdown</Col>
         <Col>button</Col>
         <Col></Col>
