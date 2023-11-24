@@ -59,16 +59,16 @@ export const getOfficesInZone =
 
 
 export const fetchOfficeAssignments = (): AppThunk => async (dispatch) => {
-  let parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/office/by-zone/BLKYCSR`
-  );
-  let response = await get<Array<Office>>(dispatch, parameters);
+  // let parameters = generateApiParameters(
+  //   `${config.API_BASE_URL}/v1/office/by-zone/BLKYCSR`
+  // );
+  // let response = await get<Array<Office>>(dispatch, parameters);
 
-  parameters = generateApiParameters(
+  let parameters = generateApiParameters(
     `${config.API_BASE_URL}/v1/office/offices-by-agency/`
   );
-debugger
-  response = await get<Array<any>>(dispatch, parameters);
+
+  let response = await get<Array<any>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = {
       response,
