@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
@@ -37,6 +37,7 @@ import {
   createWildlifeComplaint,
   getAllegationComplaintByComplaintIdentifierSetUpdate,
   getWildlifeComplaintByComplaintIdentifierSetUpdate,
+  setComplaint,
 } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { Complaint } from "../../../../types/complaints/complaint";
@@ -44,6 +45,7 @@ import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { ComplaintLocation } from "./complaint-location";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -74,7 +76,7 @@ export const CreateComplaint: FC = () => {
       },
       location_geometry_point: {
         type: "",
-        coordinates: [],
+        coordinates: [0,0],
       },
       incident_utc_datetime: null,
       incident_reported_utc_timestmp: "",
@@ -195,11 +197,20 @@ export const CreateComplaint: FC = () => {
     "comp-complaint-error display-none",
   );
 
+  const [latitude, setLatitude] = useState<string>("");
+  const [longitude, setLongitude] = useState<string>("");
+
+  useEffect(() => {
+    //-- when the component unmounts clear the complaint from redux
+      dispatch(setComplaint(null));
+      setLatitude("");
+      setLongitude("");
+  }, [dispatch]);
   
   const newEmptyComplaint = (COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint);
 
   const [createComplaint, setCreateComplaint] = useState<
-    HwcrComplaint | AllegationComplaint | null | undefined
+    HwcrComplaint | AllegationComplaint
   >(newEmptyComplaint);
 
   function noErrors() {
@@ -542,55 +553,38 @@ export const CreateComplaint: FC = () => {
       setCommunityErrorMsg("Required");
     } else {
       setCommunityErrorMsg("");
+      if (selectedOption.value) {
+        const geoOrgCode = {
+          geo_organization_unit_code: selectedOption.value,
+          short_description: "",
+          long_description: selectedOption.label ? selectedOption.label : "",
+          display_order: "",
+          active_ind: "",
+          create_user_id: "",
+          create_utc_timestamp: null,
+          update_user_id: "",
+          update_utc_timestamp: null,
+        };
+        createComplaint.complaint_identifier.cos_geo_org_unit.area_code =
+          selectedOption.value;
+          createComplaint.complaint_identifier.geo_organization_unit_code =
+          geoOrgCode;
+      }
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint: HwcrComplaint = cloneDeep(
           createComplaint,
         ) as HwcrComplaint;
-        if (selectedOption.value !== undefined) {
-          const geoOrgCode = {
-            geo_organization_unit_code: selectedOption.value,
-            short_description: "",
-            long_description: "",
-            display_order: "",
-            active_ind: "",
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-          hwcrComplaint.complaint_identifier.cos_geo_org_unit.area_code =
-            selectedOption.value;
-          hwcrComplaint.complaint_identifier.geo_organization_unit_code =
-            geoOrgCode;
-        }
         setCreateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
         let allegationComplaint: AllegationComplaint = cloneDeep(
           createComplaint,
         ) as AllegationComplaint;
-        if (selectedOption.value !== undefined) {
-          const geoOrgCode = {
-            geo_organization_unit_code: selectedOption.value,
-            short_description: "",
-            long_description: "",
-            display_order: "",
-            active_ind: "",
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-          allegationComplaint.complaint_identifier.cos_geo_org_unit.area_code =
-            selectedOption.value;
-          allegationComplaint.complaint_identifier.geo_organization_unit_code =
-            geoOrgCode;
-        }
         setCreateComplaint(allegationComplaint);
       }
     }
   }
 
-  const handleGeoPointChange = (latitude: string, longitude: string) => {
+  const handleGeoPointChange = async (latitude: string, longitude: string) => {
     //-- clear errors
     setGeoPointXMsg("");
     setGeoPointYMsg("");
@@ -848,9 +842,6 @@ export const CreateComplaint: FC = () => {
     { value: "No", label: "No" },
   ];
 
-  const [latitude, setLatitude] = useState<string>("");
-  const [longitude, setLongitude] = useState<string>("");
-
   function handleIncidentDateTimeChange(date: Date) {
       setSelectedIncidentDateTime(date);
       
@@ -984,6 +975,7 @@ export const CreateComplaint: FC = () => {
           0, 0,
         ];
       }
+      setCreateComplaint(complaint);
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         const complaintId = await dispatch(
           createWildlifeComplaint(complaint as HwcrComplaint),
@@ -1386,12 +1378,17 @@ export const CreateComplaint: FC = () => {
           </div>
         </div>
       </div>
-      {/*
+      {
   <ComplaintLocation
-    complaintType={complaintType}
-    draggable={true}
-    onMarkerMove={handleMarkerMove}
-        />*/}
+          coordinates={{ lat: +latitude, lng: +longitude }}
+          complaintType={complaintType}
+          draggable={false}
+          hideMarker={
+            !latitude || !longitude || +latitude === 0 || +longitude === 0
+          }
+          editComponent={false}
+        />
+        }
       {/* edit caller info block */}
       <div className="comp-complaint-details-block">
         <h6>Caller Information</h6>

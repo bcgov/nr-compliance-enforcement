@@ -16,6 +16,7 @@ type Props = {
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
   hideMarker?: boolean;
+  editComponent: boolean;
 };
 
 /**
@@ -27,7 +28,8 @@ export const ComplaintLocation: FC<Props> = ({
   complaintType,
   draggable,
   onMarkerMove,
-  hideMarker
+  hideMarker,
+  editComponent
 }) => {
   const dispatch = useAppDispatch();
   const { area, location } = useAppSelector(
@@ -38,44 +40,46 @@ export const ComplaintLocation: FC<Props> = ({
     lat: number;
     lng: number;
   }>({lat: 0, lng: 0});
-  
-  useEffect(() => {
-    if (area) {
-      // geocode the complaint using the area.  Used in case there are no coordinates
-      dispatch(getGeocodedComplaintCoordinates(area));
-    }
-  }, [area, dispatch, location]); 
 
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
   useEffect(() => {
+    if (editComponent && area) {
+      // geocode the complaint using the area.  Used in case there are no coordinates
+      dispatch(getGeocodedComplaintCoordinates(area));
+    }
+  }, [area, dispatch, location, editComponent]);
+
+
+  useEffect(() => {
     if (coordinates && isWithinBC([coordinates.lng, coordinates.lat])) {
       setMarkerPosition(coordinates);
-    } else {
-   
-
-     const lat =
-    geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
-        Coordinates.Latitude
-      ] !== undefined
-        ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
+    } else if(geocodedComplaintCoordinates?.features)
+      {
+        const lat =
+        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
             Coordinates.Latitude
-          ]
-        : 0;
-    const lng = geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
-        Coordinates.Longitude
-      ] !== undefined
-        ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
+          ] !== undefined
+            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
+                Coordinates.Latitude
+              ]
+            : 0;
+        const lng = geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
             Coordinates.Longitude
-          ]
-        : 0;
-        
-      setMarkerPosition({lat: lat, lng: lng});
-  }
+          ] !== undefined
+            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
+                Coordinates.Longitude
+              ]
+            : 0;
+            
+          setMarkerPosition({lat: lat, lng: lng});
+        }
   }, [coordinates, geocodedComplaintCoordinates?.features]);
 
+  const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";
+
   return (
-    <div className="comp-complaint-details-location-block">
+    <div className={calculatedClass}>
       <h6>Complaint Location</h6>
       <div className="comp-complaint-location">
         <LeafletMapWithPoint

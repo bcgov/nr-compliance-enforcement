@@ -28,6 +28,7 @@ import { ComplaintQueryParams } from "../../types/api-params/complaint-query-par
 import { Feature } from "../../types/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "../../common/toast";
 import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
+import { Coordinates } from "../../types/app/coordinate-type";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -321,7 +322,6 @@ export const getComplaintLocationByAddress =
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
-      //-- handle the error message
     }
   };
 
@@ -331,7 +331,6 @@ export const getGeocodedComplaintCoordinates =
   async (dispatch) => {
     try {
       let parameters;
-
       if (address && area) {
         parameters = generateApiParameters(
           `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`,
@@ -344,7 +343,6 @@ export const getGeocodedComplaintCoordinates =
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {
-      //-- handle the error message
     }
   };
 
@@ -373,6 +371,20 @@ export const createAllegationComplaint =
   async (dispatch) => {
     let newComplaintId: string = "";
     try {
+
+      if(allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 
+        && allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0)
+      {
+        const geocodeParameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${allegationComplaint.complaint_identifier.location_summary_text}`,
+        );
+        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
+        }
+      }
 
       const postParameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/allegation-complaint/`,
@@ -435,6 +447,19 @@ export const createWildlifeComplaint =
   async (dispatch) => {
     let newComplaintId: string = "";
     try {
+      if(hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 
+        && hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0)
+      {
+        const geocodeParameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${hwcrComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`,
+        );
+        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = coordinates[Coordinates.Latitude];
+            hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = coordinates[Coordinates.Longitude];
+        }
+      }
 
       const postParameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/hwcr-complaint/`,
@@ -482,7 +507,6 @@ export const updateWildlifeComplaint =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
-      console.log(error);
     }
   };
 

@@ -6,23 +6,18 @@ describe("Complaint Create Page spec - Create View", () => {
   const createCallDetails = {
     description:
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves ---- testing",
-    location: "644 Pine Street ---- testing",
+    location: "2975 Jutland Rd.",
     locationDescription: " ---- testing",
     incidentDateDay: "01",
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],
     attratantsIndex: [9, 0, 0],
-    xCoord: "-118",
-    yCoord: "49",
-    community: "Blaeberry",
-    office: "Golden",
-    zone: "Columbia/Kootenay",
-    region: "Kootenay",
-    communityIndex: 0,
-    communityCode: "Blaeberry",
-    officeCode: "GLDN",
-    zoneCode: "CLMBAKTNY",
-    regionCode: "KTNY",
+    xCoord: "-123.3776552",
+    yCoord: "48.4406837",
+    community: "Victoria",
+    office: "Victoria",
+    zone: "South Island",
+    region: "West Coast",
     natureOfComplaint: "Dead wildlife - no violation suspected",
     natureOfComplaintIndex: 5,
     species: "Coyote",
@@ -156,6 +151,14 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get('p[id="comp-details-location-description"]').should(
       "have.text",
       createCallDetails.locationDescription,
+    );
+
+    cy.get('div[id="call-details-x-coordinate-div"]').contains(
+      createCallDetails.xCoord
+    );
+
+    cy.get('div[id="call-details-y-coordinate-div"]').contains(
+      createCallDetails.yCoord
     );
 
     //Commented out until COMPENF-843 is Fixed
