@@ -51,7 +51,6 @@ export class BcGeoCoderService {
           })
         )
       );
-      console.log("geocoderData: " + JSON.stringify(data));
       return data;
     }
   }
