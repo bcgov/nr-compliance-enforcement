@@ -40,6 +40,7 @@ export const AttachmentsCarousel: FC<Props> = ({ complaintIdentifier }) => {
     
     a.href = response;
     a.download = filename; // Set the download filename
+    a.target = '_blank';
     a.click();
   };
 
