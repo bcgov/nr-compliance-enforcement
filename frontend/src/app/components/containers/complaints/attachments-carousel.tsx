@@ -24,8 +24,8 @@ export const AttachmentsCarousel: FC<Props> = ({ complaintIdentifier }) => {
   );
 
   useEffect(() => {
-    dispatch(getAttachments());
-  }, [dispatch]);
+    dispatch(getAttachments(complaintIdentifier));
+  }, [complaintIdentifier, dispatch]);
 
   const handleImageClick = async (objectid: string, filename: string) => {
     

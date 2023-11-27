@@ -33,13 +33,13 @@ export const attachmentsSlice = createSlice({
 export const { setAttachments } = attachmentsSlice.actions;
 
 // Get list of the officers and update store
-export const getAttachments  = (): AppThunk => async (dispatch) => {
+export const getAttachments  = (complaint_identifier: string): AppThunk => async (dispatch) => {
     try {
       const parameters = generateApiParameters(
         `${process.env.REACT_APP_COMS_URL}/object?bucketId=${process.env.REACT_APP_COMS_BUCKET}`
       );
       console.log(`${process.env.REACT_APP_COMS_URL}/object`);
-      const response = await get<Array<Officer>>(dispatch, parameters);
+      const response = await get<Array<Officer>>(dispatch, parameters,{'x-amz-meta-complaint-id':complaint_identifier});
       if (response && from(response).any()) {
         dispatch(
           setAttachments({
