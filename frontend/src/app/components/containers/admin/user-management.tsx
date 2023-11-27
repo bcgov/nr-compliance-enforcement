@@ -11,7 +11,6 @@ import {
   fetchOfficeAssignments,
   selectOfficesForAssignmentDropdown,
 } from "../../../store/reducers/office";
-// import { ToggleError } from "../../../common/toast"
 import { ToastContainer } from "react-toastify";
 import { ToggleSuccess } from "../../../common/toast";
 import {
@@ -78,16 +77,12 @@ export const UserManagement: FC = () => {
       const officerId = officer?.value ? officer.value : "";
       const officeId = office?.value ? office.value : "";
 
-console.log(officerId)
-console.log(officeId)
-
       dispatch(assignOfficerToOffice(officerId, officeId));
       ToggleSuccess("success");
     }
   };
 
   const handleCancel = () => {
-    console.log("cancel");
     resetValidationErrors();
   };
   return (
