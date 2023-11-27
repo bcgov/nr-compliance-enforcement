@@ -16,6 +16,10 @@ import {
 } from "../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { isEqual } from "lodash";
+import notificationInvalid from "../../../assets/images/notification-invalid.png";
+import {
+  BsInfoCircleFill
+} from "react-icons/bs";
 
 interface MapProps {
   complaint_type: string;
@@ -87,7 +91,15 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
     dispatch(setComplaint(null));
   };
 
-  return (
+  return (<>
+    <div id="complaint-unmapped-notification" className="comp-map-unmapped-alert">
+        <BsInfoCircleFill
+          className="filter-image-spacing"
+        />
+        {/*
+         */}
+        The exact location of 5 complaints could not be determined.
+      </div>
     <MapContainer
       id="multi-point-map"
       style={{ height: "652px", width: "1330px", zIndex: 0 }}
@@ -119,7 +131,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
         ))}
       </MarkerClusterGroup>
     </MapContainer>
-  );
+    </>);
 };
 
 export default LeafletMapWithMultiplePoints;
