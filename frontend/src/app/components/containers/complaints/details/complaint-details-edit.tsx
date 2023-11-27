@@ -59,6 +59,7 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
+import { AttachmentsCarousel } from "../attachments-carousel";
 
 type ComplaintParams = {
   id: string;
@@ -1159,7 +1160,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   <div className="comp-details-input">
                     <i className="bi bi-calendar comp-margin-right-xs"></i>
                     {formatDate(loggedDate)}
-                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
+                    <i className="bi bi-clock comp-margin- left-xs comp-margin-right-xs"></i>
                     {formatTime(loggedDate)}
                   </div>
                 </div>
@@ -1614,6 +1615,7 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
+          <AttachmentsCarousel complaintIdentifier={id}/>
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
@@ -1624,6 +1626,9 @@ export const ComplaintDetailsEdit: FC = () => {
             }
           />
         </>
+      )}
+      {readOnly && (
+        <AttachmentsCarousel complaintIdentifier={id}/>
       )}
       {readOnly && (
         <ComplaintLocation
