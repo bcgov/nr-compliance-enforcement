@@ -15,6 +15,7 @@ import { Configurations } from "../../constants/configurations";
 import { ConfigurationType } from "../../types/configurations/configuration";
 import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
+import { NotificationState } from "../../types/state/notification-state";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -23,6 +24,7 @@ enum ActionTypes {
   HIDE_MODAL = "app/HIDE_MODAL",
   TOGGLE_LOADING = "app/TOGGLE_LOADING",
   TOGGLE_NOTIFICATION = "app/TOGGLE_NOTIFICATION",
+  CLEAR_NOTIFICATION = "app/CLEAR_NOTIFICATION",
   SET_DEFAULT_ZONE = "app/SET_DEFAULT_ZONE",
   SET_CONFIGURATIONS = "app/CONFIGURATIONS",
 }
@@ -49,7 +51,7 @@ export const toggleLoading = (loading: boolean) => ({
 
 export const toggleNotification = (
   type: "success" | "info" | "warning" | "error",
-  message: string,
+  message: string
 ) => ({
   type: ActionTypes.TOGGLE_NOTIFICATION,
   payload: { type, message },
@@ -57,10 +59,14 @@ export const toggleNotification = (
 
 export const toggleToast = (
   type: "success" | "info" | "warning" | "error",
-  message: string,
+  message: string
 ) => ({
   type: ActionTypes.TOGGLE_NOTIFICATION,
   payload: { type, message },
+});
+
+export const clearNotification = () => ({
+  type: ActionTypes.CLEAR_NOTIFICATION,
 });
 
 type ModalProperties = {
@@ -107,7 +113,7 @@ export const profileInitials = (state: RootState) => {
   const { profile } = state.app;
   return `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(
     0,
-    1,
+    1
   )}`;
 };
 
@@ -155,7 +161,7 @@ export const selectModalOpenState = (state: RootState): boolean => {
 };
 
 export const selectModalSize = (
-  state: RootState,
+  state: RootState
 ): "sm" | "lg" | "xl" | undefined => {
   const { app } = state;
   return app.modalSize;
@@ -195,12 +201,19 @@ export const isLoading = (state: RootState) => {
 export const selectDefaultPageSize = (state: RootState): any => {
   const { app } = state;
   const configuration = app.configurations?.configurations?.find(
-    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode,
+    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode
   );
   if (configuration?.configurationValue) {
     return +configuration.configurationValue;
   }
   return 50; // if there is no default in the configuration table, use 50 is the fallback
+};
+
+export const selectNotification = (state: RootState): NotificationState => {
+  const {
+    app: { notifications },
+  } = state;
+  return notifications;
 };
 
 //-- thunks
@@ -216,7 +229,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       idir_user_guid_transformed = idir_user_guid as UUID;
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`,
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
       );
       const response = await get<Officer>(dispatch, parameters);
 
@@ -267,7 +280,7 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
       const { idir_username } = decoded;
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`,
+        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
       );
       const response = await get<Officer>(dispatch, parameters);
 
@@ -292,9 +305,8 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
 // Get list of the officers and update store
 export const getConfigurations = (): AppThunk => async (dispatch) => {
   try {
-
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/configuration/`,
+      `${config.API_BASE_URL}/v1/configuration/`
     );
     const response = await get<Array<ConfigurationType>>(dispatch, parameters);
 
@@ -302,7 +314,7 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
       dispatch(
         setConfigurations({
           configurations: response,
-        }),
+        })
       );
     }
   } catch (error) {
@@ -403,7 +415,6 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     }
 
     case ActionTypes.TOGGLE_LOADING: {
-
       const { payload } = action;
       return { ...state, loading: { isLoading: payload } };
     }
@@ -415,6 +426,9 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { type, message };
 
       return { ...state, notifications: update };
+    }
+    case ActionTypes.CLEAR_NOTIFICATION: {
+      return { ...state, notifications: { type: "", message: "" } };
     }
     case ActionTypes.SET_DEFAULT_ZONE: {
       const {
