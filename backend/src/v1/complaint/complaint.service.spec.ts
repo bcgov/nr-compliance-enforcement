@@ -1,30 +1,82 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ComplaintService } from './complaint.service';
-import { DataSource } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Complaint } from '../complaint/entities/complaint.entity';
-import { dataSourceMockFactory } from '../../../test/mocks/datasource';
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
 
-describe('ComplaintService', () => {
-  let service: ComplaintService;
+import { ComplaintService } from "./complaint.service";
+import { Complaint } from "../complaint/entities/complaint.entity";
+import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
+import { createWildlifeComplaintMetadata } from "../../middleware/maps/automapper-meta-data";
+import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
+import { Mapper, createMapper } from "@automapper/core";
+import { pojos } from "@automapper/pojos";
+import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
+import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { MockAllegationComplaintRepository  } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ComplaintService,
-        {
-          provide: getRepositoryToken(Complaint),
-          useValue: {},
-        },
-        {
-          provide: DataSource,
-          useFactory: dataSourceMockFactory
-        }],
-    }).compile();
+describe("Testing: Complaint Service", () => {
+   let service: ComplaintService;
+   let mapper: Mapper;
 
-    service = module.get<ComplaintService>(ComplaintService);
-  });
+   createWildlifeComplaintMetadata();
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+   beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        imports: [AutomapperModule],
+        providers: [
+          AutomapperModule,
+          {
+            provide: getMapperToken(),
+            useValue: createMapper({
+              strategyInitializer: pojos(),
+            }),
+          },
+          ComplaintService,
+          {
+            provide: getRepositoryToken(Complaint),
+            useFactory: MockComplaintsRepository,
+          },
+          {
+            provide: getRepositoryToken(AllegationComplaint),
+            useFactory: MockAllegationComplaintRepository
+          },
+          {
+            provide: getRepositoryToken(HwcrComplaint),
+            useFactory: MockWildlifeConflictComplaintRepository
+          },
+        ],
+      }).compile();
+  
+      service = module.get<ComplaintService>(ComplaintService);
+    });
+  
+    it("should be defined", () => {
+      expect(service).toBeDefined();
+    });
+
+    it("should return collection of HWCR Complaints", async () => { 
+      //-- arrange
+      const _type = "HWCR";
+
+      //-- act
+      const results = await service.findAllByType(_type);
+
+      //-- assert
+      expect(results).not.toBe(null);
+      expect(results.length).not.toBe(0);
+      expect(results.length).toBe(5);
+    })
+
+    it("should return collection of ERS Complaints", async () => { 
+      //-- arrange
+      const _type = "ERS";
+
+      //-- act
+      const results = await service.findAllByType(_type);
+
+      //-- assert
+      expect(results).not.toBe(null);
+      expect(results.length).not.toBe(0);
+      expect(results.length).toBe(5);
+    })
 });
+
