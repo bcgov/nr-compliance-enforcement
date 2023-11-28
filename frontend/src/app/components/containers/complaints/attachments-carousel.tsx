@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import {
   CarouselProvider,
   Slider,
@@ -54,6 +54,50 @@ export const AttachmentsCarousel: FC<Props> = ({
     };
   }, []);
 
+  const [visibleSlides, setVisibleSlides] = useState<number>(4); // Adjust the initial number of visible slides as needed
+  const carouselContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Function to update the number of visible slides based on the parent container width
+    const updateVisibleSlides = () => {
+      if (carouselContainerRef.current) {
+        const containerWidth = carouselContainerRef.current.offsetWidth;
+        // change the number of slides that appear in the carousel, depending on the container's width.
+        // Also factor in that the edit screen contains a upload icon, so handle that case differently (e.g. display 1 less slide)
+        if (allowUpload) {
+          if (containerWidth < 900) {
+            setVisibleSlides(1);
+          } else if (containerWidth < 1200) {
+            setVisibleSlides(2);
+          } else {
+            setVisibleSlides(3);
+          }
+        } else {
+          if (containerWidth < 800) {
+            setVisibleSlides(1);
+          } else if (containerWidth < 1100) {
+            setVisibleSlides(2);
+          } else if (containerWidth < 1400) {
+            setVisibleSlides(3);
+          } else {
+            setVisibleSlides(4);
+          }
+        }
+      }
+    };
+
+    // Call the function once to set the initial number of visible slides
+    updateVisibleSlides();
+
+    // Add a window resize listener to update the number of visible slides when the window size changes
+    window.addEventListener("resize", updateVisibleSlides);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", updateVisibleSlides);
+    };
+  }, []);
+
   const handleImageClick = async (objectid: string, filename: string) => {
     const parameters = generateApiParameters(
       `${process.env.REACT_APP_COMS_URL}/object/${objectid}?download=url`
@@ -71,57 +115,60 @@ export const AttachmentsCarousel: FC<Props> = ({
   };
 
   return (
-    <div className="comp-complaint-details-block">
+    <div className="comp-complaint-details-block" ref={carouselContainerRef}>
       <h6>Attachments ({carouselData?.length ? carouselData.length : 0})</h6>
       {carouselData && carouselData?.length > 0 && (
-      <CarouselProvider
-        naturalSlideWidth={SLIDE_WIDTH}
-        naturalSlideHeight={200}
-        totalSlides={carouselData ? carouselData.length : 0}
-        visibleSlides={4}
-        className="coms-carousel"
-      >
-        <ButtonBack className="back-icon">
-          <BsArrowLeftShort />
-        </ButtonBack>
-        <ButtonNext className="next-icon">
-          <BsArrowRightShort />
-        </ButtonNext>
-        {allowUpload && (
-          <div className="coms-carousel-upload-container">
-            <div className="upload-icon">
-              <BsPlus />
+        <CarouselProvider
+          naturalSlideWidth={SLIDE_WIDTH}
+          naturalSlideHeight={200}
+          totalSlides={carouselData ? carouselData.length : 0}
+          visibleSlides={visibleSlides}
+          className="coms-carousel"
+        >
+          <ButtonBack className="back-icon">
+            <BsArrowLeftShort />
+          </ButtonBack>
+          <ButtonNext className="next-icon">
+            <BsArrowRightShort />
+          </ButtonNext>
+          {allowUpload && (
+            <div className="coms-carousel-upload-container">
+              <div className="upload-icon">
+                <BsPlus />
+              </div>
+              <div className="upload-text">Upload</div>
             </div>
-            <div className="upload-text">Upload</div>
-          </div>
-        )}
-        <Slider className="coms-slider">
-          {carouselData?.map((item, index) => (
-            <Slide index={index} key={index}>
-              <div className="coms-carousel-slide">
-                <div className="coms-carousel-actions">
-                    {allowDelete && 
-                        <BsTrash className="delete-icon"  tabIndex={index}/>
-                    }
-                    <BsCloudDownload tabIndex={index}
-                        className="download-icon"
-                        onClick={() => handleImageClick(`${item.id}`, `${item.name}`)}
+          )}
+          <Slider className="coms-slider">
+            {carouselData?.map((item, index) => (
+              <Slide index={index} key={index}>
+                <div className="coms-carousel-slide">
+                  <div className="coms-carousel-actions">
+                    {allowDelete && (
+                      <BsTrash className="delete-icon" tabIndex={index} />
+                    )}
+                    <BsCloudDownload
+                      tabIndex={index}
+                      className="download-icon"
+                      onClick={() =>
+                        handleImageClick(`${item.id}`, `${item.name}`)
+                      }
                     />
-                </div>
-                <div className="top-section">
-                  <BsImageFill />
-                </div>
-                <div className="bottom-section">
-                  <div className="line bold">{item.name}</div>
-                  <div className="line">
-                    {formatDateTime(item.createdAt.toString())}
+                  </div>
+                  <div className="top-section">
+                    <BsImageFill />
+                  </div>
+                  <div className="bottom-section">
+                    <div className="line bold">{item.name}</div>
+                    <div className="line">
+                      {formatDateTime(item.createdAt.toString())}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Slide>
-          ))}
-        </Slider>
-      </CarouselProvider>
+              </Slide>
+            ))}
+          </Slider>
+        </CarouselProvider>
       )}
     </div>
   );
