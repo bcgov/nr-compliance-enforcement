@@ -28,6 +28,8 @@ describe("Complaints on map tests", () => {
       cy.get("#comp-status-filter").should("exist");
       cy.get("#comp-zone-filter").should("exist");
 
+      cy.get("#complaint-unmapped-notification").should("exist");
+
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
       // verify no other filters exist
