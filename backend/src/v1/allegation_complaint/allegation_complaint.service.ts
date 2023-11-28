@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  Scope,
 } from "@nestjs/common";
 import { CreateAllegationComplaintDto } from "./dto/create-allegation_complaint.dto";
 import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.dto";
@@ -23,12 +24,15 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { SearchResults } from "../complaint/models/search-results";
+import { getIdirFromRequest } from "src/common/get-user";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+import { REQUEST } from "@nestjs/core";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AllegationComplaintService {
   private readonly logger = new Logger(AllegationComplaintService.name);
 
-  constructor(private dataSource: DataSource) {}
+  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
   @InjectRepository(AllegationComplaint)
   private allegationComplaintsRepository: Repository<AllegationComplaint>;
   @InjectRepository(Office)
@@ -156,6 +160,12 @@ export class AllegationComplaintService {
       builder = this._applySearch(builder, query);
     }
 
+    //-- only return complaints for the agency the user is associated with
+    const agency = await this._getAgencyByUser();
+    if(agency){ 
+      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+    }
+
     //-- apply sorting
     builder
       .orderBy(sortString, sortDirection)
@@ -194,6 +204,12 @@ export class AllegationComplaintService {
     //-- filter locations without coordinates
     builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
     builder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+
+    //-- only return complaints for the agency the user is associated with
+    const agency = await this._getAgencyByUser();
+    if(agency){ 
+      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+    }
 
     return builder.getMany();
   };
@@ -676,4 +692,20 @@ export class AllegationComplaintService {
 
     return builder;
   }
+
+  private _getAgencyByUser = async (): Promise<AgencyCode> => {
+    const idir = getIdirFromRequest(this.request);
+
+    const builder = this.officersRepository
+      .createQueryBuilder("officer")
+      .leftJoinAndSelect("officer.office_guid", "office")
+      .leftJoinAndSelect("office.agency_code", "agency")
+      .where("officer.user_id = :idir", { idir });
+
+    const result = await builder.getOne();
+
+    //-- pull the user's agency from the query results and return the agency code
+    const { office_guid: { agency_code} } = result
+    return agency_code;
+  };
 }

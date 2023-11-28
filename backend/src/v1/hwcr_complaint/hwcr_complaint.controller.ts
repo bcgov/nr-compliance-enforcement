@@ -9,6 +9,7 @@ import {
   UseGuards,
   Query,
   Logger,
+  Req,
 } from "@nestjs/common";
 import { HwcrComplaintService } from "./hwcr_complaint.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -17,6 +18,7 @@ import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { UUID } from "crypto";
 import { SearchPayload } from "../complaint/models/search-payload";
+import { request } from "http";
 
 @UseGuards(JwtRoleGuard)
 @ApiBearerAuth()
@@ -47,9 +49,8 @@ export class HwcrComplaintController {
 
   @Get("search")
   @Roles(Role.COS_OFFICER)
-  search(
-    @Query() model: SearchPayload 
-  ) {
+  search(@Query() model: SearchPayload, @Req() request) {
+    // const { user} = request
     return this.hwcrComplaintService.search(model);
   }
 
