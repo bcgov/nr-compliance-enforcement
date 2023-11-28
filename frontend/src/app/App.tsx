@@ -22,6 +22,7 @@ import { ComplaintsWrapper } from "./components/containers/complaints/complaints
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
+import { UserManagement } from "./components/containers/admin/user-management";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -54,6 +55,11 @@ const App: FC = () => {
             path="/complaint/createComplaint"
             element={<CreateComplaint />}
           />
+        </Route>
+        <Route
+          element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}
+        >
+          <Route path="/admin/user" element={<UserManagement />} />
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />
         <Route path="*" element={<NotFound />} />

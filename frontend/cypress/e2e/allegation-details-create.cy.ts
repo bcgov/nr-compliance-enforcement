@@ -6,21 +6,16 @@ describe("Complaint Create Page spec - Create View", () => {
     const createCallDetails = {
         description:
           "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
-        location: "Keefes Landing Rd and Danskin Rd ---- testing",
+        location: "2975 Jutland Rd.",
         locationDescription: "tester call description 8 ---- testing",
+        xCoord: "-123.3776552",
+        yCoord: "48.4406837",
         incidentDateDay: "01",
         incidentTime: "13:45",
-        xCoord: "-118",
-        yCoord: "49",
-        community: "Blaeberry",
-        office: "Golden",
-        zone: "Columbia/Kootenay",
-        region: "Kootenay",
-        communityIndex: 0,
-        communityCode: "Blaeberry",
-        officeCode: "GLDN",
-        zoneCode: "CLMBAKTNY",
-        regionCode: "KTNY",
+        community: "Victoria",
+        office: "Victoria",
+        zone: "South Island",
+        region: "West Coast",
         status: "Closed",
         statusIndex: 1,
         assigned: "Olivia Benson",
@@ -146,6 +141,14 @@ describe("Complaint Create Page spec - Create View", () => {
         "have.text",
         createCallDetails.locationDescription,
       );
+
+      cy.get('div[id="call-details-x-coordinate-div"]').contains(
+        createCallDetails.xCoord
+      );
+
+      cy.get('div[id="call-details-y-coordinate-div"]').contains(
+        createCallDetails.yCoord
+      );
   
       cy.get('div[id="complaint-incident-date-time"]').contains(
         createCallDetails.incidentDateDay
@@ -180,5 +183,6 @@ describe("Complaint Create Page spec - Create View", () => {
   
       //end verifying changes are created
     });
+    
   });
   

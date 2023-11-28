@@ -6,6 +6,7 @@ import { UUID } from "crypto";
 import { CreateOfficeDto } from "./dto/create-office.dto";
 import { UpdateOfficeDto } from "./dto/update-office.dto";
 import { Office } from "./entities/office.entity";
+import { OfficeAssignmentDto } from "../../types/models/office/office-assignment-dto";
 
 @Injectable()
 export class OfficeService {
@@ -67,4 +68,30 @@ export class OfficeService {
   remove(id: number) {
     return `This action removes a #${id} office`;
   }
+
+  findOffices = async (): Promise<Array<OfficeAssignmentDto>> => {
+    const queryBuilder = this.officeRepository
+      .createQueryBuilder("office")
+      .select("office.office_guid")
+      .leftJoin("office.cos_geo_org_unit", "organization")
+      .leftJoin("office.agency_code", "agency")
+      .addSelect([
+        "organization.office_location_name",
+        "agency.short_description",
+      ]);
+
+    const data = await queryBuilder.getMany();
+
+    const results = data.map((item) => {
+      const {
+        office_guid: id,
+        cos_geo_org_unit: { office_location_name: name },
+        agency_code: { short_description: description },
+      } = item;
+      const record: OfficeAssignmentDto = { id, name, agency: description };
+      return record;
+    });
+
+    return results;
+  };
 }
