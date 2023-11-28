@@ -1,3 +1,5 @@
+import { AgencyCode } from "../code-tables/agency-code";
+
 export interface Person {
   person_guid: string;
   first_name: string;
@@ -30,6 +32,7 @@ export interface OfficeGUID {
   update_user_id: string;
   update_utc_timestamp: Date;
   cos_geo_org_unit: CosGeoOrgUnit;
+  agency_code: AgencyCode;
 }
 
 export interface CosGeoOrgUnit {

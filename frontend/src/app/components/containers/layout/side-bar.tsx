@@ -6,6 +6,7 @@ import MenuItem from "../../../types/app/menu-item";
 import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import { AgencyBanner } from "./agency-banner";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -95,12 +96,7 @@ export const SideBar: FC = () => {
       ).trim()}`}
     >
       {/* <!-- organization name --> */}
-      <span className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none comp-organization-nav-item">
-        <img className="comp-organization-nav-logo" src={logo} alt="logo" />
-        <span className="comp-organization-nav-name">
-          Conservation Officer Service
-        </span>
-      </span>
+      <AgencyBanner />
 
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">

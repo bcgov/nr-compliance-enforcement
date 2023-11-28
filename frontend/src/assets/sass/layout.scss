@@ -156,6 +156,14 @@
   color: $bc-gov-primary;
 }
 
+.comp-organization-nav-long-name {
+  font-size: 14px;
+  line-height: 14px;
+  letter-spacing: -0.0064em;
+  font-weight: 700;
+  color: $bc-gov-primary;
+}
+
 .comp-side-bar.collapsed > span > span.comp-organization-nav-name {
   display: none;
 }

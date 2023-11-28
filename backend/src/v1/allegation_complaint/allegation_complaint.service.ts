@@ -294,6 +294,7 @@ export class AllegationComplaintService {
 
   async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {
     let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0 };
+    const agency = await this._getAgencyByUser();
 
     //-- get total complaints for the zone
     let totalComplaints = await this.allegationComplaintsRepository
@@ -307,6 +308,7 @@ export class AllegationComplaintService {
       .andWhere("complaint_identifier.complaint_status_code = :status", {
         status: "OPEN",
       })
+      .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
       .getCount();
 
     const totalAssignedComplaints = await this.allegationComplaintsRepository
@@ -325,6 +327,7 @@ export class AllegationComplaintService {
       .andWhere("complaint_identifier.complaint_status_code = :status", {
         status: "OPEN",
       })
+      .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
       .getCount();
 
     const officeQuery = await this.cosGeoOrgUnitRepository
@@ -366,7 +369,8 @@ export class AllegationComplaintService {
         )
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
-        });
+        })
+        .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
 
       offices[i].assigned = await assignedComplaintsQuery.getCount();
 
@@ -380,7 +384,7 @@ export class AllegationComplaintService {
         .where("area_code.offloc_code = :zoneOfficeCode", { zoneOfficeCode })
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
-        });
+        }).andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
 
       offices[i].unassigned =
         (await totalComplaintsQuery.getCount()) - offices[i].assigned;
@@ -438,7 +442,8 @@ export class AllegationComplaintService {
             .andWhere("officer.officer_guid = :officerGuid", { officerGuid })
             .andWhere("complaint_identifier.complaint_status_code = :status", {
               status: "OPEN",
-            });
+            })
+            .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
 
         officers[j].allegationAssigned =
           await assignedOfficerComplaintsQuery.getCount();
