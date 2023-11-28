@@ -21,13 +21,14 @@ export class BcGeoCoderService {
       this.logger.debug(
         `Calling BC Geocoder with address ${addressString} and community ${localityName}`
       );
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
+
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString},${localityName},bc&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90`;
     } else if (localityName) {
       this.logger.debug(`Calling BC Geocoder with community ${localityName}`);
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=false&setBack=0&outputSRS=4326&minScore=1&localityName=${localityName}&provinceCode=BC`;
     } else if (addressString && addressString.length > 0) {
       this.logger.debug(`Calling BC Geocoder with address ${addressString}`);
-      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=1&provinceCode=BC`;
+      apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90&provinceCode=BC`;
     }
     if (apiUrl) {
       const apiKey = process.env.BC_GEOCODER_API_URL;

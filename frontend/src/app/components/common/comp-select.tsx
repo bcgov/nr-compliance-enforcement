@@ -27,6 +27,7 @@ export const CompSelect: FC<Props> = ({
   value,
   onChange,
   classNamePrefix,
+  errorMessage,
 }) => {
   let styles: StylesConfig = {};
 
@@ -40,7 +41,10 @@ export const CompSelect: FC<Props> = ({
       ...styles,
       option: (provided, state) => ({
         ...provided,
-        color: state.label === "None" || state.label ===  "Unassigned" ? "#a1a1a1" : "black",
+        color:
+          state.label === "None" || state.label === "Unassigned"
+            ? "#a1a1a1"
+            : "black",
       }),
     };
   }
@@ -54,7 +58,9 @@ export const CompSelect: FC<Props> = ({
     <>
       <Select
         id={id}
-        className={className}
+        className={
+          errorMessage ? `${className} error-select-border ` : className
+        }
         classNames={classNames}
         styles={styles}
         placeholder={placeholder}
@@ -63,7 +69,7 @@ export const CompSelect: FC<Props> = ({
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
       />
-      {enableValidation && <div></div>}
+      {enableValidation && <div className="error-message">{errorMessage}</div>}
     </>
   );
 };

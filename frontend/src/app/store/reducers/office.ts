@@ -5,9 +5,12 @@ import { createSlice } from "@reduxjs/toolkit";
 import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
 import { from } from "linq-to-typescript";
+import { OfficeAssignment } from "../../types/app/office/office-assignment";
+import { DropdownOption } from "../../types/app/drop-down-option";
 
 const initialState: OfficeState = {
   officesInZone: [],
+  officeAssignments: [],
 };
 
 export const officeSlice = createSlice({
@@ -20,6 +23,13 @@ export const officeSlice = createSlice({
       const officesInZone: Office[] = payload.officesInZone;
       return { ...state, officesInZone };
     },
+    setOfficeAssignments: (state, action) => {
+      const {
+        payload: { offices },
+      } = action;
+
+      return { ...state, officeAssignments: offices };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -28,14 +38,14 @@ export const officeSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setOfficesInZone } = officeSlice.actions;
+export const { setOfficesInZone, setOfficeAssignments } = officeSlice.actions;
 
 // Given a zone, returns a list of persons in that zone.
 export const getOfficesInZone =
   (zone?: string): AppThunk =>
   async (dispatch) => {
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/office/by-zone/${zone}`,
+      `${config.API_BASE_URL}/v1/office/by-zone/${zone}`
     );
     const response = await get<Array<Office>>(dispatch, parameters);
 
@@ -43,14 +53,43 @@ export const getOfficesInZone =
       dispatch(
         setOfficesInZone({
           officesInZone: response,
-        }),
+        })
       );
     }
   };
 
-export const selectOfficesInZone = (state: RootState) => {
-  const { officesInZone } = state.offices;
-  return officesInZone;
+export const fetchOfficeAssignments = (): AppThunk => async (dispatch) => {
+  let parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/office/offices-by-agency`
+  );
+
+  let response = await get<Array<OfficeAssignment>>(dispatch, parameters);
+  
+  if (response && from(response).any()) {
+    const payload = {
+      offices: response,
+    };
+    dispatch(setOfficeAssignments(payload));
+  }
+};
+
+export const selectOfficesForAssignmentDropdown = (
+  state: RootState
+): Array<DropdownOption> => {
+  const {
+    offices: { officeAssignments },
+  } = state;
+
+  const data = officeAssignments?.map((item) => {
+    const { id, name, agency } = item;
+    const record: DropdownOption = {
+      label: `${agency} - ${name}`,
+      value: id,
+    };
+
+    return record;
+  });
+  return data;
 };
 
 export default officeSlice.reducer;
