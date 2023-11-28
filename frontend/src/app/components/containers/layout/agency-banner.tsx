@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useAppSelector } from "../../../hooks/hooks";
 import { selectOfficerAgency } from "../../../store/reducers/app";
 import agencyIcons from "../../../../assets/images/icons";
