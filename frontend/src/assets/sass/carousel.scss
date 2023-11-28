@@ -2,9 +2,13 @@
   border: 1px solid $gray-300;
   border-radius: 4px;
   padding: 12px;
+  min-height: 230px;
+  max-height: 230px;
+  margin-top: 24px;
 }
 
 .coms-carousel-slide {
+  position: relative;
   width: 289px;
   height: 200px;
   display: flex;
@@ -44,11 +48,15 @@
  right: 50px;
 }
 
+.coms-slider {
+  margin-right: 10px;
+}
+
 .download-icon {
   display: none; /* Initially hide the download icon */
   position: absolute;
   top: 10px;
-  right: 40px;
+  right: 10px;
   font-size: 24px; /* Adjust the icon size as needed */
   background-color: $gray-300;
   width: 40px;
@@ -58,10 +66,27 @@
 }
 
 .download-icon:hover {
-  stroke-width: 0.5;
+  background-color: $gray-200;
 }
 
-.coms-carousel-slide:hover .download-icon {
+.delete-icon {
+  display: none; /* Initially hide the download icon */
+  position: absolute;
+  top: 10px;
+  right: 54px;
+  font-size: 24px; /* Adjust the icon size as needed */
+  background-color: $gray-300;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.delete-icon:hover {
+  background-color: $gray-200;
+}
+
+.coms-carousel-slide:hover .download-icon, .coms-carousel-slide:hover .delete-icon {
   display: block; /* Show the download icon on hover */
   cursor: pointer;
   
@@ -104,4 +129,27 @@
 
 .coms-carousel-slide .bold {
   font-weight: bold;
+}
+
+.coms-carousel-upload-container {
+  float: left;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 289px;
+  height: 200px;
+  border: 1px dotted $gray-400;
+  border-radius: 3px;
+  background-color: $gray-110;
+  color: $gray-400;
+}
+
+.upload-icon {
+  font-size: 32px;
+}
+
+.upload-text {
+  font-size: 16px;
 }

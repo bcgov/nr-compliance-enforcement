@@ -1615,7 +1615,7 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
-          <AttachmentsCarousel complaintIdentifier={id}/>
+          <AttachmentsCarousel complaintIdentifier={id} allowUpload={true} allowDelete={true}/>
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
