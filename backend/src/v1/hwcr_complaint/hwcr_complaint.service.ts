@@ -181,7 +181,7 @@ export class HwcrComplaintService {
 
     //-- apply search
     if (query) {
-      builder2 = this._applySearch(builder, query);
+      builder2 = this._applySearch(builder2, query);
     }
 
     //-- apply filters
