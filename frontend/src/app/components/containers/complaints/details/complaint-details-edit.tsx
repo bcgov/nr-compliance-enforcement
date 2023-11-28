@@ -1624,6 +1624,7 @@ export const ComplaintDetailsEdit: FC = () => {
             hideMarker={
               !latitude || !longitude || +latitude === 0 || +longitude === 0
             }
+            editComponent={true}
           />
         </>
       )}
@@ -1638,6 +1639,7 @@ export const ComplaintDetailsEdit: FC = () => {
           hideMarker={
             !latitude || !longitude || +latitude === 0 || +longitude === 0
           }
+          editComponent={true}
         />
       )}
     </div>
