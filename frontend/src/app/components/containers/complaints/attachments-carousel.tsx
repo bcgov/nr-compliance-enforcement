@@ -65,19 +65,19 @@ export const AttachmentsCarousel: FC<Props> = ({
         // change the number of slides that appear in the carousel, depending on the container's width.
         // Also factor in that the edit screen contains a upload icon, so handle that case differently (e.g. display 1 less slide)
         if (allowUpload) {
-          if (containerWidth < 900) {
+          if (containerWidth < 950) {
             setVisibleSlides(1);
-          } else if (containerWidth < 1200) {
+          } else if (containerWidth < 1250) {
             setVisibleSlides(2);
           } else {
             setVisibleSlides(3);
           }
         } else {
-          if (containerWidth < 800) {
+          if (containerWidth < 650) {
             setVisibleSlides(1);
-          } else if (containerWidth < 1100) {
+          } else if (containerWidth < 1000) {
             setVisibleSlides(2);
-          } else if (containerWidth < 1400) {
+          } else if (containerWidth < 1300) {
             setVisibleSlides(3);
           } else {
             setVisibleSlides(4);
@@ -105,7 +105,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     console.log(`${process.env.REACT_APP_COMS_URL}/object`);
     const response = await get<string>(dispatch, parameters);
 
-    // Create an anchor element to trigger the download
+    // Create an anchor element to trigger the download.  Note that the href is a pre-signed URL valid for 7 days (this is a COMS/Objectstore feature)
     const a = document.createElement("a");
 
     a.href = response;
