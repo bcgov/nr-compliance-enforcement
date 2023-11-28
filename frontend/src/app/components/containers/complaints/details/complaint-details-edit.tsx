@@ -59,7 +59,7 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { AttachmentsCarousel } from "../attachments-carousel";
+import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 
 type ComplaintParams = {
   id: string;
