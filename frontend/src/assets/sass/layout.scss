@@ -168,6 +168,10 @@
   display: none;
 }
 
+.comp-side-bar.collapsed > span > span.comp-organization-nav-long-name {
+  display: none;
+}
+
 .comp-side-bar.collapsed > div.comp-sidebar-toggle > i {
   float: none;
   margin-left: 25%;
