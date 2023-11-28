@@ -13,7 +13,12 @@ import { RootState } from "../../../store/store";
 import { getAttachments } from "../../../store/reducers/objectstore";
 import { generateApiParameters, get } from "../../../common/api";
 import { formatDateTime } from "../../../common/methods";
-import { BsImageFill, BsCloudDownload } from "react-icons/bs";
+import {
+  BsImageFill,
+  BsCloudDownload,
+  BsArrowLeftShort,
+  BsArrowRightShort,
+} from "react-icons/bs";
 
 type Props = {
   complaintIdentifier: string;
@@ -57,6 +62,12 @@ export const AttachmentsCarousel: FC<Props> = ({ complaintIdentifier }) => {
         visibleSlides={7}
         className="coms-carousel"
       >
+        <ButtonBack className="back-icon">
+          <BsArrowLeftShort  />
+        </ButtonBack>
+        <ButtonNext className="next-icon">
+          <BsArrowRightShort  />
+        </ButtonNext>
         <Slider>
           {carouselData?.map((item, index) => (
             <Slide index={index} key={index}>
@@ -78,8 +89,6 @@ export const AttachmentsCarousel: FC<Props> = ({ complaintIdentifier }) => {
             </Slide>
           ))}
         </Slider>
-        <ButtonBack>Back</ButtonBack>
-        <ButtonNext>Next</ButtonNext>
       </CarouselProvider>
       <br />
     </div>

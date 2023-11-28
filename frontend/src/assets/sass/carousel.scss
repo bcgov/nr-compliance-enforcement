@@ -15,6 +15,35 @@
   gap: 10px;
 }
 
+.coms-carousel:hover .back-icon, 
+.coms-carousel:hover .next-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.back-icon, .next-icon {
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  font-size: 48px;
+  background-color: $gray-200;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 50%;
+  top: 70px;
+  border: none;
+}
+
+.back-icon {
+  left: 20px;
+}
+
+.next-icon {
+ right: 50px;
+}
+
 .download-icon {
   display: none; /* Initially hide the download icon */
   position: absolute;
@@ -28,9 +57,13 @@
   border-radius: 4px;
 }
 
+.download-icon:hover {
+  stroke-width: 0.5;
+}
+
 .coms-carousel-slide:hover .download-icon {
   display: block; /* Show the download icon on hover */
-
+  cursor: pointer;
   
 }
 
@@ -45,10 +78,6 @@
 
 .coms-carousel-slide:hover > .top-section {
   background-color: $gray-400;
-}
-
-.coms-carousel-slide:hover {
-  cursor: pointer;
 }
 
 .coms-carousel-slide .icon {
