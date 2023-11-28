@@ -16,7 +16,6 @@ import {
 } from "../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { isEqual } from "lodash";
-import notificationInvalid from "../../../assets/images/notification-invalid.png";
 import {
   BsInfoCircleFill
 } from "react-icons/bs";
@@ -28,11 +27,13 @@ interface MapProps {
     lat: number;
     lng: number;
   }[];
+  unmapped_complaints: number;
 }
 
 const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
   complaint_type,
   markers,
+  unmapped_complaints,
 }) => {
   const iconHTML = ReactDOMServer.renderToString(
     <FontAwesomeIcon icon={faMapMarkerAlt} />,
@@ -98,7 +99,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
         />
         {/*
          */}
-        The exact location of 5 complaints could not be determined.
+        The exact location of {unmapped_complaints} complaints could not be determined.
       </div>
     <MapContainer
       id="multi-point-map"

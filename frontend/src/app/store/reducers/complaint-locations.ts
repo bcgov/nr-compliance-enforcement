@@ -13,11 +13,12 @@ import {
   ComplaintLocationsCollection,
   ComplaintLocationsState,
 } from "../../types/state/complaint-location-state";
+import { MapReturn } from "../../types/complaints/map-return";
 
 const initialState: ComplaintLocationsState = {
   complaintItemsOnMap: {
-    wildlife: [],
-    allegations: [],
+    wildlife: {complaints: [], unmappedComplaints: 0},
+    allegations: {complaints: [], unmappedComplaints: 0},
   },
 };
 
@@ -33,8 +34,8 @@ export const complaintLocationsSlice = createSlice({
       const { complaintItemsOnMap } = state;
 
       let update: ComplaintLocationsCollection = {
-        wildlife: [],
-        allegations: [],
+        wildlife: {complaints: [], unmappedComplaints: 0},
+        allegations: {complaints: [], unmappedComplaints: 0},
       };
 
       switch (type) {
@@ -45,7 +46,6 @@ export const complaintLocationsSlice = createSlice({
           update = { ...complaintItemsOnMap, wildlife: data };
           break;
       }
-
       return { ...state, complaintItemsOnMap: update };
     },
   },
@@ -105,7 +105,7 @@ export const getComplaintsOnMap =
         },
       );
       const response = await get<
-        HwcrComplaint | AllegationComplaint,
+        MapReturn,
         ComplaintQueryParams
       >(dispatch, parameters);
       dispatch(setComplaintsOnMap({ type: complaintType, data: response }));
@@ -124,13 +124,32 @@ export const selectTotalComplaintsOnMapByType =
 
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
-        return allegations ? allegations.length : 0;
+        return allegations.complaints ? allegations.complaints.length : 0;
       case COMPLAINT_TYPES.HWCR:
-        return wildlife ? wildlife.length : 0;
+        return wildlife.complaints ? wildlife.complaints.length : 0;
       default:
         return 0;
     }
   };
+
+  export const selectTotalUnmappedComplaintsOnMapByType =
+  (complaintType: string) =>
+  (state: RootState): number => {
+    const {
+      complaintLocations: { complaintItemsOnMap },
+    } = state;
+    const { allegations, wildlife } = complaintItemsOnMap;
+
+    switch (complaintType) {
+      case COMPLAINT_TYPES.ERS:
+        return allegations ? allegations.unmappedComplaints : 0;
+      case COMPLAINT_TYPES.HWCR:
+        return wildlife ? wildlife.unmappedComplaints : 0;
+      default:
+        return 0;
+    }
+  };
+
 export const selectComplaintLocations =
   (complaintType: string) =>
   (
@@ -185,16 +204,17 @@ export const selectComplaintLocations =
       case COMPLAINT_TYPES.ERS:
         const { allegations } = complaintItemsOnMap;
 
-        if (allegations && from(allegations).any()) {
-          coordinates = flattenCoordinates(COMPLAINT_TYPES.ERS, allegations);
+        const allegationComplaints = allegations.complaints as AllegationComplaint[];
+        if (allegationComplaints && from(allegationComplaints).any()) {
+          coordinates = flattenCoordinates(COMPLAINT_TYPES.ERS, allegationComplaints);
         }
         break;
       case COMPLAINT_TYPES.HWCR:
       default:
         const { wildlife } = complaintItemsOnMap;
-
-        if (wildlife && from(wildlife).any()) {
-          coordinates = flattenCoordinates(COMPLAINT_TYPES.HWCR, wildlife);
+        const hwcrComplaints = wildlife.complaints as HwcrComplaint[];
+        if (hwcrComplaints && from(hwcrComplaints).any()) {
+          coordinates = flattenCoordinates(COMPLAINT_TYPES.HWCR, hwcrComplaints);
         }
         break;
     }

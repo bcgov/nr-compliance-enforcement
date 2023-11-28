@@ -1,13 +1,12 @@
-import { AllegationComplaint } from "../complaints/allegation-complaint";
-import { HwcrComplaint } from "../complaints/hwcr-complaint";
+import { MapReturn } from "../complaints/map-return";
 
 export interface ComplaintLocationsState {
   complaintItemsOnMap: ComplaintLocationsCollection;
 }
 
 export interface ComplaintLocationsCollection {
-  wildlife: Array<HwcrComplaint> | null;
-  allegations: Array<AllegationComplaint>;
+  wildlife: MapReturn;
+  allegations: MapReturn;
 }
 
 export interface Coordinate {
