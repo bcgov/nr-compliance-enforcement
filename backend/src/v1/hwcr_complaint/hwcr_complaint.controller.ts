@@ -18,7 +18,6 @@ import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { UUID } from "crypto";
 import { SearchPayload } from "../complaint/models/search-payload";
-import { request } from "http";
 
 @UseGuards(JwtRoleGuard)
 @ApiBearerAuth()
