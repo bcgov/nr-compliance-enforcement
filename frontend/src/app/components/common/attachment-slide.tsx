@@ -10,7 +10,6 @@ import { COMSObject } from "../../types/coms/object";
 type Props = {
   index: number;
   attachment: COMSObject;
-  allowUpload?: boolean;
   allowDelete?: boolean;
 };
 

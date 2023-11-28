@@ -122,8 +122,7 @@ export const AttachmentsCarousel: FC<Props> = ({
           )}
           <Slider className="coms-slider">
             {carouselData?.map((item, index) => (
-              <AttachmentSlide attachment={item} index={index} allowDelete={allowDelete}/>
-
+              <AttachmentSlide key={item.id} attachment={item} index={index} allowDelete={allowDelete}/>
             ))}
           </Slider>
         </CarouselProvider>
