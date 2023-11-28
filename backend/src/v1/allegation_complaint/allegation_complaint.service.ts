@@ -189,7 +189,7 @@ export class AllegationComplaintService {
     //-- apply filters
     builder = this._applyAllegationQueryFilters(
       builder,
-      model as SearchPayload
+      model
     );
 
     //-- filter locations without coordinates
@@ -208,7 +208,7 @@ export class AllegationComplaintService {
     }
 
     //-- apply filters
-    builder2 = this._applyAllegationQueryFilters(builder2, model as SearchPayload);
+    builder2 = this._applyAllegationQueryFilters(builder2, model);
 
     //-- filter locations without coordinates
     builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");

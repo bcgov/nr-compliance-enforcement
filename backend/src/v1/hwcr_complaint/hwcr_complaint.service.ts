@@ -165,7 +165,7 @@ export class HwcrComplaintService {
     }
 
     //-- apply filters
-    builder = this._applyWildlifeQueryFilters(builder, model as SearchPayload);
+    builder = this._applyWildlifeQueryFilters(builder, model);
 
     //-- filter locations without coordinates
     builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
@@ -185,7 +185,7 @@ export class HwcrComplaintService {
     }
 
     //-- apply filters
-    builder2 = this._applyWildlifeQueryFilters(builder2, model as SearchPayload);
+    builder2 = this._applyWildlifeQueryFilters(builder2, model);
 
     //-- filter locations without coordinates
     builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");

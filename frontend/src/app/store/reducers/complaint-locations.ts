@@ -202,6 +202,7 @@ export const selectComplaintLocations =
 
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
+      {
         const { allegations } = complaintItemsOnMap;
 
         const allegationComplaints = allegations.complaints as AllegationComplaint[];
@@ -209,14 +210,20 @@ export const selectComplaintLocations =
           coordinates = flattenCoordinates(COMPLAINT_TYPES.ERS, allegationComplaints);
         }
         break;
+      }
       case COMPLAINT_TYPES.HWCR:
-      default:
+      {
         const { wildlife } = complaintItemsOnMap;
         const hwcrComplaints = wildlife.complaints as HwcrComplaint[];
         if (hwcrComplaints && from(hwcrComplaints).any()) {
           coordinates = flattenCoordinates(COMPLAINT_TYPES.HWCR, hwcrComplaints);
         }
         break;
+      }
+      default:
+      {
+        break;
+      }
     }
 
     return coordinates;
