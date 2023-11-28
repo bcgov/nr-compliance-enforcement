@@ -52,12 +52,8 @@
   margin-right: 10px;
 }
 
-.download-icon {
-  display: none; /* Initially hide the download icon */
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px; /* Adjust the icon size as needed */
+.delete-icon, .download-icon {
+  font-size: 24px;
   background-color: $gray-300;
   width: 40px;
   height: 40px;
@@ -65,30 +61,14 @@
   border-radius: 4px;
 }
 
-.download-icon:hover {
+.delete-icon:hover, .download-icon:hover {
   background-color: $gray-200;
-}
-
-.delete-icon {
-  display: none; /* Initially hide the download icon */
-  position: absolute;
-  top: 10px;
-  right: 54px;
-  font-size: 24px; /* Adjust the icon size as needed */
-  background-color: $gray-300;
-  width: 40px;
-  height: 40px;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-.delete-icon:hover {
-  background-color: $gray-200;
-}
-
-.coms-carousel-slide:hover .download-icon, .coms-carousel-slide:hover .delete-icon {
-  display: block; /* Show the download icon on hover */
   cursor: pointer;
+}
+
+.coms-carousel-slide:hover .coms-carousel-actions {
+  display: flex;
+  gap: 10px;
   
 }
 
@@ -152,4 +132,11 @@
 
 .upload-text {
   font-size: 16px;
+}
+
+.coms-carousel-actions {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }

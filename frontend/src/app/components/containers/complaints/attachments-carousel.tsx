@@ -99,11 +99,15 @@ export const AttachmentsCarousel: FC<Props> = ({
           {carouselData?.map((item, index) => (
             <Slide index={index} key={index}>
               <div className="coms-carousel-slide">
-                {allowDelete && <BsTrash className="delete-icon" />}
-                <BsCloudDownload
-                  className="download-icon"
-                  onClick={() => handleImageClick(`${item.id}`, `${item.name}`)}
-                />
+                <div className="coms-carousel-actions">
+                    {allowDelete && 
+                        <BsTrash className="delete-icon"  tabIndex={index}/>
+                    }
+                    <BsCloudDownload tabIndex={index}
+                        className="download-icon"
+                        onClick={() => handleImageClick(`${item.id}`, `${item.name}`)}
+                    />
+                </div>
                 <div className="top-section">
                   <BsImageFill />
                 </div>
