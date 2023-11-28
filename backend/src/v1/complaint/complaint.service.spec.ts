@@ -12,6 +12,9 @@ import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity"
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { MockAllegationComplaintRepository  } from "../../../test/mocks/mock-allegation-complaint-repository";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+import { Officer } from "../officer/entities/officer.entity";
+import { Office } from "../office/entities/office.entity";
 
 describe("Testing: Complaint Service", () => {
    let service: ComplaintService;
@@ -41,6 +44,19 @@ describe("Testing: Complaint Service", () => {
           },
           {
             provide: getRepositoryToken(HwcrComplaint),
+            useFactory: MockWildlifeConflictComplaintRepository
+          },
+
+          {
+            provide: getRepositoryToken(AgencyCode),
+            useFactory: MockWildlifeConflictComplaintRepository
+          },
+          {
+            provide: getRepositoryToken(Officer),
+            useFactory: MockWildlifeConflictComplaintRepository
+          },
+          {
+            provide: getRepositoryToken(Office),
             useFactory: MockWildlifeConflictComplaintRepository
           },
         ],

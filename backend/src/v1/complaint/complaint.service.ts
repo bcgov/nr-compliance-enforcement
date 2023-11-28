@@ -1,5 +1,10 @@
 import { map } from "lodash";
-import { BadRequestException, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -19,7 +24,9 @@ import { CreateComplaintDto } from "./dto/create-complaint.dto";
 import { UpdateComplaintDto } from "./dto/update-complaint.dto";
 
 import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
-
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+import { Officer } from "../officer/entities/officer.entity";
+import { Office } from "../office/entities/office.entity";
 
 @Injectable()
 export class ComplaintService {
@@ -31,6 +38,13 @@ export class ComplaintService {
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
 
+  @InjectRepository(AgencyCode)
+  private _agencyRepository: Repository<AgencyCode>;
+  @InjectRepository(Officer)
+  private _officertRepository: Repository<Officer>;
+  @InjectRepository(Office)
+  private _officeRepository: Repository<Office>;
+
   @InjectRepository(Complaint)
   private complaintsRepository: Repository<Complaint>;
 
@@ -40,13 +54,16 @@ export class ComplaintService {
     applyWildlifeComplaintMap(mapper);
     applyAllegationComplaintMap(mapper);
   }
-  
+
   async create(
     complaint: string,
     queryRunner: QueryRunner
   ): Promise<Complaint> {
     try {
       const createComplaintDto: CreateComplaintDto = JSON.parse(complaint);
+
+      const agencyCode = await this._getAgencyByUser(createComplaintDto.create_user_id);
+
       let referredByAgencyCode = createComplaintDto.referred_by_agency_code;
       let sequenceNumber;
       await queryRunner.manager
@@ -89,7 +106,9 @@ export class ComplaintService {
         update_utc_timestamp: createComplaintDto.update_utc_timestamp,
         create_user_id: createComplaintDto.create_user_id,
         update_user_id: createComplaintDto.update_user_id,
+        owned_by_agency_code: agencyCode
       };
+
       const createdValue = await this.complaintsRepository.create(createData);
       return await queryRunner.manager.save(createdValue);
     } catch (err) {
@@ -179,6 +198,20 @@ export class ComplaintService {
       return { deleted: false, message: err.message };
     }
   }
+
+  private _getAgencyByUser = async (username: string): Promise<AgencyCode> => {
+    const builder = this._officertRepository
+      .createQueryBuilder("officer")
+      .leftJoinAndSelect("officer.office_guid", "office")
+      .leftJoinAndSelect("office.agency_code", "agency")
+      .where("officer.user_id = :username", { username });
+
+    const result = await builder.getOne();
+
+    //-- pull the user's agency from the query results and return the agency code
+    const { office_guid: { agency_code} } = result
+    return agency_code;
+  };
 
   //-- refactors starts here
   private _generateQueryBuilder = (
