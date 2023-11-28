@@ -92,8 +92,10 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
     dispatch(setComplaint(null));
   };
 
+  const computedClass = (unmapped_complaints === 0) ? "comp-map-unmapped-alert display-none" : "comp-map-unmapped-alert";
+
   return (<>
-    <div id="complaint-unmapped-notification" className="comp-map-unmapped-alert">
+    <div id="complaint-unmapped-notification" className={computedClass}>
         <BsInfoCircleFill
           className="filter-image-spacing"
         />
