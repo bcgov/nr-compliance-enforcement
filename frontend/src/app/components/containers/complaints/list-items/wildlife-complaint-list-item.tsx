@@ -148,7 +148,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({
       >
         {!isExpanded && (
           <div className="comp-table-icons">
-            <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+            <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""} complaint_agency={}/>
             <span className={!isExpanded ? "comp-table-update-date" : ""}>{updateDate}</span>          
           </div> 
         )}

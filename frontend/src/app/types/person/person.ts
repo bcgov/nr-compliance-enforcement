@@ -1,3 +1,5 @@
+import { AgencyCode } from "../code-tables/agency-code";
+
 export interface Person {
   person_guid: string;
   first_name: string;
@@ -21,6 +23,7 @@ export interface Officer {
   auth_user_guid: string;
   office_guid: OfficeGUID;
   person_guid: Person;
+  agency_code: AgencyCode;
 }
 
 export interface OfficeGUID {

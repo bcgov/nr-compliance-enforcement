@@ -225,6 +225,27 @@ export const selectOfficersByZone =
     return [];
   };
 
+  export const selectOfficersByZoneAndAgency =
+  (agency: string,
+    zone?: string) =>
+  (state: RootState): Officer[] | null => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
+
+    if (zone) {
+      return officers.filter((officer) => {
+        // check for nulls
+        const zoneCode =
+          officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
+        const agencyCode =
+          officer?.agency_code?.agency_code ?? null;
+        return (zone === zoneCode && agency === agencyCode);
+      });
+    }
+
+    return [];
+  };
+
 export const assignOfficerToOffice =
   (personId: string, officeId: string): AppThunk =>
   async (dispatch, getState) => {
