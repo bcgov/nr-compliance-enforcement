@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import { generateApiParameters, put, putFile } from '../../common/api';
-import config from '../../../config';
-import { useAppDispatch } from '../../hooks/hooks';
+import { FC, useState, useRef } from "react";
+import { generateApiParameters, putFile } from "../../common/api";
+import config from "../../../config";
+import { useAppDispatch } from "../../hooks/hooks";
+import { BsPlus } from "react-icons/bs";
 
 type Props = {
-    complaintIdentifier: string;
-  };
+  complaintIdentifier: string;
+};
 
-const AttachmentUpload: React.FC<Props> = ({
-    complaintIdentifier,
-}) => {
+export const AttachmentUpload: FC<Props> = ({ complaintIdentifier }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const header = {
-    'x-amz-meta-complaint-id':complaintIdentifier,
-    'Content-Disposition':`attachment; filename=${selectedFile?.name}`,
-    'Content-Length': selectedFile?.size,
-    'Content-Type': selectedFile?.type,
-    }
+    "x-amz-meta-complaint-id": complaintIdentifier,
+    "Content-Disposition": `attachment; filename=${selectedFile?.name}`,
+    "Content-Length": selectedFile?.size,
+    "Content-Type": selectedFile?.type,
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -25,34 +24,45 @@ const AttachmentUpload: React.FC<Props> = ({
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
 
-  const handleUpload = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+  const handleDivClick = () => {
+    fileInputRef.current?.click();
 
-      try {
+    const handleUpload = async () => {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
 
-        const parameters = generateApiParameters(
+        try {
+          const parameters = generateApiParameters(
             `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
           );
- 
-          const response = await putFile<string>(dispatch, parameters,header, selectedFile);
-      
 
-      } catch (error) {
-        console.error('Error uploading file:', error);
+          const response = await putFile<string>(
+            dispatch,
+            parameters,
+            header,
+            selectedFile
+          );
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
       }
-    }
+    };
+}
+
+    return (
+      <div>
+        <input type="file" onChange={handleFileChange} ref={fileInputRef} 
+        style={{ display: 'none' }} />
+        <div className="coms-carousel-upload-container" onClick={handleDivClick}>
+          <div className="upload-icon">
+            <BsPlus />
+          </div>
+          <div className="upload-text">Upload</div>
+        </div>
+      </div>
+    );
   };
-
-  return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
-    </div>
-  );
-};
-
-export default AttachmentUpload;

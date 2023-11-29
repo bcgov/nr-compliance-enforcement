@@ -16,10 +16,10 @@ import {
 import {
   BsArrowLeftShort,
   BsArrowRightShort,
-  BsPlus,
 } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
-import AttachmentUpload from "./attachment-upload";
+import { AttachmentUpload } from "./attachment-upload";
+
 
 type Props = {
   complaintIdentifier: string;
@@ -91,7 +91,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
       <h6>Attachments ({carouselData?.length ? carouselData.length : 0})</h6>
-      <AttachmentUpload complaintIdentifier={complaintIdentifier}/>
+      
       {carouselData && carouselData?.length > 0 && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
@@ -107,12 +107,7 @@ export const AttachmentsCarousel: FC<Props> = ({
             <BsArrowRightShort />
           </ButtonNext>
           {allowUpload && (
-            <div className="coms-carousel-upload-container">
-              <div className="upload-icon">
-                <BsPlus />
-              </div>
-              <div className="upload-text">Upload</div>
-            </div>
+            <AttachmentUpload complaintIdentifier={complaintIdentifier}/>
           )}
           <Slider className="coms-slider">
             {carouselData?.map((item, index) => (
