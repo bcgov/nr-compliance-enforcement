@@ -9,6 +9,7 @@ import {
   UseGuards,
   Query,
   Logger,
+  Req,
 } from "@nestjs/common";
 import { HwcrComplaintService } from "./hwcr_complaint.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -47,9 +48,8 @@ export class HwcrComplaintController {
 
   @Get("search")
   @Roles(Role.COS_OFFICER)
-  search(
-    @Query() model: SearchPayload 
-  ) {
+  search(@Query() model: SearchPayload, @Req() request) {
+    // const { user} = request
     return this.hwcrComplaintService.search(model);
   }
 

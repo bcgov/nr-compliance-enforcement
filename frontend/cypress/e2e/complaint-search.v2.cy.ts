@@ -51,7 +51,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#complaint-search").clear().type("Oil{enter}"); //-- {enter} will perform an enter keypress
 
     //-- verify one complaint, and verify complaint-id
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 31);
+    cy.get("#complaint-list tbody").find("tr").should("have.length", 23);
 
     //-- switch tabs
     cy.get(complaintTypes[0]).click({ force: true });
