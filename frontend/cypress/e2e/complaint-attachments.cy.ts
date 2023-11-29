@@ -36,7 +36,8 @@ describe("Complaint Attachments", () => {
       .should('exist')
       .and('not.be.visible');
 
-      cy.get("#download-icon").first().click({force:true});
+      cy.get(".coms-carousel-actions").first().invoke('attr', 'style', 'display: block');
+      cy.get(".download-icon").first().click({force:true});
 
     });
 
