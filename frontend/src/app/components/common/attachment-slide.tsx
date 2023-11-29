@@ -56,8 +56,8 @@ export const AttachmentSlide: FC<Props> = ({
         <AttachmentIcon filename={attachment.name}/>
         </div>
         <div className="bottom-section">
-          <div className="line bold">{attachment.name}</div>
-          <div className="line">
+          <div className="slide_text slide_file_name">{attachment.name}</div>
+          <div className="slide_text">
             {formatDateTime(attachment.createdAt.toString())}
           </div>
         </div>
