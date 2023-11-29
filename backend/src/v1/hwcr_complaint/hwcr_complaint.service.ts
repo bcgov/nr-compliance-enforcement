@@ -24,6 +24,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchResults } from "../complaint/models/search-results";
 import { SearchPayload } from "../complaint/models/search-payload";
+import { MapReturn } from "src/types/complaints/map-return-type";
 
 @Injectable()
 export class HwcrComplaintService {
@@ -152,7 +153,7 @@ export class HwcrComplaintService {
     return { complaints: data, totalCount: totalCount };
   };
 
-  searchMap = async (model: SearchPayload): Promise<HwcrComplaint[]> => {
+  searchMap = async (model: SearchPayload): Promise<MapReturn> => {
     const { query } = model;
 
     //-- build generic wildlife query
@@ -164,13 +165,34 @@ export class HwcrComplaintService {
     }
 
     //-- apply filters
-    builder = this._applyWildlifeQueryFilters(builder, model as SearchPayload);
+    builder = this._applyWildlifeQueryFilters(builder, model);
 
     //-- filter locations without coordinates
     builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
     builder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
-    return builder.getMany();
+
+    let mapReturn: MapReturn = {complaints: [], unmappedComplaints: 0};
+
+    mapReturn.complaints = await builder.getMany();
+
+    //-- build generic wildlife query
+    let builder2 = this._getWildlifeQuery();
+
+    //-- apply search
+    if (query) {
+      builder2 = this._applySearch(builder2, query);
+    }
+
+    //-- apply filters
+    builder2 = this._applyWildlifeQueryFilters(builder2, model);
+
+    //-- filter locations without coordinates
+    builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");
+    builder2.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+    mapReturn.unmappedComplaints = await builder2.getCount();
+
+    return mapReturn;
   };
 
   findAll = async (
