@@ -87,5 +87,10 @@ describe("Testing: Complaint Controller", () => {
       `/Complaint/${_type}`
     );
     expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/Complaint/search/${_type}`
+    );
+    expect(response.statusCode).toBe(200);
   });
 });
