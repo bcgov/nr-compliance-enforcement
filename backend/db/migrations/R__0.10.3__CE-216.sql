@@ -8,3 +8,7 @@ WHERE complaint.complaint_identifier = allegation_complaint.complaint_identifier
 UPDATE complaint SET owned_by_agency_code = 'EPO'
 FROM allegation_complaint 
 WHERE complaint.complaint_identifier = allegation_complaint.complaint_identifier AND allegation_complaint.violation_code = 'PESTICDE';
+
+UPDATE complaint SET owned_by_agency_code = 'COS'
+FROM allegation_complaint 
+WHERE complaint.owned_by_agency_code IS NULL
