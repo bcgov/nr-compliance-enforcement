@@ -7,6 +7,7 @@ import { formatDateTime } from "../../common/methods";
 import { BsImageFill, BsCloudDownload, BsTrash } from "react-icons/bs";
 import { COMSObject } from "../../types/coms/object";
 import config from "../../../config";
+import AttachmentIcon from "./attachment-icon";
 
 type Props = {
   index: number;
@@ -52,7 +53,7 @@ export const AttachmentSlide: FC<Props> = ({
           />
         </div>
         <div className="top-section">
-          <BsImageFill />
+        <AttachmentIcon filename={attachment.name}/>
         </div>
         <div className="bottom-section">
           <div className="line bold">{attachment.name}</div>
