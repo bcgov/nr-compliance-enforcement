@@ -16,7 +16,7 @@ import {
   OfficeStats,
   OfficerStats,
   ZoneAtAGlanceStats,
-} from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
+} from "../../../src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
@@ -24,7 +24,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { SearchResults } from "../complaint/models/search-results";
-import { getIdirFromRequest } from "src/common/get-user";
+import { getIdirFromRequest } from "../../common/get-user";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { REQUEST } from "@nestjs/core";
 import { MapSearchResults } from "../../../src/types/complaints/map-search-results"

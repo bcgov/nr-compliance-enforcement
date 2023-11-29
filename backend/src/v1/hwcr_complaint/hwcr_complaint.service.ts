@@ -17,7 +17,7 @@ import {
   OfficeStats,
   OfficerStats,
   ZoneAtAGlanceStats,
-} from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
+} from "../../../src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
@@ -27,8 +27,8 @@ import { SearchResults } from "../complaint/models/search-results";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { REQUEST } from "@nestjs/core";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
-import { getIdirFromRequest } from "src/common/get-user";
-import { MapSearchResults } from "src/types/complaints/map-search-results";
+import { getIdirFromRequest } from "../../common/get-user";
+import { MapSearchResults } from "../../../src/types/complaints/map-search-results";
 
 @Injectable({ scope: Scope.REQUEST })
 export class HwcrComplaintService {
