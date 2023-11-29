@@ -19,6 +19,7 @@ import {
 } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
+import { COMSObject } from "../../types/coms/object";
 
 
 type Props = {
@@ -42,6 +43,14 @@ export const AttachmentsCarousel: FC<Props> = ({
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
 
+  const [slides, setSlides] = useState<COMSObject[]>([]);
+
+  useEffect(() => {
+    if (carouselData) {
+      setSlides(carouselData);
+    }
+  },[carouselData])
+
   // get the attachments when the complaint loads
   useEffect(() => {
     dispatch(getAttachments(complaintIdentifier));
@@ -53,6 +62,22 @@ export const AttachmentsCarousel: FC<Props> = ({
       dispatch(setAttachments({}));
     };
   }, []);
+
+  const onFileSelect = (newFile: File) => {
+    const newSlide: COMSObject = {
+      name: newFile.name,
+      id: "",
+      path: "",
+      public: false,
+      active: false,
+      bucketId: "",
+      createdBy: "",
+      createdAt: new Date(),
+      updatedBy: "",
+      updatedAt: new Date()
+    };
+    setSlides([...slides, newSlide]);
+  };
 
 
   useEffect(() => {
@@ -90,13 +115,13 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
-      <h6>Attachments ({carouselData?.length ? carouselData.length : 0})</h6>
+      <h6>Attachments ({slides?.length ? slides.length : 0})</h6>
       
-      {carouselData && carouselData?.length > 0 && (
+      {(allowUpload || (slides && slides?.length > 0)) && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
           naturalSlideHeight={200}
-          totalSlides={carouselData ? carouselData.length : 0}
+          totalSlides={slides ? slides.length : 0}
           visibleSlides={visibleSlides}
           className="coms-carousel"
         >
@@ -107,11 +132,11 @@ export const AttachmentsCarousel: FC<Props> = ({
             <BsArrowRightShort />
           </ButtonNext>
           {allowUpload && (
-            <AttachmentUpload complaintIdentifier={complaintIdentifier}/>
+            <AttachmentUpload complaintIdentifier={complaintIdentifier} onFileSelect={onFileSelect}/>
           )}
           <Slider className="coms-slider">
-            {carouselData?.map((item, index) => (
-              <AttachmentSlide key={item.id} attachment={item} index={index} allowDelete={allowDelete}/>
+            {slides?.map((item, index) => (
+              <AttachmentSlide key={item.name} attachment={item} index={index} allowDelete={allowDelete} />
             ))}
           </Slider>
         </CarouselProvider>

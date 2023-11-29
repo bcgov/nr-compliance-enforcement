@@ -6,9 +6,10 @@ import { BsPlus } from "react-icons/bs";
 
 type Props = {
   complaintIdentifier: string;
+  onFileSelect: (selectedFile: File) => void;
 };
 
-export const AttachmentUpload: FC<Props> = ({ complaintIdentifier }) => {
+export const AttachmentUpload: FC<Props> = ({ complaintIdentifier, onFileSelect }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const header = {
@@ -21,6 +22,7 @@ export const AttachmentUpload: FC<Props> = ({ complaintIdentifier }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setSelectedFile(event.target.files[0]);
+      onFileSelect(event.target.files[0]);
     }
   };
 
