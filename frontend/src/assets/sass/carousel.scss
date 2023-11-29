@@ -101,14 +101,19 @@
   background-color: white;
 }
 
-.coms-carousel-slide .line {
+.coms-carousel-slide .slide_text {
   font-size: 16px;
   margin-bottom: 5px;
   text-align: left;
+  
 }
 
-.coms-carousel-slide .bold {
+.coms-carousel-slide .slide_file_name {
   font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 250px;
 }
 
 .coms-carousel-upload-container {
