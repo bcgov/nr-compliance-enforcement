@@ -1,13 +1,15 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  BsImageFill,
-  BsFillCameraVideoFill,
-  BsFilePdfFill,
-  BsFileEarmarkWordFill,
-  BsFileEarmarkExcelFill,
-  BsFileEarmarkZipFill,
-  BsFileFill,
-  BsFileMusicFill,
-} from "react-icons/bs";
+  faImage,
+  faVideo,
+  faFilePdf,
+  faFileWord,
+  faFileExcel,
+  faFileZipper,
+  faFileAudio,
+  faFile,
+  faMap,
+} from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   filename: string;
@@ -31,35 +33,46 @@ const AttachmentIcon: React.FC<Props> = ({ filename }) => {
     case "bmp":
     case "tif":
     case "tiff":
-      return <BsImageFill />;
+      return <FontAwesomeIcon icon={faImage} />;
     case "mp4":
     case "asf":
     case "flv":
     case "webm":
     case "avi":
     case "mov":
-      return <BsFillCameraVideoFill />;
+      return <FontAwesomeIcon icon={faVideo} />;
     case "pdf":
-      return <BsFilePdfFill />;
+      return <FontAwesomeIcon icon={faFilePdf} />;
     case "doc":
     case "docx":
-      return <BsFileEarmarkWordFill />;
+      return <FontAwesomeIcon icon={faFileWord} />;
     case "xls":
     case "xlsx":
-      return <BsFileEarmarkExcelFill />;
+      return <FontAwesomeIcon icon={faFileExcel} />;
     case "zip":
     case "rar":
     case "7z":
-      return <BsFileEarmarkZipFill />;
+      return <FontAwesomeIcon icon={faFileZipper} />;
     case "wav":
     case "mp3":
     case "midi":
     case "mpa":
     case "wam":
-      return <BsFileMusicFill />;
+      return <FontAwesomeIcon icon={faFileAudio} />;
+    case "shp":
+    case "dbf":
+    case "shx":
+    case "geojson":
+    case "gml":
+    case "kml":
+    case "kmz":
+    case "gpx":
+    case "osm":
+    case "dlg":
+      return <FontAwesomeIcon icon={faMap} />;
 
     default:
-      return <BsFileFill />;
+      return <FontAwesomeIcon icon={faFile} />;
   }
 };
 

@@ -103,41 +103,43 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data", function () {
     //start edit
     cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
-    cy.get("#caller-name-id").clear().type(editCallerInformation.name);
-    cy.get("#complaint-address-id").clear().type(editCallerInformation.address);
-    cy.get("#complaint-email-id").clear().type(editCallerInformation.email);
+    cy.get("#caller-name-id").click({force: true}).click({force: true}).clear().type(editCallerInformation.name);
+    cy.get("#complaint-address-id").click({force: true}).clear().type(editCallerInformation.address);
+    cy.get("#complaint-email-id").click({force: true}).clear().type(editCallerInformation.email);
 
-    cy.get("#caller-primary-phone-id").click({ force: true });
+    cy.get("#caller-primary-phone-id").click({force: true}).click({ force: true });
 
-    cy.get("#caller-primary-phone-id").clear();
+    cy.get("#caller-primary-phone-id").click({force: true}).clear();
     cy.get("#caller-primary-phone-id").typeAndTriggerChange(
       editCallerInformation.phoneInput,
     );
 
     cy.get("#caller-info-secondary-phone-id")
-      .clear()
+      .click({force: true}).clear()
       .typeAndTriggerChange(editCallerInformation.secondaryInput);
     cy.get("#caller-info-alternate-phone-id")
+      .click({force: true})  
       .clear()
       .typeAndTriggerChange(editCallerInformation.alternateInput);
 
     cy.selectItemById("referred-select-id", editCallerInformation.referred);
 
     cy.get("#complaint-witness-details-textarea-id")
+      .click({force: true})  
       .clear()
       .type(editCallerInformation.witnessDetails, { delay: 0 });
 
     cy.get("#location-edit-id").click({ force: true });
-    cy.get("#location-edit-id").clear().type(editCallDetails.location);
+    cy.get("#location-edit-id").click({force: true}).clear().type(editCallDetails.location);
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,
     });
     cy.get("#complaint-location-description-textarea-id")
-      .clear()
+      .click({force: true}).clear()
       .type(editCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
-      .clear()
+      .click({force: true}).clear()
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -247,27 +249,27 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   it("Puts everything back to the original details", () => {
     //start reverting changes
     cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
-    cy.get("#caller-name-id").clear().type(originalCallerInformation.name);
+    cy.get("#caller-name-id").click({force: true}).clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
-      .clear()
+    .click({force: true}).clear()
       .type(originalCallerInformation.address);
-    cy.get("#complaint-email-id").clear(); //blank to start
+    cy.get("#complaint-email-id").click({force: true}).clear(); //blank to start
 
     cy.get("#caller-primary-phone-id").click({ force: true });
     cy.get("#caller-primary-phone-id")
-      .clear()
+      .click({force: true}).clear()
       .typeAndTriggerChange(originalCallerInformation.phoneInput);
 
     cy.get("#caller-info-secondary-phone-id")
-      .clear()
+      .click({force: true}).clear()
       .typeAndTriggerChange(originalCallerInformation.secondaryInput);
     cy.get("#caller-info-alternate-phone-id")
-      .clear()
+      .click({force: true}).clear()
       .typeAndTriggerChange(originalCallerInformation.alternateInput);
 
     cy.selectItemById("referred-select-id", originalCallerInformation.referred);
 
-    cy.get("#complaint-witness-details-textarea-id").clear();
+    cy.get("#complaint-witness-details-textarea-id").click({force: true}).clear();
 
     cy.get("#location-edit-id").click({ force: true });
     cy.get("#location-edit-id").clear().type(originalCallDetails.location);
@@ -275,11 +277,11 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       force: true,
     });
     cy.get("#complaint-location-description-textarea-id")
-      .clear()
+      .click({force: true}).clear()
       .type(originalCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
-      .clear()
+      .click({force: true}).clear()
       .type(originalCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
