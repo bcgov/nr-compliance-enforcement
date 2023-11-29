@@ -55,31 +55,23 @@ export const AttachmentsCarousel: FC<Props> = ({
 
 
   useEffect(() => {
+
+    const calcualteSlidesToDisplay = (containerWidth: number): number => {
+      const SLIDE_WIDTH = 299; // width of a slide if 289, plus 10 for gap
+      const slidesToDisplay = Math.floor(containerWidth / SLIDE_WIDTH);
+      if (allowUpload) {
+        return slidesToDisplay <= 1 ? 1 : slidesToDisplay - 1;
+      } else {
+        return slidesToDisplay <= 1 ? 1 : slidesToDisplay;
+      }
+    }
+
     // Function to update the number of visible slides based on the parent container width
     const updateVisibleSlides = () => {
       if (carouselContainerRef.current) {
         const containerWidth = carouselContainerRef.current.offsetWidth;
-        // change the number of slides that appear in the carousel, depending on the container's width.
-        // Also factor in that the edit screen contains a upload icon, so handle that case differently (e.g. display 1 less slide)
-        if (allowUpload) {
-          if (containerWidth < 950) {
-            setVisibleSlides(1);
-          } else if (containerWidth < 1250) {
-            setVisibleSlides(2);
-          } else {
-            setVisibleSlides(3);
-          }
-        } else {
-          if (containerWidth < 650) {
-            setVisibleSlides(1);
-          } else if (containerWidth < 1000) {
-            setVisibleSlides(2);
-          } else if (containerWidth < 1300) {
-            setVisibleSlides(3);
-          } else {
-            setVisibleSlides(4);
-          }
-        }
+        const slidesToDisplay = calcualteSlidesToDisplay(containerWidth);
+        setVisibleSlides(slidesToDisplay);
       }
     };
 
