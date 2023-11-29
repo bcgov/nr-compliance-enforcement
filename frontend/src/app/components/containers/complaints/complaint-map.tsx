@@ -9,6 +9,7 @@ import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multipl
 import {
   getComplaintsOnMap,
   selectComplaintLocations,
+  selectTotalUnmappedComplaintsOnMapByType,
   setComplaintsOnMap,
 } from "../../../store/reducers/complaint-locations";
 
@@ -68,6 +69,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
 
   const coordinatesArray = useAppSelector(selectComplaintLocations(type));
+  const unmappedComplaints = useAppSelector(selectTotalUnmappedComplaintsOnMapByType(type));
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
@@ -107,6 +109,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
     <LeafletMapWithMultiplePoints
       complaint_type={type}
       markers={coordinatesArray}
+      unmapped_complaints={unmappedComplaints}
     />
   );
 };
