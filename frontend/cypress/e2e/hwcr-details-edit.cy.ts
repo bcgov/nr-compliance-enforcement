@@ -229,7 +229,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
     cy.get("#caller-name-id").click({ force: true }).clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
-      .clear()
+      .click({ force: true }).clear()
       .type(originalCallerInformation.address);
     cy.get("#complaint-email-id").click({ force: true }).clear().type(originalCallerInformation.email);
 
