@@ -27,13 +27,16 @@ import { SearchResults } from "../complaint/models/search-results";
 import { getIdirFromRequest } from "src/common/get-user";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { REQUEST } from "@nestjs/core";
-import { MapReturn } from "src/types/complaints/map-return-type";
+import { MapSearchResults } from "../../../src/types/complaints/map-search-results"
 
 @Injectable({ scope: Scope.REQUEST })
 export class AllegationComplaintService {
   private readonly logger = new Logger(AllegationComplaintService.name);
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor(
+    @Inject(REQUEST) private request: Request,
+    private dataSource: DataSource
+  ) {}
   @InjectRepository(AllegationComplaint)
   private allegationComplaintsRepository: Repository<AllegationComplaint>;
   @InjectRepository(Office)
@@ -163,8 +166,10 @@ export class AllegationComplaintService {
 
     //-- only return complaints for the agency the user is associated with
     const agency = await this._getAgencyByUser();
-    if(agency){ 
-      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+    if (agency) {
+      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
+        agency: agency.agency_code,
+      });
     }
 
     //-- apply sorting
@@ -183,54 +188,63 @@ export class AllegationComplaintService {
     return { complaints: data, totalCount: totalCount };
   };
 
-  searchMap = async (
-    model: SearchPayload
-  ): Promise<MapReturn> => {
+  searchMap = async (model: SearchPayload): Promise<MapSearchResults> => {
     const { query } = model;
 
     //-- build generic wildlife query
-    let builder = this._getAllegationQuery();
+    let complaintBuilder = this._getAllegationQuery();
 
     //-- apply search
     if (query) {
-      builder = this._applySearch(builder, query);
+      complaintBuilder = this._applySearch(complaintBuilder, query);
     }
 
     //-- apply filters
-    builder = this._applyAllegationQueryFilters(
-      builder,
+    complaintBuilder = this._applyAllegationQueryFilters(
+      complaintBuilder,
       model
     );
 
     //-- filter locations without coordinates
-    builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
-    builder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+    complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+    complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
     //-- only return complaints for the agency the user is associated with
     const agency = await this._getAgencyByUser();
-    if(agency){ 
-      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+    if (agency) {
+      complaintBuilder.andWhere(
+        "complaint.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      );
     }
 
-    let mapReturn: MapReturn = {complaints: [], unmappedComplaints: 0};
+    const mappedComplaints = await complaintBuilder.getMany();
 
-    mapReturn.complaints = await builder.getMany();
     //-- build generic wildlife query
-    let builder2 = this._getAllegationQuery();
+    let unMappedBuilder = this._getAllegationQuery();
 
     //-- apply search
     if (query) {
-      builder2 = this._applySearch(builder2, query);
+      unMappedBuilder = this._applySearch(unMappedBuilder, query);
     }
 
     //-- apply filters
-    builder2 = this._applyAllegationQueryFilters(builder2, model);
+    unMappedBuilder = this._applyAllegationQueryFilters(unMappedBuilder, model);
 
     //-- filter locations without coordinates
-    builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");
-    builder2.andWhere("ST_Y(complaint.location_geometry_point) = 0");
-    mapReturn.unmappedComplaints = await builder2.getCount();
-    return mapReturn;
+    unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+    unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+
+    if (agency) {
+      unMappedBuilder.andWhere(
+        "complaint.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      );
+    }
+
+    const unmappedComplaints = await unMappedBuilder.getCount();
+
+    return { complaints: mappedComplaints, unmappedComplaints };
   };
 
   async update(
@@ -327,7 +341,10 @@ export class AllegationComplaintService {
       .andWhere("complaint_identifier.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+      .andWhere(
+        "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      )
       .getCount();
 
     const totalAssignedComplaints = await this.allegationComplaintsRepository
@@ -346,7 +363,10 @@ export class AllegationComplaintService {
       .andWhere("complaint_identifier.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+      .andWhere(
+        "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      )
       .getCount();
 
     const officeQuery = await this.cosGeoOrgUnitRepository
@@ -389,7 +409,10 @@ export class AllegationComplaintService {
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
         })
-        .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+        .andWhere(
+          "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
 
       offices[i].assigned = await assignedComplaintsQuery.getCount();
 
@@ -403,7 +426,11 @@ export class AllegationComplaintService {
         .where("area_code.offloc_code = :zoneOfficeCode", { zoneOfficeCode })
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
-        }).andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+        })
+        .andWhere(
+          "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
 
       offices[i].unassigned =
         (await totalComplaintsQuery.getCount()) - offices[i].assigned;
@@ -462,7 +489,10 @@ export class AllegationComplaintService {
             .andWhere("complaint_identifier.complaint_status_code = :status", {
               status: "OPEN",
             })
-            .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+            .andWhere(
+              "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+              { agency: agency.agency_code }
+            );
 
         officers[j].allegationAssigned =
           await assignedOfficerComplaintsQuery.getCount();
@@ -585,9 +615,8 @@ export class AllegationComplaintService {
     }
 
     if (officerAssigned) {
-      if (officerAssigned === "Unassigned")
-      {
-        //Special case for unassigned 
+      if (officerAssigned === "Unassigned") {
+        //Special case for unassigned
         builder.andWhere("people.person_complaint_xref_guid IS NULL");
       } else {
         builder.andWhere("people.person_complaint_xref_code = :Assignee", {
@@ -597,8 +626,8 @@ export class AllegationComplaintService {
           PersonGuid: officerAssigned,
         });
       }
-    } 
-    
+    }
+
     if (violationCode) {
       builder.andWhere("allegation.violation_code = :ViolationCode", {
         ViolationCode: violationCode,
@@ -729,7 +758,9 @@ export class AllegationComplaintService {
     const result = await builder.getOne();
 
     //-- pull the user's agency from the query results and return the agency code
-    const { office_guid: { agency_code} } = result
+    const {
+      office_guid: { agency_code },
+    } = result;
     return agency_code;
   };
 }

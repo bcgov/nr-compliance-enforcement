@@ -28,13 +28,16 @@ import { SearchPayload } from "../complaint/models/search-payload";
 import { REQUEST } from "@nestjs/core";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { getIdirFromRequest } from "src/common/get-user";
-import { MapReturn } from "src/types/complaints/map-return-type";
+import { MapSearchResults } from "src/types/complaints/map-search-results";
 
 @Injectable({ scope: Scope.REQUEST })
 export class HwcrComplaintService {
   private readonly logger = new Logger(HwcrComplaintService.name);
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor(
+    @Inject(REQUEST) private request: Request,
+    private dataSource: DataSource
+  ) {}
   @InjectRepository(HwcrComplaint)
   private hwcrComplaintsRepository: Repository<HwcrComplaint>;
   @InjectRepository(CosGeoOrgUnit)
@@ -151,8 +154,10 @@ export class HwcrComplaintService {
 
     //-- only return complaints for the agency the user is associated with
     const agency = await this._getAgencyByUser();
-    if(agency){ 
-      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+    if (agency) {
+      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
+        agency: agency.agency_code,
+      });
     }
 
     const [data, totalCount] = await builder
@@ -163,51 +168,60 @@ export class HwcrComplaintService {
     return { complaints: data, totalCount: totalCount };
   };
 
-  searchMap = async (model: SearchPayload): Promise<MapReturn> => {
+  searchMap = async (model: SearchPayload): Promise<MapSearchResults> => {
     const { query } = model;
 
     //-- build generic wildlife query
-    let builder = this._getWildlifeQuery();
+    let complaintBuilder = this._getWildlifeQuery();
 
     //-- apply search
     if (query) {
-      builder = this._applySearch(builder, query);
+      complaintBuilder = this._applySearch(complaintBuilder, query);
     }
 
     //-- apply filters
-    builder = this._applyWildlifeQueryFilters(builder, model);
+    complaintBuilder = this._applyWildlifeQueryFilters(complaintBuilder, model);
 
     //-- filter locations without coordinates
-    builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
-    builder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+    complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+    complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
     //-- only return complaints for the agency the user is associated with
     const agency = await this._getAgencyByUser();
-    if(agency){ 
-      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+    if (agency) {
+      complaintBuilder.andWhere(
+        "complaint.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      );
     }
 
-    let mapReturn: MapReturn = {complaints: [], unmappedComplaints: 0};
-
-    mapReturn.complaints = await builder.getMany();
+    const mappedComplaints = await complaintBuilder.getMany();
 
     //-- build generic wildlife query
-    let builder2 = this._getWildlifeQuery();
+    let unMappedBuilder = this._getWildlifeQuery();
 
     //-- apply search
     if (query) {
-      builder2 = this._applySearch(builder2, query);
+      unMappedBuilder = this._applySearch(unMappedBuilder, query);
     }
 
     //-- apply filters
-    builder2 = this._applyWildlifeQueryFilters(builder2, model);
+    unMappedBuilder = this._applyWildlifeQueryFilters(unMappedBuilder, model);
 
     //-- filter locations without coordinates
-    builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");
-    builder2.andWhere("ST_Y(complaint.location_geometry_point) = 0");
-    mapReturn.unmappedComplaints = await builder2.getCount();
+    unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+    unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
-    return mapReturn;
+    if (agency) {
+      unMappedBuilder.andWhere(
+        "complaint.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      );
+    }
+
+    const unmappedComplaints = await unMappedBuilder.getCount();
+
+    return { complaints: mappedComplaints, unmappedComplaints };
   };
 
   findAll = async (
@@ -344,7 +358,10 @@ export class HwcrComplaintService {
       .andWhere("complaint_identifier.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+      .andWhere(
+        "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      )
       .getCount();
 
     const totalAssignedComplaints = await this.hwcrComplaintsRepository
@@ -363,7 +380,10 @@ export class HwcrComplaintService {
       .andWhere("complaint_identifier.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+      .andWhere(
+        "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+        { agency: agency.agency_code }
+      )
       .getCount();
 
     const officeQuery = await this.cosGeoOrgUnitRepository
@@ -406,7 +426,10 @@ export class HwcrComplaintService {
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
         })
-        .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+        .andWhere(
+          "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
 
       offices[i].assigned = await assignedComplaintsQuery.getCount();
 
@@ -421,7 +444,10 @@ export class HwcrComplaintService {
         .andWhere("complaint_identifier.complaint_status_code = :status", {
           status: "OPEN",
         })
-        .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+        .andWhere(
+          "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
 
       offices[i].unassigned =
         (await totalComplaintsQuery.getCount()) - offices[i].assigned;
@@ -480,7 +506,10 @@ export class HwcrComplaintService {
             .andWhere("complaint_identifier.complaint_status_code = :status", {
               status: "OPEN",
             })
-            .andWhere("complaint_identifier.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
+            .andWhere(
+              "complaint_identifier.owned_by_agency_code.agency_code = :agency",
+              { agency: agency.agency_code }
+            );
 
         officers[j].hwcrAssigned =
           await assignedOfficerComplaintsQuery.getCount();
@@ -627,11 +656,9 @@ export class HwcrComplaintService {
       });
     }
 
-
     if (officerAssigned) {
-      if (officerAssigned === "Unassigned")
-      {
-        //Special case for unassigned 
+      if (officerAssigned === "Unassigned") {
+        //Special case for unassigned
         builder.andWhere("people.person_complaint_xref_guid IS NULL");
       } else {
         builder.andWhere("people.person_complaint_xref_code = :Assignee", {
@@ -641,8 +668,8 @@ export class HwcrComplaintService {
           PersonGuid: officerAssigned,
         });
       }
-    } 
-    
+    }
+
     if (natureOfComplaint) {
       builder.andWhere(
         "wildlife.hwcr_complaint_nature_code = :NatureOfComplaint",
@@ -787,7 +814,9 @@ export class HwcrComplaintService {
     const result = await builder.getOne();
 
     //-- pull the user's agency from the query results and return the agency code
-    const { office_guid: { agency_code} } = result
+    const {
+      office_guid: { agency_code },
+    } = result;
     return agency_code;
   };
 }
