@@ -4,7 +4,7 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch } from "../../hooks/hooks";
 import { generateApiParameters, get } from "../../common/api";
 import { formatDateTime } from "../../common/methods";
-import { BsImageFill, BsCloudDownload, BsTrash } from "react-icons/bs";
+import { BsCloudDownload, BsTrash } from "react-icons/bs";
 import { COMSObject } from "../../types/coms/object";
 import config from "../../../config";
 import AttachmentIcon from "./attachment-icon";
