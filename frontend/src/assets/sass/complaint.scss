@@ -691,6 +691,7 @@ p {
   align-items: center; /* Vertically center items */
   height: 46px; /* Set the container's height */
   width: 1330px;
+  margin: 7px 0px;
 }
 
 .comp-filter-left {
@@ -1036,11 +1037,12 @@ p {
 
 .complaint-filter-image-container {
   float: left;
-  margin: 0px 5px 0px 10px;
+  margin: 0px 0px 0px 7px;
 }
 
 .filter-image-spacing {
-  margin-right: 5px;
+  margin-right: 7px;
+  margin-bottom: 3px;
 }
 
 .input-field-select__option {
@@ -1067,6 +1069,16 @@ p {
   border-radius: 3px;
   background-color: #fbeaea;
   color: $bc-gov-danger;
+}
+
+.comp-map-unmapped-alert {
+  margin: 7px 0px;
+  padding: 16px;
+  border: 1px solid #C7C7C7;
+  border-radius: 4px;
+  background-color: #F2F2F2;
+  color: $black;
+  width: 1330px;
 }
 
 .display-none {
@@ -1096,7 +1108,7 @@ p {
 }
 
 .map-list-toggle {
-  margin-left: 10px;
+  margin-left: 3px;
   font-size: 12px;
   height: 38px;
   z-index: 0 !important;

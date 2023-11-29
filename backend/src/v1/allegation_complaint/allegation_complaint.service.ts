@@ -27,6 +27,7 @@ import { SearchResults } from "../complaint/models/search-results";
 import { getIdirFromRequest } from "src/common/get-user";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { REQUEST } from "@nestjs/core";
+import { MapReturn } from "src/types/complaints/map-return-type";
 
 @Injectable({ scope: Scope.REQUEST })
 export class AllegationComplaintService {
@@ -184,7 +185,7 @@ export class AllegationComplaintService {
 
   searchMap = async (
     model: SearchPayload
-  ): Promise<Array<AllegationComplaint>> => {
+  ): Promise<MapReturn> => {
     const { query } = model;
 
     //-- build generic wildlife query
@@ -198,7 +199,7 @@ export class AllegationComplaintService {
     //-- apply filters
     builder = this._applyAllegationQueryFilters(
       builder,
-      model as SearchPayload
+      model
     );
 
     //-- filter locations without coordinates
@@ -211,7 +212,25 @@ export class AllegationComplaintService {
       builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
     }
 
-    return builder.getMany();
+    let mapReturn: MapReturn = {complaints: [], unmappedComplaints: 0};
+
+    mapReturn.complaints = await builder.getMany();
+    //-- build generic wildlife query
+    let builder2 = this._getAllegationQuery();
+
+    //-- apply search
+    if (query) {
+      builder2 = this._applySearch(builder2, query);
+    }
+
+    //-- apply filters
+    builder2 = this._applyAllegationQueryFilters(builder2, model);
+
+    //-- filter locations without coordinates
+    builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");
+    builder2.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+    mapReturn.unmappedComplaints = await builder2.getCount();
+    return mapReturn;
   };
 
   async update(

@@ -28,6 +28,7 @@ import { SearchPayload } from "../complaint/models/search-payload";
 import { REQUEST } from "@nestjs/core";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { getIdirFromRequest } from "src/common/get-user";
+import { MapReturn } from "src/types/complaints/map-return-type";
 
 @Injectable({ scope: Scope.REQUEST })
 export class HwcrComplaintService {
@@ -162,7 +163,7 @@ export class HwcrComplaintService {
     return { complaints: data, totalCount: totalCount };
   };
 
-  searchMap = async (model: SearchPayload): Promise<HwcrComplaint[]> => {
+  searchMap = async (model: SearchPayload): Promise<MapReturn> => {
     const { query } = model;
 
     //-- build generic wildlife query
@@ -174,7 +175,7 @@ export class HwcrComplaintService {
     }
 
     //-- apply filters
-    builder = this._applyWildlifeQueryFilters(builder, model as SearchPayload);
+    builder = this._applyWildlifeQueryFilters(builder, model);
 
     //-- filter locations without coordinates
     builder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
@@ -186,7 +187,27 @@ export class HwcrComplaintService {
       builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code})
     }
 
-    return builder.getMany();
+    let mapReturn: MapReturn = {complaints: [], unmappedComplaints: 0};
+
+    mapReturn.complaints = await builder.getMany();
+
+    //-- build generic wildlife query
+    let builder2 = this._getWildlifeQuery();
+
+    //-- apply search
+    if (query) {
+      builder2 = this._applySearch(builder2, query);
+    }
+
+    //-- apply filters
+    builder2 = this._applyWildlifeQueryFilters(builder2, model);
+
+    //-- filter locations without coordinates
+    builder2.andWhere("ST_X(complaint.location_geometry_point) = 0");
+    builder2.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+    mapReturn.unmappedComplaints = await builder2.getCount();
+
+    return mapReturn;
   };
 
   findAll = async (
