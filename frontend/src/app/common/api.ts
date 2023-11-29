@@ -205,3 +205,44 @@ export const put = <T, M = {}>(
       });
   });
 };
+
+export const putFile = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>,
+  headers: {},
+  file: File,
+): Promise<T> => {
+  let config: AxiosRequestConfig = { headers: headers };
+
+  const formData = new FormData();
+  if (file)
+  formData.append('file', file); 
+
+  return new Promise<T>((resolve, reject) => {
+    const { url, requiresAuthentication } = parameters;
+
+    if (requiresAuthentication) {
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+    }
+
+    axios
+      .put(url, file, config)
+      .then((response: AxiosResponse) => {
+        const { status } = response;
+
+        if (status === STATUS_CODES.Unauthorized) {
+          window.location = KEYCLOAK_URL;
+        }
+
+        resolve(response.data as T);
+      })
+      .catch((error: AxiosError) => {
+        if (parameters.enableNotification) {
+          dispatch(toggleNotification("error", error.message));
+        }
+        reject(error);
+      });
+  });
+};
