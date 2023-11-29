@@ -96,6 +96,8 @@ jobs:
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
                         -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV}}
+                        -p COMS_URL=${{vars.COMS_URL_DEV}}
+                        -p COMS_BUCKET=${{vars.COMS_BUCKET_DEV}}
           - name: init
             file: common/openshift.init.yml
             overwrite: false
