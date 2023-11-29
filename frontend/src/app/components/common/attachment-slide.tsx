@@ -6,6 +6,7 @@ import { generateApiParameters, get } from "../../common/api";
 import { formatDateTime } from "../../common/methods";
 import { BsImageFill, BsCloudDownload, BsTrash } from "react-icons/bs";
 import { COMSObject } from "../../types/coms/object";
+import config from "../../../config";
 
 type Props = {
   index: number;
@@ -23,9 +24,9 @@ export const AttachmentSlide: FC<Props> = ({
   // download attachment
   const handleAttachmentClick = async (objectid: string, filename: string) => {
     const parameters = generateApiParameters(
-      `${process.env.REACT_APP_COMS_URL}/object/${objectid}?download=url`
+      `${config.COMS_URL}/object/${objectid}?download=url`
     );
-    console.log(`${process.env.REACT_APP_COMS_URL}/object`);
+
     const response = await get<string>(dispatch, parameters);
 
     // Create an anchor element to trigger the download.  Note that the href is a pre-signed URL valid for 7 days (this is a COMS/Objectstore feature)

@@ -5,6 +5,7 @@ import { generateApiParameters, get } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
+import config from "../../../config";
 
 
 const initialState: AttachmentsState = {
@@ -36,9 +37,8 @@ export const { setAttachments } = attachmentsSlice.actions;
 export const getAttachments  = (complaint_identifier: string): AppThunk => async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${process.env.REACT_APP_COMS_URL}/object?bucketId=${process.env.REACT_APP_COMS_BUCKET}`
+        `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      console.log(`${process.env.REACT_APP_COMS_URL}/object`);
       const response = await get<Array<Officer>>(dispatch, parameters,{'x-amz-meta-complaint-id':complaint_identifier});
       if (response && from(response).any()) {
         dispatch(
