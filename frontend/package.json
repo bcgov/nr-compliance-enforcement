@@ -134,7 +134,7 @@
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "cypress": "^12.10.0",
+    "cypress": "^12.15.0",
     "eslint": "^8.24.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-standard-with-typescript": "^34.0.0",
