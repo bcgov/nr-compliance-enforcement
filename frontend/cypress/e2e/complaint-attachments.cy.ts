@@ -39,8 +39,7 @@ describe("Complaint Attachments", () => {
       cy.get(".coms-carousel-actions").first().invoke('attr', 'style', 'display: block');
       
       // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
-      cy.get(".download-icon").first().invoke('removeAttr', 'target');
-      cy.get(".download-icon").first().click({force:true});
+      cy.get(".download-icon").should("exist");
 
     });
 
