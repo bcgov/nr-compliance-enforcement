@@ -13,25 +13,23 @@ import {
   getAttachments,
   setAttachments,
 } from "../../store/reducers/objectstore";
-import {
-  BsArrowLeftShort,
-  BsArrowRightShort,
-} from "react-icons/bs";
+import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
-
 
 type Props = {
   complaintIdentifier: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
+  onFilesSelected?: (attachments: FileList) => void;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
   complaintIdentifier,
   allowUpload,
   allowDelete,
+  onFilesSelected
 }) => {
   const dispatch = useAppDispatch();
   const carouselData = useSelector(
@@ -42,14 +40,17 @@ export const AttachmentsCarousel: FC<Props> = ({
   const [visibleSlides, setVisibleSlides] = useState<number>(4); // Adjust the initial number of visible slides as needed
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
-
   const [slides, setSlides] = useState<COMSObject[]>([]);
 
+  // new attachments that have been added to the complaint, but not yet saved
+  const [newAttachments, setNewAttachments] = useState<FileList>();
+
+  // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
     if (carouselData) {
       setSlides(carouselData);
     }
-  },[carouselData])
+  }, [carouselData]);
 
   // get the attachments when the complaint loads
   useEffect(() => {
@@ -63,25 +64,40 @@ export const AttachmentsCarousel: FC<Props> = ({
     };
   }, []);
 
-  const onFileSelect = (newFile: File) => {
-    const newSlide: COMSObject = {
-      name: newFile.name,
-      id: "",
-      path: "",
-      public: false,
-      active: false,
-      bucketId: "",
-      createdBy: "",
-      createdAt: new Date(),
-      updatedBy: "",
-      updatedAt: new Date()
-    };
-    setSlides([...slides, newSlide]);
+  // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
+  const onFileSelect = (newFiles: FileList) => {
+    const filesArray = Array.from(newFiles);
+    let newSlides: COMSObject[] = [];
+    filesArray.forEach((file) => {
+      const newSlide: COMSObject = {
+        name: file.name,
+        id: "",
+        path: "",
+        public: false,
+        active: false,
+        bucketId: "",
+        createdBy: "",
+        updatedBy: "",
+        toBeUploaded: true
+      };
+
+      newSlides.push(newSlide);
+      setNewAttachments(newFiles);
+      if (onFilesSelected) {
+        onFilesSelected(newFiles);
+      }
+      
+    });
+
+    setSlides([...newSlides, ...slides]);
   };
 
+  const onFileRemove = (fileName: string) => {
+    setSlides(slides => slides.filter(slide => slide.name !== fileName));
+  }
 
+  // calculates how many slides will fit on the page
   useEffect(() => {
-
     const calcualteSlidesToDisplay = (containerWidth: number): number => {
       const SLIDE_WIDTH = 299; // width of a slide if 289, plus 10 for gap
       const slidesToDisplay = Math.floor(containerWidth / SLIDE_WIDTH);
@@ -90,7 +106,7 @@ export const AttachmentsCarousel: FC<Props> = ({
       } else {
         return slidesToDisplay <= 1 ? 1 : slidesToDisplay;
       }
-    }
+    };
 
     // Function to update the number of visible slides based on the parent container width
     const updateVisibleSlides = () => {
@@ -116,7 +132,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
       <h6>Attachments ({slides?.length ? slides.length : 0})</h6>
-      
+
       {(allowUpload || (slides && slides?.length > 0)) && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
@@ -132,11 +148,20 @@ export const AttachmentsCarousel: FC<Props> = ({
             <BsArrowRightShort />
           </ButtonNext>
           {allowUpload && (
-            <AttachmentUpload complaintIdentifier={complaintIdentifier} onFileSelect={onFileSelect}/>
+            <AttachmentUpload
+              complaintIdentifier={complaintIdentifier}
+              onFileSelect={onFileSelect}
+            />
           )}
           <Slider className="coms-slider">
             {slides?.map((item, index) => (
-              <AttachmentSlide key={item.name} attachment={item} index={index} allowDelete={allowDelete} />
+              <AttachmentSlide
+                key={item.name}
+                attachment={item}
+                index={index}
+                allowDelete={allowDelete}
+                onFileRemove={() => onFileRemove(item.name)}
+              />
             ))}
           </Slider>
         </CarouselProvider>

@@ -12,6 +12,7 @@ import AttachmentIcon from "./attachment-icon";
 type Props = {
   index: number;
   attachment: COMSObject;
+  onFileRemove: (slideId: number) => void;
   allowDelete?: boolean;
 };
 
@@ -19,6 +20,7 @@ export const AttachmentSlide: FC<Props> = ({
   index,
   attachment,
   allowDelete,
+  onFileRemove
 }) => {
   const dispatch = useAppDispatch();
 
@@ -43,14 +45,15 @@ export const AttachmentSlide: FC<Props> = ({
     <Slide index={index} key={index}>
       <div className="coms-carousel-slide">
         <div className="coms-carousel-actions">
-          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} />}
+          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(index)}  />}
+          {!attachment.toBeUploaded && (
           <BsCloudDownload
             tabIndex={index}
             className="download-icon"
             onClick={() =>
               handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)
             }
-          />
+          />)}
         </div>
         <div className="top-section">
         <AttachmentIcon filename={attachment.name}/>
@@ -58,7 +61,7 @@ export const AttachmentSlide: FC<Props> = ({
         <div className="bottom-section">
           <div className="slide_text slide_file_name">{attachment.name}</div>
           <div className="slide_text">
-            {formatDateTime(attachment.createdAt.toString())}
+            {formatDateTime(attachment.createdAt?.toString())}
           </div>
         </div>
       </div>

@@ -60,6 +60,8 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
+import { generateApiParameters, putFile } from "../../../../common/api";
+import config from "../../../../../config";
 
 type ComplaintParams = {
   id: string;
@@ -122,6 +124,44 @@ export const ComplaintDetailsEdit: FC = () => {
     );
   };
 
+  const [attachments, setAttachments] = useState<FileList | null>(null);
+
+  const handleAddAttachments = (selectedFiles: FileList) => {
+    setAttachments(selectedFiles);
+  };
+
+  const handleUpload = async () => {
+    debugger;
+    if (attachments) {
+      const attachmentsArray = Array.from(attachments);
+      attachmentsArray.forEach((attachment) => {
+        const header = {
+          "x-amz-meta-complaint-id": id,
+          "Content-Disposition": `attachment; filename=${attachment?.name}`,
+          "Content-Type": attachment?.type,
+        };
+
+        const formData = new FormData();
+        formData.append("file", attachment);
+
+        try {
+          const parameters = generateApiParameters(
+            `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
+          );
+
+          const response = putFile<string>(
+            dispatch,
+            parameters,
+            header,
+            attachment
+          );
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+      });
+    }
+  };
+
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
   );
@@ -154,7 +194,8 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
-    }
+    };
+    handleUpload();
   };
 
   useEffect(() => {
@@ -1615,7 +1656,12 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
-          <AttachmentsCarousel complaintIdentifier={id} allowUpload={true} allowDelete={true}/>
+          <AttachmentsCarousel
+            complaintIdentifier={id}
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={handleAddAttachments}
+          />
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
@@ -1628,9 +1674,7 @@ export const ComplaintDetailsEdit: FC = () => {
           />
         </>
       )}
-      {readOnly && (
-        <AttachmentsCarousel complaintIdentifier={id}/>
-      )}
+      {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
       {readOnly && (
         <ComplaintLocation
           coordinates={{ lat: +latitude, lng: +longitude }}
