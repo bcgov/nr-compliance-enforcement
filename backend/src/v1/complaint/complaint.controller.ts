@@ -1,25 +1,27 @@
-import { Controller, Get, Body, Patch, Param, UseGuards } from '@nestjs/common';
-import { ComplaintService } from './complaint.service';
-import { CreateComplaintDto } from './dto/create-complaint.dto';
-import { UpdateComplaintDto } from './dto/update-complaint.dto';
-import { Role } from '../../enum/role.enum';
-import { Roles } from '../../auth/decorators/roles.decorator';
-import { JwtRoleGuard } from '../../auth/jwtrole.guard';
-import { ApiTags } from '@nestjs/swagger';
-import { COMPLAINT_TYPE } from '../../types/complaints/complaint-type';
-import { WildlifeComplaintDto } from '../../types/models/complaints/wildlife-complaint';
-import { AllegationComplaintDto } from '../../types/models/complaints/allegation-complaint';
+import { Controller, Get, Body, Patch, Param, UseGuards, Query } from "@nestjs/common";
+import { ComplaintService } from "./complaint.service";
+import { CreateComplaintDto } from "./dto/create-complaint.dto";
+import { UpdateComplaintDto } from "./dto/update-complaint.dto";
+import { Role } from "../../enum/role.enum";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { ApiTags } from "@nestjs/swagger";
+import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
+import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
 @Controller({
-  path: 'complaint',
-  version: '1'})
+  path: "complaint",
+  version: "1",
+})
 export class ComplaintController {
   constructor(private readonly service: ComplaintService) {}
 
   create(createComplaintDto: CreateComplaintDto) {
-    return 'This action adds a new geoOrgUnitStructure';
+    return "This action adds a new geoOrgUnitStructure";
   }
 
   @Get()
@@ -28,9 +30,12 @@ export class ComplaintController {
     return this.service.findAll();
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: string, @Body() updateComplaintDto: UpdateComplaintDto) {
+  update(
+    @Param("id") id: string,
+    @Body() updateComplaintDto: UpdateComplaintDto
+  ) {
     return this.service.update(id, updateComplaintDto);
   }
 
@@ -45,5 +50,14 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE
   ): Promise<Array<WildlifeComplaintDto | AllegationComplaintDto>> {
     return await this.service.findAllByType(complaintType);
+  }
+
+  @Get("/search/:complaintType")
+  @Roles(Role.COS_OFFICER)
+  search(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters
+  ) {
+    return this.service.search(complaintType, model);
   }
 }

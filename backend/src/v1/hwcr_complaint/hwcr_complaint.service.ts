@@ -165,7 +165,7 @@ export class HwcrComplaintService {
       .take(pageSize)
       .getManyAndCount();
 
-    return { complaints: data, totalCount: totalCount };
+    return { complaints: [], totalCount: totalCount };
   };
 
   searchMap = async (model: SearchPayload): Promise<MapSearchResults> => {
