@@ -10,4 +10,5 @@ export default interface Profile {
   region: string;
   zone: string;
   zoneDescription: string;
+  agency: string;
 }
