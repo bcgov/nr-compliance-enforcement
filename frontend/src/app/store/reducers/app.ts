@@ -86,7 +86,8 @@ export const openModal = ({
   modalSize,
   hideCallback = null,
   modalIsStatic = false,
-}: ModalProperties) => ({
+}: ModalProperties) => (
+  {
   type: ActionTypes.SHOW_MODAL,
   modalType,
   callback,
@@ -383,6 +384,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SHOW_MODAL: {
       const {
         callback,
+        
         data,
         hideCallback,
         modalIsStatic,

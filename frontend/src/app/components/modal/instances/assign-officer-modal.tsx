@@ -19,9 +19,7 @@ import { UUID } from "crypto";
 type AssignOfficerModalProps = {
   close: () => void;
   submit: () => void;
-  complaint_identifier: string;
   complaint_type: string;
-  complaint_guid: string;
   zone: string;
   agency: string;
 };
@@ -44,7 +42,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
 
-  const officersJson = useAppSelector(selectOfficersByZoneAndAgency(agency, zone));
+  const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData.complaint_agency, zone));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (index: number, person_guid: string) => {

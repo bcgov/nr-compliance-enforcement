@@ -44,6 +44,7 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
           zone: zone,
+          complaint_agency: complaint_agency,
         },
       })
     );
@@ -60,7 +61,6 @@ export const ComplaintActionItems: FC<Props> = ({
           description: "Status",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
-          complaint_agency: complaint_agency,
         },
       })
     );

@@ -238,8 +238,7 @@ export const selectOfficersByZone =
         const zoneCode =
           officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
         const agencyCode =
-          officer?.agency_code?.agency_code ?? null;
-        return (zone === zoneCode && agency === agencyCode);
+          officer?.office_guid?.agency_code?.agency_code ?? null;
       });
     }
 

@@ -23,7 +23,6 @@ export interface Officer {
   auth_user_guid: string;
   office_guid: OfficeGUID;
   person_guid: Person;
-  agency_code: AgencyCode;
 }
 
 export interface OfficeGUID {
@@ -33,6 +32,7 @@ export interface OfficeGUID {
   update_user_id: string;
   update_utc_timestamp: Date;
   cos_geo_org_unit: CosGeoOrgUnit;
+  agency_code: AgencyCode;
 }
 
 export interface CosGeoOrgUnit {
