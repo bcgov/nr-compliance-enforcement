@@ -13,6 +13,8 @@ const config = {
     window.REACT_APP_KEYCLOAK_URL || process.env.REACT_APP_KEYCLOAK_URL,
   KEYCLOAK_REALM:
     window.REACT_APP_KEYCLOAK_REALM || process.env.REACT_APP_KEYCLOAK_REALM,
+  COMS_URL: window.REACT_APP_COMS_URL || process.env.REACT_APP_COMS_URL,
+  COMS_BUCKET: window.REACT_APP_COMS_BUCKET || process.env.REACT_APP_COMS_BUCKET,
 };
 
 export default config;

@@ -73,8 +73,9 @@ export const generateApiParameters = <T = {}>(
 export const get = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
+  headers?: {}
 ): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: {} };
+  let config: AxiosRequestConfig = { headers: headers };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
