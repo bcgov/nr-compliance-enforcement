@@ -342,6 +342,7 @@ button.modal-buttons {
 .self-assign {
   &:hover {
     background-color: $white;
+    cursor: default;
     }
 }
 
