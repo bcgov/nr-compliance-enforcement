@@ -171,3 +171,13 @@ export const truncateString = (str: string, maxLength: number): string=> {
     return str;
   }
 }
+
+export const removeFile = (fileList: FileList, fileToRemove: File): File[] => {
+  // Convert the FileList to an array
+  const filesArray = Array.from(fileList);
+
+  // Filter out the file you want to remove
+  const updatedFilesArray = filesArray.filter(file => file !== fileToRemove);
+
+  return updatedFilesArray;
+}

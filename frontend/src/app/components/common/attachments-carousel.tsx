@@ -25,18 +25,20 @@ type Props = {
   allowUpload?: boolean;
   allowDelete?: boolean;
   onFilesSelected?: (attachments: FileList) => void;
+  onFileDeleted?: (attachments: COMSObject) => void;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
   complaintIdentifier,
   allowUpload,
   allowDelete,
-  onFilesSelected
+  onFilesSelected,
+  onFileDeleted,
 }) => {
   const dispatch = useAppDispatch();
 
   // max file size for uploads
-  const maxFileSize = useAppSelector(selectMaxFileSize);
+  const maxFileSize = useAppSelector(selectMaxFileSize) * 1_000_000; // convert MB to Bytes 
 
   const carouselData = useSelector(
     (state: RootState) => state.attachments.attachments
@@ -52,6 +54,8 @@ export const AttachmentsCarousel: FC<Props> = ({
   useEffect(() => {
     if (carouselData) {
       setSlides(carouselData);
+    } else {
+      setSlides([])
     }
   }, [carouselData]);
 
@@ -60,12 +64,12 @@ export const AttachmentsCarousel: FC<Props> = ({
     dispatch(getAttachments(complaintIdentifier));
   }, [complaintIdentifier, dispatch]);
 
-  //-- when the component unmounts clear the complaint from redux
+  //-- when the component unmounts clear the attachments from redux
   useEffect(() => {
     return () => {
       dispatch(setAttachments({}));
     };
-  }, []);
+  }, [dispatch]);
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = (newFiles: FileList) => {
@@ -84,22 +88,26 @@ export const AttachmentsCarousel: FC<Props> = ({
         pendingUpload: true
       };
 
-      if (file.size > maxFileSize) {
+      if (file.size > maxFileSize) { // add error message and remove file from newFiles
         newSlide.errorMesage = `Error: file too large`;
       }
 
       newSlides.push(newSlide);
-      if (onFilesSelected) {
-        onFilesSelected(newFiles);
-      }
       
     });
+    
+    if (onFilesSelected) {
+      onFilesSelected(newFiles);
+    }
 
     setSlides([...newSlides, ...slides]);
   };
 
-  const onFileRemove = (fileName: string) => {
-    setSlides(slides => slides.filter(slide => slide.name !== fileName));
+  const onFileRemove = (attachment: COMSObject) => {
+    setSlides(slides => slides.filter(slide => slide.name !== attachment.name));
+    if (onFileDeleted) {
+      onFileDeleted(attachment);
+    }
   }
 
   // calculates how many slides will fit on the page
@@ -107,7 +115,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     const calcualteSlidesToDisplay = (containerWidth: number): number => {
       const SLIDE_WIDTH = 299; // width of a slide if 289, plus 10 for gap
       const slidesToDisplay = Math.floor(containerWidth / SLIDE_WIDTH);
-      if (allowUpload) {
+      if (allowUpload) { // account for the upload slide (which adds another slide to the carousel)
         return slidesToDisplay <= 1 ? 1 : slidesToDisplay - 1;
       } else {
         return slidesToDisplay <= 1 ? 1 : slidesToDisplay;
@@ -132,6 +140,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     return () => {
       window.removeEventListener("resize", updateVisibleSlides);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -165,7 +174,7 @@ export const AttachmentsCarousel: FC<Props> = ({
                 attachment={item}
                 index={index}
                 allowDelete={allowDelete}
-                onFileRemove={() => onFileRemove(item.name)}
+                onFileRemove={() => onFileRemove(item)}
               />
             ))}
           </Slider>

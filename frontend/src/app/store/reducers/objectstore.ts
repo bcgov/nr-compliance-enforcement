@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import { Officer } from "../../types/person/person";
-import { generateApiParameters, get, putFile } from "../../common/api";
+import { deleteMethod, generateApiParameters, get, putFile } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
@@ -56,13 +56,41 @@ export const getAttachments =
     }
   };
 
-// Get list of the officers and update store
+  // delete attachments from objectstore
+  export const deleteAttachments =
+    (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
+    async (dispatch) => {
+      if (attachments) {
+        debugger;
+        attachments.forEach(async (attachment) => {
+          try {
+            const parameters = generateApiParameters(
+              `${config.COMS_URL}/object/${attachment.id}`
+            );
+
+            const response = await deleteMethod<string>(
+              dispatch,
+              parameters,
+            );
+
+            if (response) {
+
+            }
+          } catch (error) {
+            console.error("Error deleting file:", error);
+          }
+        })
+      }
+      dispatch(getAttachments(complaint_identifier));
+    }
+
+// save new attachment(s) to object store
 export const saveAttachments =
   (attachments: FileList, complaint_identifier: string): AppThunk =>
   async (dispatch) => {
     if (attachments) {
       const attachmentsArray = Array.from(attachments);
-      attachmentsArray.forEach((attachment) => {
+      attachmentsArray.forEach(async (attachment) => {
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
           "Content-Disposition": `attachment; filename="${injectComplaintIdentifierToFilename(
@@ -80,17 +108,22 @@ export const saveAttachments =
             `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
           );
 
-          putFile<string>(
+          const response = await putFile<string>(
             dispatch,
             parameters,
             header,
             attachment
           );
+
+          if (response) {
+
+          }
         } catch (error) {
           console.error("Error uploading file:", error);
         }
       });
     }
+    dispatch(getAttachments(complaint_identifier));
   };
 
 //-- selectors

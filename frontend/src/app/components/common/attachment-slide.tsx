@@ -12,7 +12,7 @@ import AttachmentIcon from "./attachment-icon";
 type Props = {
   index: number;
   attachment: COMSObject;
-  onFileRemove: (slideId: number) => void;
+  onFileRemove: (attachment: COMSObject) => void;
   allowDelete?: boolean;
 };
 
@@ -65,7 +65,7 @@ export const AttachmentSlide: FC<Props> = ({
               handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)
             }
           />)}
-          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(index)}  />}
+          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(attachment)}  />}
         </div>
         <div className="top-section">
         <AttachmentIcon filename={attachment.name}/>

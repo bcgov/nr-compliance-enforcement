@@ -60,7 +60,8 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { saveAttachments } from "../../../../store/reducers/objectstore";
+import { deleteAttachments, saveAttachments } from "../../../../store/reducers/objectstore";
+import { COMSObject } from "../../../../types/coms/object";
 
 type ComplaintParams = {
   id: string;
@@ -107,6 +108,8 @@ export const ComplaintDetailsEdit: FC = () => {
     setPrimaryPhoneMsg("");
     setSecondaryPhoneMsg("");
     setAlternatePhoneMsg("");
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
   };
 
   const cancelButtonClick = () => {
@@ -123,10 +126,18 @@ export const ComplaintDetailsEdit: FC = () => {
     );
   };
 
-  const [attachments, setAttachments] = useState<FileList | null>(null);
+  // files to add to COMS when complaint is saved
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<FileList | null>(null);
+
+  // files to remove from COMS when complaint is saved
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
 
   const handleAddAttachments = (selectedFiles: FileList) => {
-    setAttachments(selectedFiles);
+    setAttachmentsToAdd(selectedFiles);
+  };
+
+  const handleDeleteAttachment = (file: COMSObject) => {
+    setAttachmentsToDelete(attachmentsToDelete => attachmentsToDelete ? [...attachmentsToDelete, file] : [file]);
   };
 
 
@@ -163,8 +174,12 @@ export const ComplaintDetailsEdit: FC = () => {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
     };
-    if (attachments) {
-      dispatch(saveAttachments(attachments, id));
+    if (attachmentsToAdd) {
+      dispatch(saveAttachments(attachmentsToAdd, id));
+    }
+
+    if (attachmentsToDelete) {
+      dispatch(deleteAttachments(attachmentsToDelete, id))
     }
   };
 
@@ -1631,6 +1646,7 @@ export const ComplaintDetailsEdit: FC = () => {
             allowUpload={true}
             allowDelete={true}
             onFilesSelected={handleAddAttachments}
+            onFileDeleted={handleDeleteAttachment}
           />
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}
