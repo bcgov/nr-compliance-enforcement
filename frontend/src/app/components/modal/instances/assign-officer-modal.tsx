@@ -102,7 +102,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="assign_officer_modal_profile_card">
+        <div className="assign_officer_modal_profile_card self-assign">
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_profile-picture">
               <div
