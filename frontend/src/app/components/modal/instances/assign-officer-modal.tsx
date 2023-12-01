@@ -10,7 +10,6 @@ import {
 } from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
-  selectOfficersByZone,
   selectOfficersByZoneAndAgency,
   updateComplaintAssignee,
 } from "../../../store/reducers/officer";
