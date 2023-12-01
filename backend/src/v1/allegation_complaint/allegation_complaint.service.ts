@@ -322,7 +322,9 @@ export class AllegationComplaintService {
     let builder = this._getAllegationQuery();
     builder.where("complaint.complaint_identifier = :id", { id });
 
-    return builder.getOne();
+const result = await builder.getOne();
+
+    return result;
   }
 
   async getZoneAtAGlanceStatistics(zone: string): Promise<ZoneAtAGlanceStats> {

@@ -644,6 +644,16 @@ export class ComplaintService {
         builder = this._applySearch(builder, complaintType, query);
       }
 
+      //-- apply sort if provided
+      if (sortBy && orderBy) {
+        builder
+          .orderBy(sortString, orderBy)
+          .addOrderBy(
+            "complaint.incident_reported_utc_timestmp",
+            sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC"
+          );
+      }
+
       //-- search and count
       const [complaints, total] =
         page && pageSize

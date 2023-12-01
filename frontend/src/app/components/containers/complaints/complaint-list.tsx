@@ -24,6 +24,9 @@ import { AllegationComplaintListItem } from "./list-items/allegation-complaint-l
 import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import ComplaintPagination from "../../common/complaint-pagination";
 
+//-- new models
+import { AllegationComplaint as AllegationComplaintModel } from "../../../types/app/complaints/allegation-complaint";
+
 type Props = {
   type: string;
   searchQuery?: string;
@@ -83,7 +86,7 @@ export const generateComplaintRequestPayload = (
 export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
   const complaints = useAppSelector(selectComplaintsByType(type));
- 
+
   const totalComplaints = useAppSelector(selectTotalComplaintsByType(type));
   const defaultPageSize = useAppSelector(selectDefaultPageSize);
 
@@ -190,7 +193,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
       <Table id="complaint-list">
         {renderComplaintListHeader(type)}
         <tbody>
-          {complaints?.map((item) => {
+          {/* {complaints?.map((item) => {
             const { complaint_identifier: complaint } = item;
             const { complaint_identifier } = complaint;
 
@@ -212,6 +215,24 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
                     complaint={item as HwcrComplaint}
                   />
                 );
+            }
+          })} */}
+          {complaints.map((item) => {
+            switch (type) {
+              case COMPLAINT_TYPES.ERS: {
+                const { id } = item as AllegationComplaintModel;
+                return (
+                  <AllegationComplaintListItem
+                    key={id}
+                    type={type}
+                    complaint={item as AllegationComplaintModel}
+                  />
+                );
+              }
+              case COMPLAINT_TYPES.HWCR:
+              default: {
+                return <>wildlife</>;
+              }
             }
           })}
         </tbody>

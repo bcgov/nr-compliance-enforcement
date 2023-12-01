@@ -30,6 +30,8 @@ import { ToggleSuccess, ToggleError } from "../../common/toast";
 import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
 import { Coordinates } from "../../types/app/coordinate-type";
 
+import { AllegationComplaint as AllegationComplaintModel } from "../../types/app/complaints/allegation-complaint";
+
 const initialState: ComplaintState = {
   complaintItems: {
     wildlife: null,
@@ -182,20 +184,11 @@ export const getComplaints =
     try {
       dispatch(setComplaint(null));
 
-      const apiEndpoint = (type: string): string => {
-        switch (type) {
-          case COMPLAINT_TYPES.ERS:
-            return "allegation-complaint";
-          default:
-            return "hwcr-complaint";
-        }
-      };
-
       let parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/${apiEndpoint(complaintType)}/search`,
+        `${config.API_BASE_URL}/v1/complaint/search/${complaintType}`,
         {
-          sortColumn: sortColumn,
-          sortOrder: sortOrder,
+          sortBy: sortColumn,
+          orderBy: sortOrder,
           region: regionCodeFilter?.value,
           zone: zoneCodeFilter?.value,
           community: areaCodeFilter?.value,
@@ -871,18 +864,18 @@ export const selectAllegationZagOpenComplaints = (
 
 export const selectWildlifeComplaints = (
   state: RootState,
-): Array<HwcrComplaint> | null => {
+): Array<HwcrComplaint> => {
   const {
     complaints: { complaintItems },
   } = state;
   const { wildlife } = complaintItems;
 
-  return wildlife;
+  return !wildlife ? [] : wildlife;
 };
 
 export const selectAllegationComplaints = (
   state: RootState,
-): Array<AllegationComplaint> => {
+): Array<any> => {
   const {
     complaints: { complaintItems },
   } = state;
@@ -903,7 +896,7 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<HwcrComplaint | AllegationComplaint> | null => {
+  (state: RootState): Array<HwcrComplaint> | Array<AllegationComplaintModel> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);

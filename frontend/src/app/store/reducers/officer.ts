@@ -77,6 +77,7 @@ export const assignCurrentUserToComplaint =
   ): AppThunk =>
   async (dispatch) => {
     try {
+      debugger
       let officerParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`
       );
@@ -134,6 +135,7 @@ export const updateComplaintAssignee =
   ): AppThunk =>
   async (dispatch) => {
     try {
+      debugger
       // add new person complaint record
       const payload = {
         active_ind: true,
@@ -179,7 +181,8 @@ export const updateComplaintAssignee =
         );
       }
     } catch (error) {
-      // console.log(error);
+      debugger
+      console.log(error);
     }
   };
 
