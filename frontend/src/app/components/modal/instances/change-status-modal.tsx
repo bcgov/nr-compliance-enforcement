@@ -108,7 +108,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
           Cancel
         </Button>
         <Button id="update_complaint_status_button" onClick={handleSubmit}>
-          Update
+          Update Status
         </Button>
       </Modal.Footer>
     </>
