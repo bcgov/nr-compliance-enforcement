@@ -95,7 +95,7 @@ export const ComplaintActionItems: FC<Props> = ({
         overlay={
           
             <Tooltip id={`tt-update-${complaint_identifier}`} className="comp-tooltip">
-              Update
+              Update Status
             </Tooltip>
         }
       >
