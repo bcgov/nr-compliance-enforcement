@@ -103,9 +103,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only", function () {
     //start edit
     cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
-    cy.get("#caller-name-id").clear().type(editCallerInformation.name);
-    cy.get("#complaint-address-id").clear().type(editCallerInformation.address);
-    cy.get("#complaint-email-id").clear().type(editCallerInformation.email);
+    cy.get("#caller-name-id").click({ force: true }).clear().type(editCallerInformation.name);
+    cy.get("#complaint-address-id").click({ force: true }).clear().type(editCallerInformation.address);
+    cy.get("#complaint-email-id").click({ force: true }).clear().type(editCallerInformation.email);
 
     cy.get("#caller-primary-phone-id").click({ force: true });
     cy.get("#caller-primary-phone-id").clear();
@@ -114,16 +114,16 @@ describe("Complaint Edit Page spec - Edit View", () => {
     );
 
     cy.get("#caller-info-secondary-phone-id")
-      .clear()
+    .click({ force: true }).clear()
       .typeAndTriggerChange(editCallerInformation.secondaryInput);
     cy.get("#caller-info-alternate-phone-id")
-      .clear()
+    .click({ force: true }).clear()
       .typeAndTriggerChange(editCallerInformation.alternateInput);
 
     cy.selectItemById("referred-select-id", editCallerInformation.referred);
 
-    cy.get("#location-edit-id").click({ force: true });
-    cy.get("#location-edit-id").clear().type(editCallDetails.location);
+    cy.get("#location-edit-id").click({ force: true }).click({ force: true });
+    cy.get("#location-edit-id").click({ force: true }).clear().type(editCallDetails.location);
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,
     });
@@ -132,7 +132,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       .type(editCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
-      .clear()
+      .click({ force: true }).clear()
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -227,11 +227,11 @@ describe("Complaint Edit Page spec - Edit View", () => {
   it("Puts everything back to the original details", function () {
     //start reverting changes
     cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
-    cy.get("#caller-name-id").clear().type(originalCallerInformation.name);
+    cy.get("#caller-name-id").click({ force: true }).clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
-      .clear()
+      .click({ force: true }).clear()
       .type(originalCallerInformation.address);
-    cy.get("#complaint-email-id").clear().type(originalCallerInformation.email);
+    cy.get("#complaint-email-id").click({ force: true }).clear().type(originalCallerInformation.email);
 
     cy.get("#caller-primary-phone-id").click({ force: true });
     cy.get("#caller-primary-phone-id").clear();
@@ -240,10 +240,10 @@ describe("Complaint Edit Page spec - Edit View", () => {
     );
 
     cy.get("#caller-info-secondary-phone-id")
-      .clear()
+      .click({ force: true }).clear()
       .typeAndTriggerChange(originalCallerInformation.secondaryInput);
     cy.get("#caller-info-alternate-phone-id")
-      .clear()
+      .click({ force: true }).clear()
       .typeAndTriggerChange(originalCallerInformation.alternateInput);
 
     cy.selectItemById("referred-select-id", originalCallerInformation.referred);
@@ -253,7 +253,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,
     });
-    cy.get("#complaint-location-description-textarea-id").clear(); //original blank
+    cy.get("#complaint-location-description-textarea-id").click({ force: true }).clear(); //original blank
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
       .clear()

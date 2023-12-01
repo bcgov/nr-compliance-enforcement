@@ -59,7 +59,6 @@ export const complaintSlice = createSlice({
       const { complaintItems } = state;
 
       let update: ComplaintCollection = { wildlife: [], allegations: [] };
-
       switch (type) {
         case COMPLAINT_TYPES.ERS:
           update = { ...complaintItems, allegations: data };
@@ -68,7 +67,6 @@ export const complaintSlice = createSlice({
           update = { ...complaintItems, wildlife: data };
           break;
       }
-
       return { ...state, complaintItems: update };
     },
     setTotalCount(state, action) {

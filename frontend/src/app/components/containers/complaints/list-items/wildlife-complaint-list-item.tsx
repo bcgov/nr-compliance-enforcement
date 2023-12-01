@@ -207,6 +207,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 complaint_identifier={id}
                 complaint_type={type}
                 zone={zone ?? ""}
+                complaint_agency=""
               />
               <span className={!isExpanded ? "comp-table-update-date" : ""}>
                 {updatedOnDateTime}
@@ -257,6 +258,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 complaint_identifier={id}
                 complaint_type={type}
                 zone={zone ?? ""}
+                complaint_agency=""
               />
             </div>
           </td>

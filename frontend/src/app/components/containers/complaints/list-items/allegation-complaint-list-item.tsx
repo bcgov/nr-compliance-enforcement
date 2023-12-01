@@ -48,7 +48,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     return code.areaName;
   };
 
-  const getStatusDescription = (input: string): string => {
+    const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
     return code.longDescription;
   };
@@ -208,6 +208,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 complaint_identifier={id}
                 complaint_type={type}
                 zone={zone ?? ""}
+                complaint_agency=""
               />
               <span className={!isExpanded ? "comp-table-update-date" : ""}>
                 {updatedOnDateTime}
@@ -257,6 +258,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 complaint_identifier={id}
                 complaint_type={type}
                 zone={zone ?? ""}
+                complaint_agency=""
               />
             </div>
           </td>

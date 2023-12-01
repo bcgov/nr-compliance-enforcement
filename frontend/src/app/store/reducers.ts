@@ -8,6 +8,7 @@ import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
 import complaintLocations from "./reducers/complaint-locations";
+import attachments from "./reducers/objectstore";
 
 const appPersistConfig = {
 	key: "app",
@@ -22,4 +23,5 @@ export const rootReducer = combineReducers({
   complaints,
   codeTables,
   complaintLocations,
+  attachments,
 });

@@ -9,6 +9,7 @@ type Props = {
   complaint_identifier: string;
   complaint_type: string;
   complaint_zone: string;
+  complaint_agency: string;
   sortColumn: string;
   sortOrder: string;
   assigned_ind: boolean;
@@ -23,6 +24,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
   complaint_identifier,
   complaint_type,
   complaint_zone,
+  complaint_agency,
   assigned_ind,
   sortColumn,
   sortOrder,
@@ -98,6 +100,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
           zone: complaint_zone,
+          complaint_agency: complaint_agency,
         },
       }),
     );

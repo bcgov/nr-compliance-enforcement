@@ -10,7 +10,7 @@ import {
 } from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
-  selectOfficersByZone,
+  selectOfficersByZoneAndAgency,
   updateComplaintAssignee,
 } from "../../../store/reducers/officer";
 import { UUID } from "crypto";
@@ -18,10 +18,9 @@ import { UUID } from "crypto";
 type AssignOfficerModalProps = {
   close: () => void;
   submit: () => void;
-  complaint_identifier: string;
   complaint_type: string;
-  complaint_guid: string;
   zone: string;
+  agency: string;
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
@@ -30,6 +29,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   submit,
   complaint_type,
   zone,
+  agency,
 }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
@@ -41,7 +41,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
 
-  const officersJson = useAppSelector(selectOfficersByZone(zone));
+  const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData.complaint_agency, zone));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (index: number, person_guid: string) => {
@@ -102,7 +102,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="assign_officer_modal_profile_card">
+        <div className="assign_officer_modal_profile_card self-assign">
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_profile-picture">
               <div
