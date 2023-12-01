@@ -19,13 +19,12 @@ import {
   selectDefaultZone,
 } from "../../../store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
-import { HwcrComplaint } from "../../../types/complaints/hwcr-complaint";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
-import { AllegationComplaint } from "../../../types/complaints/allegation-complaint";
 import ComplaintPagination from "../../common/complaint-pagination";
 
 //-- new models
-import { AllegationComplaint as AllegationComplaintModel } from "../../../types/app/complaints/allegation-complaint";
+import { AllegationComplaint } from "../../../types/app/complaints/allegation-complaint";
+import { WildlifeComplaint } from "../../../types/app/complaints/wildlife-complaint";
 
 type Props = {
   type: string;
@@ -193,45 +192,28 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
       <Table id="complaint-list">
         {renderComplaintListHeader(type)}
         <tbody>
-          {/* {complaints?.map((item) => {
-            const { complaint_identifier: complaint } = item;
-            const { complaint_identifier } = complaint;
+          {complaints.map((item) => {
+            const { id } = item;
 
             switch (type) {
-              case COMPLAINT_TYPES.ERS:
-                return (
-                  <AllegationComplaintListItem
-                    key={complaint_identifier}
-                    type={type}
-                    complaint={item as AllegationComplaint}
-                  />
-                );
-              case COMPLAINT_TYPES.HWCR:
-              default:
-                return (
-                  <WildlifeComplaintListItem
-                    key={complaint_identifier}
-                    type={type}
-                    complaint={item as HwcrComplaint}
-                  />
-                );
-            }
-          })} */}
-          {complaints.map((item) => {
-            switch (type) {
               case COMPLAINT_TYPES.ERS: {
-                const { id } = item as AllegationComplaintModel;
                 return (
                   <AllegationComplaintListItem
                     key={id}
                     type={type}
-                    complaint={item as AllegationComplaintModel}
+                    complaint={item as AllegationComplaint}
                   />
                 );
               }
               case COMPLAINT_TYPES.HWCR:
               default: {
-                return <>wildlife</>;
+                return (
+                  <WildlifeComplaintListItem
+                    key={id}
+                    type={type}
+                    complaint={item as WildlifeComplaint}
+                  />
+                );
               }
             }
           })}

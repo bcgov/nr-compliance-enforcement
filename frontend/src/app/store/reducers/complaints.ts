@@ -31,10 +31,11 @@ import { ComplaintSearchResults } from "../../types/api-params/complaint-results
 import { Coordinates } from "../../types/app/coordinate-type";
 
 import { AllegationComplaint as AllegationComplaintModel } from "../../types/app/complaints/allegation-complaint";
+import { WildlifeComplaint } from "../../types/app/complaints/wildlife-complaint";
 
 const initialState: ComplaintState = {
   complaintItems: {
-    wildlife: null,
+    wildlife: [],
     allegations: [],
   },
   totalCount: 0,
@@ -98,48 +99,48 @@ export const complaintSlice = createSlice({
       state,
       action: PayloadAction<HwcrComplaint>,
     ) => {
-      const { payload: updatedComplaint } = action;
-      const { complaintItems } = state;
-      const { wildlife } = complaintItems;
+      // const { payload: updatedComplaint } = action;
+      // const { complaintItems } = state;
+      // const { wildlife } = complaintItems;
 
-      if (wildlife) {
-        const index = wildlife.findIndex(
-          ({ hwcr_complaint_guid }) =>
-            hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid,
-        );
+      // if (wildlife) {
+      //   const index = (wildlife as Array<HwcrComplaint>).findIndex(
+      //     ({ hwcr_complaint_guid }) =>
+      //       hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid,
+      //   );
 
-        if (index !== -1) {
-          const update = [...wildlife];
-          update[index] = updatedComplaint;
+      //   if (index !== -1) {
+      //     const update = [...wildlife];
+      //     update[index] = updatedComplaint;
 
-          const updatedItems = { ...complaintItems, wildlife: update };
+      //     const updatedItems = { ...complaintItems, wildlife: update };
 
-          return { ...state, complaintItems: updatedItems };
-        }
-      }
+      //     return { ...state, complaintItems: updatedItems };
+      //   }
+      // }
     },
     updateAllegationComplaintByRow: (
       state,
       action: PayloadAction<AllegationComplaint>,
     ) => {
-      const { payload: updatedComplaint } = action;
-      const { complaintItems } = state;
-      const { allegations } = complaintItems;
+      // const { payload: updatedComplaint } = action;
+      // const { complaintItems } = state;
+      // const { allegations } = complaintItems;
 
-      const index = allegations.findIndex(
-        ({ allegation_complaint_guid }) =>
-          allegation_complaint_guid ===
-          updatedComplaint.allegation_complaint_guid,
-      );
+      // const index = allegations.findIndex(
+      //   ({ allegation_complaint_guid }) =>
+      //     allegation_complaint_guid ===
+      //     updatedComplaint.allegation_complaint_guid,
+      // );
 
-      if (index !== -1) {
-        const update = [...allegations];
-        update[index] = updatedComplaint;
+      // if (index !== -1) {
+      //   const update = [...allegations];
+      //   update[index] = updatedComplaint;
 
-        const updatedItems = { ...complaintItems, allegations: update };
+      //   const updatedItems = { ...complaintItems, allegations: update };
 
-        return { ...state, complaintItems: updatedItems };
-      }
+      //   return { ...state, complaintItems: updatedItems };
+      // }
     },
   },
 
@@ -864,13 +865,13 @@ export const selectAllegationZagOpenComplaints = (
 
 export const selectWildlifeComplaints = (
   state: RootState,
-): Array<HwcrComplaint> => {
+): Array<WildlifeComplaint> => {
   const {
     complaints: { complaintItems },
   } = state;
   const { wildlife } = complaintItems;
 
-  return !wildlife ? [] : wildlife;
+  return wildlife;
 };
 
 export const selectAllegationComplaints = (
@@ -896,7 +897,7 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<HwcrComplaint> | Array<AllegationComplaintModel> => {
+  (state: RootState): Array<WildlifeComplaint> | Array<AllegationComplaintModel> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);

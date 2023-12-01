@@ -25,6 +25,10 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS)
   );
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isRowHovered, setIsRowHovered] = useState(false);
+  const [isExpandedClass, setIsExpandedClass] = useState("");
+
   const {
     id,
     reportedOn,
@@ -101,10 +105,6 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
       : "badge comp-status-badge-open";
 
   const inProgressFlag = isInProgress ? "In Progress" : "";
-
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isRowHovered, setIsRowHovered] = useState(false);
-  const [isExpandedClass, setIsExpandedClass] = useState("");
 
   const toggleExpand = () => {
     if (isExpanded) {

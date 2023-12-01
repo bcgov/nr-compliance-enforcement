@@ -1,3 +1,5 @@
+import { WildlifeComplaint } from "../app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintModel } from "../app/complaints/allegation-complaint";
 import { AllegationComplaint } from "../complaints/allegation-complaint";
 import { HwcrComplaint } from "../complaints/hwcr-complaint";
 import { Feature } from "../maps/bcGeocoderType";
@@ -12,8 +14,8 @@ export interface ComplaintState {
 }
 
 export interface ComplaintCollection {
-  wildlife: Array<HwcrComplaint> | null;
-  allegations: Array<AllegationComplaint>;
+  wildlife: Array<WildlifeComplaint>;
+  allegations: Array<AllegationComplaintModel>;
 }
 
 export interface Coordinate {
