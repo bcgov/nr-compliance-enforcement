@@ -12,7 +12,7 @@ import {
   getAvatarInitials,
 } from "../../../../common/methods";
 import { Button } from "react-bootstrap";
-import { BsPersonPlus, BsPencil } from "react-icons/bs";
+import { BsPersonPlus, BsPencil, BsArrowRepeat } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import {
   AssignOfficer,
@@ -141,7 +141,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   variant="outline-primary"
                   onClick={openStatusChangeModal}
                 >
-                  Update Status
+                  <span>Update Status</span>
+                  <BsArrowRepeat />
                 </Button>
                 <Button
                   id="details-screen-edit-button"
