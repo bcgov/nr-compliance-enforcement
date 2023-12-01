@@ -25,7 +25,7 @@ export const AttachmentUpload: FC<Props> = ({ complaintIdentifier, onFileSelect 
       <div>
         <input type="file" multiple onChange={handleFileChange} ref={fileInputRef} 
         style={{ display: 'none' }} />
-        <div className="coms-carousel-upload-container" onClick={handleDivClick}>
+        <div className="coms-carousel-upload-container" onClick={handleDivClick} onKeyDown={handleDivClick} role="button">
           <div className="upload-icon">
             <BsPlus />
           </div>

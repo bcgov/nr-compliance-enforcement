@@ -4,7 +4,6 @@ import {
   bcBoundaries,
   formatDate,
   formatTime,
-  injectComplaintIdentifierToFilename,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
@@ -61,8 +60,6 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { generateApiParameters, putFile } from "../../../../common/api";
-import config from "../../../../../config";
 import { saveAttachments } from "../../../../store/reducers/objectstore";
 
 type ComplaintParams = {

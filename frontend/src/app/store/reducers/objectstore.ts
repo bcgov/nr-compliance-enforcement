@@ -80,7 +80,7 @@ export const saveAttachments =
             `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
           );
 
-          const response = putFile<string>(
+          putFile<string>(
             dispatch,
             parameters,
             header,
