@@ -113,7 +113,6 @@ export const AttachmentsCarousel: FC<Props> = ({
         return slidesToDisplay <= 1 ? 1 : slidesToDisplay;
       }
     };
-
     // Function to update the number of visible slides based on the parent container width
     const updateVisibleSlides = () => {
       if (carouselContainerRef.current) {

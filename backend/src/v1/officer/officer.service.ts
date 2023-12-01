@@ -62,6 +62,7 @@ export class OfficerService {
         person_guid: {},
         office_guid: {
           cos_geo_org_unit: true,
+          agency_code: true
         },
       },
     });
