@@ -1,5 +1,4 @@
 import { FC, useRef } from "react";
-import { useAppDispatch } from "../../hooks/hooks";
 import { BsPlus } from "react-icons/bs";
 
 type Props = {

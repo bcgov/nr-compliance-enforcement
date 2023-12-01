@@ -1,15 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import { Officer } from "../../types/person/person";
-import { generateApiParameters, get } from "../../common/api";
+import { generateApiParameters, get, putFile } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
-
+import { injectComplaintIdentifierToFilename } from "../../common/methods";
 
 const initialState: AttachmentsState = {
-    attachments: [],
+  attachments: [],
 };
 
 export const attachmentsSlice = createSlice({
@@ -34,17 +34,21 @@ export const attachmentsSlice = createSlice({
 export const { setAttachments } = attachmentsSlice.actions;
 
 // Get list of the officers and update store
-export const getAttachments  = (complaint_identifier: string): AppThunk => async (dispatch) => {
+export const getAttachments =
+  (complaint_identifier: string): AppThunk =>
+  async (dispatch) => {
     try {
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      const response = await get<Array<Officer>>(dispatch, parameters,{'x-amz-meta-complaint-id':complaint_identifier});
+      const response = await get<Array<Officer>>(dispatch, parameters, {
+        "x-amz-meta-complaint-id": complaint_identifier,
+      });
       if (response && from(response).any()) {
         dispatch(
           setAttachments({
             attachments: response,
-          }),
+          })
         );
       }
     } catch (error) {
@@ -52,14 +56,49 @@ export const getAttachments  = (complaint_identifier: string): AppThunk => async
     }
   };
 
-//-- selectors
+// Get list of the officers and update store
+export const saveAttachments =
+  (attachments: FileList, complaint_identifier: string): AppThunk =>
+  async (dispatch) => {
+    if (attachments) {
+      const attachmentsArray = Array.from(attachments);
+      attachmentsArray.forEach((attachment) => {
+        const header = {
+          "x-amz-meta-complaint-id": complaint_identifier,
+          "Content-Disposition": `attachment; filename="${injectComplaintIdentifierToFilename(
+            attachment.name,
+            complaint_identifier
+          )}"`,
+          "Content-Type": attachment?.type,
+        };
 
+        const formData = new FormData();
+        formData.append("file", attachment);
+
+        try {
+          const parameters = generateApiParameters(
+            `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
+          );
+
+          const response = putFile<string>(
+            dispatch,
+            parameters,
+            header,
+            attachment
+          );
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+      });
+    }
+  };
+
+//-- selectors
 export const selectAttachments = (state: RootState): COMSObject[] | null => {
   const { attachments: attachmentsRoot } = state;
   const { attachments } = attachmentsRoot;
 
   return attachments ?? null;
 };
-
 
 export default attachmentsSlice.reducer;

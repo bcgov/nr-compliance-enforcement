@@ -20,7 +20,7 @@ export const AttachmentSlide: FC<Props> = ({
   index,
   attachment,
   allowDelete,
-  onFileRemove
+  onFileRemove,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -41,12 +41,23 @@ export const AttachmentSlide: FC<Props> = ({
     a.click();
   };
 
+  const getSlideClass = () => {
+    let className = "";
+
+    if (attachment.errorMesage) {
+      className = "error-slide";
+    } else if (attachment.pendingUpload) {
+      className = "pending-slide";
+    }
+
+    return className;
+  }
+
   return (
     <Slide index={index} key={index}>
-      <div className="coms-carousel-slide">
+      <div className={`coms-carousel-slide ${getSlideClass()}`}>
         <div className="coms-carousel-actions">
-          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(index)}  />}
-          {!attachment.toBeUploaded && (
+        {!attachment.pendingUpload && (
           <BsCloudDownload
             tabIndex={index}
             className="download-icon"
@@ -54,15 +65,22 @@ export const AttachmentSlide: FC<Props> = ({
               handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)
             }
           />)}
+          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(index)}  />}
         </div>
         <div className="top-section">
         <AttachmentIcon filename={attachment.name}/>
         </div>
         <div className="bottom-section">
-          <div className="slide_text slide_file_name">{attachment.name}</div>
-          <div className="slide_text">
-            {formatDateTime(attachment.createdAt?.toString())}
+          <div className="slide_text slide_file_name" title={attachment.name}>{attachment.name}</div>
+          {attachment?.pendingUpload && attachment?.errorMesage ? (
+          <div>
+            {attachment?.errorMesage}
           </div>
+          ) : (
+          <div className="slide_text">
+            {attachment?.pendingUpload ? 'Pending upload...' : formatDateTime(attachment.createdAt?.toString())}
+          </div>
+          )}
         </div>
       </div>
     </Slide>

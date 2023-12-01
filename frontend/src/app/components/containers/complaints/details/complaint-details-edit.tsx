@@ -4,6 +4,7 @@ import {
   bcBoundaries,
   formatDate,
   formatTime,
+  injectComplaintIdentifierToFilename,
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
@@ -62,6 +63,7 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { generateApiParameters, putFile } from "../../../../common/api";
 import config from "../../../../../config";
+import { saveAttachments } from "../../../../store/reducers/objectstore";
 
 type ComplaintParams = {
   id: string;
@@ -130,37 +132,6 @@ export const ComplaintDetailsEdit: FC = () => {
     setAttachments(selectedFiles);
   };
 
-  const handleUpload = async () => {
-    debugger;
-    if (attachments) {
-      const attachmentsArray = Array.from(attachments);
-      attachmentsArray.forEach((attachment) => {
-        const header = {
-          "x-amz-meta-complaint-id": id,
-          "Content-Disposition": `attachment; filename=${attachment?.name}`,
-          "Content-Type": attachment?.type,
-        };
-
-        const formData = new FormData();
-        formData.append("file", attachment);
-
-        try {
-          const parameters = generateApiParameters(
-            `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
-          );
-
-          const response = putFile<string>(
-            dispatch,
-            parameters,
-            header,
-            attachment
-          );
-        } catch (error) {
-          console.error("Error uploading file:", error);
-        }
-      });
-    }
-  };
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -195,7 +166,9 @@ export const ComplaintDetailsEdit: FC = () => {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
     };
-    handleUpload();
+    if (attachments) {
+      dispatch(saveAttachments(attachments, id));
+    }
   };
 
   useEffect(() => {

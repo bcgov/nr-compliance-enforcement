@@ -209,6 +209,18 @@ export const selectDefaultPageSize = (state: RootState): any => {
   return 50; // if there is no default in the configuration table, use 50 is the fallback
 };
 
+// get the maximum file size for uploading to COMS (in MB)
+export const selectMaxFileSize = (state: RootState): any => {
+  const { app } = state;
+  const configuration = app.configurations?.configurations?.find(
+    (record) => Configurations.MAX_FILES_SIZE === record.configurationCode
+  );
+  if (configuration?.configurationValue) {
+    return +configuration.configurationValue;
+  }
+  return 5000000; // if there is no default in the configuration table, use 5000000 as the default
+};
+
 export const selectNotification = (state: RootState): NotificationState => {
   const {
     app: { notifications },

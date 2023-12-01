@@ -9,5 +9,6 @@ export interface COMSObject {
   createdAt?: Date;
   updatedBy?: string;
   updatedAt?: Date;
-  toBeUploaded?: boolean
+  pendingUpload?: boolean
+  errorMesage?: string
 }

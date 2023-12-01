@@ -6,7 +6,7 @@ import {
   ButtonNext,
 } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
-import { useAppDispatch } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import {
@@ -17,6 +17,8 @@ import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
+import { injectComplaintIdentifierToFilename } from "../../common/methods";
+import { selectMaxFileSize } from "../../store/reducers/app";
 
 type Props = {
   complaintIdentifier: string;
@@ -32,6 +34,10 @@ export const AttachmentsCarousel: FC<Props> = ({
   onFilesSelected
 }) => {
   const dispatch = useAppDispatch();
+
+  // max file size for uploads
+  const maxFileSize = useAppSelector(selectMaxFileSize);
+
   const carouselData = useSelector(
     (state: RootState) => state.attachments.attachments
   );
@@ -41,9 +47,6 @@ export const AttachmentsCarousel: FC<Props> = ({
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
   const [slides, setSlides] = useState<COMSObject[]>([]);
-
-  // new attachments that have been added to the complaint, but not yet saved
-  const [newAttachments, setNewAttachments] = useState<FileList>();
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
@@ -70,7 +73,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     let newSlides: COMSObject[] = [];
     filesArray.forEach((file) => {
       const newSlide: COMSObject = {
-        name: file.name,
+        name: `${injectComplaintIdentifierToFilename(file.name, complaintIdentifier)}`,
         id: "",
         path: "",
         public: false,
@@ -78,11 +81,14 @@ export const AttachmentsCarousel: FC<Props> = ({
         bucketId: "",
         createdBy: "",
         updatedBy: "",
-        toBeUploaded: true
+        pendingUpload: true
       };
 
+      if (file.size > maxFileSize) {
+        newSlide.errorMesage = `Error: file too large`;
+      }
+
       newSlides.push(newSlide);
-      setNewAttachments(newFiles);
       if (onFilesSelected) {
         onFilesSelected(newFiles);
       }
