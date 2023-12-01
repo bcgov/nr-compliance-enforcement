@@ -28,6 +28,7 @@ export class OfficerService {
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
       .leftJoinAndSelect("officer.person_guid", "person")
+      .leftJoinAndSelect("office.agency_code", "agency")
       .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit")
       .orderBy("person.last_name", "ASC")
       .getMany();
@@ -72,7 +73,10 @@ export class OfficerService {
       where: { officer_guid: officer_guid },
       relations: {
         person_guid: true,
-        office_guid: true,
+        office_guid: {
+          cos_geo_org_unit: true,
+          agency_code: true
+        },
       },
     });
   }

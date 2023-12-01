@@ -27,7 +27,7 @@ import { SearchResults } from "../complaint/models/search-results";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { REQUEST } from "@nestjs/core";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
-import { getIdirFromRequest } from "../../common/get-user";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { MapSearchResults } from "../../../src/types/complaints/map-search-results";
 
 @Injectable({ scope: Scope.REQUEST })

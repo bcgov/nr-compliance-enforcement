@@ -24,7 +24,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { SearchResults } from "../complaint/models/search-results";
-import { getIdirFromRequest } from "../../common/get-user";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { REQUEST } from "@nestjs/core";
 import { MapSearchResults } from "../../../src/types/complaints/map-search-results"

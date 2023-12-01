@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '../../auth/jwtauth.guard';
 import { JwtRoleGuard } from '../../auth/jwtrole.guard';
 import { authGuardMock } from '../../../test/mocks/authGuardMock';
 import { roleGuardMock } from '../../../test/mocks/roleGuardMock';
-import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
+import { MockComplaintsAgencyRepository, MockComplaintsOfficerRepository, MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
 import { getMapperToken } from '@automapper/nestjs';
 import { createMapper } from '@automapper/core';
 import { pojos } from "@automapper/pojos";
@@ -20,12 +20,15 @@ import { MockWildlifeConflictComplaintRepository } from '../../../test/mocks/moc
 import { AgencyCode } from '../agency_code/entities/agency_code.entity';
 import { Officer } from '../officer/entities/officer.entity';
 import { Office } from '../office/entities/office.entity';
+import { ContextIdFactory, REQUEST } from '@nestjs/core';
 
 describe("Testing: Complaint Controller", () => {
   let app: INestApplication;
   let controller: ComplaintController;
 
   beforeEach(async () => {
+
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ComplaintController],
       providers: [
@@ -50,15 +53,21 @@ describe("Testing: Complaint Controller", () => {
         },
         {
           provide: getRepositoryToken(AgencyCode),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockComplaintsAgencyRepository
         },
         {
           provide: getRepositoryToken(Officer),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockComplaintsOfficerRepository
         },
         {
           provide: getRepositoryToken(Office),
           useFactory: MockWildlifeConflictComplaintRepository
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            user: { idir_username: "TEST" }
+          },
         },
       ],
     })
@@ -71,7 +80,7 @@ describe("Testing: Complaint Controller", () => {
     app = module.createNestApplication();
     await app.init();
 
-    controller = module.get<ComplaintController>(ComplaintController);
+    controller = await module.resolve<ComplaintController>(ComplaintController);
   });
 
   it("should be defined", () => {
@@ -79,6 +88,9 @@ describe("Testing: Complaint Controller", () => {
   });
 
   it("should return 200 when a GET is called successfully", async () => {
+//     const contextId = ContextIdFactory.create();
+// jest.spyOn(ContextIdFactory, 'getByRequest').mockImplementation(() => contextId);
+
     //-- arrange
    const _type = "HWCR"
 
@@ -89,7 +101,7 @@ describe("Testing: Complaint Controller", () => {
     expect(response.statusCode).toBe(200);
 
     response = await request(app.getHttpServer()).get(
-      `/Complaint/search/${_type}`
+      `/Complaint/search/${_type}?orderBy=ASC&sortBy=complaint_identifier&page=1&pageSize=50`
     );
     expect(response.statusCode).toBe(200);
   });

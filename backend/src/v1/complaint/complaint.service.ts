@@ -31,10 +31,9 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "./models/search-results";
-import { SearchParameters } from "src/types/models/general/search-parameters";
 import { ComplaintFilterParameters } from "src/types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
-import { getIdirFromRequest } from "src/common/get-user";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -692,7 +691,8 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      throw NotFoundException;
+      console.log(error)
+      throw new NotFoundException;
     }
   };
 }
