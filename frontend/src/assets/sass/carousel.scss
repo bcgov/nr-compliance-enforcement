@@ -1,0 +1,147 @@
+.coms-carousel {
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+  padding: 12px;
+  min-height: 230px;
+  max-height: 230px;
+  margin-top: 24px;
+}
+
+.coms-carousel-slide {
+  position: relative;
+  width: 289px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $gray-400;
+  border-radius: 3px;
+  text-align: center;
+  gap: 10px;
+}
+
+.coms-carousel:hover .back-icon, 
+.coms-carousel:hover .next-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.back-icon, .next-icon {
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  font-size: 48px;
+  background-color: $gray-200;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 50%;
+  top: 70px;
+  border: none;
+}
+
+.back-icon {
+  left: 20px;
+}
+
+.next-icon {
+ right: 50px;
+}
+
+.coms-slider {
+  margin-right: 10px;
+}
+
+.delete-icon, .download-icon {
+  font-size: 24px;
+  background-color: $gray-300;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.delete-icon:hover, .download-icon:hover {
+  background-color: $gray-200;
+  cursor: pointer;
+}
+
+.coms-carousel-slide:hover .coms-carousel-actions {
+  display: flex;
+  gap: 10px;
+  
+}
+
+.coms-carousel-slide .top-section {
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $gray-300;
+  font-size: 32px;
+}
+
+.coms-carousel-slide:hover > .top-section {
+  background-color: $gray-400;
+}
+
+.coms-carousel-slide .icon {
+  width: 50px; /* Adjust the size as needed */
+  height: 50px; /* Adjust the size as needed */
+}
+
+.coms-carousel-slide .bottom-section {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: flex-start;
+  padding-left: 16px;
+  font-size: 16px;
+  background-color: white;
+}
+
+.coms-carousel-slide .slide_text {
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-align: left;
+  
+}
+
+.coms-carousel-slide .slide_file_name {
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 250px;
+}
+
+.coms-carousel-upload-container {
+  float: left;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 289px;
+  height: 200px;
+  border: 1px dotted $gray-400;
+  border-radius: 3px;
+  background-color: $gray-110;
+  color: $gray-400;
+}
+
+.upload-icon {
+  font-size: 32px;
+}
+
+.upload-text {
+  font-size: 16px;
+}
+
+.coms-carousel-actions {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}

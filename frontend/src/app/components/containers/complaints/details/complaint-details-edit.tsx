@@ -59,6 +59,7 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
+import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 
 type ComplaintParams = {
   id: string;
@@ -1028,17 +1029,6 @@ export const ComplaintDetailsEdit: FC = () => {
         saveButtonClick={saveButtonClick}
       />
       {readOnly && <CallDetails complaintType={complaintType} />}
-      {readOnly && (
-        <ComplaintLocation
-          coordinates={{ lat: +latitude, lng: +longitude }}
-          complaintType={complaintType}
-          draggable={false}
-          hideMarker={
-            !latitude || !longitude || +latitude === 0 || +longitude === 0
-          }
-          editComponent={true}
-        />
-      )}
       {readOnly && <CallerInformation />}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
         <SuspectWitnessDetails />
@@ -1170,7 +1160,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   <div className="comp-details-input">
                     <i className="bi bi-calendar comp-margin-right-xs"></i>
                     {formatDate(loggedDate)}
-                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
+                    <i className="bi bi-clock comp-margin- left-xs comp-margin-right-xs"></i>
                     {formatTime(loggedDate)}
                   </div>
                 </div>
@@ -1440,16 +1430,6 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           </div>
-          <ComplaintLocation
-            coordinates={{ lat: +latitude, lng: +longitude }}
-            complaintType={complaintType}
-            draggable={true}
-            onMarkerMove={handleMarkerMove}
-            hideMarker={
-              !latitude || !longitude || +latitude === 0 || +longitude === 0
-            }
-            editComponent={true}
-          />
           {/* edit caller info block */}
           <div className="comp-complaint-details-block">
             <h6>Caller Information</h6>
@@ -1635,7 +1615,32 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
+          <AttachmentsCarousel complaintIdentifier={id} allowUpload={true} allowDelete={true}/>
+          <ComplaintLocation
+            coordinates={{ lat: +latitude, lng: +longitude }}
+            complaintType={complaintType}
+            draggable={true}
+            onMarkerMove={handleMarkerMove}
+            hideMarker={
+              !latitude || !longitude || +latitude === 0 || +longitude === 0
+            }
+            editComponent={true}
+          />
         </>
+      )}
+      {readOnly && (
+        <AttachmentsCarousel complaintIdentifier={id}/>
+      )}
+      {readOnly && (
+        <ComplaintLocation
+          coordinates={{ lat: +latitude, lng: +longitude }}
+          complaintType={complaintType}
+          draggable={false}
+          hideMarker={
+            !latitude || !longitude || +latitude === 0 || +longitude === 0
+          }
+          editComponent={true}
+        />
       )}
     </div>
   );

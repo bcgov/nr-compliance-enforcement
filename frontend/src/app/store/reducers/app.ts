@@ -27,6 +27,7 @@ enum ActionTypes {
   CLEAR_NOTIFICATION = "app/CLEAR_NOTIFICATION",
   SET_DEFAULT_ZONE = "app/SET_DEFAULT_ZONE",
   SET_CONFIGURATIONS = "app/CONFIGURATIONS",
+  SET_USER_AGENCY = "app/SET_USER_AGENCY",
 }
 //-- action creators
 
@@ -104,6 +105,11 @@ export const closeModal = () => ({
 export const setOfficerDefaultZone = (name: string, description: string) => ({
   type: ActionTypes.SET_DEFAULT_ZONE,
   payload: { name, description },
+});
+
+export const setOfficerAgency = (agency: string) => ({
+  type: ActionTypes.SET_USER_AGENCY,
+  payload: agency,
 });
 
 //-- selectors
@@ -217,6 +223,14 @@ export const selectNotification = (state: RootState): NotificationState => {
   return notifications;
 };
 
+export const selectOfficerAgency = (state: RootState): string => { 
+  const {
+    profile: { agency },
+  } = state.app;
+
+  return agency
+}
+
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
@@ -238,16 +252,18 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let region = "";
       let zone = "";
       let zoneDescription = "";
+      let agency = "";
 
       if (response.office_guid !== null) {
         const {
-          office_guid: { cos_geo_org_unit: unit },
+          office_guid: { cos_geo_org_unit: unit, agency_code: agencyCode },
         } = response;
 
         office = unit.office_location_code;
         region = unit.region_code;
         zone = unit.zone_code;
         zoneDescription = unit.zone_name;
+        agency = agencyCode.agency_code;
       }
 
       const profile: Profile = {
@@ -260,6 +276,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         region: region,
         zone: zone,
         zoneDescription: zoneDescription,
+        agency
       };
 
       dispatch(setTokenProfile(profile));
@@ -287,12 +304,14 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
 
       if (response.office_guid !== null) {
         const {
-          office_guid: { cos_geo_org_unit: unit },
+          office_guid: { cos_geo_org_unit: unit, agency_code: agency },
         } = response;
+        const { agency_code: agencyCode } = agency;
 
         const { zone_code: name, zone_name: description } = unit;
 
         dispatch(setOfficerDefaultZone(name, description));
+        dispatch(setOfficerAgency(agencyCode));
       }
     } catch (error) {
       //-- handler error
@@ -336,6 +355,7 @@ const initialState: AppState = {
     region: "",
     zone: "",
     zoneDescription: "",
+    agency: "",
   },
   isSidebarOpen: true,
 
@@ -373,6 +393,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         region: payload.region,
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
+        agency: payload.agency
       };
 
       return { ...state, profile };
@@ -450,6 +471,13 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const configuration = { configurations };
 
       return { ...state, configurations: configuration };
+    }
+    case ActionTypes.SET_USER_AGENCY: {
+      const { payload: agency } = action;
+      const { profile } = state;
+      const update = { ...profile, agency };
+
+      return { ...state, profile: update };
     }
     default:
       return state;

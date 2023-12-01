@@ -41,6 +41,12 @@ parameters:
   - name: KEYCLOAK_URL
     description: Keycloak auth url
     value: https://dev.loginproxy.gov.bc.ca/auth
+  - name: COMS_URL
+    description: COMS URL
+    value: https://coms-dev.api.gov.bc.ca/api/v1
+  - name: COMS_BUCKET
+    description: COMS BUCKET
+    value: "b105c416-21cd-44fa-8f5b-175d6ca56e93"
   - name: LOG_LEVEL
     description: Caddy logging level DEBUG, INFO, WARN, ERROR, PANIC, and FATAL (https://github.com/caddyserver/caddy/blob/master/logging.go)
     value: "info"
@@ -102,6 +108,10 @@ objects:
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: KEYCLOAK_URL
                   value: ${KEYCLOAK_URL}
+                - name: COMS_URL
+                  value: ${COMS_URL}
+                - name: COMS_BUCKET
+                  value: ${COMS_BUCKET}
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
               ports:
