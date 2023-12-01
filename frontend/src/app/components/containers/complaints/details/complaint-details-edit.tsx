@@ -174,6 +174,7 @@ export const ComplaintDetailsEdit: FC = () => {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
     };
+    debugger;
     if (attachmentsToAdd) {
       dispatch(saveAttachments(attachmentsToAdd, id));
     }
@@ -181,6 +182,10 @@ export const ComplaintDetailsEdit: FC = () => {
     if (attachmentsToDelete) {
       dispatch(deleteAttachments(attachmentsToDelete, id))
     }
+
+    // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
   };
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
 import { injectComplaintIdentifierToFilename } from "../../common/methods";
+import { ToggleError, ToggleSuccess } from "../../common/toast";
 
 const initialState: AttachmentsState = {
   attachments: [],
@@ -33,7 +34,7 @@ export const attachmentsSlice = createSlice({
 // export the actions/reducers
 export const { setAttachments } = attachmentsSlice.actions;
 
-// Get list of the officers and update store
+// Get list of the attachments and update store
 export const getAttachments =
   (complaint_identifier: string): AppThunk =>
   async (dispatch) => {
@@ -41,7 +42,7 @@ export const getAttachments =
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      const response = await get<Array<Officer>>(dispatch, parameters, {
+      const response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
       });
       if (response && from(response).any()) {
@@ -77,7 +78,7 @@ export const getAttachments =
 
             }
           } catch (error) {
-            console.error("Error deleting file:", error);
+            ToggleError(`Attachment ${attachment.name} could not be deleted`);
           }
         })
       }
@@ -116,10 +117,10 @@ export const saveAttachments =
           );
 
           if (response) {
-
+            ToggleSuccess(`Attachment ${attachment.name} saved`);
           }
         } catch (error) {
-          console.error("Error uploading file:", error);
+          ToggleError(`Attachment ${attachment.name} could not be saved`);
         }
       });
     }
