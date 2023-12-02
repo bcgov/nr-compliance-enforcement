@@ -17,14 +17,13 @@ import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
-import { injectComplaintIdentifierToFilename } from "../../common/methods";
 import { selectMaxFileSize } from "../../store/reducers/app";
 
 type Props = {
   complaintIdentifier: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
-  onFilesSelected?: (attachments: FileList) => void;
+  onFilesSelected?: (attachments: File[]) => void;
   onFileDeleted?: (attachments: COMSObject) => void;
 };
 
@@ -38,7 +37,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   const dispatch = useAppDispatch();
 
   // max file size for uploads
-  const maxFileSize = useAppSelector(selectMaxFileSize) * 1_000_000; // convert MB to Bytes 
+  const maxFileSize = useAppSelector(selectMaxFileSize)
 
   const carouselData = useSelector(
     (state: RootState) => state.attachments.attachments
@@ -73,11 +72,12 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = (newFiles: FileList) => {
+    debugger;
     const filesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
     filesArray.forEach((file) => {
       const newSlide: COMSObject = {
-        name: `${injectComplaintIdentifierToFilename(file.name, complaintIdentifier)}`,
+        name: file.name,
         id: "",
         path: "",
         public: false,
@@ -88,16 +88,17 @@ export const AttachmentsCarousel: FC<Props> = ({
         pendingUpload: true
       };
 
-      if (file.size > maxFileSize) { // add error message and remove file from newFiles
-        newSlide.errorMesage = `Error: file too large`;
+      if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
+        newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
       }
-
+debugger;
       newSlides.push(newSlide);
       
     });
     
     if (onFilesSelected) {
-      onFilesSelected(newFiles);
+      const validFiles = filesArray.filter(file => file.size <= maxFileSize * 1_000_000);
+      onFilesSelected(validFiles);
     }
 
     setSlides([...newSlides, ...slides]);

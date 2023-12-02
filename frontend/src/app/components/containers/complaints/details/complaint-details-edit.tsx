@@ -127,17 +127,21 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   // files to add to COMS when complaint is saved
-  const [attachmentsToAdd, setAttachmentsToAdd] = useState<FileList | null>(null);
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
 
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
 
-  const handleAddAttachments = (selectedFiles: FileList) => {
-    setAttachmentsToAdd(selectedFiles);
+  const handleAddAttachments = (selectedFiles: File[]) => {
+    setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
   };
 
-  const handleDeleteAttachment = (file: COMSObject) => {
-    setAttachmentsToDelete(attachmentsToDelete => attachmentsToDelete ? [...attachmentsToDelete, file] : [file]);
+  const handleDeleteAttachment = (fileToDelete: COMSObject) => {
+    if (!fileToDelete.pendingUpload) {
+      setAttachmentsToDelete(prevFiles => prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]);
+    } else if (attachmentsToAdd) { // we're deleting an attachment that wasn't uploaded, so remove the attachment from the "attachmentsToDelete" state
+      setAttachmentsToAdd(prevAttachments => prevAttachments ? prevAttachments.filter(file => file.name !== fileToDelete.name) : null);     
+    }
   };
 
 
@@ -174,7 +178,6 @@ export const ComplaintDetailsEdit: FC = () => {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
     };
-    debugger;
     if (attachmentsToAdd) {
       dispatch(saveAttachments(attachmentsToAdd, id));
     }

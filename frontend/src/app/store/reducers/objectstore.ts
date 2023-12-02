@@ -87,11 +87,10 @@ export const getAttachments =
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: FileList, complaint_identifier: string): AppThunk =>
+  (attachments: File[], complaint_identifier: string): AppThunk =>
   async (dispatch) => {
     if (attachments) {
-      const attachmentsArray = Array.from(attachments);
-      attachmentsArray.forEach(async (attachment) => {
+      attachments.forEach(async (attachment) => {
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
           "Content-Disposition": `attachment; filename="${injectComplaintIdentifierToFilename(
