@@ -1,13 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import { Officer } from "../../types/person/person";
-import { deleteMethod, generateApiParameters, get, putFile } from "../../common/api";
+import {
+  deleteMethod,
+  generateApiParameters,
+  get,
+  putFile,
+} from "../../common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
 import { injectComplaintIdentifierToFilename } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
+import axios, { AxiosError } from "axios";
 
 const initialState: AttachmentsState = {
   attachments: [],
@@ -57,33 +63,28 @@ export const getAttachments =
     }
   };
 
-  // delete attachments from objectstore
-  export const deleteAttachments =
-    (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
-    async (dispatch) => {
-      if (attachments) {
-        debugger;
-        attachments.forEach(async (attachment) => {
-          try {
-            const parameters = generateApiParameters(
-              `${config.COMS_URL}/object/${attachment.id}`
-            );
+// delete attachments from objectstore
+export const deleteAttachments =
+  (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
+  async (dispatch) => {
+    if (attachments) {
+      attachments.forEach(async (attachment) => {
+        try {
+          const parameters = generateApiParameters(
+            `${config.COMS_URL}/object/${attachment.id}`
+          );
 
-            const response = await deleteMethod<string>(
-              dispatch,
-              parameters,
-            );
+          const response = await deleteMethod<string>(dispatch, parameters);
 
-            if (response) {
-
-            }
-          } catch (error) {
-            ToggleError(`Attachment ${attachment.name} could not be deleted`);
+          if (response) {
           }
-        })
-      }
-      dispatch(getAttachments(complaint_identifier));
+        } catch (error) {
+          ToggleError(`Attachment ${attachment.name} could not be deleted`);
+        }
+      });
     }
+    dispatch(getAttachments(complaint_identifier));
+  };
 
 // save new attachment(s) to object store
 export const saveAttachments =
@@ -119,7 +120,17 @@ export const saveAttachments =
             ToggleSuccess(`Attachment ${attachment.name} saved`);
           }
         } catch (error) {
-          ToggleError(`Attachment ${attachment.name} could not be saved`);
+          if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+              ToggleError(
+                `Attachment ${attachment.name} could not be saved.  Duplicate file.`
+              );
+            } else {
+              ToggleError(`Attachment ${attachment.name} could not be saved.`);
+            }
+          } else {
+            ToggleError(`Attachment ${attachment.name} could not be saved.`);
+          }
         }
       });
     }

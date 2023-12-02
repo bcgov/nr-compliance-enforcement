@@ -72,7 +72,6 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = (newFiles: FileList) => {
-    debugger;
     const filesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
     filesArray.forEach((file) => {
@@ -91,7 +90,6 @@ export const AttachmentsCarousel: FC<Props> = ({
       if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
         newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
       }
-debugger;
       newSlides.push(newSlide);
       
     });
