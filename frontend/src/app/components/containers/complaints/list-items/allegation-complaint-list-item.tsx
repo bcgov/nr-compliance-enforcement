@@ -35,6 +35,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     updatedOn,
     details,
     status,
+    ownedBy,
     violation,
     isInProgress,
     locationDetail,
@@ -208,7 +209,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 complaint_identifier={id}
                 complaint_type={type}
                 zone={zone ?? ""}
-                complaint_agency=""
+                complaint_agency={ownedBy}
               />
               <span className={!isExpanded ? "comp-table-update-date" : ""}>
                 {updatedOnDateTime}
@@ -258,7 +259,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 complaint_identifier={id}
                 complaint_type={type}
                 zone={zone ?? ""}
-                complaint_agency=""
+                complaint_agency={ownedBy}
               />
             </div>
           </td>

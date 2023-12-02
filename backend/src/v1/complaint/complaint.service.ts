@@ -1,6 +1,8 @@
 import { map } from "lodash";
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   Logger,
@@ -34,6 +36,7 @@ import { SearchResults } from "./models/search-results";
 import { ComplaintFilterParameters } from "src/types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { MapSearchResults } from "src/types/complaints/map-search-results";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -691,8 +694,135 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      console.log(error)
-      throw new NotFoundException;
+      this.logger.log(error);
+      throw new HttpException(
+        "Unable to Perform Search",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  };
+
+  mapSearch = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintSearchParameters
+  ): Promise<MapSearchResults> => {
+    const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+
+    try {
+      let results: MapSearchResults = { complaints: [], unmappedComplaints: 0 };
+
+      //-- get the users assigned agency
+      const agency = await this._getAgencyByUser();
+
+      //-- search for complaints
+      let complaintBuilder = this._generateQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        complaintBuilder = this._applySearch(
+          complaintBuilder,
+          complaintType,
+          query
+        );
+      }
+
+      //-- apply filters
+      if (Object.keys(filters).length !== 0) {
+        complaintBuilder = this._applyFilters(
+          complaintBuilder,
+          filters as ComplaintFilterParameters,
+          complaintType
+        );
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      if (agency) {
+        complaintBuilder.andWhere(
+          "complaint.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
+      }
+
+      //-- filter locations without coordinates
+      complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+      complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+
+      //-- run query
+      const mappedComplaints = await complaintBuilder.getMany();
+
+      //-- get unmapable complaints
+      let unMappedBuilder = this._generateQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        unMappedBuilder = this._applySearch(
+          unMappedBuilder,
+          complaintType,
+          query
+        );
+      }
+
+      //-- apply filters
+      if (Object.keys(filters).length !== 0) {
+        unMappedBuilder = this._applyFilters(
+          unMappedBuilder,
+          filters as ComplaintFilterParameters,
+          complaintType
+        );
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      if (agency) {
+        unMappedBuilder.andWhere(
+          "complaint.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
+      }
+
+      //-- filter locations without coordinates
+      unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+      unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+
+      //-- run query
+      const unmappedComplaints = await unMappedBuilder.getCount();
+      results = { ...results, unmappedComplaints }
+
+      //-- map results
+      switch (complaintType) {
+        case "ERS": {
+          const items = this.mapper.mapArray<
+            AllegationComplaint,
+            AllegationComplaintDto
+          >(
+            mappedComplaints as Array<AllegationComplaint>,
+            "AllegationComplaint",
+            "AllegationComplaintDto"
+          );
+          results.complaints = items;
+          break;
+        }
+        case "HWCR":
+        default: {
+          const items = this.mapper.mapArray<
+            HwcrComplaint,
+            WildlifeComplaintDto
+          >(
+            mappedComplaints as Array<HwcrComplaint>,
+            "WildlifeComplaint",
+            "WildlifeComplaintDto"
+          );
+
+          results.complaints = items;
+          break;
+        }
+      }
+      return results;
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException(
+        "Unable to Perform Search",
+        HttpStatus.BAD_REQUEST
+      );
     }
   };
 }

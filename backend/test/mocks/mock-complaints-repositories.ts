@@ -60,6 +60,7 @@ export const MockComplaintsRepository = () => ({
     addSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(complaints),
+    getCount: jest.fn().mockResolvedValue(complaints.length),
   })),
 });
 

@@ -52,6 +52,15 @@ export class ComplaintController {
     return await this.service.findAllByType(complaintType);
   }
 
+  @Get("/map/search/:complaintType")
+  @Roles(Role.COS_OFFICER)
+  mapSearch(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters
+  ) {
+    return this.service.mapSearch(complaintType, model);
+  }
+
   @Get("/search/:complaintType")
   @Roles(Role.COS_OFFICER)
   search(

@@ -104,5 +104,10 @@ describe("Testing: Complaint Controller", () => {
       `/Complaint/search/${_type}?orderBy=ASC&sortBy=complaint_identifier&page=1&pageSize=50`
     );
     expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/complaint/map/search/${_type}?orderBy=ASC&sortBy=test&page=1&pageSize=50`
+    );
+    expect(response.statusCode).toBe(200);
   });
 });

@@ -18,6 +18,7 @@ import { Office } from "../office/entities/office.entity";
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "./models/search-results";
 import { REQUEST } from "@nestjs/core";
+import { MapSearchResults } from "src/types/complaints/map-search-results";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -77,7 +78,7 @@ describe("Testing: Complaint Service", () => {
     expect(service).toBeDefined();
   });
 
-  it("should return collection of HWCR Complaints", async () => {
+  it("should return collection of HWCR Complaints - findAllByType", async () => {
     //-- arrange
     const _type = "HWCR";
 
@@ -90,7 +91,7 @@ describe("Testing: Complaint Service", () => {
     expect(results.length).toBe(5);
   });
 
-  it("should return collection of ERS Complaints", async () => {
+  it("should return collection of ERS Complaints - findAllByType", async () => {
     //-- arrange
     const _type = "ERS";
 
@@ -103,7 +104,7 @@ describe("Testing: Complaint Service", () => {
     expect(results.length).toBe(5);
   });
 
-  it("should return collection of HWCR complaints", async () => {
+  it("should return collection of HWCR complaints - search", async () => {
     //-- arrange
     const _type = "HWCR";
     const _model: ComplaintSearchParameters = {
@@ -124,7 +125,7 @@ describe("Testing: Complaint Service", () => {
     expect(totalCount).toBe(35);
   });
 
-  it("should return collection of ERS complaints", async () => {
+  it("should return collection of ERS complaints - search", async () => {
     //-- arrange
     const _type = "ERS";
     const _model: ComplaintSearchParameters = {
@@ -143,5 +144,48 @@ describe("Testing: Complaint Service", () => {
     expect(complaints.length).not.toBe(0);
     expect(complaints.length).toBe(5);
     expect(totalCount).toBe(35);
+  });
+
+
+  it("should return collection of HWCR complaints - mapSearch", async () => {
+    //-- arrange
+    const _type = "HWCR";
+    const _model: ComplaintSearchParameters = {
+      orderBy: "ASC",
+      sortBy: "complaint_identifier",
+      page: 1,
+      pageSize: 50,
+    };
+
+    //-- act
+    const results: MapSearchResults = await service.mapSearch(_type, _model);
+
+    //-- assert
+    const { complaints, unmappedComplaints} = results;
+    expect(results).not.toBe(null);
+    expect(complaints.length).not.toBe(0);
+    expect(complaints.length).toBe(5);
+    expect(unmappedComplaints).toBe(55);
+  });
+
+  it("should return collection of ERS complaints - mapSearch", async () => {
+    //-- arrange
+    const _type = "ERS";
+    const _model: ComplaintSearchParameters = {
+      orderBy: "ASC",
+      sortBy: "complaint_identifier",
+      page: 1,
+      pageSize: 50,
+    };
+
+    //-- act
+    const results: MapSearchResults = await service.mapSearch(_type, _model);
+
+    //-- assert
+    const { complaints, unmappedComplaints} = results;
+    expect(results).not.toBe(null);
+    expect(complaints.length).not.toBe(0);
+    expect(complaints.length).toBe(5);
+    expect(unmappedComplaints).toBe(45);
   });
 });
