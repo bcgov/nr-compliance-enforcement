@@ -9,7 +9,7 @@ import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multipl
 import {
   getMappedComplaints,
   selectMappedComplaints,
-  selectUnmappedComplaintCount,
+  selectTotalUnmappedComplaints,
   setMappedComplaints,
 } from "../../../store/reducers/complaints";
 
@@ -69,7 +69,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
 
   const complaints = useAppSelector(selectMappedComplaints);
-  const unmappedComplaints = useAppSelector(selectUnmappedComplaintCount);
+  const unmappedComplaints = useAppSelector(selectTotalUnmappedComplaints);
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
