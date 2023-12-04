@@ -72,36 +72,50 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = (newFiles: FileList) => {
-    const filesArray = Array.from(newFiles);
+    const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    filesArray.forEach((file) => {
-      const newSlide: COMSObject = {
-        name: file.name,
-        id: "",
-        path: "",
-        public: false,
-        active: false,
-        bucketId: "",
-        createdBy: "",
-        updatedBy: "",
-        pendingUpload: true
-      };
-
-      if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
-        newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
-      }
-      newSlides.push(newSlide);
-      
+    selectedFilesArray.forEach((file) => {
+      newSlides.push(createSlideFromFile(file));
     });
     
-    if (onFilesSelected) {
-      const validFiles = filesArray.filter(file => file.size <= maxFileSize * 1_000_000);
-      onFilesSelected(validFiles);
-    }
+    removeInvalidFiles(selectedFilesArray);
 
     setSlides([...newSlides, ...slides]);
   };
 
+  // don't upload files that are invalid
+  const removeInvalidFiles = (files: File[]) => {
+    if (onFilesSelected) {
+      // remove any of the selected files that fail validation so that they aren't uploaded
+      const validFiles = files.filter(file => file.size <= maxFileSize * 1_000_000);
+      onFilesSelected(validFiles);
+    }
+  }
+
+  // given a file, create a carousel slide
+  const createSlideFromFile = (file: File) => {
+    const newSlide: COMSObject = {
+      name: file.name,
+      id: "",
+      path: "",
+      public: false,
+      active: false,
+      bucketId: "",
+      createdBy: "",
+      updatedBy: "",
+      pendingUpload: true
+    };
+
+    // check for large file sizes      
+    if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
+      newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
+    }
+
+    return newSlide;
+
+  }
+
+  // fired when user wants to remove a slide from the carousel 
   const onFileRemove = (attachment: COMSObject) => {
     setSlides(slides => slides.filter(slide => slide.name !== attachment.name));
     if (onFileDeleted) {

@@ -113,13 +113,13 @@ export const saveAttachments =
           );
 
           if (response) {
-            ToggleSuccess(`Attachment ${attachment.name} saved`);
+            ToggleSuccess(`Attachment "${attachment.name}" saved`);
           }
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 409) {
-            ToggleError(`Attachment ${attachment.name} could not be saved.  Duplicate file.`);
+            ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
           } else {
-            ToggleError(`Attachment ${attachment.name} could not be saved.`);
+            ToggleError(`Attachment "${attachment.name}" could not be saved.`);
           }
         }
       });

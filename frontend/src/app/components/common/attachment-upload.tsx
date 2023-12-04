@@ -11,7 +11,6 @@ export const AttachmentUpload: FC<Props> = ({
   onFileSelect,
 }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    debugger;
     if (event.target.files) {
       onFileSelect(event.target.files);
     }
