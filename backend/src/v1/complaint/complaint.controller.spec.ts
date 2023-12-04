@@ -1,34 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { ComplaintController } from './complaint.controller';
-import { ComplaintService } from './complaint.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Complaint } from './entities/complaint.entity';
-import { INestApplication } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/jwtauth.guard';
-import { JwtRoleGuard } from '../../auth/jwtrole.guard';
-import { authGuardMock } from '../../../test/mocks/authGuardMock';
-import { roleGuardMock } from '../../../test/mocks/roleGuardMock';
-import { MockComplaintsAgencyRepository, MockComplaintsOfficerRepository, MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
-import { getMapperToken } from '@automapper/nestjs';
-import { createMapper } from '@automapper/core';
+import { ComplaintController } from "./complaint.controller";
+import { ComplaintService } from "./complaint.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Complaint } from "./entities/complaint.entity";
+import { INestApplication } from "@nestjs/common";
+import { JwtAuthGuard } from "../../auth/jwtauth.guard";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { authGuardMock } from "../../../test/mocks/authGuardMock";
+import { roleGuardMock } from "../../../test/mocks/roleGuardMock";
+import {
+  MockComplaintsAgencyRepository,
+  MockComplaintsOfficerRepository,
+  MockComplaintsRepository,
+} from "../../../test/mocks/mock-complaints-repositories";
+import { getMapperToken } from "@automapper/nestjs";
+import { createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
-import { AllegationComplaint } from '../allegation_complaint/entities/allegation_complaint.entity';
-import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity';
-import { MockAllegationComplaintRepository } from '../../../test/mocks/mock-allegation-complaint-repository';
-import { MockWildlifeConflictComplaintRepository } from '../../../test/mocks/mock-wildlife-conflict-complaint-repository';
-import { AgencyCode } from '../agency_code/entities/agency_code.entity';
-import { Officer } from '../officer/entities/officer.entity';
-import { Office } from '../office/entities/office.entity';
-import { ContextIdFactory, REQUEST } from '@nestjs/core';
+import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
+import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+import { Officer } from "../officer/entities/officer.entity";
+import { Office } from "../office/entities/office.entity";
+import { REQUEST } from "@nestjs/core";
 
 describe("Testing: Complaint Controller", () => {
   let app: INestApplication;
   let controller: ComplaintController;
 
   beforeEach(async () => {
-
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ComplaintController],
       providers: [
@@ -45,28 +47,28 @@ describe("Testing: Complaint Controller", () => {
         },
         {
           provide: getRepositoryToken(AllegationComplaint),
-          useFactory: MockAllegationComplaintRepository
+          useFactory: MockAllegationComplaintRepository,
         },
         {
           provide: getRepositoryToken(HwcrComplaint),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockWildlifeConflictComplaintRepository,
         },
         {
           provide: getRepositoryToken(AgencyCode),
-          useFactory: MockComplaintsAgencyRepository
+          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),
-          useFactory: MockComplaintsOfficerRepository
+          useFactory: MockComplaintsOfficerRepository,
         },
         {
           provide: getRepositoryToken(Office),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockWildlifeConflictComplaintRepository,
         },
         {
           provide: REQUEST,
           useValue: {
-            user: { idir_username: "TEST" }
+            user: { idir_username: "TEST" },
           },
         },
       ],
@@ -88,11 +90,8 @@ describe("Testing: Complaint Controller", () => {
   });
 
   it("should return 200 when a GET is called successfully", async () => {
-//     const contextId = ContextIdFactory.create();
-// jest.spyOn(ContextIdFactory, 'getByRequest').mockImplementation(() => contextId);
-
     //-- arrange
-   const _type = "HWCR"
+    const _type = "HWCR";
 
     //-- act
     let response = await request(app.getHttpServer()).get(

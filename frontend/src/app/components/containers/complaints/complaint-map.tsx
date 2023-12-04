@@ -91,7 +91,6 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
       payload = { ...payload, query: searchQuery };
     }
 
-    //dispatch(getComplaintsOnMap(type, payload));
     dispatch(getMappedComplaints(type, payload));
   }, [filters]);
 
@@ -105,7 +104,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
         sortDirection
       );
       payload = { ...payload, query: searchQuery };
-      //dispatch(getComplaintsOnMap(type, payload));
+
       dispatch(getMappedComplaints(type, payload));
     }
   }, [searchQuery]);

@@ -408,18 +408,16 @@ export class ComplaintService {
       });
     }
 
-    if (officerAssigned) {
-      if (officerAssigned === "Unassigned") {
-        //Special case for unassigned
-        builder.andWhere("people.person_complaint_xref_guid IS NULL");
-      } else {
-        builder.andWhere("people.person_complaint_xref_code = :Assignee", {
+    if (officerAssigned && officerAssigned === "Unassigned") {
+      builder.andWhere("people.person_complaint_xref_guid IS NULL");
+    } else if (officerAssigned) {
+      builder
+        .andWhere("people.person_complaint_xref_code = :Assignee", {
           Assignee: "ASSIGNEE",
-        });
-        builder.andWhere("people.person_guid = :PersonGuid", {
+        })
+        .andWhere("people.person_guid = :PersonGuid", {
           PersonGuid: officerAssigned,
         });
-      }
     }
 
     switch (complaintType) {
@@ -429,6 +427,7 @@ export class ComplaintService {
             ViolationCode: violationCode,
           });
         }
+        break;
       }
       case "HWCR":
       default: {
@@ -444,6 +443,7 @@ export class ComplaintService {
             SpeciesCode: speciesCode,
           });
         }
+        break;
       }
     }
 
@@ -785,7 +785,7 @@ export class ComplaintService {
 
       //-- run query
       const unmappedComplaints = await unMappedBuilder.getCount();
-      results = { ...results, unmappedComplaints }
+      results = { ...results, unmappedComplaints };
 
       //-- map results
       switch (complaintType) {

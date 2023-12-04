@@ -160,10 +160,10 @@ export class HwcrComplaintService {
       });
     }
 
-    const [data, totalCount] = await builder
+    const totalCount = await builder
       .skip(skip)
       .take(pageSize)
-      .getManyAndCount();
+      .getCount();
 
     return { complaints: [], totalCount: totalCount };
   };

@@ -100,42 +100,11 @@ export const complaintSlice = createSlice({
     updateWildlifeComplaintByRow: (
       state,
       action: PayloadAction<HwcrComplaint>
-    ) => {
-      // const { payload: updatedComplaint } = action;
-      // const { complaintItems } = state;
-      // const { wildlife } = complaintItems;
-      // if (wildlife) {
-      //   const index = (wildlife as Array<HwcrComplaint>).findIndex(
-      //     ({ hwcr_complaint_guid }) =>
-      //       hwcr_complaint_guid === updatedComplaint.hwcr_complaint_guid,
-      //   );
-      //   if (index !== -1) {
-      //     const update = [...wildlife];
-      //     update[index] = updatedComplaint;
-      //     const updatedItems = { ...complaintItems, wildlife: update };
-      //     return { ...state, complaintItems: updatedItems };
-      //   }
-      // }
-    },
+    ) => {},
     updateAllegationComplaintByRow: (
       state,
       action: PayloadAction<AllegationComplaint>
-    ) => {
-      // const { payload: updatedComplaint } = action;
-      // const { complaintItems } = state;
-      // const { allegations } = complaintItems;
-      // const index = allegations.findIndex(
-      //   ({ allegation_complaint_guid }) =>
-      //     allegation_complaint_guid ===
-      //     updatedComplaint.allegation_complaint_guid,
-      // );
-      // if (index !== -1) {
-      //   const update = [...allegations];
-      //   update[index] = updatedComplaint;
-      //   const updatedItems = { ...complaintItems, allegations: update };
-      //   return { ...state, complaintItems: updatedItems };
-      // }
-    },
+    ) => {},
     setMappedComplaints: (state, action) => {
       const { mappedItems } = state;
       const {
@@ -1040,16 +1009,6 @@ export const selectMappedComplaints = (
   } else {
     return new Array<ComplaintMapItem>();
   }
-};
-
-export const selectUnmappedComplaintCount = (state: RootState) => {
-  const {
-    complaints: {
-      mappedItems: { unmapped },
-    },
-  } = state;
-
-  return unmapped;
 };
 
 export default complaintSlice.reducer;

@@ -27,7 +27,7 @@ import { SearchResults } from "../complaint/models/search-results";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { REQUEST } from "@nestjs/core";
-import { MapSearchResults } from "../../../src/types/complaints/map-search-results"
+import { MapSearchResults } from "../../../src/types/complaints/map-search-results";
 
 @Injectable({ scope: Scope.REQUEST })
 export class AllegationComplaintService {
@@ -180,12 +180,9 @@ export class AllegationComplaintService {
         sortColumn === "incident_reported_utc_timestmp" ? sortDirection : "DESC"
       );
 
-    const [data, totalCount] = await builder
-      .skip(skip)
-      .take(pageSize)
-      .getManyAndCount();
+    const totalCount = await builder.skip(skip).take(pageSize).getCount();
 
-    return { complaints: [], totalCount: totalCount };
+    return { complaints: [], totalCount };
   };
 
   searchMap = async (model: SearchPayload): Promise<MapSearchResults> => {
@@ -322,7 +319,7 @@ export class AllegationComplaintService {
     let builder = this._getAllegationQuery();
     builder.where("complaint.complaint_identifier = :id", { id });
 
-const result = await builder.getOne();
+    const result = await builder.getOne();
 
     return result;
   }
