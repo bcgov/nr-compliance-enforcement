@@ -82,6 +82,7 @@
     "typescript": "*",
     "uncontrollable": "^8.0.2",
     "urlpattern-polyfill": "^9.0.0",
+    "uuid": "^9.0.1",
     "warning": "^4.0.3",
     "web-vitals": "^3.0.0"
   },
@@ -133,6 +134,7 @@
     "@tsconfig/node16": "^1.0.3",
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "cypress": "^12.10.0",
     "eslint": "^8.24.0",

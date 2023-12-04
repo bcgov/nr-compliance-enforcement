@@ -18,6 +18,7 @@ import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
+import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
   complaintIdentifier: string;
@@ -96,7 +97,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   const createSlideFromFile = (file: File) => {
     const newSlide: COMSObject = {
       name: file.name,
-      id: "",
+      id: uuidv4(), // generate a unique identifier in case the user uploads non-unique file names.  This allows us to know which one the user wants to delete
       path: "",
       public: false,
       active: false,
@@ -110,14 +111,13 @@ export const AttachmentsCarousel: FC<Props> = ({
     if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
       newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
     }
-
+    
     return newSlide;
-
   }
 
   // fired when user wants to remove a slide from the carousel 
   const onFileRemove = (attachment: COMSObject) => {
-    setSlides(slides => slides.filter(slide => slide.name !== attachment.name));
+    setSlides(slides => slides.filter(slide => slide.id !== attachment.id));
     if (onFileDeleted) {
       onFileDeleted(attachment);
     }
