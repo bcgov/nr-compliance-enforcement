@@ -52,6 +52,7 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
+    console.log(carouselData?.length);
     if (carouselData) {
       setSlides(carouselData);
     } else {
@@ -111,7 +112,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
       newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
     }
-    
+
     return newSlide;
   }
 

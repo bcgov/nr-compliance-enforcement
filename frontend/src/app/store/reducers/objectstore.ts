@@ -67,7 +67,7 @@ export const deleteAttachments =
   (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
   async (dispatch) => {
     if (attachments) {
-      attachments.forEach(async (attachment) => {
+      for (const attachment of attachments) {
         try {
           const parameters = generateApiParameters(
             `${config.COMS_URL}/object/${attachment.id}`
@@ -77,7 +77,7 @@ export const deleteAttachments =
         } catch (error) {
           ToggleError(`Attachment ${attachment.name} could not be deleted`);
         }
-      });
+      }
     }
     dispatch(getAttachments(complaint_identifier));
   };
@@ -87,7 +87,7 @@ export const saveAttachments =
   (attachments: File[], complaint_identifier: string): AppThunk =>
   async (dispatch) => {
     if (attachments) {
-      attachments.forEach(async (attachment) => {
+      for (const attachment of attachments) {
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
           "Content-Disposition": `attachment; filename="${injectComplaintIdentifierToFilename(
@@ -122,7 +122,7 @@ export const saveAttachments =
             ToggleError(`Attachment "${attachment.name}" could not be saved.`);
           }
         }
-      });
+      }
     }
     dispatch(getAttachments(complaint_identifier));
   };
