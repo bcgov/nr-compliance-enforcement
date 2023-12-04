@@ -40,18 +40,16 @@ export const AttachmentUpload: FC<Props> = ({
         ref={fileInputRef}
         style={{ display: "none" }}
       />
-      <div
+      <button
         className="coms-carousel-upload-container"
         tabIndex={0}
         onClick={handleDivClick}
-        onKeyDown={handleDivClick}
-        role="button"
       >
         <div className="upload-icon">
           <BsPlus />
         </div>
         <div className="upload-text">Upload</div>
-      </div>
+      </button>
     </div>
   );
 };
