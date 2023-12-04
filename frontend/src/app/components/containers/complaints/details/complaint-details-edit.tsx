@@ -60,7 +60,7 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { deleteAttachments, saveAttachments } from "../../../../store/reducers/objectstore";
+import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
 import { COMSObject } from "../../../../types/coms/object";
 
 type ComplaintParams = {

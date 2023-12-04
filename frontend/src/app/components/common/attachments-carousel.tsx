@@ -12,7 +12,7 @@ import { RootState } from "../../store/store";
 import {
   getAttachments,
   setAttachments,
-} from "../../store/reducers/objectstore";
+} from "../../store/reducers/attachments";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
