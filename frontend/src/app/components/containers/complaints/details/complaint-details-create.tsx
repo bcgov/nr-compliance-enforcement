@@ -115,6 +115,17 @@ export const CreateComplaint: FC = () => {
         update_user_id: "",
         update_utc_timestamp: null,
       },
+      owned_by_agency_code: {
+        agency_code: "",
+        short_description: "",
+        long_description: "",
+        display_order: 0,
+        active_ind: false,
+        create_user_id: "",
+        create_utc_timestamp: null,
+        update_user_id: "",
+        update_utc_timestamp: null,
+      },
       cos_geo_org_unit: {
         zone_code: "",
         office_location_name: "",

@@ -330,10 +330,20 @@ button.modal-buttons {
   align-self: stretch;
   flex-grow: 0;
   cursor: pointer;
+  &:hover {
+    background-color: #DEEBFF;
+    }
 }
 
 .selected {
   background-color: $gray-100;
+}
+
+.self-assign {
+  &:hover {
+    background-color: $white;
+    cursor: default;
+    }
 }
 
 .assign_officer_modal_profile_card_column {
