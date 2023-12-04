@@ -11,11 +11,17 @@ export interface ComplaintState {
   complaint: HwcrComplaint | AllegationComplaint | undefined | null;
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
+  mappedItems: MappedComplaintsState
 }
 
 export interface ComplaintCollection {
   wildlife: Array<WildlifeComplaint>;
   allegations: Array<AllegationComplaintModel>;
+}
+
+export interface MappedComplaintsState {
+  items: Array<AllegationComplaintModel> | Array<WildlifeComplaint>;
+  unmapped: number;
 }
 
 export interface Coordinate {
