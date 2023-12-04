@@ -157,20 +157,11 @@ Cypress.Commands.add(
     //-- click on HWCR tab
     cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
 
-    cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear zone filter so this complaint is in the list view
-    cy.get("#comp-zone-filter").should("not.exist");
-    cy.waitForSpinner();
+    cy.get("#complaint-search").type(complaintIdentifier);
 
-    cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
-    cy.get("#comp-status-filter").should("not.exist");
-    cy.waitForSpinner();
+    cy.get("#complaint-search").type('{enter}');
 
-    //-- check to make sure there are items in the table
-    cy.get("#complaint-list")
-      .find("tr")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.gt(0);
-      });
+    cy.waitForSpinner();
 
     cy.get("#complaint-list > tbody > tr")
       .contains(complaintIdentifier)

@@ -18,20 +18,29 @@ const initialState: AttachmentsState = {
   attachments: [],
 };
 
+/**
+ * Attachments for each complaint
+ */
 export const attachmentsSlice = createSlice({
   name: "attachments",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+
+    // used when retrieving attachments from objectstore
     setAttachments: (state, action) => {
       const {
         payload: { attachments },
       } = action;
       return { ...state, attachments };
     },
+
+    // used when removing an attachment from a complaint
     removeAttachment: (state, action) => {
       state.attachments = state.attachments?.filter(attachment => attachment.id !== action.payload);
     },
+
+    // used when adding an attachment to a complaint
     addAttachment: (state, action) => {
       state.attachments?.push(action.payload);
     },
