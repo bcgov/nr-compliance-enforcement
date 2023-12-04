@@ -48,6 +48,10 @@
  right: 50px;
 }
 
+.back-icon:disabled { visibility: hidden } 
+
+.next-icon:disabled { visibility: hidden }
+
 .coms-slider {
   margin-right: 10px;
 }

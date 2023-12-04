@@ -31,6 +31,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
     person_complaint_xref,
     complaint_status_code,
     update_utc_timestamp,
+    owned_by_agency_code,
   } = complaintIdentifier;
 
   const incidentReportedDatetime = formatDateTime(incident_reported_utc_timestmp);
@@ -162,7 +163,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
       >
       {!isExpanded && (
           <div className="comp-table-icons">
-            <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+            <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""} complaint_agency={owned_by_agency_code?.agency_code ?? ""}/>
             <span className={!isExpanded ? "comp-table-update-date" : ""}>{updateDate}</span>          
           </div> 
         )}
@@ -184,7 +185,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
               <Link to={`/complaint/ERS/${id}`} id={id}>
                 <span className="badge comp-view-complaint-badge">View Details</span>
               </Link>
-              <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""}/>
+              <ComplaintActionItems complaint_identifier={id} complaint_type={type} zone={cos_geo_org_unit?.zone_code ?? ""} complaint_agency={owned_by_agency_code?.agency_code ?? ""}/>
             </div>
           </td>
         </tr>
