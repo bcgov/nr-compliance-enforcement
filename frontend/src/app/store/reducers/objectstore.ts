@@ -29,6 +29,13 @@ export const attachmentsSlice = createSlice({
       } = action;
       return { ...state, attachments };
     },
+    removeAttachment: (state, action) => {
+      state.attachments = state.attachments?.filter(attachment => attachment.id !== action.payload);
+    },
+    addAttachment: (state, action) => {
+      state.attachments?.push(action.payload);
+    },
+    
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -37,7 +44,7 @@ export const attachmentsSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAttachments } = attachmentsSlice.actions;
+export const { setAttachments, removeAttachment , addAttachment} = attachmentsSlice.actions;
 
 // Get list of the attachments and update store
 export const getAttachments =
@@ -58,7 +65,7 @@ export const getAttachments =
         );
       }
     } catch (error) {
-      //-- handle errors
+      ToggleError(`Error retrieving attachments`);
     }
   };
 
@@ -74,12 +81,13 @@ export const deleteAttachments =
           );
 
           await deleteMethod<string>(dispatch, parameters);
+          dispatch(removeAttachment(attachment.id)); // delete from store
         } catch (error) {
           ToggleError(`Attachment ${attachment.name} could not be deleted`);
         }
       }
     }
-    dispatch(getAttachments(complaint_identifier));
+
   };
 
 // save new attachment(s) to object store
@@ -112,9 +120,14 @@ export const saveAttachments =
             attachment
           );
 
+          dispatch(addAttachment(attachment)); // delete from store
+
           if (response) {
             ToggleSuccess(`Attachment "${attachment.name}" saved`);
           }
+
+
+
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 409) {
             ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
@@ -124,7 +137,6 @@ export const saveAttachments =
         }
       }
     }
-    dispatch(getAttachments(complaint_identifier));
   };
 
 //-- selectors

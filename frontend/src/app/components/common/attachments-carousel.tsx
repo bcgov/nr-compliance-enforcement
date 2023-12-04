@@ -52,7 +52,6 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
-    console.log(carouselData?.length);
     if (carouselData) {
       setSlides(carouselData);
     } else {
