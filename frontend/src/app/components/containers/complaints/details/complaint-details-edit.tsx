@@ -289,7 +289,7 @@ export const ComplaintDetailsEdit: FC = () => {
         }))
       : [];
 
-  assignableOfficers.unshift({value: "Unassigned", label: "None"})
+  assignableOfficers.unshift({value: "Unassigned", label: "None"});
 
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(

@@ -46,7 +46,11 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  const officers = useAppSelector(selectOfficersDropdown);
+  let officers = useAppSelector(selectOfficersDropdown);
+  if(officers && officers[0]?.value !== "Unassigned")
+  {
+    officers.unshift({value: "Unassigned", label: "Unassigned"})
+  }
   const natureOfComplaintTypes = useAppSelector(
     selectHwcrNatureOfComplaintCodeDropdown
   );
