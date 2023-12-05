@@ -32,7 +32,7 @@ export const attachmentsSlice = createSlice({
       const {
         payload: { attachments },
       } = action;
-      return { ...state, attachments };
+      return { ...state, attachments: attachments ?? [] };
     },
 
     // used when removing an attachment from a complaint
@@ -45,13 +45,12 @@ export const attachmentsSlice = createSlice({
 
     // used when adding an attachment to a complaint
     addAttachment: (state, action) => {
-      const { name, type, size } = action.payload; // Extract relevant info
-      const serializedFile = { name, type, size }; 
-      const newAttachments = Array.isArray(state.attachments) ? state.attachments : [];
+      const { name, type, size, id } = action.payload; // Extract relevant info
+      const serializedFile = { name, type, size, id }; 
 
       return {
         ...state,
-        attachments: [...newAttachments, serializedFile],
+        attachments: [...state.attachments, serializedFile],
       };
     },
     
@@ -77,9 +76,10 @@ export const getAttachments =
         "x-amz-meta-complaint-id": complaint_identifier,
       });
       if (response && from(response).any()) {
+        
         dispatch(
           setAttachments({
-            attachments: response,
+            attachments: response ?? [],
           })
         );
       }
@@ -124,28 +124,19 @@ export const saveAttachments =
           "Content-Type": attachment?.type,
         };
 
-        const formData = new FormData();
-        formData.append("file", attachment);
-
         try {
           const parameters = generateApiParameters(
             `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
           );
 
-          const response = await putFile<string>(
+          const response = await putFile<COMSObject>(
             dispatch,
             parameters,
             header,
             attachment
           );
 
-          const attachmentInfo = {
-            name: attachment.name,
-            type: attachment.type,
-            size: attachment.size,
-          };
-
-          dispatch(addAttachment(attachmentInfo)); // dispatch with serializable payload
+          dispatch(addAttachment(response)); // dispatch with serializable payload
 
           if (response) {
             ToggleSuccess(`Attachment "${attachment.name}" saved`);
@@ -155,7 +146,6 @@ export const saveAttachments =
           if (axios.isAxiosError(error) && error.response?.status === 409) {
             ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
           } else {
-            debugger;
             ToggleError(`Attachment "${attachment.name}" could not be saved.`);
           }
         }

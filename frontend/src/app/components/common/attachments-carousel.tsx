@@ -67,7 +67,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   //-- when the component unmounts clear the attachments from redux
   useEffect(() => {
     return () => {
-      dispatch(setAttachments({}));
+      dispatch(setAttachments([]));
     };
   }, [dispatch]);
 
