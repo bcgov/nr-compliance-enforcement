@@ -37,12 +37,12 @@ export const attachmentsSlice = createSlice({
 
     // used when removing an attachment from a complaint
     removeAttachment: (state, action) => {
-      state.attachments = state.attachments?.filter(attachment => attachment.id !== action.payload);
+      state.attachments = state.attachments.filter(attachment => attachment.id !== action.payload);
     },
 
     // used when adding an attachment to a complaint
     addAttachment: (state, action) => {
-      state.attachments?.push(action.payload);
+      state.attachments.push(action.payload);
     },
     
   },
@@ -135,8 +135,6 @@ export const saveAttachments =
             ToggleSuccess(`Attachment "${attachment.name}" saved`);
           }
 
-
-
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 409) {
             ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
@@ -149,11 +147,11 @@ export const saveAttachments =
   };
 
 //-- selectors
-export const selectAttachments = (state: RootState): COMSObject[] | null => {
+export const selectAttachments = (state: RootState): COMSObject[]  => {
   const { attachments: attachmentsRoot } = state;
   const { attachments } = attachmentsRoot;
 
-  return attachments ?? null;
+  return attachments ?? [];
 };
 
 export default attachmentsSlice.reducer;
