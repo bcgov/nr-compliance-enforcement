@@ -117,10 +117,10 @@ export const saveAttachments =
       for (const attachment of attachments) {
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
-          "Content-Disposition": `attachment; filename="${injectComplaintIdentifierToFilename(
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
             attachment.name,
             complaint_identifier
-          )}"`,
+          ))}"`,
           "Content-Type": attachment?.type,
         };
 

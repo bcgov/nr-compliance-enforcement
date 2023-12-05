@@ -2,13 +2,11 @@ import { FC, useRef } from "react";
 import { BsPlus } from "react-icons/bs";
 
 type Props = {
-  complaintIdentifier: string;
   onFileSelect: (selectedFile: FileList) => void;
 };
 
 export const AttachmentUpload: FC<Props> = ({
-  complaintIdentifier,
-  onFileSelect,
+   onFileSelect,
 }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {

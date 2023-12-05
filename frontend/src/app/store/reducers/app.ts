@@ -16,6 +16,7 @@ import { ConfigurationType } from "../../types/configurations/configuration";
 import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
 import { NotificationState } from "../../types/state/notification-state";
+import { ToggleError } from "../../common/toast";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -350,7 +351,7 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
       );
     }
   } catch (error) {
-    console.log(error);
+    ToggleError("Unable to get configurations");
   }
 };
 

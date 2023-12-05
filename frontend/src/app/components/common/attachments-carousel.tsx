@@ -176,7 +176,6 @@ export const AttachmentsCarousel: FC<Props> = ({
           </ButtonNext>
           {allowUpload && (
             <AttachmentUpload
-              complaintIdentifier={complaintIdentifier}
               onFileSelect={onFileSelect}
             />
           )}
