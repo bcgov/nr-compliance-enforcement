@@ -37,7 +37,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
-  const { location, zone } = useAppSelector(
+  const { location, area } = useAppSelector(
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
@@ -124,9 +124,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                 {formatTime(loggedDate)}
               </div>
-              <div>
+              <div id="popup-community-label">
                 <label>Community</label>
-                {zone}
+                {area}
               </div>
               <div className="map-comp-popup-address">
                 <label>Location/Address</label>
