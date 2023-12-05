@@ -134,7 +134,7 @@ export const AllegationComplaintListItem: FC<Props> = ({
         {location}
       </td>
       <td
-        className={`comp-cell-width-170 ${isExpandedClass}`}
+        className={`comp-cell-width-170 comp-cell-break-word ${isExpandedClass}`}
         onClick={toggleExpand}
       >
         {locationSummary}
@@ -173,11 +173,11 @@ export const AllegationComplaintListItem: FC<Props> = ({
     {isExpanded && (
         <tr onMouseEnter={() => toggleHoverState(true)} onMouseLeave={() => toggleHoverState(false)}>
           <td onClick={toggleExpand} colSpan={2} className="comp-cell-child-expanded"></td>
-          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded">
+          <td onClick={toggleExpand} className="comp-cell-break-word comp-cell-child-expanded">
             {truncatedComplaintDetailText}
           </td>
           <td onClick={toggleExpand} className="comp-cell-child-expanded"/>
-          <td onClick={toggleExpand} className="comp-cell-expanded-truncated comp-cell-child-expanded" colSpan={2}>
+          <td onClick={toggleExpand} className="comp-cell-break-word comp-cell-child-expanded" colSpan={2}>
             {truncatedLocationDetailedText}
           </td>
           <td colSpan={3} className="comp-cell-child-expanded comp-cell-child-actions">
