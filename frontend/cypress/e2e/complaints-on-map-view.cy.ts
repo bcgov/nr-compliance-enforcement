@@ -104,7 +104,6 @@ describe("Complaints on map tests", () => {
       cy.waitForSpinner();
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
       cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
       cy.get("#list_toggle_id").should("exist");
       cy.get("#map_toggle_id").should("exist"); //verifies that the list/map toggle button appears.  Click the map view
