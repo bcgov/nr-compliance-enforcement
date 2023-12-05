@@ -93,6 +93,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
   };
 
   const computedClass = (unmapped_complaints === 0) ? "comp-map-unmapped-alert display-none" : "comp-map-unmapped-alert";
+  const pluralization = (unmapped_complaints === 1) ? "" : "s";
 
   return (<>
     <div id="complaint-unmapped-notification" className={computedClass}>
@@ -101,7 +102,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
         />
         {/*
          */}
-        The exact location of {unmapped_complaints} complaints could not be determined.
+        The exact location of {unmapped_complaints} complaint{pluralization} could not be determined.
       </div>
     <MapContainer
       id="multi-point-map"
