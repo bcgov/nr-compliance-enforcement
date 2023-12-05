@@ -289,6 +289,7 @@ export class AllegationComplaintService {
             .person_complaint_xref[0]
         );
       }
+      await queryRunner.commitTransaction();
     } catch (err) {
       this.logger.error(err);
       await queryRunner.rollbackTransaction();
