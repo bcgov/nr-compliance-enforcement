@@ -105,9 +105,16 @@ describe("Complaints on map tests", () => {
       cy.get(complaintTypes[index]).click({ force: true });
 
       cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
+      cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
       cy.get("#list_toggle_id").should("exist");
       cy.get("#map_toggle_id").should("exist"); //verifies that the list/map toggle button appears.  Click the map view
       cy.get("#map_toggle_id").click({ force: true });
+
+      // wait for the map to load
+      cy.waitForSpinner();
+
+      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.selectItemById("community-select-id", "Kelowna");
 
       // wait for the map to load
       cy.waitForSpinner();
@@ -133,6 +140,11 @@ describe("Complaints on map tests", () => {
         cy.get("div.hwcr-conflict-type").should(
           "have.text",
           "Human Wildlife Conflict",
+        );
+        cy.get("#popup-community-label").should("exist");
+        cy.get("#popup-community-label").should(
+          "have.text",
+          "CommunityKelowna",
         );
         cy.get("div.hwcr-conflict-type").should(
           "not.have.text",
