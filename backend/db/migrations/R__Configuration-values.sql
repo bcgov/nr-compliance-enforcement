@@ -28,7 +28,7 @@ insert
 	update_user_id,
 	update_utc_timestamp)
 values ('MAXFILESZ',
-'5000000',
+'5000',
 'The maximum file size (in Megabytes) supported for upload.',
 true,
 CURRENT_USER,
