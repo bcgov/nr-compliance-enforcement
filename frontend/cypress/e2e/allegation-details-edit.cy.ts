@@ -437,7 +437,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#officer-assigned-pair-id label").should(($label) => {
       expect($label).to.contain.text("Officer Assigned");
     });
-    cy.get("#officer-assigned-pair-id .comp-details-input").should("exist");
+    cy.get("#officer-assigned-pair-id .comp-details-input").contains("None");
 
     // Check the Call Details inputs
     // Complaint Location

@@ -289,6 +289,12 @@ export const ComplaintDetailsEdit: FC = () => {
         }))
       : [];
 
+  //add none option if complaint currently has an assigned officer
+  if(updateComplaint?.complaint_identifier?.person_complaint_xref[0])
+  {
+    assignableOfficers.unshift({value: "Unassigned", label: "None"})
+  }
+
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(
     selectComplaintStatusCodeDropdown
@@ -551,7 +557,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
         update.complaint_identifier = updatedParent;
 
-        setUpdateComplaint(update);
       } else if (from(source).any() && from(source).elementAt(0)) {
         const assigned = { ...source[0], active_ind: false };
         source = [assigned];
@@ -562,8 +567,8 @@ export const ComplaintDetailsEdit: FC = () => {
         };
 
         update.complaint_identifier = updatedParent;
-        setUpdateComplaint(update);
       }
+      setUpdateComplaint(update);
     }
   };
 
@@ -1142,10 +1147,9 @@ export const ComplaintDetailsEdit: FC = () => {
                     onChange={(e) => handleAssignedOfficerChange(e)}
                     className="comp-details-input"
                     options={assignableOfficers}
-                    defaultOption={{ label: "None", value: "Unassigned" }}
                     placeholder="Select"
                     enableValidation={false}
-                    value={selectedAssignedOfficer}
+                    value={(updateComplaint?.complaint_identifier?.person_complaint_xref[0]?.active_ind === true ? selectedAssignedOfficer : { value: "Unassigned", label: "None" })}
                   />
                 </div>
               </div>
