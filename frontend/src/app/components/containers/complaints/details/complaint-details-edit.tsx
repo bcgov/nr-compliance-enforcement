@@ -289,11 +289,7 @@ export const ComplaintDetailsEdit: FC = () => {
         }))
       : [];
 
-  //add none option if complaint currently has an assigned officer
-  if(updateComplaint?.complaint_identifier?.person_complaint_xref[0])
-  {
-    assignableOfficers.unshift({value: "Unassigned", label: "None"})
-  }
+  assignableOfficers.unshift({value: "Unassigned", label: "None"})
 
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(
@@ -536,6 +532,7 @@ export const ComplaintDetailsEdit: FC = () => {
         const { person_guid: officer } = selectedOfficer as any;
 
         if (from(source).any() && from(source).elementAt(0)) {
+          source[0].active_ind = true;
           const assigned = { ...source[0], person_guid: officer };
           source = [assigned];
         } else {
