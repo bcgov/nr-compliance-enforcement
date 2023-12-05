@@ -37,12 +37,22 @@ export const attachmentsSlice = createSlice({
 
     // used when removing an attachment from a complaint
     removeAttachment: (state, action) => {
-      state.attachments = state.attachments.filter(attachment => attachment.id !== action.payload);
+      return {
+        ...state,
+        attachments: state.attachments.filter(attachment => attachment.id !== action.payload),
+      };
     },
 
     // used when adding an attachment to a complaint
     addAttachment: (state, action) => {
-      state.attachments.push(action.payload);
+      const { name, type, size } = action.payload; // Extract relevant info
+      const serializedFile = { name, type, size }; 
+      const newAttachments = Array.isArray(state.attachments) ? state.attachments : [];
+
+      return {
+        ...state,
+        attachments: [...newAttachments, serializedFile],
+      };
     },
     
   },
@@ -129,7 +139,13 @@ export const saveAttachments =
             attachment
           );
 
-          dispatch(addAttachment(attachment)); // delete from store
+          const attachmentInfo = {
+            name: attachment.name,
+            type: attachment.type,
+            size: attachment.size,
+          };
+
+          dispatch(addAttachment(attachmentInfo)); // dispatch with serializable payload
 
           if (response) {
             ToggleSuccess(`Attachment "${attachment.name}" saved`);
@@ -139,6 +155,7 @@ export const saveAttachments =
           if (axios.isAxiosError(error) && error.response?.status === 409) {
             ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
           } else {
+            debugger;
             ToggleError(`Attachment "${attachment.name}" could not be saved.`);
           }
         }
