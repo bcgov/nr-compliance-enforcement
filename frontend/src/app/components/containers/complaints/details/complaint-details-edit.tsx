@@ -183,7 +183,7 @@ export const ComplaintDetailsEdit: FC = () => {
     }
 
     if (attachmentsToDelete) {
-      dispatch(deleteAttachments(attachmentsToDelete, id))
+      dispatch(deleteAttachments(attachmentsToDelete))
     }
 
     // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared

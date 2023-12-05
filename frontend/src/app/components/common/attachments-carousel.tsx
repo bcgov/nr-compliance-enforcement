@@ -96,7 +96,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // given a file, create a carousel slide
   const createSlideFromFile = (file: File) => {
     const newSlide: COMSObject = {
-      name: file.name,
+      name: encodeURIComponent(file.name),
       id: uuidv4(), // generate a unique identifier in case the user uploads non-unique file names.  This allows us to know which one the user wants to delete
       path: "",
       public: false,

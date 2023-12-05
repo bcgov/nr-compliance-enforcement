@@ -71,7 +71,7 @@ export const AttachmentSlide: FC<Props> = ({
         <AttachmentIcon filename={attachment.name}/>
         </div>
         <div className="bottom-section">
-          <div className="slide_text slide_file_name" title={attachment.name}>{decodeURIComponent(attachment.name)}</div>
+          <div className="slide_text slide_file_name" >{decodeURIComponent(attachment.name)}</div>
           {attachment?.pendingUpload && attachment?.errorMesage ? (
           <div>
             {attachment?.errorMesage}

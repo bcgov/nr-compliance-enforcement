@@ -90,7 +90,7 @@ export const getAttachments =
 
 // delete attachments from objectstore
 export const deleteAttachments =
-  (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
+  (attachments: COMSObject[]): AppThunk =>
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
@@ -101,8 +101,9 @@ export const deleteAttachments =
 
           await deleteMethod<string>(dispatch, parameters);
           dispatch(removeAttachment(attachment.id)); // delete from store
+          ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
         } catch (error) {
-          ToggleError(`Attachment ${attachment.name} could not be deleted`);
+          ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
         }
       }
     }
