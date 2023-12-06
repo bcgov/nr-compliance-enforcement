@@ -7,7 +7,6 @@ import app from "./reducers/app";
 import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
-import complaintLocations from "./reducers/complaint-locations";
 import attachments from "./reducers/attachments";
 
 const appPersistConfig = {
