@@ -36,10 +36,26 @@ describe("Complaint Attachments", () => {
       .should('exist')
       .and('not.be.visible');
 
+      // should not be able to upload on details view
+      cy.get("button.coms-carousel-upload-container").should("not.exist");
+
       cy.get(".coms-carousel-actions").first().invoke('attr', 'style', 'display: block');
-      
+
       // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
       cy.get(".download-icon").should("exist");
+    });
+  });
+
+  Cypress._.times(complaintTypes.length, (index) => {
+    it("Verifies that upload option exists ", () => {
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+      } else {
+        cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
+      }
+
+      // should be able to upload on details view
+      cy.get("button.coms-carousel-upload-container").should("exist");
 
     });
 

@@ -12,6 +12,7 @@ import AttachmentIcon from "./attachment-icon";
 type Props = {
   index: number;
   attachment: COMSObject;
+  onFileRemove: (attachment: COMSObject) => void;
   allowDelete?: boolean;
 };
 
@@ -19,6 +20,7 @@ export const AttachmentSlide: FC<Props> = ({
   index,
   attachment,
   allowDelete,
+  onFileRemove,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -39,27 +41,46 @@ export const AttachmentSlide: FC<Props> = ({
     a.click();
   };
 
+  const getSlideClass = () => {
+    let className = "";
+
+    if (attachment.errorMesage) {
+      className = "error-slide";
+    } else if (attachment.pendingUpload) {
+      className = "pending-slide";
+    }
+
+    return className;
+  }
+
   return (
     <Slide index={index} key={index}>
-      <div className="coms-carousel-slide">
+      <div className={`coms-carousel-slide ${getSlideClass()}`}>
         <div className="coms-carousel-actions">
-          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} />}
+        {!attachment.pendingUpload && (
           <BsCloudDownload
             tabIndex={index}
             className="download-icon"
             onClick={() =>
               handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)
             }
-          />
+          />)}
+          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(attachment)}  />}
         </div>
         <div className="top-section">
         <AttachmentIcon filename={attachment.name}/>
         </div>
         <div className="bottom-section">
-          <div className="slide_text slide_file_name">{attachment.name}</div>
-          <div className="slide_text">
-            {formatDateTime(attachment.createdAt.toString())}
+          <div className="slide_text slide_file_name" >{decodeURIComponent(attachment.name)}</div>
+          {attachment?.pendingUpload && attachment?.errorMesage ? (
+          <div>
+            {attachment?.errorMesage}
           </div>
+          ) : (
+          <div className="slide_text">
+            {attachment?.pendingUpload ? 'Pending upload...' : formatDateTime(attachment.createdAt?.toString())}
+          </div>
+          )}
         </div>
       </div>
     </Slide>
