@@ -343,14 +343,7 @@ export class ComplaintService {
         "delegate.person_guid",
         "person",
         "delegate.active_ind = true"
-      )
-      .addSelect([
-        "person.person_guid",
-        "person.first_name",
-        "person.middle_name_1",
-        "person.middle_name_2",
-        "person.last_name",
-      ]);
+      );
 
     return builder;
   };
