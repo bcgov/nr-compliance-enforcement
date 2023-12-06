@@ -700,7 +700,7 @@ export class ComplaintService {
         return complaint as ComplaintDto;
       } else { 
         throw new HttpException(
-          `Unable to update complaint: ${id} complaint status to ${status} `,
+          `Unable to update complaint: ${id} complaint status to ${status}`,
           HttpStatus.UNPROCESSABLE_ENTITY
         );
       }
@@ -708,7 +708,7 @@ export class ComplaintService {
       this.logger.log(error);
 
       throw new HttpException(
-        `Unable to update complaint: ${id} complaint status to ${status} `,
+        `Unable to update complaint: ${id} complaint status to ${status}`,
         HttpStatus.BAD_REQUEST
       );
     }
