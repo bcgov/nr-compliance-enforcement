@@ -85,7 +85,7 @@
   font-size: 32px;
 }
 
-.coms-carousel-slide:hover > .top-section {
+.coms-carousel-slide:hover .top-section {
   background-color: $gray-400;
 }
 
@@ -103,13 +103,13 @@
   padding-left: 16px;
   font-size: 16px;
   background-color: white;
+  height: 60px;
 }
 
 .coms-carousel-slide .slide_text {
   font-size: 16px;
   margin-bottom: 5px;
   text-align: left;
-  
 }
 
 .coms-carousel-slide .slide_file_name {
@@ -118,6 +118,23 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 250px;
+}
+
+.error-slide {
+  border-color: $bc-gov-danger;
+}
+
+.pending-slide .top-section {
+  color: $gray-500;
+  background-color: $gray-200;
+}
+
+.pending-slide:hover .top-section {
+  color: black;
+}
+
+.error-slide .top-section, .error-slide .bottom-section {
+  color: $bc-gov-danger;
 }
 
 .coms-carousel-upload-container {
@@ -133,6 +150,11 @@
   border-radius: 3px;
   background-color: $gray-110;
   color: $gray-400;
+  cursor: pointer;
+}
+
+.coms-carousel-upload-container:hover {
+  color: black;
 }
 
 .upload-icon {
@@ -148,4 +170,8 @@
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+.coms-carousel-error {
+  border-color: red;
 }
