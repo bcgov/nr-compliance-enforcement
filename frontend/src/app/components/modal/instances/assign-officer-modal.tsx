@@ -147,8 +147,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           ) {
             return (
               <div
-                className={`assign_officer_modal_profile_card ${
-                  selectedAssigneeIndex === key ? "selected" : ""
+                className={`${
+                  selectedAssigneeIndex === key ? "assign_officer_modal_profile_card_selected" : "assign_officer_modal_profile_card"
                 }`}
                 key={key}
                 onClick={() => handleAssigneeClick(key, person_guid)}
