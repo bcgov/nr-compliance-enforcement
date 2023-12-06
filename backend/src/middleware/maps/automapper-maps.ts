@@ -87,7 +87,7 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
   );
 };
 
-const complaintToComplaintDtoMap = (mapper: Mapper) => {
+export const complaintToComplaintDtoMap = (mapper: Mapper) => {
   createMap<Complaint, ComplaintDto>(
     mapper,
     "Complaint", //-- source

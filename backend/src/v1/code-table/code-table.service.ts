@@ -338,7 +338,7 @@ export class CodeTableService {
       .orderBy("cos_geo_org_unit.region_name", "ASC")
       .getRawMany();
 
-      const results = data.map(({ region_name: name, region_code: code }) => {
+    const results = data.map(({ region_name: name, region_code: code }) => {
       let record: Sector = {
         code,
         name,
@@ -399,5 +399,16 @@ export class CodeTableService {
     );
 
     return results;
+  };
+
+  getComplaintStatusCodeByStatus = async (
+    input: string
+  ): Promise<ComplaintStatusCode> => {
+    const result = await this._complaintStatusRepository
+      .createQueryBuilder("status")
+      .where("status.complaint_status_code = :status", { status: input })
+      .getOne();
+
+      return result;
   };
 }
