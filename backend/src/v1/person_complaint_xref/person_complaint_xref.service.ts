@@ -124,6 +124,8 @@ export class PersonComplaintXrefService {
         `Rolling back assignment on complaint ${complaintIdentifier}`
       );
       throw new BadRequestException(err);
+    } finally {
+      await queryRunner.release();
     }
     return newPersonComplaintXref;
   }
