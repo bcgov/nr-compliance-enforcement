@@ -231,7 +231,6 @@ export const selectOfficersByZone =
   (state: RootState): Officer[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
-
     if (zone) {
       return officers.filter((officer) => {
         // check for nulls

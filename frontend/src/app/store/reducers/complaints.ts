@@ -586,6 +586,7 @@ export const selectComplaintHeader =
       } = ceComplaint;
 
       const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
+      const owned_by_agency_code = ceComplaint.owned_by_agency_code.agency_code ?? "";
 
       if (ceComplaint.person_complaint_xref.length > 0) {
         const firstName =
@@ -609,6 +610,7 @@ export const selectComplaintHeader =
         statusCode,
         zone: zone_code,
         personGuid,
+        complaintAgency: owned_by_agency_code,
       };
 
       return result;
@@ -812,6 +814,7 @@ export const selectComplaintCallerInformation = (
       caller_address,
       caller_email,
       referred_by_agency_code,
+      owned_by_agency_code,
     }: any = ceComplaint;
 
     results = {
@@ -823,9 +826,9 @@ export const selectComplaintCallerInformation = (
       address: caller_address,
       email: caller_email,
       referredByAgencyCode: referred_by_agency_code,
+      ownedByAgencyCode: owned_by_agency_code,
     };
   }
-
   return results;
 };
 

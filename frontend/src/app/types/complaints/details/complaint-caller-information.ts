@@ -1,3 +1,4 @@
+import { Agency } from "../../app/code-tables/agency";
 import { AgencyCode } from "../../code-tables/agency-code";
 
 export interface ComplaintCallerInformation {
@@ -8,4 +9,5 @@ export interface ComplaintCallerInformation {
   secondaryPhone?: string;
   alternatePhone?: string;
   referredByAgencyCode?: AgencyCode;
+  ownedByAgencyCode: AgencyCode;
 }
