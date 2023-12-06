@@ -29,6 +29,7 @@
     "@types/react-phone-number-input": "^3.0.14",
     "@types/react-transition-group": "^4.4.6",
     "@types/redux-persist": "^4.3.1",
+    "@types/uuid": "^9.0.7",
     "@types/warning": "^3.0.0",
     "@typescript-eslint/parser": "5.56.0",
     "axios": "^1.4.0",
@@ -82,6 +83,7 @@
     "typescript": "*",
     "uncontrollable": "^8.0.2",
     "urlpattern-polyfill": "^9.0.0",
+    "uuid": "^9.0.1",
     "warning": "^4.0.3",
     "web-vitals": "^3.0.0"
   },

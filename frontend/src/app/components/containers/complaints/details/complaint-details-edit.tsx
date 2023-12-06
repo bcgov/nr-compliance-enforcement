@@ -60,6 +60,8 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
+import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
+import { COMSObject } from "../../../../types/coms/object";
 
 type ComplaintParams = {
   id: string;
@@ -106,6 +108,8 @@ export const ComplaintDetailsEdit: FC = () => {
     setPrimaryPhoneMsg("");
     setSecondaryPhoneMsg("");
     setAlternatePhoneMsg("");
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
   };
 
   const cancelButtonClick = () => {
@@ -121,6 +125,25 @@ export const ComplaintDetailsEdit: FC = () => {
       })
     );
   };
+
+  // files to add to COMS when complaint is saved
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+
+  // files to remove from COMS when complaint is saved
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+
+  const handleAddAttachments = (selectedFiles: File[]) => {
+    setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
+  };
+
+  const handleDeleteAttachment = (fileToDelete: COMSObject) => {
+    if (!fileToDelete.pendingUpload) {
+      setAttachmentsToDelete(prevFiles => prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]);
+    } else if (attachmentsToAdd) { // we're deleting an attachment that wasn't uploaded, so remove the attachment from the "attachmentsToDelete" state
+      setAttachmentsToAdd(prevAttachments => prevAttachments ? prevAttachments.filter(file => file.name !== fileToDelete.name) : null);     
+    }
+  };
+
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -154,7 +177,18 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
+    };
+    if (attachmentsToAdd) {
+      dispatch(saveAttachments(attachmentsToAdd, id));
     }
+
+    if (attachmentsToDelete) {
+      dispatch(deleteAttachments(attachmentsToDelete))
+    }
+
+    // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
   };
 
   useEffect(() => {
@@ -1616,7 +1650,13 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
-          <AttachmentsCarousel complaintIdentifier={id} allowUpload={true} allowDelete={true}/>
+          <AttachmentsCarousel
+            complaintIdentifier={id}
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={handleAddAttachments}
+            onFileDeleted={handleDeleteAttachment}
+          />
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
@@ -1629,9 +1669,7 @@ export const ComplaintDetailsEdit: FC = () => {
           />
         </>
       )}
-      {readOnly && (
-        <AttachmentsCarousel complaintIdentifier={id}/>
-      )}
+      {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
       {readOnly && (
         <ComplaintLocation
           coordinates={{ lat: +latitude, lng: +longitude }}
