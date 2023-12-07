@@ -315,6 +315,10 @@ button.modal-buttons {
   margin-right: 8px !important;
 }
 
+.selected {
+  background-color: $gray-100;
+}
+
 .assign_officer_modal_profile_card {
   display: flex;
   flex-direction: row;
@@ -335,7 +339,21 @@ button.modal-buttons {
     }
 }
 
-.selected {
+.assign_officer_modal_profile_card_selected {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 16px 24px;
+  gap: 24px;
+
+  width: 498px;
+  height: 88px;
+
+  flex: none;
+  order: 4;
+  align-self: stretch;
+  flex-grow: 0;
+  cursor: pointer;
   background-color: $gray-100;
 }
 
