@@ -89,7 +89,8 @@ export class PersonComplaintXrefService {
   async assignOfficer(
     queryRunner: QueryRunner,
     complaintIdentifier: string,
-    createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
+    createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,
+    closeConnection?: boolean // should the connection be closed once completed.  Necessary because if this is part of another transaction, then that transaction will handle releasing the connection; otherwise, best to set to true so that the connection is released.
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
@@ -124,6 +125,10 @@ export class PersonComplaintXrefService {
         `Rolling back assignment on complaint ${complaintIdentifier}`
       );
       throw new BadRequestException(err);
+    } finally {
+      if (closeConnection) {
+        await queryRunner.release();
+      }
     }
     return newPersonComplaintXref;
   }
