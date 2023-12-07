@@ -161,6 +161,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     cy.selectItemById("status-select-id", editCallDetails.status);
 
+    cy.get("#officer-assigned-select-id").scrollIntoView();
     cy.selectItemById("officer-assigned-select-id", editCallDetails.assigned);
 
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });
