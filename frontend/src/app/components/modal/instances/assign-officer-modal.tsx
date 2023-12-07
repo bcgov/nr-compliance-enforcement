@@ -41,7 +41,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
 
-  const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData?.agency_code?.agency_code, zone));
+  const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData?.agency_code, zone));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (index: number, person_guid: string) => {
