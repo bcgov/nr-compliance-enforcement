@@ -36,7 +36,7 @@ import { Officer } from "../../../../types/person/person";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
-import { selectOfficersByZoneAndAgency } from "../../../../store/reducers/officer";
+import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
@@ -294,13 +294,13 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const userid = useAppSelector(userId);
   
-  const officerList = useAppSelector(selectOfficersByZoneAndAgency(ownedByAgencyCode?.agency_code, zone_code));
+  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
   ) as ComplaintSuspectWitness;
 
-  const officersInZoneList = useAppSelector(selectOfficersByZoneAndAgency(ownedByAgencyCode?.agency_code, zone_code));
+  const officersInZoneList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime
