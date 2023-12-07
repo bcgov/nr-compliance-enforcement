@@ -29,7 +29,8 @@ export class PersonComplaintXrefController {
     return this.personComplaintXrefService.assignOfficer(
       queryRunner,
       complaintId,
-      createPersonComplaintXrefDto
+      createPersonComplaintXrefDto,
+      true // close the connection once done
     );
   }
 
