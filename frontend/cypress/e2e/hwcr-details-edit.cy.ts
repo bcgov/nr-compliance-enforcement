@@ -291,6 +291,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     cy.selectItemById("status-select-id", originalCallDetails.status);
 
+    cy.get("#officer-assigned-select-id").scrollIntoView();
     cy.selectItemById(
       "officer-assigned-select-id",
       originalCallDetails.assigned,
