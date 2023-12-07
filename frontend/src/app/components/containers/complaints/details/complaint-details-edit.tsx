@@ -263,7 +263,6 @@ export const ComplaintDetailsEdit: FC = () => {
     area,
     region,
     zone,
-    zone_code,
     office,
     attractants,
     violationInProgress,

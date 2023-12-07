@@ -239,7 +239,6 @@ export const selectOfficersByAgency =
       return agency === agencyCode;
     });
 
-  return [];
 };
 
   export const selectOfficersByZoneAndAgency =
