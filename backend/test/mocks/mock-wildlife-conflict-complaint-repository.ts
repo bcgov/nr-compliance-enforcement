@@ -51,7 +51,7 @@ const createQueryBuilder: any = {
     from: jest.fn().mockReturnThis(),
     skip: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
-    getManyAndCount: jest.fn().mockResolvedValue([manyItems, 35])
-
+    getManyAndCount: jest.fn().mockResolvedValue([manyItems, 35]),
+    getCount: jest.fn().mockResolvedValue(55),
     })),
  });
