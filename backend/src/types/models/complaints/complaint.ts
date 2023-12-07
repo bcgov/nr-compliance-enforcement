@@ -19,6 +19,7 @@ export interface ComplaintDto {
   referredByAgencyOther: string;
   incidentDateTime: Date;
   reportedOn: Date;
+  updatedOn: Date;
   organization: {
     area: string;
     zone: string;

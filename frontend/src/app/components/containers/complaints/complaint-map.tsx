@@ -7,15 +7,15 @@ import { ComplaintFilters } from "../../../types/complaints/complaint-filters/co
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
 import {
-  getComplaintsOnMap,
-  selectComplaintLocations,
-  selectTotalUnmappedComplaintsOnMapByType,
-  setComplaintsOnMap,
-} from "../../../store/reducers/complaint-locations";
+  getMappedComplaints,
+  selectMappedComplaints,
+  selectTotalUnmappedComplaints,
+  setMappedComplaints,
+} from "../../../store/reducers/complaints";
 
 type Props = {
   type: string;
-  searchQuery: string
+  searchQuery: string;
 };
 
 export const generateMapComplaintRequestPayload = (
@@ -68,8 +68,8 @@ export const generateMapComplaintRequestPayload = (
 export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
 
-  const coordinatesArray = useAppSelector(selectComplaintLocations(type));
-  const unmappedComplaints = useAppSelector(selectTotalUnmappedComplaintsOnMapByType(type));
+  const complaints = useAppSelector(selectMappedComplaints);
+  const unmappedComplaints = useAppSelector(selectTotalUnmappedComplaints);
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
@@ -80,35 +80,46 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
 
   useEffect(() => {
     //Update map when filters change
-    let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
+    let payload = generateMapComplaintRequestPayload(
+      type,
+      filters,
+      sortKey,
+      sortDirection
+    );
 
     if (searchQuery) {
       payload = { ...payload, query: searchQuery };
     }
 
-    dispatch(getComplaintsOnMap(type, payload));
+    dispatch(getMappedComplaints(type, payload));
   }, [filters]);
 
   useEffect(() => {
     //when the search Query is cleared refresh the map
     if (!searchQuery) {
-      let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
+      let payload = generateMapComplaintRequestPayload(
+        type,
+        filters,
+        sortKey,
+        sortDirection
+      );
       payload = { ...payload, query: searchQuery };
-      dispatch(getComplaintsOnMap(type, payload));
+
+      dispatch(getMappedComplaints(type, payload));
     }
   }, [searchQuery]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
-      dispatch(setComplaintsOnMap({ type: { type }, data: [] }));
+      dispatch(setMappedComplaints({ type: { type }, data: [] }));
     };
   }, []);
 
   return (
     <LeafletMapWithMultiplePoints
       complaint_type={type}
-      markers={coordinatesArray}
+      markers={complaints}
       unmapped_complaints={unmappedComplaints}
     />
   );

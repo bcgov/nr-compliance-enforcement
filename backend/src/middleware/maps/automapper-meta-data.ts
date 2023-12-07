@@ -96,6 +96,7 @@ export const createComplaintMetaData = () => {
     referred_by_agency_other_text: String,
     incident_reported_utc_timestmp: Date,
     incident_utc_datetime: Date,
+    update_utc_timestamp: Date,
     cos_geo_org_unit: Object,
     person_complaint_xref: Object,
   });
@@ -118,6 +119,7 @@ export const createComplaintMetaData = () => {
     referredByAgencyOther: String,
     reportedOn: Date,
     incidentDateTime: Date,
+    updatedOn: Date,
     organization: Object,
     delegates: Array<DelegateDto>,
   });

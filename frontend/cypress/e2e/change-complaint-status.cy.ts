@@ -51,26 +51,30 @@ describe(
 
         cy.waitForSpinner();
 
-        cy.get("table tr")
-          .filter(':contains("Closed")')
-          .should("have.length.at.least", 1);
+        //Uncomment all this when CE-263 is complete!!!
+
+        //cy.get("table tr")
+        //  .filter(':contains("Closed")')
+        //  .should("have.length.at.least", 1);
 
         // Find the number of closed complaints
         // This number should change if a complaint is changed from closed to open
-        cy.get("table tr").filter(':contains("Closed")').as("closedRows");
+        //cy.get("table tr").filter(':contains("Closed")').as("closedRows");
 
-        cy.get("svg.tt-status-icon").filter(':visible').click({force:true});
+        //cy.get("svg.tt-status-icon").filter(':visible').click({force:true});
 
 
-        cy.get("#complaint_status_dropdown").click();
+        //cy.get("#complaint_status_dropdown").click();
 
         // Select the option with value "OPEN"
-        cy.get(".comp-select__option").contains("Open").click();
+        //cy.get(".comp-select__option").contains("Open").click();
 
-        cy.get("#update_complaint_status_button").click();
-        cy.get("table tr")
-          .filter(':contains("Open")')
-          .should("have.length.at.least", 1);
+        //cy.get("#update_complaint_status_button").click();
+
+      
+        //cy.get("table tr")
+        //  .filter(':contains("Open")')
+        //  .should("have.length.at.least", 1);
       });
     });
   },

@@ -5,7 +5,7 @@ import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../types/app/complaint-types";
 import { useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType } from "../../../store/reducers/complaints";
+import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -21,7 +21,6 @@ import {
 import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
-import { selectTotalComplaintsOnMapByType } from "../../../store/reducers/complaint-locations";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -36,12 +35,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
   const totalComplaints = useAppSelector(
-    selectTotalComplaintsByType(complaintType),
+    selectTotalComplaintsByType(complaintType)
   );
 
-  const totalComplaintsOnMap = useAppSelector(
-    selectTotalComplaintsOnMapByType(complaintType),
-  );
+  const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
 
   const [isExpanded, setExpanded] = useState(false);
   const { getToggleProps } = useCollapse({ isExpanded });
@@ -62,7 +59,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   // renders the complaint count on the list and map views, for the selected complaint type
   const renderComplaintTotal = (
-    selectedComplaintType: string,
+    selectedComplaintType: string
   ): string | undefined => {
     if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
       if (complaintType === selectedComplaintType) {
@@ -85,7 +82,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       ];
     }
 
-    setSearch("")
+    setSearch("");
 
     filterDispatch(resetFilters(payload));
   };
@@ -145,7 +142,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
             {...getToggleProps({
               onClick: () => {
                 const filterElem = document.querySelector(
-                  "#collapsible-complaints-list-filter-id",
+                  "#collapsible-complaints-list-filter-id"
                 );
                 const rect = filterElem?.getBoundingClientRect();
                 const bottom = rect?.bottom;

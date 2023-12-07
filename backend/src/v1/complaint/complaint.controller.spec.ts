@@ -1,25 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { ComplaintController } from './complaint.controller';
-import { ComplaintService } from './complaint.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Complaint } from './entities/complaint.entity';
-import { INestApplication } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/jwtauth.guard';
-import { JwtRoleGuard } from '../../auth/jwtrole.guard';
-import { authGuardMock } from '../../../test/mocks/authGuardMock';
-import { roleGuardMock } from '../../../test/mocks/roleGuardMock';
-import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
-import { getMapperToken } from '@automapper/nestjs';
-import { createMapper } from '@automapper/core';
+import { ComplaintController } from "./complaint.controller";
+import { ComplaintService } from "./complaint.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Complaint } from "./entities/complaint.entity";
+import { INestApplication } from "@nestjs/common";
+import { JwtAuthGuard } from "../../auth/jwtauth.guard";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { authGuardMock } from "../../../test/mocks/authGuardMock";
+import { roleGuardMock } from "../../../test/mocks/roleGuardMock";
+import {
+  MockComplaintsAgencyRepository,
+  MockComplaintsOfficerRepository,
+  MockComplaintsRepository,
+} from "../../../test/mocks/mock-complaints-repositories";
+import { getMapperToken } from "@automapper/nestjs";
+import { createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
-import { AllegationComplaint } from '../allegation_complaint/entities/allegation_complaint.entity';
-import { HwcrComplaint } from '../hwcr_complaint/entities/hwcr_complaint.entity';
-import { MockAllegationComplaintRepository } from '../../../test/mocks/mock-allegation-complaint-repository';
-import { MockWildlifeConflictComplaintRepository } from '../../../test/mocks/mock-wildlife-conflict-complaint-repository';
-import { AgencyCode } from '../agency_code/entities/agency_code.entity';
-import { Officer } from '../officer/entities/officer.entity';
-import { Office } from '../office/entities/office.entity';
+import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
+import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
+import { Officer } from "../officer/entities/officer.entity";
+import { Office } from "../office/entities/office.entity";
+import { REQUEST } from "@nestjs/core";
 
 describe("Testing: Complaint Controller", () => {
   let app: INestApplication;
@@ -42,23 +47,29 @@ describe("Testing: Complaint Controller", () => {
         },
         {
           provide: getRepositoryToken(AllegationComplaint),
-          useFactory: MockAllegationComplaintRepository
+          useFactory: MockAllegationComplaintRepository,
         },
         {
           provide: getRepositoryToken(HwcrComplaint),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockWildlifeConflictComplaintRepository,
         },
         {
           provide: getRepositoryToken(AgencyCode),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockComplaintsOfficerRepository,
         },
         {
           provide: getRepositoryToken(Office),
-          useFactory: MockWildlifeConflictComplaintRepository
+          useFactory: MockWildlifeConflictComplaintRepository,
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            user: { idir_username: "TEST" },
+          },
         },
       ],
     })
@@ -71,7 +82,7 @@ describe("Testing: Complaint Controller", () => {
     app = module.createNestApplication();
     await app.init();
 
-    controller = module.get<ComplaintController>(ComplaintController);
+    controller = await module.resolve<ComplaintController>(ComplaintController);
   });
 
   it("should be defined", () => {
@@ -80,11 +91,21 @@ describe("Testing: Complaint Controller", () => {
 
   it("should return 200 when a GET is called successfully", async () => {
     //-- arrange
-   const _type = "HWCR"
+    const _type = "HWCR";
 
     //-- act
     let response = await request(app.getHttpServer()).get(
       `/Complaint/${_type}`
+    );
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/Complaint/search/${_type}?orderBy=ASC&sortBy=complaint_identifier&page=1&pageSize=50`
+    );
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/complaint/map/search/${_type}?orderBy=ASC&sortBy=test&page=1&pageSize=50`
     );
     expect(response.statusCode).toBe(200);
   });
