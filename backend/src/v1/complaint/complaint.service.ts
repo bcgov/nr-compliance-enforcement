@@ -36,6 +36,7 @@ import { Office } from "../office/entities/office.entity";
 import { ComplaintDto } from "./dto/complaint.dto";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
+import { mapComplaintDtoToComplaint } from "src/middleware/maps/automapper-dto-to-entity-maps";
 
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "./models/search-results";
@@ -77,6 +78,9 @@ export class ComplaintService {
     complaintToComplaintDtoMap(mapper);
     applyWildlifeComplaintMap(mapper);
     applyAllegationComplaintMap(mapper);
+
+    //-- DTO -> ENTITY
+    mapComplaintDtoToComplaint(mapper)
   }
 
   async create(
@@ -698,13 +702,19 @@ export class ComplaintService {
       if (result.affected === 1) {
         const complaint = await this.findById(id);
         return complaint as ComplaintDto;
-      } else { 
+      } else {
+        this.logger.log(
+          `Unable to update complaint: ${id} complaint status to ${status}`
+        );
         throw new HttpException(
           `Unable to update complaint: ${id} complaint status to ${status}`,
           HttpStatus.UNPROCESSABLE_ENTITY
         );
       }
     } catch (error) {
+      this.logger.log(
+        `An Error occured trying to update complaint: ${id}, update status: ${status}`
+      );
       this.logger.log(error);
 
       throw new HttpException(
@@ -716,9 +726,49 @@ export class ComplaintService {
 
   updateComplaintById = async (
     id: string,
-    complaintType: string
+    complaintType: string,
+    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
-    return {} as WildlifeComplaintDto;
+    try {
+
+      //-- convert the the dto from the client back into an entity
+      //-- so that it can be used to update the comaplaint
+      let entity: Complaint | HwcrComplaint | AllegationComplaint =
+        this.mapper.map<ComplaintDto, Complaint>(
+          model as ComplaintDto,
+          "ComplaintDto",
+          "Complaint"
+        );
+
+      switch (complaintType) {
+        case "ERS": {
+          break;
+        }
+        case "HWCR": {
+          entity = this.mapper.map<WildlifeComplaintDto, HwcrComplaint>(
+            model as WildlifeComplaintDto,
+            "WildlifeComplaintDto",
+            "HwcrComplaint"
+          );
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+
+      return {} as WildlifeComplaintDto;
+    } catch (error) {
+      this.logger.log(
+        `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${model}`
+      );
+      this.logger.log(error);
+
+      throw new HttpException(
+        `Unable to update complaint: ${id}`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
   };
 
   search = async (

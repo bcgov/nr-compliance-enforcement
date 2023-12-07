@@ -84,8 +84,9 @@ export class ComplaintController {
   @Roles(Role.COS_OFFICER)
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Param("id") id: string
+    @Param("id") id: string,
+    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
-    return await this.service.updateComplaintById(id, complaintType);
-
+    return await this.service.updateComplaintById(id, complaintType, model);
+  }
 }

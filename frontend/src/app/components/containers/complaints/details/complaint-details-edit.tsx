@@ -155,6 +155,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (noErrors()) {
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint = updateComplaint as HwcrComplaint;
+        debugger
         await dispatch(updateWildlifeComplaint(hwcrComplaint));
         dispatch(
           getWildlifeComplaintByComplaintIdentifierSetUpdate(
@@ -481,8 +482,8 @@ export const ComplaintDetailsEdit: FC = () => {
         const { species_code: source } = update;
         const updatedEntity = {
           ...source,
-          short_description: value,
-          long_description: label as string,
+          // short_description: value,
+          // long_description: label as string,
           species_code: value,
         };
 
