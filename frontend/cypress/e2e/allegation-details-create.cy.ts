@@ -54,11 +54,11 @@ describe("Complaint Create Page spec - Create View", () => {
       cy.navigateToCreateScreen();
   
       cy.selectItemById("complaint-type-select-id", "Enforcement");
-      cy.get("#caller-name-id").clear().type(createCallerInformation.name);
-      cy.get("#complaint-address-id")
+      cy.get("#caller-name-id").click({ force: true }).clear().type(createCallerInformation.name);
+      cy.get("#complaint-address-id").click({ force: true })
         .clear()
         .type(createCallerInformation.address);
-      cy.get("#complaint-email-id").clear().type(createCallerInformation.email);
+      cy.get("#complaint-email-id").click({ force: true }).clear().type(createCallerInformation.email);
   
       cy.get("#caller-primary-phone-id").click({ force: true });
       cy.get("#caller-primary-phone-id").clear();
@@ -66,10 +66,10 @@ describe("Complaint Create Page spec - Create View", () => {
         createCallerInformation.phoneInput,
       );
   
-      cy.get("#caller-info-secondary-phone-id")
+      cy.get("#caller-info-secondary-phone-id").click({ force: true })
         .clear()
         .typeAndTriggerChange(createCallerInformation.secondaryInput);
-      cy.get("#caller-info-alternate-phone-id")
+      cy.get("#caller-info-alternate-phone-id").click({ force: true })
         .clear()
         .typeAndTriggerChange(createCallerInformation.alternateInput);
   
@@ -80,7 +80,7 @@ describe("Complaint Create Page spec - Create View", () => {
       cy.get("#complaint-location-description-textarea-id").click({
         force: true,
       });
-      cy.get("#complaint-location-description-textarea-id")
+      cy.get("#complaint-location-description-textarea-id").click({ force: true })
         .clear()
         .type(createCallDetails.locationDescription, { delay: 0 });
       cy.get("#complaint-description-textarea-id").click({ force: true });
