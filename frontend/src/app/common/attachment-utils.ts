@@ -1,5 +1,3 @@
-// attachmentUtils.ts
-
 import {
   deleteAttachments,
   saveAttachments,
