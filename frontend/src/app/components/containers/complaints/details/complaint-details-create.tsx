@@ -1034,15 +1034,15 @@ export const CreateComplaint: FC = () => {
   const processComplaintBasedOnType = async (complaint: HwcrComplaint | AllegationComplaint) => {
     switch (complaintType) {
       case COMPLAINT_TYPES.HWCR:
-        return handleHwcrComplaint(complaint as HwcrComplaint);
+        return handleHwcrComplaint(complaint);
       case COMPLAINT_TYPES.ERS:
-        return handleErsComplaint(complaint as AllegationComplaint);
+        return handleErsComplaint(complaint);
       default:
         return null;
     }
   };
   
-  const handleHwcrComplaint = async (complaint: HwcrComplaint) => {
+  const handleHwcrComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
     const complaintId = await dispatch(
       createWildlifeComplaint(complaint as HwcrComplaint)
     );
@@ -1059,7 +1059,7 @@ export const CreateComplaint: FC = () => {
     return complaintId;
   };
   
-  const handleErsComplaint = async (complaint: AllegationComplaint) => {
+  const handleErsComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
     const complaintId = await dispatch(
       createAllegationComplaint(complaint as AllegationComplaint)
     );
