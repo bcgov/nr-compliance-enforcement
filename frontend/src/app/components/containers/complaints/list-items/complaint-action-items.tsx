@@ -18,14 +18,14 @@ type Props = {
   complaint_identifier: string;
   complaint_type: string;
   zone: string;
-  complaint_agency: string;
+  agency_code: string;
 };
 
 export const ComplaintActionItems: FC<Props> = ({
   complaint_identifier,
   complaint_type,
   zone,
-  complaint_agency,
+  agency_code,
 }) => {
   const [isReferHovered, setIsReferHovered] = useState(false);
   const [isAssignHovered, setIsAssignHovered] = useState(false);
@@ -44,7 +44,7 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
           zone: zone,
-          complaint_agency: complaint_agency,
+          agency_code: agency_code,
         },
       })
     );

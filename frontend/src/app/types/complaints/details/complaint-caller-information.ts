@@ -8,4 +8,5 @@ export interface ComplaintCallerInformation {
   secondaryPhone?: string;
   alternatePhone?: string;
   referredByAgencyCode?: AgencyCode;
+  ownedByAgencyCode: AgencyCode;
 }

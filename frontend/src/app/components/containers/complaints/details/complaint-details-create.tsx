@@ -16,7 +16,7 @@ import { AllegationComplaint } from "../../../../types/complaints/allegation-com
 import { cloneDeep } from "lodash";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { openModal, userId } from "../../../../store/reducers/app";
+import { openModal, selectOfficerAgency, userId } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { useSelector } from "react-redux";
 import {
@@ -29,7 +29,7 @@ import {
   selectViolationCodeDropdown,
 } from "../../../../store/reducers/code-table";
 import { Officer } from "../../../../types/person/person";
-import { selectOfficers } from "../../../../store/reducers/officer";
+import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import {
@@ -50,9 +50,10 @@ import { ComplaintLocation } from "./complaint-location";
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
   const userid = useAppSelector(userId);
-  const officerList = useAppSelector(selectOfficers);
+  const agency = useAppSelector(selectOfficerAgency);
+  const officerList = useAppSelector(selectOfficersByAgency(agency));
   let assignableOfficers: Option[] =
-    officerList !== null
+    officerList
       ? officerList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
