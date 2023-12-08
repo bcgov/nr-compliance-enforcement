@@ -60,9 +60,8 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
 import { COMSObject } from "../../../../types/coms/object";
-import { handleAttachments } from "../../../../common/attachment-utils";
+import { handleAddAttachments, handleAttachments, handleDeleteAttachments } from "../../../../common/attachment-utils";
 
 type ComplaintParams = {
   id: string;
@@ -133,18 +132,13 @@ export const ComplaintDetailsEdit: FC = () => {
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
 
-  const handleAddAttachments = (selectedFiles: File[]) => {
-    setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
+  const onHandleAddAttachments = (selectedFiles: File[]) => {
+    handleAddAttachments(setAttachmentsToAdd, selectedFiles);
   };
 
-  const handleDeleteAttachment = (fileToDelete: COMSObject) => {
-    if (!fileToDelete.pendingUpload) {
-      setAttachmentsToDelete(prevFiles => prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]);
-    } else if (attachmentsToAdd) { // we're deleting an attachment that wasn't uploaded, so remove the attachment from the "attachmentsToDelete" state
-      setAttachmentsToAdd(prevAttachments => prevAttachments ? prevAttachments.filter(file => file.name !== fileToDelete.name) : null);     
-    }
+  const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
-
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -1648,8 +1642,8 @@ export const ComplaintDetailsEdit: FC = () => {
             complaintIdentifier={id}
             allowUpload={true}
             allowDelete={true}
-            onFilesSelected={handleAddAttachments}
-            onFileDeleted={handleDeleteAttachment}
+            onFilesSelected={onHandleAddAttachments}
+            onFileDeleted={onHandleDeleteAttachment}
           />
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}

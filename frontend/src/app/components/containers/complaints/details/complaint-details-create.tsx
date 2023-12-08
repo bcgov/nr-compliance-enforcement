@@ -48,8 +48,7 @@ import { useNavigate } from "react-router-dom";
 import { ComplaintLocation } from "./complaint-location";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
-import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
-import { handleAttachments } from "../../../../common/attachment-utils";
+import { handleAddAttachments, handleAttachments, handleDeleteAttachments } from "../../../../common/attachment-utils";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -234,16 +233,12 @@ export const CreateComplaint: FC = () => {
     // files to remove from COMS when complaint is saved
     const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   
-    const handleAddAttachments = (selectedFiles: File[]) => {
-      setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
+    const onHandleAddAttachments = (selectedFiles: File[]) => {
+      handleAddAttachments(setAttachmentsToAdd, selectedFiles);
     };
   
-    const handleDeleteAttachment = (fileToDelete: COMSObject) => {
-      if (!fileToDelete.pendingUpload) {
-        setAttachmentsToDelete(prevFiles => prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]);
-      } else if (attachmentsToAdd) { // we're deleting an attachment that wasn't uploaded, so remove the attachment from the "attachmentsToDelete" state
-        setAttachmentsToAdd(prevAttachments => prevAttachments ? prevAttachments.filter(file => file.name !== fileToDelete.name) : null);     
-      }
+    const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+      handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
     };
   
 
@@ -1634,8 +1629,8 @@ export const CreateComplaint: FC = () => {
       <AttachmentsCarousel
             allowUpload={true}
             allowDelete={true}
-            onFilesSelected={handleAddAttachments}
-            onFileDeleted={handleDeleteAttachment}
+            onFilesSelected={onHandleAddAttachments}
+            onFileDeleted={onHandleDeleteAttachment}
           />
     </div>
   );
