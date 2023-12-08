@@ -976,7 +976,20 @@ export const CreateComplaint: FC = () => {
     if (!createComplaint) {
       return;
     }
+  
     let complaint = createComplaint;
+    setComplaintToOpenStatus(complaint);
+  
+    const noError = await setErrors(complaint);
+  
+    if (noError && noErrors()) {
+      await handleComplaintProcessing(complaint);
+    } else {
+      handleFormErrors();
+    }
+  };
+  
+  const setComplaintToOpenStatus = (complaint: HwcrComplaint | AllegationComplaint) => {
     const openStatus = {
       short_description: "OPEN",
       long_description: "Open",
@@ -988,79 +1001,97 @@ export const CreateComplaint: FC = () => {
       update_user_id: "",
       update_utc_timestamp: null,
     };
-
-    complaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
-
-    const noError = await setErrors(complaint);
-
-    if (noError && noErrors()) {
-      let complaintId;
-      complaint.complaint_identifier.create_utc_timestamp =
-        complaint.complaint_identifier.update_utc_timestamp =
-          new Date().toDateString();
-      complaint.complaint_identifier.create_user_id =
-        complaint.complaint_identifier.update_user_id = userid;
-      complaint.complaint_identifier.location_geometry_point.type = "Point";
-      if (
-        complaint.complaint_identifier.location_geometry_point.coordinates
-          .length === 0
-      ) {
-        complaint.complaint_identifier.location_geometry_point.coordinates = [
-          0, 0,
-        ];
-      }
-      setCreateComplaint(complaint);
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-         complaintId = await dispatch(
-          createWildlifeComplaint(complaint as HwcrComplaint),
-        );
-        if (complaintId) {
-          await dispatch(
-            getWildlifeComplaintByComplaintIdentifierSetUpdate(
-              complaintId,
-              setCreateComplaint,
-            ),
-          );
-
-          navigate("/complaint/" + complaintType + "/" + complaintId);
-        }
-      }
-      else if (complaintType === COMPLAINT_TYPES.ERS) {
-        complaintId = await dispatch(
-          createAllegationComplaint(complaint as AllegationComplaint),
-        );
-        if (complaintId) {
-          await dispatch(
-            getAllegationComplaintByComplaintIdentifierSetUpdate(
-              complaintId,
-              setCreateComplaint,
-            ),
-          );
-
-          navigate("/complaint/" + complaintType + "/" + complaintId);
-        }
-      }
-      setErrorNotificationClass("comp-complaint-error display-none");
-
-      if (attachmentsToAdd) {
-        if (complaintId) {
-          dispatch(saveAttachments(attachmentsToAdd, complaintId));
-        }
-      }
+    complaint.complaint_identifier.complaint_status_code = openStatus;
+  };
   
-      if (attachmentsToDelete) {
-        dispatch(deleteAttachments(attachmentsToDelete))
-      }
+  const handleComplaintProcessing = async (complaint: HwcrComplaint | AllegationComplaint) => {
+    updateComplaintDetails(complaint);
+    setCreateComplaint(complaint);
   
-      // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared
-      setAttachmentsToAdd(null);
-      setAttachmentsToDelete(null);
+    let complaintId = await processComplaintBasedOnType(complaint);
+    if (complaintId) {
+      handleAttachments(complaintId);
+    }
   
-    } else {
-      ToggleError("Errors in form");
-      setErrorNotificationClass("comp-complaint-error");
+    setErrorNotificationClass("comp-complaint-error display-none");
+  };
+  
+  const updateComplaintDetails = (complaint: HwcrComplaint | AllegationComplaint) => {
+    const now = new Date().toDateString();
+    complaint.complaint_identifier.create_utc_timestamp = now;
+    complaint.complaint_identifier.update_utc_timestamp = now;
+    complaint.complaint_identifier.create_user_id = userid;
+    complaint.complaint_identifier.update_user_id = userid;
+    complaint.complaint_identifier.location_geometry_point.type = "Point";
+  
+    if (
+      complaint.complaint_identifier.location_geometry_point.coordinates.length === 0
+    ) {
+      complaint.complaint_identifier.location_geometry_point.coordinates = [0, 0];
     }
   };
+  
+  const processComplaintBasedOnType = async (complaint: HwcrComplaint | AllegationComplaint) => {
+    switch (complaintType) {
+      case COMPLAINT_TYPES.HWCR:
+        return handleHwcrComplaint(complaint as HwcrComplaint);
+      case COMPLAINT_TYPES.ERS:
+        return handleErsComplaint(complaint as AllegationComplaint);
+      default:
+        return null;
+    }
+  };
+  
+  const handleHwcrComplaint = async (complaint: HwcrComplaint) => {
+    const complaintId = await dispatch(
+      createWildlifeComplaint(complaint as HwcrComplaint)
+    );
+    if (complaintId) {
+      await dispatch(
+        getWildlifeComplaintByComplaintIdentifierSetUpdate(
+          complaintId,
+          setCreateComplaint
+        )
+      );
+  
+      navigate("/complaint/" + complaintType + "/" + complaintId);
+    }
+    return complaintId;
+  };
+  
+  const handleErsComplaint = async (complaint: AllegationComplaint) => {
+    const complaintId = await dispatch(
+      createAllegationComplaint(complaint as AllegationComplaint)
+    );
+    if (complaintId) {
+      await dispatch(
+        getAllegationComplaintByComplaintIdentifierSetUpdate(
+          complaintId,
+          setCreateComplaint
+        )
+      );
+  
+      navigate("/complaint/" + complaintType + "/" + complaintId);
+    }
+    return complaintId;
+  };
+  
+  const handleAttachments = (complaintId: string) => {
+    if (attachmentsToAdd) {
+      dispatch(saveAttachments(attachmentsToAdd, complaintId));
+    }
+    if (attachmentsToDelete) {
+      dispatch(deleteAttachments(attachmentsToDelete));
+    }
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
+  };
+  
+  const handleFormErrors = () => {
+    ToggleError("Errors in form");
+    setErrorNotificationClass("comp-complaint-error");
+  };
+  
 
   const maxDate = new Date();
 
