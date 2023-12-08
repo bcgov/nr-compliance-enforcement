@@ -25,13 +25,15 @@ export const handleDeleteAttachments = (
   fileToDelete: COMSObject
 ) => {
   if (!fileToDelete.pendingUpload) {
+    // a user is wanting to delete a previously uploaded attachment
     setAttachmentsToDelete((prevFiles) =>
       prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]
     );
   } else if (attachmentsToAdd) {
+    // a user has added an attachment and deleted it, before the complaint was saved.  Let's make sure this file isn't uploaded, so remove it from the "attachmentsToAdd" state
     setAttachmentsToAdd((prevAttachments) =>
       prevAttachments
-        ? prevAttachments.filter((file) => file.name !== fileToDelete.name)
+        ? prevAttachments.filter((file) => decodeURIComponent(file.name) !== decodeURIComponent(fileToDelete.name))
         : null
     );
   }
