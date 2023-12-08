@@ -359,7 +359,7 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
   const selectedAssignedOfficer = assignableOfficers?.find(
-    (option) => option.value === (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid) ?? personGuid
+    (option) => option.value === (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid ? updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid : personGuid)
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
