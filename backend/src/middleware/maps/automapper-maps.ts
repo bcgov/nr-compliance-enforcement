@@ -189,6 +189,10 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       mapFrom((source) => source.incident_reported_utc_timestmp)
     ),
     forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.update_utc_timestamp)
+    ),
+    forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
         if (source.cos_geo_org_unit !== null) {
@@ -549,6 +553,12 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       )
     ),
     forMember(
+      (destination) => destination.updatedOn,
+      mapFrom(
+        (source) => source.update_utc_timestamp
+      )
+    ),
+    forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
         const {
@@ -789,6 +799,12 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.reportedOn,
       mapFrom(
         (source) => source.complaint_identifier.incident_reported_utc_timestmp
+      )
+    ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom(
+        (source) => source.update_utc_timestamp
       )
     ),
     forMember(

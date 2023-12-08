@@ -1,7 +1,7 @@
-import { AllegationComplaint } from "src/v1/allegation_complaint/entities/allegation_complaint.entity";
-import { HwcrComplaint } from "../../hwcr_complaint/entities/hwcr_complaint.entity";
+import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
+import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
 
 export interface SearchResults {
-  complaints: HwcrComplaint[] | AllegationComplaint[];
+  complaints: WildlifeComplaintDto[] | AllegationComplaintDto[];
   totalCount: number;
 }

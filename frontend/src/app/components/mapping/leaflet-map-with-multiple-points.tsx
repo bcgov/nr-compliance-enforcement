@@ -19,14 +19,11 @@ import { isEqual } from "lodash";
 import {
   BsInfoCircleFill
 } from "react-icons/bs";
+import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
 
 interface MapProps {
   complaint_type: string;
-  markers: {
-    complaint_identifier: string;
-    lat: number;
-    lng: number;
-  }[];
+  markers: Array<ComplaintMapItem>;
   unmapped_complaints: number;
 }
 
@@ -40,14 +37,14 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
   );
   const mapRef = useRef<Map | null>(null);
   const [markersState, setMarkersState] =
-    useState<{ lat: number; lng: number }[]>(markers);
+    useState<Array<ComplaintMapItem>>(markers);
 
   useEffect(() => {
     if (mapRef.current && markersState.length > 0) {
       // Calculate the bounds of all markers
       const bounds = Leaflet.latLngBounds(
         markersState.map(
-          (marker) => [marker.lat, marker.lng] as LatLngExpression,
+          (marker) => [marker.latitude, marker.longitude] as LatLngExpression,
         ),
       );
 
@@ -75,14 +72,14 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
   const dispatch = useAppDispatch();
 
   const handlePopupOpen =
-    (complaint_identifier: string) => (e: L.PopupEvent) => {
+    (id: string) => (e: L.PopupEvent) => {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
         dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier),
+          getWildlifeComplaintByComplaintIdentifier(id),
         );
       } else {
         dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier),
+          getAllegationComplaintByComplaintIdentifier(id),
         );
       }
     };
@@ -93,6 +90,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
   };
 
   const computedClass = (unmapped_complaints === 0) ? "comp-map-unmapped-alert display-none" : "comp-map-unmapped-alert";
+  const pluralization = (unmapped_complaints === 1) ? "" : "s";
 
   return (<>
     <div id="complaint-unmapped-notification" className={computedClass}>
@@ -101,7 +99,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
         />
         {/*
          */}
-        The exact location of {unmapped_complaints} complaints could not be determined.
+        The exact location of {unmapped_complaints} complaint{pluralization} could not be determined.
       </div>
     <MapContainer
       id="multi-point-map"
@@ -118,17 +116,17 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
       <MarkerClusterGroup>
         {markers.map((marker) => (
           <Marker
-            key={marker.complaint_identifier}
-            position={[marker.lat, marker.lng]}
+            key={marker.id}
+            position={[marker.latitude, marker.longitude]}
             icon={customMarkerIcon}
             eventHandlers={{
-              popupopen: handlePopupOpen(marker.complaint_identifier),
+              popupopen: handlePopupOpen(marker.id),
               popupclose: handlePopupClose,
             }}
           >
             <ComplaintSummaryPopup
               complaintType={complaint_type}
-              complaint_identifier={marker.complaint_identifier}
+              complaint_identifier={marker.id}
             />
           </Marker>
         ))}

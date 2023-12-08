@@ -1,6 +1,10 @@
 export interface ComplaintQueryParams {
-  sortColumn: string;
-  sortOrder: string;
+  sortColumn?: string; //-- to be removed
+  sortOrder?: string;  //-- to be removed
+
+  sortBy?: string;
+  orderBy?: string;
+
   region?: string;
   zone?: string;
   community?: string;

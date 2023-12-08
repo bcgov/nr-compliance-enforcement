@@ -3,7 +3,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 
 import { ComplaintService } from "./complaint.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
+import { MockComplaintsAgencyRepository, MockComplaintsOfficerRepository, MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
 import { createWildlifeComplaintMetadata } from "../../middleware/maps/automapper-meta-data";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { Mapper, createMapper } from "@automapper/core";
@@ -15,6 +15,7 @@ import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/moc
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
+
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import {
   MockAttractantCodeTableRepository,
@@ -38,6 +39,10 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
+import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { SearchResults } from "./models/search-results";
+import { REQUEST } from "@nestjs/core";
+import { MapSearchResults } from "src/types/complaints/map-search-results";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -123,18 +128,26 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
         },
+                {
+          provide: REQUEST,
+          useValue: {
+            user: { idir_username: "TEST" }
+          },
+        },
         CodeTableService
       ],
     }).compile();
 
     service = module.get<ComplaintService>(ComplaintService);
+
   });
 
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it("should return collection of HWCR Complaints", async () => {
+
+  it("should return collection of HWCR Complaints - findAllByType", async () => {
     //-- arrange
     const _type = "HWCR";
 
@@ -147,7 +160,7 @@ describe("Testing: Complaint Service", () => {
     expect(results.length).toBe(5);
   });
 
-  it("should return collection of ERS Complaints", async () => {
+  it("should return collection of ERS Complaints - findAllByType", async () => {
     //-- arrange
     const _type = "ERS";
 
@@ -158,5 +171,90 @@ describe("Testing: Complaint Service", () => {
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(5);
+  });
+
+  it("should return collection of HWCR complaints - search", async () => {
+    //-- arrange
+    const _type = "HWCR";
+    const _model: ComplaintSearchParameters = {
+      orderBy: "ASC",
+      sortBy: "complaint_identifier",
+      page: 1,
+      pageSize: 50,
+    };
+
+    //-- act
+    const results: SearchResults = await service.search(_type, _model);
+
+    //-- assert
+    const { complaints, totalCount} = results;
+    expect(results).not.toBe(null);
+    expect(complaints.length).not.toBe(0);
+    expect(complaints.length).toBe(5);
+    expect(totalCount).toBe(35);
+  });
+
+  it("should return collection of ERS complaints - search", async () => {
+    //-- arrange
+    const _type = "ERS";
+    const _model: ComplaintSearchParameters = {
+      orderBy: "ASC",
+      sortBy: "complaint_identifier",
+      page: 1,
+      pageSize: 50,
+    };
+
+    //-- act
+    const results: SearchResults = await service.search(_type, _model);
+
+    //-- assert
+    const { complaints, totalCount} = results;
+    expect(results).not.toBe(null);
+    expect(complaints.length).not.toBe(0);
+    expect(complaints.length).toBe(5);
+    expect(totalCount).toBe(35);
+  });
+
+
+  it("should return collection of HWCR complaints - mapSearch", async () => {
+    //-- arrange
+    const _type = "HWCR";
+    const _model: ComplaintSearchParameters = {
+      orderBy: "ASC",
+      sortBy: "complaint_identifier",
+      page: 1,
+      pageSize: 50,
+    };
+
+    //-- act
+    const results: MapSearchResults = await service.mapSearch(_type, _model);
+
+    //-- assert
+    const { complaints, unmappedComplaints} = results;
+    expect(results).not.toBe(null);
+    expect(complaints.length).not.toBe(0);
+    expect(complaints.length).toBe(5);
+    expect(unmappedComplaints).toBe(55);
+  });
+
+  it("should return collection of ERS complaints - mapSearch", async () => {
+    //-- arrange
+    const _type = "ERS";
+    const _model: ComplaintSearchParameters = {
+      orderBy: "ASC",
+      sortBy: "complaint_identifier",
+      page: 1,
+      pageSize: 50,
+    };
+
+    //-- act
+    const results: MapSearchResults = await service.mapSearch(_type, _model);
+
+    //-- assert
+    const { complaints, unmappedComplaints} = results;
+    expect(results).not.toBe(null);
+    expect(complaints.length).not.toBe(0);
+    expect(complaints.length).toBe(5);
+    expect(unmappedComplaints).toBe(45);
   });
 });

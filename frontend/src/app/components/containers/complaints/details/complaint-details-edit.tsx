@@ -60,6 +60,8 @@ import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
+import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
+import { COMSObject } from "../../../../types/coms/object";
 
 type ComplaintParams = {
   id: string;
@@ -106,6 +108,8 @@ export const ComplaintDetailsEdit: FC = () => {
     setPrimaryPhoneMsg("");
     setSecondaryPhoneMsg("");
     setAlternatePhoneMsg("");
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
   };
 
   const cancelButtonClick = () => {
@@ -121,6 +125,25 @@ export const ComplaintDetailsEdit: FC = () => {
       })
     );
   };
+
+  // files to add to COMS when complaint is saved
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+
+  // files to remove from COMS when complaint is saved
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+
+  const handleAddAttachments = (selectedFiles: File[]) => {
+    setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
+  };
+
+  const handleDeleteAttachment = (fileToDelete: COMSObject) => {
+    if (!fileToDelete.pendingUpload) {
+      setAttachmentsToDelete(prevFiles => prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]);
+    } else if (attachmentsToAdd) { // we're deleting an attachment that wasn't uploaded, so remove the attachment from the "attachmentsToDelete" state
+      setAttachmentsToAdd(prevAttachments => prevAttachments ? prevAttachments.filter(file => file.name !== fileToDelete.name) : null);     
+    }
+  };
+
 
   const [errorNotificationClass, setErrorNotificationClass] = useState(
     "comp-complaint-error display-none"
@@ -154,7 +177,18 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
+    };
+    if (attachmentsToAdd) {
+      dispatch(saveAttachments(attachmentsToAdd, id));
     }
+
+    if (attachmentsToDelete) {
+      dispatch(deleteAttachments(attachmentsToDelete))
+    }
+
+    // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
   };
 
   useEffect(() => {
@@ -288,6 +322,8 @@ export const ComplaintDetailsEdit: FC = () => {
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
         }))
       : [];
+
+  assignableOfficers.unshift({value: "Unassigned", label: "None"});
 
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(
@@ -530,6 +566,7 @@ export const ComplaintDetailsEdit: FC = () => {
         const { person_guid: officer } = selectedOfficer as any;
 
         if (from(source).any() && from(source).elementAt(0)) {
+          source[0].active_ind = true;
           const assigned = { ...source[0], person_guid: officer };
           source = [assigned];
         } else {
@@ -551,7 +588,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
         update.complaint_identifier = updatedParent;
 
-        setUpdateComplaint(update);
       } else if (from(source).any() && from(source).elementAt(0)) {
         const assigned = { ...source[0], active_ind: false };
         source = [assigned];
@@ -562,8 +598,8 @@ export const ComplaintDetailsEdit: FC = () => {
         };
 
         update.complaint_identifier = updatedParent;
-        setUpdateComplaint(update);
       }
+      setUpdateComplaint(update);
     }
   };
 
@@ -1142,10 +1178,9 @@ export const ComplaintDetailsEdit: FC = () => {
                     onChange={(e) => handleAssignedOfficerChange(e)}
                     className="comp-details-input"
                     options={assignableOfficers}
-                    defaultOption={{ label: "None", value: "Unassigned" }}
                     placeholder="Select"
                     enableValidation={false}
-                    value={selectedAssignedOfficer}
+                    value={(updateComplaint?.complaint_identifier?.person_complaint_xref[0]?.active_ind === true ? selectedAssignedOfficer : { value: "Unassigned", label: "None" })}
                   />
                 </div>
               </div>
@@ -1615,7 +1650,13 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
-          <AttachmentsCarousel complaintIdentifier={id} allowUpload={true} allowDelete={true}/>
+          <AttachmentsCarousel
+            complaintIdentifier={id}
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={handleAddAttachments}
+            onFileDeleted={handleDeleteAttachment}
+          />
           <ComplaintLocation
             coordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
@@ -1628,9 +1669,7 @@ export const ComplaintDetailsEdit: FC = () => {
           />
         </>
       )}
-      {readOnly && (
-        <AttachmentsCarousel complaintIdentifier={id}/>
-      )}
+      {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
       {readOnly && (
         <ComplaintLocation
           coordinates={{ lat: +latitude, lng: +longitude }}

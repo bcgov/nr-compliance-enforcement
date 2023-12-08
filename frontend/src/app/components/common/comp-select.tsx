@@ -34,9 +34,6 @@ export const CompSelect: FC<Props> = ({
   let items = [...options];
 
   // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
-  if (defaultOption) {
-    items = [defaultOption, ...options];
-
     styles = {
       ...styles,
       option: (provided, state) => ({
@@ -47,7 +44,6 @@ export const CompSelect: FC<Props> = ({
             : "black",
       }),
     };
-  }
 
   //-- pass through the onChange event
   const handleChange = (s: any) => {

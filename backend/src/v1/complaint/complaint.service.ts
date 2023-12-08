@@ -7,9 +7,10 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Scope,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
+import { Brackets, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 
@@ -31,11 +32,20 @@ import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
+
 import { ComplaintDto } from "./dto/complaint.dto";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 
-@Injectable()
+import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { SearchResults } from "./models/search-results";
+import { ComplaintFilterParameters } from "src/types/models/complaints/complaint-filter-parameters";
+import { REQUEST } from "@nestjs/core";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { MapSearchResults } from "src/types/complaints/map-search-results";
+
+
+@Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
   private mapper: Mapper;
@@ -58,8 +68,9 @@ export class ComplaintService {
   private complaintsRepository: Repository<Complaint>;
 
   constructor(
+    @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
-    private readonly codeTableService: CodeTableService
+     private readonly codeTableService: CodeTableService
   ) {
     this.mapper = mapper;
 
@@ -74,10 +85,7 @@ export class ComplaintService {
   ): Promise<Complaint> {
     try {
       const createComplaintDto: CreateComplaintDto = JSON.parse(complaint);
-
-      const agencyCode = await this._getAgencyByUser(
-        createComplaintDto.create_user_id
-      );
+      const agencyCode = await this._getAgencyByUser();
 
       let referredByAgencyCode = createComplaintDto.referred_by_agency_code;
       let sequenceNumber;
@@ -214,12 +222,14 @@ export class ComplaintService {
     }
   }
 
-  private _getAgencyByUser = async (username: string): Promise<AgencyCode> => {
+  private _getAgencyByUser = async (): Promise<AgencyCode> => {
+    const idir = getIdirFromRequest(this.request);
+
     const builder = this._officertRepository
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
       .leftJoinAndSelect("office.agency_code", "agency")
-      .where("officer.user_id = :username", { username });
+      .where("officer.user_id = :idir", { idir });
 
     const result = await builder.getOne();
 
@@ -231,6 +241,22 @@ export class ComplaintService {
   };
 
   //-- refactors starts here
+  private _getSortTable = (column: string): string => {
+    switch (column) {
+      case "species_code":
+      case "hwcr_complaint_nature_code":
+        return "wildlife";
+      case "last_name":
+        return "person";
+      case "violation_code":
+      case "in_progress_ind":
+        return "allegation";
+      case "complaint_identifier":
+      default:
+        return "complaint";
+    }
+  };
+
   private _generateQueryBuilder = (
     type: COMPLAINT_TYPE
   ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> => {
@@ -326,17 +352,226 @@ export class ComplaintService {
         "delegate.person_guid",
         "person",
         "delegate.active_ind = true"
-      )
-      .addSelect([
-        "person.person_guid",
-        "person.first_name",
-        "person.middle_name_1",
-        "person.middle_name_2",
-        "person.last_name",
-      ]);
+      );
 
     return builder;
   };
+
+  private _applyFilters(
+    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
+    {
+      community,
+      zone,
+      region,
+      incidentReportedStart,
+      incidentReportedEnd,
+      status,
+      officerAssigned,
+      natureOfComplaint,
+      speciesCode,
+      violationCode,
+    }: ComplaintFilterParameters,
+    complaintType: COMPLAINT_TYPE
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
+    if (community) {
+      builder.andWhere("cos_organization.area_code = :Community", {
+        Community: community,
+      });
+    }
+
+    if (zone) {
+      builder.andWhere("cos_organization.zone_code = :Zone", {
+        Zone: zone,
+      });
+    }
+
+    if (region) {
+      builder.andWhere("cos_organization.region_code = :Region", {
+        Region: region,
+      });
+    }
+
+    if (incidentReportedStart !== null && incidentReportedStart !== undefined) {
+      builder.andWhere(
+        "complaint.incident_reported_utc_timestmp >= :IncidentReportedStart",
+        { IncidentReportedStart: incidentReportedStart }
+      );
+    }
+    if (incidentReportedEnd !== null && incidentReportedEnd !== undefined) {
+      builder.andWhere(
+        "complaint.incident_reported_utc_timestmp <= :IncidentReportedEnd",
+        { IncidentReportedEnd: incidentReportedEnd }
+      );
+    }
+
+    if (status) {
+      builder.andWhere("complaint.complaint_status_code = :Status", {
+        Status: status,
+      });
+    }
+
+    if (officerAssigned && officerAssigned === "Unassigned") {
+      builder.andWhere("delegate.person_complaint_xref_guid IS NULL");
+    } else if (officerAssigned) {
+      builder
+        .andWhere("delegate.person_complaint_xref_code = :Assignee", {
+          Assignee: "ASSIGNEE",
+        })
+        .andWhere("delegate.person_guid = :PersonGuid", {
+          PersonGuid: officerAssigned,
+        });
+    }
+
+    switch (complaintType) {
+      case "ERS": {
+        if (violationCode) {
+          builder.andWhere("allegation.violation_code = :ViolationCode", {
+            ViolationCode: violationCode,
+          });
+        }
+        break;
+      }
+      case "HWCR":
+      default: {
+        if (natureOfComplaint) {
+          builder.andWhere(
+            "wildlife.hwcr_complaint_nature_code = :NatureOfComplaint",
+            { NatureOfComplaint: natureOfComplaint }
+          );
+        }
+
+        if (speciesCode) {
+          builder.andWhere("wildlife.species_code = :SpeciesCode", {
+            SpeciesCode: speciesCode,
+          });
+        }
+        break;
+      }
+    }
+
+    return builder;
+  }
+
+  private _applySearch(
+    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
+    complaintType: COMPLAINT_TYPE,
+    query: string
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
+    builder.andWhere(
+      new Brackets((qb) => {
+        qb.orWhere("complaint.complaint_identifier ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.detail_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_address ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_email ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_phone_1 ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_phone_2 ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.caller_phone_3 ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.location_summary_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.location_detailed_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint.referred_by_agency_other_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("referred_by.short_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("referred_by.long_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("owned_by.short_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("owned_by.long_description ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        qb.orWhere("cos_organization.region_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("cos_organization.area_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("cos_organization.zone_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("cos_organization.offloc_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+
+        switch (complaintType) {
+          case "ERS": {
+            qb.orWhere("allegation.suspect_witnesss_dtl_text ILIKE :query", {
+              query: `%${query}%`,
+            });
+
+            qb.orWhere("violation_code.short_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+            qb.orWhere("violation_code.long_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+            break;
+          }
+          case "HWCR":
+          default: {
+            qb.orWhere("wildlife.other_attractants_text ILIKE :query", {
+              query: `%${query}%`,
+            });
+
+            qb.orWhere("species_code.short_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+            qb.orWhere("species_code.long_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+
+            qb.orWhere("wildlife.hwcr_complaint_nature_code ILIKE :query", {
+              query: `%${query}%`,
+            });
+
+            qb.orWhere("attractant_code.short_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+            qb.orWhere("attractant_code.long_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+            break;
+          }
+        }
+
+        qb.orWhere("person.first_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("person.last_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+      })
+    );
+
+    return builder;
+  }
 
   findAllByType = async (
     complaintType: COMPLAINT_TYPE
@@ -484,5 +719,228 @@ export class ComplaintService {
     complaintType: string
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
     return {} as WildlifeComplaintDto;
+  };
+
+  search = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintSearchParameters
+  ): Promise<SearchResults> => {
+    try {
+      let results: SearchResults = { totalCount: 0, complaints: [] };
+
+      const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+
+      const skip = page && pageSize ? (page - 1) * pageSize : 0;
+      const sortTable = this._getSortTable(sortBy);
+
+      const sortString =
+        sortBy !== "update_utc_timestamp"
+          ? `${sortTable}.${sortBy}`
+          : "_update_utc_timestamp";
+
+      //-- generate initial query
+      let builder = this._generateQueryBuilder(complaintType);
+
+      //-- apply filters if used
+      if (Object.keys(filters).length !== 0) {
+        builder = this._applyFilters(
+          builder,
+          filters as ComplaintFilterParameters,
+          complaintType
+        );
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      const agency = await this._getAgencyByUser();
+      if (agency) {
+        builder.andWhere(
+          "complaint.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
+      }
+
+      //-- apply search
+      if (query) {
+        builder = this._applySearch(builder, complaintType, query);
+      }
+
+      //-- apply sort if provided
+      if (sortBy && orderBy) {
+        builder
+          .orderBy(sortString, orderBy)
+          .addOrderBy(
+            "complaint.incident_reported_utc_timestmp",
+            sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC"
+          );
+      }
+
+      //-- search and count
+      const [complaints, total] =
+        page && pageSize
+          ? await builder.skip(skip).take(pageSize).getManyAndCount()
+          : await builder.getManyAndCount();
+      results.totalCount = total;
+
+      switch (complaintType) {
+        case "ERS": {
+          const items = this.mapper.mapArray<
+            AllegationComplaint,
+            AllegationComplaintDto
+          >(
+            complaints as Array<AllegationComplaint>,
+            "AllegationComplaint",
+            "AllegationComplaintDto"
+          );
+          results.complaints = items;
+          break;
+        }
+        case "HWCR":
+        default: {
+          const items = this.mapper.mapArray<
+            HwcrComplaint,
+            WildlifeComplaintDto
+          >(
+            complaints as Array<HwcrComplaint>,
+            "WildlifeComplaint",
+            "WildlifeComplaintDto"
+          );
+
+          results.complaints = items;
+          break;
+        }
+      }
+
+      return results;
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException(
+        "Unable to Perform Search",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  };
+
+  mapSearch = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintSearchParameters
+  ): Promise<MapSearchResults> => {
+    const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+
+    try {
+      let results: MapSearchResults = { complaints: [], unmappedComplaints: 0 };
+
+      //-- get the users assigned agency
+      const agency = await this._getAgencyByUser();
+
+      //-- search for complaints
+      let complaintBuilder = this._generateQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        complaintBuilder = this._applySearch(
+          complaintBuilder,
+          complaintType,
+          query
+        );
+      }
+
+      //-- apply filters
+      if (Object.keys(filters).length !== 0) {
+        complaintBuilder = this._applyFilters(
+          complaintBuilder,
+          filters as ComplaintFilterParameters,
+          complaintType
+        );
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      if (agency) {
+        complaintBuilder.andWhere(
+          "complaint.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
+      }
+
+      //-- filter locations without coordinates
+      complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+      complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+
+      //-- run query
+      const mappedComplaints = await complaintBuilder.getMany();
+
+      //-- get unmapable complaints
+      let unMappedBuilder = this._generateQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        unMappedBuilder = this._applySearch(
+          unMappedBuilder,
+          complaintType,
+          query
+        );
+      }
+
+      //-- apply filters
+      if (Object.keys(filters).length !== 0) {
+        unMappedBuilder = this._applyFilters(
+          unMappedBuilder,
+          filters as ComplaintFilterParameters,
+          complaintType
+        );
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      if (agency) {
+        unMappedBuilder.andWhere(
+          "complaint.owned_by_agency_code.agency_code = :agency",
+          { agency: agency.agency_code }
+        );
+      }
+
+      //-- filter locations without coordinates
+      unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+      unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+
+      //-- run query
+      const unmappedComplaints = await unMappedBuilder.getCount();
+      results = { ...results, unmappedComplaints };
+
+      //-- map results
+      switch (complaintType) {
+        case "ERS": {
+          const items = this.mapper.mapArray<
+            AllegationComplaint,
+            AllegationComplaintDto
+          >(
+            mappedComplaints as Array<AllegationComplaint>,
+            "AllegationComplaint",
+            "AllegationComplaintDto"
+          );
+          results.complaints = items;
+          break;
+        }
+        case "HWCR":
+        default: {
+          const items = this.mapper.mapArray<
+            HwcrComplaint,
+            WildlifeComplaintDto
+          >(
+            mappedComplaints as Array<HwcrComplaint>,
+            "WildlifeComplaint",
+            "WildlifeComplaintDto"
+          );
+
+          results.complaints = items;
+          break;
+        }
+      }
+      return results;
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException(
+        "Unable to Perform Search",
+        HttpStatus.BAD_REQUEST
+      );
+    }
   };
 }

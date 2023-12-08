@@ -9,7 +9,13 @@ import { JwtAuthGuard } from "../../auth/jwtauth.guard";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { authGuardMock } from "../../../test/mocks/authGuardMock";
 import { roleGuardMock } from "../../../test/mocks/roleGuardMock";
-import { MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
+
+import {
+  MockComplaintsAgencyRepository,
+  MockComplaintsOfficerRepository,
+  MockComplaintsRepository,
+} from "../../../test/mocks/mock-complaints-repositories";
+
 import { getMapperToken } from "@automapper/nestjs";
 import { createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
@@ -43,6 +49,7 @@ import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
+import { REQUEST } from "@nestjs/core";
 
 describe("Testing: Complaint Controller", () => {
   let app: INestApplication;
@@ -77,11 +84,17 @@ describe("Testing: Complaint Controller", () => {
         },
         {
           provide: getRepositoryToken(Officer),
-          useFactory: MockWildlifeConflictComplaintRepository,
+          useFactory: MockComplaintsOfficerRepository,
         },
         {
           provide: getRepositoryToken(Office),
           useFactory: MockWildlifeConflictComplaintRepository,
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            user: { idir_username: "TEST" },
+          },
         },
         {
           provide: getRepositoryToken(AttractantCode),
@@ -135,7 +148,7 @@ describe("Testing: Complaint Controller", () => {
     app = module.createNestApplication();
     await app.init();
 
-    controller = module.get<ComplaintController>(ComplaintController);
+    controller = await module.resolve<ComplaintController>(ComplaintController);
   });
 
   it("should be defined", () => {
@@ -166,6 +179,16 @@ describe("Testing: Complaint Controller", () => {
 
     response = await request(app.getHttpServer()).patch(
       `/complaint/update-status-by-id/${_type}/${_id}`
+    );
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/Complaint/search/${_type}?orderBy=ASC&sortBy=complaint_identifier&page=1&pageSize=50`
+    );
+    expect(response.statusCode).toBe(200);
+
+    response = await request(app.getHttpServer()).get(
+      `/complaint/map/search/${_type}?orderBy=ASC&sortBy=test&page=1&pageSize=50`
     );
     expect(response.statusCode).toBe(200);
   });

@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Query } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
 import { CreateComplaintDto } from "./dto/create-complaint.dto";
 import { UpdateComplaintDto } from "./dto/update-complaint.dto";
@@ -10,6 +10,7 @@ import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "./dto/complaint.dto";
+import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -52,6 +53,24 @@ export class ComplaintController {
     return await this.service.findAllByType(complaintType);
   }
 
+  @Get("/map/search/:complaintType")
+  @Roles(Role.COS_OFFICER)
+  mapSearch(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters
+  ) {
+    return this.service.mapSearch(complaintType, model);
+  }
+
+  @Get("/search/:complaintType")
+  @Roles(Role.COS_OFFICER)
+  search(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters
+  ) {
+    return this.service.search(complaintType, model);
+  }
+  
   @Patch("/update-status-by-id/:id")
   @Roles(Role.COS_OFFICER)
   async updateComplaintStatusById(
@@ -68,5 +87,5 @@ export class ComplaintController {
     @Param("id") id: string
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return await this.service.updateComplaintById(id, complaintType);
-  }
+
 }
