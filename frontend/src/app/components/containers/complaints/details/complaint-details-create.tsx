@@ -46,6 +46,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { ComplaintLocation } from "./complaint-location";
+import { AttachmentsCarousel } from "../../../common/attachments-carousel";
+import { COMSObject } from "../../../../types/coms/object";
+import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -223,6 +226,25 @@ export const CreateComplaint: FC = () => {
   const [createComplaint, setCreateComplaint] = useState<
     HwcrComplaint | AllegationComplaint
   >(newEmptyComplaint);
+
+    // files to add to COMS when complaint is saved
+    const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+
+    // files to remove from COMS when complaint is saved
+    const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  
+    const handleAddAttachments = (selectedFiles: File[]) => {
+      setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
+    };
+  
+    const handleDeleteAttachment = (fileToDelete: COMSObject) => {
+      if (!fileToDelete.pendingUpload) {
+        setAttachmentsToDelete(prevFiles => prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]);
+      } else if (attachmentsToAdd) { // we're deleting an attachment that wasn't uploaded, so remove the attachment from the "attachmentsToDelete" state
+        setAttachmentsToAdd(prevAttachments => prevAttachments ? prevAttachments.filter(file => file.name !== fileToDelete.name) : null);     
+      }
+    };
+  
 
   function noErrors() {
     let noErrors = false;
@@ -972,6 +994,7 @@ export const CreateComplaint: FC = () => {
     const noError = await setErrors(complaint);
 
     if (noError && noErrors()) {
+      let complaintId;
       complaint.complaint_identifier.create_utc_timestamp =
         complaint.complaint_identifier.update_utc_timestamp =
           new Date().toDateString();
@@ -988,7 +1011,7 @@ export const CreateComplaint: FC = () => {
       }
       setCreateComplaint(complaint);
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        const complaintId = await dispatch(
+         complaintId = await dispatch(
           createWildlifeComplaint(complaint as HwcrComplaint),
         );
         if (complaintId) {
@@ -1003,7 +1026,7 @@ export const CreateComplaint: FC = () => {
         }
       }
       else if (complaintType === COMPLAINT_TYPES.ERS) {
-        const complaintId = await dispatch(
+        complaintId = await dispatch(
           createAllegationComplaint(complaint as AllegationComplaint),
         );
         if (complaintId) {
@@ -1018,6 +1041,21 @@ export const CreateComplaint: FC = () => {
         }
       }
       setErrorNotificationClass("comp-complaint-error display-none");
+
+      if (attachmentsToAdd) {
+        if (complaintId) {
+          dispatch(saveAttachments(attachmentsToAdd, complaintId));
+        }
+      }
+  
+      if (attachmentsToDelete) {
+        dispatch(deleteAttachments(attachmentsToDelete))
+      }
+  
+      // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared
+      setAttachmentsToAdd(null);
+      setAttachmentsToDelete(null);
+  
     } else {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
@@ -1572,6 +1610,12 @@ export const CreateComplaint: FC = () => {
           </div>
         </div>
       )}
+      <AttachmentsCarousel
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={handleAddAttachments}
+            onFileDeleted={handleDeleteAttachment}
+          />
     </div>
   );
 };

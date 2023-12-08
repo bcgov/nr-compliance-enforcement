@@ -21,7 +21,7 @@ import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
-  complaintIdentifier: string;
+  complaintIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
   onFilesSelected?: (attachments: File[]) => void;
@@ -61,7 +61,9 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // get the attachments when the complaint loads
   useEffect(() => {
-    dispatch(getAttachments(complaintIdentifier));
+    if (complaintIdentifier) {
+      dispatch(getAttachments(complaintIdentifier));
+    }
   }, [complaintIdentifier, dispatch]);
 
   //-- when the component unmounts clear the attachments from redux
