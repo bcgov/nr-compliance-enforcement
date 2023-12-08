@@ -48,7 +48,7 @@ import { useNavigate } from "react-router-dom";
 import { ComplaintLocation } from "./complaint-location";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
-import { handleAddAttachments, handleAttachments, handleDeleteAttachments } from "../../../../common/attachment-utils";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "../../../../common/attachment-utils";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -1006,7 +1006,7 @@ export const CreateComplaint: FC = () => {
   
     let complaintId = await processComplaintBasedOnType(complaint);
     if (complaintId) {
-      handleAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, complaintId, setAttachmentsToAdd, setAttachmentsToDelete);
+      handlePersistAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, complaintId, setAttachmentsToAdd, setAttachmentsToDelete);
     }
   
     setErrorNotificationClass("comp-complaint-error display-none");

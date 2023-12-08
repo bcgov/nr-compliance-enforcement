@@ -61,7 +61,7 @@ import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
-import { handleAddAttachments, handleAttachments, handleDeleteAttachments } from "../../../../common/attachment-utils";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "../../../../common/attachment-utils";
 
 type ComplaintParams = {
   id: string;
@@ -170,7 +170,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
-      handleAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, id, setAttachmentsToAdd, setAttachmentsToDelete);
+      handlePersistAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, id, setAttachmentsToAdd, setAttachmentsToDelete);
 
     } else {
       ToggleError("Errors in form");

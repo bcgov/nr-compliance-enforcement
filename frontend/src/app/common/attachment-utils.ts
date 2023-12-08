@@ -4,6 +4,7 @@ import {
 } from "../store/reducers/attachments";
 import { COMSObject } from "../types/coms/object";
 
+// used to update the state of attachments that are to be added to a complaint
 export const handleAddAttachments = (
     setAttachmentsToAdd: React.Dispatch<React.SetStateAction<File[] | null>>, 
     selectedFiles: File[]
@@ -11,6 +12,7 @@ export const handleAddAttachments = (
     setAttachmentsToAdd(prevFiles => prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles);
 };
 
+// used to update the state of attachments that are to be deleted from a complaint
 export const handleDeleteAttachments = (
     attachmentsToAdd: File[] | null,
     setAttachmentsToAdd: React.Dispatch<React.SetStateAction<File[] | null>>,
@@ -25,7 +27,7 @@ export const handleDeleteAttachments = (
 };
 
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
-export function handleAttachments(
+export function handlePersistAttachments(
   dispatch: any,
   attachmentsToAdd: File[] | null,
   attachmentsToDelete: COMSObject[] | null,
