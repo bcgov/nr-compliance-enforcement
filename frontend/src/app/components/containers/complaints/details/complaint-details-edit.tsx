@@ -62,6 +62,7 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
 import { COMSObject } from "../../../../types/coms/object";
+import { handleAttachments } from "../../../../common/attachment-utils";
 
 type ComplaintParams = {
   id: string;
@@ -174,21 +175,14 @@ export const ComplaintDetailsEdit: FC = () => {
       }
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
+
+      handleAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, id, setAttachmentsToAdd, setAttachmentsToDelete);
+
     } else {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
     };
-    if (attachmentsToAdd) {
-      dispatch(saveAttachments(attachmentsToAdd, id));
-    }
 
-    if (attachmentsToDelete) {
-      dispatch(deleteAttachments(attachmentsToDelete))
-    }
-
-    // clear the attachments since they've been added or saved.  If they couldn't be added or saved then an error would have appeared
-    setAttachmentsToAdd(null);
-    setAttachmentsToDelete(null);
   };
 
   useEffect(() => {

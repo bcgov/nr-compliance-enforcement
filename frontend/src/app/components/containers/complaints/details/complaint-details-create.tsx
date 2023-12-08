@@ -49,6 +49,7 @@ import { ComplaintLocation } from "./complaint-location";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
 import { deleteAttachments, saveAttachments } from "../../../../store/reducers/attachments";
+import { handleAttachments } from "../../../../common/attachment-utils";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -1010,7 +1011,7 @@ export const CreateComplaint: FC = () => {
   
     let complaintId = await processComplaintBasedOnType(complaint);
     if (complaintId) {
-      handleAttachments(complaintId);
+      handleAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, complaintId, setAttachmentsToAdd, setAttachmentsToDelete);
     }
   
     setErrorNotificationClass("comp-complaint-error display-none");
@@ -1074,17 +1075,6 @@ export const CreateComplaint: FC = () => {
       navigate("/complaint/" + complaintType + "/" + complaintId);
     }
     return complaintId;
-  };
-  
-  const handleAttachments = (complaintId: string) => {
-    if (attachmentsToAdd) {
-      dispatch(saveAttachments(attachmentsToAdd, complaintId));
-    }
-    if (attachmentsToDelete) {
-      dispatch(deleteAttachments(attachmentsToDelete));
-    }
-    setAttachmentsToAdd(null);
-    setAttachmentsToDelete(null);
   };
   
   const handleFormErrors = () => {
