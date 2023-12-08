@@ -53,7 +53,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
     if (carouselData) {
-      setSlides(carouselData);
+      setSlides(sortAttachmentsByName(carouselData));
     } else {
       setSlides([])
     }
@@ -72,6 +72,16 @@ export const AttachmentsCarousel: FC<Props> = ({
       dispatch(setAttachments([]));
     };
   }, [dispatch]);
+
+ function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
+  // Create a copy of the array using slice() or spread syntax
+  const copy = [...comsObjects];
+
+  // Sort the copy based on the name property
+  copy.sort((a, b) => a.name.localeCompare(b.name));
+
+  return copy;
+}
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = (newFiles: FileList) => {
