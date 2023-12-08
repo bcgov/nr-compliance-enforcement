@@ -80,16 +80,6 @@ export const ComplaintDetailsEdit: FC = () => {
     HwcrComplaint | AllegationComplaint | null | undefined
   >(complaint);
 
-  /*
-  useEffect(() => {
-    //-- when the component unmounts clear the complaint from redux
-    return () => {
-      console.log("updateComplaintzzzzzzzzzzzzzzzzzzzzzzz: " + JSON.stringify(updateComplaint));
-      dispatch(setComplaint(updateComplaint));
-      dispatch(setGeocodedComplaintCoordinates(updateComplaint?.complaint_identifier.location_geometry_point));
-    };
-  }, [dispatch, updateComplaint, setUpdateComplaint]);*/
-
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
@@ -273,7 +263,6 @@ export const ComplaintDetailsEdit: FC = () => {
     area,
     region,
     zone,
-    zone_code,
     office,
     attractants,
     violationInProgress,
@@ -370,7 +359,7 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
   const selectedAssignedOfficer = assignableOfficers?.find(
-    (option) => option.value === updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid ?? personGuid
+    (option) => option.value === (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid) ?? personGuid
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
