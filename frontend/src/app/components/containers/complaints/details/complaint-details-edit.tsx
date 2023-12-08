@@ -36,7 +36,7 @@ import { Officer } from "../../../../types/person/person";
 import Option from "../../../../types/app/option";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
-import { selectOfficersByZone } from "../../../../store/reducers/officer";
+import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
@@ -251,7 +251,6 @@ export const ComplaintDetailsEdit: FC = () => {
     area,
     region,
     zone,
-    zone_code,
     office,
     attractants,
     violationInProgress,
@@ -277,17 +276,18 @@ export const ComplaintDetailsEdit: FC = () => {
     address,
     email,
     referredByAgencyCode,
+    ownedByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
 
   const userid = useAppSelector(userId);
-
-  const officerList = useAppSelector(selectOfficersByZone(zone_code));
+  
+  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
   ) as ComplaintSuspectWitness;
 
-  const officersInZoneList = useAppSelector(selectOfficersByZone(zone_code));
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime
@@ -304,8 +304,8 @@ export const ComplaintDetailsEdit: FC = () => {
   // Transform the fetched data into the DropdownOption type
 
   let assignableOfficers: Option[] =
-    officersInZoneList !== null
-      ? officersInZoneList.map((officer: Officer) => ({
+  officersInAgencyList !== null
+      ? officersInAgencyList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
         }))
@@ -347,7 +347,7 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
   const selectedAssignedOfficer = assignableOfficers?.find(
-    (option) => option.value === personGuid
+    (option) => option.value === (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid ? updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid : personGuid)
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
@@ -554,8 +554,8 @@ export const ComplaintDetailsEdit: FC = () => {
         const { person_guid: officer } = selectedOfficer as any;
 
         if (from(source).any() && from(source).elementAt(0)) {
-          source[0].active_ind = true;
-          const assigned = { ...source[0], person_guid: officer };
+          const assigned = { ...source[0], person_guid: officer, active_ind: true };
+          console.log("assigned1 :" + JSON.stringify(assigned));
           source = [assigned];
         } else {
           const assigned = {
@@ -566,6 +566,7 @@ export const ComplaintDetailsEdit: FC = () => {
             active_ind: true,
             person_complaint_xref_code: "ASSIGNEE",
           };
+          console.log("assigned2 :" + JSON.stringify(assigned));
           source = [assigned];
         }
 
@@ -578,6 +579,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
       } else if (from(source).any() && from(source).elementAt(0)) {
         const assigned = { ...source[0], active_ind: false };
+        console.log("assigned3 :" + JSON.stringify(assigned));
         source = [assigned];
 
         const updatedParent = {
@@ -587,7 +589,10 @@ export const ComplaintDetailsEdit: FC = () => {
 
         update.complaint_identifier = updatedParent;
       }
+      console.log("updateComplaintvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv: " + JSON.stringify(update));
+      console.log("lol");
       setUpdateComplaint(update);
+      console.log("lol2");
     }
   };
 
