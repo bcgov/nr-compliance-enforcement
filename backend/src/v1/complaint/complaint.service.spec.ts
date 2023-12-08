@@ -3,7 +3,11 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 
 import { ComplaintService } from "./complaint.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { MockComplaintsAgencyRepository, MockComplaintsOfficerRepository, MockComplaintsRepository } from "../../../test/mocks/mock-complaints-repositories";
+import {
+  MockComplaintsAgencyRepository,
+  MockComplaintsOfficerRepository,
+  MockComplaintsRepository,
+} from "../../../test/mocks/mock-complaints-repositories";
 import { createWildlifeComplaintMetadata } from "../../middleware/maps/automapper-meta-data";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { Mapper, createMapper } from "@automapper/core";
@@ -28,7 +32,7 @@ import {
   MockPersonComplaintCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
-} from "../../../test/mocks/mock-code-table-repositories"
+} from "../../../test/mocks/mock-code-table-repositories";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
@@ -77,11 +81,11 @@ describe("Testing: Complaint Service", () => {
 
         {
           provide: getRepositoryToken(AgencyCode),
-          useFactory: MockWildlifeConflictComplaintRepository,
+          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),
-          useFactory: MockWildlifeConflictComplaintRepository,
+          useFactory: MockComplaintsOfficerRepository,
         },
         {
           provide: getRepositoryToken(Office),
@@ -128,24 +132,22 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
         },
-                {
+        {
           provide: REQUEST,
           useValue: {
-            user: { idir_username: "TEST" }
+            user: { idir_username: "TEST" },
           },
         },
-        CodeTableService
+        CodeTableService,
       ],
     }).compile();
 
-    service = module.get<ComplaintService>(ComplaintService);
-
+    service = await module.resolve<ComplaintService>(ComplaintService);
   });
 
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
-
 
   it("should return collection of HWCR Complaints - findAllByType", async () => {
     //-- arrange
@@ -187,7 +189,7 @@ describe("Testing: Complaint Service", () => {
     const results: SearchResults = await service.search(_type, _model);
 
     //-- assert
-    const { complaints, totalCount} = results;
+    const { complaints, totalCount } = results;
     expect(results).not.toBe(null);
     expect(complaints.length).not.toBe(0);
     expect(complaints.length).toBe(5);
@@ -208,13 +210,12 @@ describe("Testing: Complaint Service", () => {
     const results: SearchResults = await service.search(_type, _model);
 
     //-- assert
-    const { complaints, totalCount} = results;
+    const { complaints, totalCount } = results;
     expect(results).not.toBe(null);
     expect(complaints.length).not.toBe(0);
     expect(complaints.length).toBe(5);
     expect(totalCount).toBe(35);
   });
-
 
   it("should return collection of HWCR complaints - mapSearch", async () => {
     //-- arrange
@@ -230,7 +231,7 @@ describe("Testing: Complaint Service", () => {
     const results: MapSearchResults = await service.mapSearch(_type, _model);
 
     //-- assert
-    const { complaints, unmappedComplaints} = results;
+    const { complaints, unmappedComplaints } = results;
     expect(results).not.toBe(null);
     expect(complaints.length).not.toBe(0);
     expect(complaints.length).toBe(5);
@@ -251,7 +252,7 @@ describe("Testing: Complaint Service", () => {
     const results: MapSearchResults = await service.mapSearch(_type, _model);
 
     //-- assert
-    const { complaints, unmappedComplaints} = results;
+    const { complaints, unmappedComplaints } = results;
     expect(results).not.toBe(null);
     expect(complaints.length).not.toBe(0);
     expect(complaints.length).toBe(5);

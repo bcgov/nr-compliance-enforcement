@@ -80,7 +80,7 @@ describe("Testing: Complaint Controller", () => {
         },
         {
           provide: getRepositoryToken(AgencyCode),
-          useFactory: MockWildlifeConflictComplaintRepository,
+          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),

@@ -36,7 +36,7 @@ import { Office } from "../office/entities/office.entity";
 import { ComplaintDto } from "./dto/complaint.dto";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
-import { mapComplaintDtoToComplaint } from "src/middleware/maps/automapper-dto-to-entity-maps";
+import { mapComplaintDtoToComplaint } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "./models/search-results";

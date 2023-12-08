@@ -88,75 +88,59 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.person_complaint_xref,
       mapFrom((src) => {
-         const items = mapper.mapArray<DelegateDto, PersonComplaintXref>(
-            src.delegates,
-            "ViolationCode",
-            "ViolationCodeDto"
-          );
+        if (src.delegates) {
+          const items = src.delegates.map((item) => {
+            const {
+              xrefId,
+              isActive,
+              type,
+              person: { id, firstName, lastName, middleName1, middleName2 },
+            } = item;
+            let record = {
+              personComplaintXrefGuid: xrefId,
+              active_ind: isActive,
+              person_complaint_xref_code: {
+                person_complaint_xref_code: type,
+              },
+              person_guid: {
+                person_guid: id,
+                first_name: firstName,
+                middle_name_1: middleName1,
+                middle_name_2: middleName2,
+                last_name: lastName,
+              },
+            };
 
-          return items
+            return record;
+          });
+          return items;
+        }
       })
     ),
-  );
-};
-
-export const delegatesToPersonComplaintXref = (mapper: Mapper) => {
-  createMap<DelegateDto, PersonComplaintXref>(
-    mapper,
-    "DelegateDto",
-    "PersonComplaintXref",
     forMember(
-      (dest) => dest.personComplaintXrefGuid,
-      mapFrom((src) => src.xrefId)
-    ),
-    forMember(
-      (dest) => dest.active_ind,
-      mapFrom((src) => src.isActive)
-    ),
-    forMember(
-      (dest) => dest.person_complaint_xref_code,
+      (dest) => dest.owned_by_agency_code,
       mapFrom((src) => {
-        return { person_complaint_xref_code: src.type };
+        const { ownedBy } = src || null;
+        return ownedBy ? { agency_code: ownedBy } : null;
+      })
+    ),
+    forMember(
+      (dest) => dest.referred_by_agency_code,
+      mapFrom((src) => {
+        const { referredBy } = src || null;
+        return referredBy ? { agency_code: referredBy } : null;
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_status_code,
+      mapFrom((src) => {
+        const { status } = src;
+        return { complaint_status_code: status };
       })
     )
   );
 };
 
-/*const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
-   createMap<PersonComplaintXref, DelegateDto>(
-     mapper,
-     "PersonComplaintXref",
-     "Delegate",
-     forMember(
-       (destination) => destination.xrefId,
-       mapFrom((source) => source.personComplaintXrefGuid)
-     ),
-     forMember(
-       (destination) => destination.isActive,
-       mapFrom((source) => source.active_ind)
-     ),
-     forMember(
-       (destination) => destination.type,
-       mapFrom(
-         (source) => source.person_complaint_xref_code.person_complaint_xref_code
-       )
-     ),
-     forMember(
-       (destination) => destination.person,
-       mapFrom((source) => {
-         return {
-           id: source.person_guid.person_guid,
-           firstName: source.person_guid.first_name,
-           middleName1: source.person_guid.middle_name_1,
-           middleName2: source.person_guid.middle_name_2,
-           lastName: source.person_guid.last_name,
-         };
-       })
-     )
-   );
- };*/
-
-// export const mapWidllifeComplaintToHwcrComplaint = (mapper: Mapper) => {
-//    createMap<WildlifeComplaintDto, HwcrComplaint>(mapper, "WildlifeComplaintDto", "HwcrComplaint",
-//    )
-// };
+export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => { 
+  
+}
