@@ -1319,3 +1319,33 @@ UPDATE public.attractant_code SET display_order=16 WHERE attractant_code='PETFOO
 UPDATE public.attractant_code SET display_order=17 WHERE attractant_code='PETS';
 UPDATE public.attractant_code SET display_order=18 WHERE attractant_code='VEGGARD';
 UPDATE public.attractant_code SET display_order=19 WHERE attractant_code='VNYDORCH';
+
+-- CE-326 Adding Caribou
+
+UPDATE species_code SET display_order = 24 where display_order = 23;
+UPDATE species_code SET display_order = 23 where display_order = 22;
+UPDATE species_code SET display_order = 22 where display_order = 21;
+UPDATE species_code SET display_order = 21 where display_order = 20;
+UPDATE species_code SET display_order = 20 where display_order = 19;
+UPDATE species_code SET display_order = 19 where display_order = 18;
+UPDATE species_code SET display_order = 18 where display_order = 17;
+UPDATE species_code SET display_order = 17 where display_order = 16;
+UPDATE species_code SET display_order = 16 where display_order = 15;
+UPDATE species_code SET display_order = 15 where display_order = 14;
+UPDATE species_code SET display_order = 14 where display_order = 13;
+UPDATE species_code SET display_order = 13 where display_order = 12;
+UPDATE species_code SET display_order = 12 where display_order = 11;
+UPDATE species_code SET display_order = 11 where display_order = 10;
+UPDATE species_code SET display_order = 10 where display_order = 9;
+UPDATE species_code SET display_order = 9 where display_order = 8;
+UPDATE species_code SET display_order = 8 where display_order = 7;
+UPDATE species_code SET display_order = 7 where display_order = 6;
+UPDATE species_code SET display_order = 6 where display_order = 5;
+UPDATE species_code SET display_order = 5 where display_order = 4;
+UPDATE species_code SET display_order = 4 where display_order = 3;
+insert into species_code (species_code, short_description, long_description, display_order, active_ind, legacy_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now());
+
+-- CE-326 Opps
+UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
+UPDATE species_code SET display_order = 3 where species_code = 'BOBCAT';

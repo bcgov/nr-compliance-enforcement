@@ -29,10 +29,12 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
+import { SpeciesCodeService } from "../species_code/species_code.service";
 
 @Injectable()
 export class CodeTableService {
   private readonly logger = new Logger(CodeTableService.name);
+  constructor(private readonly speciesService: SpeciesCodeService) {}
 
   @InjectRepository(AgencyCode)
   private _agencyRepository: Repository<AgencyCode>;
@@ -226,7 +228,7 @@ export class CodeTableService {
         return results;
       }
       case "species": {
-        const data = await this._speciesRepository.find();
+        const data = await this.speciesService.findAll();
         let results = data.map(
           ({
             species_code,
