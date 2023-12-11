@@ -80,7 +80,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_identifier: id,
           complaint_type: complaintType,
           zone: zone,
-          complaint_agency: complaintAgency,
+          agency_code: complaintAgency,
         },
       }),
     );
