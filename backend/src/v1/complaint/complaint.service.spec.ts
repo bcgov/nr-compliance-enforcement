@@ -47,6 +47,7 @@ import { ComplaintSearchParameters } from "src/types/models/complaints/complaint
 import { SearchResults } from "./models/search-results";
 import { REQUEST } from "@nestjs/core";
 import { MapSearchResults } from "src/types/complaints/map-search-results";
+import { ComplaintDto } from "src/types/models/complaints/complaint";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -258,4 +259,28 @@ describe("Testing: Complaint Service", () => {
     expect(complaints.length).toBe(5);
     expect(unmappedComplaints).toBe(45);
   });
+
+  it("should update a complaint status by complaint-identifier", async () => { 
+    //-- arange
+    const _id = "23-031396";
+    const _status = "CLOSED";
+
+    //-- act
+    const result = await service.updateComplaintStatusById(_id, _status);
+
+    //-- assert
+    const { id, status} = result;
+    expect(result).not.toBe(null);
+    expect(id).toBe(_id);
+    expect(status).toBe(_status);
+
+  })
+
+  it("shoudl update complaint by complaint-id", async () => { 
+        //-- arange
+
+    //-- act
+
+    //-- assert
+  })
 });

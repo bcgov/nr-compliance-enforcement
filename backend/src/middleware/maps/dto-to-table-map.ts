@@ -1,0 +1,98 @@
+import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
+import { ComplaintDto } from "src/types/models/complaints/complaint";
+import { ComplaintTable } from "src/types/tables/complaint.table";
+import { UpdateComplaintDto } from "src/v1/complaint/dto/update-complaint.dto";
+
+export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
+  createMap<ComplaintDto, UpdateComplaintDto>(
+    mapper,
+    "ComplaintDto",
+    "UpdateComplaintDto",
+    forMember(
+      (dest) => dest.detail_text,
+      mapFrom((src) => src.details)
+    ),
+    forMember(
+      (dest) => dest.caller_name,
+      mapFrom((src) => src.name)
+    ),
+    forMember(
+      (dest) => dest.caller_address,
+      mapFrom((src) => src.address)
+    ),
+    forMember(
+      (dest) => dest.caller_email,
+      mapFrom((src) => src.email)
+    ),
+    forMember(
+      (dest) => dest.caller_phone_1,
+      mapFrom((src) => src.phone1)
+    ),
+    forMember(
+      (dest) => dest.caller_phone_2,
+      mapFrom((src) => src.phone2)
+    ),
+    forMember(
+      (dest) => dest.caller_phone_3,
+      mapFrom((src) => src.phone3)
+    ),
+    forMember(
+      (dest) => dest.location_geometry_point,
+      mapFrom((src) => src.location)
+    ),
+    forMember(
+      (dest) => dest.location_summary_text,
+      mapFrom((src) => src.locationSummary)
+    ),
+    forMember(
+      (dest) => dest.location_detailed_text,
+      mapFrom((src) => src.locationDetail)
+    ),
+    forMember(
+      (dest) => dest.incident_utc_datetime,
+      mapFrom((src) => src.incidentDateTime)
+    ),
+    forMember(
+      (dest) => dest.referred_by_agency_other_text,
+      mapFrom((src) => src.referredByAgencyOther)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier,
+      mapFrom((src) => src.id)
+    ),
+    forMember(
+      (dest) => dest.referred_by_agency_code,
+      mapFrom((src) => {
+        return {
+          agency_code: src.referredBy,
+        };
+      })
+    ),
+    forMember(
+      (dest) => dest.owned_by_agency_code,
+      mapFrom((src) => {
+        return {
+          agency_code: src.ownedBy,
+        };
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_status_code,
+      mapFrom((src) => {
+        return {
+          complaint_status_code: src.status,
+        };
+      })
+    ),
+    forMember(
+      (dest) => dest.geo_organization_unit_code,
+      mapFrom((src) => {
+        const { area } = src.organization;
+
+        return {
+         geo_organization_unit_code: area,
+        };
+      })
+    )
+  );
+};

@@ -10,7 +10,13 @@ import {
   Scope,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Brackets, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
+import {
+  Brackets,
+  DataSource,
+  QueryRunner,
+  Repository,
+  SelectQueryBuilder,
+} from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 
@@ -18,7 +24,7 @@ import {
   applyAllegationComplaintMap,
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
-} from "../../middleware/maps/automapper-maps";
+} from "../../middleware/maps/automapper-entity-to-dto-maps";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
@@ -33,10 +39,13 @@ import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 
-import { ComplaintDto } from "./dto/complaint.dto";
+import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
-import { mapComplaintDtoToComplaint } from "../../middleware/maps/automapper-dto-to-entity-maps";
+import {
+  mapComplaintDtoToComplaint,
+  mapWildlifeComplaintDtoToHwcrComplaint,
+} from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "./models/search-results";
@@ -44,7 +53,8 @@ import { ComplaintFilterParameters } from "src/types/models/complaints/complaint
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { MapSearchResults } from "src/types/complaints/map-search-results";
-
+import { ComplaintTable } from "src/types/tables/complaint.table";
+import { mapComplaintDtoToComplaintTable } from "src/middleware/maps/dto-to-table-map";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -71,7 +81,8 @@ export class ComplaintService {
   constructor(
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
-     private readonly codeTableService: CodeTableService
+    private readonly codeTableService: CodeTableService,
+    private dataSource: DataSource
   ) {
     this.mapper = mapper;
 
@@ -80,7 +91,9 @@ export class ComplaintService {
     applyAllegationComplaintMap(mapper);
 
     //-- DTO -> ENTITY
-    mapComplaintDtoToComplaint(mapper)
+    mapComplaintDtoToComplaint(mapper);
+    mapWildlifeComplaintDtoToHwcrComplaint(mapper);
+    mapComplaintDtoToComplaintTable(mapper);
   }
 
   async create(
@@ -730,6 +743,9 @@ export class ComplaintService {
     model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
     try {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to update the comaplaint
@@ -744,7 +760,8 @@ export class ComplaintService {
         case "ERS": {
           break;
         }
-        case "HWCR": {
+        case "HWCR":
+        default: {
           entity = this.mapper.map<WildlifeComplaintDto, HwcrComplaint>(
             model as WildlifeComplaintDto,
             "WildlifeComplaintDto",
@@ -752,10 +769,17 @@ export class ComplaintService {
           );
           break;
         }
-        default: {
-          break;
-        }
       }
+
+      //-- unlike a typical ORM typeORM can't update an entiy and each entity type needs to be updated
+      //-- becuase of this we need to transform the entity into a type type and that is then used to update
+      //-- the original entity
+      const complaintTable = this.mapper.map<ComplaintDto, UpdateComplaintDto>(
+        model as ComplaintDto,
+        "ComplaintDto",
+        "UpdateComplaintDto"
+      );
+      await this.complaintsRepository.update(id, complaintTable);
 
       return {} as WildlifeComplaintDto;
     } catch (error) {
@@ -994,3 +1018,8 @@ export class ComplaintService {
     }
   };
 }
+/*
+
+'Property "geo_organization_unit_code.geo_organization_unit_code" was not found in "Complaint". Make sure your query is correct.'
+
+*/

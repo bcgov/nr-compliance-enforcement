@@ -54,13 +54,20 @@ export const MockComplaintsOfficerRepository = () => ({
 export const MockComplaintsRepository = () => ({
   getIdirFromRequest: jest.fn().mockReturnThis(),
   find: jest.fn().mockReturnThis(),
+  update: jest.fn().mockReturnThis(),
+  set: jest.fn().mockReturnThis(),
   createQueryBuilder: jest.fn(() => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     leftJoin: jest.fn().mockReturnThis(),
     addSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
+    set: jest.fn().mockReturnThis(),
+    execute: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(complaints),
     getCount: jest.fn().mockResolvedValue(complaints.length),
+    getOne: jest.fn().mockResolvedValue(complaints[3]),
+    update: jest.fn().mockResolvedValue({affected: 1}),
+    
   })),
 });
 

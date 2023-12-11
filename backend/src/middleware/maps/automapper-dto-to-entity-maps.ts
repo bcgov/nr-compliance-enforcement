@@ -141,6 +141,185 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   );
 };
 
-export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => { 
-  
-}
+export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
+  createMap<WildlifeComplaintDto, HwcrComplaint>(
+    mapper,
+    "WildlifeComplaintDto",
+    "HwcrComplaint",
+    forMember(
+      (dest) => dest.complaint_identifier.complaint_identifier,
+      mapFrom((src) => src.id)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.detail_text,
+      mapFrom((src) => src.details)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.caller_name,
+      mapFrom((src) => src.name)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.caller_address,
+      mapFrom((src) => src.address)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.caller_email,
+      mapFrom((src) => src.email)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.caller_phone_1,
+      mapFrom((src) => src.phone1)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.caller_phone_2,
+      mapFrom((src) => src.phone2)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.caller_phone_3,
+      mapFrom((src) => src.phone3)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.location_geometry_point,
+      mapFrom((src) => src.location)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.location_summary_text,
+      mapFrom((src) => src.locationSummary)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.location_detailed_text,
+      mapFrom((src) => src.locationDetail)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.referred_by_agency_other_text,
+      mapFrom((src) => src.referredByAgencyOther)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.incident_utc_datetime,
+      mapFrom((src) => src.incidentDateTime)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.incident_reported_utc_timestmp,
+      mapFrom((src) => src.reportedOn)
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.cos_geo_org_unit,
+      mapFrom((src) => {
+        const { area, zone, region } = src.organization;
+        return { area_code: area, zone_code: zone, region_code: region };
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.cos_geo_org_unit,
+      mapFrom((src) => {
+        const { area, zone, region } = src.organization;
+        return { area_code: area, zone_code: zone, region_code: region };
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.person_complaint_xref,
+      mapFrom((src) => {
+        if (src.delegates) {
+          const items = src.delegates.map((item) => {
+            const {
+              xrefId,
+              isActive,
+              type,
+              person: { id, firstName, lastName, middleName1, middleName2 },
+            } = item;
+            let record = {
+              personComplaintXrefGuid: xrefId,
+              active_ind: isActive,
+              person_complaint_xref_code: {
+                person_complaint_xref_code: type,
+              },
+              person_guid: {
+                person_guid: id,
+                first_name: firstName,
+                middle_name_1: middleName1,
+                middle_name_2: middleName2,
+                last_name: lastName,
+              },
+            };
+
+            return record;
+          });
+          return items;
+        }
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.owned_by_agency_code,
+      mapFrom((src) => {
+        const { ownedBy } = src || null;
+        return ownedBy ? { agency_code: ownedBy } : null;
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.referred_by_agency_code,
+      mapFrom((src) => {
+        const { referredBy } = src || null;
+        return referredBy ? { agency_code: referredBy } : null;
+      })
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.complaint_status_code,
+      mapFrom((src) => {
+        const { status } = src;
+        return { complaint_status_code: status };
+      })
+    ),
+    forMember(
+      (dest) => dest.hwcr_complaint_guid,
+      mapFrom((src) => src.hwcrId)
+    ),
+    forMember(
+      (dest) => dest.attractant_hwcr_xref,
+      mapFrom((src) => {
+        const { attractants, hwcrId } = src;
+
+        const items = attractants.map((item) => {
+          const { attractant, xrefId } = item;
+
+          let record = {
+            attractant_hwcr_xref_guid: xrefId,
+            attractant_code: {
+              attractant_code: attractant,
+            },
+          };
+          return record;
+        });
+
+        return items;
+      })
+    ),
+    forMember(
+      (dest) => dest.other_attractants_text,
+      mapFrom((src) => src.otherAttractants)
+    ),
+    forMember(
+      (dest) => dest.species_code,
+      mapFrom((src) => {
+        const { species } = src;
+
+        const record = {
+          species_code: species
+        };
+
+        return record;
+      })
+    ),
+    forMember(
+      (dest) => dest.hwcr_complaint_nature_code,
+      mapFrom((src) => { 
+        const { natureOfComplaint} = src;
+        const record = { 
+          hwcr_complaint_nature_code: natureOfComplaint
+        }
+
+        return record
+      })
+    )
+  );
+};
+//other_attractants_text
