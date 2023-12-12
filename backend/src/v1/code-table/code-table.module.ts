@@ -25,7 +25,6 @@ import { SpeciesCodeService } from "../species_code/species_code.service";
     TypeOrmModule.forFeature([GeoOrganizationUnitCode]),
     TypeOrmModule.forFeature([PersonComplaintXrefCode]),
     TypeOrmModule.forFeature([SpeciesCode]),
-    TypeOrmModule.forFeature([SpeciesCodeService]),
     TypeOrmModule.forFeature([ViolationCode]),
     TypeOrmModule.forFeature([CosGeoOrgUnit]),
     TypeOrmModule.forFeature([ComplaintTypeCode]),
