@@ -1,10 +1,8 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import {
   BsPersonPlus,
   BsSend,
-  BsSendFill,
   BsArrowRepeat,
-  BsFillPersonPlusFill,
 } from "react-icons/bs";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
@@ -27,8 +25,6 @@ export const ComplaintActionItems: FC<Props> = ({
   zone,
   agency_code,
 }) => {
-  const [isReferHovered, setIsReferHovered] = useState(false);
-  const [isAssignHovered, setIsAssignHovered] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -71,7 +67,6 @@ export const ComplaintActionItems: FC<Props> = ({
       <OverlayTrigger
         placement="top"
         key={`tt-assign-${complaint_identifier}`}
-        delay={{ show: 750, hide: 0 }}
         overlay={
             <Tooltip id={`tt-assign-${complaint_identifier}`} className="comp-tooltip">
               Assign
@@ -79,21 +74,14 @@ export const ComplaintActionItems: FC<Props> = ({
         }
       >
         <span className="tt-assign-span"
-          onMouseEnter={() => setIsAssignHovered(true)}
-          onMouseLeave={() => setIsAssignHovered(false)}
           onClick={openAsignOfficerModal}
           onKeyUp={openAsignOfficerModal}
         >
-          {isAssignHovered ? (
-            <BsFillPersonPlusFill className="comp-table-row-hover-icons comp-table-icon" />
-          ) : (
-            <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon" />
-          )}
+            <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
         </span>
       </OverlayTrigger>
       <OverlayTrigger
         placement="top"
-        delay={{ show: 750, hide: 0 }}
         key={`tt-update-${complaint_identifier}`}
         overlay={
           
@@ -111,27 +99,15 @@ export const ComplaintActionItems: FC<Props> = ({
       </OverlayTrigger>
       <OverlayTrigger
         placement="top"
-        delay={{ show: 750, hide: 0 }}
         key={`tt-refer-${complaint_identifier}`}
         overlay={
-          isReferHovered ? (
             <Tooltip id="tt-refer" className="comp-tooltip">
               Refer
             </Tooltip>
-          ) : (
-            <span></span>
-          )
         }
       >
-        <span
-          onMouseEnter={() => setIsReferHovered(true)}
-          onMouseLeave={() => setIsReferHovered(false)}
-        >
-          {isReferHovered ? (
-            <BsSendFill className="comp-table-row-hover-icons comp-table-icon" />
-          ) : (
-            <BsSend className="comp-table-row-hover-icons comp-table-icon" />
-          )}
+        <span>
+            <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
         </span>
       </OverlayTrigger>
     </>
