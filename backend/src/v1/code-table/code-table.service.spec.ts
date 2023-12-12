@@ -29,7 +29,6 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
-import { SpeciesCodeService } from "../species_code/species_code.service";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -38,7 +37,6 @@ describe("Testing: CodeTable Service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        SpeciesCodeService,
         {
           provide: getRepositoryToken(AgencyCode),
           useFactory: MockAgencyCodeTableRepository,
@@ -244,7 +242,6 @@ describe("Testing: CodeTable service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        SpeciesCodeService,
         {
           provide: getRepositoryToken(AgencyCode),
           useFactory: MockAgencyCodeTableRepository,
@@ -321,7 +318,6 @@ describe("Testing: CodeTable service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        SpeciesCodeService,
         {
           provide: getRepositoryToken(AgencyCode),
           useFactory: MockAgencyCodeTableRepository,
@@ -399,7 +395,6 @@ describe("Testing: CodeTable service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        SpeciesCodeService,
         {
           provide: getRepositoryToken(AgencyCode),
           useFactory: MockAgencyCodeTableRepository,

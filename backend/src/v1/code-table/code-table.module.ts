@@ -13,7 +13,6 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
-import { SpeciesCodeService } from "../species_code/species_code.service";
 
 @Module({
   imports: [
@@ -30,6 +29,6 @@ import { SpeciesCodeService } from "../species_code/species_code.service";
     TypeOrmModule.forFeature([ComplaintTypeCode]),
   ],
   controllers: [CodeTableController],
-  providers: [CodeTableService, SpeciesCodeService],
+  providers: [CodeTableService],
 })
 export class CodeTableModule {}
