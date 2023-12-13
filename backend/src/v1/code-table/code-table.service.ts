@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -181,12 +181,17 @@ export class CodeTableService {
         return results;
       }
       case "organization-unit": {
-        const builder = this._organizationUnitRepository
+        let builder: SelectQueryBuilder<GeoOrganizationUnitCode>;
+        builder = this._organizationUnitRepository
           .createQueryBuilder("organization_unit")
           .leftJoinAndSelect(
             "organization_unit.geo_org_unit_type_code",
             "organization_unit_type"
-          ).orderBy("long_description");
+          );
+          
+          builder.orderBy("organization_unit.long_description", "DESC");
+
+        //console.log("builder: " +  builder.getQueryAndParameters());
 
         const data = await builder.getMany();
 
