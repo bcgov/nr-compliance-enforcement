@@ -1344,7 +1344,7 @@ UPDATE species_code SET display_order = 6 where display_order = 5;
 UPDATE species_code SET display_order = 5 where display_order = 4;
 UPDATE species_code SET display_order = 4 where display_order = 3;
 insert into species_code (species_code, short_description, long_description, display_order, active_ind, legacy_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now());
+values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now()) ON CONFLICT DO NOTHING;
 
 -- CE-326 Opps
 UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
