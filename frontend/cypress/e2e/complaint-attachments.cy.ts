@@ -47,7 +47,7 @@ describe("Complaint Attachments", () => {
   });
 
   Cypress._.times(complaintTypes.length, (index) => {
-    it("Verifies that upload option exists ", () => {
+    it("Verifies that upload option exists on edit page", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
       } else {
@@ -59,5 +59,10 @@ describe("Complaint Attachments", () => {
 
     });
 
+  });
+
+  it("Verifies that upload option exists on the create page", () => {
+    cy.navigateToCreateScreen();
+    cy.get("button.coms-carousel-upload-container").should("exist");
   });
 });

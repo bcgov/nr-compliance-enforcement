@@ -46,6 +46,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { ComplaintLocation } from "./complaint-location";
+import { AttachmentsCarousel } from "../../../common/attachments-carousel";
+import { COMSObject } from "../../../../types/coms/object";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "../../../../common/attachment-utils";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -224,6 +227,21 @@ export const CreateComplaint: FC = () => {
   const [createComplaint, setCreateComplaint] = useState<
     HwcrComplaint | AllegationComplaint
   >(newEmptyComplaint);
+
+    // files to add to COMS when complaint is saved
+    const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+
+    // files to remove from COMS when complaint is saved
+    const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  
+    const onHandleAddAttachments = (selectedFiles: File[]) => {
+      handleAddAttachments(setAttachmentsToAdd, selectedFiles);
+    };
+  
+    const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+      handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
+    };
+  
 
   function noErrors() {
     let noErrors = false;
@@ -955,7 +973,20 @@ export const CreateComplaint: FC = () => {
     if (!createComplaint) {
       return;
     }
+  
     let complaint = createComplaint;
+    setComplaintToOpenStatus(complaint);
+  
+    const noError = await setErrors(complaint);
+  
+    if (noError && noErrors()) {
+      await handleComplaintProcessing(complaint);
+    } else {
+      handleFormErrors();
+    }
+  };
+  
+  const setComplaintToOpenStatus = (complaint: HwcrComplaint | AllegationComplaint) => {
     const openStatus = {
       short_description: "OPEN",
       long_description: "Open",
@@ -967,63 +998,86 @@ export const CreateComplaint: FC = () => {
       update_user_id: "",
       update_utc_timestamp: null,
     };
-
-    complaint.complaint_identifier.complaint_status_code = openStatus; //force OPEN
-
-    const noError = await setErrors(complaint);
-
-    if (noError && noErrors()) {
-      complaint.complaint_identifier.create_utc_timestamp =
-        complaint.complaint_identifier.update_utc_timestamp =
-          new Date().toDateString();
-      complaint.complaint_identifier.create_user_id =
-        complaint.complaint_identifier.update_user_id = userid;
-      complaint.complaint_identifier.location_geometry_point.type = "Point";
-      if (
-        complaint.complaint_identifier.location_geometry_point.coordinates
-          .length === 0
-      ) {
-        complaint.complaint_identifier.location_geometry_point.coordinates = [
-          0, 0,
-        ];
-      }
-      setCreateComplaint(complaint);
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        const complaintId = await dispatch(
-          createWildlifeComplaint(complaint as HwcrComplaint),
-        );
-        if (complaintId) {
-          await dispatch(
-            getWildlifeComplaintByComplaintIdentifierSetUpdate(
-              complaintId,
-              setCreateComplaint,
-            ),
-          );
-
-          navigate("/complaint/" + complaintType + "/" + complaintId);
-        }
-      }
-      else if (complaintType === COMPLAINT_TYPES.ERS) {
-        const complaintId = await dispatch(
-          createAllegationComplaint(complaint as AllegationComplaint),
-        );
-        if (complaintId) {
-          await dispatch(
-            getAllegationComplaintByComplaintIdentifierSetUpdate(
-              complaintId,
-              setCreateComplaint,
-            ),
-          );
-
-          navigate("/complaint/" + complaintType + "/" + complaintId);
-        }
-      }
-      setErrorNotificationClass("comp-complaint-error display-none");
-    } else {
-      ToggleError("Errors in form");
-      setErrorNotificationClass("comp-complaint-error");
+    complaint.complaint_identifier.complaint_status_code = openStatus;
+  };
+  
+  const handleComplaintProcessing = async (complaint: HwcrComplaint | AllegationComplaint) => {
+    updateComplaintDetails(complaint);
+    setCreateComplaint(complaint);
+  
+    let complaintId = await processComplaintBasedOnType(complaint);
+    if (complaintId) {
+      handlePersistAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, complaintId, setAttachmentsToAdd, setAttachmentsToDelete);
+    }
+  
+    setErrorNotificationClass("comp-complaint-error display-none");
+  };
+  
+  const updateComplaintDetails = (complaint: HwcrComplaint | AllegationComplaint) => {
+    const now = new Date().toDateString();
+    complaint.complaint_identifier.create_utc_timestamp = now;
+    complaint.complaint_identifier.update_utc_timestamp = now;
+    complaint.complaint_identifier.create_user_id = userid;
+    complaint.complaint_identifier.update_user_id = userid;
+    complaint.complaint_identifier.location_geometry_point.type = "Point";
+  
+    if (
+      complaint.complaint_identifier.location_geometry_point.coordinates.length === 0
+    ) {
+      complaint.complaint_identifier.location_geometry_point.coordinates = [0, 0];
     }
   };
+  
+  const processComplaintBasedOnType = async (complaint: HwcrComplaint | AllegationComplaint) => {
+    switch (complaintType) {
+      case COMPLAINT_TYPES.HWCR:
+        return handleHwcrComplaint(complaint);
+      case COMPLAINT_TYPES.ERS:
+        return handleErsComplaint(complaint);
+      default:
+        return null;
+    }
+  };
+  
+  const handleHwcrComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
+    const complaintId = await dispatch(
+      createWildlifeComplaint(complaint as HwcrComplaint)
+    );
+    if (complaintId) {
+      await dispatch(
+        getWildlifeComplaintByComplaintIdentifierSetUpdate(
+          complaintId,
+          setCreateComplaint
+        )
+      );
+  
+      navigate("/complaint/" + complaintType + "/" + complaintId);
+    }
+    return complaintId;
+  };
+  
+  const handleErsComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
+    const complaintId = await dispatch(
+      createAllegationComplaint(complaint as AllegationComplaint)
+    );
+    if (complaintId) {
+      await dispatch(
+        getAllegationComplaintByComplaintIdentifierSetUpdate(
+          complaintId,
+          setCreateComplaint
+        )
+      );
+  
+      navigate("/complaint/" + complaintType + "/" + complaintId);
+    }
+    return complaintId;
+  };
+  
+  const handleFormErrors = () => {
+    ToggleError("Errors in form");
+    setErrorNotificationClass("comp-complaint-error");
+  };
+  
 
   const maxDate = new Date();
 
@@ -1573,6 +1627,12 @@ export const CreateComplaint: FC = () => {
           </div>
         </div>
       )}
+      <AttachmentsCarousel
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={onHandleAddAttachments}
+            onFileDeleted={onHandleDeleteAttachment}
+          />
     </div>
   );
 };
