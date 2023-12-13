@@ -187,9 +187,7 @@ export class CodeTableService {
           .leftJoinAndSelect(
             "organization_unit.geo_org_unit_type_code",
             "organization_unit_type"
-          );
-          
-          builder.orderBy("organization_unit.long_description", "DESC");
+          ).orderBy("organization_unit.long_description", "DESC");
 
         //console.log("builder: " +  builder.getQueryAndParameters());
 
