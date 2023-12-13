@@ -206,6 +206,7 @@ export const MockOrganizationUnitTypeCodeTableRepository = () => ({
   createQueryBuilder: jest.fn(() => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(organizationUnitTypes),
   })),
 });
@@ -215,6 +216,7 @@ export const MockOrganizationUnitCodeTableRepository = () => ({
   createQueryBuilder: jest.fn(() => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(organizationUnits),
   })),
 });
@@ -255,6 +257,7 @@ export const MockCosOrganizationUnitCodeTableRepository = () => ({
     getRawMany: jest.fn().mockReturnThis(),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(cosOrganizationUnits),
   })),
 });
