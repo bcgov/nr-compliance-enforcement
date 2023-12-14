@@ -555,7 +555,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
         if (from(source).any() && from(source).elementAt(0)) {
           const assigned = { ...source[0], person_guid: officer, active_ind: true };
-          console.log("assigned1 :" + JSON.stringify(assigned));
           source = [assigned];
         } else {
           const assigned = {
@@ -566,7 +565,6 @@ export const ComplaintDetailsEdit: FC = () => {
             active_ind: true,
             person_complaint_xref_code: "ASSIGNEE",
           };
-          console.log("assigned2 :" + JSON.stringify(assigned));
           source = [assigned];
         }
 
@@ -579,7 +577,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
       } else if (from(source).any() && from(source).elementAt(0)) {
         const assigned = { ...source[0], active_ind: false };
-        console.log("assigned3 :" + JSON.stringify(assigned));
         source = [assigned];
 
         const updatedParent = {
@@ -589,10 +586,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
         update.complaint_identifier = updatedParent;
       }
-      console.log("updateComplaintvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv: " + JSON.stringify(update));
-      console.log("lol");
       setUpdateComplaint(update);
-      console.log("lol2");
     }
   };
 

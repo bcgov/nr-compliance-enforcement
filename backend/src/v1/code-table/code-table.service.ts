@@ -189,8 +189,6 @@ export class CodeTableService {
             "organization_unit_type"
           ).orderBy("organization_unit.long_description", "ASC");
 
-        //console.log("builder: " +  builder.getQueryAndParameters());
-
         const data = await builder.getMany();
 
         let results = data.map(
