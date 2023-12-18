@@ -99,12 +99,52 @@ export const complaintSlice = createSlice({
     },
     updateWildlifeComplaintByRow: (
       state,
-      action: PayloadAction<HwcrComplaint>
-    ) => {},
+      action: PayloadAction<WildlifeComplaint>,
+    ) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = state;
+      const { wildlife } = complaintItems;
+
+      if (wildlife) {
+        const index = wildlife.findIndex(
+          ({ hwcrId }) =>
+          hwcrId === updatedComplaint.hwcrId,
+        );
+
+        if (index !== -1) {
+          const update = [...wildlife];
+          update[index] = updatedComplaint;
+
+          const updatedItems = { ...complaintItems, wildlife: update };
+
+          return { ...state, complaintItems: updatedItems };
+        }
+      }
+    },
     updateAllegationComplaintByRow: (
       state,
-      action: PayloadAction<AllegationComplaint>
-    ) => {},
+      action: PayloadAction<AllegationComplaintModel>,
+    ) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = state;
+      const { allegations } = complaintItems;
+
+      if (allegations) {
+        const index = allegations.findIndex(
+          ({ ersId }) =>
+          ersId === updatedComplaint.ersId,
+        );
+
+        if (index !== -1) {
+          const update = [...allegations];
+          update[index] = updatedComplaint;
+
+          const updatedItems = { ...complaintItems, wildlife: update };
+
+          return { ...state, complaintItems: updatedItems };
+        }
+      }
+    },
     setMappedComplaints: (state, action) => {
       const { mappedItems } = state;
       const {
