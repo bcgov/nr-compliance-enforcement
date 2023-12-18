@@ -7,11 +7,12 @@ describe("Complaint Search Functionality", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
-    cy.visit("/");
-    cy.waitForSpinner();
   });
 
   it("Can search Wildlife complaints for 'siblings '", () => {
+
+    cy.visit("/");
+    cy.waitForSpinner();
 
    //-- load the human wildlife conflicts
    cy.navigateToTab(complaintTypes[0], true);
@@ -40,6 +41,9 @@ describe("Complaint Search Functionality", () => {
 
   it("Can search Allegations for 'Oil' and clear search when done", () => {
 
+    cy.visit("/");
+    cy.waitForSpinner();
+
     //-- load the human wildlife conflicts
     cy.navigateToTab(complaintTypes[1], true);
 
@@ -61,6 +65,9 @@ describe("Complaint Search Functionality", () => {
   });
 
   it("Can't search Wildlife complaints for 'Zebra'", () => {
+
+    cy.visit("/");
+    cy.waitForSpinner();
 
     //-- load the human wildlife conflicts
     cy.navigateToTab(complaintTypes[0], true);
@@ -86,6 +93,9 @@ describe("Complaint Search Functionality", () => {
 
   it("Can search wildlife map complaints by complaint-id: 23-031562", () => {
 
+    cy.visit("/");
+    cy.waitForSpinner();
+
     //-- load the human wildlife conflicts
     cy.navigateToTab(complaintTypes[0], true);
 
@@ -108,6 +118,9 @@ describe("Complaint Search Functionality", () => {
 
   it("Can search multiple allegation map complaints: ", () => {
 
+    cy.visit("/");
+    cy.waitForSpinner();
+    
     //-- load the human wildlife conflicts
     cy.navigateToTab(complaintTypes[1], false);
 
