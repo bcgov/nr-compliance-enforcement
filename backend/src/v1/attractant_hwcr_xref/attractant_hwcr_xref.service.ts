@@ -1,11 +1,12 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, Logger } from "@nestjs/common";
 import { CreateAttractantHwcrXrefDto } from "./dto/create-attractant_hwcr_xref.dto";
 import { UpdateAttractantHwcrXrefDto } from "./dto/update-attractant_hwcr_xref.dto";
 import { AttractantHwcrXref } from "./entities/attractant_hwcr_xref.entity";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
-import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
+import { REQUEST } from "@nestjs/core";
+import { getIdirFromRequest } from "src/common/get-idir-from-request";
 
 @Injectable()
 export class AttractantHwcrXrefService {
@@ -13,7 +14,10 @@ export class AttractantHwcrXrefService {
   @InjectRepository(AttractantHwcrXref)
   private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>;
 
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    @Inject(REQUEST) private request: Request,
+    private dataSource: DataSource
+  ) {}
 
   async create(
     queryRunner: QueryRunner,
@@ -54,6 +58,8 @@ export class AttractantHwcrXrefService {
     comaplint: HwcrComplaint,
     attractants: AttractantHwcrXref[]
   ) {
+    const idir = getIdirFromRequest(this.request);
+    
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -69,7 +75,7 @@ export class AttractantHwcrXrefService {
             ...attractant,
             attractant_code,
             hwcr_complaint_guid: comaplint,
-            create_user_id: "MSEARS",
+            create_user_id: idir,
           };
 
           const createdResult = await this.attractantHwcrXrefRepository.create(
@@ -84,7 +90,7 @@ export class AttractantHwcrXrefService {
             const updateResult = await this.attractantHwcrXrefRepository
               .createQueryBuilder()
               .update(AttractantHwcrXref)
-              .set({ active_ind: isActive, update_user_id: "MSEARS" })
+              .set({ active_ind: isActive, update_user_id: idir })
               .where("attractant_hwcr_xref_guid = :xrefId", { xrefId })
               .execute();
           }
