@@ -43,6 +43,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 import {
+  mapAllegationComplaintDtoToAllegationComplaint,
   mapAttractantXrefDtoToAttractantHwcrXref,
   mapComplaintDtoToComplaint,
   mapWildlifeComplaintDtoToHwcrComplaint,
@@ -106,6 +107,7 @@ export class ComplaintService {
     //-- DTO -> ENTITY
     mapComplaintDtoToComplaint(mapper);
     mapWildlifeComplaintDtoToHwcrComplaint(mapper);
+    mapAllegationComplaintDtoToAllegationComplaint(mapper);
     mapComplaintDtoToComplaintTable(mapper);
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
@@ -699,9 +701,19 @@ export class ComplaintService {
 
     switch (complaintType) {
       case "ERS": {
+        return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
+          result as AllegationComplaint,
+          "AllegationComplaint",
+          "AllegationComplaintDto"
+        );
         break;
       }
       case "HWCR": {
+        return this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
+          result as HwcrComplaint,
+          "HwcrComplaint",
+          "WildlifeComplaintDto"
+        );
         break;
       }
       default: {
@@ -787,6 +799,11 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "ERS": {
+          entity = this.mapper.map<AllegationComplaintDto, AllegationComplaint>(
+            model as AllegationComplaintDto,
+            "AllegationComplaintDto",
+            "AllegationComplaint"
+          );
           break;
         }
         case "HWCR":
@@ -838,11 +855,26 @@ export class ComplaintService {
         //-- apply complaint specific updates
         switch (complaintType) {
           case "ERS": {
+            const { violation, isInProgress, wasObserved, violationDetails, ersId } = model as AllegationComplaintDto;
+            const updateResult = await this._allegationComplaintRepository
+            .createQueryBuilder()
+            .update(AllegationComplaint)
+            .set({
+              violation_code: {
+                violation_code: violation,
+              },
+              in_progress_ind: isInProgress,
+              observed_ind: wasObserved,
+              suspect_witnesss_dtl_text: violationDetails,
+              update_user_id: idir
+            })
+            .where("allegation_complaint_guid = :ersId", { ersId })
+            .execute();
             break;
           }
           case "HWCR":
           default: {
-            const { natureOfComplaint, species } =
+            const { natureOfComplaint, species, otherAttractants, hwcrId } =
               model as WildlifeComplaintDto;
             const { attractant_hwcr_xref: attractants } =
               entity as HwcrComplaint;
@@ -851,12 +883,28 @@ export class ComplaintService {
               entity as HwcrComplaint,
               attractants
             );
+
+            const updateResult = await this._wildlifeComplaintRepository
+              .createQueryBuilder()
+              .update(HwcrComplaint)
+              .set({
+                hwcr_complaint_nature_code: {
+                  hwcr_complaint_nature_code: natureOfComplaint,
+                },
+                species_code: { species_code: species },
+                other_attractants_text: otherAttractants,
+                update_user_id: idir
+              })
+              .where("hwcr_complaint_guid = :hwcrId", { hwcrId })
+              .execute();
+
             break;
           }
         }
         await queryRunner.commitTransaction();
 
-        return {} as WildlifeComplaintDto;
+        const result = await this.findById(id, complaintType as COMPLAINT_TYPE) as any;
+        return result
       } else {
         throw new HttpException(
           `Unable to update complaint: ${id}`,
@@ -866,7 +914,7 @@ export class ComplaintService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.log(
-        `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${model}`
+        `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`
       );
       this.logger.log(error);
 
