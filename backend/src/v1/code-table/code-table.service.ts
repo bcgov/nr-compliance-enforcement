@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -60,7 +60,9 @@ export class CodeTableService {
   getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
     switch (table) {
       case "agency": {
-        const data = await this._agencyRepository.find();
+        const data = await this._agencyRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             agency_code,
@@ -83,7 +85,9 @@ export class CodeTableService {
         return results;
       }
       case "attractant": {
-        const data = await this._attractantRepository.find();
+        const data = await this._attractantRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             attractant_code,
@@ -105,7 +109,9 @@ export class CodeTableService {
         return results;
       }
       case "complaint-status": {
-        const data = await this._complaintStatusRepository.find();
+        const data = await this._complaintStatusRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             complaint_status_code,
@@ -127,7 +133,9 @@ export class CodeTableService {
         return results;
       }
       case "nature-of-complaint": {
-        const data = await this._natureOfComplaintRepository.find();
+        const data = await this._natureOfComplaintRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             hwcr_complaint_nature_code,
@@ -149,7 +157,9 @@ export class CodeTableService {
         return results;
       }
       case "organization-unit-type": {
-        const data = await this._organizationUnitTypeRepository.find();
+        const data = await this._organizationUnitTypeRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             geo_org_unit_type_code,
@@ -171,12 +181,13 @@ export class CodeTableService {
         return results;
       }
       case "organization-unit": {
-        const builder = this._organizationUnitRepository
+        let builder: SelectQueryBuilder<GeoOrganizationUnitCode>;
+        builder = this._organizationUnitRepository
           .createQueryBuilder("organization_unit")
           .leftJoinAndSelect(
             "organization_unit.geo_org_unit_type_code",
             "organization_unit_type"
-          );
+          ).orderBy("organization_unit.long_description", "ASC");
 
         const data = await builder.getMany();
 
@@ -206,7 +217,9 @@ export class CodeTableService {
         return results;
       }
       case "person-complaint": {
-        const data = await this._personComplaintTypeRepository.find();
+        const data = await this._personComplaintTypeRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             person_complaint_xref_code,
@@ -226,7 +239,9 @@ export class CodeTableService {
         return results;
       }
       case "species": {
-        const data = await this._speciesRepository.find();
+        const data = await this._speciesRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             species_code,
@@ -250,7 +265,9 @@ export class CodeTableService {
         return results;
       }
       case "violation": {
-        const data = await this._violationsRepository.find();
+        const data = await this._violationsRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             violation_code,
@@ -272,7 +289,9 @@ export class CodeTableService {
         return results;
       }
       case "complaint-type": {
-        const data = await this._complaintTypetRepository.find();
+        const data = await this._complaintTypetRepository.find(
+          {order: {display_order: "ASC"}}
+        );
         let results = data.map(
           ({
             complaint_type_code,
