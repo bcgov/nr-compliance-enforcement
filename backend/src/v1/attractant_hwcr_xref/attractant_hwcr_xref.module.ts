@@ -7,6 +7,7 @@ import { AttractantHwcrXref } from './entities/attractant_hwcr_xref.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([AttractantHwcrXref])],
   controllers: [AttractantHwcrXrefController],
-  providers: [AttractantHwcrXrefService]
+  providers: [AttractantHwcrXrefService],
+  exports: [AttractantHwcrXrefService]
 })
 export class AttractantHwcrXrefModule {}

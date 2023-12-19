@@ -9,6 +9,8 @@ import { PersonComplaintXref } from "src/v1/person_complaint_xref/entities/perso
 import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
 import { ComplaintDto } from "src/types/models/complaints/complaint";
 import { DelegateDto } from "src/types/models/people/delegate";
+import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
+import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   createMap<ComplaintDto, Complaint>(
@@ -279,20 +281,47 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
         const { attractants, hwcrId } = src;
 
         const items = attractants.map((item) => {
-          const { attractant, xrefId } = item;
+          const { attractant, xrefId , isActive} = item;
 
           let record = {
             attractant_hwcr_xref_guid: xrefId,
+            active_ind: isActive ? isActive : false,
             attractant_code: {
               attractant_code: attractant,
             },
           };
-          return record;
+          
+          return record as any;
         });
 
         return items;
       })
     ),
+
+    // forMember(
+    //   (dest) => dest.attractant_hwcr_xref,
+    //   mapFrom((src) => {
+    //     const { attractants, hwcrId } = src;
+
+    //     const items = attractants.map((item) => {
+    //       const { attractant, xrefId, isActive } = item;
+
+    //       let record = new AttractantHwcrXref();
+    //       record = {
+    //         ...record,
+    //         attractant_hwcr_xref_guid: xrefId,
+    //         active_ind: isActive ? isActive : false,
+    //       };
+    //       record.attractant_code = {
+    //         attractant_code: attractant,
+    //       } as any;
+    //       return record;
+    //     });
+
+    //     return items;
+    //   })
+    // ),
+
     forMember(
       (dest) => dest.other_attractants_text,
       mapFrom((src) => src.otherAttractants)
@@ -322,4 +351,27 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
     )
   );
 };
-//other_attractants_text
+
+export const mapAttractantXrefDtoToAttractantHwcrXref = (mapper: Mapper ) => { 
+  createMap<AttractantXrefDto, AttractantHwcrXref>(
+    mapper,
+    "AttractantXrefDto",
+    "AttractantHwcrXref",
+    forMember(
+      (dest) => dest.active_ind,
+      mapFrom((src) => src.isActive)
+    ),
+    forMember(
+      (dest) => dest.attractant_code,
+      mapFrom((src) => {
+        const { attractant } = src;
+        return { attractant_code: attractant, active_ind: src.isActive
+         };
+      })
+    ),
+    forMember(
+      (dest) => dest.attractant_hwcr_xref_guid,
+      mapFrom((src) => src.xrefId)
+    ),
+  );
+}

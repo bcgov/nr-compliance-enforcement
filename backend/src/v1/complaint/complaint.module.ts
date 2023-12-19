@@ -20,6 +20,8 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CodeTableModule } from "../code-table/code-table.module";
+import { PersonComplaintXrefModule } from "../person_complaint_xref/person_complaint_xref.module";
+import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwcr_xref.module";
 
 @Module({
   imports: [
@@ -39,7 +41,9 @@ import { CodeTableModule } from "../code-table/code-table.module";
     TypeOrmModule.forFeature([ViolationCode]),
     TypeOrmModule.forFeature([CosGeoOrgUnit]),
     TypeOrmModule.forFeature([ComplaintTypeCode]),
-    CodeTableModule
+    CodeTableModule,
+    PersonComplaintXrefModule,
+    AttractantHwcrXrefModule
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],

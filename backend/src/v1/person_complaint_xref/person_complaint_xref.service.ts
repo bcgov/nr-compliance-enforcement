@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { QueryRunner, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -10,6 +10,8 @@ export class PersonComplaintXrefService {
   private personComplaintXrefRepository: Repository<PersonComplaintXref>;
 
   private readonly logger = new Logger(PersonComplaintXrefService.name);
+
+  constructor(private dataSource: DataSource) {}
 
   async create(
     createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
@@ -55,18 +57,30 @@ export class PersonComplaintXrefService {
     person_guid: string,
     complaint_identifier: string
   ): Promise<PersonComplaintXref> {
-    return this.personComplaintXrefRepository.createQueryBuilder('personComplaintXref')
-    .leftJoinAndSelect('personComplaintXref.person_guid', 'person_guid')
-    .leftJoinAndSelect('personComplaintXref.complaint_identifier','complaint_identifier')
-    .where('personComplaintXref.person_guid = :person_guid', {person_guid})
-    .andWhere('personComplaintXref.complaint_identifier = :complaint_identifier', {complaint_identifier})
-    .andWhere('personComplaintXref.person_complaint_xref_code = :person_complaint_xref_code', {person_complaint_xref_code: "ASSIGNEE"})
-    .andWhere('personComplaintXref.active_ind = :active_ind', {active_ind: true})
-    .getOne();
+    return this.personComplaintXrefRepository
+      .createQueryBuilder("personComplaintXref")
+      .leftJoinAndSelect("personComplaintXref.person_guid", "person_guid")
+      .leftJoinAndSelect(
+        "personComplaintXref.complaint_identifier",
+        "complaint_identifier"
+      )
+      .where("personComplaintXref.person_guid = :person_guid", { person_guid })
+      .andWhere(
+        "personComplaintXref.complaint_identifier = :complaint_identifier",
+        { complaint_identifier }
+      )
+      .andWhere(
+        "personComplaintXref.person_complaint_xref_code = :person_complaint_xref_code",
+        { person_complaint_xref_code: "ASSIGNEE" }
+      )
+      .andWhere("personComplaintXref.active_ind = :active_ind", {
+        active_ind: true,
+      })
+      .getOne();
   }
 
   async update(
-    //queryRunner: QueryRunner, 
+    //queryRunner: QueryRunner,
     person_complaint_xref_guid: any,
     updatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
@@ -87,11 +101,13 @@ export class PersonComplaintXrefService {
    * create a new cross reference between the complaint and officer.
    */
   async assignOfficer(
-    queryRunner: QueryRunner,
     complaintIdentifier: string,
-    createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,
-    closeConnection?: boolean // should the connection be closed once completed.  Necessary because if this is part of another transaction, then that transaction will handle releasing the connection; otherwise, best to set to true so that the connection is released.
+    createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
@@ -116,6 +132,7 @@ export class PersonComplaintXrefService {
 
       // save the transaction
       await queryRunner.manager.save(newPersonComplaintXref);
+      await queryRunner.commitTransaction();
       this.logger.debug(
         `Successfully assigned person to complaint ${complaintIdentifier}`
       );
@@ -126,9 +143,7 @@ export class PersonComplaintXrefService {
       );
       throw new BadRequestException(err);
     } finally {
-      if (closeConnection) {
-        await queryRunner.release();
-      }
+      await queryRunner.release();
     }
     return newPersonComplaintXref;
   }

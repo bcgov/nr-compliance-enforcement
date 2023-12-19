@@ -27,10 +27,8 @@ export class PersonComplaintXrefController {
   ) {
     const queryRunner = this.dataSource.createQueryRunner();
     return this.personComplaintXrefService.assignOfficer(
-      queryRunner,
       complaintId,
       createPersonComplaintXrefDto,
-      true // close the connection once done
     );
   }
 

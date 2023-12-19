@@ -43,18 +43,29 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 import {
+  mapAttractantXrefDtoToAttractantHwcrXref,
   mapComplaintDtoToComplaint,
   mapWildlifeComplaintDtoToHwcrComplaint,
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
-import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "./models/search-results";
-import { ComplaintFilterParameters } from "src/types/models/complaints/complaint-filter-parameters";
+import { ComplaintFilterParameters } from "../../types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
-import { MapSearchResults } from "src/types/complaints/map-search-results";
-import { ComplaintTable } from "src/types/tables/complaint.table";
-import { mapComplaintDtoToComplaintTable } from "src/middleware/maps/dto-to-table-map";
+import { MapSearchResults } from "../../types/complaints/map-search-results";
+import {
+  mapAttactantDtoToAttractant,
+  mapComplaintDtoToComplaintTable,
+  mapDelegateDtoToPersonComplaintXrefTable,
+} from "../../middleware/maps/dto-to-table-map";
+import { DelegateDto } from "src/types/models/people/delegate";
+import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
+import { PersonComplaintXrefTable } from "src/types/tables/person-complaint-xref.table";
+import { CreatePersonComplaintXrefDto } from "../person_complaint_xref/dto/create-person_complaint_xref.dto";
+import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
+import { AttractantXrefTable } from "src/types/tables/attractant-xref.table";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -81,7 +92,9 @@ export class ComplaintService {
   constructor(
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
-    private readonly codeTableService: CodeTableService,
+    private readonly _codeTableService: CodeTableService,
+    private readonly _personService: PersonComplaintXrefService,
+    private readonly _attractantService: AttractantHwcrXrefService,
     private dataSource: DataSource
   ) {
     this.mapper = mapper;
@@ -94,6 +107,8 @@ export class ComplaintService {
     mapComplaintDtoToComplaint(mapper);
     mapWildlifeComplaintDtoToHwcrComplaint(mapper);
     mapComplaintDtoToComplaintTable(mapper);
+    mapDelegateDtoToPersonComplaintXrefTable(mapper);
+    mapAttractantXrefDtoToAttractantHwcrXref(mapper);
   }
 
   async create(
@@ -182,6 +197,7 @@ export class ComplaintService {
     complaint_identifier: string,
     updateComplaintDto: UpdateComplaintDto
   ): Promise<Complaint> {
+    const test = 0;
     await this.complaintsRepository.update(
       complaint_identifier,
       updateComplaintDto
@@ -328,6 +344,7 @@ export class ComplaintService {
           .addSelect([
             "attractants.attractant_hwcr_xref_guid",
             "attractants.attractant_code",
+            "attractants.active_ind",
           ])
 
           .leftJoin("attractants.attractant_code", "attractant_code")
@@ -703,7 +720,7 @@ export class ComplaintService {
   ): Promise<ComplaintDto> => {
     try {
       const statusCode =
-        await this.codeTableService.getComplaintStatusCodeByStatus(status);
+        await this._codeTableService.getComplaintStatusCodeByStatus(status);
       const result = await this.complaintsRepository
         .createQueryBuilder("complaint")
         .update()
@@ -742,11 +759,23 @@ export class ComplaintService {
     complaintType: string,
     model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
-    try {
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+    const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
+      if (delegates && delegates.length > 0) {
+        const result = delegates.find((item) => item.type === "ASSIGNEE");
 
+        return !!result;
+      }
+
+      return false;
+    };
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const idir = getIdirFromRequest(this.request);
+
+    try {
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to update the comaplaint
       let entity: Complaint | HwcrComplaint | AllegationComplaint =
@@ -771,18 +800,71 @@ export class ComplaintService {
         }
       }
 
-      //-- unlike a typical ORM typeORM can't update an entiy and each entity type needs to be updated
-      //-- becuase of this we need to transform the entity into a type type and that is then used to update
+      //-- unlike a typical ORM typeORM can't update an entity and each entity type needs to be updated
+      //-- becuase of this we need to transform the entity into a type and that is then used to update
       //-- the original entity
       const complaintTable = this.mapper.map<ComplaintDto, UpdateComplaintDto>(
         model as ComplaintDto,
         "ComplaintDto",
         "UpdateComplaintDto"
       );
-      await this.complaintsRepository.update(id, complaintTable);
 
-      return {} as WildlifeComplaintDto;
+      const complaintUpdateResult = await this.complaintsRepository
+        .createQueryBuilder("complaint")
+        .update()
+        .set(complaintTable)
+        .where("complaint_identifier = :id", { id })
+        .execute();
+
+      //-- only continue the update if the base complaint has been update otherwise roll the transaction back
+      if (complaintUpdateResult.affected === 1) {
+        const { delegates } = model;
+
+        if (hasAssignees(delegates)) {
+          const assignee = delegates.find((item) => item.type === "ASSIGNEE");
+          const converted = this.mapper.map<
+            DelegateDto,
+            PersonComplaintXrefTable
+          >(assignee, "DelegateDto", "PersonComplaintXrefTable");
+          converted.create_user_id = idir;
+          converted.complaint_identifier = id;
+
+          const assignmentResult = this._personService.assignOfficer(
+            id,
+            converted as any
+          );
+        }
+
+        //-- apply complaint specific updates
+        switch (complaintType) {
+          case "ERS": {
+            break;
+          }
+          case "HWCR":
+          default: {
+            const { natureOfComplaint, species } =
+              model as WildlifeComplaintDto;
+            const { attractant_hwcr_xref: attractants } =
+              entity as HwcrComplaint;
+
+            this._attractantService.updateComplaintAttractants(
+              entity as HwcrComplaint,
+              attractants
+            );
+            break;
+          }
+        }
+        await queryRunner.commitTransaction();
+
+        return {} as WildlifeComplaintDto;
+      } else {
+        throw new HttpException(
+          `Unable to update complaint: ${id}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       this.logger.log(
         `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${model}`
       );
@@ -792,6 +874,8 @@ export class ComplaintService {
         `Unable to update complaint: ${id}`,
         HttpStatus.BAD_REQUEST
       );
+    } finally {
+      await queryRunner.release();
     }
   };
 
@@ -1018,8 +1102,3 @@ export class ComplaintService {
     }
   };
 }
-/*
-
-'Property "geo_organization_unit_code.geo_organization_unit_code" was not found in "Complaint". Make sure your query is correct.'
-
-*/

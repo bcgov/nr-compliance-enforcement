@@ -89,7 +89,6 @@ export class HwcrComplaintService {
         createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
           newHwcrComplaint.complaint_identifier;
         await this.personComplaintXrefService.assignOfficer(
-          queryRunner,
           newHwcrComplaint.complaint_identifier.complaint_identifier,
           createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
         );
@@ -160,10 +159,7 @@ export class HwcrComplaintService {
       });
     }
 
-    const totalCount = await builder
-      .skip(skip)
-      .take(pageSize)
-      .getCount();
+    const totalCount = await builder.skip(skip).take(pageSize).getCount();
 
     return { complaints: [], totalCount: totalCount };
   };
@@ -297,13 +293,11 @@ export class HwcrComplaintService {
         undefined
       ) {
         await this.personComplaintXrefService.assignOfficer(
-          queryRunner,
           updateHwcrComplaintDto.complaint_identifier.complaint_identifier,
           updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
         );
       }
       await this.attractantHwcrXrefService.updateComplaintAttractants(
-        queryRunner,
         updateHwcrComplaintDto as HwcrComplaint,
         updateHwcrComplaintDto.attractant_hwcr_xref
       );

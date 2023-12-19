@@ -1,6 +1,9 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
+import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
 import { ComplaintDto } from "src/types/models/complaints/complaint";
-import { ComplaintTable } from "src/types/tables/complaint.table";
+import { DelegateDto } from "src/types/models/people/delegate";
+import { AttractantXrefTable } from "src/types/tables/attractant-xref.table";
+import { PersonComplaintXrefTable } from "src/types/tables/person-complaint-xref.table";
 import { UpdateComplaintDto } from "src/v1/complaint/dto/update-complaint.dto";
 
 export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
@@ -85,14 +88,66 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
       })
     ),
     forMember(
-      (dest) => dest.geo_organization_unit_code,
+      (dest) => dest.cos_geo_org_unit,
       mapFrom((src) => {
-        const { area } = src.organization;
-
+        const { region, zone, area } = src.organization;
         return {
-         geo_organization_unit_code: area,
+          region_code: region,
+          zone_code: zone,
+          area_code: area,
         };
       })
+    )
+  );
+};
+
+export const mapDelegateDtoToPersonComplaintXrefTable = (mapper: Mapper) => {
+  createMap<DelegateDto, PersonComplaintXrefTable>(
+    mapper,
+    "DelegateDto",
+    "PersonComplaintXrefTable",
+    forMember(
+      (dest) => dest.active_ind,
+      mapFrom((src) => src.isActive)
+    ),
+    forMember(
+      (dest) => dest.person_guid,
+      mapFrom((src) => {
+        const {
+          person: { id },
+        } = src;
+
+        return {
+          person_guid: id,
+        };
+      })
+    ),
+    forMember(
+      (dest) => dest.person_complaint_xref_code,
+      mapFrom((src) => src.type)
+    )
+  );
+};
+
+export const mapAttactantDtoToAttractant = (mapper: Mapper) => {
+  createMap<AttractantXrefDto, AttractantXrefTable>(
+    mapper,
+    "AttractantXrefDto",
+    "AttractantXrefTable",
+    forMember(
+      (dest) => dest.active_ind,
+      mapFrom((src) => src.isActive)
+    ),
+    forMember(
+      (dest) => dest.attractant_code,
+      mapFrom((src) => {
+        const { attractant } = src;
+        return { attractant_code: attractant, active_ind: true };
+      })
+    ),
+    forMember(
+      (dest) => dest.hwcr_complaint_guid,
+      mapFrom((src) => src.xrefId)
     )
   );
 };

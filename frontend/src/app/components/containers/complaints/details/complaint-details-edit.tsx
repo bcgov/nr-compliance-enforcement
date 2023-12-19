@@ -150,7 +150,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (noErrors()) {
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         let hwcrComplaint = updateComplaint as HwcrComplaint;
-        debugger
+
         await dispatch(updateWildlifeComplaint(hwcrComplaint));
         dispatch(
           getWildlifeComplaintByComplaintIdentifierSetUpdate(
