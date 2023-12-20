@@ -1,10 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import {
-  bcBoundaries,
-  formatDate,
-  formatTime,
-} from "../../../../common/methods";
+import { bcBoundaries, formatDate, formatTime } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   selectComplaintDetails,
@@ -61,7 +57,17 @@ import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
-import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "../../../../common/attachment-utils";
+import {
+  handleAddAttachments,
+  handleDeleteAttachments,
+  handlePersistAttachments,
+} from "../../../../common/attachment-utils";
+import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
+import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
+import { UUID } from "crypto";
+import { Delegate } from "../../../../types/app/people/delegate";
+import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 
 type ComplaintParams = {
   id: string;
@@ -73,175 +79,8 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
+  //-- selectors
   const complaint = useAppSelector(selectComplaint);
-
-  const [readOnly, setReadOnly] = useState(true);
-  const [updateComplaint, setUpdateComplaint] = useState<
-    HwcrComplaint | AllegationComplaint | null | undefined
-  >(complaint);
-
-  useEffect(() => {
-    //-- when the component unmounts clear the complaint from redux
-    return () => {
-      dispatch(setComplaint(null));
-      dispatch(setGeocodedComplaintCoordinates(null));
-    };
-  }, [dispatch]);
-
-  const editButtonClick = () => {
-    setReadOnly(false);
-    window.scrollTo({ top: 0, behavior: "auto" });
-  };
-
-  const cancelConfirmed = () => {
-    setReadOnly(true);
-    setErrorNotificationClass("comp-complaint-error display-none");
-    setNOCErrorMsg("");
-    setSpeciesErrorMsg("");
-    setStatusErrorMsg("");
-    setComplaintDescErrorMsg("");
-    setAttractantsErrorMsg("");
-    setCommunityErrorMsg("");
-    setGeoPointXMsg("");
-    setGeoPointYMsg("");
-    setEmailMsg("");
-    setPrimaryPhoneMsg("");
-    setSecondaryPhoneMsg("");
-    setAlternatePhoneMsg("");
-    setAttachmentsToAdd(null);
-    setAttachmentsToDelete(null);
-  };
-
-  const cancelButtonClick = () => {
-    dispatch(
-      openModal({
-        modalSize: "md",
-        modalType: CancelConfirm,
-        data: {
-          title: "Cancel Changes?",
-          description: "Your changes will be lost.",
-          cancelConfirmed,
-        },
-      })
-    );
-  };
-
-  // files to add to COMS when complaint is saved
-  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
-
-  // files to remove from COMS when complaint is saved
-  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
-
-  const onHandleAddAttachments = (selectedFiles: File[]) => {
-    handleAddAttachments(setAttachmentsToAdd, selectedFiles);
-  };
-
-  const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
-    handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
-  };
-
-  const [errorNotificationClass, setErrorNotificationClass] = useState(
-    "comp-complaint-error display-none"
-  );
-  const saveButtonClick = async () => {
-    if (!updateComplaint) {
-      return;
-    }
-    if (noErrors()) {
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint = updateComplaint as HwcrComplaint;
-
-        await dispatch(updateWildlifeComplaint(hwcrComplaint));
-        dispatch(
-          getWildlifeComplaintByComplaintIdentifierSetUpdate(
-            hwcrComplaint.complaint_identifier.complaint_identifier,
-            setUpdateComplaint
-          )
-        );
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint = updateComplaint as AllegationComplaint;
-        await dispatch(updateAllegationComplaint(allegationComplaint));
-        dispatch(
-          getAllegationComplaintByComplaintIdentifierSetUpdate(
-            allegationComplaint.complaint_identifier.complaint_identifier,
-            setUpdateComplaint
-          )
-        );
-      }
-      setErrorNotificationClass("comp-complaint-error display-none");
-      setReadOnly(true);
-
-      handlePersistAttachments(dispatch, attachmentsToAdd, attachmentsToDelete, id, setAttachmentsToAdd, setAttachmentsToDelete);
-
-    } else {
-      ToggleError("Errors in form");
-      setErrorNotificationClass("comp-complaint-error");
-    };
-
-  };
-
-  useEffect(() => {
-    if (
-      !complaint ||
-      complaint.complaint_identifier.complaint_identifier !== id
-    ) {
-      if (id) {
-        switch (complaintType) {
-          case COMPLAINT_TYPES.ERS:
-            dispatch(
-              getAllegationComplaintByComplaintIdentifierSetUpdate(
-                id,
-                setUpdateComplaint
-              )
-            );
-            break;
-          case COMPLAINT_TYPES.HWCR:
-            dispatch(
-              getWildlifeComplaintByComplaintIdentifierSetUpdate(
-                id,
-                setUpdateComplaint
-              )
-            );
-            break;
-        }
-      }
-    }
-  }, [id, complaintType, complaint, dispatch]);
-
-  const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
-  const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
-  const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
-  const [complaintDescErrorMsg, setComplaintDescErrorMsg] =
-    useState<string>("");
-  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
-  const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
-  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
-  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
-  const [emailMsg, setEmailMsg] = useState<string>("");
-  const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
-  const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
-  const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
-
-  function noErrors() {
-    let noErrors = false;
-    if (
-      nocErrorMsg === "" &&
-      speciesErrorMsg === "" &&
-      statusErrorMsg === "" &&
-      complaintDescErrorMsg === "" &&
-      attractantsErrorMsg === "" &&
-      communityErrorMsg === "" &&
-      geoPointXMsg === "" &&
-      geoPointYMsg === "" &&
-      emailMsg === "" &&
-      primaryPhoneMsg === "" &&
-      secondaryPhoneMsg === "" &&
-      alternatePhoneMsg === ""
-    ) {
-      noErrors = true;
-    }
-    return noErrors;
-  }
 
   const {
     details,
@@ -281,7 +120,18 @@ export const ComplaintDetailsEdit: FC = () => {
   } = useAppSelector(selectComplaintCallerInformation);
 
   const userid = useAppSelector(userId);
-  
+
+  // Get the code table lists to populate the Selects
+  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
+  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
+  const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
+
+  const areaCodes = useAppSelector(selectCommunityCodeDropdown);
+
+  const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
+  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
+
   const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
   const { details: complaint_witness_details } = useAppSelector(
@@ -290,46 +140,331 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
+  //-- state
+  const [readOnly, setReadOnly] = useState(true);
+  const [updateComplaint, setUpdateComplaint] = useState<HwcrComplaint | AllegationComplaint | null | undefined>(
+    complaint
+  );
+
+  //-- complaint update object
+  const [update, applyUpdate] = useState<ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto>();
+
+  // files to add to COMS when complaint is saved
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+  // files to remove from COMS when complaint is saved
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
+  const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
+  const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
+  const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
+  const [complaintDescErrorMsg, setComplaintDescErrorMsg] = useState<string>("");
+  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
+  const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
+  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
+  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
+  const [emailMsg, setEmailMsg] = useState<string>("");
+  const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
+  const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
+  const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
+  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [latitude, setLatitude] = useState<string>("0");
+  const [longitude, setLongitude] = useState<string>("0");
+
+  //-- use effects
   useEffect(() => {
-    const incidentDateTimeObject = incidentDateTime
-      ? new Date(incidentDateTime)
-      : null;
+    //-- when the component unmounts clear the complaint from redux
+    return () => {
+      dispatch(setComplaint(null));
+      dispatch(setGeocodedComplaintCoordinates(null));
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!complaint || complaint.complaint_identifier.complaint_identifier !== id) {
+      if (id) {
+        switch (complaintType) {
+          case COMPLAINT_TYPES.ERS:
+            dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
+            break;
+          case COMPLAINT_TYPES.HWCR:
+            dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
+            break;
+        }
+      }
+    }
+  }, [id, complaintType, complaint, dispatch]);
+
+  useEffect(() => {
+    const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;
     if (incidentDateTimeObject) {
       setSelectedIncidentDateTime(incidentDateTimeObject);
     }
   }, [incidentDateTime]);
 
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] =
-    useState<Date>();
+  useEffect(() => {
+    setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
+    setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
+  }, [coordinates]);
+
+  //-- events
+  const editButtonClick = () => {
+    setReadOnly(false);
+
+    //-- create the complaint update object
+    createUpdateComplaintModel(complaintType);
+
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  const saveButtonClick = async () => {
+    if (!updateComplaint) {
+      return;
+    }
+    if (hasValidationErrors()) {
+      //-- TODO
+      if (complaintType === COMPLAINT_TYPES.HWCR) {
+        let hwcrComplaint = updateComplaint as HwcrComplaint;
+
+        await dispatch(updateWildlifeComplaint(hwcrComplaint));
+        dispatch(
+          getWildlifeComplaintByComplaintIdentifierSetUpdate(
+            hwcrComplaint.complaint_identifier.complaint_identifier,
+            setUpdateComplaint
+          )
+        );
+      } else if (complaintType === COMPLAINT_TYPES.ERS) {
+        let allegationComplaint = updateComplaint as AllegationComplaint;
+        await dispatch(updateAllegationComplaint(allegationComplaint));
+        dispatch(
+          getAllegationComplaintByComplaintIdentifierSetUpdate(
+            allegationComplaint.complaint_identifier.complaint_identifier,
+            setUpdateComplaint
+          )
+        );
+      }
+      setErrorNotificationClass("comp-complaint-error display-none");
+      setReadOnly(true);
+
+      handlePersistAttachments(
+        dispatch,
+        attachmentsToAdd,
+        attachmentsToDelete,
+        id,
+        setAttachmentsToAdd,
+        setAttachmentsToDelete
+      );
+    } else {
+      ToggleError("Errors in form");
+      setErrorNotificationClass("comp-complaint-error");
+    }
+  };
+
+  const resetErrorMessages = () => {
+    setReadOnly(true);
+    setErrorNotificationClass("comp-complaint-error display-none");
+    setNOCErrorMsg("");
+    setSpeciesErrorMsg("");
+    setStatusErrorMsg("");
+    setComplaintDescErrorMsg("");
+
+    setAttractantsErrorMsg("");
+    setCommunityErrorMsg("");
+    setGeoPointXMsg("");
+    setGeoPointYMsg("");
+    setEmailMsg("");
+    setPrimaryPhoneMsg("");
+    setSecondaryPhoneMsg("");
+    setAlternatePhoneMsg("");
+    setAttachmentsToAdd(null);
+    setAttachmentsToDelete(null);
+  };
+
+  const cancelButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CancelConfirm,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: resetErrorMessages,
+        },
+      })
+    );
+  };
+
+  //-- this needs to be updated once the complaint findByComplaintId endpoint is updated
+  const createUpdateComplaintModel = (complaintType: string) => {
+    const { complaint_identifier: root } = complaint as HwcrComplaint | AllegationComplaint;
+
+    const {
+      complaint_identifier: id,
+      detail_text: details,
+      caller_name: name,
+      caller_address: address,
+      caller_email: email,
+      caller_phone_1: phone1,
+      caller_phone_2: phone2,
+      caller_phone_3: phone3,
+      location_geometry_point: location,
+      location_summary_text: locationSummary,
+      location_detailed_text: locationDetail,
+      complaint_status_code: { complaint_status_code: status },
+      referred_by_agency_code,
+      owned_by_agency_code: { agency_code: ownedBy },
+      referred_by_agency_other_text: referredByAgencyOther,
+      incident_utc_datetime: incidentDateTime,
+      incident_reported_utc_timestmp: reportedOn,
+      update_utc_timestamp: updatedOn,
+      cos_geo_org_unit: { area_code: area, region_code: region, zone_code: zone },
+      person_complaint_xref,
+    } = root;
+
+    let model: ComplaintDto = {
+      id,
+      details,
+      name,
+      address,
+      email,
+      phone1,
+      phone2,
+      phone3,
+      location,
+      locationSummary,
+      locationDetail,
+      status,
+      referredBy: "",
+      ownedBy,
+      referredByAgencyOther,
+      incidentDateTime: new Date(incidentDateTime ? incidentDateTime : new Date()),
+      reportedOn: new Date(reportedOn ? reportedOn : new Date()),
+      updatedOn: new Date(updatedOn ? updatedOn : new Date()),
+      organization: { area, region, zone },
+      delegates: [],
+    };
+
+    if (referred_by_agency_code) {
+      const { agency_code: referredBy } = referred_by_agency_code;
+
+      model = { ...model, referredBy };
+    }
+
+    if (from(person_complaint_xref).any()) {
+      debugger;
+      const delegates = person_complaint_xref.filter((item) => item.personComplaintXrefGuid !== undefined);
+      const result = delegates.map((item) => {
+        const {
+          personComplaintXrefGuid,
+          active_ind,
+          person_guid: { person_guid: id, first_name, middle_name_1, middle_name_2, last_name },
+        } = item;
+        const record: Delegate = {
+          xrefId: personComplaintXrefGuid as UUID,
+          isActive: active_ind || false,
+          type: "ASSIGNEE",
+          person: {
+            id: id as UUID,
+            firstName: first_name,
+            middleName1: middle_name_1,
+            middleName2: middle_name_2,
+            lastName: last_name,
+          },
+        };
+
+        return record;
+      });
+
+      model = { ...model, delegates: result };
+    }
+
+    switch (complaintType) {
+      case "ERS": {
+        const {
+          violation_code: { violation_code: violation },
+          in_progress_ind: isInProgress,
+          observed_ind: wasObserved,
+          suspect_witnesss_dtl_text: violationDetails,
+          allegation_complaint_guid: ersId,
+        } = complaint as AllegationComplaint;
+
+        model = { ...model, ersId, violation, isInProgress, wasObserved, violationDetails } as AllegationComplaintDto;
+        break;
+      }
+      case "HWCR":
+      default: {
+        const {
+          hwcr_complaint_guid: hwcrId,
+          species_code: { species_code: species },
+          hwcr_complaint_nature_code: { hwcr_complaint_nature_code: natureOfComplaint },
+          other_attractants_text: otherAttractants,
+          attractant_hwcr_xref,
+        } = complaint as HwcrComplaint;
+
+        let attractants: Array<AttractantXref> = [];
+
+        if (from(attractant_hwcr_xref).any()) {
+          attractants = attractant_hwcr_xref.map((item) => {
+            const { attractant_hwcr_xref_guid } = item;
+            const attractant = item.attractant_code ? item.attractant_code.attractant_code : "";
+
+            const record: AttractantXref = {
+              xrefId: attractant_hwcr_xref_guid as UUID,
+              attractant,
+              isActive: true,
+            };
+
+            return record;
+          });
+        }
+
+        model = { ...model, hwcrId, species, natureOfComplaint, otherAttractants, attractants } as WildlifeComplaintDto;
+
+        break;
+      }
+    }
+
+    applyUpdate(model)
+  };
+
+  const onHandleAddAttachments = (selectedFiles: File[]) => {
+    handleAddAttachments(setAttachmentsToAdd, selectedFiles);
+  };
+
+  const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
+  };
+
+  const hasValidationErrors = () => {
+    let noErrors = false;
+    if (
+      nocErrorMsg === "" &&
+      speciesErrorMsg === "" &&
+      statusErrorMsg === "" &&
+      complaintDescErrorMsg === "" &&
+      attractantsErrorMsg === "" &&
+      communityErrorMsg === "" &&
+      geoPointXMsg === "" &&
+      geoPointYMsg === "" &&
+      emailMsg === "" &&
+      primaryPhoneMsg === "" &&
+      secondaryPhoneMsg === "" &&
+      alternatePhoneMsg === ""
+    ) {
+      noErrors = true;
+    }
+    return noErrors;
+  };
 
   // Transform the fetched data into the DropdownOption type
-
   let assignableOfficers: Option[] =
-  officersInAgencyList !== null
+    officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
         }))
       : [];
 
-  assignableOfficers.unshift({value: "Unassigned", label: "None"});
-
-  // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(
-    selectComplaintStatusCodeDropdown
-  ) as Option[];
-  const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
-  const hwcrNatureOfComplaintCodes = useSelector(
-    selectHwcrNatureOfComplaintCodeDropdown
-  ) as Option[];
-
-  const areaCodes = useAppSelector(selectCommunityCodeDropdown);
-
-  const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
-  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
-  const violationTypeCodes = useSelector(
-    selectViolationCodeDropdown
-  ) as Option[];
+  assignableOfficers.unshift({ value: "Unassigned", label: "None" });
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -337,45 +472,32 @@ export const ComplaintDetailsEdit: FC = () => {
   ];
 
   // Used to set selected values in the dropdowns
-  const selectedStatus = complaintStatusCodes.find(
-    (option) => option.value === statusCode
-  );
-  const selectedSpecies = speciesCodes.find(
-    (option) => option.value === speciesCode
-  );
-  const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find(
-    (option) => option.value === natureOfComplaintCode
-  );
+  const selectedStatus = complaintStatusCodes.find((option) => option.value === statusCode);
+  const selectedSpecies = speciesCodes.find((option) => option.value === speciesCode);
+  const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find((option) => option.value === natureOfComplaintCode);
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
   const selectedAssignedOfficer = assignableOfficers?.find(
-    (option) => option.value === (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid ? updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid : personGuid)
+    (option) =>
+      option.value ===
+      (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid
+        ? updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid
+        : personGuid)
   );
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
-      option.value ===
-      (referredByAgencyCode?.agency_code === undefined
-        ? ""
-        : referredByAgencyCode.agency_code)
+      option.value === (referredByAgencyCode?.agency_code === undefined ? "" : referredByAgencyCode.agency_code)
   );
   const selectedAttractants = attractantCodes.filter(
-    (option) =>
-      attractants?.some((attractant) => attractant.code === option.value)
+    (option) => attractants?.some((attractant) => attractant.code === option.value)
   );
-  const selectedViolationTypeCode = violationTypeCodes.find(
-    (option) => option.value === violationTypeCode
-  );
+  const selectedViolationTypeCode = violationTypeCodes.find((option) => option.value === violationTypeCode);
   const selectedViolationInProgress = yesNoOptions.find(
     (option) => option.value === (violationInProgress ? "Yes" : "No")
   );
-  const selectedViolationObserved = yesNoOptions.find(
-    (option) => option.value === (violationObserved ? "Yes" : "No")
-  );
+  const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
 
   //--
-  const getEditableCoordinates = (
-    input: Array<number> | Array<string> | undefined,
-    type: Coordinates
-  ): string => {
+  const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";
     }
@@ -383,14 +505,6 @@ export const ComplaintDetailsEdit: FC = () => {
     let result = type === Coordinates.Longitude ? input[0] : input[1];
     return result === 0 || result === "0" ? "" : result.toString();
   };
-
-  const [latitude, setLatitude] = useState<string>("0");
-  const [longitude, setLongitude] = useState<string>("0");
-
-  useEffect(() => {
-    setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
-    setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
-  }, [coordinates]);
 
   const handleMarkerMove = async (lat: number, lng: number) => {
     await updateCoordinates(lat, lng);
@@ -409,15 +523,11 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleIncidentDateTimeChange(date: Date) {
     setSelectedIncidentDateTime(date);
     if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint
-      ) as HwcrComplaint;
+      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint
-      ) as AllegationComplaint;
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
       allegationComplaint.complaint_identifier.incident_utc_datetime = date;
       setUpdateComplaint(allegationComplaint);
     }
@@ -509,9 +619,7 @@ export const ComplaintDetailsEdit: FC = () => {
       } else {
         setStatusErrorMsg("");
 
-        let update = { ...updateComplaint } as
-          | HwcrComplaint
-          | AllegationComplaint;
+        let update = { ...updateComplaint } as HwcrComplaint | AllegationComplaint;
 
         const { complaint_identifier: identifier } = update;
         const { complaint_status_code: source } = identifier;
@@ -538,24 +646,23 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       const { value } = selected;
 
-      let update = { ...updateComplaint } as
-        | HwcrComplaint
-        | AllegationComplaint;
+      let update = { ...updateComplaint } as HwcrComplaint | AllegationComplaint;
 
       const { complaint_identifier: identifier } = update;
-      let { person_complaint_xref: source, complaint_identifier: id } =
-        identifier;
+      let { person_complaint_xref: source, complaint_identifier: id } = identifier;
       if (value !== "Unassigned") {
-        const selectedOfficer = officerList?.find(
-          ({ person_guid: { person_guid: id } }) => {
-            return id === value;
-          }
-        );
+        const selectedOfficer = officerList?.find(({ person_guid: { person_guid: id } }) => {
+          return id === value;
+        });
 
         const { person_guid: officer } = selectedOfficer as any;
 
         if (from(source).any() && from(source).elementAt(0)) {
-          const assigned = { ...source[0], person_guid: officer, active_ind: true };
+          const assigned = {
+            ...source[0],
+            person_guid: officer,
+            active_ind: true,
+          };
           source = [assigned];
         } else {
           const assigned = {
@@ -575,7 +682,6 @@ export const ComplaintDetailsEdit: FC = () => {
         };
 
         update.complaint_identifier = updatedParent;
-
       } else if (from(source).any() && from(source).elementAt(0)) {
         const assigned = { ...source[0], active_ind: false };
         source = [assigned];
@@ -597,15 +703,11 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setComplaintDescErrorMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint
-        ) as HwcrComplaint;
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.detail_text = value;
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint
-        ) as AllegationComplaint;
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         allegationComplaint.complaint_identifier.detail_text = value;
         setUpdateComplaint(allegationComplaint);
       }
@@ -614,49 +716,36 @@ export const ComplaintDetailsEdit: FC = () => {
 
   function handleLocationDescriptionChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint
-      ) as HwcrComplaint;
+      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.location_detailed_text = value;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint
-      ) as AllegationComplaint;
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
       allegationComplaint.complaint_identifier.location_detailed_text = value;
       setUpdateComplaint(allegationComplaint);
     }
   }
 
   function handleViolationInProgessChange(selectedOption: Option | null) {
-    let allegationComplaint: AllegationComplaint = cloneDeep(
-      updateComplaint
-    ) as AllegationComplaint;
+    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
     allegationComplaint.in_progress_ind = selectedOption?.value === "Yes";
     setUpdateComplaint(allegationComplaint);
   }
 
   function handleViolationObservedChange(selectedOption: Option | null) {
-    let allegationComplaint: AllegationComplaint = cloneDeep(
-      updateComplaint
-    ) as AllegationComplaint;
+    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
     allegationComplaint.observed_ind = selectedOption?.value === "Yes";
     setUpdateComplaint(allegationComplaint);
   }
 
   function handleLocationChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint
-      ) as HwcrComplaint;
+      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.location_summary_text = value ?? "";
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint
-      ) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.location_summary_text =
-        value ?? "";
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
+      allegationComplaint.complaint_identifier.location_summary_text = value ?? "";
       setUpdateComplaint(allegationComplaint);
     }
   }
@@ -740,9 +829,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setCommunityErrorMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint
-        ) as HwcrComplaint;
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         if (selectedOption.value !== undefined) {
           const geoOrgCode = {
             geo_organization_unit_code: selectedOption.value,
@@ -761,16 +848,14 @@ export const ComplaintDetailsEdit: FC = () => {
             office_location_name: "",
             area_code: selectedOption.value,
             area_name: "",
+            region_code: "",
           };
 
-          hwcrComplaint.complaint_identifier.geo_organization_unit_code =
-            geoOrgCode;
+          hwcrComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
         }
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint
-        ) as AllegationComplaint;
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         if (selectedOption.value !== undefined) {
           const geoOrgCode = {
             geo_organization_unit_code: selectedOption.value,
@@ -789,10 +874,10 @@ export const ComplaintDetailsEdit: FC = () => {
             office_location_name: "",
             area_code: selectedOption.value,
             area_name: "",
+            region_code: "",
           };
 
-          allegationComplaint.complaint_identifier.geo_organization_unit_code =
-            geoOrgCode;
+          allegationComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
         }
         setUpdateComplaint(allegationComplaint);
       }
@@ -814,60 +899,36 @@ export const ComplaintDetailsEdit: FC = () => {
     if (latitude && !Number.isNaN(latitude)) {
       const item = parseFloat(latitude);
       if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
-        setGeoPointYMsg(
-          `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`
-        );
+        setGeoPointYMsg(`Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`);
       }
     }
 
     if (longitude && !Number.isNaN(longitude)) {
       const item = parseFloat(longitude);
-      if (
-        item > bcBoundaries.maxLongitude ||
-        item < bcBoundaries.minLongitude
-      ) {
-        setGeoPointXMsg(
-          `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`
-        );
+      if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
+        setGeoPointXMsg(`Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`);
       }
     }
 
     //-- update coordinates
-    if (
-      latitude &&
-      longitude &&
-      !Number.isNaN(latitude) &&
-      !Number.isNaN(longitude)
-    ) {
-      complaint.complaint_identifier.location_geometry_point.coordinates[
-        Coordinates.Longitude
-      ] = parseFloat(longitude);
-      complaint.complaint_identifier.location_geometry_point.coordinates[
-        Coordinates.Latitude
-      ] = parseFloat(latitude);
+    if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = parseFloat(longitude);
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = parseFloat(latitude);
       setUpdateComplaint(complaint);
     } else if (latitude === "" && longitude === "") {
-      complaint.complaint_identifier.location_geometry_point.coordinates[
-        Coordinates.Longitude
-      ] = 0;
-      complaint.complaint_identifier.location_geometry_point.coordinates[
-        Coordinates.Latitude
-      ] = 0;
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
+      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
       setUpdateComplaint(complaint);
     }
   };
 
   function handleNameChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint
-      ) as HwcrComplaint;
+      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.caller_name = value;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint
-      ) as AllegationComplaint;
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
       allegationComplaint.complaint_identifier.caller_name = value;
       setUpdateComplaint(allegationComplaint);
     }
@@ -875,15 +936,11 @@ export const ComplaintDetailsEdit: FC = () => {
 
   function handleAddressChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(
-        updateComplaint
-      ) as HwcrComplaint;
+      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
       hwcrComplaint.complaint_identifier.caller_address = value;
       setUpdateComplaint(hwcrComplaint);
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(
-        updateComplaint
-      ) as AllegationComplaint;
+      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
       allegationComplaint.complaint_identifier.caller_address = value;
       setUpdateComplaint(allegationComplaint);
     }
@@ -892,23 +949,16 @@ export const ComplaintDetailsEdit: FC = () => {
   function handlePrimaryPhoneChange(value: string) {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setPrimaryPhoneMsg("Phone number must be 10 digits");
-    } else if (
-      value !== undefined &&
-      (value.startsWith("+11") || value.startsWith("+10"))
-    ) {
+    } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setPrimaryPhoneMsg("Invalid Format");
     } else {
       setPrimaryPhoneMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint
-        ) as HwcrComplaint;
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_1 = value ?? "";
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint
-        ) as AllegationComplaint;
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_1 = value ?? "";
         setUpdateComplaint(allegationComplaint);
       }
@@ -917,23 +967,16 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleSecondaryPhoneChange(value: string) {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setSecondaryPhoneMsg("Phone number must be 10 digits");
-    } else if (
-      value !== undefined &&
-      (value.startsWith("+11") || value.startsWith("+10"))
-    ) {
+    } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setSecondaryPhoneMsg("Invalid Format");
     } else {
       setSecondaryPhoneMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint
-        ) as HwcrComplaint;
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_2 = value ?? "";
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint
-        ) as AllegationComplaint;
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_2 = value ?? "";
         setUpdateComplaint(allegationComplaint);
       }
@@ -943,23 +986,16 @@ export const ComplaintDetailsEdit: FC = () => {
   function handleAlternatePhoneChange(value: string) {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setAlternatePhoneMsg("Phone number must be 10 digits");
-    } else if (
-      value !== undefined &&
-      (value.startsWith("+11") || value.startsWith("+10"))
-    ) {
+    } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setAlternatePhoneMsg("Invalid Format");
     } else {
       setAlternatePhoneMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint
-        ) as HwcrComplaint;
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_phone_3 = value ?? "";
         setUpdateComplaint(hwcrComplaint);
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint
-        ) as AllegationComplaint;
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_phone_3 = value ?? "";
         setUpdateComplaint(allegationComplaint);
       }
@@ -973,16 +1009,12 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setEmailMsg("");
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(
-          updateComplaint
-        ) as HwcrComplaint;
+        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
         hwcrComplaint.complaint_identifier.caller_email = value;
         setUpdateComplaint(hwcrComplaint);
       }
       if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(
-          updateComplaint
-        ) as AllegationComplaint;
+        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
         allegationComplaint.complaint_identifier.caller_email = value;
         setUpdateComplaint(allegationComplaint);
       }
@@ -993,9 +1025,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       const { label, value } = selected;
 
-      let update = cloneDeep(updateComplaint) as
-        | HwcrComplaint
-        | AllegationComplaint;
+      let update = cloneDeep(updateComplaint) as HwcrComplaint | AllegationComplaint;
 
       const { complaint_identifier: identifier } = update;
       const { referred_by_agency_code: source } = identifier;
@@ -1032,8 +1062,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   function handleSuspectDetailsChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint =
-        updateComplaint as AllegationComplaint;
+      let allegationComplaint: AllegationComplaint = updateComplaint as AllegationComplaint;
       allegationComplaint.suspect_witnesss_dtl_text = value;
       setUpdateComplaint(allegationComplaint);
     }
@@ -1054,21 +1083,12 @@ export const ComplaintDetailsEdit: FC = () => {
       />
       {readOnly && <CallDetails complaintType={complaintType} />}
       {readOnly && <CallerInformation />}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
-        <SuspectWitnessDetails />
-      )}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
       {!readOnly && (
         <>
           {/* edit header block */}
-          <div
-            id="complaint-error-notification"
-            className={errorNotificationClass}
-          >
-            <img
-              src={notificationInvalid}
-              alt="error"
-              className="filter-image-spacing"
-            />
+          <div id="complaint-error-notification" className={errorNotificationClass}>
+            <img src={notificationInvalid} alt="error" className="filter-image-spacing" />
             {/*
              */}
             Errors in form
@@ -1077,10 +1097,7 @@ export const ComplaintDetailsEdit: FC = () => {
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
                 {complaintType === COMPLAINT_TYPES.HWCR && (
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="nature-of-complaint-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
                     <label id="nature-of-complaint-label-id">
                       Nature of Complaint<span className="required-ind">*</span>
                     </label>
@@ -1097,10 +1114,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   </div>
                 )}
                 {complaintType === COMPLAINT_TYPES.HWCR && (
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="species-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="species-pair-id">
                     <label id="species-label-id">
                       Species<span className="required-ind">*</span>
                     </label>
@@ -1117,10 +1131,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   </div>
                 )}
                 {complaintType === COMPLAINT_TYPES.ERS && (
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="violation-type-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="violation-type-pair-id">
                     <label id="violation-label-id">
                       Violation Type<span className="required-ind">*</span>
                     </label>
@@ -1135,10 +1146,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     />
                   </div>
                 )}
-                <div
-                  className="comp-details-label-input-pair"
-                  id="status-pair-id"
-                >
+                <div className="comp-details-label-input-pair" id="status-pair-id">
                   <label id="status-label-id">
                     Status<span className="required-ind">*</span>
                   </label>
@@ -1153,13 +1161,8 @@ export const ComplaintDetailsEdit: FC = () => {
                     errMsg={statusErrorMsg}
                   />
                 </div>
-                <div
-                  className="comp-details-label-input-pair"
-                  id="officer-assigned-pair-id"
-                >
-                  <label id="officer-assigned-select-label-id">
-                    Officer Assigned
-                  </label>
+                <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+                  <label id="officer-assigned-select-label-id">Officer Assigned</label>
                   <CompSelect
                     id="officer-assigned-select-id"
                     classNamePrefix="comp-select"
@@ -1168,18 +1171,17 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={assignableOfficers}
                     placeholder="Select"
                     enableValidation={false}
-                    value={(updateComplaint?.complaint_identifier?.person_complaint_xref[0]?.active_ind === true ? selectedAssignedOfficer : { value: "Unassigned", label: "None" })}
+                    value={
+                      updateComplaint?.complaint_identifier?.person_complaint_xref[0]?.active_ind === true
+                        ? selectedAssignedOfficer
+                        : { value: "Unassigned", label: "None" }
+                    }
                   />
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div
-                  className="comp-details-label-input-pair"
-                  id="date-time-pair-id"
-                >
-                  <label id="date-time-logged-label-id">
-                    Date / Time Logged
-                  </label>
+                <div className="comp-details-label-input-pair" id="date-time-pair-id">
+                  <label id="date-time-logged-label-id">Date / Time Logged</label>
                   <div className="comp-details-input">
                     <i className="bi bi-calendar comp-margin-right-xs"></i>
                     {formatDate(loggedDate)}
@@ -1187,10 +1189,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     {formatTime(loggedDate)}
                   </div>
                 </div>
-                <div
-                  className="comp-details-label-input-pair"
-                  id="last-updated-pair-id"
-                >
+                <div className="comp-details-label-input-pair" id="last-updated-pair-id">
                   <label id="last-updated-label-id">Last Updated</label>
                   <div className="comp-details-input">
                     <i className="bi bi-calendar comp-margin-right-xs"></i>
@@ -1199,14 +1198,9 @@ export const ComplaintDetailsEdit: FC = () => {
                     {formatTime(lastUpdated)}
                   </div>
                 </div>
-                <div
-                  className="comp-details-label-input-pair"
-                  id="created-by-pair-id"
-                >
+                <div className="comp-details-label-input-pair" id="created-by-pair-id">
                   <label id="created-by-label-id">Created By</label>
-                  <div className="comp-padding-left-xs comp-padding-top-xs">
-                    {createdBy}
-                  </div>
+                  <div className="comp-padding-left-xs comp-padding-top-xs">{createdBy}</div>
                 </div>
               </div>
             </div>
@@ -1217,14 +1211,8 @@ export const ComplaintDetailsEdit: FC = () => {
             <div className="comp-complaint-call-information">
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="complaint-description-pair-id"
-                  >
-                    <label
-                      id="complaint-description-edit-label-id"
-                      className="col-auto"
-                    >
+                  <div className="comp-details-label-input-pair" id="complaint-description-pair-id">
+                    <label id="complaint-description-edit-label-id" className="col-auto">
                       Complaint Description
                       <span className="required-ind">*</span>
                     </label>
@@ -1238,10 +1226,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       maxLength={4000}
                     />
                   </div>
-                  <div
-                    className="comp-details-label-input-pair comp-margin-top-30"
-                    id="incident-time-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair comp-margin-top-30" id="incident-time-pair-id">
                     <label>Incident Time</label>
                     <DatePicker
                       id="complaint-incident-time"
@@ -1257,10 +1242,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     />
                   </div>
                   {complaintType === COMPLAINT_TYPES.HWCR && (
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="attractants-pair-id"
-                    >
+                    <div className="comp-details-label-input-pair" id="attractants-pair-id">
                       <label>Attractants</label>
                       <div className="comp-details-edit-input">
                         <ValidationMultiSelect
@@ -1277,10 +1259,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </div>
                   )}
                   {complaintType === COMPLAINT_TYPES.ERS && (
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="violation-in-progress-pair-id"
-                    >
+                    <div className="comp-details-label-input-pair" id="violation-in-progress-pair-id">
                       <label>Violation in Progress</label>
                       <div className="comp-details-edit-input">
                         <Select
@@ -1295,10 +1274,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </div>
                   )}
                   {complaintType === COMPLAINT_TYPES.ERS && (
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="violation-observed-pair-id"
-                    >
+                    <div className="comp-details-label-input-pair" id="violation-observed-pair-id">
                       <label>Violation Observed</label>
                       <div className="comp-details-edit-input">
                         <Select
@@ -1314,13 +1290,8 @@ export const ComplaintDetailsEdit: FC = () => {
                   )}
                 </div>
                 <div className="comp-details-edit-column comp-details-right-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="complaint-location-pair-id"
-                  >
-                    <label id="complaint-location-label-id">
-                      Complaint Location
-                    </label>
+                  <div className="comp-details-label-input-pair" id="complaint-location-pair-id">
+                    <label id="complaint-location-label-id">Complaint Location</label>
                     <div className="comp-details-edit-input">
                       <input
                         type="text"
@@ -1332,19 +1303,14 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="location-description-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="location-description-pair-id">
                     <label>Location Description</label>
                     <textarea
                       className="comp-form-control"
                       id="complaint-location-description-textarea-id"
                       defaultValue={locationDescription}
                       rows={4}
-                      onChange={(e) =>
-                        handleLocationDescriptionChange(e.target.value)
-                      }
+                      onChange={(e) => handleLocationDescriptionChange(e.target.value)}
                       maxLength={4000}
                     />
                   </div>
@@ -1359,12 +1325,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     value={longitude}
                     error={geoPointXMsg}
                     step="any"
-                    onChange={(evt: any) =>
-                      handleCoordinateChange(
-                        evt.target.value,
-                        Coordinates.Longitude
-                      )
-                    }
+                    onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
                   />
                   <CompInput
                     id="comp-details-edit-y-coordinate-input"
@@ -1377,17 +1338,9 @@ export const ComplaintDetailsEdit: FC = () => {
                     value={latitude}
                     error={geoPointYMsg}
                     step="any"
-                    onChange={(evt: any) =>
-                      handleCoordinateChange(
-                        evt.target.value,
-                        Coordinates.Latitude
-                      )
-                    }
+                    onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
                   />
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="area-community-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="area-community-pair-id">
                     <label>
                       Community<span className="required-ind">*</span>
                     </label>
@@ -1404,10 +1357,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="office-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="office-pair-id">
                     <label>Office</label>
                     <div className="comp-details-edit-input">
                       <input
@@ -1419,10 +1369,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="zone-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="zone-pair-id">
                     <label>Zone</label>
                     <div className="comp-details-edit-input">
                       <input
@@ -1434,10 +1381,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="region-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="region-pair-id">
                     <label>Region</label>
                     <div className="comp-details-edit-input">
                       <input
@@ -1459,14 +1403,8 @@ export const ComplaintDetailsEdit: FC = () => {
             <div className="comp-complaint-call-information">
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="name-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-name-label-id"
-                      className="col-auto"
-                    >
+                  <div className="comp-details-label-input-pair" id="name-pair-id">
+                    <label id="complaint-caller-info-name-label-id" className="col-auto">
                       Name
                     </label>
                     <div className="comp-details-edit-input">
@@ -1480,14 +1418,8 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="primary-phone-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-primary-phone-label-id"
-                      className="col-auto"
-                    >
+                  <div className="comp-details-label-input-pair" id="primary-phone-pair-id">
+                    <label id="complaint-caller-info-primary-phone-label-id" className="col-auto">
                       Primary Phone
                     </label>
                     <div className="comp-details-edit-input">
@@ -1502,14 +1434,8 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="secondary-phone-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-secondary-phone-label-id"
-                      className="col-auto"
-                    >
+                  <div className="comp-details-label-input-pair" id="secondary-phone-pair-id">
+                    <label id="complaint-caller-info-secondary-phone-label-id" className="col-auto">
                       Alternate 1 Phone
                     </label>
                     <div className="comp-details-edit-input">
@@ -1524,14 +1450,8 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="alternate-phone-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-alternate-phone-label-id"
-                      className="col-auto"
-                    >
+                  <div className="comp-details-label-input-pair" id="alternate-phone-pair-id">
+                    <label id="complaint-caller-info-alternate-phone-label-id" className="col-auto">
                       Alternate 2 Phone
                     </label>
                     <div className="comp-details-edit-input">
@@ -1548,10 +1468,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   </div>
                 </div>
                 <div className="comp-details-edit-column comp-details-right-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="address-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="address-pair-id">
                     <label>Address</label>
                     <div className="comp-details-edit-input">
                       <input
@@ -1565,10 +1482,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </div>
                   </div>
 
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="email-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="email-pair-id">
                     <label>Email</label>
                     <div className="comp-details-edit-input">
                       <ValidationInput
@@ -1582,10 +1496,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="referred-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="referred-pair-id">
                     <label>Referred by / Complaint Agency</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
@@ -1611,14 +1522,8 @@ export const ComplaintDetailsEdit: FC = () => {
               <div className="comp-complaint-call-information">
                 <div className="comp-suspect-witness-edit-container">
                   <div className="comp-details-edit-column comp-details-right-column">
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="subject-of-complaint-pair-id"
-                    >
-                      <label
-                        id="complaint-caller-info-name-label-id"
-                        className="col-auto"
-                      >
+                    <div className="comp-details-label-input-pair" id="subject-of-complaint-pair-id">
+                      <label id="complaint-caller-info-name-label-id" className="col-auto">
                         Description
                       </label>
                       <textarea
@@ -1626,9 +1531,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="complaint-witness-details-textarea-id"
                         defaultValue={complaint_witness_details}
                         rows={4}
-                        onChange={(e) =>
-                          handleSuspectDetailsChange(e.target.value)
-                        }
+                        onChange={(e) => handleSuspectDetailsChange(e.target.value)}
                         maxLength={4000}
                       />
                     </div>
@@ -1650,9 +1553,7 @@ export const ComplaintDetailsEdit: FC = () => {
             complaintType={complaintType}
             draggable={true}
             onMarkerMove={handleMarkerMove}
-            hideMarker={
-              !latitude || !longitude || +latitude === 0 || +longitude === 0
-            }
+            hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
             editComponent={true}
           />
         </>
@@ -1663,9 +1564,7 @@ export const ComplaintDetailsEdit: FC = () => {
           coordinates={{ lat: +latitude, lng: +longitude }}
           complaintType={complaintType}
           draggable={false}
-          hideMarker={
-            !latitude || !longitude || +latitude === 0 || +longitude === 0
-          }
+          hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
           editComponent={true}
         />
       )}
