@@ -42,16 +42,20 @@ export class BcGeoCoderService {
         headers,
         // Add any other Axios request configuration options here
       };
-
-      const { data } = await firstValueFrom(
-        this.httpService.get<any>(apiUrl, config).pipe(
-          catchError((error: AxiosError) => {
-            this.logger.error(error.response);
-            throw "Error getting BC Geocoder response";
-          })
-        )
-      );
-      return data;
+      try
+      {
+        const { data } = await firstValueFrom(
+          this.httpService.get<any>(apiUrl, config).pipe(
+            catchError((error: AxiosError) => {
+              this.logger.error(error.response);
+              throw "Error getting BC Geocoder response";
+            })
+          )
+        );
+        return data;
+      }
+      catch{}
+      return null;
     }
   }
 }
