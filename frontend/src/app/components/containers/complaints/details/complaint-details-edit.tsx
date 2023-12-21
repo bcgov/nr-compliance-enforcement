@@ -1549,7 +1549,7 @@ export const ComplaintDetailsEdit: FC = () => {
             onFileDeleted={onHandleDeleteAttachment}
           />
           <ComplaintLocation
-            coordinates={{ lat: +latitude, lng: +longitude }}
+            parentCoordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
             draggable={true}
             onMarkerMove={handleMarkerMove}
@@ -1561,7 +1561,7 @@ export const ComplaintDetailsEdit: FC = () => {
       {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
       {readOnly && (
         <ComplaintLocation
-          coordinates={{ lat: +latitude, lng: +longitude }}
+          parentCoordinates={{ lat: +latitude, lng: +longitude }}
           complaintType={complaintType}
           draggable={false}
           hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}

@@ -1449,7 +1449,7 @@ export const CreateComplaint: FC = () => {
       </div>
       {
   <ComplaintLocation
-          coordinates={{ lat: +latitude, lng: +longitude }}
+          parentCoordinates={{ lat: +latitude, lng: +longitude }}
           complaintType={complaintType}
           draggable={false}
           hideMarker={
