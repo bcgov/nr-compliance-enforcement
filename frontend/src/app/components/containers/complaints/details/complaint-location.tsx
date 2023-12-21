@@ -11,7 +11,7 @@ import { isWithinBC } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 
 type Props = {
-  coordinates?: { lat: number; lng: number };
+  parentCoordinates?: { lat: number; lng: number };
   complaintType: string;
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
@@ -24,7 +24,7 @@ type Props = {
  *
  */
 export const ComplaintLocation: FC<Props> = ({
-  coordinates,
+  parentCoordinates,
   complaintType,
   draggable,
   onMarkerMove,
@@ -32,7 +32,7 @@ export const ComplaintLocation: FC<Props> = ({
   editComponent
 }) => {
   const dispatch = useAppDispatch();
-  const { area, location } = useAppSelector(
+  const { area, coordinates } = useAppSelector(
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
@@ -44,16 +44,16 @@ export const ComplaintLocation: FC<Props> = ({
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
   useEffect(() => {
-    if (editComponent && area) {
-      // geocode the complaint using the area.  Used in case there are no coordinates
+    if (editComponent && area && coordinates && +coordinates[Coordinates.Latitude] === 0 && +coordinates[Coordinates.Longitude] === 0) {
+      // geocode the complaint using the area.  Used in case there are no parentCoordinates
       dispatch(getGeocodedComplaintCoordinates(area));
     }
-  }, [area, dispatch, location, editComponent]);
+  }, [area, dispatch, editComponent, coordinates]);
 
 
   useEffect(() => {
-    if (coordinates && isWithinBC([coordinates.lng, coordinates.lat])) {
-      setMarkerPosition(coordinates);
+    if (parentCoordinates && isWithinBC([parentCoordinates.lng, parentCoordinates.lat])) {
+      setMarkerPosition(parentCoordinates);
     } else if(geocodedComplaintCoordinates?.features)
       {
         const lat =
@@ -74,7 +74,7 @@ export const ComplaintLocation: FC<Props> = ({
             
           setMarkerPosition({lat: lat, lng: lng});
         }
-  }, [coordinates, geocodedComplaintCoordinates?.features]);
+  }, [parentCoordinates, geocodedComplaintCoordinates?.features]);
 
   const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";
 
