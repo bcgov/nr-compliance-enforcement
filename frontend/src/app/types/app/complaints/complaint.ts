@@ -13,7 +13,7 @@ export interface Complaint {
    locationSummary: string;
    locationDetail: string;
    status: string;
-   referredBy: string;
+   referredBy?: string;
    ownedBy: string;
    referredByAgencyOther: string;
    incidentDateTime: Date;

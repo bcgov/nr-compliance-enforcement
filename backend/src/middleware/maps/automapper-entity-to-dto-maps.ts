@@ -407,7 +407,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
 
   createMap<HwcrComplaint, WildlifeComplaintDto>(
     mapper,
-    "WildlifeComplaint",
+    "HwcrComplaint",
     "WildlifeComplaintDto",
     forMember(
       (destination) => destination.id,

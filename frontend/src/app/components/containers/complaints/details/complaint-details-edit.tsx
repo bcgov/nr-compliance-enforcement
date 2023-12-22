@@ -12,6 +12,7 @@ import {
   setGeocodedComplaintCoordinates,
   getAllegationComplaintByComplaintIdentifier,
   getWildlifeComplaintByComplaintIdentifier,
+  updateComplaintById,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -213,6 +214,8 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
+      await dispatch(updateComplaintById(update, complaintType))
+      
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         dispatch(getWildlifeComplaintByComplaintIdentifier(id));
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
@@ -309,7 +312,6 @@ export const ComplaintDetailsEdit: FC = () => {
       locationSummary,
       locationDetail,
       status,
-      referredBy: "",
       ownedBy,
       referredByAgencyOther,
       incidentDateTime: new Date(incidentDateTime ? incidentDateTime : new Date()),
