@@ -732,7 +732,7 @@ export class ComplaintService {
         const { delegates } = model;
 
         if (hasAssignees(delegates)) {
-          const assignee = delegates.find((item) => item.type === "ASSIGNEE");
+          const assignee = delegates.find((item) => item.type === "ASSIGNEE" && item.isActive);
           const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
             assignee,
             "DelegateDto",
@@ -740,6 +740,18 @@ export class ComplaintService {
           );
           converted.create_user_id = idir;
           converted.complaint_identifier = id;
+
+/*
+{
+  active_ind: true,
+  person_guid: {
+    person_guid: "16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8",
+  },
+  complaint_identifier: "23-029344",
+  person_complaint_xref_code: "ASSIGNEE",
+  create_user_id: "M2SEARS",
+}
+*/
 
           const assignmentResult = this._personService.assignOfficer(id, converted as any);
         }
