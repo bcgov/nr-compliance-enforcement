@@ -29,7 +29,7 @@ import { Person } from "../person/entities/person.entity";
 import { PersonService } from "../person/person.service";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
-import { BcGeoCoderService } from "src/external_api/bc_geo_coder/bc_geo_coder.service";
+import { BcGeoCoderService } from "../../external_api/bc_geo_coder/bc_geo_coder.service";
 import { HttpModule } from "@nestjs/axios";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { CodeTableModule } from "../code-table/code-table.module";

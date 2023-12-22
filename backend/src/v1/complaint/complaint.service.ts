@@ -53,10 +53,10 @@ import {
   mapComplaintDtoToComplaintTable,
   mapDelegateDtoToPersonComplaintXrefTable,
 } from "../../middleware/maps/dto-to-table-map";
-import { DelegateDto } from "src/types/models/people/delegate";
+import { DelegateDto } from "../../types/models/people/delegate";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
-import { PersonComplaintXrefTable } from "src/types/tables/person-complaint-xref.table";
+import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -740,18 +740,6 @@ export class ComplaintService {
           );
           converted.create_user_id = idir;
           converted.complaint_identifier = id;
-
-/*
-{
-  active_ind: true,
-  person_guid: {
-    person_guid: "16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8",
-  },
-  complaint_identifier: "23-029344",
-  person_complaint_xref_code: "ASSIGNEE",
-  create_user_id: "M2SEARS",
-}
-*/
 
           const assignmentResult = this._personService.assignOfficer(id, converted as any);
         }

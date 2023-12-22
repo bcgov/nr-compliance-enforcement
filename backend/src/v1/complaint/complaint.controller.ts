@@ -10,7 +10,7 @@ import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
-import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")

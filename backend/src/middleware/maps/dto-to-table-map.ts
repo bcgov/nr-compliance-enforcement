@@ -1,10 +1,10 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
-import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
-import { ComplaintDto } from "src/types/models/complaints/complaint";
-import { DelegateDto } from "src/types/models/people/delegate";
-import { AttractantXrefTable } from "src/types/tables/attractant-xref.table";
-import { PersonComplaintXrefTable } from "src/types/tables/person-complaint-xref.table";
-import { UpdateComplaintDto } from "src/v1/complaint/dto/update-complaint.dto";
+import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
+import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { DelegateDto } from "../../types/models/people/delegate";
+import { AttractantXrefTable } from "../../types/tables/attractant-xref.table";
+import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
+import { UpdateComplaintDto } from "../../v1/complaint/dto/update-complaint.dto";
 
 export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
   createMap<ComplaintDto, UpdateComplaintDto>(

@@ -1,16 +1,16 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 
 //-- entities
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
-import { HwcrComplaint } from "src/v1/hwcr_complaint/entities/hwcr_complaint.entity";
-import { AllegationComplaint } from "src/v1/allegation_complaint/entities/allegation_complaint.entity";
-import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
+import { Complaint } from "../../v1/complaint/entities/complaint.entity";
+import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
+import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
+import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
 //-- dto
-import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
-import { ComplaintDto } from "src/types/models/complaints/complaint";
-import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
-import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
+import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
+import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   createMap<ComplaintDto, Complaint>(

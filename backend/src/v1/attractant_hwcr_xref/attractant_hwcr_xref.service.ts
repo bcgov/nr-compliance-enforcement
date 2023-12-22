@@ -6,7 +6,7 @@ import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { REQUEST } from "@nestjs/core";
-import { getIdirFromRequest } from "src/common/get-idir-from-request";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 
 @Injectable()
 export class AttractantHwcrXrefService {
