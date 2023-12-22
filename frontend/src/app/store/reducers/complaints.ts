@@ -1,16 +1,7 @@
-import {
-  Action,
-  Dispatch,
-  PayloadAction,
-  ThunkAction,
-  createSlice,
-} from "@reduxjs/toolkit";
+import { Action, Dispatch, PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
-import {
-  ComplaintCollection,
-  ComplaintState,
-} from "../../types/state/complaint-state";
+import { ComplaintCollection, ComplaintState } from "../../types/state/complaint-state";
 import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { ComplaintHeader } from "../../types/complaints/details/complaint-header";
@@ -30,10 +21,12 @@ import { ToggleSuccess, ToggleError } from "../../common/toast";
 import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
 import { Coordinates } from "../../types/app/coordinate-type";
 
-import { AllegationComplaint as AllegationComplaintModel } from "../../types/app/complaints/allegation-complaint";
-import { WildlifeComplaint } from "../../types/app/complaints/wildlife-complaint";
 import { MapSearchResults } from "../../types/complaints/map-return";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
+
+import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
+import { Complaint as ComplaintDto } from "../../types/app/complaints/complaint";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -91,20 +84,12 @@ export const complaintSlice = createSlice({
       const { zoneAtGlance } = state;
 
       const update =
-        type === ComplaintType.HWCR_COMPLAINT
-          ? { ...zoneAtGlance, hwcr: rest }
-          : { ...zoneAtGlance, allegation: rest };
+        type === ComplaintType.HWCR_COMPLAINT ? { ...zoneAtGlance, hwcr: rest } : { ...zoneAtGlance, allegation: rest };
 
       return { ...state, zoneAtGlance: update };
     },
-    updateWildlifeComplaintByRow: (
-      state,
-      action: PayloadAction<HwcrComplaint>
-    ) => {},
-    updateAllegationComplaintByRow: (
-      state,
-      action: PayloadAction<AllegationComplaint>
-    ) => {},
+    updateWildlifeComplaintByRow: (state, action: PayloadAction<HwcrComplaint>) => {},
+    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaint>) => {},
     setMappedComplaints: (state, action) => {
       const { mappedItems } = state;
       const {
@@ -163,31 +148,25 @@ export const getComplaints =
     try {
       dispatch(setComplaint(null));
 
-      let parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/search/${complaintType}`,
-        {
-          sortBy: sortColumn,
-          orderBy: sortOrder,
-          region: regionCodeFilter?.value,
-          zone: zoneCodeFilter?.value,
-          community: areaCodeFilter?.value,
-          officerAssigned: officerFilter?.value,
-          natureOfComplaint: natureOfComplaintFilter?.value,
-          speciesCode: speciesCodeFilter?.value,
-          incidentReportedStart: startDateFilter,
-          incidentReportedEnd: endDateFilter,
-          violationCode: violationFilter?.value,
-          status: complaintStatusFilter?.value,
-          page: page,
-          pageSize: pageSize,
-          query: query,
-        }
-      );
+      let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/search/${complaintType}`, {
+        sortBy: sortColumn,
+        orderBy: sortOrder,
+        region: regionCodeFilter?.value,
+        zone: zoneCodeFilter?.value,
+        community: areaCodeFilter?.value,
+        officerAssigned: officerFilter?.value,
+        natureOfComplaint: natureOfComplaintFilter?.value,
+        speciesCode: speciesCodeFilter?.value,
+        incidentReportedStart: startDateFilter,
+        incidentReportedEnd: endDateFilter,
+        violationCode: violationFilter?.value,
+        status: complaintStatusFilter?.value,
+        page: page,
+        pageSize: pageSize,
+        query: query,
+      });
 
-      const { complaints, totalCount } = await get<
-        ComplaintSearchResults,
-        ComplaintQueryParams
-      >(dispatch, parameters);
+      const { complaints, totalCount } = await get<ComplaintSearchResults, ComplaintQueryParams>(dispatch, parameters);
 
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
@@ -220,31 +199,25 @@ export const getMappedComplaints =
     try {
       dispatch(setComplaint(null));
 
-      let parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/map/search/${complaintType}`,
-        {
-          sortBy: sortColumn,
-          orderBy: sortOrder,
-          region: regionCodeFilter?.value,
-          zone: zoneCodeFilter?.value,
-          community: areaCodeFilter?.value,
-          officerAssigned: officerFilter?.value,
-          natureOfComplaint: natureOfComplaintFilter?.value,
-          speciesCode: speciesCodeFilter?.value,
-          incidentReportedStart: startDateFilter,
-          incidentReportedEnd: endDateFilter,
-          violationCode: violationFilter?.value,
-          status: complaintStatusFilter?.value,
-          page: page,
-          pageSize: pageSize,
-          query: query,
-        }
-      );
+      let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/map/search/${complaintType}`, {
+        sortBy: sortColumn,
+        orderBy: sortOrder,
+        region: regionCodeFilter?.value,
+        zone: zoneCodeFilter?.value,
+        community: areaCodeFilter?.value,
+        officerAssigned: officerFilter?.value,
+        natureOfComplaint: natureOfComplaintFilter?.value,
+        speciesCode: speciesCodeFilter?.value,
+        incidentReportedStart: startDateFilter,
+        incidentReportedEnd: endDateFilter,
+        violationCode: violationFilter?.value,
+        status: complaintStatusFilter?.value,
+        page: page,
+        pageSize: pageSize,
+        query: query,
+      });
 
-      const response = await get<MapSearchResults, ComplaintQueryParams>(
-        dispatch,
-        parameters
-      );
+      const response = await get<MapSearchResults, ComplaintQueryParams>(dispatch, parameters);
 
       dispatch(setMappedComplaints(response));
     } catch (error) {
@@ -345,9 +318,7 @@ export const getComplaintLocationByAddress =
   (address: string): AppThunk =>
   async (dispatch) => {
     try {
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`
-      );
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/bc-geo-coder/address?addressString=${address}`);
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {}
@@ -364,24 +335,17 @@ export const getGeocodedComplaintCoordinates =
           `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`
         );
       } else {
-        parameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`
-        );
+        parameters = generateApiParameters(`${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`);
       }
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {}
   };
 
-const updateComplaintStatus = async (
-  dispatch: Dispatch,
-  id: string,
-  status: string
-) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/complaint/${id}`,
-    { complaint_status_code: `${status}` }
-  );
+const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: string) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/${id}`, {
+    complaint_status_code: `${status}`,
+  });
 
   await patch<Complaint>(dispatch, parameters);
 };
@@ -389,63 +353,137 @@ const updateComplaintStatus = async (
 export const createAllegationComplaint =
   (
     allegationComplaint: AllegationComplaint
-  ): ThunkAction<
-    Promise<string | undefined>,
-    RootState,
-    unknown,
-    Action<string>
-  > =>
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
     let newComplaintId: string = "";
     try {
       if (
-        allegationComplaint.complaint_identifier.location_geometry_point
-          .coordinates[Coordinates.Latitude] === 0 &&
-        allegationComplaint.complaint_identifier.location_geometry_point
-          .coordinates[Coordinates.Longitude] === 0
+        allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 &&
+        allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0
       ) {
         const geocodeParameters = generateApiParameters(
           `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${allegationComplaint.complaint_identifier.location_summary_text}`
         );
         const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-        if (
-          geocodeResponse?.features &&
-          geocodeResponse?.features.length === 1 &&
-          geocodeResponse?.minScore >= 90
-        ) {
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
           const coordinates = geocodeResponse?.features[0].geometry.coordinates;
-          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[
-            Coordinates.Latitude
-          ] = coordinates[Coordinates.Latitude];
-          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[
-            Coordinates.Longitude
-          ] = coordinates[Coordinates.Longitude];
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] =
+            coordinates[Coordinates.Latitude];
+          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] =
+            coordinates[Coordinates.Longitude];
         }
       }
 
-      const postParameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/`,
-        { allegationComplaint: JSON.stringify(allegationComplaint) }
-      );
-      await post<AllegationComplaint>(dispatch, postParameters).then(
-        async (res) => {
-          const newAllegationComplaint: AllegationComplaint = res;
+      const postParameters = generateApiParameters(`${config.API_BASE_URL}/v1/allegation-complaint/`, {
+        allegationComplaint: JSON.stringify(allegationComplaint),
+      });
+      await post<AllegationComplaint>(dispatch, postParameters).then(async (res) => {
+        const newAllegationComplaint: AllegationComplaint = res;
 
-          //-- get the created wildlife conflict
-          const parameters = generateApiParameters(
-            `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${res}`
-          );
-          const response = await get<AllegationComplaint>(dispatch, parameters);
+        //-- get the created wildlife conflict
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${res}`
+        );
+        const response = await get<AllegationComplaint>(dispatch, parameters);
 
-          dispatch(setComplaint({ ...response }));
-          newComplaintId =
-            newAllegationComplaint.complaint_identifier.complaint_identifier;
-        }
-      );
+        dispatch(setComplaint({ ...response }));
+        newComplaintId = newAllegationComplaint.complaint_identifier.complaint_identifier;
+      });
       ToggleSuccess("Complaint has been saved");
       return newComplaintId;
     } catch (error) {
       ToggleError("Unable to create complaint");
+      //-- add error handling
+    }
+  };
+
+export const createWildlifeComplaint =
+  (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch) => {
+    let newComplaintId: string = "";
+    try {
+      if (
+        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 &&
+        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0
+      ) {
+        const geocodeParameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${hwcrComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`
+        );
+        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] =
+            coordinates[Coordinates.Latitude];
+          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] =
+            coordinates[Coordinates.Longitude];
+        }
+      }
+
+      const postParameters = generateApiParameters(`${config.API_BASE_URL}/v1/hwcr-complaint/`, {
+        hwcrComplaint: JSON.stringify(hwcrComplaint),
+      });
+      await post<HwcrComplaint>(dispatch, postParameters).then(async (res) => {
+        const newHwcrComplaint: HwcrComplaint = res;
+
+        //-- get the created wildlife conflict
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${res}`
+        );
+        const response = await get<HwcrComplaint>(dispatch, parameters);
+
+        dispatch(setComplaint({ ...response }));
+        newComplaintId = newHwcrComplaint.complaint_identifier.complaint_identifier;
+      });
+      ToggleSuccess("Complaint has been saved");
+      return newComplaintId;
+    } catch (error) {
+      ToggleError("Unable to create complaint");
+      //-- add error handling
+    }
+  };
+
+// export const updateWildlifeComplaint =
+//   (hwcrComplaint: HwcrComplaint): AppThunk =>
+//   async (dispatch) => {
+//     try {
+//       const updateParams = generateApiParameters(
+//         `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
+//         { hwcrComplaint: JSON.stringify(hwcrComplaint) }
+//       );
+
+//       await patch<HwcrComplaint>(dispatch, updateParams);
+
+//       //-- get the updated wildlife conflict
+//       const parameters = generateApiParameters(
+//         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${hwcrComplaint.complaint_identifier.complaint_identifier}`
+//       );
+//       const response = await get<HwcrComplaint>(dispatch, parameters);
+
+//       dispatch(setComplaint({ ...response }));
+//       ToggleSuccess("Updates have been saved");
+//     } catch (error) {
+//       ToggleError("Unable to update complaint");
+//     }
+//   };
+
+export const updateWildlifeComplaintStatus =
+  (complaint_identifier: string, newStatus: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      //-- update the status of the complaint
+      await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
+
+      //-- get the wildlife conflict and update its status
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+      );
+      const response = await get<HwcrComplaint>(dispatch, parameters);
+
+      dispatch(updateWildlifeComplaintByRow(response));
+      const result = response;
+
+      dispatch(setComplaint({ ...result }));
+    } catch (error) {
       //-- add error handling
     }
   };
@@ -474,116 +512,6 @@ export const updateAllegationComplaint =
     }
   };
 
-export const createWildlifeComplaint =
-  (
-    hwcrComplaint: HwcrComplaint
-  ): ThunkAction<
-    Promise<string | undefined>,
-    RootState,
-    unknown,
-    Action<string>
-  > =>
-  async (dispatch) => {
-    let newComplaintId: string = "";
-    try {
-      if (
-        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[
-          Coordinates.Latitude
-        ] === 0 &&
-        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[
-          Coordinates.Longitude
-        ] === 0
-      ) {
-        const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${hwcrComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`
-        );
-        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-        if (
-          geocodeResponse?.features &&
-          geocodeResponse?.features.length === 1 &&
-          geocodeResponse?.minScore >= 90
-        ) {
-          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[
-            Coordinates.Latitude
-          ] = coordinates[Coordinates.Latitude];
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[
-            Coordinates.Longitude
-          ] = coordinates[Coordinates.Longitude];
-        }
-      }
-
-      const postParameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/`,
-        { hwcrComplaint: JSON.stringify(hwcrComplaint) }
-      );
-      await post<HwcrComplaint>(dispatch, postParameters).then(async (res) => {
-        const newHwcrComplaint: HwcrComplaint = res;
-
-        //-- get the created wildlife conflict
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${res}`
-        );
-        const response = await get<HwcrComplaint>(dispatch, parameters);
-
-        dispatch(setComplaint({ ...response }));
-        newComplaintId =
-          newHwcrComplaint.complaint_identifier.complaint_identifier;
-      });
-      ToggleSuccess("Complaint has been saved");
-      return newComplaintId;
-    } catch (error) {
-      ToggleError("Unable to create complaint");
-      //-- add error handling
-    }
-  };
-
-export const updateWildlifeComplaint =
-  (hwcrComplaint: HwcrComplaint): AppThunk =>
-  async (dispatch) => {
-    try {
-      const updateParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
-        { hwcrComplaint: JSON.stringify(hwcrComplaint) }
-      );
-
-      await patch<HwcrComplaint>(dispatch, updateParams);
-
-      //-- get the updated wildlife conflict
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${hwcrComplaint.complaint_identifier.complaint_identifier}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-      ToggleSuccess("Updates have been saved");
-    } catch (error) {
-      ToggleError("Unable to update complaint");
-    }
-  };
-
-export const updateWildlifeComplaintStatus =
-  (complaint_identifier: string, newStatus: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      //-- update the status of the complaint
-      await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
-
-      //-- get the wildlife conflict and update its status
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-
-      dispatch(updateWildlifeComplaintByRow(response));
-      const result = response;
-
-      dispatch(setComplaint({ ...result }));
-    } catch (error) {
-      //-- add error handling
-    }
-  };
-
 export const updateAllegationComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
@@ -606,18 +534,40 @@ export const updateAllegationComplaintStatus =
     }
   };
 
+export const updateComplaintById =
+  (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto, complaintType: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const { id } = complaint;
+
+      const updateParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/update-by-id/${complaintType}/${id}`,
+        complaint
+      );
+
+      await patch<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, updateParams);
+
+      // //-- get the updated wildlife conflict
+      // const parameters = generateApiParameters(
+      //   `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
+      // );
+      // const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      // dispatch(setComplaint({ ...response }));
+      ToggleSuccess("Updates have been saved");
+    } catch (error) {
+      ToggleError("Unable to update complaint");
+    }
+  };
+
 //-- selectors
-export const selectComplaint = (
-  state: RootState
-): HwcrComplaint | AllegationComplaint | undefined | null => {
+export const selectComplaint = (state: RootState): HwcrComplaint | AllegationComplaint | undefined | null => {
   const { complaints: root } = state;
   const { complaint } = root;
   return complaint;
 };
 
-export const selectGeocodedComplaintCoordinates = (
-  state: RootState
-): Feature | null | undefined => {
+export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },
   } = state;
@@ -641,17 +591,13 @@ export const selectComplaintHeader =
       const owned_by_agency_code = ceComplaint.owned_by_agency_code.agency_code ?? "";
 
       if (ceComplaint.person_complaint_xref.length > 0) {
-        const firstName =
-          ceComplaint.person_complaint_xref[0].person_guid.first_name;
-        const lastName =
-          ceComplaint.person_complaint_xref[0].person_guid.last_name;
+        const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
+        const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
         officerAssigned = `${firstName} ${lastName}`;
-        personGuid =
-          ceComplaint.person_complaint_xref[0].person_guid.person_guid;
+        personGuid = ceComplaint.person_complaint_xref[0].person_guid.person_guid;
       }
 
-      const { complaint_status_code: statusCode, long_description: status } =
-        ceStatusCode;
+      const { complaint_status_code: statusCode, long_description: status } = ceStatusCode;
 
       result = {
         ...result,
@@ -669,9 +615,7 @@ export const selectComplaintHeader =
       return result;
     };
 
-    const selectWildlifeComplaintHeader = (
-      state: RootState
-    ): ComplaintHeader => {
+    const selectWildlifeComplaintHeader = (state: RootState): ComplaintHeader => {
       const {
         complaints: { complaint },
       } = state;
@@ -704,16 +648,13 @@ export const selectComplaintHeader =
           result = selectSharedHeader(ceComplaint, result);
 
           if (ceComplaintNatureCode) {
-            const {
-              long_description: natureOfComplaint,
-              hwcr_complaint_nature_code: natureOfComplaintCode,
-            } = ceComplaintNatureCode;
+            const { long_description: natureOfComplaint, hwcr_complaint_nature_code: natureOfComplaintCode } =
+              ceComplaintNatureCode;
             result = { ...result, natureOfComplaint, natureOfComplaintCode };
           }
 
           if (ceSpeciesCode) {
-            const { short_description: species, species_code: speciesCode } =
-              ceSpeciesCode;
+            const { short_description: species, species_code: speciesCode } = ceSpeciesCode;
             result = { ...result, species, speciesCode };
           }
         }
@@ -721,9 +662,7 @@ export const selectComplaintHeader =
       return result;
     };
 
-    const selectAllegationComplaintHeader = (
-      state: RootState
-    ): ComplaintHeader => {
+    const selectAllegationComplaintHeader = (state: RootState): ComplaintHeader => {
       const {
         complaints: { complaint },
       } = state;
@@ -742,20 +681,14 @@ export const selectComplaintHeader =
       };
 
       if (complaint) {
-        const {
-          complaint_identifier: ceComplaint,
-          violation_code: ceViolation,
-        } = complaint as AllegationComplaint;
+        const { complaint_identifier: ceComplaint, violation_code: ceViolation } = complaint as AllegationComplaint;
 
         if (ceComplaint) {
           result = selectSharedHeader(ceComplaint, result);
         }
 
         if (ceViolation) {
-          const {
-            long_description: violationType,
-            violation_code: violationTypeCode,
-          } = ceViolation;
+          const { long_description: violationType, violation_code: violationTypeCode } = ceViolation;
           result = { ...result, violationType, violationTypeCode };
         }
       }
@@ -793,8 +726,7 @@ export const selectComplaintDetails =
         const region_name = ceComplaint.cos_geo_org_unit?.region_name ?? "";
         const zone_name = ceComplaint.cos_geo_org_unit?.zone_name ?? "";
         const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-        const office_location_name =
-          ceComplaint.cos_geo_org_unit?.office_location_name ?? "";
+        const office_location_name = ceComplaint.cos_geo_org_unit?.office_location_name ?? "";
 
         results = {
           ...results,
@@ -815,10 +747,7 @@ export const selectComplaintDetails =
     if (complaint) {
       switch (complaintType) {
         case COMPLAINT_TYPES.ERS: {
-          const {
-            in_progress_ind: violationInProgress,
-            observed_ind: violationObserved,
-          }: any = complaint;
+          const { in_progress_ind: violationInProgress, observed_ind: violationObserved }: any = complaint;
 
           results = { ...results, violationInProgress, violationObserved };
           break;
@@ -830,10 +759,7 @@ export const selectComplaintDetails =
             const attractants = attractant_hwcr_xref.map(
               ({
                 attractant_hwcr_xref_guid: key,
-                attractant_code: {
-                  attractant_code: code,
-                  short_description: description,
-                },
+                attractant_code: { attractant_code: code, short_description: description },
               }: any): ComplaintDetailsAttractant => {
                 return { key, code, description };
               }
@@ -848,9 +774,7 @@ export const selectComplaintDetails =
     return results;
   };
 
-export const selectComplaintCallerInformation = (
-  state: RootState
-): ComplaintCallerInformation => {
+export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
   const {
     complaints: { complaint },
   } = state;
@@ -885,9 +809,7 @@ export const selectComplaintCallerInformation = (
   return results;
 };
 
-export const selectComplaintSuspectWitnessDetails = (
-  state: RootState
-): ComplaintSuspectWitness => {
+export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
   const {
     complaints: { complaint },
   } = state;
@@ -903,9 +825,7 @@ export const selectComplaintSuspectWitnessDetails = (
   return results;
 };
 
-export const selectWildlifeZagOpenComplaints = (
-  state: RootState
-): ZoneAtAGlanceStats => {
+export const selectWildlifeZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => {
   const {
     complaints: { zoneAtGlance },
   } = state;
@@ -913,9 +833,7 @@ export const selectWildlifeZagOpenComplaints = (
   return zoneAtGlance.hwcr;
 };
 
-export const selectAllegationZagOpenComplaints = (
-  state: RootState
-): ZoneAtAGlanceStats => {
+export const selectAllegationZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => {
   const {
     complaints: { zoneAtGlance },
   } = state;
@@ -923,9 +841,7 @@ export const selectAllegationZagOpenComplaints = (
   return zoneAtGlance.allegation;
 };
 
-export const selectWildlifeComplaints = (
-  state: RootState
-): Array<WildlifeComplaint> => {
+export const selectWildlifeComplaints = (state: RootState): Array<WildlifeComplaintDto> => {
   const {
     complaints: { complaintItems },
   } = state;
@@ -955,9 +871,7 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (
-    state: RootState
-  ): Array<WildlifeComplaint> | Array<AllegationComplaintModel> => {
+  (state: RootState): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
@@ -988,9 +902,7 @@ export const selectTotalUnmappedComplaints = (state: RootState): number => {
   return unmapped;
 };
 
-export const selectMappedComplaints = (
-  state: RootState
-): Array<ComplaintMapItem> => {
+export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem> => {
   const {
     complaints: {
       mappedItems: { items },

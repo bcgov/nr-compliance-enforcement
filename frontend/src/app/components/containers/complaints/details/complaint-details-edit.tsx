@@ -10,10 +10,8 @@ import {
   selectComplaint,
   setComplaint,
   setGeocodedComplaintCoordinates,
-  updateWildlifeComplaint,
-  getWildlifeComplaintByComplaintIdentifierSetUpdate,
-  updateAllegationComplaint,
-  getAllegationComplaintByComplaintIdentifierSetUpdate,
+  getAllegationComplaintByComplaintIdentifier,
+  getWildlifeComplaintByComplaintIdentifier,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -37,7 +35,6 @@ import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import { cloneDeep } from "lodash";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
 import { ValidationInput } from "../../../../common/validation-input";
@@ -46,7 +43,7 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import { CompSelect } from "../../../common/comp-select";
 import { CompInput } from "../../../common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal, userId } from "../../../../store/reducers/app";
+import { openModal } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CancelConfirm } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -119,8 +116,6 @@ export const ComplaintDetailsEdit: FC = () => {
     ownedByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
 
-  const userid = useAppSelector(userId);
-
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -142,24 +137,21 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- state
   const [readOnly, setReadOnly] = useState(true);
-  const [updateComplaint, setUpdateComplaint] = useState<HwcrComplaint | AllegationComplaint | null | undefined>(
-    complaint
-  );
 
   //-- complaint update object
-  const [update, applyUpdate] = useState<ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto>();
+  const [update, applyComplaintUpdate] = useState<ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto>();
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
-  const [nocErrorMsg, setNOCErrorMsg] = useState<string>("");
-  const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
-  const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
-  const [complaintDescErrorMsg, setComplaintDescErrorMsg] = useState<string>("");
+  const [nocErrorMsg, setNatureOfComplaintError] = useState<string>("");
+  const [speciesErrorMsg, setSpeciesError] = useState<string>("");
+  const [statusErrorMsg, setStatusError] = useState<string>("");
+  const [complaintDescErrorMsg, setComplaintDescriptionError] = useState<string>("");
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
-  const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
+  const [communityErrorMsg, setCommunityError] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
   const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
   const [emailMsg, setEmailMsg] = useState<string>("");
@@ -184,10 +176,10 @@ export const ComplaintDetailsEdit: FC = () => {
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
-            dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
+            dispatch(getAllegationComplaintByComplaintIdentifier(id));
             break;
           case COMPLAINT_TYPES.HWCR:
-            dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(id, setUpdateComplaint));
+            dispatch(getWildlifeComplaintByComplaintIdentifier(id));
             break;
         }
       }
@@ -217,30 +209,14 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const saveButtonClick = async () => {
-    if (!updateComplaint) {
+    if (!update) {
       return;
     }
     if (hasValidationErrors()) {
-      //-- TODO
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint = updateComplaint as HwcrComplaint;
-
-        await dispatch(updateWildlifeComplaint(hwcrComplaint));
-        dispatch(
-          getWildlifeComplaintByComplaintIdentifierSetUpdate(
-            hwcrComplaint.complaint_identifier.complaint_identifier,
-            setUpdateComplaint
-          )
-        );
+        dispatch(getWildlifeComplaintByComplaintIdentifier(id));
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint = updateComplaint as AllegationComplaint;
-        await dispatch(updateAllegationComplaint(allegationComplaint));
-        dispatch(
-          getAllegationComplaintByComplaintIdentifierSetUpdate(
-            allegationComplaint.complaint_identifier.complaint_identifier,
-            setUpdateComplaint
-          )
-        );
+        dispatch(getAllegationComplaintByComplaintIdentifier(id));
       }
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
@@ -262,13 +238,13 @@ export const ComplaintDetailsEdit: FC = () => {
   const resetErrorMessages = () => {
     setReadOnly(true);
     setErrorNotificationClass("comp-complaint-error display-none");
-    setNOCErrorMsg("");
-    setSpeciesErrorMsg("");
-    setStatusErrorMsg("");
-    setComplaintDescErrorMsg("");
+    setNatureOfComplaintError("");
+    setSpeciesError("");
+    setStatusError("");
+    setComplaintDescriptionError("");
 
     setAttractantsErrorMsg("");
-    setCommunityErrorMsg("");
+    setCommunityError("");
     setGeoPointXMsg("");
     setGeoPointYMsg("");
     setEmailMsg("");
@@ -350,7 +326,6 @@ export const ComplaintDetailsEdit: FC = () => {
     }
 
     if (from(person_complaint_xref).any()) {
-      debugger;
       const delegates = person_complaint_xref.filter((item) => item.personComplaintXrefGuid !== undefined);
       const result = delegates.map((item) => {
         const {
@@ -423,7 +398,7 @@ export const ComplaintDetailsEdit: FC = () => {
       }
     }
 
-    applyUpdate(model)
+    applyComplaintUpdate(model);
   };
 
   const onHandleAddAttachments = (selectedFiles: File[]) => {
@@ -476,13 +451,42 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedSpecies = speciesCodes.find((option) => option.value === speciesCode);
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find((option) => option.value === natureOfComplaintCode);
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-  const selectedAssignedOfficer = assignableOfficers?.find(
-    (option) =>
-      option.value ===
-      (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid
-        ? updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid
-        : personGuid)
-  );
+
+  const hasAssignedOfficer = (): boolean => {
+    const { delegates } = update as ComplaintDto;
+
+    return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
+  };
+
+  const getSelectedOfficer = (officers: Option[], personGuid: UUID, update: ComplaintDto | undefined): any => {
+    if (update && personGuid) {
+      const { delegates } = update;
+
+      const assignees = delegates.filter((item) => item.type === "ASSIGNEE" && item.isActive);
+      if (!from(assignees).any()) {
+        return undefined;
+      }
+
+      const selected = officers.find(({ value }) => {
+        const first = from(assignees).firstOrDefault();
+        if (first) {
+          const {
+            person: { id },
+          } = first;
+          return value === id;
+        }
+
+        return false;
+      });
+
+      return selected;
+    }
+
+    return undefined;
+  };
+
+  const selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, update);
+
   const selectedAgencyCode = referredByAgencyCodes.find(
     (option) =>
       option.value === (referredByAgencyCode?.agency_code === undefined ? "" : referredByAgencyCode.agency_code)
@@ -496,7 +500,6 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
 
-  //--
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";
@@ -511,27 +514,234 @@ export const ComplaintDetailsEdit: FC = () => {
     await updateValidation(lat, lng);
   };
 
-  async function updateCoordinates(lat: number, lng: number) {
+  const updateCoordinates = async (lat: number, lng: number) => {
     setLatitude(lat.toString());
     setLongitude(lng.toString());
-  }
+  };
 
-  async function updateValidation(lat: number, lng: number) {
+  const updateValidation = async (lat: number, lng: number) => {
     handleGeoPointChange(lat.toString(), lng.toString());
-  }
+  };
 
-  function handleIncidentDateTimeChange(date: Date) {
-    setSelectedIncidentDateTime(date);
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
-      setUpdateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_utc_datetime = date;
-      setUpdateComplaint(allegationComplaint);
+  //-- wildlife complaint updates
+  const handleNatureOfComplaintChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (!value) {
+        setNatureOfComplaintError("Required");
+      } else {
+        setNatureOfComplaintError("");
+
+        let updatedComplaint = { ...update, natureOfComplaint: value } as WildlifeComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
     }
-  }
+  };
+
+  const handleSpeciesChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (!value) {
+        setSpeciesError("Required");
+      } else {
+        setSpeciesError("");
+
+        let updatedComplaint = { ...update, species: value } as WildlifeComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
+    }
+  };
+
+  const handleStatusChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (!value) {
+        setStatusError("Required");
+      } else {
+        setStatusError("");
+
+        let updatedComplaint = { ...update, status: value } as WildlifeComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
+    }
+  };
+
+  //-- allegation complaint updates
+  const handleViolationTypeChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (value) {
+        let updatedComplaint = { ...update, violation: value } as AllegationComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
+    }
+  };
+
+  const handleViolationInProgessChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      const isInProgress = value?.toUpperCase() === "YES";
+      let updatedComplaint = { ...update, isInProgress } as AllegationComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const handleViolationObservedChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      const wasObserved = value?.toUpperCase() === "YES";
+      let updatedComplaint = { ...update, wasObserved } as AllegationComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const handleSuspectDetailsChange = (value: string) => {
+    let updatedComplaint = { ...update, violationDetails: value } as AllegationComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handleAssignedOfficerChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      let { delegates } = update as ComplaintDto;
+      let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
+      let updatedDelegates: Array<Delegate> = [];
+
+      //-- if the selected officer is not unassigned add the officer to the delegates collection
+      if (value !== "Unassigned") {
+        //-- get the new officer from state
+        const officer = officerList?.find(({ person_guid: { person_guid: id } }) => {
+          return id === value;
+        });
+
+        const { person_guid: person } = officer as any;
+        const { person_guid: id, first_name, last_name, middle_name_1, middle_name_2 } = person;
+
+        //-- if there's already an assignee mark the officer as inactive
+        if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
+          let delegate = delegates.find((item) => item.type === "ASSIGNEE");
+          let updatedDelegate = { ...delegate, isActive: false } as Delegate;
+
+          updatedDelegates = [updatedDelegate];
+        }
+
+        //-- create a new assigned officer delegate
+        let delegate: Delegate = {
+          isActive: true,
+          type: "ASSIGNEE",
+          person: {
+            id: id as UUID,
+            firstName: first_name,
+            middleName1: middle_name_1,
+            middleName2: middle_name_2,
+            lastName: last_name,
+          },
+        };
+
+        updatedDelegates = [...updatedDelegates, ...existing, delegate];
+
+        let updatedComplaint = { ...update, delegates: updatedDelegates } as ComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      } else {
+        //-- remove the assigned officer
+        if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
+          let delegate = delegates.find((item) => item.type === "ASSIGNEE");
+          let updatedDelegate = { ...delegate, isActive: false } as Delegate;
+
+          updatedDelegates = [updatedDelegate];
+
+          let updatedComplaint = { ...update, delegates: updatedDelegates } as ComplaintDto;
+          applyComplaintUpdate(updatedComplaint);
+        }
+      }
+    }
+  };
+
+  const handleComplaintDescChange = (value: string) => {
+    if (value === "") {
+      setComplaintDescriptionError("Required");
+    } else {
+      setComplaintDescriptionError("");
+
+      const updatedComplaint = { ...update, details: value } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const handleIncidentDateTimeChange = (date: Date) => {
+    setSelectedIncidentDateTime(date);
+
+    const updatedComplaint = { ...update, incidentDateTime: date } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handleAttractantsChange = async (selectedOptions: Option[] | null) => {
+    if (!selectedOptions) {
+      return;
+    }
+
+    const { attractants } = update as WildlifeComplaintDto;
+    let updatedAttractants: Array<AttractantXref> = [];
+
+    console.log(selectedOptions);
+
+    selectedOptions.forEach((selectedOption) => {
+      let match = false;
+
+      attractants.forEach((item) => {
+        if (selectedOption.value === item.attractant) {
+          match = true;
+          updatedAttractants.push(item);
+        }
+      });
+
+      if (!match && selectedOption.value) {
+        const { value } = selectedOption;
+
+        const record: AttractantXref = {
+          isActive: true,
+          attractant: value,
+        };
+        updatedAttractants.push(record);
+      }
+    });
+
+    attractants.forEach((current) => {
+      let match = false;
+
+      updatedAttractants.forEach((item) => {
+        if (current.attractant === item.attractant) {
+          match = true;
+        }
+      });
+
+      if (!match) {
+        const { xrefId, attractant } = current;
+        const record: AttractantXref = {
+          xrefId,
+          attractant,
+          isActive: false,
+        };
+        updatedAttractants.push(record);
+      }
+    });
+
+    const model = { ...update, attractants: updatedAttractants } as WildlifeComplaintDto;
+    applyComplaintUpdate(model);
+  };
+
+  const handleLocationChange = (value: string) => {
+    const updatedComplaint = { ...update, locationSummary: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handleLocationDescriptionChange = (value: string) => {
+    const updatedComplaint = { ...update, locationDetail: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
@@ -543,357 +753,10 @@ export const ComplaintDetailsEdit: FC = () => {
     }
   };
 
-  const handleNOCChange = (selected: Option | null) => {
-    if (selected) {
-      const { label, value } = selected;
-      if (!value) {
-        setNOCErrorMsg("Required");
-      } else {
-        setNOCErrorMsg("");
-
-        let update = { ...updateComplaint } as HwcrComplaint;
-
-        const { hwcr_complaint_nature_code: source } = update;
-        const updatedEntity = {
-          ...source,
-          short_description: value,
-          long_description: label as string,
-          hwcr_complaint_nature_code: value,
-        };
-
-        update.hwcr_complaint_nature_code = updatedEntity;
-        setUpdateComplaint(update);
-      }
-    }
-  };
-
-  const handleSpeciesChange = (selected: Option | null) => {
-    if (selected) {
-      const { label, value } = selected;
-      if (!value) {
-        setSpeciesErrorMsg("Required");
-      } else {
-        setSpeciesErrorMsg("");
-
-        let update = { ...updateComplaint } as HwcrComplaint;
-
-        const { species_code: source } = update;
-        const updatedEntity = {
-          ...source,
-          // short_description: value,
-          // long_description: label as string,
-          species_code: value,
-        };
-
-        update.species_code = updatedEntity;
-        setUpdateComplaint(update);
-      }
-    }
-  };
-
-  const handleViolationTypeChange = (selected: Option | null) => {
-    if (selected) {
-      const { label, value } = selected;
-      if (value) {
-        let update = { ...updateComplaint } as AllegationComplaint;
-
-        const { violation_code: source } = update;
-        const updatedEntity = {
-          ...source,
-          short_description: value,
-          long_description: label as string,
-          violation_code: value,
-        };
-
-        update.violation_code = updatedEntity;
-        setUpdateComplaint(update);
-      }
-    }
-  };
-
-  const handleStatusChange = (selected: Option | null) => {
-    if (selected) {
-      const { label, value } = selected;
-      if (!value) {
-        setStatusErrorMsg("Required");
-      } else {
-        setStatusErrorMsg("");
-
-        let update = { ...updateComplaint } as HwcrComplaint | AllegationComplaint;
-
-        const { complaint_identifier: identifier } = update;
-        const { complaint_status_code: source } = identifier;
-
-        const updatedEntity = {
-          ...source,
-          short_description: value,
-          long_description: label as string,
-          complaint_status_code: value,
-        };
-
-        const updatedParent = {
-          ...identifier,
-          complaint_status_code: updatedEntity,
-        };
-        update.complaint_identifier = updatedParent;
-
-        setUpdateComplaint(update);
-      }
-    }
-  };
-
-  const handleAssignedOfficerChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-
-      let update = { ...updateComplaint } as HwcrComplaint | AllegationComplaint;
-
-      const { complaint_identifier: identifier } = update;
-      let { person_complaint_xref: source, complaint_identifier: id } = identifier;
-      if (value !== "Unassigned") {
-        const selectedOfficer = officerList?.find(({ person_guid: { person_guid: id } }) => {
-          return id === value;
-        });
-
-        const { person_guid: officer } = selectedOfficer as any;
-
-        if (from(source).any() && from(source).elementAt(0)) {
-          const assigned = {
-            ...source[0],
-            person_guid: officer,
-            active_ind: true,
-          };
-          source = [assigned];
-        } else {
-          const assigned = {
-            person_guid: officer,
-            create_user_id: userid,
-            update_user_id: userid,
-            complaint_identifier: id,
-            active_ind: true,
-            person_complaint_xref_code: "ASSIGNEE",
-          };
-          source = [assigned];
-        }
-
-        const updatedParent = {
-          ...identifier,
-          person_complaint_xref: source,
-        };
-
-        update.complaint_identifier = updatedParent;
-      } else if (from(source).any() && from(source).elementAt(0)) {
-        const assigned = { ...source[0], active_ind: false };
-        source = [assigned];
-
-        const updatedParent = {
-          ...identifier,
-          person_complaint_xref: source,
-        };
-
-        update.complaint_identifier = updatedParent;
-      }
-      setUpdateComplaint(update);
-    }
-  };
-
-  function handleComplaintDescChange(value: string) {
-    if (value === "") {
-      setComplaintDescErrorMsg("Required");
-    } else {
-      setComplaintDescErrorMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.detail_text = value;
-        setUpdateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.detail_text = value;
-        setUpdateComplaint(allegationComplaint);
-      }
-    }
-  }
-
-  function handleLocationDescriptionChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.location_detailed_text = value;
-      setUpdateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.location_detailed_text = value;
-      setUpdateComplaint(allegationComplaint);
-    }
-  }
-
-  function handleViolationInProgessChange(selectedOption: Option | null) {
-    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-    allegationComplaint.in_progress_ind = selectedOption?.value === "Yes";
-    setUpdateComplaint(allegationComplaint);
-  }
-
-  function handleViolationObservedChange(selectedOption: Option | null) {
-    let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-    allegationComplaint.observed_ind = selectedOption?.value === "Yes";
-    setUpdateComplaint(allegationComplaint);
-  }
-
-  function handleLocationChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.location_summary_text = value ?? "";
-      setUpdateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.location_summary_text = value ?? "";
-      setUpdateComplaint(allegationComplaint);
-    }
-  }
-
-  async function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if (!selectedOptions) {
-      return;
-    }
-    let update = { ...updateComplaint } as HwcrComplaint;
-    const { attractant_hwcr_xref: currentAttactants } = update;
-
-    let newAttractants = new Array<any>();
-
-    selectedOptions.forEach((selectedOption) => {
-      let match = false;
-
-      currentAttactants.forEach((item) => {
-        if (selectedOption.value === item.attractant_code?.attractant_code) {
-          match = true;
-          const attractant = {
-            attractant_hwcr_xref_guid: item.attractant_hwcr_xref_guid,
-            attractant_code: item.attractant_code,
-            hwcr_complaint_guid: update.hwcr_complaint_guid,
-            create_user_id: userid,
-            active_ind: true,
-          };
-          newAttractants.push(attractant);
-        }
-      });
-
-      if (!match) {
-        const { label, value } = selectedOption;
-
-        const attractant = {
-          attractant_hwcr_xref_guid: undefined,
-          attractant_code: {
-            active_ind: true,
-            attractant_code: value as string,
-            short_description: label as string,
-            long_description: label as string,
-          },
-          hwcr_complaint_guid: update.hwcr_complaint_guid,
-          create_user_id: userid,
-          active_ind: true,
-        };
-        newAttractants.push(attractant);
-      }
-    });
-
-    currentAttactants.forEach((current) => {
-      let match = false;
-
-      newAttractants.forEach((item) => {
-        if (current.attractant_code === item.attractant_code) {
-          match = true;
-        }
-      });
-
-      if (!match) {
-        const attractant = {
-          attractant_hwcr_xref_guid: current.attractant_hwcr_xref_guid,
-          attractant_code: current.attractant_code,
-          hwcr_complaint_guid: update.hwcr_complaint_guid,
-          create_user_id: userid,
-          active_ind: false,
-        };
-        newAttractants.push(attractant);
-      }
-    });
-
-    update.attractant_hwcr_xref = newAttractants;
-    setUpdateComplaint(update);
-  }
-
-  function handleCommunityChange(selectedOption: Option | null) {
-    if (!selectedOption) {
-      return;
-    }
-    if (selectedOption.value === "") {
-      setCommunityErrorMsg("Required");
-    } else {
-      setCommunityErrorMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        if (selectedOption.value !== undefined) {
-          const geoOrgCode = {
-            geo_organization_unit_code: selectedOption.value,
-            short_description: "",
-            long_description: "",
-            display_order: "",
-            active_ind: "",
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-
-          hwcrComplaint.complaint_identifier.cos_geo_org_unit = {
-            zone_code: "",
-            office_location_name: "",
-            area_code: selectedOption.value,
-            area_name: "",
-            region_code: "",
-          };
-
-          hwcrComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
-        }
-        setUpdateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        if (selectedOption.value !== undefined) {
-          const geoOrgCode = {
-            geo_organization_unit_code: selectedOption.value,
-            short_description: "",
-            long_description: "",
-            display_order: "",
-            active_ind: "",
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-
-          allegationComplaint.complaint_identifier.cos_geo_org_unit = {
-            zone_code: "",
-            office_location_name: "",
-            area_code: selectedOption.value,
-            area_name: "",
-            region_code: "",
-          };
-
-          allegationComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
-        }
-        setUpdateComplaint(allegationComplaint);
-      }
-    }
-  }
-
   const handleGeoPointChange = (latitude: string, longitude: string) => {
     //-- clear errors
     setGeoPointXMsg("");
     setGeoPointYMsg("");
-
-    //-- clone the complaint
-    const complaint =
-      complaintType === COMPLAINT_TYPES.HWCR
-        ? (cloneDeep(updateComplaint) as HwcrComplaint)
-        : (cloneDeep(updateComplaint) as AllegationComplaint);
 
     //-- verify latitude and longitude
     if (latitude && !Number.isNaN(latitude)) {
@@ -910,97 +773,89 @@ export const ComplaintDetailsEdit: FC = () => {
       }
     }
 
-    //-- update coordinates
     if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = parseFloat(longitude);
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = parseFloat(latitude);
-      setUpdateComplaint(complaint);
+      const location = { type: "point", coordinates: [parseFloat(longitude), parseFloat(latitude)] };
+
+      const updatedComplaint = { ...update, location } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     } else if (latitude === "" && longitude === "") {
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-      setUpdateComplaint(complaint);
+      const location = { type: "point", coordinates: [0, 0] };
+
+      const updatedComplaint = { ...update, location } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     }
   };
 
-  function handleNameChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.caller_name = value;
-      setUpdateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.caller_name = value;
-      setUpdateComplaint(allegationComplaint);
+  const handleCommunityChange = (selectedOption: Option | null) => {
+    debugger;
+    if (!selectedOption) {
+      return;
     }
-  }
 
-  function handleAddressChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.caller_address = value;
-      setUpdateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.caller_address = value;
-      setUpdateComplaint(allegationComplaint);
+    if (selectedOption.value === "") {
+      setCommunityError("Required");
+    } else {
+      setCommunityError("");
+
+      const { value } = selectedOption;
+      if (value) {
+        const { organization } = update as ComplaintDto;
+        const updatedOrganization = { ...organization, area: value };
+
+        const updatedComplaint = { ...update, organization: updatedOrganization } as ComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
     }
-  }
+  };
 
-  function handlePrimaryPhoneChange(value: string) {
+  const handleNameChange = (value: string) => {
+    const updatedComplaint = { ...update, name: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handlePrimaryPhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setPrimaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setPrimaryPhoneMsg("Invalid Format");
     } else {
       setPrimaryPhoneMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_phone_1 = value ?? "";
-        setUpdateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_phone_1 = value ?? "";
-        setUpdateComplaint(allegationComplaint);
-      }
+
+      const updatedComplaint = { ...update, phone1: value ?? "" } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     }
-  }
-  function handleSecondaryPhoneChange(value: string) {
+  };
+
+  const handleSecondaryPhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setSecondaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setSecondaryPhoneMsg("Invalid Format");
     } else {
       setSecondaryPhoneMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_phone_2 = value ?? "";
-        setUpdateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_phone_2 = value ?? "";
-        setUpdateComplaint(allegationComplaint);
-      }
-    }
-  }
 
-  function handleAlternatePhoneChange(value: string) {
+      const updatedComplaint = { ...update, phone2: value ?? "" } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const handleAlternatePhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setAlternatePhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setAlternatePhoneMsg("Invalid Format");
     } else {
       setAlternatePhoneMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_phone_3 = value ?? "";
-        setUpdateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_phone_3 = value ?? "";
-        setUpdateComplaint(allegationComplaint);
-      }
+
+      const updatedComplaint = { ...update, phone3: value ?? "" } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     }
-  }
+  };
+
+  const handleAddressChange = (value: string) => {
+    const updatedComplaint = { ...update, address: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
 
   function handleEmailChange(value: string) {
     let re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -1008,65 +863,20 @@ export const ComplaintDetailsEdit: FC = () => {
       setEmailMsg("Please enter a vaild email");
     } else {
       setEmailMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(updateComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_email = value;
-        setUpdateComplaint(hwcrComplaint);
-      }
-      if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(updateComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_email = value;
-        setUpdateComplaint(allegationComplaint);
-      }
+
+      const updatedComplaint = { ...update, email: value } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     }
   }
 
   const handleReferredByChange = (selected: Option | null) => {
     if (selected) {
-      const { label, value } = selected;
+      const { value } = selected;
 
-      let update = cloneDeep(updateComplaint) as HwcrComplaint | AllegationComplaint;
-
-      const { complaint_identifier: identifier } = update;
-      const { referred_by_agency_code: source } = identifier;
-
-      const updatedEntity = value
-        ? {
-            ...source,
-            short_description: value,
-            long_description: label as string,
-            agency_code: value,
-          }
-        : {
-            agency_code: "",
-            short_description: "",
-            long_description: "",
-            display_order: 0,
-            active_ind: true,
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-
-      const updatedParent = {
-        ...identifier,
-        referred_by_agency_code: updatedEntity,
-      };
-
-      update.complaint_identifier = updatedParent;
-
-      setUpdateComplaint(update);
+      const updatedComplaint = { ...update, referredBy: value } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     }
   };
-
-  function handleSuspectDetailsChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = updateComplaint as AllegationComplaint;
-      allegationComplaint.suspect_witnesss_dtl_text = value;
-      setUpdateComplaint(allegationComplaint);
-    }
-  }
 
   const maxDate = new Date();
 
@@ -1108,7 +918,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       className="comp-details-input"
                       classNamePrefix="comp-select"
                       defaultValue={selectedNatureOfComplaint}
-                      onChange={(e) => handleNOCChange(e)}
+                      onChange={(e) => handleNatureOfComplaintChange(e)}
                       errMsg={nocErrorMsg}
                     />
                   </div>
@@ -1171,11 +981,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={assignableOfficers}
                     placeholder="Select"
                     enableValidation={false}
-                    value={
-                      updateComplaint?.complaint_identifier?.person_complaint_xref[0]?.active_ind === true
-                        ? selectedAssignedOfficer
-                        : { value: "Unassigned", label: "None" }
-                    }
+                    value={hasAssignedOfficer() ? selectedAssignedOfficer : { value: "Unassigned", label: "None" }}
                   />
                 </div>
               </div>
@@ -1185,7 +991,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   <div className="comp-details-input">
                     <i className="bi bi-calendar comp-margin-right-xs"></i>
                     {formatDate(loggedDate)}
-                    <i className="bi bi-clock comp-margin- left-xs comp-margin-right-xs"></i>
+                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
                     {formatTime(loggedDate)}
                   </div>
                 </div>
