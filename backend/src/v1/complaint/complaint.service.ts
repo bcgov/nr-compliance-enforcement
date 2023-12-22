@@ -867,7 +867,7 @@ export class ComplaintService {
         default: {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             complaints as Array<HwcrComplaint>,
-            "WildlifeComplaint",
+            "HwcrComplaint",
             "WildlifeComplaintDto"
           );
 
@@ -962,7 +962,7 @@ export class ComplaintService {
         default: {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             mappedComplaints as Array<HwcrComplaint>,
-            "WildlifeComplaint",
+            "HwcrComplaint",
             "WildlifeComplaintDto"
           );
 
