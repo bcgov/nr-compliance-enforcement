@@ -611,7 +611,6 @@ export class ComplaintService {
           "AllegationComplaint",
           "AllegationComplaintDto"
         );
-        break;
       }
       case "HWCR": {
         return this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
@@ -619,7 +618,6 @@ export class ComplaintService {
           "HwcrComplaint",
           "WildlifeComplaintDto"
         );
-        break;
       }
       default: {
         return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
