@@ -147,12 +147,12 @@ export const ComplaintDetailsEdit: FC = () => {
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
-  const [nocErrorMsg, setNatureOfComplaintError] = useState<string>("");
-  const [speciesErrorMsg, setSpeciesError] = useState<string>("");
-  const [statusErrorMsg, setStatusError] = useState<string>("");
-  const [complaintDescErrorMsg, setComplaintDescriptionError] = useState<string>("");
+  const [natureOfComplaintError, setNatureOfComplaintError] = useState<string>("");
+  const [speciesError, setSpeciesError] = useState<string>("");
+  const [statusError, setStatusError] = useState<string>("");
+  const [complaintDescriptionError, setComplaintDescriptionError] = useState<string>("");
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
-  const [communityErrorMsg, setCommunityError] = useState<string>("");
+  const [communityError, setCommunityError] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
   const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
   const [emailMsg, setEmailMsg] = useState<string>("");
@@ -214,8 +214,8 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
-      await dispatch(updateComplaintById(update, complaintType))
-      
+      await dispatch(updateComplaintById(update, complaintType));
+
       if (complaintType === COMPLAINT_TYPES.HWCR) {
         dispatch(getWildlifeComplaintByComplaintIdentifier(id));
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
@@ -314,9 +314,9 @@ export const ComplaintDetailsEdit: FC = () => {
       status,
       ownedBy,
       referredByAgencyOther,
-      incidentDateTime: new Date(incidentDateTime ? incidentDateTime : new Date()),
-      reportedOn: new Date(reportedOn ? reportedOn : new Date()),
-      updatedOn: new Date(updatedOn ? updatedOn : new Date()),
+      incidentDateTime: new Date(incidentDateTime ?? new Date()),
+      reportedOn: new Date(reportedOn ?? new Date()),
+      updatedOn: new Date(updatedOn ?? new Date()),
       organization: { area, region, zone },
       delegates: [],
     };
@@ -414,12 +414,12 @@ export const ComplaintDetailsEdit: FC = () => {
   const hasValidationErrors = () => {
     let noErrors = false;
     if (
-      nocErrorMsg === "" &&
-      speciesErrorMsg === "" &&
-      statusErrorMsg === "" &&
-      complaintDescErrorMsg === "" &&
+      natureOfComplaintError === "" &&
+      speciesError === "" &&
+      statusError === "" &&
+      complaintDescriptionError === "" &&
       attractantsErrorMsg === "" &&
-      communityErrorMsg === "" &&
+      communityError === "" &&
       geoPointXMsg === "" &&
       geoPointYMsg === "" &&
       emailMsg === "" &&
@@ -647,17 +647,14 @@ export const ComplaintDetailsEdit: FC = () => {
 
         let updatedComplaint = { ...update, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintUpdate(updatedComplaint);
-      } else {
-        //-- remove the assigned officer
-        if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
-          let delegate = delegates.find((item) => item.type === "ASSIGNEE");
-          let updatedDelegate = { ...delegate, isActive: false } as Delegate;
+      } else if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
+        let delegate = delegates.find((item) => item.type === "ASSIGNEE");
+        let updatedDelegate = { ...delegate, isActive: false } as Delegate;
 
-          updatedDelegates = [updatedDelegate];
+        updatedDelegates = [updatedDelegate];
 
-          let updatedComplaint = { ...update, delegates: updatedDelegates } as ComplaintDto;
-          applyComplaintUpdate(updatedComplaint);
-        }
+        let updatedComplaint = { ...update, delegates: updatedDelegates } as ComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
       }
     }
   };
@@ -921,7 +918,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       classNamePrefix="comp-select"
                       defaultValue={selectedNatureOfComplaint}
                       onChange={(e) => handleNatureOfComplaintChange(e)}
-                      errMsg={nocErrorMsg}
+                      errMsg={natureOfComplaintError}
                     />
                   </div>
                 )}
@@ -938,7 +935,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       id="species-select-id"
                       classNamePrefix="comp-select"
                       onChange={(e) => handleSpeciesChange(e)}
-                      errMsg={speciesErrorMsg}
+                      errMsg={speciesError}
                     />
                   </div>
                 )}
@@ -970,7 +967,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     id="status-select-id"
                     classNamePrefix="comp-select"
                     onChange={(e) => handleStatusChange(e)}
-                    errMsg={statusErrorMsg}
+                    errMsg={statusError}
                   />
                 </div>
                 <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
@@ -1029,7 +1026,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       id="complaint-description-textarea-id"
                       defaultValue={details !== undefined ? details : ""}
                       rows={4}
-                      errMsg={complaintDescErrorMsg}
+                      errMsg={complaintDescriptionError}
                       onChange={handleComplaintDescChange}
                       maxLength={4000}
                     />
@@ -1161,7 +1158,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="community-select-id"
                         classNamePrefix="comp-select"
                         onChange={(e) => handleCommunityChange(e)}
-                        errMsg={communityErrorMsg}
+                        errMsg={communityError}
                       />
                     </div>
                   </div>

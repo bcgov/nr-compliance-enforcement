@@ -442,30 +442,6 @@ export const createWildlifeComplaint =
     }
   };
 
-// export const updateWildlifeComplaint =
-//   (hwcrComplaint: HwcrComplaint): AppThunk =>
-//   async (dispatch) => {
-//     try {
-//       const updateParams = generateApiParameters(
-//         `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
-//         { hwcrComplaint: JSON.stringify(hwcrComplaint) }
-//       );
-
-//       await patch<HwcrComplaint>(dispatch, updateParams);
-
-//       //-- get the updated wildlife conflict
-//       const parameters = generateApiParameters(
-//         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${hwcrComplaint.complaint_identifier.complaint_identifier}`
-//       );
-//       const response = await get<HwcrComplaint>(dispatch, parameters);
-
-//       dispatch(setComplaint({ ...response }));
-//       ToggleSuccess("Updates have been saved");
-//     } catch (error) {
-//       ToggleError("Unable to update complaint");
-//     }
-//   };
-
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
@@ -547,13 +523,6 @@ export const updateComplaintById =
 
       await patch<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, updateParams);
 
-      // //-- get the updated wildlife conflict
-      // const parameters = generateApiParameters(
-      //   `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
-      // );
-      // const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      // dispatch(setComplaint({ ...response }));
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");

@@ -25,22 +25,12 @@ export class PersonComplaintXrefController {
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    return this.personComplaintXrefService.assignOfficer(
-      complaintId,
-      createPersonComplaintXrefDto,
-    );
+    return this.personComplaintXrefService.assignOfficer(complaintId, createPersonComplaintXrefDto);
   }
 
   @Get("/:person_guid/:complaint_id")
   @Roles(Role.COS_OFFICER)
-  findAssigned(
-    @Param("person_guid") personGuid: string,
-    @Param("complaint_id") complaintId: string
-  ) {
-    return this.personComplaintXrefService.findAssigned(
-      personGuid,
-      complaintId
-    );
+  findAssigned(@Param("person_guid") personGuid: string, @Param("complaint_id") complaintId: string) {
+    return this.personComplaintXrefService.findAssigned(personGuid, complaintId);
   }
 }

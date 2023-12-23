@@ -205,7 +205,7 @@ export class ComplaintService {
         caller_phone_3: updateComplaintDto.caller_phone_3,
         referred_by_agency_code: referredByAgencyCode,
       };
-      const updatedValue = await this.complaintsRepository.update({ complaint_identifier }, updateData);
+      await this.complaintsRepository.update({ complaint_identifier }, updateData);
     } catch (err) {
       this.logger.error(err);
       throw new BadRequestException(err);
@@ -741,14 +741,14 @@ export class ComplaintService {
           converted.create_user_id = idir;
           converted.complaint_identifier = id;
 
-          const assignmentResult = this._personService.assignOfficer(id, converted as any);
+          this._personService.assignOfficer(id, converted as any);
         }
 
         //-- apply complaint specific updates
         switch (complaintType) {
           case "ERS": {
             const { violation, isInProgress, wasObserved, violationDetails, ersId } = model as AllegationComplaintDto;
-            const updateResult = await this._allegationComplaintRepository
+            await this._allegationComplaintRepository
               .createQueryBuilder()
               .update(AllegationComplaint)
               .set({
@@ -771,7 +771,7 @@ export class ComplaintService {
 
             this._attractantService.updateComplaintAttractants(entity as HwcrComplaint, attractants);
 
-            const updateResult = await this._wildlifeComplaintRepository
+            await this._wildlifeComplaintRepository
               .createQueryBuilder()
               .update(HwcrComplaint)
               .set({

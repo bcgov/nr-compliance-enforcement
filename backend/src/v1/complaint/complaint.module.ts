@@ -9,7 +9,6 @@ import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
-import { CodeTableService } from "../code-table/code-table.service";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";

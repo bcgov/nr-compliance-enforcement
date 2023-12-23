@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, QueryRunner, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {

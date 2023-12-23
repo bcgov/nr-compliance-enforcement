@@ -278,14 +278,14 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.attractant_hwcr_xref,
       mapFrom((src) => {
-        const { attractants, hwcrId } = src;
+        const { attractants } = src;
 
         const items = attractants.map((item) => {
           const { attractant, xrefId, isActive } = item;
 
           let record = {
             attractant_hwcr_xref_guid: xrefId,
-            active_ind: isActive ? isActive : false,
+            active_ind: isActive,
             attractant_code: {
               attractant_code: attractant,
             },
@@ -485,19 +485,6 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (
     )
   );
 };
-
-/*
-
-      const updateData = {
-        allegation_complaint_guid:
-          updateAllegationComplaintDto.allegation_complaint_guid,
-        in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
-        observed_ind: updateAllegationComplaintDto.observed_ind,
-        violation_code: updateAllegationComplaintDto.violation_code,
-        suspect_witnesss_dtl_text:
-          updateAllegationComplaintDto.suspect_witnesss_dtl_text,
-      };
-*/
 
 export const mapAttractantXrefDtoToAttractantHwcrXref = (mapper: Mapper) => {
   createMap<AttractantXrefDto, AttractantHwcrXref>(
