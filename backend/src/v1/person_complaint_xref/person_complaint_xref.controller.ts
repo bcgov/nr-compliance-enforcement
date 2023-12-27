@@ -25,7 +25,8 @@ export class PersonComplaintXrefController {
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ) {
-    return this.personComplaintXrefService.assignOfficer(complaintId, createPersonComplaintXrefDto);
+    const queryRunner = this.dataSource.createQueryRunner();
+    return this.personComplaintXrefService.assignOfficer(queryRunner, complaintId, createPersonComplaintXrefDto, true);
   }
 
   @Get("/:person_guid/:complaint_id")

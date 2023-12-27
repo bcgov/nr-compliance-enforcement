@@ -88,7 +88,7 @@ export class HwcrComplaintService {
       ) {
         createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
           newHwcrComplaint.complaint_identifier;
-        await this.personComplaintXrefService.assignOfficer(
+        await this.personComplaintXrefService.assignOfficer(queryRunner,
           newHwcrComplaint.complaint_identifier.complaint_identifier,
           createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
         );
@@ -292,7 +292,7 @@ export class HwcrComplaintService {
         updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !==
         undefined
       ) {
-        await this.personComplaintXrefService.assignOfficer(
+        await this.personComplaintXrefService.assignNewOfficer(
           updateHwcrComplaintDto.complaint_identifier.complaint_identifier,
           updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
         );

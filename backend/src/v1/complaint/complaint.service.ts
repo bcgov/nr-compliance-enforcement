@@ -739,7 +739,7 @@ export class ComplaintService {
           converted.create_user_id = idir;
           converted.complaint_identifier = id;
 
-          this._personService.assignOfficer(id, converted as any);
+          this._personService.assignNewOfficer(id, converted as any);
         }
 
         //-- apply complaint specific updates

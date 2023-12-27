@@ -86,7 +86,7 @@ export class AllegationComplaintService {
       ) {
         createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
           newAllegationComplaint.complaint_identifier;
-        await this.personComplaintXrefService.assignOfficer(
+        await this.personComplaintXrefService.assignOfficer(queryRunner,
           newAllegationComplaint.complaint_identifier.complaint_identifier,
           createAllegationComplaintDto.complaint_identifier
             .person_complaint_xref[0]
@@ -277,7 +277,7 @@ export class AllegationComplaintService {
         updateAllegationComplaintDto.complaint_identifier
           .person_complaint_xref[0] !== undefined
       ) {
-        await this.personComplaintXrefService.assignOfficer(
+        await this.personComplaintXrefService.assignOfficer(queryRunner,
           updateAllegationComplaintDto.complaint_identifier
             .complaint_identifier,
           updateAllegationComplaintDto.complaint_identifier

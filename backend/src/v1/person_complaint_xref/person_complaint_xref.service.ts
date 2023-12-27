@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -100,7 +100,7 @@ export class PersonComplaintXrefService {
    * If the complaint is already assigned to an officer and the intention is to reassign the complaint to another officer, then first deactivate the first assignment and then
    * create a new cross reference between the complaint and officer.
    */
-  async assignOfficer(
+  async assignNewOfficer(
     complaintIdentifier: string,
     createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
   ): Promise<PersonComplaintXref> {
@@ -148,7 +148,62 @@ export class PersonComplaintXrefService {
     return newPersonComplaintXref;
   }
 
+/**
+   * Assigns an officer to a complaint.  This will perform one of two operations.
+   * If the existing complaint is not yet assigned to an officer, then this will create a new complaint/officer cross reference.
+   * As such, this exists as a queryRunner transaction.  If there's an exception, the entire transcation is rolled back.
+   *
+   * If the complaint is already assigned to an officer and the intention is to reassign the complaint to another officer, then first deactivate the first assignment and then
+   * create a new cross reference between the complaint and officer.
+   */
+async assignOfficer(
+  queryRunner: QueryRunner,
+  complaintIdentifier: string,
+  createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,
+  closeConnection?: boolean // should the connection be closed once completed.  Necessary because if this is part of another transaction, then that transaction will handle releasing the connection; otherwise, best to set to true so that the connection is released.
+): Promise<PersonComplaintXref> {
+  this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
+  let newPersonComplaintXref: PersonComplaintXref;
+  let unassignedPersonComplaintXref: PersonComplaintXref;
+
+  try {
+    // unassign complaint if it's already assigned to an officer
+    unassignedPersonComplaintXref = await this.findByComplaint(
+      complaintIdentifier
+    );
+    if (unassignedPersonComplaintXref) {
+      this.logger.debug(
+        `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`
+      );
+      unassignedPersonComplaintXref.active_ind = false;
+      await queryRunner.manager.save(unassignedPersonComplaintXref);
+    }
+    // create a new complaint assignment record
+    newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
+    this.logger.debug(
+      `Updating assignment on complaint ${complaintIdentifier}`
+    );
+
+    // save the transaction
+    await queryRunner.manager.save(newPersonComplaintXref);
+    this.logger.debug(
+      `Successfully assigned person to complaint ${complaintIdentifier}`
+    );
+  } catch (err) {
+    this.logger.error(err);
+    this.logger.error(
+      `Rolling back assignment on complaint ${complaintIdentifier}`
+    );
+    throw new BadRequestException(err);
+  } finally {
+    if (closeConnection) {
+      await queryRunner.release();
+    }
+  }
+  return newPersonComplaintXref;
+}
+
   remove(id: string) {
     return `This action removes a #${id} personComplaintXref`;
-  }
+  } 
 }
