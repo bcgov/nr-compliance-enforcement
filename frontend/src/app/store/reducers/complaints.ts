@@ -26,7 +26,6 @@ import { WildlifeComplaint } from "../../types/app/complaints/wildlife-complaint
 import { MapSearchResults } from "../../types/complaints/map-return";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
 import { Delegate } from "../../types/app/people/delegate";
-import { WildlifeComplaintListHeader } from "../../components/containers/complaints/headers/wildlife-complaint-list-header";
 
 const initialState: ComplaintState = {
   complaintItems: {

@@ -4,7 +4,6 @@ import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { refreshComplaintItem } from "../../../../store/reducers/complaints";
 
 type Props = {
   complaint_identifier: string;
