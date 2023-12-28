@@ -1,16 +1,10 @@
 import { FC } from "react";
-import {
-  BsPersonPlus,
-  BsSend,
-  BsArrowRepeat,
-} from "react-icons/bs";
+import { BsPersonPlus, BsSend, BsArrowRepeat } from "react-icons/bs";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
-import {
-  AssignOfficer,
-  ChangeStatus,
-} from "../../../../types/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { refreshComplaintItem } from "../../../../store/reducers/complaints";
 
 type Props = {
   complaint_identifier: string;
@@ -19,13 +13,7 @@ type Props = {
   agency_code: string;
 };
 
-export const ComplaintActionItems: FC<Props> = ({
-  complaint_identifier,
-  complaint_type,
-  zone,
-  agency_code,
-}) => {
-
+export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complaint_type, zone, agency_code }) => {
   const dispatch = useAppDispatch();
 
   const openAsignOfficerModal = () => {
@@ -33,7 +21,7 @@ export const ComplaintActionItems: FC<Props> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: AssignOfficer,
+        modalType: ASSIGN_OFFICER,
         data: {
           title: "Assign Complaint",
           description: "",
@@ -51,7 +39,7 @@ export const ComplaintActionItems: FC<Props> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: ChangeStatus,
+        modalType: CHANGE_STATUS,
         data: {
           title: "Update status?",
           description: "Status",
@@ -68,26 +56,22 @@ export const ComplaintActionItems: FC<Props> = ({
         placement="top"
         key={`tt-assign-${complaint_identifier}`}
         overlay={
-            <Tooltip id={`tt-assign-${complaint_identifier}`} className="comp-tooltip">
-              Assign
-            </Tooltip>
+          <Tooltip id={`tt-assign-${complaint_identifier}`} className="comp-tooltip">
+            Assign
+          </Tooltip>
         }
       >
-        <span className="tt-assign-span"
-          onClick={openAsignOfficerModal}
-          onKeyUp={openAsignOfficerModal}
-        >
-            <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
+        <span className="tt-assign-span" onClick={openAsignOfficerModal} onKeyUp={openAsignOfficerModal}>
+          <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
         </span>
       </OverlayTrigger>
       <OverlayTrigger
         placement="top"
         key={`tt-update-${complaint_identifier}`}
         overlay={
-          
-            <Tooltip id={`tt-update-${complaint_identifier}`} className="comp-tooltip">
-              Update Status
-            </Tooltip>
+          <Tooltip id={`tt-update-${complaint_identifier}`} className="comp-tooltip">
+            Update Status
+          </Tooltip>
         }
       >
         <span>
@@ -101,13 +85,13 @@ export const ComplaintActionItems: FC<Props> = ({
         placement="top"
         key={`tt-refer-${complaint_identifier}`}
         overlay={
-            <Tooltip id="tt-refer" className="comp-tooltip">
-              Refer
-            </Tooltip>
+          <Tooltip id="tt-refer" className="comp-tooltip">
+            Refer
+          </Tooltip>
         }
       >
         <span>
-            <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
+          <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
         </span>
       </OverlayTrigger>
     </>

@@ -161,7 +161,7 @@ export const updateComplaintAssignee =
           `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
         );
         const response = await get<HwcrComplaint>(dispatch, parameters);
-
+debugger
         dispatch(updateWildlifeComplaintByRow(response));
         dispatch(
           getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
