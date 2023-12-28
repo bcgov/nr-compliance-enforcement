@@ -104,7 +104,13 @@ export const assignCurrentUserToComplaint =
         dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
         dispatch(updateWildlifeComplaintByRow(response));
       } else {
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
+        );
+        const response = await get<AllegationComplaint>(dispatch, parameters);
+
         dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
+        dispatch(updateAllegationComplaintByRow(response));
       }
     } catch (error) {
       //-- handle error
