@@ -15,8 +15,8 @@ import { Button } from "react-bootstrap";
 import { BsPersonPlus, BsPencil, BsArrowRepeat } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import {
-  AssignOfficer,
-  ChangeStatus,
+  ASSIGN_OFFICER,
+  CHANGE_STATUS,
 } from "../../../../types/modal/modal-types";
 
 interface ComplaintHeaderProps {
@@ -57,7 +57,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: ChangeStatus,
+        modalType: CHANGE_STATUS,
         data: {
           title: "Update status?",
           description: "Status",
@@ -73,7 +73,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: AssignOfficer,
+        modalType: ASSIGN_OFFICER,
         data: {
           title: "Assign Complaint",
           description: "Suggested Officers",

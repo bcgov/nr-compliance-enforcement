@@ -1,7 +1,7 @@
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import { useAppDispatch } from "../../../hooks/hooks";
 import { openModal } from "../../../store/reducers/app";
-import { AssignOfficer, ChangeStatus } from "../../../types/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../types/modal/modal-types";
 import { FC, useContext } from "react";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 
@@ -70,7 +70,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: ChangeStatus,
+        modalType: CHANGE_STATUS,
         data: {
           title: "Update status?",
           description: "Status",
@@ -93,7 +93,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: AssignOfficer,
+        modalType: ASSIGN_OFFICER,
         data: {
           title: "Assign Complaint",
           description: "",

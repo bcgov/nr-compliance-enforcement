@@ -50,9 +50,7 @@ export const getOfficers =
   (zone?: string): AppThunk =>
   async (dispatch) => {
     try {
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/`
-      );
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/`);
       const response = await get<Array<Officer>>(dispatch, parameters);
 
       if (response && from(response).any()) {
@@ -69,34 +67,21 @@ export const getOfficers =
 
 // Assigns the current user to an office
 export const assignCurrentUserToComplaint =
-  (
-    userId: string,
-    userGuid: UUID,
-    complaint_identifier: string,
-    complaint_type: string
-  ): AppThunk =>
+  (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string): AppThunk =>
   async (dispatch) => {
     try {
-      let officerParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`
-      );
+      let officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
       let officerResponse = await get<Officer>(dispatch, officerParams);
 
       if (officerResponse.auth_user_guid === undefined) {
-        officerParams = generateApiParameters(
-          `${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`
-        );
+        officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`);
 
-        let officerByUserIdResponse = await get<Officer>(
-          dispatch,
-          officerParams
-        );
+        let officerByUserIdResponse = await get<Officer>(dispatch, officerParams);
         const officerGuid = officerByUserIdResponse.officer_guid;
 
-        officerParams = generateApiParameters(
-          `${config.API_BASE_URL}/v1/officer/${officerGuid}`,
-          { auth_user_guid: userGuid }
-        );
+        officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, {
+          auth_user_guid: userGuid,
+        });
 
         await patch<Officer>(dispatch, officerParams);
       }
@@ -111,13 +96,21 @@ export const assignCurrentUserToComplaint =
       );
 
       if (complaint_type === COMPLAINT_TYPES.HWCR) {
-        dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
         );
+        const response = await get<HwcrComplaint>(dispatch, parameters);
+
+        dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
+        dispatch(updateWildlifeComplaintByRow(response));
       } else {
-        dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
         );
+        const response = await get<AllegationComplaint>(dispatch, parameters);
+
+        dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
+        dispatch(updateAllegationComplaintByRow(response));
       }
     } catch (error) {
       //-- handle error
@@ -126,12 +119,7 @@ export const assignCurrentUserToComplaint =
 
 // creates a new cross reference for a person and office.  Assigns a person to an office.
 export const updateComplaintAssignee =
-  (
-    currentUser: string,
-    complaint_identifier: string,
-    complaint_type: string,
-    person_guid?: UUID
-  ): AppThunk =>
+  (currentUser: string, complaint_identifier: string, complaint_type: string, person_guid?: UUID): AppThunk =>
   async (dispatch) => {
     try {
       // add new person complaint record
@@ -150,10 +138,7 @@ export const updateComplaintAssignee =
         `${config.API_BASE_URL}/v1/person-complaint-xref/${complaint_identifier}`,
         payload
       );
-      await post<Array<PersonComplaintXref>>(
-        dispatch,
-        personComplaintXrefGuidParams
-      );
+      await post<Array<PersonComplaintXref>>(dispatch, personComplaintXrefGuidParams);
 
       // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
@@ -163,9 +148,7 @@ export const updateComplaintAssignee =
         const response = await get<HwcrComplaint>(dispatch, parameters);
 
         dispatch(updateWildlifeComplaintByRow(response));
-        dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier)
-        );
+        dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
       } else {
         const parameters = generateApiParameters(
           `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
@@ -174,9 +157,7 @@ export const updateComplaintAssignee =
 
         dispatch(updateAllegationComplaintByRow(response));
 
-        dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier)
-        );
+        dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
       }
     } catch (error) {
       console.log(error);
@@ -216,8 +197,7 @@ export const selectOfficersByZone =
     if (zone) {
       return officers.filter((officer) => {
         // check for nulls
-        const zoneCode =
-          officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
+        const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
         return zone === zoneCode;
       });
     }
@@ -225,36 +205,31 @@ export const selectOfficersByZone =
     return [];
   };
 
-  // find officers that have an office in the given zone
+// find officers that have an office in the given zone
 export const selectOfficersByAgency =
-(agency: string) =>
-(state: RootState): Officer[] | null => {
-  const { officers: officerRoot } = state;
-  const { officers } = officerRoot;
+  (agency: string) =>
+  (state: RootState): Officer[] | null => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
 
     return officers.filter((officer) => {
       // check for nulls
-      const agencyCode =
-        officer?.office_guid?.agency_code?.agency_code ?? null;
+      const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
       return agency === agencyCode;
     });
+  };
 
-};
-
-  export const selectOfficersByZoneAndAgency =
-  (agency: string,
-    zone?: string) =>
+export const selectOfficersByZoneAndAgency =
+  (agency: string, zone?: string) =>
   (state: RootState): Officer[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
     if (zone) {
       return officers.filter((officer) => {
         // check for nulls
-        const zoneCode =
-          officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
-        const agencyCode =
-          officer?.office_guid?.agency_code?.agency_code ?? null;
-        return (zone === zoneCode && (agency === agencyCode || !agency));
+        const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
+        const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
+        return zone === zoneCode && (agency === agencyCode || !agency);
       });
     }
 
@@ -281,22 +256,18 @@ export const assignOfficerToOffice =
 
       const update = { ...selectedOfficer, office_guid: updatedOffice };
 
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`,
-        { ...update }
-      );
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`, {
+        ...update,
+      });
 
       const response = await patch<Array<Officer>>(dispatch, parameters);
 
       if (response && from(response).any()) {
         dispatch(toggleNotification("success", "officer assigned"));
       }
-      
     } catch (error) {
       //-- handle errors
-      dispatch(
-        toggleNotification("error", "unable to assign officer to office")
-      );
+      dispatch(toggleNotification("error", "unable to assign officer to office"));
     }
   };
 
