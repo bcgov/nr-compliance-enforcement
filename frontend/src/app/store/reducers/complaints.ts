@@ -102,9 +102,9 @@ export const complaintSlice = createSlice({
           },
         } = updatedComplaint;
         const newStatus = complaint_status_code;
-        const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
+        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
 
-        let complaint = { ...wildlife[index], status: newStatus, delegates: [assigned] };
+        let complaint = { ...wildlife[index], status: newStatus, delegates };
         const update = [...wildlife];
         update[index] = complaint;
 
@@ -129,9 +129,9 @@ export const complaintSlice = createSlice({
           },
         } = updatedComplaint;
         const newStatus = complaint_status_code;
-        const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
+        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
 
-        let complaint = { ...allegations[index], status: newStatus, delegates: [assigned] };
+        let complaint = { ...allegations[index], status: newStatus, delegates };
         const update = [...allegations];
         update[index] = complaint;
 
