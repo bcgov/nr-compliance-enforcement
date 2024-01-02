@@ -77,7 +77,7 @@ export class ComplaintService {
 
       const agencyCode = await this._getAgencyByUser();
 
-      let referredByAgencyCode = createComplaintDto.referred_by_agency_code;
+      let referredByAgencyCode = createComplaintDto.reported_by_code;
       let sequenceNumber;
       await queryRunner.manager
         .query("SELECT nextval('complaint_sequence')")
@@ -113,7 +113,7 @@ export class ComplaintService {
         caller_phone_1: createComplaintDto.caller_phone_1,
         caller_phone_2: createComplaintDto.caller_phone_2,
         caller_phone_3: createComplaintDto.caller_phone_3,
-        referred_by_agency_code: referredByAgencyCode,
+        reported_by_code: referredByAgencyCode,
         complaint_identifier: createComplaintDto.complaint_identifier,
         create_utc_timestamp: createComplaintDto.create_utc_timestamp,
         update_utc_timestamp: createComplaintDto.update_utc_timestamp,
@@ -133,7 +133,7 @@ export class ComplaintService {
   async findAll(): Promise<Complaint[]> {
     return this.complaintsRepository.find({
       relations: {
-        referred_by_agency_code: true,
+        reported_by_code: true,
         owned_by_agency_code: true,
         complaint_status_code: true,
       },
@@ -144,7 +144,7 @@ export class ComplaintService {
     return this.complaintsRepository.findOneOrFail({
       where: { complaint_identifier: id },
       relations: {
-        referred_by_agency_code: true,
+        reported_by_code: true,
         owned_by_agency_code: true,
         complaint_status_code: true,
       },
@@ -169,7 +169,7 @@ export class ComplaintService {
     try {
       const updateComplaintDto: UpdateComplaintDto =
         JSON.parse(updateComplaint);
-      let referredByAgencyCode = updateComplaintDto.referred_by_agency_code;
+      let referredByAgencyCode = updateComplaintDto.reported_by_code;
       if (
         referredByAgencyCode !== null &&
         referredByAgencyCode.agency_code === ""
@@ -190,7 +190,7 @@ export class ComplaintService {
         caller_phone_1: updateComplaintDto.caller_phone_1,
         caller_phone_2: updateComplaintDto.caller_phone_2,
         caller_phone_3: updateComplaintDto.caller_phone_3,
-        referred_by_agency_code: referredByAgencyCode,
+        reported_by_code: referredByAgencyCode,
       };
       const updatedValue = await this.complaintsRepository.update(
         { complaint_identifier },
@@ -320,11 +320,11 @@ export class ComplaintService {
         "complaint_status.short_description",
         "complaint_status.long_description",
       ])
-      .leftJoin("complaint.referred_by_agency_code", "referred_by")
+      .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect([
-        "referred_by.agency_code",
-        "referred_by.short_description",
-        "referred_by.long_description",
+        "reported_by.agency_code",
+        "reported_by.short_description",
+        "reported_by.long_description",
       ])
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .addSelect([
@@ -480,14 +480,14 @@ export class ComplaintService {
         qb.orWhere("complaint.location_detailed_text ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere("complaint.referred_by_agency_other_text ILIKE :query", {
+        qb.orWhere("complaint.reported_by_other_text ILIKE :query", {
           query: `%${query}%`,
         });
 
-        qb.orWhere("referred_by.short_description ILIKE :query", {
+        qb.orWhere("reported_by.short_description ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere("referred_by.long_description ILIKE :query", {
+        qb.orWhere("reported_by.long_description ILIKE :query", {
           query: `%${query}%`,
         });
 

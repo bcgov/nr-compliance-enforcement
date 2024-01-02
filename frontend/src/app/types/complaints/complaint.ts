@@ -22,7 +22,7 @@ export interface Complaint {
     caller_phone_1: string;
     caller_phone_2: string;
     caller_phone_3: string;
-    referred_by_agency_code: AgencyCode;
+    reported_by_code: AgencyCode;
     owned_by_agency_code: AgencyCode;
     cos_geo_org_unit: {
       zone_code: string;

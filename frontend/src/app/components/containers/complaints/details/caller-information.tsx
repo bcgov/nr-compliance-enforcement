@@ -71,7 +71,7 @@ export const CallerInformation: FC = () => {
             </div>
             <div>
               <div className="comp-details-content-label">
-                Referred by / Complaint Agency
+                Reported By
               </div>
               <div className="comp-details-content" id="comp-details-referred">
                 {referredByAgencyCode?.long_description}

@@ -17,7 +17,7 @@ export class ComplaintDto {
     example: "COS",
     description: "The organization code of the organization that referred the complaint",
   })
-  referred_by_agency_code: AgencyCode;
+  reported_by_code: AgencyCode;
 
   @ApiProperty({
     example: "COS",
@@ -126,7 +126,7 @@ export class ComplaintDto {
     example: "Referred to COS because of jurisdictional reaons",
     description: "The text explaining the reason for referral and other details",
   })
-  referred_by_agency_other_text: string;
+  reported_by_other_text: string;
 
   @ApiProperty({
     example: "IDIR\mburns",

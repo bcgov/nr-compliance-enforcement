@@ -587,11 +587,11 @@ export class HwcrComplaintService {
         "complaint_status.long_description",
       ])
 
-      .leftJoin("complaint.referred_by_agency_code", "referred_by")
+      .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect([
-        "referred_by.agency_code",
-        "referred_by.short_description",
-        "referred_by.long_description",
+        "reported_by.agency_code",
+        "reported_by.short_description",
+        "reported_by.long_description",
       ])
 
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
@@ -741,14 +741,14 @@ export class HwcrComplaintService {
         qb.orWhere("complaint.location_detailed_text ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere("complaint.referred_by_agency_other_text ILIKE :query", {
+        qb.orWhere("complaint.reported_by_other_text ILIKE :query", {
           query: `%${query}%`,
         });
 
-        qb.orWhere("referred_by.short_description ILIKE :query", {
+        qb.orWhere("reported_by.short_description ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere("referred_by.long_description ILIKE :query", {
+        qb.orWhere("reported_by.long_description ILIKE :query", {
           query: `%${query}%`,
         });
 

@@ -108,7 +108,7 @@ export const CreateComplaint: FC = () => {
       caller_phone_1: "",
       caller_phone_2: "",
       caller_phone_3: "",
-      referred_by_agency_code: {
+      reported_by_code: {
         agency_code: "",
         short_description: "",
         long_description: "",
@@ -813,7 +813,7 @@ export const CreateComplaint: FC = () => {
         | AllegationComplaint;
 
       const { complaint_identifier: identifier } = update;
-      const { referred_by_agency_code: source } = identifier;
+      const { reported_by_code: source } = identifier;
 
       const updatedEntity = value
         ? {
@@ -836,7 +836,7 @@ export const CreateComplaint: FC = () => {
 
       const updatedParent = {
         ...identifier,
-        referred_by_agency_code: updatedEntity,
+        reported_by_code: updatedEntity,
       };
 
       update.complaint_identifier = updatedParent;
@@ -1579,7 +1579,7 @@ export const CreateComplaint: FC = () => {
                 className="comp-details-label-input-pair"
                 id="referred-pair-id"
               >
-                <label>Referred by / Complaint Agency</label>
+                <label>Reported By</label>
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="referred-select-id"

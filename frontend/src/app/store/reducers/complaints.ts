@@ -866,7 +866,7 @@ export const selectComplaintCallerInformation = (
       caller_phone_3,
       caller_address,
       caller_email,
-      referred_by_agency_code,
+      reported_by_code,
       owned_by_agency_code,
     }: any = ceComplaint;
 
@@ -878,7 +878,7 @@ export const selectComplaintCallerInformation = (
       alternatePhone: caller_phone_3,
       address: caller_address,
       email: caller_email,
-      referredByAgencyCode: referred_by_agency_code,
+      referredByAgencyCode: reported_by_code,
       ownedByAgencyCode: owned_by_agency_code,
     };
   }

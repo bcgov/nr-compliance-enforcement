@@ -153,9 +153,9 @@ const complaintToComplaintDtoMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.referredBy,
       mapFrom((source) => {
-        if (source.referred_by_agency_code !== null) {
+        if (source.reported_by_code !== null) {
           const {
-            referred_by_agency_code: { agency_code },
+            reported_by_code: { agency_code },
           } = source;
           return agency_code;
         } else {
@@ -178,7 +178,7 @@ const complaintToComplaintDtoMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.referredByAgencyOther,
-      mapFrom((source) => source.referred_by_agency_other_text)
+      mapFrom((source) => source.reported_by_other_text)
     ),
     forMember(
       (destination) => destination.incidentDateTime,
@@ -504,7 +504,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       (destination) => destination.referredBy,
       mapFrom((source) => {
         const {
-          complaint_identifier: { referred_by_agency_code: agency },
+          complaint_identifier: { reported_by_code: agency },
         } = source;
         if (agency !== null) {
           const code = mapper.map<AgencyCode, Agency>(
@@ -539,7 +539,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.referredByAgencyOther,
       mapFrom(
-        (source) => source.complaint_identifier.referred_by_agency_other_text
+        (source) => source.complaint_identifier.reported_by_other_text
       )
     ),
     forMember(
@@ -753,7 +753,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.referredBy,
       mapFrom((source) => {
         const {
-          complaint_identifier: { referred_by_agency_code: agency },
+          complaint_identifier: { reported_by_code: agency },
         } = source;
         if (agency !== null) {
           const code = mapper.map<AgencyCode, Agency>(
@@ -788,7 +788,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.referredByAgencyOther,
       mapFrom(
-        (source) => source.complaint_identifier.referred_by_agency_other_text
+        (source) => source.complaint_identifier.reported_by_other_text
       )
     ),
     forMember(

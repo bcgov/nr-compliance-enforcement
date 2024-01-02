@@ -997,7 +997,7 @@ export const ComplaintDetailsEdit: FC = () => {
         | AllegationComplaint;
 
       const { complaint_identifier: identifier } = update;
-      const { referred_by_agency_code: source } = identifier;
+      const { reported_by_code: source } = identifier;
 
       const updatedEntity = value
         ? {
@@ -1020,7 +1020,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
       const updatedParent = {
         ...identifier,
-        referred_by_agency_code: updatedEntity,
+        reported_by_code: updatedEntity,
       };
 
       update.complaint_identifier = updatedParent;
@@ -1585,7 +1585,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     className="comp-details-label-input-pair"
                     id="referred-pair-id"
                   >
-                    <label>Referred by / Complaint Agency</label>
+                    <label>Reported By</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
                         id="referred-select-id"
