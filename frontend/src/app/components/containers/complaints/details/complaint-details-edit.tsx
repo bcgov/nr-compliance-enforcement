@@ -786,7 +786,6 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleCommunityChange = (selectedOption: Option | null) => {
-    debugger;
     if (!selectedOption) {
       return;
     }

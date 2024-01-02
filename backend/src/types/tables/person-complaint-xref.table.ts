@@ -7,5 +7,6 @@ export interface PersonComplaintXrefTable {
   };
   complaint_identifier: string;
   person_complaint_xref_code: string;
-  create_user_id: string;
+  create_user_id?: string;
+  update_user_id?: string;
 }

@@ -630,7 +630,7 @@ export const refreshComplaintItem =
               `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
             );
             const response = await get<HwcrComplaint>(dispatch, parameters);
-            debugger;
+
             //-- refactor this when findById is updated
             const {
               complaint_identifier: {

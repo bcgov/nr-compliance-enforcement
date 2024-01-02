@@ -731,15 +731,33 @@ export class ComplaintService {
 
         if (hasAssignees(delegates)) {
           const assignee = delegates.find((item) => item.type === "ASSIGNEE" && item.isActive);
-          const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
-            assignee,
-            "DelegateDto",
-            "PersonComplaintXrefTable"
-          );
-          converted.create_user_id = idir;
-          converted.complaint_identifier = id;
+          if (assignee) {
+            const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
+              assignee,
+              "DelegateDto",
+              "PersonComplaintXrefTable"
+            );
+            converted.create_user_id = idir;
+            converted.complaint_identifier = id;
 
-          this._personService.assignNewOfficer(id, converted as any);
+            this._personService.assignNewOfficer(id, converted as any);
+          } else {
+            //-- the complaint has no assigned officer
+            const unassigned = delegates.filter(({ isActive }) => !isActive);
+            unassigned.forEach((officer) => {
+              const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
+                officer,
+                "DelegateDto",
+                "PersonComplaintXrefTable"
+              );
+
+              converted.create_user_id = idir;
+              converted.update_user_id = idir;
+              converted.complaint_identifier = id;
+
+              this._personService.assignNewOfficer(id, converted as any);
+            });
+          }
         }
 
         //-- apply complaint specific updates
