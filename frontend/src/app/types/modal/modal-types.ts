@@ -1,9 +1,9 @@
 export const Sample = "SAMPLE_MODAL";
-export const YesNo = "YES_NO_MODAL";
+export const YES_NO_MODAL = "YES_NO_MODAL";
 export const OK = "OK_MODAL";
-export const AssignOfficer = "ASSIGN_OFFICER";
-export const ChangeStatus = "CHANGE_STATUS";
-export const CancelConfirm = "CANCEL_CONFIRM";
+export const ASSIGN_OFFICER = "ASSIGN_OFFICER";
+export const CHANGE_STATUS = "CHANGE_STATUS";
+export const CANCEL_CONFIRM = "CANCEL_CONFIRM";
 
 export interface ModalProps {
   modalType: string;

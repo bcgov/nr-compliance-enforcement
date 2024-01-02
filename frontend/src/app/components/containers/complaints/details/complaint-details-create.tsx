@@ -31,7 +31,7 @@ import {
 import { Officer } from "../../../../types/person/person";
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
-import { CancelConfirm } from "../../../../types/modal/modal-types";
+import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import {
   createAllegationComplaint,
   createWildlifeComplaint,
@@ -913,7 +913,7 @@ export const CreateComplaint: FC = () => {
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: CancelConfirm,
+        modalType: CANCEL_CONFIRM,
         data: {
           title: "Cancel Changes?",
           description: "Your changes will be lost.",

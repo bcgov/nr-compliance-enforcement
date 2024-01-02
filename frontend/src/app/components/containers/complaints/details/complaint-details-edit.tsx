@@ -46,7 +46,7 @@ import { CompInput } from "../../../common/comp-input";
 import { from } from "linq-to-typescript";
 import { openModal } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
-import { CancelConfirm } from "../../../../types/modal/modal-types";
+import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import { ComplaintHeader } from "./complaint-header";
@@ -262,7 +262,7 @@ export const ComplaintDetailsEdit: FC = () => {
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: CancelConfirm,
+        modalType: CANCEL_CONFIRM,
         data: {
           title: "Cancel Changes?",
           description: "Your changes will be lost.",

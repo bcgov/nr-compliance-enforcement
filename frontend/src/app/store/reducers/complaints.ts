@@ -1,4 +1,4 @@
-import { Action, Dispatch, PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
+import { Action, Dispatch, PayloadAction, ThunkAction, createSlice, current } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import { ComplaintCollection, ComplaintState } from "../../types/state/complaint-state";
@@ -23,6 +23,7 @@ import { Coordinates } from "../../types/app/coordinate-type";
 
 import { MapSearchResults } from "../../types/complaints/map-return";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
+import { Delegate } from "../../types/app/people/delegate";
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
@@ -88,8 +89,59 @@ export const complaintSlice = createSlice({
 
       return { ...state, zoneAtGlance: update };
     },
-    updateWildlifeComplaintByRow: (state, action: PayloadAction<HwcrComplaint>) => {},
-    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaint>) => {},
+    updateWildlifeComplaintByRow: (state, action: PayloadAction<HwcrComplaint>) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = current(state);
+      const { wildlife } = complaintItems;
+
+      const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcr_complaint_guid);
+
+      if (index !== -1) {
+        const {
+          complaint_identifier: {
+            complaint_status_code: { complaint_status_code },
+            person_complaint_xref,
+          },
+        } = updatedComplaint;
+        const newStatus = complaint_status_code;
+        const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
+
+        let complaint = { ...wildlife[index], status: newStatus, delegates: [assigned] };
+        const update = [...wildlife];
+        update[index] = complaint;
+
+        const updatedItems = { ...complaintItems, wildlife: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
+
+    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaint>) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = current(state);
+      const { allegations } = complaintItems;
+
+      const index = allegations.findIndex(({ ersId }) => ersId === updatedComplaint.allegation_complaint_guid);
+
+      if (index !== -1) {
+        const {
+          complaint_identifier: {
+            complaint_status_code: { complaint_status_code },
+            person_complaint_xref,
+          },
+        } = updatedComplaint;
+        const newStatus = complaint_status_code;
+        const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
+
+        let complaint = { ...allegations[index], status: newStatus, delegates: [assigned] };
+        const update = [...allegations];
+        update[index] = complaint;
+
+        const updatedItems = { ...complaintItems, allegations: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
     setMappedComplaints: (state, action) => {
       const { mappedItems } = state;
       const {
@@ -526,6 +578,81 @@ export const updateComplaintById =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
+    }
+  };
+
+const convertPersonXrefToDelegate = (person: any): Delegate => {
+  const {
+    personComplaintXrefGuid: xrefId,
+    active_ind: isActive,
+    person_guid: { first_name: firstName, last_name: lastName, person_guid: id },
+  } = person;
+
+  const result: Delegate = {
+    isActive: isActive,
+    person: {
+      id,
+      firstName,
+      lastName,
+      middleName1: "",
+      middleName2: "",
+    },
+    type: "ASSIGNEE",
+    xrefId,
+  };
+
+  return result;
+};
+
+export const refreshComplaintItem =
+  (id: string, complaintType: string): AppThunk =>
+  async (dispatch, getState) => {
+    try {
+      const {
+        complaints: {
+          complaintItems: { wildlife },
+        },
+      } = getState();
+
+      switch (complaintType) {
+        case COMPLAINT_TYPES.ERS: {
+          break;
+        }
+        case COMPLAINT_TYPES.HWCR:
+        default: {
+          //-- get all complaints from list of complaints except the updated complaint and readd it
+          //-- to the list of complaints
+          const items = wildlife.filter((item) => item.id !== id);
+          const original = wildlife.find((item) => item.id === id);
+          if (original) {
+            //-- get the updated complaint
+            const parameters = generateApiParameters(
+              `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
+            );
+            const response = await get<HwcrComplaint>(dispatch, parameters);
+            debugger;
+            //-- refactor this when findById is updated
+            const {
+              complaint_identifier: {
+                person_complaint_xref,
+                complaint_status_code: { complaint_status_code },
+              },
+            } = response;
+
+            const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
+
+            const updated = { ...original, status: complaint_status_code, delegates: [assigned] };
+
+            const udpatedItems = [...items, updated];
+
+            dispatch(setComplaints({ type: complaintType, data: udpatedItems }));
+          }
+
+          break;
+        }
+      }
+    } catch (error) {
+      //-- add error handling
     }
   };
 
