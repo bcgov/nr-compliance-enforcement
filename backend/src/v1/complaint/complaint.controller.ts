@@ -89,4 +89,14 @@ export class ComplaintController {
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return await this.service.updateComplaintById(id, complaintType, model);
   }
+
+  @Get("/by-complaint-identifier/:complaintType/:id")
+  @Roles(Role.COS_OFFICER)
+  async findComplaintById(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Param("id") id: string
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
+    const result = (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
+    return result
+  }
 }
