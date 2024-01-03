@@ -140,7 +140,9 @@ export const ComplaintDetailsEdit: FC = () => {
   const [readOnly, setReadOnly] = useState(true);
 
   //-- complaint update object
-  const [complaintUpdate, applyComplaintUpdate] = useState<ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto>();
+  const [complaintUpdate, applyComplaintUpdate] = useState<
+    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto
+  >();
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
@@ -214,6 +216,7 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
+      debugger;
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
       if (complaintType === COMPLAINT_TYPES.HWCR) {
@@ -677,58 +680,41 @@ export const ComplaintDetailsEdit: FC = () => {
     applyComplaintUpdate(updatedComplaint);
   };
 
-  const handleAttractantsChange = async (selectedOptions: Option[] | null) => {
-    if (!selectedOptions) {
+  const handleAttractantsChange = async (options: Option[] | null) => {
+    if (!options) {
       return;
     }
 
     const { attractants } = complaintUpdate as WildlifeComplaintDto;
-    let updatedAttractants: Array<AttractantXref> = [];
+    let updates: Array<AttractantXref> = [];
 
-    console.log(selectedOptions);
+    console.log(options);
 
-    selectedOptions.forEach((selectedOption) => {
-      let match = false;
+    //-- handle existing attractants
+    console.log("updated list: ", updates);
 
-      attractants.forEach((item) => {
-        if (selectedOption.value === item.attractant) {
-          match = true;
-          updatedAttractants.push(item);
-        }
-      });
+    attractants.forEach((item) => {
+      const { attractant, isActive, xrefId } = item;
 
-      if (!match && selectedOption.value) {
-        const { value } = selectedOption;
-
-        const record: AttractantXref = {
-          isActive: true,
-          attractant: value,
-        };
-        updatedAttractants.push(record);
+      console.log(`xref: ${xrefId} ${attractant}: ${isActive}`);
+      if (from(options).any(({ value: selected }) => selected === attractant)) {
+        console.log("activate attractant");
+        updates.push({ xrefId, attractant, isActive: true });
+      } else {
+        updates.push({ xrefId, attractant, isActive: false });
       }
     });
 
-    attractants.forEach((current) => {
-      let match = false;
+    options.forEach(({ value: selected }) => {
+      if (!from(attractants).any(({ attractant }) => attractant === selected)) {
+        console.log(`add new attractant: ${selected}`);
+        const _item: AttractantXref = { attractant: selected as string, isActive: true };
 
-      updatedAttractants.forEach((item) => {
-        if (current.attractant === item.attractant) {
-          match = true;
-        }
-      });
-
-      if (!match) {
-        const { xrefId, attractant } = current;
-        const record: AttractantXref = {
-          xrefId,
-          attractant,
-          isActive: false,
-        };
-        updatedAttractants.push(record);
+        updates.push(_item);
       }
     });
 
-    const model = { ...complaintUpdate, attractants: updatedAttractants } as WildlifeComplaintDto;
+    const model = { ...complaintUpdate, attractants: updates } as WildlifeComplaintDto;
     applyComplaintUpdate(model);
   };
 
