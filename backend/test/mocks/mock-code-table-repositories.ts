@@ -189,6 +189,7 @@ export const MockComplaintStatusCodeTableRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(complaitStatus),
+    getOne: jest.fn().mockResolvedValue(complaitStatus[0]),
   })),
 });
 

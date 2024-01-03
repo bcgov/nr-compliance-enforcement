@@ -21,11 +21,13 @@ import { ToggleSuccess, ToggleError } from "../../common/toast";
 import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
 import { Coordinates } from "../../types/app/coordinate-type";
 
-import { AllegationComplaint as AllegationComplaintModel } from "../../types/app/complaints/allegation-complaint";
-import { WildlifeComplaint } from "../../types/app/complaints/wildlife-complaint";
 import { MapSearchResults } from "../../types/complaints/map-return";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
 import { Delegate } from "../../types/app/people/delegate";
+
+import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
+import { Complaint as ComplaintDto } from "../../types/app/complaints/complaint";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -447,30 +449,6 @@ export const createAllegationComplaint =
     }
   };
 
-export const updateAllegationComplaint =
-  (allegationComplaint: AllegationComplaint): AppThunk =>
-  async (dispatch) => {
-    try {
-      const updateParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaint.allegation_complaint_guid}`,
-        { allegationComplaint: JSON.stringify(allegationComplaint) }
-      );
-
-      await patch<AllegationComplaint>(dispatch, updateParams);
-
-      //-- get the updated wildlife conflict
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-      ToggleSuccess("Updates have been saved");
-    } catch (error) {
-      ToggleError("Unable to update complaint");
-    }
-  };
-
 export const createWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
@@ -516,30 +494,6 @@ export const createWildlifeComplaint =
     }
   };
 
-export const updateWildlifeComplaint =
-  (hwcrComplaint: HwcrComplaint): AppThunk =>
-  async (dispatch) => {
-    try {
-      const updateParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/${hwcrComplaint.hwcr_complaint_guid}`,
-        { hwcrComplaint: JSON.stringify(hwcrComplaint) }
-      );
-
-      await patch<HwcrComplaint>(dispatch, updateParams);
-
-      //-- get the updated wildlife conflict
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${hwcrComplaint.complaint_identifier.complaint_identifier}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-      ToggleSuccess("Updates have been saved");
-    } catch (error) {
-      ToggleError("Unable to update complaint");
-    }
-  };
-
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
@@ -562,6 +516,30 @@ export const updateWildlifeComplaintStatus =
     }
   };
 
+export const updateAllegationComplaint =
+  (allegationComplaint: AllegationComplaint): AppThunk =>
+  async (dispatch) => {
+    try {
+      const updateParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaint.allegation_complaint_guid}`,
+        { allegationComplaint: JSON.stringify(allegationComplaint) }
+      );
+
+      await patch<AllegationComplaint>(dispatch, updateParams);
+
+      //-- get the updated wildlife conflict
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
+      );
+      const response = await get<AllegationComplaint>(dispatch, parameters);
+
+      dispatch(setComplaint({ ...response }));
+      ToggleSuccess("Updates have been saved");
+    } catch (error) {
+      ToggleError("Unable to update complaint");
+    }
+  };
+
 export const updateAllegationComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
@@ -581,6 +559,25 @@ export const updateAllegationComplaintStatus =
       dispatch(setComplaint({ ...result }));
     } catch (error) {
       //-- add error handling
+    }
+  };
+
+export const updateComplaintById =
+  (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto, complaintType: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const { id } = complaint;
+
+      const updateParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/update-by-id/${complaintType}/${id}`,
+        complaint
+      );
+
+      await patch<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, updateParams);
+
+      ToggleSuccess("Updates have been saved");
+    } catch (error) {
+      ToggleError("Unable to update complaint");
     }
   };
 
@@ -633,7 +630,7 @@ export const refreshComplaintItem =
               `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
             );
             const response = await get<HwcrComplaint>(dispatch, parameters);
-            debugger;
+
             //-- refactor this when findById is updated
             const {
               complaint_identifier: {
@@ -940,7 +937,7 @@ export const selectAllegationZagOpenComplaints = (state: RootState): ZoneAtAGlan
   return zoneAtGlance.allegation;
 };
 
-export const selectWildlifeComplaints = (state: RootState): Array<WildlifeComplaint> => {
+export const selectWildlifeComplaints = (state: RootState): Array<WildlifeComplaintDto> => {
   const {
     complaints: { complaintItems },
   } = state;
@@ -970,7 +967,7 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<WildlifeComplaint> | Array<AllegationComplaintModel> => {
+  (state: RootState): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);

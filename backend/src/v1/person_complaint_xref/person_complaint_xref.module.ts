@@ -7,6 +7,7 @@ import { PersonComplaintXref } from './entities/person_complaint_xref.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([PersonComplaintXref])],
   controllers: [PersonComplaintXrefController],
-  providers: [PersonComplaintXrefService]
+  providers: [PersonComplaintXrefService],
+  exports: [PersonComplaintXrefService]
 })
 export class PersonComplaintXrefModule {}

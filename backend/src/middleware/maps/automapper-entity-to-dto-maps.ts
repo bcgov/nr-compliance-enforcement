@@ -1,17 +1,17 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 
 //-- entities
-import { CosGeoOrgUnit } from "src/v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { PersonComplaintXref } from "src/v1/person_complaint_xref/entities/person_complaint_xref.entity";
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
-import { SpeciesCode } from "src/v1/species_code/entities/species_code.entity";
-import { HwcrComplaintNatureCode } from "src/v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { AttractantCode } from "src/v1/attractant_code/entities/attractant_code.entity";
-import { HwcrComplaint } from "src/v1/hwcr_complaint/entities/hwcr_complaint.entity";
-import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
-import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
-import { ViolationCode } from "src/v1/violation_code/entities/violation_code.entity";
-import { AllegationComplaint } from "src/v1/allegation_complaint/entities/allegation_complaint.entity";
+import { CosGeoOrgUnit } from "../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { PersonComplaintXref } from "../../v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { Complaint } from "../../v1/complaint/entities/complaint.entity";
+import { SpeciesCode } from "../../v1/species_code/entities/species_code.entity";
+import { HwcrComplaintNatureCode } from "../../v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
+import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";
+import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
+import { AgencyCode } from "../../v1/agency_code/entities/agency_code.entity";
+import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
+import { ViolationCode } from "../../v1/violation_code/entities/violation_code.entity";
+import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
 
 //-- models (dto for now)
 import {
@@ -21,12 +21,12 @@ import {
   OrganizationCodeTable,
   Species,
   Violation,
-} from "src/types/models/code-tables";
-import { DelegateDto } from "src/types/models/people/delegate";
-import { ComplaintDto } from "src/types/models/complaints/complaint";
-import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
-import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
-import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
+} from "../../types/models/code-tables";
+import { DelegateDto } from "../../types/models/people/delegate";
+import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
+import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
+import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 
 //-- define entity -> model mapping
 const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
@@ -87,7 +87,7 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
   );
 };
 
-const complaintToComplaintDtoMap = (mapper: Mapper) => {
+export const complaintToComplaintDtoMap = (mapper: Mapper) => {
   createMap<Complaint, ComplaintDto>(
     mapper,
     "Complaint", //-- source
@@ -407,7 +407,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
 
   createMap<HwcrComplaint, WildlifeComplaintDto>(
     mapper,
-    "WildlifeComplaint",
+    "HwcrComplaint",
     "WildlifeComplaintDto",
     forMember(
       (destination) => destination.id,
@@ -869,3 +869,4 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     )
   );
 };
+

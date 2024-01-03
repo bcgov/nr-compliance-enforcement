@@ -461,4 +461,20 @@ describe("Testing: CodeTable service", () => {
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(11);
   });
+
+  it("should return complaint-status-code by status", async () => {
+    //-- arrange
+    const _status = "open";
+
+    //-- act
+    const result = await service.getComplaintStatusCodeByStatus(_status);
+
+    //-- assert
+    expect(result).not.toBe(null);
+    
+    const { complaint_status_code, short_description, long_description } = result;
+    expect(complaint_status_code).toBe("OPEN")
+    expect(short_description).toBe("OPEN")
+    expect(long_description).toBe("Open")
+  });
 });

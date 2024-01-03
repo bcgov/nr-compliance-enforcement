@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { catchError, firstValueFrom } from "rxjs";
 import { AxiosError, AxiosRequestConfig } from "axios";
-import { Feature } from "src/types/bc_geocoder/bcGeocoderType";
+import { Feature } from "../../types/bc_geocoder/bcGeocoderType";
 
 @Injectable()
 export class BcGeoCoderService {

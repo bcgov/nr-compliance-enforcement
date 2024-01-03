@@ -30,5 +30,6 @@ import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_typ
   ],
   controllers: [CodeTableController],
   providers: [CodeTableService],
+  exports: [CodeTableService]
 })
 export class CodeTableModule {}

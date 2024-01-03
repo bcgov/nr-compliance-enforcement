@@ -9,7 +9,8 @@ import { ApiTags } from "@nestjs/swagger";
 import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -68,5 +69,24 @@ export class ComplaintController {
     @Query() model: ComplaintSearchParameters
   ) {
     return this.service.search(complaintType, model);
+  }
+  
+  @Patch("/update-status-by-id/:id")
+  @Roles(Role.COS_OFFICER)
+  async updateComplaintStatusById(
+    @Param("id") id: string, @Body() model: any
+  ): Promise<ComplaintDto> {
+    const { status } = model
+    return await this.service.updateComplaintStatusById(id, status);
+  }
+
+  @Patch("/update-by-id/:complaintType/:id")
+  @Roles(Role.COS_OFFICER)
+  async updateComplaintById(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Param("id") id: string,
+    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
+    return await this.service.updateComplaintById(id, complaintType, model);
   }
 }

@@ -17,4 +17,5 @@ export interface HwcrComplaint {
     create_user_id: string;
     active_ind: boolean;
   }[];
+  other_attractants_text: string
 }
