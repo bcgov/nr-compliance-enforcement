@@ -5,6 +5,7 @@ import { GeoOrganizationUnitCode } from '../../geo_organization_unit_code/entiti
 import { Point } from 'geojson';
 import { CosGeoOrgUnit } from '../../cos_geo_org_unit/entities/cos_geo_org_unit.entity';
 import { PersonComplaintXref } from '../../person_complaint_xref/entities/person_complaint_xref.entity';
+import { ReportedByCode } from 'src/v1/reported_by_code/entities/reported_by_code.entity';
 
 export class ComplaintDto {
   @ApiProperty({
@@ -17,7 +18,7 @@ export class ComplaintDto {
     example: "COS",
     description: "The organization code of the organization that referred the complaint",
   })
-  reported_by_code: AgencyCode;
+  reported_by_code: ReportedByCode;
 
   @ApiProperty({
     example: "COS",

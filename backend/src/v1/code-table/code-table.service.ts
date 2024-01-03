@@ -17,6 +17,7 @@ import BaseCodeTable, {
   Sector,
   Zone,
   Community,
+  ReportedBy,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -29,6 +30,7 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -56,8 +58,11 @@ export class CodeTableService {
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
   @InjectRepository(ComplaintTypeCode)
   private _complaintTypetRepository: Repository<ComplaintTypeCode>;
+  @InjectRepository(ReportedByCode)
+  private _reportedByRepository: Repository<ReportedByCode>;
 
   getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
+    console.log("tablezzzzzzzzzzzzzzzz: " + table);
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find(
@@ -302,6 +307,30 @@ export class CodeTableService {
           }) => {
             let table: ComplaintType = {
               complaintType: complaint_type_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+            };
+            return table;
+          }
+        );
+        return results;
+      }
+      case "reported-by": {
+        const data = await this._reportedByRepository.find(
+          {order: {display_order: "ASC"}}
+        );
+        let results = data.map(
+          ({
+            reported_by_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+          }) => {
+            let table: ReportedBy = {
+              reportedBy: reported_by_code,
               shortDescription: short_description,
               longDescription: long_description,
               displayOrder: display_order,

@@ -589,7 +589,7 @@ export class HwcrComplaintService {
 
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect([
-        "reported_by.agency_code",
+        "reported_by.reported_by_code",
         "reported_by.short_description",
         "reported_by.long_description",
       ])
@@ -621,6 +621,7 @@ export class HwcrComplaintService {
         "person.middle_name_2",
         "person.last_name",
       ]);
+      console.log("vvvvvvvvvvvv: " + builder.getQueryAndParameters());
     return builder;
   };
 

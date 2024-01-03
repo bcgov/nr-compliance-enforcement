@@ -30,6 +30,7 @@ import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
+  selectReportedByDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -184,6 +185,7 @@ export const ComplaintDetailsEdit: FC = () => {
       !complaint ||
       complaint.complaint_identifier.complaint_identifier !== id
     ) {
+      console.log("complaint: " + JSON.stringify(complaint));
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
@@ -275,9 +277,10 @@ export const ComplaintDetailsEdit: FC = () => {
     alternatePhone,
     address,
     email,
-    referredByAgencyCode,
+    reportedByCode,
     ownedByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
+  console.log("reportedByCodesssssssssssss: " + JSON.stringify(reportedByCode));
 
   const userid = useAppSelector(userId);
   
@@ -325,7 +328,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const areaCodes = useAppSelector(selectCommunityCodeDropdown);
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
-  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
+  const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useSelector(
     selectViolationCodeDropdown
   ) as Option[];
@@ -349,13 +352,15 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedAssignedOfficer = assignableOfficers?.find(
     (option) => option.value === (updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid ? updateComplaint?.complaint_identifier.person_complaint_xref[0]?.person_guid.person_guid : personGuid)
   );
-  const selectedAgencyCode = referredByAgencyCodes.find(
+  const selectedReportedByCode = reportedByCodes.find(
     (option) =>
       option.value ===
-      (referredByAgencyCode?.agency_code === undefined
+      (reportedByCode?.reported_by_code === undefined
         ? ""
-        : referredByAgencyCode.agency_code)
+        : reportedByCode.reported_by_code)
   );
+  console.log("reportedByCodes: " + JSON.stringify(reportedByCodes));
+  console.log("selectedReportedByCode: " + JSON.stringify(selectedReportedByCode));
   const selectedAttractants = attractantCodes.filter(
     (option) =>
       attractants?.some((attractant) => attractant.code === option.value)
@@ -988,7 +993,8 @@ export const ComplaintDetailsEdit: FC = () => {
     }
   }
 
-  const handleReferredByChange = (selected: Option | null) => {
+  const handleReportedByChange = (selected: Option | null) => {
+    console.log("selected: " + JSON.stringify(selected));
     if (selected) {
       const { label, value } = selected;
 
@@ -1004,10 +1010,10 @@ export const ComplaintDetailsEdit: FC = () => {
             ...source,
             short_description: value,
             long_description: label as string,
-            agency_code: value,
+            reported_by_code: value,
           }
         : {
-            agency_code: "",
+            reported_by_code: "",
             short_description: "",
             long_description: "",
             display_order: 0,
@@ -1583,20 +1589,20 @@ export const ComplaintDetailsEdit: FC = () => {
                   </div>
                   <div
                     className="comp-details-label-input-pair"
-                    id="referred-pair-id"
+                    id="reported-pair-id"
                   >
                     <label>Reported By</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
-                        id="referred-select-id"
+                        id="reported-select-id"
                         classNamePrefix="comp-select"
                         className="comp-details-edit-input"
-                        options={referredByAgencyCodes}
+                        options={reportedByCodes}
                         defaultOption={{ label: "None", value: undefined }}
                         placeholder="Select"
                         enableValidation={false}
-                        value={selectedAgencyCode}
-                        onChange={(e) => handleReferredByChange(e)}
+                        value={selectedReportedByCode}
+                        onChange={(e) => handleReportedByChange(e)}
                       />
                     </div>
                   </div>

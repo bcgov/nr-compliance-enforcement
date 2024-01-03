@@ -21,7 +21,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
     alternate: "",
     address: "437 Fake St",
     email: "tester@gmail.com",
-    referred: "Conservation Officer Service",
+    reported: "Conservation Officer Service",
   };
 
   beforeEach(function () {
@@ -102,8 +102,8 @@ describe("COMPENF-35 Display HWCR Details", () => {
       callerInformation.address,
     );
     cy.get('div[id="comp-details-email"]').contains(callerInformation.email);
-    cy.get('div[id="comp-details-referred"]').contains(
-      callerInformation.referred,
+    cy.get('div[id="comp-details-reported"]').contains(
+      callerInformation.reported,
     );
   });
 

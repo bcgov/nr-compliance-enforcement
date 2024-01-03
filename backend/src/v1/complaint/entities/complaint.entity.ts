@@ -15,6 +15,7 @@ import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entiti
 import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 @Entity()
 export class Complaint {
@@ -30,9 +31,9 @@ export class Complaint {
     description:
       "The organization code of the organization that referred the complaint",
   })
-  @ManyToOne(() => AgencyCode, { nullable: true })
+  @ManyToOne(() => ReportedByCode, { nullable: true })
   @JoinColumn({ name: "reported_by_code" })
-  reported_by_code: AgencyCode;
+  reported_by_code: ReportedByCode;
 
   @ApiProperty({
     example: "COS",
@@ -227,7 +228,7 @@ export class Complaint {
     update_user_id?: string,
     update_utc_timestamp?: Date,
     complaint_identifier?: string,
-    reported_by_code?: AgencyCode,
+    reported_by_code?: ReportedByCode,
     owned_by_agency_code?: AgencyCode,
     complaint_status_code?: ComplaintStatusCode,
     geo_organization_unit_code?: GeoOrganizationUnitCode,

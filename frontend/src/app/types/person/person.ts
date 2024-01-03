@@ -1,4 +1,5 @@
 import { AgencyCode } from "../code-tables/agency-code";
+import { ReportedByCode } from "../code-tables/reported-by-code";
 
 export interface Person {
   person_guid: string;
@@ -33,6 +34,7 @@ export interface OfficeGUID {
   update_utc_timestamp: Date;
   cos_geo_org_unit: CosGeoOrgUnit;
   agency_code: AgencyCode;
+  reported_by_code: ReportedByCode;
 }
 
 export interface CosGeoOrgUnit {

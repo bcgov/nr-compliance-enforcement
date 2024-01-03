@@ -8,6 +8,7 @@ import { AllegationComplaint } from "../allegation_complaint/entities/allegation
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Officer } from "../officer/entities/officer.entity";
     TypeOrmModule.forFeature([AgencyCode]),
     TypeOrmModule.forFeature([Office]),
     TypeOrmModule.forFeature([Officer]),
+    TypeOrmModule.forFeature([ReportedByCode]),
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],

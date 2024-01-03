@@ -77,7 +77,7 @@ export class ComplaintService {
 
       const agencyCode = await this._getAgencyByUser();
 
-      let referredByAgencyCode = createComplaintDto.reported_by_code;
+      let reportedByCode = createComplaintDto.reported_by_code;
       let sequenceNumber;
       await queryRunner.manager
         .query("SELECT nextval('complaint_sequence')")
@@ -92,10 +92,10 @@ export class ComplaintService {
       }
       createComplaintDto.complaint_identifier = complaintId;
       if (
-        referredByAgencyCode !== null &&
-        referredByAgencyCode.agency_code === ""
+        reportedByCode !== null &&
+        reportedByCode.reported_by_code === ""
       ) {
-        referredByAgencyCode = null;
+        reportedByCode = null;
       }
       const createData = {
         complaint_status_code: createComplaintDto.complaint_status_code,
@@ -113,7 +113,7 @@ export class ComplaintService {
         caller_phone_1: createComplaintDto.caller_phone_1,
         caller_phone_2: createComplaintDto.caller_phone_2,
         caller_phone_3: createComplaintDto.caller_phone_3,
-        reported_by_code: referredByAgencyCode,
+        reported_by_code: reportedByCode,
         complaint_identifier: createComplaintDto.complaint_identifier,
         create_utc_timestamp: createComplaintDto.create_utc_timestamp,
         update_utc_timestamp: createComplaintDto.update_utc_timestamp,
@@ -169,12 +169,12 @@ export class ComplaintService {
     try {
       const updateComplaintDto: UpdateComplaintDto =
         JSON.parse(updateComplaint);
-      let referredByAgencyCode = updateComplaintDto.reported_by_code;
+      let reportedByCode = updateComplaintDto.reported_by_code;
       if (
-        referredByAgencyCode !== null &&
-        referredByAgencyCode.agency_code === ""
+        reportedByCode !== null &&
+        reportedByCode.reported_by_code === ""
       ) {
-        referredByAgencyCode = null;
+        reportedByCode = null;
       }
       const updateData = {
         complaint_status_code: updateComplaintDto.complaint_status_code,
@@ -190,7 +190,7 @@ export class ComplaintService {
         caller_phone_1: updateComplaintDto.caller_phone_1,
         caller_phone_2: updateComplaintDto.caller_phone_2,
         caller_phone_3: updateComplaintDto.caller_phone_3,
-        reported_by_code: referredByAgencyCode,
+        reported_by_code: reportedByCode,
       };
       const updatedValue = await this.complaintsRepository.update(
         { complaint_identifier },
@@ -322,7 +322,7 @@ export class ComplaintService {
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect([
-        "reported_by.agency_code",
+        "reported_by.reported_by_code",
         "reported_by.short_description",
         "reported_by.long_description",
       ])

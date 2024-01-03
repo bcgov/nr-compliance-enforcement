@@ -13,6 +13,7 @@ import { ComplaintType } from "./complaint-type";
 import { Sector } from "./sector";
 import { Community } from "./community";
 import { Zone } from "./zone";
+import { ReportedBy } from "./reported-by";
 
 export const AvailableCodeTables = [
   "agency",
@@ -27,6 +28,7 @@ export const AvailableCodeTables = [
   "violation",
   "cos-organization-unit",
   "complaint-type",
+  "reported-by"
 ];
 
 export const AvailableAgencies = [
@@ -48,5 +50,6 @@ export {
   ComplaintType,
   Sector,
   Zone,
-  Community
+  Community,
+  ReportedBy,
 };

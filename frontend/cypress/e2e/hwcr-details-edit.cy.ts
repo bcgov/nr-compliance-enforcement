@@ -45,9 +45,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
     alternateInput: "",
     address: "437 Fake St",
     email: "tester@gmail.com",
-    referred: "Conservation Officer Service",
-    referredCode: "COS",
-    referredIndex: 3,
+    reported: "Conservation Officer Service",
+    reportedCode: "COS",
+    reportedIndex: 3,
   };
 
   const editCallDetails = {
@@ -90,9 +90,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
     alternateInput: "2506668888",
     address: "437 Fake St ---- testing",
     email: "tester512@gmail.com",
-    referred: "BC Wildlife Federation",
-    referredCode: "BCWF",
-    referredIndex: 1,
+    reported: "Department of Fisheries and Oceans",
+    reportedCode: "DFO",
+    reportedIndex: 1,
   };
 
   beforeEach(function () {
@@ -120,7 +120,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     .click({ force: true }).clear()
       .typeAndTriggerChange(editCallerInformation.alternateInput);
 
-    cy.selectItemById("referred-select-id", editCallerInformation.referred);
+    cy.selectItemById("reported-select-id", editCallerInformation.reported);
 
     cy.get("#location-edit-id").click({ force: true }).click({ force: true });
     cy.get("#location-edit-id").click({ force: true }).clear().type(editCallDetails.location);
@@ -186,8 +186,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('div[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
-    cy.get('div[id="comp-details-referred"]').contains(
-      editCallerInformation.referred,
+    cy.get('div[id="comp-details-reported"]').contains(
+      editCallerInformation.reported,
     );
     cy.get('div[id="comp-details-email"]').contains(
       editCallerInformation.email,
@@ -247,7 +247,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
       .click({ force: true }).clear()
       .typeAndTriggerChange(originalCallerInformation.alternateInput);
 
-    cy.selectItemById("referred-select-id", originalCallerInformation.referred);
+    cy.selectItemById("reported-select-id", originalCallerInformation.reported);
 
     cy.get("#location-edit-id").click({ force: true });
     cy.get("#location-edit-id").clear().type(originalCallDetails.location);
@@ -322,8 +322,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-referred"]').contains(
-      originalCallerInformation.referred,
+    cy.get('div[id="comp-details-reported"]').contains(
+      originalCallerInformation.reported,
     );
 
     cy.get('div[id="comp-details-location"]').contains(
@@ -517,10 +517,10 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#email-pair-id input").should("exist");
 
     // Reffered by / Complaint Agency
-    cy.get("#referred-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Referred by / Complaint Agency");
+    cy.get("#reported-pair-id label").should(($label) => {
+      expect($label).to.contain.text("reported by / Complaint Agency");
     });
-    cy.get("#referred-pair-id input").should("exist");
+    cy.get("#reported-pair-id input").should("exist");
   });
 
   it("it has a map on screen with a marker at the correct location", function () {

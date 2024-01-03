@@ -5,7 +5,7 @@ on the wildlife contacts details page and see all the inputs
 describe("Complaint Create Page spec - Create View", () => {
     const createCallDetails = {
         description:
-          "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
+          "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who reported the answer to COS. ---- testing",
         location: "2975 Jutland Rd.",
         locationDescription: "tester call description 8 ---- testing",
         xCoord: "-123.3776552",
@@ -38,9 +38,9 @@ describe("Complaint Create Page spec - Create View", () => {
         alternateInput: "2506668888",
         address: "135 fake st ---- testing",
         email: "tester512@gmail.com",
-        referred: "BC Wildlife Federation",
-        referredCode: "BCWF",
-        referredIndex: 1,
+        reported: "Conservation Officer Service",
+        reportedCode: "BCWF",
+        reportedIndex: 1,
         witnessDetails: "----- testing",
       };
   
@@ -73,7 +73,7 @@ describe("Complaint Create Page spec - Create View", () => {
         .clear()
         .typeAndTriggerChange(createCallerInformation.alternateInput);
   
-      cy.selectItemById("referred-select-id", createCallerInformation.referred);
+      cy.selectItemById("reported-select-id", createCallerInformation.reported);
   
       cy.get("#location-edit-id").click({ force: true });
       cy.get("#location-edit-id").clear().type(createCallDetails.location);
@@ -129,8 +129,8 @@ describe("Complaint Create Page spec - Create View", () => {
         expect($el.text().trim()).equal(createCallerInformation.alternate);
       });
   
-      cy.get('div[id="comp-details-referred"]').contains(
-        createCallerInformation.referred,
+      cy.get('div[id="comp-details-reported"]').contains(
+        createCallerInformation.reported,
       );
   
       cy.get('div[id="comp-details-location"]').contains(

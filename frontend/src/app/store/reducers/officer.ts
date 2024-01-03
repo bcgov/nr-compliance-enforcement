@@ -219,6 +219,20 @@ export const selectOfficersByAgency =
     });
   };
 
+  // find officers that have an office in the given zone
+export const selectOfficersByReportedBy =
+(reportedBy: string) =>
+(state: RootState): Officer[] | null => {
+  const { officers: officerRoot } = state;
+  const { officers } = officerRoot;
+
+  return officers.filter((officer) => {
+    // check for nulls
+    const reportedByCode = officer?.office_guid?.reported_by_code?.reported_by_code ?? null;
+    return reportedBy === reportedByCode;
+  });
+};
+
 export const selectOfficersByZoneAndAgency =
   (agency: string, zone?: string) =>
   (state: RootState): Officer[] | null => {
