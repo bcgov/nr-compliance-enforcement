@@ -548,7 +548,7 @@ export class AllegationComplaintService {
 
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect([
-        "reported_by.agency_code",
+        "reported_by.reported_by_code",
         "reported_by.short_description",
         "reported_by.long_description",
       ])

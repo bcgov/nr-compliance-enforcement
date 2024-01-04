@@ -352,9 +352,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedReportedByCode = reportedByCodes.find(
     (option) =>
       option.value ===
-      (!reportedByCode
-        ? ""
-        : reportedByCode.reported_by_code)
+      (reportedByCode?.reported_by_code)
   );
   const selectedAttractants = attractantCodes.filter(
     (option) =>
@@ -1592,10 +1590,9 @@ export const ComplaintDetailsEdit: FC = () => {
                         classNamePrefix="comp-select"
                         className="comp-details-edit-input"
                         options={reportedByCodes}
-                        defaultOption={{ label: "None", value: undefined }}
+                        defaultOption={{ label: selectedReportedByCode?.label, value: selectedReportedByCode?.value }}
                         placeholder="Select"
                         enableValidation={false}
-                        value={selectedReportedByCode}
                         onChange={(e) => handleReportedByChange(e)}
                       />
                     </div>
