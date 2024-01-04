@@ -219,7 +219,6 @@ export const selectOfficersByAgency =
     });
   };
 
-  // find officers that have an office in the given zone
 export const selectOfficersByReportedBy =
 (reportedBy: string) =>
 (state: RootState): Officer[] | null => {

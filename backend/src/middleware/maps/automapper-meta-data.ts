@@ -13,6 +13,7 @@ import {
   OrganizationCodeTable,
   Species,
   Violation,
+  ReportedBy,
 } from "../../types/models/code-tables";
 import { DelegateDto } from "../../types/models/people/delegate";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
@@ -26,6 +27,7 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { ViolationCode } from "../../v1/violation_code/entities/violation_code.entity";
 import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 const createOrganizationMetaData = () => {
   PojosMetadataMap.create<CosGeoOrgUnit>("CosGeoOrgUnit", {
@@ -77,6 +79,7 @@ const createDelegateMetadata = () => {
 export const createComplaintMetaData = () => {
   createDelegateMetadata();
   createOrganizationMetaData();
+  createReportedByCodeMetaData();
 
   PojosMetadataMap.create<Complaint>("Complaint", {
     complaint_identifier: String,
@@ -91,7 +94,7 @@ export const createComplaintMetaData = () => {
     location_summary_text: String,
     location_detailed_text: String,
     complaint_status_code: Object,
-    reported_by_code: Object,
+    reported_by_code: ReportedByCode,
     owned_by_agency_code: Object,
     reported_by_other_text: String,
     incident_reported_utc_timestmp: Date,
@@ -138,6 +141,24 @@ export const createSpeciesCodeMetaData = () => {
   PojosMetadataMap.create<Species>("SpeciesDto", {
     species: String,
     legacy: String,
+    shortDescription: String,
+    longDescription: String,
+    displayOrder: Number,
+    isActive: Boolean,
+  });
+};
+
+export const createReportedByCodeMetaData = () => {
+  PojosMetadataMap.create<ReportedByCode>("ReportedByCode", {
+    reported_by_code: String,
+    short_description: String,
+    long_description: String,
+    display_order: Number,
+    active_ind: Boolean,
+  });
+
+  PojosMetadataMap.create<ReportedBy>("ReportedByCodeDto", {
+    reportedBy: String,
     shortDescription: String,
     longDescription: String,
     displayOrder: Number,

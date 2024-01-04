@@ -23,7 +23,6 @@ import { ComplaintDetails } from "../../../../types/complaints/details/complaint
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
-  selectAgencyDropdown,
   selectComplaintStatusCodeDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
@@ -185,7 +184,6 @@ export const ComplaintDetailsEdit: FC = () => {
       !complaint ||
       complaint.complaint_identifier.complaint_identifier !== id
     ) {
-      console.log("complaint: " + JSON.stringify(complaint));
       if (id) {
         switch (complaintType) {
           case COMPLAINT_TYPES.ERS:
@@ -280,7 +278,6 @@ export const ComplaintDetailsEdit: FC = () => {
     reportedByCode,
     ownedByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
-  console.log("reportedByCodesssssssssssss: " + JSON.stringify(reportedByCode));
 
   const userid = useAppSelector(userId);
   
@@ -355,12 +352,10 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedReportedByCode = reportedByCodes.find(
     (option) =>
       option.value ===
-      (reportedByCode?.reported_by_code === undefined
+      (!reportedByCode
         ? ""
         : reportedByCode.reported_by_code)
   );
-  console.log("reportedByCodes: " + JSON.stringify(reportedByCodes));
-  console.log("selectedReportedByCode: " + JSON.stringify(selectedReportedByCode));
   const selectedAttractants = attractantCodes.filter(
     (option) =>
       attractants?.some((attractant) => attractant.code === option.value)
@@ -994,7 +989,6 @@ export const ComplaintDetailsEdit: FC = () => {
   }
 
   const handleReportedByChange = (selected: Option | null) => {
-    console.log("selected: " + JSON.stringify(selected));
     if (selected) {
       const { label, value } = selected;
 
@@ -1008,9 +1002,9 @@ export const ComplaintDetailsEdit: FC = () => {
       const updatedEntity = value
         ? {
             ...source,
+            reported_by_code: value,
             short_description: value,
             long_description: label as string,
-            reported_by_code: value,
           }
         : {
             reported_by_code: "",

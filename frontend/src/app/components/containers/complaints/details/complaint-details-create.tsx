@@ -20,7 +20,6 @@ import { openModal, selectOfficerAgency, userId } from "../../../../store/reduce
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { useSelector } from "react-redux";
 import {
-  selectAgencyDropdown,
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
   selectComplaintTypeDropdown,

@@ -254,7 +254,6 @@ export class HwcrComplaintService {
     //-- build generic wildlife query
     let builder = this._getWildlifeQuery();
     builder.where("wildlife.hwcr_complaint_guid = :id", { id });
-
     return builder.getOne();
   };
 
@@ -621,7 +620,6 @@ export class HwcrComplaintService {
         "person.middle_name_2",
         "person.last_name",
       ]);
-      console.log("vvvvvvvvvvvv: " + builder.getQueryAndParameters());
     return builder;
   };
 

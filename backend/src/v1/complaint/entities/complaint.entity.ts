@@ -29,7 +29,7 @@ export class Complaint {
   @ApiProperty({
     example: "COS",
     description:
-      "The organization code of the organization that referred the complaint",
+      "The organization code of the organization that reported the complaint",
   })
   @ManyToOne(() => ReportedByCode, { nullable: true })
   @JoinColumn({ name: "reported_by_code" })

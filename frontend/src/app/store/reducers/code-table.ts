@@ -121,11 +121,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(complaintType).any()) {
       dispatch(fetchComplaintTypeCodes());
     }
-    console.log("testing1");
     if (!from(reportedBy).any()) {
-      console.log("testing2");
       dispatch(fetchReportedByCodes());
-      console.log("testing3");
     }
   } catch (error) {}
 };
@@ -303,7 +300,6 @@ export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
     `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REPORTED_BY}`
   );
   const response = await get<Array<ReportedBy>>(dispatch, parameters);
-    console.log("response: " + JSON.stringify(response));
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.REPORTED_BY, data: response };
     dispatch(setCodeTable(payload));

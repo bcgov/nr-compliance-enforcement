@@ -12,6 +12,7 @@ import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 import { AttractantHwcrXref } from "src/v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { ViolationCode } from "src/v1/violation_code/entities/violation_code.entity";
 import { AllegationComplaint } from "src/v1/allegation_complaint/entities/allegation_complaint.entity";
+import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 //-- models (dto for now)
 import {
@@ -28,7 +29,6 @@ import { ComplaintDto } from "src/types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
 import { AttractantXrefDto } from "src/types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
-import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 //-- define entity -> model mapping
 const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
@@ -343,11 +343,11 @@ const agencyCodeToAgencyDto = (mapper: Mapper) => {
   );
 };
 
-const reportedByAgencyDto = (mapper: Mapper) => {
+const reportedByCodeToReportedByDto = (mapper: Mapper) => {
   createMap<ReportedByCode, ReportedBy>(
     mapper,
     "ReportedByCode",
-    "ReportedByCodeDTO",
+    "ReportedByCodeDto",
     forMember(
       (destination) => destination.reportedBy,
       mapFrom((source) => source.reported_by_code)
@@ -434,7 +434,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
   agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
-  reportedByAgencyDto(mapper);
+  reportedByCodeToReportedByDto(mapper);
 
   createMap<HwcrComplaint, WildlifeComplaintDto>(
     mapper,
@@ -684,7 +684,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
   agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
-  reportedByAgencyDto(mapper);
+  reportedByCodeToReportedByDto(mapper);
 
   createMap<AllegationComplaint, AllegationComplaintDto>(
     mapper,

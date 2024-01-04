@@ -62,7 +62,6 @@ export class CodeTableService {
   private _reportedByRepository: Repository<ReportedByCode>;
 
   getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
-    console.log("tablezzzzzzzzzzzzzzzz: " + table);
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find(

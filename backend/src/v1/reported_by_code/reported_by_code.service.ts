@@ -12,10 +12,10 @@ export class ReportedByCodeService {
     private reportedByCodeRepository: Repository<ReportedByCode>
   ) {}
 
-  async create(agencyCode: CreateReportedByCodeDto): Promise<ReportedByCode> {
-    const newAgencyCode = this.reportedByCodeRepository.create(agencyCode);
-    await this.reportedByCodeRepository.save(newAgencyCode);
-    return newAgencyCode;
+  async create(reportedByCode: CreateReportedByCodeDto): Promise<ReportedByCode> {
+    const newReportedByCode = this.reportedByCodeRepository.create(reportedByCode);
+    await this.reportedByCodeRepository.save(newReportedByCode);
+    return newReportedByCode;
   }
 
   async findAll(): Promise<ReportedByCode[]> {
@@ -26,8 +26,8 @@ export class ReportedByCodeService {
     return this.reportedByCodeRepository.findOneOrFail(id);
   }
 
-  async update(reported_by_code: string, updateAgencyCodeDto: UpdateReportedByCodeDto): Promise<ReportedByCode> {
-    await this.reportedByCodeRepository.update({ reported_by_code }, updateAgencyCodeDto);
+  async update(reported_by_code: string, updateReportedByCodeDto: UpdateReportedByCodeDto): Promise<ReportedByCode> {
+    await this.reportedByCodeRepository.update({ reported_by_code }, updateReportedByCodeDto);
     return this.findOne(reported_by_code);
   }
 
