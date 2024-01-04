@@ -181,14 +181,13 @@ export class ComplaintService {
   }
 
   async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {
-    const test = 0;
     await this.complaintsRepository.update(complaint_identifier, updateComplaintDto);
     return this.findOne(complaint_identifier);
   }
 
   async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
     try {
-      const updateComplaintDto: UpdateComplaintDto =
+      const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
       let reportedByCode = updateComplaintDto.reported_by_code;
       if (
         reportedByCode !== null &&

@@ -33,7 +33,7 @@ export interface Complaint {
       region_code: string;
     };
     person_complaint_xref: PersonComplaintXref[];
-    referred_by_agency_other_text: string;
+    reported_by_other_text: string;
 }
 
 export interface ComplaintStatusCode {

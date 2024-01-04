@@ -119,7 +119,7 @@ export const CreateComplaint: FC = () => {
         update_user_id: "",
         update_utc_timestamp: null,
       },
-      referred_by_agency_other_text: "",
+      reported_by_other_text: "",
       owned_by_agency_code: {
         agency_code: "",
         short_description: "",
