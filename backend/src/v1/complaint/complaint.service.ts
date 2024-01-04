@@ -718,6 +718,10 @@ export class ComplaintService {
         "UpdateComplaintDto"
       );
 
+      //set the audit field
+      complaintTable.update_user_id = idir;
+      console.log(complaintTable);
+
       const complaintUpdateResult = await this.complaintsRepository
         .createQueryBuilder("complaint")
         .update()
