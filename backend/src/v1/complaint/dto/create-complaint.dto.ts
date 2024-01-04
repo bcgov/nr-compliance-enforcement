@@ -1,5 +1,5 @@
-import { PickType } from '@nestjs/swagger';
-import { ComplaintDto } from './complaint.dto';
+import { PickType } from "@nestjs/swagger";
+import { ComplaintDto } from "./complaint.dto";
 
 export class CreateComplaintDto extends PickType(ComplaintDto, [
   "detail_text",
@@ -25,4 +25,4 @@ export class CreateComplaintDto extends PickType(ComplaintDto, [
   "complaint_status_code",
   "geo_organization_unit_code",
   "cos_geo_org_unit",
-        ] as const) {}
+] as const) {}

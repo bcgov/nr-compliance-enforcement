@@ -119,6 +119,7 @@ export const CreateComplaint: FC = () => {
         update_user_id: "",
         update_utc_timestamp: null,
       },
+      referred_by_agency_other_text: "",
       owned_by_agency_code: {
         agency_code: "",
         short_description: "",
@@ -135,6 +136,7 @@ export const CreateComplaint: FC = () => {
         office_location_name: "",
         area_name: "",
         area_code: "",
+        region_code: "",
       },
       person_complaint_xref: [],
   }
@@ -167,6 +169,7 @@ export const CreateComplaint: FC = () => {
     update_utc_timestamp: "",
     hwcr_complaint_guid: "",
     attractant_hwcr_xref: [],
+    other_attractants_text: ""
   };
 
   const emptyAllegationComplaint: AllegationComplaint = {

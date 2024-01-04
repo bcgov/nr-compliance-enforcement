@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { BcGeoCoderService } from "./bc_geo_coder.service";
 import { HttpService, HttpModule } from "@nestjs/axios";
-import { Feature } from "src/types/bc_geocoder/bcGeocoderType";
+import { Feature } from "../../types/bc_geocoder/bcGeocoderType";
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 

@@ -24,6 +24,8 @@ import { Person } from "../person/entities/person.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
+import { CodeTableModule } from "../code-table/code-table.module";
+import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwcr_xref.module";
 
 @Module({
   imports: [
@@ -38,7 +40,9 @@ import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity"
     TypeOrmModule.forFeature([Officer]),
     TypeOrmModule.forFeature([Person]),
     TypeOrmModule.forFeature([PersonComplaintXref]),
-    TypeOrmModule.forFeature([HwcrComplaint])
+    TypeOrmModule.forFeature([HwcrComplaint]),
+    CodeTableModule,
+    AttractantHwcrXrefModule
   ],
   controllers: [AllegationComplaintController],
   providers: [

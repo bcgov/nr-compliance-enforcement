@@ -36,6 +36,7 @@ import { ReportedByCodeModule } from "./v1/reported_by_code/reported_by_code.mod
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
 console.log("Var check - POSTGRESQL_USER", process.env.POSTGRESQL_USER);
+console.log("Var check - POSTGRESQL_ENABLE_LOGGING", process.env.POSTGRESQL_ENABLE_LOGGING);
 if (process.env.POSTGRESQL_PASSWORD != null) {
   console.log("Var check - POSTGRESQL_PASSWORD present");
 } else {
@@ -55,6 +56,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
           username: process.env.POSTGRESQL_USER || "postgres",
           password: process.env.POSTGRESQL_PASSWORD,
           autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
+          logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true"
         };
       },
     }),

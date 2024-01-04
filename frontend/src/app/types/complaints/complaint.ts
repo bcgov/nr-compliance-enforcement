@@ -30,8 +30,10 @@ export interface Complaint {
       office_location_name: string;
       area_name: string;
       area_code: string;
+      region_code: string;
     };
     person_complaint_xref: PersonComplaintXref[];
+    referred_by_agency_other_text: string;
 }
 
 export interface ComplaintStatusCode {

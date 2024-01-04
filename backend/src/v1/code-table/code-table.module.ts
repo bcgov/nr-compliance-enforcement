@@ -32,5 +32,6 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
   ],
   controllers: [CodeTableController],
   providers: [CodeTableService],
+  exports: [CodeTableService]
 })
 export class CodeTableModule {}
