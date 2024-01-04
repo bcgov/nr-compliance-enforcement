@@ -8,7 +8,7 @@ import {
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
-import { selectComplaintDetails } from "../../../../store/reducers/complaints";
+import { selectComplaintDetailsV2 } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 
@@ -30,8 +30,9 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     attractants,
     violationInProgress,
     violationObserved,
-  } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+  } = useAppSelector(selectComplaintDetailsV2(complaintType)) as ComplaintDetails;
 
+console.log(attractants)
   return (
     <div className="comp-complaint-details-block">
       <h6>Call Details</h6>
@@ -55,9 +56,9 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   className="bi bi-calendar comp-margin-right-xxs"
                   id="complaint-incident-date"
                 ></i>
-                {formatDate(incidentDateTime)}
+                {formatDate(incidentDateTime?.toString())}
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(incidentDateTime)}
+                {formatTime(incidentDateTime?.toString())}
               </div>
             </div>
 

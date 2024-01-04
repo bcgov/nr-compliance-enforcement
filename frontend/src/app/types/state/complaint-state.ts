@@ -1,9 +1,10 @@
-import { WildlifeComplaint } from "../app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintModel } from "../app/complaints/allegation-complaint";
 import { AllegationComplaint } from "../complaints/allegation-complaint";
 import { HwcrComplaint } from "../complaints/hwcr-complaint";
 import { Feature } from "../maps/bcGeocoderType";
 import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
+
+import { WildlifeComplaint as WildlifeComplaintDto } from "../app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints/allegation-complaint";
 
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
@@ -11,16 +12,17 @@ export interface ComplaintState {
   complaint: HwcrComplaint | AllegationComplaint | undefined | null;
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
-  mappedItems: MappedComplaintsState
+  mappedItems: MappedComplaintsState;
+  data: WildlifeComplaintDto | AllegationComplaintDto | null
 }
 
 export interface ComplaintCollection {
-  wildlife: Array<WildlifeComplaint>;
-  allegations: Array<AllegationComplaintModel>;
+  wildlife: Array<WildlifeComplaintDto>;
+  allegations: Array<AllegationComplaintDto>;
 }
 
 export interface MappedComplaintsState {
-  items: Array<AllegationComplaintModel> | Array<WildlifeComplaint>;
+  items: Array<AllegationComplaintDto> | Array<WildlifeComplaintDto>;
   unmapped: number;
 }
 

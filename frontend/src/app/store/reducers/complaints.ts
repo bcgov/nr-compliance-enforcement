@@ -28,6 +28,10 @@ import { Delegate } from "../../types/app/people/delegate";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
 import { Complaint as ComplaintDto } from "../../types/app/complaints/complaint";
+import { AttractantXref as AttractantXrefDto } from "../../types/app/complaints/attractant-xref";
+import { Attractant as AttractantDto } from "../../types/app/code-tables/attactant";
+
+import { from } from "linq-to-typescript";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -44,6 +48,9 @@ const initialState: ComplaintState = {
   },
 
   mappedItems: { items: [], unmapped: 0 },
+
+  //-- this is temproary, when ready rename to complaint
+  data: null,
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -75,6 +82,12 @@ export const complaintSlice = createSlice({
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
+
+    setComplaintData: (state, action) => {
+      const { payload: complaint } = action;
+      return { ...state, data: complaint };
+    },
+
     setGeocodedComplaintCoordinates: (state, action) => {
       const { payload: complaintLocation } = action;
       return { ...state, complaintLocation };
@@ -104,7 +117,7 @@ export const complaintSlice = createSlice({
           },
         } = updatedComplaint;
         const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
+        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])];
 
         let complaint = { ...wildlife[index], status: newStatus, delegates };
         const update = [...wildlife];
@@ -131,7 +144,7 @@ export const complaintSlice = createSlice({
           },
         } = updatedComplaint;
         const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
+        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])];
 
         let complaint = { ...allegations[index], status: newStatus, delegates };
         const update = [...allegations];
@@ -168,6 +181,7 @@ export const {
   setComplaints,
   setTotalCount,
   setComplaint,
+  setComplaintData,
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
@@ -656,6 +670,24 @@ export const refreshComplaintItem =
     }
   };
 
+//-- get complaint
+export const getComplaintById =
+  (id: string, complaintType: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      dispatch(setComplaintData(null));
+
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`
+      );
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+
+      dispatch(setComplaintData({ ...response }));
+    } catch (error) {
+      //-- handle the error
+    }
+  };
+
 //-- selectors
 export const selectComplaint = (state: RootState): HwcrComplaint | AllegationComplaint | undefined | null => {
   const { complaints: root } = state;
@@ -955,6 +987,7 @@ export const selectAllegationComplaints = (state: RootState): Array<any> => {
   return allegations;
 };
 
+///---
 export const selectTotalComplaintsByType =
   (complaintType: string) =>
   (state: RootState): number => {
@@ -977,7 +1010,6 @@ export const selectComplaintsByType =
     }
   };
 
-///---
 export const selectTotalMappedComplaints = (state: RootState): number => {
   const {
     complaints: {
@@ -1021,5 +1053,98 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
     return new Array<ComplaintMapItem>();
   }
 };
+
+//-- TODO: rename toSelectComplaint and remove previous selectComplaint selector
+export const selectComplaintData = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
+  const {
+    complaints: { data },
+  } = state;
+  return data;
+};
+
+export const selectComplaintDetailsV2 =
+  (complaintType: string) =>
+  (state: RootState): ComplaintDetails => {
+    const {
+      complaints: { data },
+      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable },
+    } = state;
+
+    const getAttractants = (
+      attractants: Array<AttractantXrefDto>,
+      codes: Array<AttractantDto>
+    ): Array<ComplaintDetailsAttractant> => {
+  
+      const result = attractants.map(({ xrefId: key, attractant: code }) => {
+        let record: ComplaintDetailsAttractant = { key: "", description: "", code };
+
+        if (key) {
+          record = { ...record, key };
+        }
+
+        const attractant = codes.find((item) => item.attractant === code);
+        if (attractant) {
+          const { longDescription: description } = attractant;
+
+          record = { ...record, description };
+        }
+
+        return record;
+      });
+
+      return result;
+    };
+
+    let result: ComplaintDetails = {};
+
+    if (data) {
+      const {
+        details,
+        locationSummary: location,
+        locationDetail: locationDescription,
+        incidentDateTime,
+        location: { coordinates },
+        organization: { area: areaCode, region, zone, officeLocation },
+        attractants,
+        isInProgress: violationInProgress,
+        wasObserved: violationObserved,
+      } = data as any;
+
+      const org = areaCodes.find(({ area }) => area === areaCode);
+
+      if (from(attractants).any()) {
+        let items = getAttractants(attractants, attractantCodeTable);
+        result = { ...result, attractants: items };
+      }
+
+      result = {
+        ...result,
+        details,
+        location,
+        locationDescription,
+        incidentDateTime,
+        coordinates,
+        violationInProgress,
+        violationObserved,
+      };
+
+      if (org) {
+        const { areaName, regionName, zoneName, officeLocationName } = org;
+        result = {
+          ...result,
+          area: areaName,
+          areaCode,
+          region: regionName,
+          regionCode: region,
+          zone: zoneName,
+          zone_code: zone,
+          office: officeLocationName,
+          officeCode: officeLocation,
+        };
+      }
+    }
+
+    return result;
+  };
 
 export default complaintSlice.reducer;
