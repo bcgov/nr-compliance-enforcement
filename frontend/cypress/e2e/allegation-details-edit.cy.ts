@@ -555,7 +555,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Reffered by / Complaint Agency
     cy.get("#reported-pair-id label").should(($label) => {
-      expect($label).to.contain.text("reported by / Complaint Agency");
+      expect($label).to.contain.text("Reported By");
     });
     cy.get("#reported-pair-id input").should("exist");
 

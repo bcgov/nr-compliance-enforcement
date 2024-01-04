@@ -17,7 +17,9 @@ import { Mapper } from "@automapper/core";
 import {
   applyAllegationComplaintMap,
   applyWildlifeComplaintMap,
-} from "../../middleware/maps/automapper-maps";
+  complaintToComplaintDtoMap,
+} from "../../middleware/maps/automapper-entity-to-dto-maps";
+
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
