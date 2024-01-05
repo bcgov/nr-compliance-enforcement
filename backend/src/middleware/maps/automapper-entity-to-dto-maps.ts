@@ -28,6 +28,8 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 
+// @SONAR_STOP@
+
 //-- define entity -> model mapping
 const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
   createMap<CosGeoOrgUnit, OrganizationCodeTable>(
@@ -823,3 +825,4 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     )
   );
 };
+// @SONAR_START@
