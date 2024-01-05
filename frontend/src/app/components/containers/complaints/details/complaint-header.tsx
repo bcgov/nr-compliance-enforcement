@@ -4,7 +4,7 @@ import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../../types/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintHeaderV2 } from "../../../../store/reducers/complaints";
+import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import {
   applyStatusClass,
   formatDate,
@@ -48,7 +48,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     violationType,
     species,
     complaintAgency,
-  } = useAppSelector(selectComplaintHeaderV2(complaintType));
+  } = useAppSelector(selectComplaintHeader(complaintType));
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";

@@ -1,8 +1,5 @@
 import { FC } from "react";
-import {
-  selectComplaintDetails,
-  selectComplaintHeader,
-} from "../../store/reducers/complaints";
+import { selectComplaintDetails, selectComplaintHeader } from "../../store/reducers/complaints";
 import { useAppSelector } from "../../hooks/hooks";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import {
@@ -12,9 +9,7 @@ import {
   getAvatarInitials,
   getFirstInitialAndLastName,
 } from "../../common/methods";
-import COMPLAINT_TYPES, {
-  complaintTypeToName,
-} from "../../types/app/complaint-types";
+import COMPLAINT_TYPES, { complaintTypeToName } from "../../types/app/complaint-types";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Popup } from "react-leaflet";
@@ -26,24 +21,13 @@ interface Props {
   complaintType: string;
 }
 
-export const ComplaintSummaryPopup: FC<Props> = ({
-  complaint_identifier,
-  complaintType,
-}) => {
-  const { officerAssigned, natureOfComplaint, species, violationType } =
+export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
+  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, lastUpdated, status } =
     useAppSelector(selectComplaintHeader(complaintType));
 
-  const { violationInProgress } = useAppSelector(
-    selectComplaintDetails(complaintType),
+  const { violationInProgress, location, area } = useAppSelector(
+    selectComplaintDetails(complaintType)
   ) as ComplaintDetails;
-
-  const { location, area } = useAppSelector(
-    selectComplaintDetails(complaintType),
-  ) as ComplaintDetails;
-
-  const { loggedDate, lastUpdated, status } = useAppSelector(
-    selectComplaintHeader(complaintType),
-  );
 
   // used to indicate what sections should be rendered in the popup
   const renderHWCRSection = COMPLAINT_TYPES.HWCR === complaintType;
@@ -61,15 +45,10 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                 <div
                   data-initials-sm={getAvatarInitials(officerAssigned)}
                   className={
-                    "Not Assigned" === officerAssigned
-                      ? "leaflet-popup-not-assigned"
-                      : "comp-orange-avatar-sm"
+                    "Not Assigned" === officerAssigned ? "leaflet-popup-not-assigned" : "comp-orange-avatar-sm"
                   }
                 >
-                  <span
-                    id="comp-details-assigned-officer-name-text-id"
-                    className="comp-padding-left-xs"
-                  >
+                  <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">
                     {getFirstInitialAndLastName(officerAssigned)}
                   </span>
                 </div>
@@ -80,9 +59,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({
               <div className="map-comp-summary-popup-subheading">
                 <div
                   className={`comp-box-conflict-type ${
-                    renderHWCRSection
-                      ? "hwcr-conflict-type"
-                      : "allegation-conflict-type"
+                    renderHWCRSection ? "hwcr-conflict-type" : "allegation-conflict-type"
                   }`}
                 >
                   {complaintTypeToName(complaintType, true)}
@@ -91,30 +68,19 @@ export const ComplaintSummaryPopup: FC<Props> = ({
                   <div className="comp-box-species-type">{species}</div>
                 ) : (
                   violationInProgress && (
-                    <div
-                      id="comp-details-status-text-id"
-                      className="comp-box-violation-in-progress"
-                    >
-                      <FontAwesomeIcon
-                        id="violation-in-progress-icon"
-                        icon={faExclamationCircle}
-                      />
+                    <div id="comp-details-status-text-id" className="comp-box-violation-in-progress">
+                      <FontAwesomeIcon id="violation-in-progress-icon" icon={faExclamationCircle} />
                       {inProgressInd}
                     </div>
                   )
                 )}
-                <div
-                  id="comp-details-status-text-id"
-                  className={`badge ${applyStatusClass(status)}`}
-                >
+                <div id="comp-details-status-text-id" className={`badge ${applyStatusClass(status)}`}>
                   {status}
                 </div>
               </div>
             </div>
           </div>
-          <div className="map-comp-nature-of-complaint">
-            {renderHWCRSection ? natureOfComplaint : violationType}
-          </div>
+          <div className="map-comp-nature-of-complaint">{renderHWCRSection ? natureOfComplaint : violationType}</div>
           <div className="map-comp-summary-popup-details-section">
             <div className="comp-details-content">
               <div>

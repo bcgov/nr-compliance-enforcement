@@ -1,12 +1,10 @@
 import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintCallerInformationV2 } from "../../../../store/reducers/complaints";
+import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 
 export const CallerInformation: FC = () => {
-  const data = useAppSelector(selectComplaintCallerInformationV2);
-console.log(data)
   const {
     name,
     primaryPhone,
@@ -15,7 +13,7 @@ console.log(data)
     address,
     email,
     referredByAgencyCode,
-  } = useAppSelector(selectComplaintCallerInformationV2);
+  } = useAppSelector(selectComplaintCallerInformation);
 
   return (
     <div className="comp-complaint-details-block">

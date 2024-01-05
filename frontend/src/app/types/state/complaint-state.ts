@@ -1,5 +1,3 @@
-import { AllegationComplaint } from "../complaints/allegation-complaint";
-import { HwcrComplaint } from "../complaints/hwcr-complaint";
 import { Feature } from "../maps/bcGeocoderType";
 import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
 
@@ -9,11 +7,10 @@ import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
   totalCount: number;
-  complaint: HwcrComplaint | AllegationComplaint | undefined | null;
+  complaint: WildlifeComplaintDto | AllegationComplaintDto | null
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
   mappedItems: MappedComplaintsState;
-  data: WildlifeComplaintDto | AllegationComplaintDto | null
 }
 
 export interface ComplaintCollection {

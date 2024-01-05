@@ -3,8 +3,6 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { bcBoundaries, formatDate, formatTime } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
-  selectComplaintCallerInformation,
-  selectComplaintSuspectWitnessDetails,
   setComplaint,
   setGeocodedComplaintCoordinates,
   getAllegationComplaintByComplaintIdentifier,
@@ -12,8 +10,10 @@ import {
   updateComplaintById,
   selectComplaintData,
   getComplaintById,
-  selectComplaintDetailsV2,
-  selectComplaintHeaderV2,
+  selectComplaintDetails,
+  selectComplaintHeader,
+  selectComplaintCallerInformation,
+  selectComplaintSuspectWitnessDetails,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -92,7 +92,7 @@ export const ComplaintDetailsEdit: FC = () => {
     attractants,
     violationInProgress,
     violationObserved,
-  } = useAppSelector(selectComplaintDetailsV2(complaintType)) as ComplaintDetails;
+  } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const {
     loggedDate,
@@ -103,7 +103,7 @@ export const ComplaintDetailsEdit: FC = () => {
     natureOfComplaintCode,
     speciesCode,
     violationTypeCode,
-  } = useAppSelector(selectComplaintHeaderV2(complaintType));
+  } = useAppSelector(selectComplaintHeader(complaintType));
 
   const {
     name,

@@ -55,9 +55,6 @@ const initialState: ComplaintState = {
   },
 
   mappedItems: { items: [], unmapped: 0 },
-
-  //-- this is temproary, when ready rename to complaint
-  data: null,
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -88,11 +85,6 @@ export const complaintSlice = createSlice({
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
       return { ...state, complaint };
-    },
-
-    setComplaintData: (state, action) => {
-      const { payload: complaint } = action;
-      return { ...state, data: complaint };
     },
 
     setGeocodedComplaintCoordinates: (state, action) => {
@@ -188,7 +180,6 @@ export const {
   setComplaints,
   setTotalCount,
   setComplaint,
-  setComplaintData,
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
@@ -682,282 +673,26 @@ export const getComplaintById =
   (id: string, complaintType: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(setComplaintData(null));
+      dispatch(setComplaint(null));
 
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`
       );
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
-      dispatch(setComplaintData({ ...response }));
+      dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
     }
   };
 
 //-- selectors
-export const selectComplaint = (state: RootState): HwcrComplaint | AllegationComplaint | undefined | null => {
-  const { complaints: root } = state;
-  const { complaint } = root;
-  return complaint;
-};
 
 export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },
   } = state;
   return complaintLocation;
-};
-
-export const selectComplaintHeader =
-  (complaintType: string) =>
-  (state: RootState): any => {
-    const selectSharedHeader = (ceComplaint: Complaint, result: any) => {
-      let officerAssigned = "Not Assigned";
-      let personGuid = "";
-      const {
-        incident_reported_utc_timestmp: loggedDate,
-        create_user_id: createdBy,
-        update_utc_timestamp: lastUpdated,
-        complaint_status_code: ceStatusCode,
-      } = ceComplaint;
-
-      const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-      const owned_by_agency_code = ceComplaint.owned_by_agency_code.agency_code ?? "";
-
-      if (ceComplaint.person_complaint_xref.length > 0) {
-        const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
-        const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
-        officerAssigned = `${firstName} ${lastName}`;
-        personGuid = ceComplaint.person_complaint_xref[0].person_guid.person_guid;
-      }
-
-      const { complaint_status_code: statusCode, long_description: status } = ceStatusCode;
-
-      result = {
-        ...result,
-        loggedDate,
-        createdBy,
-        lastUpdated,
-        officerAssigned: officerAssigned,
-        status,
-        statusCode,
-        zone: zone_code,
-        personGuid,
-        complaintAgency: owned_by_agency_code,
-      };
-
-      return result;
-    };
-
-    const selectWildlifeComplaintHeader = (state: RootState): ComplaintHeader => {
-      const {
-        complaints: { complaint },
-      } = state;
-
-      let result = {
-        loggedDate: "",
-        createdBy: "",
-        lastUpdated: "",
-        officerAssigned: "",
-        personGuid: "",
-        status: "",
-        statusCode: "",
-        natureOfComplaint: "", //-- needs to be violation as well
-        natureOfComplaintCode: "",
-        species: "", //-- not available for ers
-        speciesCode: "",
-        zone: "",
-        firstName: "",
-        lastName: "",
-      };
-
-      if (complaint) {
-        const {
-          complaint_identifier: ceComplaint,
-          hwcr_complaint_nature_code: ceComplaintNatureCode,
-          species_code: ceSpeciesCode,
-        } = complaint as HwcrComplaint;
-
-        if (ceComplaint) {
-          result = selectSharedHeader(ceComplaint, result);
-
-          if (ceComplaintNatureCode) {
-            const { long_description: natureOfComplaint, hwcr_complaint_nature_code: natureOfComplaintCode } =
-              ceComplaintNatureCode;
-            result = { ...result, natureOfComplaint, natureOfComplaintCode };
-          }
-
-          if (ceSpeciesCode) {
-            const { short_description: species, species_code: speciesCode } = ceSpeciesCode;
-            result = { ...result, species, speciesCode };
-          }
-        }
-      }
-      return result;
-    };
-
-    const selectAllegationComplaintHeader = (state: RootState): ComplaintHeader => {
-      const {
-        complaints: { complaint },
-      } = state;
-
-      let result = {
-        loggedDate: "",
-        createdBy: "",
-        lastUpdated: "",
-        officerAssigned: "",
-        status: "",
-        statusCode: "",
-        zone: "",
-        violationType: "", //-- needs to be violation as well
-        personGuid: "",
-        violationTypeCode: "",
-      };
-
-      if (complaint) {
-        const { complaint_identifier: ceComplaint, violation_code: ceViolation } = complaint as AllegationComplaint;
-
-        if (ceComplaint) {
-          result = selectSharedHeader(ceComplaint, result);
-        }
-
-        if (ceViolation) {
-          const { long_description: violationType, violation_code: violationTypeCode } = ceViolation;
-          result = { ...result, violationType, violationTypeCode };
-        }
-      }
-      return result;
-    };
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return selectAllegationComplaintHeader(state);
-      case COMPLAINT_TYPES.HWCR:
-        return selectWildlifeComplaintHeader(state);
-    }
-  };
-
-export const selectComplaintDetails =
-  (complaintType: string) =>
-  (state: RootState): ComplaintDetails => {
-    const {
-      complaints: { complaint },
-    } = state;
-
-    let results: ComplaintDetails = {};
-    if (complaint) {
-      const { complaint_identifier: ceComplaint }: any = complaint;
-
-      if (ceComplaint) {
-        const {
-          detail_text,
-          location_summary_text,
-          location_detailed_text,
-          incident_utc_datetime,
-          location_geometry_point: { coordinates },
-        } = ceComplaint;
-
-        const area_name = ceComplaint.cos_geo_org_unit?.area_name ?? "";
-        const region_name = ceComplaint.cos_geo_org_unit?.region_name ?? "";
-        const zone_name = ceComplaint.cos_geo_org_unit?.zone_name ?? "";
-        const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-        const office_location_name = ceComplaint.cos_geo_org_unit?.office_location_name ?? "";
-
-        results = {
-          ...results,
-          details: detail_text,
-          location: location_summary_text,
-          locationDescription: location_detailed_text,
-          incidentDateTime: incident_utc_datetime,
-          coordinates,
-          area: area_name,
-          region: region_name,
-          zone: zone_name,
-          zone_code: zone_code,
-          office: office_location_name,
-        };
-      }
-    }
-
-    if (complaint) {
-      switch (complaintType) {
-        case COMPLAINT_TYPES.ERS: {
-          const { in_progress_ind: violationInProgress, observed_ind: violationObserved }: any = complaint;
-
-          results = { ...results, violationInProgress, violationObserved };
-          break;
-        }
-        case COMPLAINT_TYPES.HWCR: {
-          const { attractant_hwcr_xref }: any = complaint;
-
-          if (attractant_hwcr_xref) {
-            const attractants = attractant_hwcr_xref.map(
-              ({
-                attractant_hwcr_xref_guid: key,
-                attractant_code: { attractant_code: code, short_description: description },
-              }: any): ComplaintDetailsAttractant => {
-                return { key, code, description };
-              }
-            );
-
-            results = { ...results, attractants };
-          }
-          break;
-        }
-      }
-    }
-    return results;
-  };
-
-export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
-  const {
-    complaints: { complaint },
-  } = state;
-
-  let results = {} as ComplaintCallerInformation;
-
-  if (complaint) {
-    const { complaint_identifier: ceComplaint } = complaint;
-    const {
-      caller_name,
-      caller_phone_1,
-      caller_phone_2,
-      caller_phone_3,
-      caller_address,
-      caller_email,
-      referred_by_agency_code,
-      owned_by_agency_code,
-    }: any = ceComplaint;
-
-    results = {
-      ...results,
-      name: caller_name,
-      primaryPhone: caller_phone_1,
-      secondaryPhone: caller_phone_2,
-      alternatePhone: caller_phone_3,
-      address: caller_address,
-      email: caller_email,
-      referredByAgencyCode: referred_by_agency_code,
-      ownedByAgencyCode: owned_by_agency_code,
-    };
-  }
-  return results;
-};
-
-export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
-  const {
-    complaints: { complaint },
-  } = state;
-
-  let results = {} as ComplaintSuspectWitness;
-
-  if (complaint) {
-    const { suspect_witnesss_dtl_text: details }: any = complaint;
-
-    results = { ...results, details };
-  }
-
-  return results;
 };
 
 export const selectWildlifeZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => {
@@ -1064,16 +799,16 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
 //-- TODO: rename toSelectComplaint and remove previous selectComplaint selector
 export const selectComplaintData = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
   const {
-    complaints: { data },
+    complaints: { complaint },
   } = state;
-  return data;
+  return complaint;
 };
 
-export const selectComplaintDetailsV2 =
+export const selectComplaintDetails =
   (complaintType: string) =>
   (state: RootState): ComplaintDetails => {
     const {
-      complaints: { data },
+      complaints: { complaint },
       codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable },
     } = state;
 
@@ -1103,7 +838,7 @@ export const selectComplaintDetailsV2 =
 
     let result: ComplaintDetails = {};
 
-    if (data) {
+    if (complaint) {
       const {
         details,
         locationSummary: location,
@@ -1114,7 +849,7 @@ export const selectComplaintDetailsV2 =
         attractants,
         isInProgress: violationInProgress,
         wasObserved: violationObserved,
-      } = data as any;
+      } = complaint as any;
 
       const org = areaCodes.find(({ area }) => area === areaCode);
 
@@ -1153,11 +888,11 @@ export const selectComplaintDetailsV2 =
     return result;
   };
 
-export const selectComplaintHeaderV2 =
+export const selectComplaintHeader =
   (complaintType: string) =>
   (state: RootState): ComplaintHeader => {
     const {
-      complaints: { data },
+      complaints: { complaint },
       codeTables: {
         "complaint-status": statusCodes,
         violation: violationCodes,
@@ -1182,7 +917,7 @@ export const selectComplaintHeaderV2 =
       let officerAssigned = "Not Assigned";
       let personGuid = "";
 
-      if (data) {
+      if (complaint) {
         const {
           reportedOn: loggedDate,
           createdBy,
@@ -1191,7 +926,7 @@ export const selectComplaintHeaderV2 =
           delegates,
           ownedBy: complaintAgency,
           organization: { zone },
-        } = data as ComplaintDto;
+        } = complaint as ComplaintDto;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
 
@@ -1225,16 +960,16 @@ export const selectComplaintHeaderV2 =
 
     let result = selectSharedHeader();
 
-    if (data) {
+    if (complaint) {
       switch (complaintType) {
         case COMPLAINT_TYPES.ERS:
-          const { violation: violationTypeCode } = data as AllegationComplaintDto;
+          const { violation: violationTypeCode } = complaint as AllegationComplaintDto;
           const violationType = getViolationByViolationCode(violationTypeCode, violationCodes);
 
           result = { ...result, violationType, violationTypeCode };
           break;
         case COMPLAINT_TYPES.HWCR:
-          const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } = data as WildlifeComplaintDto;
+          const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } = complaint as WildlifeComplaintDto;
           const species = getSpeciesBySpeciesCode(speciesCode, speciesCodes);
           const natureOfComplaint = getNatureOfComplaintByNatureOfComplaintCode(
             natureOfComplaintCode,
@@ -1249,9 +984,9 @@ export const selectComplaintHeaderV2 =
     return result;
   };
 
-export const selectComplaintCallerInformationV2 = (state: RootState): ComplaintCallerInformation => {
+export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
   const {
-    complaints: { data },
+    complaints: { complaint },
     codeTables: { agency: agencyCodes },
   } = state;
 
@@ -1267,8 +1002,8 @@ export const selectComplaintCallerInformationV2 = (state: RootState): ComplaintC
 
   let results = {} as ComplaintCallerInformation;
 
-  if (data) {
-    const { name, phone1, phone2, phone3, address, email, referredBy, ownedBy }: any = data;
+  if (complaint) {
+    const { name, phone1, phone2, phone3, address, email, referredBy, ownedBy }: any = complaint;
     const referredByAgencyCode = getAgencyByAgencyCode(referredBy, agencyCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
 
@@ -1290,6 +1025,22 @@ export const selectComplaintCallerInformationV2 = (state: RootState): ComplaintC
       results = { ...results, ownedByAgencyCode };
     }
   }
+  return results;
+};
+
+export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
+  const {
+    complaints: { complaint },
+  } = state;
+
+  let results = {} as ComplaintSuspectWitness;
+
+  if (complaint) {
+    const { violationDetails: details } = complaint as AllegationComplaintDto;
+
+    results = { ...results, details };
+  }
+
   return results;
 };
 

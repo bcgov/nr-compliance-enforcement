@@ -8,7 +8,7 @@ import {
 } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
-import { selectComplaintDetailsV2 } from "../../../../store/reducers/complaints";
+import { selectComplaintDetails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 
@@ -30,7 +30,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     attractants,
     violationInProgress,
     violationObserved,
-  } = useAppSelector(selectComplaintDetailsV2(complaintType)) as ComplaintDetails;
+  } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   return (
     <div className="comp-complaint-details-block">
