@@ -58,6 +58,7 @@ import { DelegateDto } from "../../types/models/people/delegate";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -71,6 +72,8 @@ export class ComplaintService {
 
   @InjectRepository(AgencyCode)
   private _agencyRepository: Repository<AgencyCode>;
+  @InjectRepository(ReportedByCode)
+  private _reportedByuRepository: Repository<ReportedByCode>;
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
