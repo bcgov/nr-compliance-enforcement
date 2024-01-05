@@ -1,6 +1,11 @@
 import format from "date-fns/format";
 import { Coordinates } from "../types/app/coordinate-type";
 import COMPLAINT_TYPES from "../types/app/complaint-types";
+import { ComplaintStatus } from "../types/app/code-tables/complaint-status";
+import { from } from "linq-to-typescript";
+import { Violation } from "../types/app/code-tables/violation";
+import { Species } from "../types/app/code-tables/species";
+import { NatureOfComplaint } from "../types/app/code-tables/nature-of-complaint";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -180,4 +185,44 @@ export const removeFile = (fileList: FileList, fileToRemove: File): File[] => {
   const updatedFilesArray = filesArray.filter(file => file !== fileToRemove);
 
   return updatedFilesArray;
+}
+
+export const getStatusByStatusCode = (code: string, codes: Array<ComplaintStatus>): string => { 
+  if(from(codes).any(({complaintStatus}) => complaintStatus === code)){ 
+    const selected = from(codes).first(({complaintStatus}) => complaintStatus === code)
+
+    return selected.longDescription
+  }
+
+  return "";
+}
+
+export const getViolationByViolationCode = (code: string, codes: Array<Violation>): string => { 
+  if(codes && from(codes).any(({violation}) => violation === code)){ 
+    const selected = from(codes).first(({violation}) => violation === code);
+
+    return selected.longDescription;
+  }
+
+  return ""
+}
+
+export const getSpeciesBySpeciesCode = (code: string, codes: Array<Species>): string => { 
+  if(codes && from(codes).any(({species}) => species === code)){ 
+    const selected = from(codes).first(({species}) => species === code);
+
+    return selected.longDescription;
+  }
+
+  return ""
+}
+
+export const getNatureOfComplaintByNatureOfComplaintCode = (code: string, codes: Array<NatureOfComplaint>): string => { 
+  if(codes && from(codes).any(({natureOfComplaint}) => natureOfComplaint === code)){ 
+    const selected = from(codes).first(({natureOfComplaint}) => natureOfComplaint === code);
+
+    return selected.longDescription;
+  }
+
+  return ""
 }

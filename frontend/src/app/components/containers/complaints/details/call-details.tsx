@@ -32,7 +32,6 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     violationObserved,
   } = useAppSelector(selectComplaintDetailsV2(complaintType)) as ComplaintDetails;
 
-console.log(attractants)
   return (
     <div className="comp-complaint-details-block">
       <h6>Call Details</h6>

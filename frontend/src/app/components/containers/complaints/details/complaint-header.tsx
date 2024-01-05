@@ -4,7 +4,7 @@ import COMPLAINT_TYPES, {
   complaintTypeToName,
 } from "../../../../types/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintHeader } from "../../../../store/reducers/complaints";
+import { selectComplaintHeaderV2 } from "../../../../store/reducers/complaints";
 import {
   applyStatusClass,
   formatDate,
@@ -36,6 +36,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
 }) => {
+
   const {
     loggedDate,
     createdBy,
@@ -47,7 +48,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     violationType,
     species,
     complaintAgency,
-  } = useAppSelector(selectComplaintHeader(complaintType));
+  } = useAppSelector(selectComplaintHeaderV2(complaintType));
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";

@@ -3,11 +3,8 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { bcBoundaries, formatDate, formatTime } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
-  selectComplaintDetails,
-  selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
-  selectComplaint,
   setComplaint,
   setGeocodedComplaintCoordinates,
   getAllegationComplaintByComplaintIdentifier,
@@ -16,6 +13,7 @@ import {
   selectComplaintData,
   getComplaintById,
   selectComplaintDetailsV2,
+  selectComplaintHeaderV2,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -37,8 +35,6 @@ import { ComplaintSuspectWitness } from "../../../../types/complaints/details/co
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
-import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
-import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
 import { ValidationInput } from "../../../../common/validation-input";
@@ -81,7 +77,6 @@ export const ComplaintDetailsEdit: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   //-- selectors
-  const complaint = useAppSelector(selectComplaint);
   const data = useAppSelector(selectComplaintData);
 
   const {
@@ -108,7 +103,7 @@ export const ComplaintDetailsEdit: FC = () => {
     natureOfComplaintCode,
     speciesCode,
     violationTypeCode,
-  } = useAppSelector(selectComplaintHeader(complaintType));
+  } = useAppSelector(selectComplaintHeaderV2(complaintType));
 
   const {
     name,
@@ -177,22 +172,6 @@ export const ComplaintDetailsEdit: FC = () => {
       dispatch(setGeocodedComplaintCoordinates(null));
     };
   }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (!complaint || complaint.complaint_identifier.complaint_identifier !== id) {
-  //     if (id) {
-
-  //       switch (complaintType) {
-  //         case COMPLAINT_TYPES.ERS:
-  //           dispatch(getAllegationComplaintByComplaintIdentifier(id));
-  //           break;
-  //         case COMPLAINT_TYPES.HWCR:
-  //           dispatch(getWildlifeComplaintByComplaintIdentifier(id));
-  //           break;
-  //       }
-  //     }
-  //   }
-  // }, [id, complaintType, complaint, dispatch]);
 
   useEffect(() => {
     if (id && (!data || data.id !== id)) {
@@ -346,7 +325,7 @@ export const ComplaintDetailsEdit: FC = () => {
     return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
   };
 
-  const getSelectedOfficer = (officers: Option[], personGuid: UUID, update: ComplaintDto | undefined): any => {
+  const getSelectedOfficer = (officers: Option[], personGuid: UUID | string, update: ComplaintDto | undefined): any => {
     if (update && personGuid) {
       const { delegates } = update;
 

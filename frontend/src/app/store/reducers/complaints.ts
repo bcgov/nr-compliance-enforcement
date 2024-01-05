@@ -32,6 +32,12 @@ import { AttractantXref as AttractantXrefDto } from "../../types/app/complaints/
 import { Attractant as AttractantDto } from "../../types/app/code-tables/attactant";
 
 import { from } from "linq-to-typescript";
+import {
+  getNatureOfComplaintByNatureOfComplaintCode,
+  getSpeciesBySpeciesCode,
+  getStatusByStatusCode,
+  getViolationByViolationCode,
+} from "../../common/methods";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -1074,7 +1080,6 @@ export const selectComplaintDetailsV2 =
       attractants: Array<AttractantXrefDto>,
       codes: Array<AttractantDto>
     ): Array<ComplaintDetailsAttractant> => {
-  
       const result = attractants.map(({ xrefId: key, attractant: code }) => {
         let record: ComplaintDetailsAttractant = { key: "", description: "", code };
 
@@ -1112,7 +1117,7 @@ export const selectComplaintDetailsV2 =
 
       const org = areaCodes.find(({ area }) => area === areaCode);
 
-      if (from(attractants).any()) {
+      if (attractants && from(attractants).any()) {
         let items = getAttractants(attractants, attractantCodeTable);
         result = { ...result, attractants: items };
       }
@@ -1141,6 +1146,103 @@ export const selectComplaintDetailsV2 =
           office: officeLocationName,
           officeCode: officeLocation,
         };
+      }
+    }
+
+    return result;
+  };
+
+export const selectComplaintHeaderV2 =
+  (complaintType: string) =>
+  (state: RootState): ComplaintHeader => {
+
+    const {
+      complaints: { data },
+      codeTables: {
+        "complaint-status": statusCodes,
+        violation: violationCodes,
+        species: speciesCodes,
+        "nature-of-complaint": natureOfComplaints,
+      },
+    } = state;
+
+    const selectSharedHeader = () => {
+      let result: ComplaintHeader = {
+        loggedDate: "",
+        createdBy: "",
+        lastUpdated: "",
+        status: "",
+        statusCode: "",
+        zone: "",
+        officerAssigned: "",
+        personGuid: "",
+        complaintAgency: "",
+      };
+
+      let officerAssigned = "Not Assigned";
+      let personGuid = "";
+
+      if (data) {
+        const {
+          reportedOn: loggedDate,
+          createdBy,
+          updatedOn: lastUpdated,
+          status: statusCode,
+          delegates,
+          ownedBy: complaintAgency,
+          organization: { zone },
+        } = data as ComplaintDto;
+
+        const status = getStatusByStatusCode(statusCode, statusCodes);
+
+        result = {
+          loggedDate: loggedDate.toString(),
+          createdBy,
+          lastUpdated: lastUpdated.toString(),
+          status,
+          statusCode,
+          zone,
+          officerAssigned,
+          personGuid,
+          complaintAgency,
+        };
+
+        if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
+          const assigned = from(delegates).first(({ isActive, type }) => type === "ASSIGNEE" && isActive);
+
+          const {
+            person: { firstName, lastName, id },
+          } = assigned;
+          officerAssigned = `${firstName} ${lastName}`;
+          personGuid = id as string;
+
+          result = { ...result, firstName, lastName, officerAssigned, personGuid };
+        }
+      }
+
+      return result;
+    };
+
+    let result = selectSharedHeader();
+
+    if (data) {
+      switch (complaintType) {
+        case COMPLAINT_TYPES.ERS:
+          const { violation: violationTypeCode } = data as AllegationComplaintDto;
+          const violationType = getViolationByViolationCode(violationTypeCode, violationCodes);
+
+          result = { ...result, violationType, violationTypeCode };
+          break;
+        case COMPLAINT_TYPES.HWCR:
+          const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } = data as WildlifeComplaintDto;
+          const species = getSpeciesBySpeciesCode(speciesCode, speciesCodes);
+          const natureOfComplaint = getNatureOfComplaintByNatureOfComplaintCode(
+            natureOfComplaintCode,
+            natureOfComplaints
+          );
+
+          result = { ...result, species, speciesCode, natureOfComplaint, natureOfComplaintCode };
+          break;
       }
     }
 
