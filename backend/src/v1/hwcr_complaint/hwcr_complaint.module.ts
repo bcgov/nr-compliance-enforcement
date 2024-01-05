@@ -33,6 +33,8 @@ import { BcGeoCoderService } from "../../external_api/bc_geo_coder/bc_geo_coder.
 import { HttpModule } from "@nestjs/axios";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { CodeTableModule } from "../code-table/code-table.module";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
+import { ReportedByCodeService } from "../reported_by_code/reported_by_code.service";
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { CodeTableModule } from "../code-table/code-table.module";
     TypeOrmModule.forFeature([Person]),
     TypeOrmModule.forFeature([PersonComplaintXref]),
     TypeOrmModule.forFeature([AllegationComplaint]),
+    TypeOrmModule.forFeature([ReportedByCode]),
     CodeTableModule,
     HttpModule,
   ],
@@ -71,6 +74,7 @@ import { CodeTableModule } from "../code-table/code-table.module";
     PersonService,
     PersonComplaintXrefService,
     BcGeoCoderService,
+    ReportedByCodeService,
   ],
 })
 export class HwcrComplaintModule {}
