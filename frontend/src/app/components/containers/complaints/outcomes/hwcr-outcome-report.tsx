@@ -8,7 +8,7 @@ import { HWCRFileReview } from "./hwcr-file-review";
 export const HWCROutcomeReport: FC = () => {  
     return (
       <div className="comp-hwcr-outcome-report">
-        <hr />
+        <hr className="blue-seperator"/>
         <div className="comp-sub-header">
             Outcome report
         </div>
