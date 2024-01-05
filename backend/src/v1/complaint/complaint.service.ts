@@ -73,7 +73,7 @@ export class ComplaintService {
   @InjectRepository(AgencyCode)
   private _agencyRepository: Repository<AgencyCode>;
   @InjectRepository(ReportedByCode)
-  private _reportedByuRepository: Repository<ReportedByCode>;
+  private _reportedByRepository: Repository<ReportedByCode>;
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
