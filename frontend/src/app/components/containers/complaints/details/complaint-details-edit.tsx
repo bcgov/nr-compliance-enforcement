@@ -1290,7 +1290,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     className="comp-details-label-input-pair"
                     id="reported-pair-id"
                   >
-                    <label>Reported By</label>
+                    <label htmlFor="reported-select-id">Reported By</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
                         id="reported-select-id"
