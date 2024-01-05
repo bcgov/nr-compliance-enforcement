@@ -12,7 +12,7 @@ export const CallerInformation: FC = () => {
     alternatePhone,
     address,
     email,
-    referredByAgencyCode,
+    reportedByCode,
   } = useAppSelector(selectComplaintCallerInformation);
 
   return (
@@ -71,10 +71,10 @@ export const CallerInformation: FC = () => {
             </div>
             <div>
               <div className="comp-details-content-label">
-                Referred by / Complaint Agency
+                Reported By
               </div>
-              <div className="comp-details-content" id="comp-details-referred">
-                {referredByAgencyCode?.long_description}
+              <div className="comp-details-content" id="comp-details-reported">
+                {reportedByCode?.long_description}
               </div>
             </div>
           </Col>

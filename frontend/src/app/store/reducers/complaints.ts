@@ -302,7 +302,6 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
-
       setUpdateComplaint(response);
 
       dispatch(setComplaint({ ...response }));
@@ -876,7 +875,6 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
   } = state;
 
   let results = {} as ComplaintCallerInformation;
-
   if (complaint) {
     const { complaint_identifier: ceComplaint } = complaint;
     const {
@@ -886,7 +884,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       caller_phone_3,
       caller_address,
       caller_email,
-      referred_by_agency_code,
+      reported_by_code,
       owned_by_agency_code,
     }: any = ceComplaint;
 
@@ -898,7 +896,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       alternatePhone: caller_phone_3,
       address: caller_address,
       email: caller_email,
-      referredByAgencyCode: referred_by_agency_code,
+      reportedByCode: reported_by_code,
       ownedByAgencyCode: owned_by_agency_code,
     };
   }

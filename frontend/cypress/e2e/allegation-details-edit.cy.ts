@@ -2,7 +2,7 @@ import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 
 const originalCallDetails = {
   description:
-    "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS.",
+    "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who reported the answer to COS.",
   location: "Keefes Landing Rd and Danskin Rd",
   locationDescription: "tester call description 8",
   incidentDateDay: "11",
@@ -39,15 +39,15 @@ const originalCallerInformation = {
   alternateInput: "",
   address: "135 fake st",
   email: "",
-  referred: "Bylaw Enforcement",
-  referredCode: "BYLAW",
-  referredIndex: 2,
+  reported: "Department of Fisheries and Oceans",
+  reportedCode: "DFO",
+  reportedIndex: 2,
   witnessDetails: "",
 };
 
 const editCallDetails = {
   description:
-    "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who referred the answer to COS. ---- testing",
+    "Caller was involved in an altercation yesterday with a person who was exceeding the Callers understanding of the limit.  SUBs were attempting to catch 5 fish, of each type, each person (total 20.) SUBs male and their wife.  Caller requesting CO clarification regarding fish quotas for region 3.  Caller has contacted front counter BC, who reported the answer to COS. ---- testing",
   location: "Keefes Landing Rd and Danskin Rd ---- testing",
   locationDescription: "tester call description 8 ---- testing",
   incidentDateDay: "01",
@@ -84,9 +84,9 @@ const editCallerInformation = {
   alternateInput: "2506668888",
   address: "135 fake st ---- testing",
   email: "tester512@gmail.com",
-  referred: "BC Wildlife Federation",
-  referredCode: "BCWF",
-  referredIndex: 1,
+  reported: "Conservation Officer Service",
+  reportedCode: "COS",
+  reportedIndex: 1,
   witnessDetails: "----- testing",
 };
 
@@ -110,9 +110,9 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#caller-primary-phone-id").click({force: true}).click({ force: true });
 
     cy.get("#caller-primary-phone-id").click({force: true}).clear();
-    cy.get("#caller-primary-phone-id").typeAndTriggerChange(
-      editCallerInformation.phoneInput,
-    );
+    cy.get("#caller-primary-phone-id")
+      .click({force: true}).clear()
+      .typeAndTriggerChange(editCallerInformation.phoneInput);
 
     cy.get("#caller-info-secondary-phone-id")
       .click({force: true}).clear()
@@ -122,7 +122,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .clear()
       .typeAndTriggerChange(editCallerInformation.alternateInput);
 
-    cy.selectItemById("referred-select-id", editCallerInformation.referred);
+    cy.selectItemById("reported-select-id", editCallerInformation.reported);
 
     cy.get("#complaint-witness-details-textarea-id")
       .click({force: true})  
@@ -195,8 +195,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get('div[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
-    cy.get('div[id="comp-details-referred"]').contains(
-      editCallerInformation.referred,
+    cy.get('div[id="comp-details-reported"]').contains(
+      editCallerInformation.reported,
     );
     cy.get('div[id="comp-details-email"]').contains(
       editCallerInformation.email,
@@ -250,7 +250,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   it("Puts everything back to the original details", () => {
     //start reverting changes
     cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
-    cy.get("#caller-name-id").click({force: true}).clear().type(originalCallerInformation.name);
+    cy.get("#caller-name-id").click({force: true}).click({force: true}).clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
     .click({force: true}).clear()
       .type(originalCallerInformation.address);
@@ -268,7 +268,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       .click({force: true}).clear()
       .typeAndTriggerChange(originalCallerInformation.alternateInput);
 
-    cy.selectItemById("referred-select-id", originalCallerInformation.referred);
+    cy.selectItemById("reported-select-id", originalCallerInformation.reported);
 
     cy.get("#complaint-witness-details-textarea-id").click({force: true}).clear();
 
@@ -346,8 +346,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-referred"]').contains(
-      originalCallerInformation.referred,
+    cy.get('div[id="comp-details-reported"]').contains(
+      originalCallerInformation.reported,
     );
 
     cy.get('div[id="comp-details-location"]').contains(
@@ -554,10 +554,10 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#email-pair-id input").should("exist");
 
     // Reffered by / Complaint Agency
-    cy.get("#referred-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Referred by / Complaint Agency");
+    cy.get("#reported-pair-id label").should(($label) => {
+      expect($label).to.contain.text("Reported By");
     });
-    cy.get("#referred-pair-id input").should("exist");
+    cy.get("#reported-pair-id input").should("exist");
 
     cy.get("#subject-of-complaint-pair-id label").should(($label) => {
       expect($label).to.contain.text("Description");

@@ -38,9 +38,9 @@ describe("Complaint Create Page spec - Create View", () => {
     alternateInput: "2506668888",
     address: "437 Fake St ---- testing",
     email: "tester512@gmail.com",
-    referred: "BC Wildlife Federation",
-    referredCode: "BCWF",
-    referredIndex: 1,
+    reported: "Conservation Officer Service",
+    reportedCode: "BCWF",
+    reportedIndex: 1,
   };
 
   beforeEach(function () {
@@ -73,7 +73,7 @@ describe("Complaint Create Page spec - Create View", () => {
       .clear()
       .typeAndTriggerChange(createCallerInformation.alternateInput);
 
-    cy.selectItemById("referred-select-id", createCallerInformation.referred);
+    cy.selectItemById("reported-select-id", createCallerInformation.reported);
 
     cy.get("#location-edit-id").click({ force: true });
     cy.get("#location-edit-id").clear().type(createCallDetails.location);
@@ -140,8 +140,8 @@ describe("Complaint Create Page spec - Create View", () => {
       expect($el.text().trim()).equal(createCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-referred"]').contains(
-      createCallerInformation.referred,
+    cy.get('div[id="comp-details-reported"]').contains(
+      createCallerInformation.reported,
     );
 
     cy.get('div[id="comp-details-location"]').contains(

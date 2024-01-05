@@ -13,9 +13,9 @@ export interface Complaint {
    locationSummary: string;
    locationDetail: string;
    status: string;
-   referredBy?: string;
+   reportedBy?: string;
    ownedBy: string;
-   referredByAgencyOther: string;
+   reportedByOther: string;
    incidentDateTime: Date;
    reportedOn: Date;
    updatedOn: Date;

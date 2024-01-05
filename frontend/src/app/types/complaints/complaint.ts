@@ -1,5 +1,6 @@
 import { AgencyCode } from "../code-tables/agency-code";
 import { GeoOrganizationUnitCode } from "../code-tables/geo-organization-unit-code";
+import { ReportedByCode } from "../code-tables/reported-by-code";
 import { PersonComplaintXref } from "./person-complaint-xref";
 
 export interface Complaint {
@@ -22,7 +23,7 @@ export interface Complaint {
     caller_phone_1: string;
     caller_phone_2: string;
     caller_phone_3: string;
-    referred_by_agency_code: AgencyCode;
+    reported_by_code: ReportedByCode;
     owned_by_agency_code: AgencyCode;
     cos_geo_org_unit: {
       zone_code: string;
@@ -32,7 +33,7 @@ export interface Complaint {
       region_code: string;
     };
     person_complaint_xref: PersonComplaintXref[];
-    referred_by_agency_other_text: string;
+    reported_by_other_text: string;
 }
 
 export interface ComplaintStatusCode {

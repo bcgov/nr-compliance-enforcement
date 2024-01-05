@@ -62,8 +62,8 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.locationDetail)
     ),
     forMember(
-      (dest) => dest.referred_by_agency_other_text,
-      mapFrom((src) => src.referredByAgencyOther)
+      (dest) => dest.reported_by_other_text,
+      mapFrom((src) => src.reportedByOther)
     ),
     forMember(
       (dest) => dest.incident_utc_datetime,
@@ -127,10 +127,10 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       })
     ),
     forMember(
-      (dest) => dest.referred_by_agency_code,
+      (dest) => dest.reported_by_code,
       mapFrom((src) => {
-        const { referredBy } = src || null;
-        return referredBy ? { agency_code: referredBy } : null;
+        const { reportedBy } = src || null;
+        return reportedBy ? { reported_by_code: reportedBy } : null;
       })
     ),
     forMember(
@@ -193,8 +193,8 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.locationDetail)
     ),
     forMember(
-      (dest) => dest.complaint_identifier.referred_by_agency_other_text,
-      mapFrom((src) => src.referredByAgencyOther)
+      (dest) => dest.complaint_identifier.reported_by_other_text,
+      mapFrom((src) => src.reportedByOther)
     ),
     forMember(
       (dest) => dest.complaint_identifier.incident_utc_datetime,
@@ -258,10 +258,10 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       })
     ),
     forMember(
-      (dest) => dest.complaint_identifier.referred_by_agency_code,
+      (dest) => dest.complaint_identifier.reported_by_code,
       mapFrom((src) => {
-        const { referredBy } = src || null;
-        return referredBy ? { agency_code: referredBy } : null;
+        const { reportedBy } = src || null;
+        return reportedBy ? { reported_by_code: reportedBy } : null;
       })
     ),
     forMember(
@@ -379,8 +379,8 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (
       mapFrom((src) => src.locationDetail)
     ),
     forMember(
-      (dest) => dest.complaint_identifier.referred_by_agency_other_text,
-      mapFrom((src) => src.referredByAgencyOther)
+      (dest) => dest.complaint_identifier.reported_by_other_text,
+      mapFrom((src) => src.reportedByOther)
     ),
     forMember(
       (dest) => dest.complaint_identifier.incident_utc_datetime,
@@ -444,10 +444,10 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (
       })
     ),
     forMember(
-      (dest) => dest.complaint_identifier.referred_by_agency_code,
+      (dest) => dest.complaint_identifier.reported_by_code,
       mapFrom((src) => {
-        const { referredBy } = src || null;
-        return referredBy ? { agency_code: referredBy } : null;
+        const { reportedBy } = src || null;
+        return reportedBy ? { reported_by_code: reportedBy } : null;
       })
     ),
     forMember(
