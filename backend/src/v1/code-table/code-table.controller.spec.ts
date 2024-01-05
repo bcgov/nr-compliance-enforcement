@@ -20,6 +20,7 @@ import {
   MockOrganizationUnitCodeTableRepository,
   MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
+  MockReportedByCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
@@ -34,6 +35,7 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 
 describe("Testing: CodeTable Controller", () => {
   let app: INestApplication;
@@ -87,6 +89,10 @@ describe("Testing: CodeTable Controller", () => {
         {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ReportedByCode),
+          useFactory: MockReportedByCodeTableRepository,
         },
       ],
     })

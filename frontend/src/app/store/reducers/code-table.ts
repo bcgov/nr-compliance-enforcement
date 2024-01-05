@@ -18,6 +18,7 @@ import { Region } from "../../types/app/code-tables/region";
 import { Zone } from "../../types/app/code-tables/zone";
 import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
+import { ReportedBy } from "../../types/app/code-tables/reported-by";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -31,6 +32,7 @@ const initialState: CodeTableState = {
   zones: [],
   communities: [],
   "area-codes": [],
+  "reported-by": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -71,6 +73,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       regions,
       zones,
       communities,
+      "reported-by": reportedBy,
     },
   } = state;
 
@@ -117,6 +120,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
 
     if (!from(complaintType).any()) {
       dispatch(fetchComplaintTypeCodes());
+    }
+    if (!from(reportedBy).any()) {
+      dispatch(fetchReportedByCodes());
     }
   } catch (error) {}
 };
@@ -289,6 +295,17 @@ export const fetchCommunities = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REPORTED_BY}`
+  );
+  const response = await get<Array<ReportedBy>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.REPORTED_BY, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -319,6 +336,18 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
 
   const data = agency.map(({ agency, longDescription }) => {
     const item: Option = { label: longDescription, value: agency };
+    return item;
+  });
+  return data;
+};
+
+export const selectReportedByDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "reported-by": reportedBy },
+  } = state;
+
+  const data = reportedBy.map(({ reportedBy, longDescription }) => {
+    const item: Option = { label: longDescription, value: reportedBy };
     return item;
   });
   return data;

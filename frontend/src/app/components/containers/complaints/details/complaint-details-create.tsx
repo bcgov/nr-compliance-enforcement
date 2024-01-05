@@ -20,11 +20,11 @@ import { openModal, selectOfficerAgency, userId } from "../../../../store/reduce
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { useSelector } from "react-redux";
 import {
-  selectAgencyDropdown,
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
   selectComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
+  selectReportedByDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
 } from "../../../../store/reducers/code-table";
@@ -108,8 +108,8 @@ export const CreateComplaint: FC = () => {
       caller_phone_1: "",
       caller_phone_2: "",
       caller_phone_3: "",
-      referred_by_agency_code: {
-        agency_code: "",
+      reported_by_code: {
+        reported_by_code: "",
         short_description: "",
         long_description: "",
         display_order: 0,
@@ -119,7 +119,7 @@ export const CreateComplaint: FC = () => {
         update_user_id: "",
         update_utc_timestamp: null,
       },
-      referred_by_agency_other_text: "",
+      reported_by_other_text: "",
       owned_by_agency_code: {
         agency_code: "",
         short_description: "",
@@ -807,7 +807,7 @@ export const CreateComplaint: FC = () => {
     }
   }
 
-  const handleReferredByChange = (selected: Option | null) => {
+  const handleReportedByChange = (selected: Option | null) => {
     if (selected) {
       const { label, value } = selected;
 
@@ -816,17 +816,17 @@ export const CreateComplaint: FC = () => {
         | AllegationComplaint;
 
       const { complaint_identifier: identifier } = update;
-      const { referred_by_agency_code: source } = identifier;
+      const { reported_by_code: source } = identifier;
 
       const updatedEntity = value
         ? {
             ...source,
             short_description: value,
             long_description: label as string,
-            agency_code: value,
+            reported_by_code: value,
           }
         : {
-            agency_code: "",
+            reported_by_code: "",
             short_description: "",
             long_description: "",
             display_order: 0,
@@ -839,7 +839,7 @@ export const CreateComplaint: FC = () => {
 
       const updatedParent = {
         ...identifier,
-        referred_by_agency_code: updatedEntity,
+        reported_by_code: updatedEntity,
       };
 
       update.complaint_identifier = updatedParent;
@@ -865,7 +865,7 @@ export const CreateComplaint: FC = () => {
   const areaCodes = useAppSelector(selectCommunityCodeDropdown)
   
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
-  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
+  const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useSelector(
     selectViolationCodeDropdown,
   ) as Option[];
@@ -1580,19 +1580,19 @@ export const CreateComplaint: FC = () => {
               </div>
               <div
                 className="comp-details-label-input-pair"
-                id="referred-pair-id"
+                id="reported-pair-id"
               >
-                <label>Referred by / Complaint Agency</label>
+                <label>Reported By</label>
                 <div className="comp-details-edit-input">
                   <CompSelect
-                    id="referred-select-id"
+                    id="reported-select-id"
                     classNamePrefix="comp-select"
                     className="comp-details-edit-input"
-                    options={referredByAgencyCodes}
+                    options={reportedByCodes}
                     defaultOption={{ label: "None", value: undefined }}
                     placeholder="Select"
                     enableValidation={false}
-                    onChange={(e) => handleReferredByChange(e)}
+                    onChange={(e) => handleReportedByChange(e)}
                   />
                 </div>
               </div>

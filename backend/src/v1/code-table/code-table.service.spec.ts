@@ -20,6 +20,7 @@ import {
   MockCommunityCodeTableServiceRepository,
   MockZoneCodeTableServiceRepository,
   MockRegionCodeTableServiceRepository,
+  MockReportedByCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
@@ -29,6 +30,7 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -81,6 +83,10 @@ describe("Testing: CodeTable Service", () => {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
         },
+        {
+          provide: getRepositoryToken(ReportedByCode),
+          useFactory: MockReportedByCodeTableRepository,
+        },
       ],
     }).compile();
 
@@ -101,7 +107,20 @@ describe("Testing: CodeTable Service", () => {
     //-- assert
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
-    expect(results.length).toBe(8);
+    expect(results.length).toBe(3);
+  });
+
+  it("should return collection of reported by codes", async () => {
+    //-- arrange
+    const _tableName = "reported-by";
+
+    //-- act
+    const results = await service.getCodeTableByName(_tableName);
+
+    //-- assert
+    expect(results).not.toBe(null);
+    expect(results.length).not.toBe(0);
+    expect(results.length).toBe(12);
   });
 
   it("should return collection of attractants", async () => {
@@ -286,6 +305,10 @@ describe("Testing: CodeTable service", () => {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
         },
+        {
+          provide: getRepositoryToken(ReportedByCode),
+          useFactory: MockReportedByCodeTableRepository,
+        },
       ],
     }).compile();
 
@@ -361,6 +384,10 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ReportedByCode),
+          useFactory: MockReportedByCodeTableRepository,
         },
       ],
     }).compile();
@@ -438,6 +465,10 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ReportedByCode),
+          useFactory: MockReportedByCodeTableRepository,
         },
       ],
     }).compile();

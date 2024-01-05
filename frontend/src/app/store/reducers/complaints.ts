@@ -314,7 +314,6 @@ export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
         `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
       );
       const response = await get<HwcrComplaint>(dispatch, parameters);
-
       setUpdateComplaint(response);
 
       dispatch(setComplaint({ ...response }));
@@ -687,7 +686,6 @@ export const getComplaintById =
   };
 
 //-- selectors
-
 export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },
