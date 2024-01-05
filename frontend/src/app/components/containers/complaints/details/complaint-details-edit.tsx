@@ -127,13 +127,13 @@ export const ComplaintDetailsEdit: FC = () => {
   const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
   const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
 
-  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
+  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
   ) as ComplaintSuspectWitness;
 
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
 
   //-- state
   const [readOnly, setReadOnly] = useState(true);
@@ -209,7 +209,6 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
-      debugger;
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
       if (complaintType === COMPLAINT_TYPES.HWCR) {

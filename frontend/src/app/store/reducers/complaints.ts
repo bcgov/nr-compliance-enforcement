@@ -38,6 +38,7 @@ import {
   getStatusByStatusCode,
   getViolationByViolationCode,
 } from "../../common/methods";
+import { Agency } from "../../types/app/code-tables/agency";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -1155,7 +1156,6 @@ export const selectComplaintDetailsV2 =
 export const selectComplaintHeaderV2 =
   (complaintType: string) =>
   (state: RootState): ComplaintHeader => {
-
     const {
       complaints: { data },
       codeTables: {
@@ -1248,5 +1248,49 @@ export const selectComplaintHeaderV2 =
 
     return result;
   };
+
+export const selectComplaintCallerInformationV2 = (state: RootState): ComplaintCallerInformation => {
+  const {
+    complaints: { data },
+    codeTables: { agency: agencyCodes },
+  } = state;
+
+  const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
+    if (codes && from(codes).any(({ agency }) => agency === code)) {
+      const selected = from(codes).first(({ agency }) => agency === code);
+
+      return selected;
+    }
+
+    return null;
+  };
+
+  let results = {} as ComplaintCallerInformation;
+
+  if (data) {
+    const { name, phone1, phone2, phone3, address, email, referredBy, ownedBy }: any = data;
+    const referredByAgencyCode = getAgencyByAgencyCode(referredBy, agencyCodes);
+    const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
+
+    results = {
+      ...results,
+      name,
+      primaryPhone: phone1,
+      secondaryPhone: phone2,
+      alternatePhone: phone3,
+      address,
+      email,
+    };
+
+    if (referredByAgencyCode) {
+      results = { ...results, referredByAgencyCode };
+    }
+
+    if (ownedByAgencyCode) {
+      results = { ...results, ownedByAgencyCode };
+    }
+  }
+  return results;
+};
 
 export default complaintSlice.reducer;
