@@ -56,18 +56,18 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
       mapFrom((src) => src.incidentDateTime)
     ),
     forMember(
-      (dest) => dest.referred_by_agency_other_text,
-      mapFrom((src) => src.referredByAgencyOther)
+      (dest) => dest.reported_by_other_text,
+      mapFrom((src) => src.reportedByOther)
     ),
     forMember(
       (dest) => dest.complaint_identifier,
       mapFrom((src) => src.id)
     ),
     forMember(
-      (dest) => dest.referred_by_agency_code,
+      (dest) => dest.reported_by_code,
       mapFrom((src) => {
         return {
-          agency_code: src.referredBy,
+          reported_by_code: src.reportedBy,
         };
       })
     ),

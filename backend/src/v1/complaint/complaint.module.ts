@@ -8,6 +8,7 @@ import { AllegationComplaint } from "../allegation_complaint/entities/allegation
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
+import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
@@ -30,6 +31,7 @@ import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwc
     TypeOrmModule.forFeature([AgencyCode]),
     TypeOrmModule.forFeature([Office]),
     TypeOrmModule.forFeature([Officer]),
+    TypeOrmModule.forFeature([ReportedByCode]),
     TypeOrmModule.forFeature([ComplaintStatusCode]),
     TypeOrmModule.forFeature([AttractantCode]),
     TypeOrmModule.forFeature([HwcrComplaintNatureCode]),

@@ -1,13 +1,23 @@
 const agencyCollection = [
-   { "agency_code": "BCWF", "short_description": "BCWF", "long_description": "BC Wildlife Federation", "display_order": 1, "active_ind": true   },
-   { "agency_code": "BYLAW", "short_description": "Bylaw Enforcement", "long_description": "Bylaw Enforcement", "display_order": 2, "active_ind": true   },
-   { "agency_code": "COS", "short_description": "COS", "long_description": "Conservation Officer Service", "display_order": 3, "active_ind": true   },
-   { "agency_code": "DFO", "short_description": "DFO", "long_description": "Department of Fisheries and Oceans", "display_order": 4, "active_ind": true   },
-   { "agency_code": "EPO", "short_description": "EPO", "long_description": "Environmental Protection Office", "display_order": 5, "active_ind": true   },
-   { "agency_code": "CEB", "short_description": "FOR", "long_description": "Forestry Compliance and Enforcement Branch", "display_order": 6, "active_ind": true   },
-   { "agency_code": "LE", "short_description": "Police", "long_description": "Municipal Police or RCMP", "display_order": 7, "active_ind": true   },
-   { "agency_code": "OTHER", "short_description": "Other", "long_description": "Other", "display_order": 8, "active_ind": true   }
-]
+   { "agency_code": "PARKS", "short_description": "BC Parks", "long_description": "BC Parks", "display_order": 1, "active_ind": true   },
+   { "agency_code": "COS", "short_description": "COS", "long_description": "Conservation Officer Service", "display_order": 2, "active_ind": true   },
+   { "agency_code": "EPO", "short_description": "EPO", "long_description": "Compliance and Environmental Enforcement Branch", "display_order": 3, "active_ind": true   },
+];
+
+const reportedByCollection = [
+  { "reported_by_code": "911", "short_description": "911", "long_description": "911", "display_order": 1, "active_ind": true   },
+  { "reported_by_code": "BCWF", "short_description": "BCWF", "long_description": "BC Wildlife Federation", "display_order": 2, "active_ind": true   },
+  { "reported_by_code": "BYLAW", "short_description": "Bylaw Enforcement", "long_description": "Bylaw Enforcement", "display_order": 3, "active_ind": true   },
+  { "reported_by_code": "CEB", "short_description": "FOR", "long_description": "Forestry Compliance and Enforcement Branch", "display_order": 4, "active_ind": true   },
+  { "reported_by_code": "COS", "short_description": "COS", "long_description": "Conservation Officer Service", "display_order": 5, "active_ind": true   },
+  { "reported_by_code": "DFO", "short_description": "DFO", "long_description": "Department of Fisheries and Oceans", "display_order": 6, "active_ind": true   },
+  { "reported_by_code": "EMAILRAPP", "short_description": "RAPP Email", "long_description": "RAPP Email", "display_order": 7, "active_ind": true   },
+  { "reported_by_code": "EPO", "short_description": "Other", "long_description": "Other", "display_order": 8, "active_ind": true   },
+  { "reported_by_code": "LE", "short_description": "Police", "long_description": "RCMP", "display_order": 9, "active_ind": true   },
+  { "reported_by_code": "NRO", "short_description": "Natural Resource Officer", "long_description": "Natural Resource Officer", "display_order": 10, "active_ind": true   },
+  { "reported_by_code": "OTHER", "short_description": "Other", "long_description": "Other", "display_order": 11, "active_ind": true   },
+  { "reported_by_code": "SELF", "short_description": "Self", "long_description": "Self", "display_order": 12, "active_ind": true   }
+];
 
 const attractants = [
    { "attractant_code": "BEEHIVE", "short_description": "Beehive", "long_description": "Beehive", "display_order": 2, "active_ind": true},
@@ -23,7 +33,7 @@ const attractants = [
 const complaitStatus = [
    { "complaint_status_code": "OPEN", "short_description": "OPEN", "long_description": "Open", "display_order": 1, "active_ind": true   },
    { "complaint_status_code": "CLOSED", "short_description": "CLOSED", "long_description": "Closed", "display_order": 1, "active_ind": true   }
-]
+];
 
 const natureOfComplaints = [
    { "hwcr_complaint_nature_code": "AGGNOT", "short_description": "AGGNOT", "long_description": "Aggressive - not present", "display_order": 1, "active_ind": true   },
@@ -32,14 +42,14 @@ const natureOfComplaints = [
    { "hwcr_complaint_nature_code": "COUGARN", "short_description": "COUGARN", "long_description": "Cougar suspected - killed/injured livestock/pets - not present", "display_order": 4, "active_ind": true   },
    { "hwcr_complaint_nature_code": "DAMNP", "short_description": "DAMNP", "long_description": "Damage to property - not present", "display_order": 5, "active_ind": true   },
    { "hwcr_complaint_nature_code": "DEADNV", "short_description": "DEADNV", "long_description": "Dead wildlife - no violation suspected", "display_order": 6, "active_ind": true   }
-]
+];
 
 const organizationUnitTypes = [
    { "geo_org_unit_type_code": "ZONE", "short_description": "Zone", "long_description": null, "display_order": 1, "active_ind": true   },
    { "geo_org_unit_type_code": "REGION", "short_description": "Region", "long_description": null, "display_order": 2, "active_ind": true   },
    { "geo_org_unit_type_code": "OFFLOC", "short_description": "Office Location", "long_description": null, "display_order": 3, "active_ind": true   },
    { "geo_org_unit_type_code": "AREA", "short_description": "Area", "long_description": null, "display_order": 4, "active_ind": true   }
-]
+];
 
 const organizationUnits = [
   { organizationUnit: "OKNGN", shortDescription: "Okanagan", longDescription: "Okanagan", organizationUnitType: "REGION",  },
@@ -52,7 +62,7 @@ const organizationUnits = [
 const personTypes = [
    { "person_complaint_xref_code": "ASSIGNEE", "short_description": "Officer Assigned", "long_description": "The person to whom the complaint is assigned to.", "display_order": 1,   },
    { "person_complaint_xref_code": "TEST", "short_description": "TEST", "long_description": "Test person type", "display_order": 2,  }
-]
+];
 
 const species = [
    { "species_code": "BISON", "short_description": "Bison", "long_description": "Bison", "display_order": 1, "active_ind": true, "legacy_code": null,   },
@@ -60,7 +70,7 @@ const species = [
    { "species_code": "BOBCAT", "short_description": "Bobcat", "long_description": "Bobcat", "display_order": 3, "active_ind": true, "legacy_code": null,   },
    { "species_code": "COUGAR", "short_description": "Cougar", "long_description": "Cougar", "display_order": 4, "active_ind": true, "legacy_code": null,   },
    { "species_code": "COYOTE", "short_description": "Coyote", "long_description": "Coyote", "display_order": 5, "active_ind": true, "legacy_code": null,   },
-   { "species_code": "DEER", "short_description": "Deer", "long_description": "Deer", "display_order": 6, "active_ind": true, "legacy_code": null,   }]
+   { "species_code": "DEER", "short_description": "Deer", "long_description": "Deer", "display_order": 6, "active_ind": true, "legacy_code": null,   }];
 
 const violations = [
    { "violation_code": "AINVSPC", "short_description": "AINVSPC", "long_description": "Aquatic: Invasive Species", "display_order": 1, "active_ind": true,   },
@@ -72,7 +82,7 @@ const violations = [
    { "violation_code": "OTHER", "short_description": "OTHER", "long_description": "Other", "display_order": 7, "active_ind": true,   },
    { "violation_code": "PESTICDE", "short_description": "PESTICDE", "long_description": "Pesticide", "display_order": 8, "active_ind": true,   },
    { "violation_code": "RECREATN", "short_description": "RECREATN", "long_description": "Recreation sites/ trails", "display_order": 9, "active_ind": true,   }
-]
+];
 
 const cosOrganizationUnits = [
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "BLBRY", "area_name": "Blaeberry"   },
@@ -89,12 +99,12 @@ const cosOrganizationUnits = [
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "MCMURDO", "area_name": "McMurdo"   },
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "NICHOLN", "area_name": "Nicholson"   },
    { "zone_code": "CLMBAKTNY", "region_code": "KTNY", "region_name": "Kootenay", "zone_name": "Columbia/Kootenay", "office_location_code": "GLDN", "office_location_name": "Golden", "area_code": "PARSON", "area_name": "Parson"   }
-]
+];
 
 const complaintTypes = [
    { "complaint_type_code": "HWCR", "short_description": "HWCR", "long_description": "Human Wildlife Conflict", "display_order": 1, "active_ind": true,   },
    { "complaint_type_code": "ERS", "short_description": "ERS", "long_description": "Enforcement", "display_order": 2, "active_ind": true,   }
-]
+];
 
 const regions = [
   { "code": "KTNY", "name": "Kootenay"  },
@@ -105,7 +115,7 @@ const regions = [
   { "code": "STHCST", "name": "South Coast"  },
   { "code": "TMPSNCRBO", "name": "Thompson Cariboo"  },
   { "code": "WSTCST", "name": "West Coast"  }
-]
+];
 
 const zones = [    
 {  "code": "NOKNGN",  "name": "North Okanagan",  "region": "OKNGN"},
@@ -117,7 +127,7 @@ const zones = [
 {  "code": "SOKNGN",  "name": "South Okanagan",  "region": "OKNGN"},
 {  "code": "SPCE",  "name": "South Peace",  "region": "PCLRD"},
 {  "code": "TMPSNNCLA",  "name": "Thompson Nicola",  "region": "TMPSNCRBO"},
-]
+];
 
 const communities = [
   { "code": "100MHHS", "name": "100 Mile House", "zone": "CRBOTMPSN", "region": "TMPSNCRBO"  },
@@ -131,7 +141,7 @@ const communities = [
   { "code": "ADMSLKHS", "name": "Adams Lake", "zone": "TMPSNNCLA", "region": "TMPSNCRBO"  },
   { "code": "AGSSZHS", "name": "Agassiz", "zone": "FRSRS", "region": "STHCST"  },
   { "code": "AHST", "name": "Ahousat", "zone": "CENISL", "region": "WSTCST"  }
-]
+];
 
 const single = (name: string = "default", idx: number = 0): any => {
   switch (name) {
@@ -314,5 +324,14 @@ export const MockCommunityCodeTableServiceRepository = () => ({
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
+  })),
+});
+
+export const MockReportedByCodeTableRepository = () => ({
+  find: jest.fn().mockResolvedValue(reportedByCollection),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(reportedByCollection),
   })),
 });

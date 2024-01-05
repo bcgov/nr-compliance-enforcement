@@ -18,13 +18,13 @@ import { ComplaintDetails } from "../../../../types/complaints/details/complaint
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
-  selectAgencyDropdown,
   selectComplaintStatusCodeDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
+  selectReportedByDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -114,7 +114,7 @@ export const ComplaintDetailsEdit: FC = () => {
     alternatePhone,
     address,
     email,
-    referredByAgencyCode,
+    reportedByCode,
     ownedByAgencyCode,
   } = useAppSelector(selectComplaintCallerInformation);
 
@@ -126,16 +126,26 @@ export const ComplaintDetailsEdit: FC = () => {
   const areaCodes = useAppSelector(selectCommunityCodeDropdown);
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
-  const referredByAgencyCodes = useSelector(selectAgencyDropdown) as Option[];
+  const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
 
+  
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
   const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
+  let assignableOfficers: Option[] =
+    officersInAgencyList !== null
+      ? officersInAgencyList.map((officer: Officer) => ({
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+        }))
+      : [];
+
+
+  assignableOfficers.unshift({value: "Unassigned", label: "None"});
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
   ) as ComplaintSuspectWitness;
-
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
 
   //-- state
   const [readOnly, setReadOnly] = useState(true);
@@ -293,9 +303,9 @@ export const ComplaintDetailsEdit: FC = () => {
       location_summary_text: locationSummary,
       location_detailed_text: locationDetail,
       complaint_status_code: { complaint_status_code: status },
-      referred_by_agency_code,
+      reported_by_code,
       owned_by_agency_code: { agency_code: ownedBy },
-      referred_by_agency_other_text: referredByAgencyOther,
+      reported_by_other_text: reportedByOther,
       incident_utc_datetime: incidentDateTime,
       incident_reported_utc_timestmp: reportedOn,
       update_utc_timestamp: updatedOn,
@@ -317,7 +327,7 @@ export const ComplaintDetailsEdit: FC = () => {
       locationDetail,
       status,
       ownedBy,
-      referredByAgencyOther,
+      reportedByOther,
       incidentDateTime: new Date(incidentDateTime ?? new Date()),
       reportedOn: new Date(reportedOn ?? new Date()),
       updatedOn: new Date(updatedOn ?? new Date()),
@@ -325,10 +335,10 @@ export const ComplaintDetailsEdit: FC = () => {
       delegates: [],
     };
 
-    if (referred_by_agency_code) {
-      const { agency_code: referredBy } = referred_by_agency_code;
+    if (reported_by_code) {
+      const { reported_by_code: reportedBy } = reported_by_code;
 
-      model = { ...model, referredBy };
+      model = { ...model, reportedBy };
     }
 
     if (from(person_complaint_xref).any()) {
@@ -434,18 +444,8 @@ export const ComplaintDetailsEdit: FC = () => {
       noErrors = true;
     }
     return noErrors;
-  };
+  }
 
-  // Transform the fetched data into the DropdownOption type
-  let assignableOfficers: Option[] =
-    officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-        }))
-      : [];
-
-  assignableOfficers.unshift({ value: "Unassigned", label: "None" });
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -457,6 +457,11 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedSpecies = speciesCodes.find((option) => option.value === speciesCode);
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find((option) => option.value === natureOfComplaintCode);
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
+  const selectedReportedByCode = reportedByCodes.find(
+    (option) =>
+      option.value ===
+      (reportedByCode?.reported_by_code)
+  );
 
   const hasAssignedOfficer = (): boolean => {
     const { delegates } = complaintUpdate as ComplaintDto;
@@ -490,13 +495,8 @@ export const ComplaintDetailsEdit: FC = () => {
 
     return undefined;
   };
-
   const selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, complaintUpdate);
 
-  const selectedAgencyCode = referredByAgencyCodes.find(
-    (option) =>
-      option.value === (referredByAgencyCode?.agency_code === undefined ? "" : referredByAgencyCode.agency_code)
-  );
   const selectedAttractants = attractantCodes.filter(
     (option) => attractants?.some((attractant) => attractant.code === option.value)
   );
@@ -854,11 +854,11 @@ export const ComplaintDetailsEdit: FC = () => {
     }
   }
 
-  const handleReferredByChange = (selected: Option | null) => {
+  const handleReportedByChange = (selected: Option | null) => {
     if (selected) {
       const { value } = selected;
 
-      const updatedComplaint = { ...complaintUpdate, referredBy: value } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -1287,19 +1287,21 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div className="comp-details-label-input-pair" id="referred-pair-id">
-                    <label>Referred by / Complaint Agency</label>
+                  <div
+                    className="comp-details-label-input-pair"
+                    id="reported-pair-id"
+                  >
+                    <label htmlFor="reported-select-id">Reported By</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
-                        id="referred-select-id"
+                        id="reported-select-id"
                         classNamePrefix="comp-select"
                         className="comp-details-edit-input"
-                        options={referredByAgencyCodes}
-                        defaultOption={{ label: "None", value: undefined }}
+                        options={reportedByCodes}
+                        defaultOption={{ label: selectedReportedByCode?.label, value: selectedReportedByCode?.value }}
                         placeholder="Select"
                         enableValidation={false}
-                        value={selectedAgencyCode}
-                        onChange={(e) => handleReferredByChange(e)}
+                        onChange={(e) => handleReportedByChange(e)}
                       />
                     </div>
                   </div>
