@@ -2,7 +2,7 @@ import { FC } from "react";
 import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
 import { HWCRPreventionEducation } from "./hwcr-prevention-education";
 import { HWCREquipment } from "./hwcr-equipment";
-import { HWCRWildlifeInformation } from "./hwcr-wildlife-information";
+import { HWCROutcomeByAnimal } from "./hwcr-outcome-by-animal";
 import { HWCRFileReview } from "./hwcr-file-review";
 
 export const HWCROutcomeReport: FC = () => {  
@@ -15,7 +15,7 @@ export const HWCROutcomeReport: FC = () => {
         <HWCRComplaintAssessment/>
         <HWCRPreventionEducation/>
         <HWCREquipment/>
-        <HWCRWildlifeInformation/>
+        <HWCROutcomeByAnimal/>
         <HWCRFileReview/>
       </div>
     );

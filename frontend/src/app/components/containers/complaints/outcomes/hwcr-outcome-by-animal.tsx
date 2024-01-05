@@ -2,10 +2,10 @@ import { FC } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 
-export const HWCRWildlifeInformation: FC = () => {  
+export const HWCROutcomeByAnimal: FC = () => {  
     return (
         <div className="comp-outcome-report-block">
-            <h6>Wildlife information</h6>
+            <h6>Outcome by animal</h6>
             <div className="comp-outcome-report-button">
                 <Button
                     id="outcome-report-add-outcome"
