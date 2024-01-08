@@ -31,15 +31,6 @@ export class ComplaintController {
     return this.service.findAll();
   }
 
-  @Patch(":id")
-  @Roles(Role.COS_OFFICER)
-  update(
-    @Param("id") id: string,
-    @Body() updateComplaintDto: UpdateComplaintDto
-  ) {
-    return this.service.update(id, updateComplaintDto);
-  }
-
   remove(id: number) {
     return `This action removes a #${id} geoOrgUnitStructure`;
   }

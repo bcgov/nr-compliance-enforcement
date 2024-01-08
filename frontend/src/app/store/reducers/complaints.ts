@@ -39,6 +39,7 @@ import {
   getViolationByViolationCode,
 } from "../../common/methods";
 import { Agency } from "../../types/app/code-tables/agency";
+import { ReportedBy } from "../../types/app/code-tables/reported-by";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -985,7 +986,7 @@ export const selectComplaintHeader =
 export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
   const {
     complaints: { complaint },
-    codeTables: { agency: agencyCodes },
+    codeTables: { agency: agencyCodes, "reported-by": reportedByCodes },
   } = state;
 
   const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
@@ -998,11 +999,21 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
     return null;
   };
 
+  const getReportedByReportedByCode = (code: string, codes: Array<ReportedBy>): ReportedBy | null => {
+    if (codes && from(codes).any(({ reportedBy }) => reportedBy === code)) {
+      const selected = from(codes).first(({ reportedBy }) => reportedBy === code);
+
+      return selected;
+    }
+
+    return null;
+  };
+
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, referredBy, ownedBy }: any = complaint;
-    const referredByAgencyCode = getAgencyByAgencyCode(referredBy, agencyCodes);
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy }: any = complaint;
+    const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
 
     results = {
@@ -1015,8 +1026,8 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       email,
     };
 
-    if (referredByAgencyCode) {
-      results = { ...results, referredByAgencyCode };
+    if (reportedByCode) {
+      results = { ...results, reportedByCode };
     }
 
     if (ownedByAgencyCode) {

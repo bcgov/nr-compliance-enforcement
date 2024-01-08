@@ -105,16 +105,8 @@ export const ComplaintDetailsEdit: FC = () => {
     violationTypeCode,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
-  const {
-    name,
-    primaryPhone,
-    secondaryPhone,
-    alternatePhone,
-    address,
-    email,
-    reportedByCode,
-    ownedByAgencyCode,
-  } = useAppSelector(selectComplaintCallerInformation);
+  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
+    useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
@@ -126,9 +118,9 @@ export const ComplaintDetailsEdit: FC = () => {
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
- 
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
-  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
+
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
@@ -137,8 +129,7 @@ export const ComplaintDetailsEdit: FC = () => {
         }))
       : [];
 
-
-  assignableOfficers.unshift({value: "Unassigned", label: "None"});
+  assignableOfficers.unshift({ value: "Unassigned", label: "None" });
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
@@ -205,7 +196,6 @@ export const ComplaintDetailsEdit: FC = () => {
     setReadOnly(false);
 
     //-- create the complaint update object
-    //createUpdateComplaintModel(complaintType);
     if (data) {
       applyComplaintUpdate(data);
     }
@@ -220,11 +210,12 @@ export const ComplaintDetailsEdit: FC = () => {
     if (hasValidationErrors()) {
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        dispatch(getWildlifeComplaintByComplaintIdentifier(id));
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        dispatch(getAllegationComplaintByComplaintIdentifier(id));
-      }
+      // if (complaintType === COMPLAINT_TYPES.HWCR) {
+      //   dispatch(getWildlifeComplaintByComplaintIdentifier(id));
+      // } else if (complaintType === COMPLAINT_TYPES.ERS) {
+      //   dispatch(getAllegationComplaintByComplaintIdentifier(id));
+      // }
+      dispatch(getComplaintById(id, complaintType));
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
@@ -303,8 +294,7 @@ export const ComplaintDetailsEdit: FC = () => {
       noErrors = true;
     }
     return noErrors;
-  }
-
+  };
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -316,11 +306,8 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedSpecies = speciesCodes.find((option) => option.value === speciesCode);
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find((option) => option.value === natureOfComplaintCode);
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-  const selectedReportedByCode = reportedByCodes.find(
-    (option) =>
-      option.value ===
-      (reportedByCode?.reported_by_code)
-  );
+
+  const selectedReportedByCode = reportedByCodes.find((option) => option.value === reportedByCode?.reportedBy);
 
   const hasAssignedOfficer = (): boolean => {
     const { delegates } = complaintUpdate as ComplaintDto;
@@ -1139,10 +1126,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="reported-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="reported-pair-id">
                     <label htmlFor="reported-select-id">Reported By</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
