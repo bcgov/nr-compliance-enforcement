@@ -36,53 +36,7 @@ export class AllegationComplaintController {
   create(@Body('allegationComplaint') createAllegationComplaintDto: string) {
     return this.allegationComplaintService.create(createAllegationComplaintDto);
   }
-
-  @Get()
-  @Roles(Role.COS_OFFICER)
-  findAll(
-    @Query("sortColumn") sortColumn: string,
-    @Query("sortOrder") sortOrder: string
-  ) {
-    return this.allegationComplaintService.findAll(sortColumn, sortOrder);
-  }
-
-  @Get("search")
-  @Roles(Role.COS_OFFICER)
-  search(
-    @Query() model: SearchPayload ) {
-    return this.allegationComplaintService.search(model);
-  }
-
-  @Get("map/search")
-  @Roles(Role.COS_OFFICER)
-  searchMap(@Query() model) {
-    return this.allegationComplaintService.searchMap(model);
-  }
-
-  @Get(":id")
-  @Roles(Role.COS_OFFICER)
-  findOne(@Param("id") id: UUID) {
-    return this.allegationComplaintService.findOne(id);
-  }
-
-  @Patch(":id")
-  @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: UUID, @Body('allegationComplaint') updateAllegationComplaintDto: string) {
-    return this.allegationComplaintService.update(id, updateAllegationComplaintDto);
-  }
-
-  @Delete(":id")
-  @Roles(Role.COS_OFFICER)
-  remove(@Param("id") id: UUID) {
-    return this.allegationComplaintService.remove(id);
-  }
-
-  @Get("/by-complaint-identifier/:id")
-  @Roles(Role.COS_OFFICER)
-  byId(@Param("id") id: string) {
-    return this.allegationComplaintService.findByComplaintIdentifier(id);
-  }
-
+  
   @Get("/stats/by-zone/:zone")
   @Roles(Role.COS_OFFICER)
   statsByZone(@Param("zone") zone: string) {
