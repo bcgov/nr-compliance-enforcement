@@ -5,10 +5,8 @@ import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   setComplaint,
   setGeocodedComplaintCoordinates,
-  getAllegationComplaintByComplaintIdentifier,
-  getWildlifeComplaintByComplaintIdentifier,
   updateComplaintById,
-  selectComplaintData,
+  selectComplaint,
   getComplaintById,
   selectComplaintDetails,
   selectComplaintHeader,
@@ -77,7 +75,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   //-- selectors
-  const data = useAppSelector(selectComplaintData);
+  const data = useAppSelector(selectComplaint);
 
   const {
     details,
@@ -210,12 +208,8 @@ export const ComplaintDetailsEdit: FC = () => {
     if (hasValidationErrors()) {
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
-      // if (complaintType === COMPLAINT_TYPES.HWCR) {
-      //   dispatch(getWildlifeComplaintByComplaintIdentifier(id));
-      // } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      //   dispatch(getAllegationComplaintByComplaintIdentifier(id));
-      // }
       dispatch(getComplaintById(id, complaintType));
+
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 

@@ -1,7 +1,6 @@
 import { Controller, Get, Body, Patch, Param, UseGuards, Query } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
 import { CreateComplaintDto } from "./dto/create-complaint.dto";
-import { UpdateComplaintDto } from "./dto/update-complaint.dto";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";

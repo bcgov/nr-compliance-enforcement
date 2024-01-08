@@ -795,8 +795,7 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
   }
 };
 
-//-- TODO: rename toSelectComplaint and remove previous selectComplaint selector
-export const selectComplaintData = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
+export const selectComplaint = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
   const {
     complaints: { complaint },
   } = state;
@@ -845,17 +844,29 @@ export const selectComplaintDetails =
         incidentDateTime,
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
-        attractants,
-        isInProgress: violationInProgress,
-        wasObserved: violationObserved,
-      } = complaint as any;
+      } = complaint as ComplaintDto;
+
+      if (complaintType === "HWCR") {
+        const { attractants } = complaint as WildlifeComplaintDto;
+
+        if (attractants && from(attractants).any()) {
+          let items = getAttractants(attractants, attractantCodeTable);
+          result = { ...result, attractants: items };
+        }
+      }
+
+      if (complaintType === "ERS") {
+        const { isInProgress: violationInProgress, wasObserved: violationObserved } =
+          complaint as AllegationComplaintDto;
+
+        result = {
+          ...result,
+          violationInProgress,
+          violationObserved,
+        };
+      }
 
       const org = areaCodes.find(({ area }) => area === areaCode);
-
-      if (attractants && from(attractants).any()) {
-        let items = getAttractants(attractants, attractantCodeTable);
-        result = { ...result, attractants: items };
-      }
 
       result = {
         ...result,
@@ -864,8 +875,6 @@ export const selectComplaintDetails =
         locationDescription,
         incidentDateTime,
         coordinates,
-        violationInProgress,
-        violationObserved,
       };
 
       if (org) {
@@ -968,6 +977,7 @@ export const selectComplaintHeader =
           result = { ...result, violationType, violationTypeCode };
           break;
         case COMPLAINT_TYPES.HWCR:
+          default:
           const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } = complaint as WildlifeComplaintDto;
           const species = getSpeciesBySpeciesCode(speciesCode, speciesCodes);
           const natureOfComplaint = getNatureOfComplaintByNatureOfComplaintCode(
