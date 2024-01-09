@@ -63,6 +63,7 @@ import { AllegationComplaint as AllegationComplaintDto } from "../../../../types
 import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
+import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 
 type ComplaintParams = {
   id: string;
@@ -1190,6 +1191,9 @@ export const ComplaintDetailsEdit: FC = () => {
           hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
           editComponent={true}
         />
+      )}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
+       <HWCROutcomeReport/>
       )}
     </div>
   );

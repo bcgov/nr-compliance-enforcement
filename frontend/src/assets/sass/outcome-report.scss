@@ -1,0 +1,53 @@
+.comp-hwcr-outcome-report {
+
+    .comp-sub-header {
+        margin-left: 24px;
+    }
+    
+}
+
+.comp-outcome-report-block {
+    margin-left: 24px;
+    margin-right: 24px;
+  
+    h6 {
+      padding-top: 0px;
+      font-weight: 700;
+      margin-bottom: 0px;
+    }
+    
+    .comp-outcome-report-button {
+        margin-top: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .comp-outcome-report-button span {
+        padding-right: 8px;
+    }
+
+    .comp-outcome-report-button button svg {
+        font-size: 18px;
+        vertical-align: text-top;
+        margin-top: 1px;
+    }
+  
+    .comp-outcome-report-complaint-assessment {
+      margin-top: 24px;
+      margin-bottom: 24px;
+      border: 1px solid $gray-300;
+      border-radius: 3px;
+      padding: 24px;
+    }
+
+    .comp-outcome-report-file-review {
+        margin-top: 24px;
+        margin-bottom: 24px;
+        border: 1px solid $gray-300;
+        border-radius: 3px;
+        padding: 24px;
+    }
+
+    label {
+        padding: 0 10px;
+    }
+}
