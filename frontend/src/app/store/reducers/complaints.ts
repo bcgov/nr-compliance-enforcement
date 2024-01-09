@@ -13,7 +13,6 @@ import { ComplaintSuspectWitness } from "../../types/complaints/details/complain
 import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
-import { Complaint } from "../../types/complaints/complaint";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import { Feature } from "../../types/maps/bcGeocoderType";
@@ -23,7 +22,6 @@ import { Coordinates } from "../../types/app/coordinate-type";
 
 import { MapSearchResults } from "../../types/complaints/map-return";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
-import { Delegate } from "../../types/app/people/delegate";
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
@@ -102,24 +100,18 @@ export const complaintSlice = createSlice({
 
       return { ...state, zoneAtGlance: update };
     },
-    updateWildlifeComplaintByRow: (state, action: PayloadAction<HwcrComplaint>) => {
+    updateWildlifeComplaintByRow: (state, action: PayloadAction<WildlifeComplaintDto>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { wildlife } = complaintItems;
 
-      const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcr_complaint_guid);
+      const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcrId);
 
       if (index !== -1) {
-        const {
-          complaint_identifier: {
-            complaint_status_code: { complaint_status_code },
-            person_complaint_xref,
-          },
-        } = updatedComplaint;
-        const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])];
+        debugger;
+        const { status, delegates } = updatedComplaint;
 
-        let complaint = { ...wildlife[index], status: newStatus, delegates };
+        let complaint = { ...wildlife[index], status, delegates };
         const update = [...wildlife];
         update[index] = complaint;
 
@@ -129,24 +121,17 @@ export const complaintSlice = createSlice({
       }
     },
 
-    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaint>) => {
+    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaintDto>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { allegations } = complaintItems;
 
-      const index = allegations.findIndex(({ ersId }) => ersId === updatedComplaint.allegation_complaint_guid);
+      const index = allegations.findIndex(({ ersId }) => ersId === updatedComplaint.ersId);
 
       if (index !== -1) {
-        const {
-          complaint_identifier: {
-            complaint_status_code: { complaint_status_code },
-            person_complaint_xref,
-          },
-        } = updatedComplaint;
-        const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])];
+        const { status, delegates } = updatedComplaint;
 
-        let complaint = { ...allegations[index], status: newStatus, delegates };
+        let complaint = { ...allegations[index], status, delegates };
         const update = [...allegations];
         update[index] = complaint;
 
@@ -290,75 +275,6 @@ export const getMappedComplaints =
     }
   };
 
-export const getWildlifeComplaintByComplaintIdentifier =
-  (id: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {}
-  };
-
-export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
-  (id: string, setUpdateComplaint: Function): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-      setUpdateComplaint(response);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {
-      //-- handle the error
-    }
-  };
-
-export const getAllegationComplaintByComplaintIdentifier =
-  (id: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {
-      //-- handle the error
-    }
-  };
-
-export const getAllegationComplaintByComplaintIdentifierSetUpdate =
-  (id: string, setUpdateComplaint: Function): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      setUpdateComplaint(response);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {
-      //-- handle the error
-    }
-  };
-
 export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
@@ -407,11 +323,11 @@ export const getGeocodedComplaintCoordinates =
   };
 
 const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: string) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/${id}`, {
-    complaint_status_code: `${status}`,
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-status-by-id/${id}`, {
+    status: `${status}`,
   });
 
-  await patch<Complaint>(dispatch, parameters);
+  await patch<ComplaintDto>(dispatch, parameters);
 };
 
 export const createAllegationComplaint =
@@ -444,13 +360,11 @@ export const createAllegationComplaint =
       await post<AllegationComplaint>(dispatch, postParameters).then(async (res) => {
         const newAllegationComplaint: AllegationComplaint = res;
 
-        //-- get the created wildlife conflict
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${res}`
-        );
-        const response = await get<AllegationComplaint>(dispatch, parameters);
+        const { complaint_identifier: complaint } = res;
+        const { complaint_identifier: complaintId } = complaint;
 
-        dispatch(setComplaint({ ...response }));
+        await dispatch(getComplaintById(complaintId, "ERS"));
+
         newComplaintId = newAllegationComplaint.complaint_identifier.complaint_identifier;
       });
       ToggleSuccess("Complaint has been saved");
@@ -464,6 +378,7 @@ export const createAllegationComplaint =
 export const createWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
+    debugger;
     let newComplaintId: string = "";
     try {
       if (
@@ -488,14 +403,10 @@ export const createWildlifeComplaint =
       });
       await post<HwcrComplaint>(dispatch, postParameters).then(async (res) => {
         const newHwcrComplaint: HwcrComplaint = res;
+        const { complaint_identifier: complaint } = res;
+        const { complaint_identifier: complaintId } = complaint;
 
-        //-- get the created wildlife conflict
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${res}`
-        );
-        const response = await get<HwcrComplaint>(dispatch, parameters);
-
-        dispatch(setComplaint({ ...response }));
+        await dispatch(getComplaintById(complaintId, "HWCR"));
         newComplaintId = newHwcrComplaint.complaint_identifier.complaint_identifier;
       });
       ToggleSuccess("Complaint has been saved");
@@ -515,40 +426,17 @@ export const updateWildlifeComplaintStatus =
 
       //-- get the wildlife conflict and update its status
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/HWCR/${complaint_identifier}`
       );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
+      debugger
+      const response = await get<WildlifeComplaintDto>(dispatch, parameters);
 
-      dispatch(updateWildlifeComplaintByRow(response));
+      dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
       const result = response;
 
       dispatch(setComplaint({ ...result }));
     } catch (error) {
       //-- add error handling
-    }
-  };
-
-export const updateAllegationComplaint =
-  (allegationComplaint: AllegationComplaint): AppThunk =>
-  async (dispatch) => {
-    try {
-      const updateParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaint.allegation_complaint_guid}`,
-        { allegationComplaint: JSON.stringify(allegationComplaint) }
-      );
-
-      await patch<AllegationComplaint>(dispatch, updateParams);
-
-      //-- get the updated wildlife conflict
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-      ToggleSuccess("Updates have been saved");
-    } catch (error) {
-      ToggleError("Unable to update complaint");
     }
   };
 
@@ -561,10 +449,9 @@ export const updateAllegationComplaintStatus =
 
       //-- get the wildlife conflict and update its status
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/ERS/${complaint_identifier}`
       );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
+      const response = await get<AllegationComplaintDto>(dispatch, parameters);
       dispatch(updateAllegationComplaintByRow(response));
       const result = response;
 
@@ -590,81 +477,6 @@ export const updateComplaintById =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
-    }
-  };
-
-const convertPersonXrefToDelegate = (person: any): Delegate => {
-  const {
-    personComplaintXrefGuid: xrefId,
-    active_ind: isActive,
-    person_guid: { first_name: firstName, last_name: lastName, person_guid: id },
-  } = person;
-
-  const result: Delegate = {
-    isActive: isActive,
-    person: {
-      id,
-      firstName,
-      lastName,
-      middleName1: "",
-      middleName2: "",
-    },
-    type: "ASSIGNEE",
-    xrefId,
-  };
-
-  return result;
-};
-
-export const refreshComplaintItem =
-  (id: string, complaintType: string): AppThunk =>
-  async (dispatch, getState) => {
-    try {
-      const {
-        complaints: {
-          complaintItems: { wildlife },
-        },
-      } = getState();
-
-      switch (complaintType) {
-        case COMPLAINT_TYPES.ERS: {
-          break;
-        }
-        case COMPLAINT_TYPES.HWCR:
-        default: {
-          //-- get all complaints from list of complaints except the updated complaint and readd it
-          //-- to the list of complaints
-          const items = wildlife.filter((item) => item.id !== id);
-          const original = wildlife.find((item) => item.id === id);
-          if (original) {
-            //-- get the updated complaint
-            const parameters = generateApiParameters(
-              `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-            );
-            const response = await get<HwcrComplaint>(dispatch, parameters);
-
-            //-- refactor this when findById is updated
-            const {
-              complaint_identifier: {
-                person_complaint_xref,
-                complaint_status_code: { complaint_status_code },
-              },
-            } = response;
-
-            const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
-
-            const updated = { ...original, status: complaint_status_code, delegates: [assigned] };
-
-            const udpatedItems = [...items, updated];
-
-            dispatch(setComplaints({ type: complaintType, data: udpatedItems }));
-          }
-
-          break;
-        }
-      }
-    } catch (error) {
-      //-- add error handling
     }
   };
 

@@ -10,11 +10,9 @@ import Leaflet, { LatLngExpression, Map } from "leaflet";
 import { ComplaintSummaryPopup } from "./complaint-summary-popup";
 import { useAppDispatch } from "../../hooks/hooks";
 import {
-  getAllegationComplaintByComplaintIdentifier,
-  getWildlifeComplaintByComplaintIdentifier,
+  getComplaintById,
   setComplaint,
 } from "../../store/reducers/complaints";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { isEqual } from "lodash";
 import {
   BsInfoCircleFill
@@ -73,15 +71,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
 
   const handlePopupOpen =
     (id: string) => (e: L.PopupEvent) => {
-      if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        dispatch(
-          getWildlifeComplaintByComplaintIdentifier(id),
-        );
-      } else {
-        dispatch(
-          getAllegationComplaintByComplaintIdentifier(id),
-        );
-      }
+      dispatch(getComplaintById(id, complaint_type))
     };
 
   // unmount complaint when popup closes
