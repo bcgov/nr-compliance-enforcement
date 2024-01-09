@@ -34,7 +34,9 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
 
   return (
     <div className="comp-complaint-details-block">
-      <h6>Call Details</h6>
+      <div>
+        <h6>Call Details</h6>
+      </div>
       {/* readonly call details section */}
       <div className="comp-complaint-call-details">
         <Row>

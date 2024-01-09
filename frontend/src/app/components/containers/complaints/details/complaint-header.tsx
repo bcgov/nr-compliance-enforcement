@@ -146,15 +146,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   <span>Update Status</span>
                   <BsArrowRepeat />
                 </Button>
-                <Button
-                  id="details-screen-edit-button"
-                  title="Edit Complaint"
-                  variant="outline-primary"
-                  onClick={editButtonClick}
-                >
-                  <span>Edit</span>
-                  <BsPencil />
-                </Button>
               </div>
             )}
             {!readOnly && (

@@ -24,7 +24,7 @@ p {
   color: $white;
 
   height: 43px;
-  padding: 8px 37px 8px 32px;
+  padding: 8px 37px 8px 24px;
 }
 
 .comp-table tbody div:last-child .comp-cell:last-of-type {
@@ -82,11 +82,27 @@ p {
 }
 
 .comp-details-subheader {
-  padding: 8px 34px 0px;
+  padding: 0px 0px 0px 24px;
   height: 98px;
   background: $bc-gov-primary-400;
 
   color: $white;
+  flex: 1;
+}
+
+.comp-details-subsection {
+  padding: 12px 24px 0px 24px;
+  background: $white;
+
+  color: $bc-gov-primary-400;
+  flex: 1;
+}
+
+.comp-box-actions {
+  padding: 8px 24px 0px;
+  background: $bc-gov-primary-400;
+
+  color: $bc-gov-primary-400;
   flex: 1;
 }
 
@@ -173,11 +189,41 @@ p {
     font-size: 14px;
   }
 
+
   .comp-box-actions button span {
     padding-right: 8px;
   }
 
   .comp-box-actions button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+  }
+
+  .comp-box-actions-non-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 0 0;
+  }
+
+  .comp-box-actions-non-header button {
+    border-radius: 4px;
+    border-color:  $bc-gov-primary-400;
+    color: $bc-gov-primary-400;
+    font-size: 14px;
+  }
+
+  .comp-box-actions-non-header button:hover {
+    color: $white;
+  }
+
+  .comp-box-actions-non-header button span {
+    padding-right: 8px;
+  }
+
+  .comp-box-actions-non-header button svg {
     font-size: 16px;
     vertical-align: text-top;
     margin-top: 1px;
@@ -274,9 +320,60 @@ p {
   margin-bottom: 8px;
 }
 
+.comp-complaint-details-header {
+  margin: 24px 24px 24px 24px;
+  h6 {
+    padding-top: 0px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+
+  .comp-complaint-call-details {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+  }
+
+  .comp-complaint-call-information {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+  }
+
+  .comp-details-content-label {
+    padding-right: 25px;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .comp-details-content {
+    margin-bottom: 16px;
+    display: inline-block;
+
+    i:first-child {
+      padding-right: 5px;
+    }
+    i:last-child {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+  .comp-attactant-badge {
+    background-color: $gray-200;
+    color: $black;
+  }
+}
+
+
+
 .comp-complaint-details-block {
   margin-left: 24px;
   margin-right: 24px;
+  margin-top: 24px;
 
   h6 {
     padding-top: 0px;
@@ -928,8 +1025,6 @@ p {
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
-  margin-left: 5px;
-  margin-bottom: 25px;
   /* identical to box height, or 133% */
 
   /* BC Primary/Blue */

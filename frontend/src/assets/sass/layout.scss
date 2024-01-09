@@ -189,6 +189,19 @@
 
 }
 
+.blue-seperator {
+  height: 2px;
+  background-color: $bc-brand-blue;
+  color: $bc-brand-blue;
+  opacity: 100 !important;
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.spacer-seperator {
+  height: 12px;
+}
+
 .comp-nav-item-name-underline {
   color: $bc-brand-links;
 
