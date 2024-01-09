@@ -4,8 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
 import {
-  getAllegationComplaintByComplaintIdentifier,
-  getWildlifeComplaintByComplaintIdentifier,
+  getComplaintById,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
 } from "../../../store/reducers/complaints";
@@ -30,11 +29,7 @@ type ChangeStatusModalProps = {
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
-  close,
-  submit,
-  complaint_type,
-}) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
   const modalData = useAppSelector(selectModalData);
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState("");
@@ -52,20 +47,12 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
   const updateThunksSequentially = async () => {
     try {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        await dispatch(
-          updateWildlifeComplaintStatus(complaint_identifier, status),
-        );
-        dispatch(
-          getWildlifeComplaintByComplaintIdentifier(complaint_identifier),
-        );
+        await dispatch(updateWildlifeComplaintStatus(complaint_identifier, status));
       } else {
-        await dispatch(
-          updateAllegationComplaintStatus(complaint_identifier, status),
-        );
-        dispatch(
-          getAllegationComplaintByComplaintIdentifier(complaint_identifier),
-        );
+        await dispatch(updateAllegationComplaintStatus(complaint_identifier, status));
       }
+
+      await dispatch(getComplaintById(complaint_identifier, complaint_type));
     } catch (error) {
       // Handle any errors that occurred during the dispatch
       console.error("Error dispatching thunks:", error);

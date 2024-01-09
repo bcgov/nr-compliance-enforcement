@@ -1,10 +1,19 @@
 export interface ComplaintHeader {
-  loggedDate: string;
+  loggedDate: string; 
   createdBy: string;
   lastUpdated: string;
-  officerAssigned: string;
   status: string;
   natureOfComplaint?: string;
   violationType?: string;
+  violationTypeCode?: string;
   species?: string;
+  statusCode?: string;
+  natureOfComplaintCode?: string
+  speciesCode?: string
+  zone?: string
+  complaintAgency?: string;
+  officerAssigned: string;
+  personGuid: string
+  firstName?: string
+  lastName?: string
 }

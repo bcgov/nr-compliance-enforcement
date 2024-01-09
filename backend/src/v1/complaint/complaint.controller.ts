@@ -1,7 +1,6 @@
 import { Controller, Get, Body, Patch, Param, UseGuards, Query } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
 import { CreateComplaintDto } from "./dto/create-complaint.dto";
-import { UpdateComplaintDto } from "./dto/update-complaint.dto";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -29,15 +28,6 @@ export class ComplaintController {
   @Roles(Role.COS_OFFICER)
   findAll() {
     return this.service.findAll();
-  }
-
-  @Patch(":id")
-  @Roles(Role.COS_OFFICER)
-  update(
-    @Param("id") id: string,
-    @Body() updateComplaintDto: UpdateComplaintDto
-  ) {
-    return this.service.update(id, updateComplaintDto);
   }
 
   remove(id: number) {
@@ -88,5 +78,15 @@ export class ComplaintController {
     @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return await this.service.updateComplaintById(id, complaintType, model);
+  }
+
+  @Get("/by-complaint-identifier/:complaintType/:id")
+  @Roles(Role.COS_OFFICER)
+  async findComplaintById(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Param("id") id: string
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
+    const result = (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
+    return result
   }
 }

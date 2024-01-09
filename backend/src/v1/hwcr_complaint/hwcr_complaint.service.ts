@@ -261,56 +261,6 @@ export class HwcrComplaintService {
     return builder.getOne();
   }
 
-  async update(
-    hwcr_complaint_guid: UUID,
-    updateHwcrComplaint: string
-  ): Promise<HwcrComplaint> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const updateHwcrComplaintDto: UpdateHwcrComplaintDto =
-        JSON.parse(updateHwcrComplaint);
-      const updateData = {
-        hwcr_complaint_nature_code:
-          updateHwcrComplaintDto.hwcr_complaint_nature_code,
-        species_code: updateHwcrComplaintDto.species_code,
-      };
-      const updatedValue = await this.hwcrComplaintsRepository.update(
-        { hwcr_complaint_guid },
-        updateData
-      );
-      await this.complaintService.updateComplex(
-        updateHwcrComplaintDto.complaint_identifier.complaint_identifier,
-        JSON.stringify(updateHwcrComplaintDto.complaint_identifier)
-      );
-      //Note: this needs a refactor for when we have more types of persons being loaded in
-
-      if (
-        updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !==
-        undefined
-      ) {
-        await this.personComplaintXrefService.assignNewOfficer(
-          updateHwcrComplaintDto.complaint_identifier.complaint_identifier,
-          updateHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
-        );
-      }
-      await this.attractantHwcrXrefService.updateComplaintAttractants(
-        updateHwcrComplaintDto as HwcrComplaint,
-        updateHwcrComplaintDto.attractant_hwcr_xref
-      );
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
-    }
-    return this.findOne(hwcr_complaint_guid);
-  }
-
   async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
     try {
       let complaint_identifier = (

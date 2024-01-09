@@ -65,19 +65,6 @@ export class HwcrComplaintController {
     return this.hwcrComplaintService.findOne(id);
   }
 
-  @Patch(":id")
-  @Roles(Role.COS_OFFICER)
-  async update(
-    @Param("id") id: UUID,
-    @Body("hwcrComplaint") updateHwcrComplaintDto: string
-  ) {
-    const hwcrComplaint = await this.hwcrComplaintService.update(
-      id,
-      updateHwcrComplaintDto
-    );
-    return hwcrComplaint;
-  }
-
   @Delete(":id")
   @Roles(Role.COS_OFFICER)
   remove(@Param("id") id: UUID) {
