@@ -635,7 +635,7 @@ export const selectComplaintDetails =
 
         const attractant = codes.find((item) => item.attractant === code);
         if (attractant) {
-          const { longDescription: description } = attractant;
+          const { shortDescription: description } = attractant;
 
           record = { ...record, description };
         }
