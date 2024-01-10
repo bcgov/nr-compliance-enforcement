@@ -519,7 +519,7 @@ export const CreateComplaint: FC = () => {
         const { organization } = complaintData as ComplaintDto;
         const update = { ...organization, area: value };
 
-        const complaint = { ...complaintData, organization: update } as ComplaintDto
+        const complaint = { ...complaintData, organization: update } as ComplaintDto;
         applyComplaintData(complaint);
       }
     }
@@ -558,11 +558,11 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleNameChange = (value: string) => {
-    if(value){ 
-      const complaint = { ...complaintData, name: value.trim()} as ComplaintDto;
-      applyComplaintData(complaint)
+    if (value) {
+      const complaint = { ...complaintData, name: value.trim() } as ComplaintDto;
+      applyComplaintData(complaint);
     }
-  }
+  };
 
   function handleAddressChange(value: string) {
     if (complaintType === COMPLAINT_TYPES.HWCR) {
@@ -584,10 +584,10 @@ export const CreateComplaint: FC = () => {
     } else {
       setPrimaryPhoneMsg("");
 
-      const complaint = { ...complaintData, phone1: value} as ComplaintDto;
-      applyComplaintData(complaint)
+      const complaint = { ...complaintData, phone1: value } as ComplaintDto;
+      applyComplaintData(complaint);
     }
-  }
+  };
   const handleSecondaryPhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setSecondaryPhoneMsg("Phone number must be 10 digits");
@@ -596,42 +596,35 @@ export const CreateComplaint: FC = () => {
     } else {
       setSecondaryPhoneMsg("");
 
-      const complaint = { ...complaintData, phone2: value} as ComplaintDto;
-      applyComplaintData(complaint)
+      const complaint = { ...complaintData, phone2: value } as ComplaintDto;
+      applyComplaintData(complaint);
     }
-  }
+  };
 
-  const  handleAlternatePhoneChange = (value: string) => {
+  const handleAlternatePhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setAlternatePhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setAlternatePhoneMsg("Invalid Format");
     } else {
       setAlternatePhoneMsg("");
-      
-      const complaint = { ...complaintData, phone3: value} as ComplaintDto;
-      applyComplaintData(complaint)
-    }
-  }
 
-  function handleEmailChange(value: string) {
+      const complaint = { ...complaintData, phone3: value } as ComplaintDto;
+      applyComplaintData(complaint);
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
     let re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (value !== undefined && value !== "" && !re.test(value)) {
       setEmailMsg("Please enter a vaild email");
     } else {
       setEmailMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_email = value;
-        setCreateComplaint(hwcrComplaint);
-      }
-      if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_email = value;
-        setCreateComplaint(allegationComplaint);
-      }
+
+      const complaint = { ...complaintData, email: value } as ComplaintDto;
+      applyComplaintData(complaint);
     }
-  }
+  };
 
   const handleReportedByChange = (selected: Option | null) => {
     if (selected) {
