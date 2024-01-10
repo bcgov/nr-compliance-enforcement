@@ -894,26 +894,6 @@ export const ComplaintDetailsEdit: FC = () => {
                 </Button>
               </div>)
               }
-              {!readOnly && (
-              <div className="comp-box-actions-non-header">
-                <Button
-                  id="details-screen-cancel-edit-button-top"
-                  title="Cancel Edit Complaint"
-                  variant="outline-primary"
-                  onClick={cancelButtonClick}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  id="details-screen-cancel-save-button-top"
-                  title="Save Complaint"
-                  variant="outline-primary"
-                  onClick={saveButtonClick}
-                >
-                  Save Changes
-                </Button>
-              </div>
-            )}
               <div className="clear-left-float clear-right-float"></div>
           </div>
           </div>
