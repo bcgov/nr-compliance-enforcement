@@ -12,7 +12,7 @@ import {
   getAvatarInitials,
 } from "../../../../common/methods";
 import { Button } from "react-bootstrap";
-import { BsPersonPlus, BsPencil, BsArrowRepeat } from "react-icons/bs";
+import { BsPersonPlus, BsArrowRepeat } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import {
   ASSIGN_OFFICER,
