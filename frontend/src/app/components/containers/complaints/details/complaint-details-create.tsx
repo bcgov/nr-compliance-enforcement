@@ -59,6 +59,7 @@ import { AllegationComplaint as AllegationComplaintDto } from "../../../../types
 import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { UUID } from "crypto";
+import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -357,7 +358,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleSpeciesChange = (selected: Option | null) => {
-    if(selected){ 
+    if (selected) {
       const { value } = selected;
 
       if (!value) {
@@ -365,7 +366,7 @@ export const CreateComplaint: FC = () => {
       } else {
         setSpeciesErrorMsg("");
 
-        const complaint = {...complaintData, species: value} as WildlifeComplaintDto;
+        const complaint = { ...complaintData, species: value } as WildlifeComplaintDto;
         applyComplaintData(complaint);
       }
     }
@@ -441,16 +442,16 @@ export const CreateComplaint: FC = () => {
       setComplaintDescriptionErrorMsg("Required");
     } else {
       setComplaintDescriptionErrorMsg("");
-      
-      const complaint = { ...complaintData, details: value?.trim() } as ComplaintDto
-      applyComplaintData(complaint)
+
+      const complaint = { ...complaintData, details: value?.trim() } as ComplaintDto;
+      applyComplaintData(complaint);
     }
-  }
+  };
 
   const handleLocationDescriptionChange = (value: string) => {
-    const complaint = { ...complaintData, locationDetail: value?.trim()} as ComplaintDto
-    applyComplaintData(complaint)
-  }
+    const complaint = { ...complaintData, locationDetail: value?.trim() } as ComplaintDto;
+    applyComplaintData(complaint);
+  };
 
   function handleViolationInProgessChange(selectedOption: Option | null) {
     let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
@@ -465,80 +466,40 @@ export const CreateComplaint: FC = () => {
   }
 
   const handleLocationChange = (value: string) => {
-    const complaint = { ...complaintData, locationSummary: value?.trim()} as ComplaintDto
-    applyComplaintData(complaint)
-  }
+    const complaint = { ...complaintData, locationSummary: value?.trim() } as ComplaintDto;
+    applyComplaintData(complaint);
+  };
 
-  async function handleAttractantsChange(selectedOptions: Option[] | null) {
-    if (!selectedOptions) {
+  const handleAttractantsChange = async (selectedItems: Array<Option> | null) => {
+    if (!selectedItems) {
       return;
     }
-    let update = { ...createComplaint } as HwcrComplaint;
-    const { attractant_hwcr_xref: currentAttactants } = update;
 
-    let newAttractants = new Array<any>();
+    const { attractants } = complaintData as WildlifeComplaintDto;
+    let updates: Array<AttractantXref> = [];
 
-    selectedOptions.forEach((selectedOption) => {
-      let match = false;
+    if (attractants) {
+      attractants.forEach((item) => {
+        const { attractant, xrefId } = item;
 
-      currentAttactants.forEach((item) => {
-        if (selectedOption.value === item.attractant_code?.attractant_code) {
-          match = true;
-          const attractant = {
-            attractant_hwcr_xref_guid: item.attractant_hwcr_xref_guid,
-            attractant_code: item.attractant_code,
-            hwcr_complaint_guid: update.hwcr_complaint_guid,
-            create_user_id: userid,
-            active_ind: true,
-          };
-          newAttractants.push(attractant);
+        if (from(selectedItems).any(({ value: selected }) => selected === attractant)) {
+          updates.push({ xrefId, attractant, isActive: true });
+        } else {
+          updates.push({ xrefId, attractant, isActive: false });
         }
       });
+    }
 
-      if (!match) {
-        const { label, value } = selectedOption;
-
-        const attractant = {
-          attractant_hwcr_xref_guid: undefined,
-          attractant_code: {
-            active_ind: true,
-            attractant_code: value as string,
-            short_description: label as string,
-            long_description: label as string,
-          },
-          hwcr_complaint_guid: update.hwcr_complaint_guid,
-          create_user_id: userid,
-          active_ind: true,
-        };
-        newAttractants.push(attractant);
+    selectedItems.forEach(({ value: selected }) => {
+      if (!from(attractants).any(({ attractant }) => attractant === selected)) {
+        const _item: AttractantXref = { attractant: selected as string, isActive: true };
+        updates.push(_item);
       }
     });
 
-    currentAttactants.forEach((current) => {
-      let match = false;
-
-      newAttractants.forEach((item) => {
-        if (current.attractant_code === item.attractant_code) {
-          match = true;
-        }
-      });
-
-      if (!match) {
-        const attractant = {
-          attractant_hwcr_xref_guid: current.attractant_hwcr_xref_guid,
-          attractant_code: current.attractant_code,
-          hwcr_complaint_guid: update.hwcr_complaint_guid,
-          create_user_id: userid,
-          active_ind: false,
-        };
-        newAttractants.push(attractant);
-      }
-    });
-
-    update.attractant_hwcr_xref = newAttractants;
-    setAttractantsErrorMsg("");
-    setCreateComplaint(update);
-  }
+    const model = { ...complaintData, attractants: updates } as WildlifeComplaintDto;
+    applyComplaintData(model);
+  };
 
   function handleCommunityChange(selectedOption: Option | null) {
     if (!selectedOption) {
@@ -762,19 +723,12 @@ export const CreateComplaint: FC = () => {
     { value: "No", label: "No" },
   ];
 
-  function handleIncidentDateTimeChange(date: Date) {
+  const handleIncidentDateTimeChange = (date: Date) => {
     setSelectedIncidentDateTime(date);
 
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.incident_utc_datetime = date;
-      setCreateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.incident_utc_datetime = date;
-      setCreateComplaint(allegationComplaint);
-    }
-  }
+    const complaint = { ...complaintData, incidentDateTime: date } as ComplaintDto;
+    applyComplaintData(complaint);
+  };
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
