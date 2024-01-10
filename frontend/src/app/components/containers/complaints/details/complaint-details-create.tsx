@@ -57,6 +57,8 @@ import {
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
 import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
+import { Delegate } from "../../../../types/app/people/delegate";
+import { UUID } from "crypto";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -255,7 +257,7 @@ export const CreateComplaint: FC = () => {
         location: { type: "Point", coordinates: [0, 0] },
         locationSummary: "",
         locationDetail: "",
-        status: "",
+        status: "OPEN",
         ownedBy: "COS",
         reportedByOther: "",
         reportedOn: new Date(),
@@ -320,7 +322,7 @@ export const CreateComplaint: FC = () => {
   const handleComplaintChange = (selected: Option | null) => {
     if (selected && selected.value) {
       const { value } = selected;
-      
+
       setComplaintTypeMsg("");
       setComplaintType(value);
 
@@ -337,7 +339,7 @@ export const CreateComplaint: FC = () => {
         otherAttractants,
         ...rest
       } = complaintData as any;
-      applyComplaintData(rest)
+      applyComplaintData(rest);
     } else {
       setComplaintTypeMsg("Required");
     }
@@ -347,7 +349,7 @@ export const CreateComplaint: FC = () => {
     if (selected && selected.value) {
       const { value } = selected;
 
-      const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto
+      const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
       applyComplaintData(complaint);
     } else {
       setNatureOfComplaintErrorMsg("Required");
@@ -355,25 +357,16 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleSpeciesChange = (selected: Option | null) => {
-    if (selected) {
-      const { label, value } = selected;
+    if(selected){ 
+      const { value } = selected;
+
       if (!value) {
         setSpeciesErrorMsg("Required");
       } else {
         setSpeciesErrorMsg("");
 
-        let update = { ...createComplaint } as HwcrComplaint;
-
-        const { species_code: source } = update;
-        const updatedEntity = {
-          ...source,
-          short_description: value,
-          long_description: label as string,
-          species_code: value,
-        };
-
-        update.species_code = updatedEntity;
-        setCreateComplaint(update);
+        const complaint = {...complaintData, species: value} as WildlifeComplaintDto;
+        applyComplaintData(complaint);
       }
     }
   };
@@ -393,51 +386,52 @@ export const CreateComplaint: FC = () => {
     if (selected) {
       const { value } = selected;
 
-      let update = { ...createComplaint } as HwcrComplaint | AllegationComplaint;
+      const { delegates } = complaintData as ComplaintDto;
+      let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
+      let updatedDelegates: Array<Delegate> = [];
 
-      const { complaint_identifier: identifier } = update;
-      let { person_complaint_xref: source, complaint_identifier: id } = identifier;
       if (value !== "Unassigned") {
-        const selectedOfficer = officerList?.find(({ person_guid: { person_guid: id } }) => {
+        //-- get the new officer from state
+        const officer = officerList?.find(({ person_guid: { person_guid: id } }) => {
           return id === value;
         });
 
-        const { person_guid: officer } = selectedOfficer as any;
+        const { person_guid: person } = officer as any;
+        const { person_guid: id, first_name, last_name, middle_name_1, middle_name_2 } = person;
 
-        if (from(source).any() && from(source).elementAt(0)) {
-          const assigned = { ...source[0], person_guid: officer };
-          source = [assigned];
-        } else {
-          const assigned = {
-            person_guid: officer,
-            create_user_id: userid,
-            update_user_id: userid,
-            complaint_identifier: id,
-            active_ind: true,
-            person_complaint_xref_code: "ASSIGNEE",
-          };
-          source = [assigned];
+        //-- if there's already an assignee mark the officer as inactive
+        if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
+          let delegate = delegates.find((item) => item.type === "ASSIGNEE");
+          let updatedDelegate = { ...delegate, isActive: false } as Delegate;
+
+          updatedDelegates = [updatedDelegate];
         }
 
-        const updatedParent = {
-          ...identifier,
-          person_complaint_xref: source,
+        //-- create a new assigned officer delegate
+        let delegate: Delegate = {
+          isActive: true,
+          type: "ASSIGNEE",
+          person: {
+            id: id as UUID,
+            firstName: first_name,
+            middleName1: middle_name_1,
+            middleName2: middle_name_2,
+            lastName: last_name,
+          },
         };
 
-        update.complaint_identifier = updatedParent;
+        updatedDelegates = [...updatedDelegates, ...existing, delegate];
 
-        setCreateComplaint(update);
-      } else if (from(source).any() && from(source).elementAt(0)) {
-        const assigned = { ...source[0], active_ind: false };
-        source = [assigned];
+        const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
+        applyComplaintData(complaint);
+      } else if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
+        let delegate = delegates.find((item) => item.type === "ASSIGNEE");
+        let updatedDelegate = { ...delegate, isActive: false } as Delegate;
 
-        const updatedParent = {
-          ...identifier,
-          person_complaint_xref: source,
-        };
+        updatedDelegates = [updatedDelegate];
 
-        update.complaint_identifier = updatedParent;
-        setCreateComplaint(update);
+        const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
+        applyComplaintData(complaint);
       }
     }
   };

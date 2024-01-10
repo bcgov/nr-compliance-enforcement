@@ -656,7 +656,7 @@ export const refreshComplaintItem =
   };
 
   export const createComplaint =
-  (complaint: WildlifeComplaintDto | AllegationComplaintDto): AppThunk =>
+  (complaintType: string, complaint: WildlifeComplaintDto | AllegationComplaintDto): AppThunk =>
   async (dispatch) => {
     let newComplaintId: string = "moo";
     try {
