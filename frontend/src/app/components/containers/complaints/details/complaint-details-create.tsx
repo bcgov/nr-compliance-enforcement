@@ -13,7 +13,6 @@ import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
 import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
 import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
-import { cloneDeep } from "lodash";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { openModal, selectOfficerAgency, userId } from "../../../../store/reducers/app";
@@ -63,6 +62,7 @@ import { AttractantXref } from "../../../../types/app/complaints/attractant-xref
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const userid = useAppSelector(userId);
   const agency = useAppSelector(selectOfficerAgency);
@@ -82,7 +82,10 @@ export const CreateComplaint: FC = () => {
       }))
     : [];
 
-  const navigate = useNavigate();
+  const yesNoOptions: Option[] = [
+    { value: "Yes", label: "Yes" },
+    { value: "No", label: "No" },
+  ];
 
   const emptyComplaint: Complaint = {
     complaint_identifier: "",
@@ -558,23 +561,14 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleNameChange = (value: string) => {
-    if (value) {
-      const complaint = { ...complaintData, name: value.trim() } as ComplaintDto;
-      applyComplaintData(complaint);
-    }
+    const complaint = { ...complaintData, name: value?.trim() } as ComplaintDto;
+    applyComplaintData(complaint);
   };
 
-  function handleAddressChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.caller_address = value;
-      setCreateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.caller_address = value;
-      setCreateComplaint(allegationComplaint);
-    }
-  }
+  const handleAddressChange = (value: string) => {
+    const complaint = { ...complaintData, address: value?.trim() } as ComplaintDto;
+    applyComplaintData(complaint);
+  };
 
   const handlePrimaryPhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
@@ -621,47 +615,17 @@ export const CreateComplaint: FC = () => {
     } else {
       setEmailMsg("");
 
-      const complaint = { ...complaintData, email: value } as ComplaintDto;
+      const complaint = { ...complaintData, email: value?.trim() } as ComplaintDto;
       applyComplaintData(complaint);
     }
   };
 
   const handleReportedByChange = (selected: Option | null) => {
     if (selected) {
-      const { label, value } = selected;
+      const { value } = selected;
 
-      let update = cloneDeep(createComplaint) as HwcrComplaint | AllegationComplaint;
-
-      const { complaint_identifier: identifier } = update;
-      const { reported_by_code: source } = identifier;
-
-      const updatedEntity = value
-        ? {
-            ...source,
-            short_description: value,
-            long_description: label as string,
-            reported_by_code: value,
-          }
-        : {
-            reported_by_code: "",
-            short_description: "",
-            long_description: "",
-            display_order: 0,
-            active_ind: true,
-            create_user_id: "",
-            create_utc_timestamp: null,
-            update_user_id: "",
-            update_utc_timestamp: null,
-          };
-
-      const updatedParent = {
-        ...identifier,
-        reported_by_code: updatedEntity,
-      };
-
-      update.complaint_identifier = updatedParent;
-
-      setCreateComplaint(update);
+      const complaint = { ...complaintData, reportedBy: value } as ComplaintDto;
+      applyComplaintData(complaint);
     }
   };
 
@@ -672,11 +636,6 @@ export const CreateComplaint: FC = () => {
       setCreateComplaint(allegationComplaint);
     }
   }
-
-  const yesNoOptions: Option[] = [
-    { value: "Yes", label: "Yes" },
-    { value: "No", label: "No" },
-  ];
 
   const handleIncidentDateTimeChange = (date: Date) => {
     setSelectedIncidentDateTime(date);
