@@ -509,3 +509,12 @@ button.modal-buttons {
 .pagination_specific_page {
   width: 110px;
 }
+
+.blue-seperator {
+  height: 2px;
+  background-color: $bc-brand-blue;
+  color: $bc-brand-blue;
+  opacity: 100 !important;
+  margin-left: 24px;
+  margin-right: 24px;
+}

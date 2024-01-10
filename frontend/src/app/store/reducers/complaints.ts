@@ -13,7 +13,6 @@ import { ComplaintSuspectWitness } from "../../types/complaints/details/complain
 import ComplaintType from "../../constants/complaint-types";
 import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "../../types/complaints/complaint-filters";
-import { Complaint } from "../../types/complaints/complaint";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
 import { Feature } from "../../types/maps/bcGeocoderType";
@@ -23,11 +22,22 @@ import { Coordinates } from "../../types/app/coordinate-type";
 
 import { MapSearchResults } from "../../types/complaints/map-return";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
-import { Delegate } from "../../types/app/people/delegate";
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
 import { Complaint as ComplaintDto } from "../../types/app/complaints/complaint";
+import { AttractantXref as AttractantXrefDto } from "../../types/app/complaints/attractant-xref";
+import { Attractant as AttractantDto } from "../../types/app/code-tables/attactant";
+
+import { from } from "linq-to-typescript";
+import {
+  getNatureOfComplaintByNatureOfComplaintCode,
+  getSpeciesBySpeciesCode,
+  getStatusByStatusCode,
+  getViolationByViolationCode,
+} from "../../common/methods";
+import { Agency } from "../../types/app/code-tables/agency";
+import { ReportedBy } from "../../types/app/code-tables/reported-by";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -75,6 +85,7 @@ export const complaintSlice = createSlice({
       const { payload: complaint } = action;
       return { ...state, complaint };
     },
+
     setGeocodedComplaintCoordinates: (state, action) => {
       const { payload: complaintLocation } = action;
       return { ...state, complaintLocation };
@@ -89,24 +100,18 @@ export const complaintSlice = createSlice({
 
       return { ...state, zoneAtGlance: update };
     },
-    updateWildlifeComplaintByRow: (state, action: PayloadAction<HwcrComplaint>) => {
+    updateWildlifeComplaintByRow: (state, action: PayloadAction<WildlifeComplaintDto>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { wildlife } = complaintItems;
 
-      const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcr_complaint_guid);
+      const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcrId);
 
       if (index !== -1) {
-        const {
-          complaint_identifier: {
-            complaint_status_code: { complaint_status_code },
-            person_complaint_xref,
-          },
-        } = updatedComplaint;
-        const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
+        debugger;
+        const { status, delegates } = updatedComplaint;
 
-        let complaint = { ...wildlife[index], status: newStatus, delegates };
+        let complaint = { ...wildlife[index], status, delegates };
         const update = [...wildlife];
         update[index] = complaint;
 
@@ -116,24 +121,17 @@ export const complaintSlice = createSlice({
       }
     },
 
-    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaint>) => {
+    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaintDto>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { allegations } = complaintItems;
 
-      const index = allegations.findIndex(({ ersId }) => ersId === updatedComplaint.allegation_complaint_guid);
+      const index = allegations.findIndex(({ ersId }) => ersId === updatedComplaint.ersId);
 
       if (index !== -1) {
-        const {
-          complaint_identifier: {
-            complaint_status_code: { complaint_status_code },
-            person_complaint_xref,
-          },
-        } = updatedComplaint;
-        const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
+        const { status, delegates } = updatedComplaint;
 
-        let complaint = { ...allegations[index], status: newStatus, delegates };
+        let complaint = { ...allegations[index], status, delegates };
         const update = [...allegations];
         update[index] = complaint;
 
@@ -277,75 +275,6 @@ export const getMappedComplaints =
     }
   };
 
-export const getWildlifeComplaintByComplaintIdentifier =
-  (id: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {}
-  };
-
-export const getWildlifeComplaintByComplaintIdentifierSetUpdate =
-  (id: string, setUpdateComplaint: Function): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
-      setUpdateComplaint(response);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {
-      //-- handle the error
-    }
-  };
-
-export const getAllegationComplaintByComplaintIdentifier =
-  (id: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {
-      //-- handle the error
-    }
-  };
-
-export const getAllegationComplaintByComplaintIdentifierSetUpdate =
-  (id: string, setUpdateComplaint: Function): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(setComplaint(null));
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${id}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      setUpdateComplaint(response);
-
-      dispatch(setComplaint({ ...response }));
-    } catch (error) {
-      //-- handle the error
-    }
-  };
-
 export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
@@ -394,11 +323,11 @@ export const getGeocodedComplaintCoordinates =
   };
 
 const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: string) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/${id}`, {
-    complaint_status_code: `${status}`,
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-status-by-id/${id}`, {
+    status: `${status}`,
   });
 
-  await patch<Complaint>(dispatch, parameters);
+  await patch<ComplaintDto>(dispatch, parameters);
 };
 
 export const createAllegationComplaint =
@@ -431,13 +360,11 @@ export const createAllegationComplaint =
       await post<AllegationComplaint>(dispatch, postParameters).then(async (res) => {
         const newAllegationComplaint: AllegationComplaint = res;
 
-        //-- get the created wildlife conflict
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${res}`
-        );
-        const response = await get<AllegationComplaint>(dispatch, parameters);
+        const { complaint_identifier: complaint } = res;
+        const { complaint_identifier: complaintId } = complaint;
 
-        dispatch(setComplaint({ ...response }));
+        await dispatch(getComplaintById(complaintId, "ERS"));
+
         newComplaintId = newAllegationComplaint.complaint_identifier.complaint_identifier;
       });
       ToggleSuccess("Complaint has been saved");
@@ -451,6 +378,7 @@ export const createAllegationComplaint =
 export const createWildlifeComplaint =
   (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
+    debugger;
     let newComplaintId: string = "";
     try {
       if (
@@ -475,14 +403,10 @@ export const createWildlifeComplaint =
       });
       await post<HwcrComplaint>(dispatch, postParameters).then(async (res) => {
         const newHwcrComplaint: HwcrComplaint = res;
+        const { complaint_identifier: complaint } = res;
+        const { complaint_identifier: complaintId } = complaint;
 
-        //-- get the created wildlife conflict
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${res}`
-        );
-        const response = await get<HwcrComplaint>(dispatch, parameters);
-
-        dispatch(setComplaint({ ...response }));
+        await dispatch(getComplaintById(complaintId, "HWCR"));
         newComplaintId = newHwcrComplaint.complaint_identifier.complaint_identifier;
       });
       ToggleSuccess("Complaint has been saved");
@@ -502,40 +426,17 @@ export const updateWildlifeComplaintStatus =
 
       //-- get the wildlife conflict and update its status
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/HWCR/${complaint_identifier}`
       );
-      const response = await get<HwcrComplaint>(dispatch, parameters);
+      debugger
+      const response = await get<WildlifeComplaintDto>(dispatch, parameters);
 
-      dispatch(updateWildlifeComplaintByRow(response));
+      dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
       const result = response;
 
       dispatch(setComplaint({ ...result }));
     } catch (error) {
       //-- add error handling
-    }
-  };
-
-export const updateAllegationComplaint =
-  (allegationComplaint: AllegationComplaint): AppThunk =>
-  async (dispatch) => {
-    try {
-      const updateParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/${allegationComplaint.allegation_complaint_guid}`,
-        { allegationComplaint: JSON.stringify(allegationComplaint) }
-      );
-
-      await patch<AllegationComplaint>(dispatch, updateParams);
-
-      //-- get the updated wildlife conflict
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${allegationComplaint.complaint_identifier.complaint_identifier}`
-      );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
-      dispatch(setComplaint({ ...response }));
-      ToggleSuccess("Updates have been saved");
-    } catch (error) {
-      ToggleError("Unable to update complaint");
     }
   };
 
@@ -548,10 +449,9 @@ export const updateAllegationComplaintStatus =
 
       //-- get the wildlife conflict and update its status
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/ERS/${complaint_identifier}`
       );
-      const response = await get<AllegationComplaint>(dispatch, parameters);
-
+      const response = await get<AllegationComplaintDto>(dispatch, parameters);
       dispatch(updateAllegationComplaintByRow(response));
       const result = response;
 
@@ -580,343 +480,30 @@ export const updateComplaintById =
     }
   };
 
-const convertPersonXrefToDelegate = (person: any): Delegate => {
-  const {
-    personComplaintXrefGuid: xrefId,
-    active_ind: isActive,
-    person_guid: { first_name: firstName, last_name: lastName, person_guid: id },
-  } = person;
-
-  const result: Delegate = {
-    isActive: isActive,
-    person: {
-      id,
-      firstName,
-      lastName,
-      middleName1: "",
-      middleName2: "",
-    },
-    type: "ASSIGNEE",
-    xrefId,
-  };
-
-  return result;
-};
-
-export const refreshComplaintItem =
+//-- get complaint
+export const getComplaintById =
   (id: string, complaintType: string): AppThunk =>
-  async (dispatch, getState) => {
+  async (dispatch) => {
     try {
-      const {
-        complaints: {
-          complaintItems: { wildlife },
-        },
-      } = getState();
+      dispatch(setComplaint(null));
 
-      switch (complaintType) {
-        case COMPLAINT_TYPES.ERS: {
-          break;
-        }
-        case COMPLAINT_TYPES.HWCR:
-        default: {
-          //-- get all complaints from list of complaints except the updated complaint and readd it
-          //-- to the list of complaints
-          const items = wildlife.filter((item) => item.id !== id);
-          const original = wildlife.find((item) => item.id === id);
-          if (original) {
-            //-- get the updated complaint
-            const parameters = generateApiParameters(
-              `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${id}`
-            );
-            const response = await get<HwcrComplaint>(dispatch, parameters);
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`
+      );
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
-            //-- refactor this when findById is updated
-            const {
-              complaint_identifier: {
-                person_complaint_xref,
-                complaint_status_code: { complaint_status_code },
-              },
-            } = response;
-
-            const assigned = convertPersonXrefToDelegate(person_complaint_xref[0]);
-
-            const updated = { ...original, status: complaint_status_code, delegates: [assigned] };
-
-            const udpatedItems = [...items, updated];
-
-            dispatch(setComplaints({ type: complaintType, data: udpatedItems }));
-          }
-
-          break;
-        }
-      }
+      dispatch(setComplaint({ ...response }));
     } catch (error) {
-      //-- add error handling
+      //-- handle the error
     }
   };
 
 //-- selectors
-export const selectComplaint = (state: RootState): HwcrComplaint | AllegationComplaint | undefined | null => {
-  const { complaints: root } = state;
-  const { complaint } = root;
-  return complaint;
-};
-
 export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },
   } = state;
   return complaintLocation;
-};
-
-export const selectComplaintHeader =
-  (complaintType: string) =>
-  (state: RootState): any => {
-    const selectSharedHeader = (ceComplaint: Complaint, result: any) => {
-      let officerAssigned = "Not Assigned";
-      let personGuid = "";
-      const {
-        incident_reported_utc_timestmp: loggedDate,
-        create_user_id: createdBy,
-        update_utc_timestamp: lastUpdated,
-        complaint_status_code: ceStatusCode,
-      } = ceComplaint;
-
-      const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-      const owned_by_agency_code = ceComplaint.owned_by_agency_code.agency_code ?? "";
-
-      if (ceComplaint.person_complaint_xref.length > 0) {
-        const firstName = ceComplaint.person_complaint_xref[0].person_guid.first_name;
-        const lastName = ceComplaint.person_complaint_xref[0].person_guid.last_name;
-        officerAssigned = `${firstName} ${lastName}`;
-        personGuid = ceComplaint.person_complaint_xref[0].person_guid.person_guid;
-      }
-
-      const { complaint_status_code: statusCode, long_description: status } = ceStatusCode;
-
-      result = {
-        ...result,
-        loggedDate,
-        createdBy,
-        lastUpdated,
-        officerAssigned: officerAssigned,
-        status,
-        statusCode,
-        zone: zone_code,
-        personGuid,
-        complaintAgency: owned_by_agency_code,
-      };
-
-      return result;
-    };
-
-    const selectWildlifeComplaintHeader = (state: RootState): ComplaintHeader => {
-      const {
-        complaints: { complaint },
-      } = state;
-
-      let result = {
-        loggedDate: "",
-        createdBy: "",
-        lastUpdated: "",
-        officerAssigned: "",
-        personGuid: "",
-        status: "",
-        statusCode: "",
-        natureOfComplaint: "", //-- needs to be violation as well
-        natureOfComplaintCode: "",
-        species: "", //-- not available for ers
-        speciesCode: "",
-        zone: "",
-        firstName: "",
-        lastName: "",
-      };
-
-      if (complaint) {
-        const {
-          complaint_identifier: ceComplaint,
-          hwcr_complaint_nature_code: ceComplaintNatureCode,
-          species_code: ceSpeciesCode,
-        } = complaint as HwcrComplaint;
-
-        if (ceComplaint) {
-          result = selectSharedHeader(ceComplaint, result);
-
-          if (ceComplaintNatureCode) {
-            const { long_description: natureOfComplaint, hwcr_complaint_nature_code: natureOfComplaintCode } =
-              ceComplaintNatureCode;
-            result = { ...result, natureOfComplaint, natureOfComplaintCode };
-          }
-
-          if (ceSpeciesCode) {
-            const { short_description: species, species_code: speciesCode } = ceSpeciesCode;
-            result = { ...result, species, speciesCode };
-          }
-        }
-      }
-      return result;
-    };
-
-    const selectAllegationComplaintHeader = (state: RootState): ComplaintHeader => {
-      const {
-        complaints: { complaint },
-      } = state;
-
-      let result = {
-        loggedDate: "",
-        createdBy: "",
-        lastUpdated: "",
-        officerAssigned: "",
-        status: "",
-        statusCode: "",
-        zone: "",
-        violationType: "", //-- needs to be violation as well
-        personGuid: "",
-        violationTypeCode: "",
-      };
-
-      if (complaint) {
-        const { complaint_identifier: ceComplaint, violation_code: ceViolation } = complaint as AllegationComplaint;
-
-        if (ceComplaint) {
-          result = selectSharedHeader(ceComplaint, result);
-        }
-
-        if (ceViolation) {
-          const { long_description: violationType, violation_code: violationTypeCode } = ceViolation;
-          result = { ...result, violationType, violationTypeCode };
-        }
-      }
-      return result;
-    };
-    switch (complaintType) {
-      case COMPLAINT_TYPES.ERS:
-        return selectAllegationComplaintHeader(state);
-      case COMPLAINT_TYPES.HWCR:
-        return selectWildlifeComplaintHeader(state);
-    }
-  };
-
-export const selectComplaintDetails =
-  (complaintType: string) =>
-  (state: RootState): ComplaintDetails => {
-    const {
-      complaints: { complaint },
-    } = state;
-
-    let results: ComplaintDetails = {};
-    if (complaint) {
-      const { complaint_identifier: ceComplaint }: any = complaint;
-
-      if (ceComplaint) {
-        const {
-          detail_text,
-          location_summary_text,
-          location_detailed_text,
-          incident_utc_datetime,
-          location_geometry_point: { coordinates },
-        } = ceComplaint;
-
-        const area_name = ceComplaint.cos_geo_org_unit?.area_name ?? "";
-        const region_name = ceComplaint.cos_geo_org_unit?.region_name ?? "";
-        const zone_name = ceComplaint.cos_geo_org_unit?.zone_name ?? "";
-        const zone_code = ceComplaint.cos_geo_org_unit?.zone_code ?? "";
-        const office_location_name = ceComplaint.cos_geo_org_unit?.office_location_name ?? "";
-
-        results = {
-          ...results,
-          details: detail_text,
-          location: location_summary_text,
-          locationDescription: location_detailed_text,
-          incidentDateTime: incident_utc_datetime,
-          coordinates,
-          area: area_name,
-          region: region_name,
-          zone: zone_name,
-          zone_code: zone_code,
-          office: office_location_name,
-        };
-      }
-    }
-
-    if (complaint) {
-      switch (complaintType) {
-        case COMPLAINT_TYPES.ERS: {
-          const { in_progress_ind: violationInProgress, observed_ind: violationObserved }: any = complaint;
-
-          results = { ...results, violationInProgress, violationObserved };
-          break;
-        }
-        case COMPLAINT_TYPES.HWCR: {
-          const { attractant_hwcr_xref }: any = complaint;
-
-          if (attractant_hwcr_xref) {
-            const attractants = attractant_hwcr_xref.map(
-              ({
-                attractant_hwcr_xref_guid: key,
-                attractant_code: { attractant_code: code, short_description: description },
-              }: any): ComplaintDetailsAttractant => {
-                return { key, code, description };
-              }
-            );
-
-            results = { ...results, attractants };
-          }
-          break;
-        }
-      }
-    }
-    return results;
-  };
-
-export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
-  const {
-    complaints: { complaint },
-  } = state;
-
-  let results = {} as ComplaintCallerInformation;
-  if (complaint) {
-    const { complaint_identifier: ceComplaint } = complaint;
-    const {
-      caller_name,
-      caller_phone_1,
-      caller_phone_2,
-      caller_phone_3,
-      caller_address,
-      caller_email,
-      reported_by_code,
-      owned_by_agency_code,
-    }: any = ceComplaint;
-
-    results = {
-      ...results,
-      name: caller_name,
-      primaryPhone: caller_phone_1,
-      secondaryPhone: caller_phone_2,
-      alternatePhone: caller_phone_3,
-      address: caller_address,
-      email: caller_email,
-      reportedByCode: reported_by_code,
-      ownedByAgencyCode: owned_by_agency_code,
-    };
-  }
-  return results;
-};
-
-export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
-  const {
-    complaints: { complaint },
-  } = state;
-
-  let results = {} as ComplaintSuspectWitness;
-
-  if (complaint) {
-    const { suspect_witnesss_dtl_text: details }: any = complaint;
-
-    results = { ...results, details };
-  }
-
-  return results;
 };
 
 export const selectWildlifeZagOpenComplaints = (state: RootState): ZoneAtAGlanceStats => {
@@ -953,6 +540,7 @@ export const selectAllegationComplaints = (state: RootState): Array<any> => {
   return allegations;
 };
 
+///---
 export const selectTotalComplaintsByType =
   (complaintType: string) =>
   (state: RootState): number => {
@@ -975,7 +563,6 @@ export const selectComplaintsByType =
     }
   };
 
-///---
 export const selectTotalMappedComplaints = (state: RootState): number => {
   const {
     complaints: {
@@ -1018,6 +605,277 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
   } else {
     return new Array<ComplaintMapItem>();
   }
+};
+
+export const selectComplaint = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
+  const {
+    complaints: { complaint },
+  } = state;
+  return complaint;
+};
+
+export const selectComplaintDetails =
+  (complaintType: string) =>
+  (state: RootState): ComplaintDetails => {
+    const {
+      complaints: { complaint },
+      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable },
+    } = state;
+
+    const getAttractants = (
+      attractants: Array<AttractantXrefDto>,
+      codes: Array<AttractantDto>
+    ): Array<ComplaintDetailsAttractant> => {
+      const result = attractants.map(({ xrefId: key, attractant: code }) => {
+        let record: ComplaintDetailsAttractant = { key: "", description: "", code };
+
+        if (key) {
+          record = { ...record, key };
+        }
+
+        const attractant = codes.find((item) => item.attractant === code);
+        if (attractant) {
+          const { shortDescription: description } = attractant;
+
+          record = { ...record, description };
+        }
+
+        return record;
+      });
+
+      return result;
+    };
+
+    let result: ComplaintDetails = {};
+
+    if (complaint) {
+      const {
+        details,
+        locationSummary: location,
+        locationDetail: locationDescription,
+        incidentDateTime,
+        location: { coordinates },
+        organization: { area: areaCode, region, zone, officeLocation },
+      } = complaint as ComplaintDto;
+
+      result = {
+        ...result,
+        details,
+        location,
+        locationDescription,
+        incidentDateTime,
+        coordinates,
+      };
+
+      if (complaintType === "HWCR") {
+        const { attractants } = complaint as WildlifeComplaintDto;
+
+        if (attractants && from(attractants).any()) {
+          let items = getAttractants(attractants, attractantCodeTable);
+          result = { ...result, attractants: items };
+        }
+      } else if (complaintType === "ERS") {
+        const { isInProgress: violationInProgress, wasObserved: violationObserved } =
+          complaint as AllegationComplaintDto;
+
+        result = {
+          ...result,
+          violationInProgress,
+          violationObserved,
+        };
+      }
+
+      const org = areaCodes.find(({ area }) => area === areaCode);
+
+      if (org) {
+        const { areaName, regionName, zoneName, officeLocationName } = org;
+        result = {
+          ...result,
+          area: areaName,
+          areaCode,
+          region: regionName,
+          regionCode: region,
+          zone: zoneName,
+          zone_code: zone,
+          office: officeLocationName,
+          officeCode: officeLocation,
+        };
+      }
+    }
+
+    return result;
+  };
+
+export const selectComplaintHeader =
+  (complaintType: string) =>
+  (state: RootState): ComplaintHeader => {
+    const {
+      complaints: { complaint },
+      codeTables: {
+        "complaint-status": statusCodes,
+        violation: violationCodes,
+        species: speciesCodes,
+        "nature-of-complaint": natureOfComplaints,
+      },
+    } = state;
+
+    const selectSharedHeader = () => {
+      let result: ComplaintHeader = {
+        loggedDate: "",
+        createdBy: "",
+        lastUpdated: "",
+        status: "",
+        statusCode: "",
+        zone: "",
+        officerAssigned: "",
+        personGuid: "",
+        complaintAgency: "",
+      };
+
+      let officerAssigned = "Not Assigned";
+      let personGuid = "";
+
+      if (complaint) {
+        const {
+          reportedOn: loggedDate,
+          createdBy,
+          updatedOn: lastUpdated,
+          status: statusCode,
+          delegates,
+          ownedBy: complaintAgency,
+          organization: { zone },
+        } = complaint as ComplaintDto;
+
+        const status = getStatusByStatusCode(statusCode, statusCodes);
+
+        result = {
+          loggedDate: loggedDate.toString(),
+          createdBy,
+          lastUpdated: lastUpdated.toString(),
+          status,
+          statusCode,
+          zone,
+          officerAssigned,
+          personGuid,
+          complaintAgency,
+        };
+
+        if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
+          const assigned = from(delegates).first(({ isActive, type }) => type === "ASSIGNEE" && isActive);
+
+          const {
+            person: { firstName, lastName, id },
+          } = assigned;
+          officerAssigned = `${firstName} ${lastName}`;
+          personGuid = id as string;
+
+          result = { ...result, firstName, lastName, officerAssigned, personGuid };
+        }
+      }
+
+      return result;
+    };
+
+    let result = selectSharedHeader();
+
+    if (complaint) {
+      switch (complaintType) {
+        case COMPLAINT_TYPES.ERS:
+          {
+            const { violation: violationTypeCode } = complaint as AllegationComplaintDto;
+            const violationType = getViolationByViolationCode(violationTypeCode, violationCodes);
+
+            result = { ...result, violationType, violationTypeCode };
+          }
+          break;
+        case COMPLAINT_TYPES.HWCR:
+        default:
+          {
+            const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } =
+              complaint as WildlifeComplaintDto;
+            const species = getSpeciesBySpeciesCode(speciesCode, speciesCodes);
+            const natureOfComplaint = getNatureOfComplaintByNatureOfComplaintCode(
+              natureOfComplaintCode,
+              natureOfComplaints
+            );
+
+            result = { ...result, species, speciesCode, natureOfComplaint, natureOfComplaintCode };
+          }
+          break;
+      }
+    }
+
+    return result;
+  };
+
+export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
+  const {
+    complaints: { complaint },
+    codeTables: { agency: agencyCodes, "reported-by": reportedByCodes },
+  } = state;
+
+  const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
+    if (codes && from(codes).any(({ agency }) => agency === code)) {
+      const selected = from(codes).first(({ agency }) => agency === code);
+
+      return selected;
+    }
+
+    return null;
+  };
+
+  const getReportedByReportedByCode = (code: string, codes: Array<ReportedBy>): ReportedBy | null => {
+    if (codes && from(codes).any(({ reportedBy }) => reportedBy === code)) {
+      const selected = from(codes).first(({ reportedBy }) => reportedBy === code);
+
+      return selected;
+    }
+
+    return null;
+  };
+
+  let results = {} as ComplaintCallerInformation;
+
+  if (complaint) {
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy }: any = complaint;
+    const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
+    const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
+
+    results = {
+      ...results,
+      name,
+      primaryPhone: phone1,
+      secondaryPhone: phone2,
+      alternatePhone: phone3,
+      address,
+      email,
+    };
+
+    if (reportedByCode) {
+      results = { ...results, reportedByCode };
+    }
+
+    if (ownedByAgencyCode) {
+      results = { ...results, ownedByAgencyCode };
+    }
+  }
+  return results;
+};
+
+export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
+  const {
+    complaints: { complaint },
+  } = state;
+
+  let results = {} as ComplaintSuspectWitness;
+
+  if (complaint) {
+    const { violationDetails: details } = complaint as AllegationComplaintDto;
+
+    results = { ...results, details };
+  }
+
+  return results;
 };
 
 export default complaintSlice.reducer;

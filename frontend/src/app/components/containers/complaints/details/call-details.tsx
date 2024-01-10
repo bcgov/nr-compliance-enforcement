@@ -57,9 +57,9 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   className="bi bi-calendar comp-margin-right-xxs"
                   id="complaint-incident-date"
                 ></i>
-                {formatDate(incidentDateTime)}
+                {formatDate(incidentDateTime?.toString())}
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(incidentDateTime)}
+                {formatTime(incidentDateTime?.toString())}
               </div>
             </div>
 

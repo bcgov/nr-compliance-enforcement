@@ -3,16 +3,15 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { bcBoundaries, formatDate, formatTime } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
+  setComplaint,
+  setGeocodedComplaintCoordinates,
+  updateComplaintById,
+  selectComplaint,
+  getComplaintById,
   selectComplaintDetails,
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
-  selectComplaint,
-  setComplaint,
-  setGeocodedComplaintCoordinates,
-  getAllegationComplaintByComplaintIdentifier,
-  getWildlifeComplaintByComplaintIdentifier,
-  updateComplaintById,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -34,8 +33,6 @@ import { ComplaintSuspectWitness } from "../../../../types/complaints/details/co
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationSelect } from "../../../../common/validation-select";
-import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
-import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
 import { ValidationInput } from "../../../../common/validation-input";
@@ -68,6 +65,7 @@ import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
+import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 
 type ComplaintParams = {
   id: string;
@@ -80,7 +78,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   //-- selectors
-  const complaint = useAppSelector(selectComplaint);
+  const data = useAppSelector(selectComplaint);
 
   const {
     details,
@@ -108,16 +106,8 @@ export const ComplaintDetailsEdit: FC = () => {
     violationTypeCode,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
-  const {
-    name,
-    primaryPhone,
-    secondaryPhone,
-    alternatePhone,
-    address,
-    email,
-    reportedByCode,
-    ownedByAgencyCode,
-  } = useAppSelector(selectComplaintCallerInformation);
+  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
+    useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
   const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
@@ -130,9 +120,8 @@ export const ComplaintDetailsEdit: FC = () => {
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
 
-  
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
-  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
@@ -141,8 +130,7 @@ export const ComplaintDetailsEdit: FC = () => {
         }))
       : [];
 
-
-  assignableOfficers.unshift({value: "Unassigned", label: "None"});
+  assignableOfficers.unshift({ value: "Unassigned", label: "None" });
 
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails
@@ -187,19 +175,10 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!complaint || complaint.complaint_identifier.complaint_identifier !== id) {
-      if (id) {
-        switch (complaintType) {
-          case COMPLAINT_TYPES.ERS:
-            dispatch(getAllegationComplaintByComplaintIdentifier(id));
-            break;
-          case COMPLAINT_TYPES.HWCR:
-            dispatch(getWildlifeComplaintByComplaintIdentifier(id));
-            break;
-        }
-      }
+    if (id && (!data || data.id !== id)) {
+      dispatch(getComplaintById(id, complaintType));
     }
-  }, [id, complaintType, complaint, dispatch]);
+  }, [id, complaintType, data, dispatch]);
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;
@@ -218,7 +197,9 @@ export const ComplaintDetailsEdit: FC = () => {
     setReadOnly(false);
 
     //-- create the complaint update object
-    createUpdateComplaintModel(complaintType);
+    if (data) {
+      applyComplaintUpdate(data);
+    }
 
     window.scrollTo({ top: 0, behavior: "auto" });
   };
@@ -228,14 +209,10 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
-      debugger;
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        dispatch(getWildlifeComplaintByComplaintIdentifier(id));
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        dispatch(getAllegationComplaintByComplaintIdentifier(id));
-      }
+      dispatch(getComplaintById(id, complaintType));
+
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
@@ -287,137 +264,6 @@ export const ComplaintDetailsEdit: FC = () => {
     );
   };
 
-  //-- this needs to be updated once the complaint findByComplaintId endpoint is updated
-  const createUpdateComplaintModel = (complaintType: string) => {
-    const { complaint_identifier: root } = complaint as HwcrComplaint | AllegationComplaint;
-
-    const {
-      complaint_identifier: id,
-      detail_text: details,
-      caller_name: name,
-      caller_address: address,
-      caller_email: email,
-      caller_phone_1: phone1,
-      caller_phone_2: phone2,
-      caller_phone_3: phone3,
-      location_geometry_point: location,
-      location_summary_text: locationSummary,
-      location_detailed_text: locationDetail,
-      complaint_status_code: { complaint_status_code: status },
-      reported_by_code,
-      owned_by_agency_code: { agency_code: ownedBy },
-      reported_by_other_text: reportedByOther,
-      incident_utc_datetime: incidentDateTime,
-      incident_reported_utc_timestmp: reportedOn,
-      update_utc_timestamp: updatedOn,
-      cos_geo_org_unit: { area_code: area, region_code: region, zone_code: zone },
-      person_complaint_xref,
-    } = root;
-
-    let model: ComplaintDto = {
-      id,
-      details,
-      name,
-      address,
-      email,
-      phone1,
-      phone2,
-      phone3,
-      location,
-      locationSummary,
-      locationDetail,
-      status,
-      ownedBy,
-      reportedByOther,
-      incidentDateTime: new Date(incidentDateTime ?? new Date()),
-      reportedOn: new Date(reportedOn ?? new Date()),
-      updatedOn: new Date(updatedOn ?? new Date()),
-      organization: { area, region, zone },
-      delegates: [],
-    };
-
-    if (reported_by_code) {
-      const { reported_by_code: reportedBy } = reported_by_code;
-
-      model = { ...model, reportedBy };
-    }
-
-    if (from(person_complaint_xref).any()) {
-      const delegates = person_complaint_xref.filter((item) => item.personComplaintXrefGuid !== undefined);
-      const result = delegates.map((item) => {
-        const {
-          personComplaintXrefGuid,
-          active_ind,
-          person_guid: { person_guid: id, first_name, middle_name_1, middle_name_2, last_name },
-        } = item;
-        const record: Delegate = {
-          xrefId: personComplaintXrefGuid as UUID,
-          isActive: active_ind || false,
-          type: "ASSIGNEE",
-          person: {
-            id: id as UUID,
-            firstName: first_name,
-            middleName1: middle_name_1,
-            middleName2: middle_name_2,
-            lastName: last_name,
-          },
-        };
-
-        return record;
-      });
-
-      model = { ...model, delegates: result };
-    }
-
-    switch (complaintType) {
-      case "ERS": {
-        const {
-          violation_code: { violation_code: violation },
-          in_progress_ind: isInProgress,
-          observed_ind: wasObserved,
-          suspect_witnesss_dtl_text: violationDetails,
-          allegation_complaint_guid: ersId,
-        } = complaint as AllegationComplaint;
-
-        model = { ...model, ersId, violation, isInProgress, wasObserved, violationDetails } as AllegationComplaintDto;
-        break;
-      }
-      case "HWCR":
-      default: {
-        const {
-          hwcr_complaint_guid: hwcrId,
-          species_code: { species_code: species },
-          hwcr_complaint_nature_code: { hwcr_complaint_nature_code: natureOfComplaint },
-          other_attractants_text: otherAttractants,
-          attractant_hwcr_xref,
-        } = complaint as HwcrComplaint;
-
-        let attractants: Array<AttractantXref> = [];
-
-        if (from(attractant_hwcr_xref).any()) {
-          attractants = attractant_hwcr_xref.map((item) => {
-            const { attractant_hwcr_xref_guid } = item;
-            const attractant = item.attractant_code ? item.attractant_code.attractant_code : "";
-
-            const record: AttractantXref = {
-              xrefId: attractant_hwcr_xref_guid as UUID,
-              attractant,
-              isActive: true,
-            };
-
-            return record;
-          });
-        }
-
-        model = { ...model, hwcrId, species, natureOfComplaint, otherAttractants, attractants } as WildlifeComplaintDto;
-
-        break;
-      }
-    }
-
-    applyComplaintUpdate(model);
-  };
-
   const onHandleAddAttachments = (selectedFiles: File[]) => {
     handleAddAttachments(setAttachmentsToAdd, selectedFiles);
   };
@@ -445,8 +291,7 @@ export const ComplaintDetailsEdit: FC = () => {
       noErrors = true;
     }
     return noErrors;
-  }
-
+  };
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -458,11 +303,8 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedSpecies = speciesCodes.find((option) => option.value === speciesCode);
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find((option) => option.value === natureOfComplaintCode);
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
-  const selectedReportedByCode = reportedByCodes.find(
-    (option) =>
-      option.value ===
-      (reportedByCode?.reported_by_code)
-  );
+
+  const selectedReportedByCode = reportedByCodes.find((option) => option.value === reportedByCode?.reportedBy);
 
   const hasAssignedOfficer = (): boolean => {
     const { delegates } = complaintUpdate as ComplaintDto;
@@ -470,7 +312,7 @@ export const ComplaintDetailsEdit: FC = () => {
     return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
   };
 
-  const getSelectedOfficer = (officers: Option[], personGuid: UUID, update: ComplaintDto | undefined): any => {
+  const getSelectedOfficer = (officers: Option[], personGuid: UUID | string, update: ComplaintDto | undefined): any => {
     if (update && personGuid) {
       const { delegates } = update;
 
@@ -692,15 +534,10 @@ export const ComplaintDetailsEdit: FC = () => {
 
     console.log(options);
 
-    //-- handle existing attractants
-    console.log("updated list: ", updates);
-
     attractants.forEach((item) => {
-      const { attractant, isActive, xrefId } = item;
+      const { attractant, xrefId } = item;
 
-      console.log(`xref: ${xrefId} ${attractant}: ${isActive}`);
       if (from(options).any(({ value: selected }) => selected === attractant)) {
-        console.log("activate attractant");
         updates.push({ xrefId, attractant, isActive: true });
       } else {
         updates.push({ xrefId, attractant, isActive: false });
@@ -709,9 +546,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
     options.forEach(({ value: selected }) => {
       if (!from(attractants).any(({ attractant }) => attractant === selected)) {
-        console.log(`add new attractant: ${selected}`);
         const _item: AttractantXref = { attractant: selected as string, isActive: true };
-
         updates.push(_item);
       }
     });
@@ -1308,10 +1143,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="reported-pair-id"
-                  >
+                  <div className="comp-details-label-input-pair" id="reported-pair-id">
                     <label htmlFor="reported-select-id">Reported By</label>
                     <div className="comp-details-edit-input">
                       <CompSelect
@@ -1381,6 +1213,9 @@ export const ComplaintDetailsEdit: FC = () => {
           hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
           editComponent={true}
         />
+      )}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
+       <HWCROutcomeReport/>
       )}
     </div>
   );

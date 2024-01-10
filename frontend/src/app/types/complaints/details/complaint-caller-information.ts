@@ -1,5 +1,5 @@
-import { AgencyCode } from "../../code-tables/agency-code";
-import { ReportedByCode } from "../../code-tables/reported-by-code";
+import { Agency } from "../../app/code-tables/agency";
+import { ReportedBy } from "../../app/code-tables/reported-by";
 
 export interface ComplaintCallerInformation {
   name?: string;
@@ -8,6 +8,6 @@ export interface ComplaintCallerInformation {
   primaryPhone?: string;
   secondaryPhone?: string;
   alternatePhone?: string;
-  reportedByCode?: ReportedByCode;
-  ownedByAgencyCode: AgencyCode;
+  ownedByAgencyCode: Agency;
+  reportedByCode?: ReportedBy;
 }

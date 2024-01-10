@@ -66,9 +66,11 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
     forMember(
       (dest) => dest.reported_by_code,
       mapFrom((src) => {
-        return {
-          reported_by_code: src.reportedBy,
-        };
+        return !src.reportedBy
+          ? null
+          : {
+              reported_by_code: src.reportedBy,
+            };
       })
     ),
     forMember(
