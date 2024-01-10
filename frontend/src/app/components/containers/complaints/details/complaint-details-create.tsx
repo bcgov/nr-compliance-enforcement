@@ -542,12 +542,8 @@ export const CreateComplaint: FC = () => {
     //-- clear errors
     setGeoPointXMsg("");
     setGeoPointYMsg("");
-
-    //-- clone the complaint
-    const complaint =
-      complaintType === COMPLAINT_TYPES.HWCR
-        ? (cloneDeep(createComplaint) as HwcrComplaint)
-        : (cloneDeep(createComplaint) as AllegationComplaint);
+    
+    let coordinates: Array<number> = [0,0];
 
     //-- verify latitude and longitude
     if (latitude && !Number.isNaN(latitude)) {
@@ -566,14 +562,12 @@ export const CreateComplaint: FC = () => {
 
     //-- update coordinates
     if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = parseFloat(longitude);
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = parseFloat(latitude);
-      setCreateComplaint(complaint);
-    } else if (latitude === "" && longitude === "") {
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] = 0;
-      complaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] = 0;
-      setCreateComplaint(complaint);
+      coordinates[Coordinates.Longitude] = parseFloat(longitude);
+      coordinates[Coordinates.Latitude] = parseFloat(latitude);
     }
+    
+    const complaint = { ...complaintData, location: { coordinates }} as ComplaintDto;
+    applyComplaintData(complaint)
   };
 
   function handleNameChange(value: string) {
