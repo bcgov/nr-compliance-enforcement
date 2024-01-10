@@ -4,13 +4,16 @@ export interface ComplaintDetails {
   details?: string;
   location?: string;
   locationDescription?: string;
-  incidentDateTime?: string;
+  incidentDateTime?: string | Date;
   coordinates?: number[] | string[];
   area?: string;
+  areaCode?: string;
   region?: string;
+  regionCode?: string;
   zone?: string;
   zone_code?: string;
   office?: string;
+  officeCode?: string;
   attractants?: Array<ComplaintDetailsAttractant>;
   violationInProgress?: boolean;
   violationObserved?: boolean;

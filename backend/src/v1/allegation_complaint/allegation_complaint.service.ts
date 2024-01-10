@@ -243,58 +243,6 @@ export class AllegationComplaintService {
     return { complaints: mappedComplaints, unmappedComplaints };
   };
 
-  async update(
-    allegation_complaint_guid: UUID,
-    updateAllegationComplaint: string
-  ): Promise<AllegationComplaint> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const updateAllegationComplaintDto: UpdateAllegationComplaintDto =
-        JSON.parse(updateAllegationComplaint);
-
-      const updateData = {
-        allegation_complaint_guid:
-          updateAllegationComplaintDto.allegation_complaint_guid,
-        in_progress_ind: updateAllegationComplaintDto.in_progress_ind,
-        observed_ind: updateAllegationComplaintDto.observed_ind,
-        violation_code: updateAllegationComplaintDto.violation_code,
-        suspect_witnesss_dtl_text:
-          updateAllegationComplaintDto.suspect_witnesss_dtl_text,
-      };
-      await this.allegationComplaintsRepository.update(
-        { allegation_complaint_guid },
-        updateData
-      );
-      await this.complaintService.updateComplex(
-        updateAllegationComplaintDto.complaint_identifier.complaint_identifier,
-        JSON.stringify(updateAllegationComplaintDto.complaint_identifier)
-      );
-      //Note: this needs a refactor for when we have more types of persons being loaded in
-      if (
-        updateAllegationComplaintDto.complaint_identifier
-          .person_complaint_xref[0] !== undefined
-      ) {
-        await this.personComplaintXrefService.assignOfficer(queryRunner,
-          updateAllegationComplaintDto.complaint_identifier
-            .complaint_identifier,
-          updateAllegationComplaintDto.complaint_identifier
-            .person_complaint_xref[0]
-        );
-      }
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
-    }
-    return this.findOne(allegation_complaint_guid);
-  }
-
   async remove(id: UUID): Promise<{ deleted: boolean; message?: string }> {
     try {
       let complaint_identifier = (

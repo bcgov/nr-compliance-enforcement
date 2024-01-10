@@ -124,10 +124,7 @@ export class ComplaintService {
         createComplaintDto.incident_utc_datetime = null;
       }
       createComplaintDto.complaint_identifier = complaintId;
-      if (
-        reportedByCode !== null &&
-        reportedByCode.reported_by_code === ""
-      ) {
+      if (reportedByCode !== null && reportedByCode.reported_by_code === "") {
         reportedByCode = null;
       }
       const createData = {
@@ -181,45 +178,6 @@ export class ComplaintService {
         complaint_status_code: true,
       },
     });
-  }
-
-  async update(complaint_identifier: string, updateComplaintDto: UpdateComplaintDto): Promise<Complaint> {
-    await this.complaintsRepository.update(complaint_identifier, updateComplaintDto);
-    return this.findOne(complaint_identifier);
-  }
-
-  async updateComplex(complaint_identifier: string, updateComplaint: string): Promise<Complaint> {
-    try {
-      const updateComplaintDto: UpdateComplaintDto = JSON.parse(updateComplaint);
-      let reportedByCode = updateComplaintDto.reported_by_code;
-      if (
-        reportedByCode !== null &&
-        reportedByCode.reported_by_code === ""
-      ) {
-        reportedByCode = null;
-      }
-      const updateData = {
-        complaint_status_code: updateComplaintDto.complaint_status_code,
-        detail_text: updateComplaintDto.detail_text,
-        location_detailed_text: updateComplaintDto.location_detailed_text,
-        cos_geo_org_unit: updateComplaintDto.cos_geo_org_unit,
-        incident_utc_datetime: updateComplaintDto.incident_utc_datetime,
-        location_geometry_point: updateComplaintDto.location_geometry_point,
-        location_summary_text: updateComplaintDto.location_summary_text,
-        caller_name: updateComplaintDto.caller_name,
-        caller_email: updateComplaintDto.caller_email,
-        caller_address: updateComplaintDto.caller_address,
-        caller_phone_1: updateComplaintDto.caller_phone_1,
-        caller_phone_2: updateComplaintDto.caller_phone_2,
-        caller_phone_3: updateComplaintDto.caller_phone_3,
-        reported_by_code: reportedByCode,
-      };
-      await this.complaintsRepository.update({ complaint_identifier }, updateData);
-    } catch (err) {
-      this.logger.error(err);
-      throw new BadRequestException(err);
-    }
-    return this.findOne(complaint_identifier);
   }
 
   async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
@@ -323,11 +281,7 @@ export class ComplaintService {
         "complaint_status.long_description",
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
-      .addSelect([
-        "reported_by.reported_by_code",
-        "reported_by.short_description",
-        "reported_by.long_description",
-      ])
+      .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
@@ -597,8 +551,8 @@ export class ComplaintService {
           "complaint_status.short_description",
           "complaint_status.long_description",
         ])
-        .leftJoin("complaint.referred_by_agency_code", "referred_by")
-        .addSelect(["referred_by.agency_code", "referred_by.short_description", "referred_by.long_description"])
+        .leftJoin("complaint.reported_by_code", "reported_by")
+        .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
         .leftJoin("complaint.owned_by_agency_code", "owned_by")
         .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
         .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")

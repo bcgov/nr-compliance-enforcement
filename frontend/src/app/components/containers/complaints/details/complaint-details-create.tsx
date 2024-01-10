@@ -34,8 +34,7 @@ import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import {
   createAllegationComplaint,
   createWildlifeComplaint,
-  getAllegationComplaintByComplaintIdentifierSetUpdate,
-  getWildlifeComplaintByComplaintIdentifierSetUpdate,
+  getComplaintById,
   setComplaint,
 } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
@@ -784,9 +783,9 @@ export const CreateComplaint: FC = () => {
   const handleHwcrComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
     const complaintId = await dispatch(createWildlifeComplaint(complaint as HwcrComplaint));
     if (complaintId) {
-      await dispatch(getWildlifeComplaintByComplaintIdentifierSetUpdate(complaintId, setCreateComplaint));
-
-      navigate("/complaint/" + complaintType + "/" + complaintId);
+      await dispatch(getComplaintById(complaintId, complaintType));
+  
+      navigate(`/complaint/${complaintType}/${complaintId}`);
     }
     return complaintId;
   };
@@ -794,9 +793,9 @@ export const CreateComplaint: FC = () => {
   const handleErsComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
     const complaintId = await dispatch(createAllegationComplaint(complaint as AllegationComplaint));
     if (complaintId) {
-      await dispatch(getAllegationComplaintByComplaintIdentifierSetUpdate(complaintId, setCreateComplaint));
-
-      navigate("/complaint/" + complaintType + "/" + complaintId);
+      await dispatch(getComplaintById(complaintId, complaintType));
+  
+      navigate(`/complaint/${complaintType}/${complaintId}`);
     }
     return complaintId;
   };
