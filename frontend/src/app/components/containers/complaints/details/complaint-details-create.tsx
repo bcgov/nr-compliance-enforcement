@@ -220,7 +220,6 @@ export const CreateComplaint: FC = () => {
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   const [complaintDescErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
-  const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
   const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
@@ -298,7 +297,6 @@ export const CreateComplaint: FC = () => {
     if (
       statusErrorMsg === "" &&
       complaintDescErrorMsg === "" &&
-      attractantsErrorMsg === "" &&
       communityErrorMsg === "" &&
       geoPointXMsg === "" &&
       geoPointYMsg === "" &&
@@ -453,16 +451,22 @@ export const CreateComplaint: FC = () => {
     applyComplaintData(complaint);
   };
 
-  function handleViolationInProgessChange(selectedOption: Option | null) {
-    let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-    allegationComplaint.in_progress_ind = selectedOption?.value === "Yes";
-    setCreateComplaint(allegationComplaint);
-  }
+  const handleViolationInProgessChange = (selected: Option | null) => {
+    if (selected && selected?.value) {
+      const { value } = selected;
 
-  function handleViolationObservedChange(selectedOption: Option | null) {
-    let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-    allegationComplaint.observed_ind = selectedOption?.value === "Yes";
-    setCreateComplaint(allegationComplaint);
+      const complaint = { ...complaintData, isInProgress: value === "Yes" } as AllegationComplaintDto;
+      applyComplaintData(complaint);
+    }
+  };
+
+  const handleViolationObservedChange = (selected: Option | null) => {
+    if (selected && selected?.value) {
+      const { value } = selected;
+
+      const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
+      applyComplaintData(complaint);
+    }
   }
 
   const handleLocationChange = (value: string) => {
@@ -1052,7 +1056,7 @@ export const CreateComplaint: FC = () => {
                       id="attractants-select-id"
                       classNamePrefix="comp-select"
                       onChange={handleAttractantsChange}
-                      errMsg={attractantsErrorMsg}
+                      errMsg={""}
                     />
                   </div>
                 </div>
