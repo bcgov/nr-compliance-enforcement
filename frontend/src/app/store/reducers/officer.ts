@@ -5,20 +5,20 @@ import { OfficerState } from "../../types/complaints/officers-state";
 import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/complaints/person-complaint-xref";
-import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
-import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import {
-  getAllegationComplaintByComplaintIdentifier,
-  getWildlifeComplaintByComplaintIdentifier,
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
+  getComplaintById,
 } from "./complaints";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
 import Option from "../../types/app/option";
 import { toggleNotification } from "./app";
+import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
+
 
 const initialState: OfficerState = {
   officers: [],
@@ -95,22 +95,15 @@ export const assignCurrentUserToComplaint =
         )
       );
 
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`
+      );
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+
       if (complaint_type === COMPLAINT_TYPES.HWCR) {
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
-        );
-        const response = await get<HwcrComplaint>(dispatch, parameters);
-
-        dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
-        dispatch(updateWildlifeComplaintByRow(response));
+        dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
       } else {
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
-        );
-        const response = await get<AllegationComplaint>(dispatch, parameters);
-
-        dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
-        dispatch(updateAllegationComplaintByRow(response));
+        dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
       }
     } catch (error) {
       //-- handle error
@@ -140,25 +133,19 @@ export const updateComplaintAssignee =
       );
       await post<Array<PersonComplaintXref>>(dispatch, personComplaintXrefGuidParams);
 
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`
+      );
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+
       // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/hwcr-complaint/by-complaint-identifier/${complaint_identifier}`
-        );
-        const response = await get<HwcrComplaint>(dispatch, parameters);
-
-        dispatch(updateWildlifeComplaintByRow(response));
-        dispatch(getWildlifeComplaintByComplaintIdentifier(complaint_identifier));
+        dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
       } else {
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/allegation-complaint/by-complaint-identifier/${complaint_identifier}`
-        );
-        const response = await get<AllegationComplaint>(dispatch, parameters);
-
-        dispatch(updateAllegationComplaintByRow(response));
-
-        dispatch(getAllegationComplaintByComplaintIdentifier(complaint_identifier));
+        dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
       }
+
+      await dispatch(getComplaintById(complaint_identifier, complaint_type));
     } catch (error) {
       console.log(error);
     }

@@ -65,12 +65,6 @@ export class AllegationComplaintController {
     return this.allegationComplaintService.findOne(id);
   }
 
-  @Patch(":id")
-  @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: UUID, @Body('allegationComplaint') updateAllegationComplaintDto: string) {
-    return this.allegationComplaintService.update(id, updateAllegationComplaintDto);
-  }
-
   @Delete(":id")
   @Roles(Role.COS_OFFICER)
   remove(@Param("id") id: UUID) {

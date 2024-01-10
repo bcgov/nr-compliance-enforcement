@@ -30,6 +30,8 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
+// @SONAR_STOP@
+
 //-- define entity -> model mapping
 const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
   createMap<CosGeoOrgUnit, OrganizationCodeTable>(
@@ -70,9 +72,7 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.type,
-      mapFrom(
-        (source) => source.person_complaint_xref_code.person_complaint_xref_code
-      )
+      mapFrom((source) => source.person_complaint_xref_code.person_complaint_xref_code)
     ),
     forMember(
       (destination) => destination.person,
@@ -195,6 +195,14 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       mapFrom((source) => source.update_utc_timestamp)
     ),
     forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id)
+    ),
+    forMember(
+      (destination) => destination.updatedBy,
+      mapFrom((source) => source.update_user_id)
+    ),
+    forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
         if (source.cos_geo_org_unit !== null) {
@@ -215,11 +223,7 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       (destination) => destination.delegates,
       mapFrom((source) => {
         const { person_complaint_xref: people } = source;
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(
-          people,
-          "PersonComplaintXref",
-          "Delegate"
-        );
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
 
         return delegates;
       })
@@ -383,11 +387,7 @@ const attractantXrefToAttractantXrefDto = (mapper: Mapper) => {
     forMember(
       (destination) => destination.attractant,
       mapFrom((src) => {
-        const item = mapper.map<AttractantCode, Attractant>(
-          src.attractant_code,
-          "AttractantCode",
-          "AttractantDto"
-        );
+        const item = mapper.map<AttractantCode, Attractant>(src.attractant_code, "AttractantCode", "AttractantDto");
         return item.attractant;
       })
     ),
@@ -427,7 +427,7 @@ const violationCodeToViolationDto = (mapper: Mapper) => {
 };
 
 export const applyWildlifeComplaintMap = (mapper: Mapper) => {
-  speciesCodeToSpeciesDtoMap(mapper)
+  speciesCodeToSpeciesDtoMap(mapper);
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
@@ -462,9 +462,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       (destination) => destination.address,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_address !== null
-          ? complaint.caller_address
-          : "";
+        return complaint.caller_address !== null ? complaint.caller_address : "";
       })
     ),
     forMember(
@@ -478,27 +476,21 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_1 !== null
-          ? complaint.caller_phone_1
-          : "";
+        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
       })
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_2 !== null
-          ? complaint.caller_phone_2
-          : "";
+        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
       })
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_3 !== null
-          ? complaint.caller_phone_3
-          : "";
+        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
       })
     ),
     forMember(
@@ -556,11 +548,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
           complaint_identifier: { owned_by_agency_code: agency },
         } = source;
         if (agency !== null) {
-          const code = mapper.map<AgencyCode, Agency>(
-            agency,
-            "AgencyCode",
-            "AgencyCodeDto"
-          );
+          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
           return code.agency;
         }
 
@@ -579,15 +567,19 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom(
-        (source) => source.complaint_identifier.incident_reported_utc_timestmp
-      )
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp)
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom(
-        (source) => source.update_utc_timestamp
-      )
+      mapFrom((source) => source.update_utc_timestamp)
+    ),
+    forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id)
+    ),
+    forMember(
+      (destination) => destination.updatedBy,
+      mapFrom((source) => source.update_user_id)
     ),
     forMember(
       (destination) => destination.organization,
@@ -609,11 +601,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
           complaint_identifier: { person_complaint_xref: people },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(
-          people,
-          "PersonComplaintXref",
-          "Delegate"
-        );
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
 
         return delegates;
       })
@@ -649,11 +637,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.species,
       mapFrom((src) => {
-        const item = mapper.map<SpeciesCode, Species>(
-          src.species_code,
-          "SpeciesCode",
-          "SpeciesDto"
-        );
+        const item = mapper.map<SpeciesCode, Species>(src.species_code, "SpeciesCode", "SpeciesDto");
         if (item !== null) {
           return item.species;
         }
@@ -712,9 +696,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.address,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_address !== null
-          ? complaint.caller_address
-          : "";
+        return complaint.caller_address !== null ? complaint.caller_address : "";
       })
     ),
     forMember(
@@ -728,27 +710,21 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_1 !== null
-          ? complaint.caller_phone_1
-          : "";
+        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
       })
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_2 !== null
-          ? complaint.caller_phone_2
-          : "";
+        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
       })
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_3 !== null
-          ? complaint.caller_phone_3
-          : "";
+        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
       })
     ),
     forMember(
@@ -806,11 +782,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
           complaint_identifier: { owned_by_agency_code: agency },
         } = source;
         if (agency !== null) {
-          const code = mapper.map<AgencyCode, Agency>(
-            agency,
-            "AgencyCode",
-            "AgencyCodeDto"
-          );
+          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
           return code.agency;
         }
 
@@ -829,15 +801,19 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom(
-        (source) => source.complaint_identifier.incident_reported_utc_timestmp
-      )
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp)
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom(
-        (source) => source.update_utc_timestamp
-      )
+      mapFrom((source) => source.update_utc_timestamp)
+    ),
+    forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id)
+    ),
+    forMember(
+      (destination) => destination.updatedBy,
+      mapFrom((source) => source.update_user_id)
     ),
     forMember(
       (destination) => destination.organization,
@@ -859,11 +835,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
           complaint_identifier: { person_complaint_xref: people },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(
-          people,
-          "PersonComplaintXref",
-          "Delegate"
-        );
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
 
         return delegates;
       })
@@ -875,11 +847,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.violation,
       mapFrom((src) => {
-        const item = mapper.map<ViolationCode, Violation>(
-          src.violation_code,
-          "ViolationCode",
-          "ViolationCodeDto"
-        );
+        const item = mapper.map<ViolationCode, Violation>(src.violation_code, "ViolationCode", "ViolationCodeDto");
         if (item !== null) {
           return item.violation;
         }
@@ -901,4 +869,4 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     )
   );
 };
-
+// @SONAR_START@

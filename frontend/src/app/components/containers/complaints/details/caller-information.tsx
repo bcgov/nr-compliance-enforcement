@@ -74,7 +74,7 @@ export const CallerInformation: FC = () => {
                 Reported By
               </div>
               <div className="comp-details-content" id="comp-details-reported">
-                {reportedByCode?.long_description}
+                {reportedByCode?.longDescription}
               </div>
             </div>
           </Col>
