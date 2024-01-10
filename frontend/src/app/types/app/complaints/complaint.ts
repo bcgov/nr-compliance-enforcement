@@ -16,7 +16,7 @@ export interface Complaint {
    reportedBy?: string;
    ownedBy: string;
    reportedByOther: string;
-   incidentDateTime: Date;
+   incidentDateTime?: Date;
    reportedOn: Date;
    updatedOn: Date;
    organization: {

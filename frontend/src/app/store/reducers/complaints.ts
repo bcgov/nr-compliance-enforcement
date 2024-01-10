@@ -104,7 +104,7 @@ export const complaintSlice = createSlice({
           },
         } = updatedComplaint;
         const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
+        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])];
 
         let complaint = { ...wildlife[index], status: newStatus, delegates };
         const update = [...wildlife];
@@ -131,7 +131,7 @@ export const complaintSlice = createSlice({
           },
         } = updatedComplaint;
         const newStatus = complaint_status_code;
-        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])]
+        const delegates = !person_complaint_xref[0] ? [] : [convertPersonXrefToDelegate(person_complaint_xref[0])];
 
         let complaint = { ...allegations[index], status: newStatus, delegates };
         const update = [...allegations];
@@ -655,6 +655,21 @@ export const refreshComplaintItem =
     }
   };
 
+  export const createComplaint =
+  (complaint: WildlifeComplaintDto | AllegationComplaintDto): AppThunk =>
+  async (dispatch) => {
+    let newComplaintId: string = "moo";
+    try {
+      
+      
+      ToggleSuccess("Complaint has been saved");
+      return newComplaintId;
+    } catch (error) {
+      ToggleError("Unable to create complaint");
+      //-- add error handling
+    }
+  };
+
 //-- selectors
 export const selectComplaint = (state: RootState): HwcrComplaint | AllegationComplaint | undefined | null => {
   const { complaints: root } = state;
@@ -975,7 +990,6 @@ export const selectComplaintsByType =
     }
   };
 
-///---
 export const selectTotalMappedComplaints = (state: RootState): number => {
   const {
     complaints: {
