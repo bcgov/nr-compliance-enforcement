@@ -629,12 +629,9 @@ export const CreateComplaint: FC = () => {
     }
   };
 
-  function handleSuspectDetailsChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = createComplaint as AllegationComplaint;
-      allegationComplaint.suspect_witnesss_dtl_text = value;
-      setCreateComplaint(allegationComplaint);
-    }
+  const handleSuspectDetailsChange = (value: string) => {
+    const complaint = { ...complaintData, violationDetails: value?.trim() } as AllegationComplaintDto;
+    applyComplaintData(complaint);
   }
 
   const handleIncidentDateTimeChange = (date: Date) => {
