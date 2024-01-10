@@ -18,7 +18,7 @@ export const HWCRComplaintAssessment: FC = () => {
     const {
         ownedByAgencyCode,
       } = useAppSelector(selectComplaintCallerInformation);
-    const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code));
+    const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency_code??));
     const assignableOfficers: Option[] = officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
@@ -35,20 +35,20 @@ export const HWCRComplaintAssessment: FC = () => {
                     </div>
                     <div className="comp-outcome-report-edit-column">
                         <div className="form-check">
-                            <input className="form-check-input" id="review-required" type="checkbox" />
-                            <label className="form-check-label" htmlFor="review-required">Assessed public safety risk</label>
+                            <input className="form-check-input" id="assessed-risk" type="checkbox" />
+                            <label className="form-check-label" htmlFor="assessed-risk">Assessed public safety risk</label>
                         </div>
                         <div className="form-check">
-                            <input className="form-check-input" id="review-required" type="checkbox" />
-                            <label className="form-check-label" htmlFor="review-required">Assessed health as per animal welfare guidelines</label>
+                            <input className="form-check-input" id="assessed-health" type="checkbox" />
+                            <label className="form-check-label" htmlFor="assessed-health">Assessed health as per animal welfare guidelines</label>
                         </div>
                         <div className="form-check">
-                            <input className="form-check-input" id="review-required" type="checkbox" />
-                            <label className="form-check-label" htmlFor="review-required">Assessed known conflict history</label>
+                            <input className="form-check-input" id="assessed-conflict" type="checkbox" />
+                            <label className="form-check-label" htmlFor="assessed-conflict">Assessed known conflict history</label>
                         </div>
                         <div className="form-check">
-                            <input className="form-check-input" id="review-required" type="checkbox" />
-                            <label className="form-check-label" htmlFor="review-required">Confirmed idenfication of offending animals</label>
+                            <input className="form-check-input" id="identification" type="checkbox" />
+                            <label className="form-check-label" htmlFor="identification">Confirmed idenfication of offending animals</label>
                         </div>
                     </div>
                 </div>
