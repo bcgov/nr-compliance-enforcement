@@ -12,7 +12,7 @@ import {
   getAvatarInitials,
 } from "../../../../common/methods";
 import { Button } from "react-bootstrap";
-import { BsPersonPlus, BsPencil, BsArrowRepeat } from "react-icons/bs";
+import { BsPersonPlus, BsArrowRepeat } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import {
   ASSIGN_OFFICER,
@@ -146,15 +146,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 >
                   <span>Update Status</span>
                   <BsArrowRepeat />
-                </Button>
-                <Button
-                  id="details-screen-edit-button"
-                  title="Edit Complaint"
-                  variant="outline-primary"
-                  onClick={editButtonClick}
-                >
-                  <span>Edit</span>
-                  <BsPencil />
                 </Button>
               </div>
             )}
