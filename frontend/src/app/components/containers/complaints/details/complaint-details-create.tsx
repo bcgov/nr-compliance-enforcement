@@ -557,15 +557,10 @@ export const CreateComplaint: FC = () => {
     applyComplaintData(complaint);
   };
 
-  function handleNameChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.caller_name = value;
-      setCreateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.caller_name = value;
-      setCreateComplaint(allegationComplaint);
+  const handleNameChange = (value: string) => {
+    if(value){ 
+      const complaint = { ...complaintData, name: value.trim()} as ComplaintDto;
+      applyComplaintData(complaint)
     }
   }
 
@@ -581,59 +576,41 @@ export const CreateComplaint: FC = () => {
     }
   }
 
-  function handlePrimaryPhoneChange(value: string) {
+  const handlePrimaryPhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setPrimaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setPrimaryPhoneMsg("Invalid Format");
     } else {
       setPrimaryPhoneMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_phone_1 = value ?? "";
-        setCreateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_phone_1 = value ?? "";
-        setCreateComplaint(allegationComplaint);
-      }
+
+      const complaint = { ...complaintData, phone1: value} as ComplaintDto;
+      applyComplaintData(complaint)
     }
   }
-  function handleSecondaryPhoneChange(value: string) {
+  const handleSecondaryPhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setSecondaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setSecondaryPhoneMsg("Invalid Format");
     } else {
       setSecondaryPhoneMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_phone_2 = value ?? "";
-        setCreateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_phone_2 = value ?? "";
-        setCreateComplaint(allegationComplaint);
-      }
+
+      const complaint = { ...complaintData, phone2: value} as ComplaintDto;
+      applyComplaintData(complaint)
     }
   }
 
-  function handleAlternatePhoneChange(value: string) {
+  const  handleAlternatePhoneChange = (value: string) => {
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setAlternatePhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setAlternatePhoneMsg("Invalid Format");
     } else {
       setAlternatePhoneMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.caller_phone_3 = value ?? "";
-        setCreateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.caller_phone_3 = value ?? "";
-        setCreateComplaint(allegationComplaint);
-      }
+      
+      const complaint = { ...complaintData, phone3: value} as ComplaintDto;
+      applyComplaintData(complaint)
     }
   }
 
