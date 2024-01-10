@@ -292,6 +292,14 @@ INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8'::uuid, 'ENV', NULL, NULL, 'TestAcct', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('5a724b5e-aa64-439d-a76d-3aa7320409a0'::uuid, 'Scarlett', NULL, NULL, 'Truong', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, 'Dragos', NULL, NULL, 'Vuia', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
+ON CONFLICT DO NOTHING;
 
 -------------------------
 -- INSERT OFFICER RECORDS
@@ -397,6 +405,16 @@ INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('fc91b041-7f1b-46e9-8c07-0813bb656a7f'::uuid, 'ENCETST1', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8'::uuid, '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, '0cf857a2-28a3-4867-af0f-d59449243057'::uuid)
 ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('a534a1e0-bebc-499d-ba4b-eb5ed0726f26'::uuid, 'STRUONG', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', '5a724b5e-aa64-439d-a76d-3aa7320409a0'::uuid, '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('3fc8a9db-e085-4461-bce2-b05462b79794'::uuid, 'DVUIA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', '74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid)
+ON CONFLICT DO NOTHING;
+
+
 
 UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE officer_guid = 'fc91b041-7f1b-46e9-8c07-0813bb656a7f';
 
