@@ -467,7 +467,7 @@ export const CreateComplaint: FC = () => {
       const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
       applyComplaintData(complaint);
     }
-  }
+  };
 
   const handleLocationChange = (value: string) => {
     const complaint = { ...complaintData, locationSummary: value?.trim() } as ComplaintDto;
@@ -505,45 +505,32 @@ export const CreateComplaint: FC = () => {
     applyComplaintData(model);
   };
 
-  function handleCommunityChange(selectedOption: Option | null) {
-    if (!selectedOption) {
+  const handleCommunityChange = (selected: Option | null) => {
+    if (!selected) {
       return;
     }
-    if (selectedOption.value === "") {
+
+    if (selected.value === "") {
       setCommunityErrorMsg("Required");
     } else {
       setCommunityErrorMsg("");
-      if (selectedOption.value) {
-        const geoOrgCode = {
-          geo_organization_unit_code: selectedOption.value,
-          short_description: "",
-          long_description: selectedOption.label ? selectedOption.label : "",
-          display_order: "",
-          active_ind: "",
-          create_user_id: "",
-          create_utc_timestamp: null,
-          update_user_id: "",
-          update_utc_timestamp: null,
-        };
-        createComplaint.complaint_identifier.cos_geo_org_unit.area_code = selectedOption.value;
-        createComplaint.complaint_identifier.geo_organization_unit_code = geoOrgCode;
-      }
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-        setCreateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-        setCreateComplaint(allegationComplaint);
+      if (selected.value) {
+        const { value } = selected;
+        const { organization } = complaintData as ComplaintDto;
+        const update = { ...organization, area: value };
+
+        const complaint = { ...complaintData, organization: update } as ComplaintDto
+        applyComplaintData(complaint);
       }
     }
-  }
+  };
 
   const handleGeoPointChange = async (latitude: string, longitude: string) => {
     //-- clear errors
     setGeoPointXMsg("");
     setGeoPointYMsg("");
-    
-    let coordinates: Array<number> = [0,0];
+
+    let coordinates: Array<number> = [0, 0];
 
     //-- verify latitude and longitude
     if (latitude && !Number.isNaN(latitude)) {
@@ -565,9 +552,9 @@ export const CreateComplaint: FC = () => {
       coordinates[Coordinates.Longitude] = parseFloat(longitude);
       coordinates[Coordinates.Latitude] = parseFloat(latitude);
     }
-    
-    const complaint = { ...complaintData, location: { coordinates }} as ComplaintDto;
-    applyComplaintData(complaint)
+
+    const complaint = { ...complaintData, location: { coordinates } } as ComplaintDto;
+    applyComplaintData(complaint);
   };
 
   function handleNameChange(value: string) {
