@@ -218,7 +218,7 @@ export const CreateComplaint: FC = () => {
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
-  const [complaintDescErrorMsg, setComplaintDescErrorMsg] = useState<string>("");
+  const [complaintDescErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
@@ -436,33 +436,20 @@ export const CreateComplaint: FC = () => {
     }
   };
 
-  function handleComplaintDescChange(value: string) {
+  const handleComplaintDescriptionChange = (value: string) => {
     if (value === "") {
-      setComplaintDescErrorMsg("Required");
+      setComplaintDescriptionErrorMsg("Required");
     } else {
-      setComplaintDescErrorMsg("");
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-        hwcrComplaint.complaint_identifier.detail_text = value;
-        setCreateComplaint(hwcrComplaint);
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-        allegationComplaint.complaint_identifier.detail_text = value;
-        setCreateComplaint(allegationComplaint);
-      }
+      setComplaintDescriptionErrorMsg("");
+      
+      const complaint = { ...complaintData, details: value?.trim() } as ComplaintDto
+      applyComplaintData(complaint)
     }
   }
 
-  function handleLocationDescriptionChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.location_detailed_text = value;
-      setCreateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.location_detailed_text = value;
-      setCreateComplaint(allegationComplaint);
-    }
+  const handleLocationDescriptionChange = (value: string) => {
+    const complaint = { ...complaintData, locationDetail: value?.trim()} as ComplaintDto
+    applyComplaintData(complaint)
   }
 
   function handleViolationInProgessChange(selectedOption: Option | null) {
@@ -477,16 +464,9 @@ export const CreateComplaint: FC = () => {
     setCreateComplaint(allegationComplaint);
   }
 
-  function handleLocationChange(value: string) {
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      let hwcrComplaint: HwcrComplaint = cloneDeep(createComplaint) as HwcrComplaint;
-      hwcrComplaint.complaint_identifier.location_summary_text = value ?? "";
-      setCreateComplaint(hwcrComplaint);
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      let allegationComplaint: AllegationComplaint = cloneDeep(createComplaint) as AllegationComplaint;
-      allegationComplaint.complaint_identifier.location_summary_text = value ?? "";
-      setCreateComplaint(allegationComplaint);
-    }
+  const handleLocationChange = (value: string) => {
+    const complaint = { ...complaintData, locationSummary: value?.trim()} as ComplaintDto
+    applyComplaintData(complaint)
   }
 
   async function handleAttractantsChange(selectedOptions: Option[] | null) {
@@ -855,7 +835,7 @@ export const CreateComplaint: FC = () => {
       noError = false;
     }
     if (complaint.complaint_identifier.detail_text === "") {
-      await setComplaintDescErrorMsg("Required");
+      await setComplaintDescriptionErrorMsg("Required");
       noError = false;
     }
     return noError;
@@ -1088,7 +1068,7 @@ export const CreateComplaint: FC = () => {
                   id="complaint-description-textarea-id"
                   rows={4}
                   errMsg={complaintDescErrorMsg}
-                  onChange={handleComplaintDescChange}
+                  onChange={handleComplaintDescriptionChange}
                   maxLength={4000}
                 />
               </div>
