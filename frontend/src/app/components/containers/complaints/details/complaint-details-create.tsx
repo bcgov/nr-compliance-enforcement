@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
@@ -11,8 +11,6 @@ import { CompInput } from "../../../common/comp-input";
 import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
 import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
-import { HwcrComplaint } from "../../../../types/complaints/hwcr-complaint";
-import { AllegationComplaint } from "../../../../types/complaints/allegation-complaint";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { openModal, selectOfficerAgency, userId } from "../../../../store/reducers/app";
@@ -32,13 +30,11 @@ import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import {
-  createAllegationComplaint,
-  createWildlifeComplaint,
+  createComplaint,
   getComplaintById,
   setComplaint,
 } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
-import { Complaint } from "../../../../types/complaints/complaint";
 import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -86,132 +82,7 @@ export const CreateComplaint: FC = () => {
     { value: "No", label: "No" },
   ];
 
-  const emptyComplaint: Complaint = {
-    complaint_identifier: "",
-    geo_organization_unit_code: {
-      geo_organization_unit_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: "",
-      active_ind: "",
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    location_geometry_point: {
-      type: "",
-      coordinates: [0, 0],
-    },
-    incident_utc_datetime: null,
-    incident_reported_utc_timestmp: "",
-    location_summary_text: "",
-    location_detailed_text: "",
-    detail_text: "",
-    create_user_id: "",
-    create_utc_timestamp: "",
-    update_user_id: "",
-    update_utc_timestamp: "",
-    complaint_status_code: {
-      complaint_status_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    caller_name: "",
-    caller_address: "",
-    caller_email: "",
-    caller_phone_1: "",
-    caller_phone_2: "",
-    caller_phone_3: "",
-    reported_by_code: {
-      reported_by_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    reported_by_other_text: "",
-    owned_by_agency_code: {
-      agency_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    cos_geo_org_unit: {
-      zone_code: "",
-      office_location_name: "",
-      area_name: "",
-      area_code: "",
-      region_code: "",
-    },
-    person_complaint_xref: [],
-  };
-
-  const emptyHwcrComplaint: HwcrComplaint = {
-    complaint_identifier: emptyComplaint,
-    hwcr_complaint_nature_code: {
-      hwcr_complaint_nature_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    species_code: {
-      species_code: "",
-      legacy_code: null,
-      short_description: "",
-      long_description: "",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    update_utc_timestamp: "",
-    hwcr_complaint_guid: "",
-    attractant_hwcr_xref: [],
-    other_attractants_text: "",
-  };
-
-  const emptyAllegationComplaint: AllegationComplaint = {
-    complaint_identifier: emptyComplaint,
-    update_utc_timestamp: "",
-    allegation_complaint_guid: "",
-    violation_code: {
-      violation_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    },
-    in_progress_ind: "",
-    observed_ind: false,
-    suspect_witnesss_dtl_text: "",
-  };
+  const currentDate = useMemo(() => new Date(), []);
 
   const [complaintData, applyComplaintData] = useState<ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto>();
 
@@ -262,23 +133,21 @@ export const CreateComplaint: FC = () => {
         status: "OPEN",
         ownedBy: "COS",
         reportedByOther: "",
-        reportedOn: new Date(),
-        updatedOn: new Date(),
+        reportedOn: currentDate,
+        updatedOn: currentDate,
         organization: {
           area: "",
           zone: "",
           region: "",
         },
         delegates: [],
+        createdBy: userid,
+        updatedBy: userid,
       };
 
       applyComplaintData(model);
     }
-  }, [complaintData]);
-
-  const newEmptyComplaint = COMPLAINT_TYPES.HWCR ? emptyHwcrComplaint : emptyAllegationComplaint;
-
-  const [createComplaint, setCreateComplaint] = useState<HwcrComplaint | AllegationComplaint>(newEmptyComplaint);
+  }, [complaintData, currentDate, userid]);
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
@@ -668,80 +537,63 @@ export const CreateComplaint: FC = () => {
     );
   };
 
-  const setErrors = async (complaint: HwcrComplaint | AllegationComplaint) => {
+  const setErrors = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto) => {
     let noError = true;
     if (!complaintType) {
       setComplaintTypeMsg("Required");
     }
     if (complaintType === COMPLAINT_TYPES.HWCR) {
-      const hwcrComplaint = complaint as HwcrComplaint;
-      if (hwcrComplaint.hwcr_complaint_nature_code.hwcr_complaint_nature_code === "") {
-        await setNatureOfComplaintErrorMsg("Required");
+      const { species, natureOfComplaint } = complaint as WildlifeComplaintDto;
+
+      if (!natureOfComplaint) {
+        setNatureOfComplaintErrorMsg("Required");
         noError = false;
       }
-      if (hwcrComplaint.species_code.species_code === "") {
-        await setSpeciesErrorMsg("Required");
+      if (!species) {
+        setSpeciesErrorMsg("Required");
         noError = false;
       }
     } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      const allegationComplaint = complaint as AllegationComplaint;
-      if (allegationComplaint.violation_code.violation_code === "") {
-        await setViolationTypeErrorMsg("Required");
+      const { violation } = complaint as AllegationComplaintDto
+
+      if (!violation) {
+        setViolationTypeErrorMsg("Required");
         noError = false;
       }
     }
-    if (complaint.complaint_identifier.complaint_status_code.complaint_status_code === "") {
-      await setStatusErrorMsg("Required");
+
+    const { status, organization: { area}, details } = complaint as ComplaintDto
+    if (!status) {
+      setStatusErrorMsg("Required");
       noError = false;
     }
-    if (complaint.complaint_identifier.geo_organization_unit_code.geo_organization_unit_code === "") {
-      await setCommunityErrorMsg("Required");
+    if (!area) {
+      setCommunityErrorMsg("Required");
       noError = false;
     }
-    if (complaint.complaint_identifier.detail_text === "") {
-      await setComplaintDescriptionErrorMsg("Required");
+    if (!details) {
+      setComplaintDescriptionErrorMsg("Required");
       noError = false;
     }
     return noError;
   };
 
   const saveButtonClick = async () => {
-    if (!createComplaint) {
+    if (!complaintData) {
       return;
     }
 
-    let complaint = createComplaint;
-    setComplaintToOpenStatus(complaint);
-
-    const noError = await setErrors(complaint);
+    const noError = await setErrors(complaintData);
 
     if (noError && noErrors()) {
-      await handleComplaintProcessing(complaint);
+      await handleComplaintProcessing(complaintData);
     } else {
       handleFormErrors();
     }
   };
 
-  const setComplaintToOpenStatus = (complaint: HwcrComplaint | AllegationComplaint) => {
-    const openStatus = {
-      short_description: "OPEN",
-      long_description: "Open",
-      complaint_status_code: "OPEN",
-      display_order: 0,
-      active_ind: false,
-      create_user_id: "",
-      create_utc_timestamp: null,
-      update_user_id: "",
-      update_utc_timestamp: null,
-    };
-    complaint.complaint_identifier.complaint_status_code = openStatus;
-  };
-
-  const handleComplaintProcessing = async (complaint: HwcrComplaint | AllegationComplaint) => {
-    updateComplaintDetails(complaint);
-    setCreateComplaint(complaint);
-
-    let complaintId = await processComplaintBasedOnType(complaint);
+  const handleComplaintProcessing = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto) => {
+    let complaintId = await handleHwcrComplaint(complaint);
     if (complaintId) {
       handlePersistAttachments(
         dispatch,
@@ -756,42 +608,8 @@ export const CreateComplaint: FC = () => {
     setErrorNotificationClass("comp-complaint-error display-none");
   };
 
-  const updateComplaintDetails = (complaint: HwcrComplaint | AllegationComplaint) => {
-    const now = new Date().toDateString();
-    complaint.complaint_identifier.create_utc_timestamp = now;
-    complaint.complaint_identifier.update_utc_timestamp = now;
-    complaint.complaint_identifier.create_user_id = userid;
-    complaint.complaint_identifier.update_user_id = userid;
-    complaint.complaint_identifier.location_geometry_point.type = "Point";
-
-    if (complaint.complaint_identifier.location_geometry_point.coordinates.length === 0) {
-      complaint.complaint_identifier.location_geometry_point.coordinates = [0, 0];
-    }
-  };
-
-  const processComplaintBasedOnType = async (complaint: HwcrComplaint | AllegationComplaint) => {
-    switch (complaintType) {
-      case COMPLAINT_TYPES.HWCR:
-        return handleHwcrComplaint(complaint);
-      case COMPLAINT_TYPES.ERS:
-        return handleErsComplaint(complaint);
-      default:
-        return null;
-    }
-  };
-
-  const handleHwcrComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
-    const complaintId = await dispatch(createWildlifeComplaint(complaint as HwcrComplaint));
-    if (complaintId) {
-      await dispatch(getComplaintById(complaintId, complaintType));
-  
-      navigate(`/complaint/${complaintType}/${complaintId}`);
-    }
-    return complaintId;
-  };
-
-  const handleErsComplaint = async (complaint: HwcrComplaint | AllegationComplaint) => {
-    const complaintId = await dispatch(createAllegationComplaint(complaint as AllegationComplaint));
+  const handleHwcrComplaint = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto ) => {
+    const complaintId = await dispatch(createComplaint(complaint));
     if (complaintId) {
       await dispatch(getComplaintById(complaintId, complaintType));
   
@@ -804,8 +622,6 @@ export const CreateComplaint: FC = () => {
     ToggleError("Errors in form");
     setErrorNotificationClass("comp-complaint-error");
   };
-
-  const maxDate = new Date();
 
   return (
     <div className="comp-complaint-details">
@@ -948,7 +764,7 @@ export const CreateComplaint: FC = () => {
                   dateFormat="yyyy-MM-dd HH:mm"
                   timeFormat="HH:mm"
                   wrapperClassName="comp-details-edit-calendar-input"
-                  maxDate={maxDate}
+                  maxDate={currentDate}
                 />
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (

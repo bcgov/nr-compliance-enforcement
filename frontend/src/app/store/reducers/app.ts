@@ -131,8 +131,8 @@ export const userGuid = (state: RootState) => {
 };
 
 export const userId = (state: RootState) => {
-  const { profile } = state.app;
-  return profile.idir_username;
+  const { profile: { idir_username } } = state.app;
+  return idir_username as string;
 };
 
 export const profileDisplayName = (state: RootState) => {
