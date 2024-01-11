@@ -344,15 +344,15 @@ export class CodeTableService {
       }
       case "justification": {
         const justificationCodes: Justification[] = [
-          { justification: "TEST JUST1",
-            shortDescription: "TEST JUST1",
-            longDescription: "TEST JUST1",
+          { justification: "No public safety concern",
+            shortDescription: "No public safety concern",
+            longDescription: "No public safety concern",
             displayOrder: 1,
             isActive: true,
           },
-          { justification: "TEST JUST2",
-            shortDescription: "TEST JUST2",
-            longDescription: "TEST JUST2",
+          { justification: "Other operational priorities",
+            shortDescription: "Other operational priorities",
+            longDescription: "Other operational priorities",
             displayOrder: 2,
             isActive: true,
           },
@@ -361,15 +361,15 @@ export class CodeTableService {
       }
       case "action-required": {
         const justifiedCodes: ActionRequired[] = [
-          { actionRequired: "TEST Action1",
-            shortDescription: "TEST Action1",
-            longDescription: "TEST Action1",
+          { actionRequired: "Yes",
+            shortDescription: "Yes",
+            longDescription: "Yes",
             displayOrder: 1,
             isActive: true,
           },
-          { actionRequired: "TEST Action2",
-            shortDescription: "TEST Action2",
-            longDescription: "TEST Action2",
+          { actionRequired: "No",
+            shortDescription: "No",
+            longDescription: "No",
             displayOrder: 2,
             isActive: true,
           },
