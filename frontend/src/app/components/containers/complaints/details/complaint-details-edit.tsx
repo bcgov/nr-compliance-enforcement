@@ -63,6 +63,8 @@ import { AllegationComplaint as AllegationComplaintDto } from "../../../../types
 import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
+import { Button } from "react-bootstrap";
+import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 
 type ComplaintParams = {
@@ -710,6 +712,26 @@ export const ComplaintDetailsEdit: FC = () => {
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
       />
+        {readOnly && (<hr className="blue-seperator"/>)}
+        {!readOnly && (<div className="spacer-seperator"/>)}
+        <div className="comp-details-subsection">
+        <div className="comp-complaint-info">
+            <div className="comp-sub-header comp-vertical-align-middle">Complaint details</div>   
+            {readOnly && (<div className="comp-box-actions-non-header">
+              <Button
+                  id="details-screen-edit-button"
+                  title="Edit Complaint"
+                  variant="outline-primary"
+                  onClick={editButtonClick}
+                >
+                  <span>Edit complaint</span>
+                  <BsPencil />
+                </Button>
+              </div>)
+              }
+              <div className="clear-left-float clear-right-float"></div>
+          </div>
+          </div>
       {readOnly && <CallDetails complaintType={complaintType} />}
       {readOnly && <CallerInformation />}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
