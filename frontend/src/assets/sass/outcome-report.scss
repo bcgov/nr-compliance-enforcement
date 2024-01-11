@@ -56,6 +56,17 @@
         flex-direction: column;
         margin-right: 60px;
      }
+
+     .comp-outcome-hide {
+      visibility: collapse;
+     }
+
+     .comp-outcome-report-label-half-column-hidden {
+      flex: .25;
+      display: none;
+      flex-direction: column;
+      margin-right: 60px;
+   }
     
     .comp-outcome-report-button {
         margin-top: 24px;

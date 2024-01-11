@@ -323,7 +323,6 @@ export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
     `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.JUSTIFICATION}`
   );
   const response = await get<Array<Justification>>(dispatch, parameters);
-  console.log("justificationResponse");
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.JUSTIFICATION, data: response };
     dispatch(setCodeTable(payload));
@@ -335,7 +334,6 @@ export const fetchActionRequiredCodes = (): AppThunk => async (dispatch) => {
     `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ACTION_REQUIRED}`
   );
   const response = await get<Array<ActionRequired>>(dispatch, parameters);
-  console.log("actionRequiredResponse");
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.ACTION_REQUIRED, data: response };
     dispatch(setCodeTable(payload));

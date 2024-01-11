@@ -46,9 +46,7 @@ export const HWCRComplaintAssessment: FC = () => {
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
-        console.log("test1");
       dispatch(getComplaintById(id, complaintType));
-      console.log("test2");
     }
   }, [id, complaintType, complaintData, dispatch]);
       
@@ -78,15 +76,13 @@ export const HWCRComplaintAssessment: FC = () => {
     
         return undefined;
       };
-      console.log("assignableOfficers: " + JSON.stringify(assignableOfficers));
-      console.log("personGuid: " + JSON.stringify(personGuid));
-      console.log("complaint: " + JSON.stringify(complaintData));
+      const justificationLabelClass = actionRequired === "No" ? "comp-outcome-report-label-half-column" : "comp-outcome-report-label-half-column comp-outcome-hide";
+      const justificationEditClass = actionRequired === "No" ? "comp-outcome-report-edit-column" : "comp-outcome-report-edit-column comp-outcome-hide";
       let selectedAssignedOfficer;
       if(complaintData)
       {
         selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       }
-      console.log("selectedAssignedOfficer: " + JSON.stringify(selectedAssignedOfficer));
     return (
         <div className="comp-outcome-report-block">
             <h6>Complaint assessment</h6>
@@ -121,13 +117,12 @@ export const HWCRComplaintAssessment: FC = () => {
                     <div className="comp-outcome-report-edit-column">
                         <OutcomeSelect id="action-required" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
                     </div>
-                    {actionRequired === "Yes" && (
-                    <><div className="comp-outcome-report-label-half-column">
+                    <div className={justificationLabelClass}>
                             Justification
-                        </div><div className="comp-outcome-report-edit-column">
-                                <OutcomeSelect id="justification" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
-                            </div></>
-                    )}
+                        </div>
+                        <div className={justificationEditClass}>
+                            <OutcomeSelect id="justification" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
+                        </div>
                 </div>
                 <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
                     <div className="comp-outcome-report-label-half-column">
