@@ -31,6 +31,8 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
+import { Justification } from "src/types/models/code-tables/justification";
+import { ActionRequired } from "src/types/models/code-tables/action-required";
 
 @Injectable()
 export class CodeTableService {
@@ -340,6 +342,91 @@ export class CodeTableService {
         );
         return results;
       }
+      case "justification": {
+        const justificationCodes: Justification[] = [
+          { justification: "TEST JUST1",
+            shortDescription: "TEST JUST1",
+            longDescription: "TEST JUST1",
+            displayOrder: 1,
+            isActive: true,
+          },
+          { justification: "TEST JUST2",
+            shortDescription: "TEST JUST2",
+            longDescription: "TEST JUST2",
+            displayOrder: 2,
+            isActive: true,
+          },
+        ];
+        return justificationCodes;
+      }
+      case "action-required": {
+        const justifiedCodes: ActionRequired[] = [
+          { actionRequired: "TEST Action1",
+            shortDescription: "TEST Action1",
+            longDescription: "TEST Action1",
+            displayOrder: 1,
+            isActive: true,
+          },
+          { actionRequired: "TEST Action2",
+            shortDescription: "TEST Action2",
+            longDescription: "TEST Action2",
+            displayOrder: 2,
+            isActive: true,
+          },
+        ];
+        return justifiedCodes;
+      }
+      /* ---- NOTE, uncomment and create repositories once code tables are created
+      case "justified": {
+        const data = await this._justifiedRepository.find(
+          {order: {display_order: "ASC"}}
+        );
+        let results = data.map(
+          ({
+            justification,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+          }) => {
+            let table: Justification = {
+              justification: justification,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+            };
+            return table;
+            
+          }
+        );
+        return results;
+      }
+      case "action-required": {
+        const data = await this._actionRequiredRepository.find(
+          {order: {display_order: "ASC"}}
+        );
+        let results = data.map(
+          ({
+            action_required,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+          }) => {
+            let table: ActionRequired = {
+              actionRequired: action_required,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+            };
+            return table;
+            
+          }
+        );
+        return results;
+      }*/
     }
   };
 

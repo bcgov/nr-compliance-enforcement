@@ -19,6 +19,8 @@ import { Zone } from "../../types/app/code-tables/zone";
 import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
+import { Justification } from "../../types/app/code-tables/justification";
+import { ActionRequired } from "../../types/app/code-tables/action-required";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -33,6 +35,8 @@ const initialState: CodeTableState = {
   communities: [],
   "area-codes": [],
   "reported-by": [],
+  justification: [],
+  "action-required": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -74,6 +78,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       zones,
       communities,
       "reported-by": reportedBy,
+      justification,
+      "action-required": actionRequired,
     },
   } = state;
 
@@ -123,6 +129,12 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(reportedBy).any()) {
       dispatch(fetchReportedByCodes());
+    }
+    if (!from(justification).any()) {
+      dispatch(fetchJustificationCodes());
+    }
+    if (!from(actionRequired).any()) {
+      dispatch(fetchActionRequiredCodes());
     }
   } catch (error) {}
 };
@@ -306,6 +318,30 @@ export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.JUSTIFICATION}`
+  );
+  const response = await get<Array<Justification>>(dispatch, parameters);
+  console.log("justificationResponse");
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.JUSTIFICATION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchActionRequiredCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ACTION_REQUIRED}`
+  );
+  const response = await get<Array<ActionRequired>>(dispatch, parameters);
+  console.log("actionRequiredResponse");
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ACTION_REQUIRED, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -388,6 +424,34 @@ export const selectViolationCodeDropdown = (
 
   const data = violation.map(({ violation, longDescription }) => {
     const item: Option = { label: longDescription, value: violation };
+    return item;
+  });
+  return data;
+};
+
+export const selectJustificationCodeDropdown = (
+  state: RootState
+): Array<Option> => {
+  const {
+    codeTables: { justification },
+  } = state;
+
+  const data = justification.map(({ justification, longDescription }) => {
+    const item: Option = { label: longDescription, value: justification };
+    return item;
+  });
+  return data;
+};
+
+export const selectActionRequiredCodeDropdown = (
+  state: RootState
+): Array<Option> => {
+  const {
+    codeTables: { "action-required": actionRequired },
+  } = state;
+
+  const data = actionRequired.map(({ actionRequired, longDescription }) => {
+    const item: Option = { label: longDescription, value: actionRequired };
     return item;
   });
   return data;

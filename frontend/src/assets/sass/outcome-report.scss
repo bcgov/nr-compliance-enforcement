@@ -37,6 +37,9 @@
        display: flex;
        flex-direction: column;
        margin-right: 60px;
+       .form-check-spacing {
+        padding-bottom: 12px;
+       }
     }
 
     .comp-outcome-report-label-column {

@@ -11,6 +11,8 @@ export const CODE_TABLE_TYPES = {
   COMMUNITIES: "communities",
   AREA_CODES: "area-codes",
   REPORTED_BY: "reported-by",
+  JUSTIFICATION: "justification",
+  ACTION_REQUIRED: "action-required",
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",
   //  PERSON_TYPE: "person-complaint",

@@ -13,6 +13,8 @@ import { Region } from "../app/code-tables/region";
 import { Zone } from "../app/code-tables/zone";
 import { Community } from "../app/code-tables/community";
 import { ReportedBy } from "../app/code-tables/reported-by";
+import { Justification } from "../app/code-tables/justification";
+import { ActionRequired } from "../app/code-tables/action-required";
 
 export interface CodeTableState {
   [key: string]:
@@ -30,7 +32,9 @@ export interface CodeTableState {
     | Array<Region>
     | Array<Zone>
     | Array<Community>
-    | Array<ReportedBy>;
+    | Array<ReportedBy>
+    | Array<Justification>
+    | Array<ActionRequired>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -44,4 +48,6 @@ export interface CodeTableState {
   zones: Array<Zone>;
   communities: Array<Community>;
   "reported-by": Array<ReportedBy>;
+  justification: Array<Justification>;
+  "action-required": Array<ActionRequired>;
 }
