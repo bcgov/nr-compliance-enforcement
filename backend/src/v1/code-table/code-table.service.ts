@@ -377,8 +377,8 @@ export class CodeTableService {
         return justifiedCodes;
       }
       /* ---- NOTE, uncomment and create repositories once code tables are created
-      case "justified": {
-        const data = await this._justifiedRepository.find(
+      case "justification": {
+        const data = await this._justificationRepository.find(
           {order: {display_order: "ASC"}}
         );
         let results = data.map(

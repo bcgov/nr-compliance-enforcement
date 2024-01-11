@@ -11,11 +11,6 @@ import { selectActionRequiredCodeDropdown, selectJustificationCodeDropdown } fro
 
 
 export const HWCRComplaintAssessment: FC = () => {
-    const actionItems: Option[] = [
-        { value: "", label: "None"},
-        { value: "test1", label: "Test Action 1" },
-        { value: "test2", label: "Test Action 2" },
-    ];
     const {
         ownedByAgencyCode,
       } = useAppSelector(selectComplaintCallerInformation);
