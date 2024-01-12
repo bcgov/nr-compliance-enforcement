@@ -69,7 +69,7 @@ export const HWCRComplaintAssessment: FC = () => {
                         {assessmentTypeList.map(assessmentType => (
                             <div className="form-check form-check-spacing" key={assessmentType.label}>
                                 <input className="form-check-input" id={assessmentType.value} type="checkbox" />
-                                <label className="form-check-label" htmlFor="assessed-risk">{assessmentType.label}</label>
+                                <label className="form-check-label" htmlFor={assessmentType.value}>{assessmentType.label}</label>
                             </div>
                             ))
                         }
