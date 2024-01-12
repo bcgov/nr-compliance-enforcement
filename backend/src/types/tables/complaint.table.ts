@@ -11,13 +11,13 @@ export interface ComplaintTable {
   location_detailed_text: string;
   incident_reported_utc_timestmp: Date;
   incident_utc_datetime: Date;
-  referred_by_agency_other_text: string;
+  reported_by_other_text: string;
   create_user_id: string;
   create_utc_timestamp: Date;
   update_user_id: string;
   update_utc_timestamp: Date;
   complaint_identifier: string;
-  referred_by_agency_code: string;
+  reported_by_code: string;
   owned_by_agency_code: string;
   complaint_status_code: string;
   geo_organization_unit_code: string;
