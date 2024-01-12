@@ -26,7 +26,6 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 ///
 import { Complaint } from "./entities/complaint.entity";
-import { CreateComplaintDto } from "./dto/create-complaint.dto";
 import { UpdateComplaintDto } from "./dto/update-complaint.dto";
 
 import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
@@ -61,7 +60,6 @@ import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xr
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { randomUUID } from "crypto";
 import { format } from "date-fns";
-import { CreateHwcrComplaintDto } from "../hwcr_complaint/dto/create-hwcr_complaint.dto";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -968,7 +966,7 @@ export class ComplaintService {
   };
 
   async create(
-    complaintType: string,
+    complaintType: COMPLAINT_TYPE,
     model: WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
@@ -985,11 +983,13 @@ export class ComplaintService {
     const idir = getIdirFromRequest(this.request);
 
     const queryRunner = this.dataSource.createQueryRunner();
-    queryRunner.connect();
-    queryRunner.startTransaction();
 
     try {
+      queryRunner.connect();
+      queryRunner.startTransaction();
+
       const complaintId = await generateComplaintId(queryRunner);
+
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to create the comaplaint
       let entity: Complaint = this.mapper.map<ComplaintDto, Complaint>(
@@ -998,62 +998,99 @@ export class ComplaintService {
         "Complaint"
       );
 
-      //-- create the base complaint
+      //-- apply audit user data
       entity.create_user_id = idir;
       entity.update_user_id = idir;
       entity.complaint_identifier = complaintId;
 
-      const complaint = this.complaintsRepository.create(entity);
-      this.complaintsRepository.save(complaint);
-      await queryRunner.commitTransaction();
+      const complaint = await this.complaintsRepository.create(entity);
+      await this.complaintsRepository.save(complaint);
 
-      queryRunner.startTransaction();
+      //-- if there are any asignees apply them to the complaint
+      if (entity.person_complaint_xref) {
+        const { person_complaint_xref } = entity;
+
+        const selectedAssignee = person_complaint_xref.find(
+          ({ person_complaint_xref_code: { person_complaint_xref_code }, active_ind }) =>
+            person_complaint_xref_code === "ASSIGNEE" && active_ind
+        );
+        const {
+          person_guid: { person_guid: id },
+        } = selectedAssignee;
+
+        const assignee = {
+          active_ind: true,
+          person_guid: {
+            person_guid: id,
+          },
+          complaint_identifier: complaintId,
+          person_complaint_xref_code: "ASSIGNEE",
+          create_user_id: idir,
+        } as any;
+
+        this._personService.assignNewOfficer(complaintId, assignee);
+      }
+
       switch (complaintType) {
         case "ERS": {
-          const entity = this.mapper.map<AllegationComplaintDto, AllegationComplaint>(
-            model as AllegationComplaintDto,
-            "AllegationComplaintDto",
-            "AllegationComplaint"
-          );
+          const { violation, isInProgress, wasObserved, violationDetails } = model as AllegationComplaintDto;
+          const ersId = randomUUID();
+
+          const ers = { 
+            allegation_complaint_guid: ersId,
+            complaint_identifier: complaintId,
+            violation_code: violation,
+            in_progress_ind: isInProgress,
+            observed_ind: wasObserved,
+            suspect_witnesss_dtl_text: violationDetails,
+            create_user_id: idir,
+            update_user_id: idir,
+          } as any
+
+          const newAllegation = await this._allegationComplaintRepository.create(ers)
+          await this._allegationComplaintRepository.save(newAllegation);
           break;
         }
-        case "HWCR":
+        case "HWCR": 
         default: {
-          const entity = this.mapper.map<WildlifeComplaintDto, HwcrComplaint>(
-            model as WildlifeComplaintDto,
-            "WildlifeComplaintDto",
-            "HwcrComplaint"
-          );
+          const { species, natureOfComplaint, otherAttractants, attractants } = model as WildlifeComplaintDto;
+          const hwcrId = randomUUID();
 
-            const hwcr: CreateHwcrComplaintDto = { 
-              hwcr_complaint_guid: randomUUID(),
-              complaint_identifier: entity.complaint_identifier,
-              species_code: entity.species_code,
-              hwcr_complaint_nature_code: entity.hwcr_complaint_nature_code,
-              attractant_hwcr_xref: entity.attractant_hwcr_xref,
-              other_attractants_text: entity.other_attractants_text,
-              create_user_id: idir,
-              create_utc_timestamp: new Date(),
-              update_user_id: idir,
-              update_utc_timestamp: new Date(),
-            }
+          const hwcr = {
+            hwcr_complaint_guid: hwcrId,
+            complaint_identifier: complaintId,
+            species_code: species,
+            hwcr_complaint_nature_code: natureOfComplaint,
+            other_attractants_text: otherAttractants,
+            create_user_id: idir,
+            update_user_id: idir,
+          } as any;
 
-            hwcr.complaint_identifier.complaint_identifier = complaintId;
-            
-          // entity.hwcr_complaint_guid = randomUUID();
-          // entity.create_user_id = idir;
-          // entity.update_user_id = idir;
-          // entity.complaint_identifier.complaint_identifier = complaintId;
+          const newWildlife = await this._wildlifeComplaintRepository.create(hwcr);
+          await this._wildlifeComplaintRepository.save(newWildlife);
 
-          const res = this._wildlifeComplaintRepository.create(hwcr);
-          this._wildlifeComplaintRepository.save(res);
+          if (attractants) {
+            attractants.forEach(({ attractant }) => {
+              const record = {
+                hwcr_complaint_guid: hwcrId,
+                attractant_code: attractant,
+                create_user_id: idir,
+                update_user_id: idir,
+              } as any;
 
-          const test = 0;
+              this._attractantService.create(queryRunner, record);
+            });
+          }
+
           break;
         }
       }
 
       await queryRunner.commitTransaction();
+
+      const derp = await this.findById(complaintId, complaintType);
+
+      return derp as WildlifeComplaintDto | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       // this.logger.log(
