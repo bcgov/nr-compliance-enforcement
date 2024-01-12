@@ -20,7 +20,7 @@ import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { Justification } from "../../types/app/code-tables/justification";
-import { ActionRequired } from "../../types/app/code-tables/action-required";
+import { AssessmentType } from "../../types/app/code-tables/assesment-type";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -36,7 +36,7 @@ const initialState: CodeTableState = {
   "area-codes": [],
   "reported-by": [],
   justification: [],
-  "action-required": [],
+  "assessment-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -79,7 +79,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       communities,
       "reported-by": reportedBy,
       justification,
-      "action-required": actionRequired,
+      "assessment-type": assessmentType,
     },
   } = state;
 
@@ -133,8 +133,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(justification).any()) {
       dispatch(fetchJustificationCodes());
     }
-    if (!from(actionRequired).any()) {
-      dispatch(fetchActionRequiredCodes());
+    if (!from(assessmentType).any()) {
+      dispatch(fetchAssessmentTypeCodes());
     }
   } catch (error) {}
 };
@@ -320,7 +320,7 @@ export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.JUSTIFICATION}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.JUSTIFICATION}`
   );
   const response = await get<Array<Justification>>(dispatch, parameters);
   if (response && from(response).any()) {
@@ -329,13 +329,14 @@ export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchActionRequiredCodes = (): AppThunk => async (dispatch) => {
+export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ACTION_REQUIRED}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.ASSESSMENT_TYPE}`
   );
-  const response = await get<Array<ActionRequired>>(dispatch, parameters);
+  console.log("in fetchAssessmentTypeCodes");
+  const response = await get<Array<AssessmentType>>(dispatch, parameters);
   if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.ACTION_REQUIRED, data: response };
+    const payload = { key: CODE_TABLE_TYPES.ASSESSMENT_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -438,20 +439,32 @@ export const selectJustificationCodeDropdown = (
     const item: Option = { label: longDescription, value: justification };
     return item;
   });
+  console.log("justificationCodes: " + JSON.stringify(data))
   return data;
 };
 
-export const selectActionRequiredCodeDropdown = (
+export const selectAssessmentTypeCodeDropdown = (
   state: RootState
 ): Array<Option> => {
   const {
-    codeTables: { "action-required": actionRequired },
+    codeTables: { "assessment-type": assessmentType },
   } = state;
 
-  const data = actionRequired.map(({ actionRequired, longDescription }) => {
-    const item: Option = { label: longDescription, value: actionRequired };
+  const data = assessmentType.map(({ assessmentType, longDescription }) => {
+    const item: Option = { label: longDescription, value: assessmentType };
     return item;
   });
+  console.log("assessmentTypeCodes: " + JSON.stringify(data))
+  return data;
+};
+
+export const selectYesNoCodeDropdown = (
+): Array<Option> => {
+  const data: Option[] = 
+    [ 
+      {value: "Yes", label: "Yes"}, 
+      {value: "No", label: "No"},
+    ]
   return data;
 };
 

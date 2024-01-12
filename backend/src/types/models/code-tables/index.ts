@@ -15,7 +15,7 @@ import { Community } from "./community";
 import { Zone } from "./zone";
 import { ReportedBy } from "./reported-by";
 import { Justification } from "./justification";
-import { ActionRequired } from "./action-required";
+import { AssessmentType } from "./assessment-type";
 
 export const AvailableCodeTables = [
   "agency",
@@ -32,7 +32,7 @@ export const AvailableCodeTables = [
   "complaint-type",
   "reported-by",
   "justification",
-  "action-required"
+  "assessment-type"
 ];
 
 export const AvailableAgencies = [
@@ -57,5 +57,5 @@ export {
   Community,
   ReportedBy,
   Justification,
-  ActionRequired,
+  AssessmentType,
 };

@@ -32,7 +32,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { Justification } from "src/types/models/code-tables/justification";
-import { ActionRequired } from "src/types/models/code-tables/action-required";
+import { AssessmentType } from "src/types/models/code-tables/assessment-type";
 
 @Injectable()
 export class CodeTableService {
@@ -64,6 +64,7 @@ export class CodeTableService {
   private _reportedByRepository: Repository<ReportedByCode>;
 
   getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
+    console.log("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find(
@@ -359,74 +360,36 @@ export class CodeTableService {
         ];
         return justificationCodes;
       }
-      case "action-required": {
-        const justifiedCodes: ActionRequired[] = [
-          { actionRequired: "Yes",
-            shortDescription: "Yes",
-            longDescription: "Yes",
+      case "assessment-type": {
+        console.log("in assessment type")
+        const assessmentTypeCodes: AssessmentType[] = [
+          { assessmentType: "Assessed public safety risk",
+            shortDescription: "Assessed public safety risk",
+            longDescription: "Assessed public safety risk",
             displayOrder: 1,
             isActive: true,
           },
-          { actionRequired: "No",
-            shortDescription: "No",
-            longDescription: "No",
+          { assessmentType: "Assessed health as per animal welfare guidelines",
+            shortDescription: "Assessed health as per animal welfare guidelines",
+            longDescription: "Assessed health as per animal welfare guidelines",
             displayOrder: 2,
             isActive: true,
           },
+          { assessmentType: "Assessed known conflict history",
+            shortDescription: "Assessed known conflict history",
+            longDescription: "Assessed known conflict history",
+            displayOrder: 3,
+            isActive: true,
+          },
+          { assessmentType: "Confirmed idenfication of offending animals",
+            shortDescription: "Confirmed idenfication of offending animals",
+            longDescription: "Confirmed idenfication of offending animals",
+            displayOrder: 4,
+            isActive: true,
+          },
         ];
-        return justifiedCodes;
+        return assessmentTypeCodes;
       }
-      /* ---- NOTE, uncomment and create repositories once code tables are created
-      case "justification": {
-        const data = await this._justificationRepository.find(
-          {order: {display_order: "ASC"}}
-        );
-        let results = data.map(
-          ({
-            justification,
-            short_description,
-            long_description,
-            display_order,
-            active_ind,
-          }) => {
-            let table: Justification = {
-              justification: justification,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind,
-            };
-            return table;
-            
-          }
-        );
-        return results;
-      }
-      case "action-required": {
-        const data = await this._actionRequiredRepository.find(
-          {order: {display_order: "ASC"}}
-        );
-        let results = data.map(
-          ({
-            action_required,
-            short_description,
-            long_description,
-            display_order,
-            active_ind,
-          }) => {
-            let table: ActionRequired = {
-              actionRequired: action_required,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind,
-            };
-            return table;
-            
-          }
-        );
-        return results;
-      }*/
     }
   };
 

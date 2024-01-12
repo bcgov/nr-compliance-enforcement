@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import { OutcomeSelect } from "../../../common/outcome-select";
 import Option from "../../../../types/app/option";
 import DatePicker from "react-datepicker";
 import { Button } from "react-bootstrap";
@@ -7,11 +6,10 @@ import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { getComplaintById, selectComplaint, selectComplaintCallerInformation, selectComplaintHeader } from "../../../../store/reducers/complaints";
-import { selectActionRequiredCodeDropdown, selectJustificationCodeDropdown } from "../../../../store/reducers/code-table";
-import { UUID } from "crypto";
-import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
-import { from } from "linq-to-typescript";
+import { selectAssessmentTypeCodeDropdown, selectJustificationCodeDropdown, selectYesNoCodeDropdown } from "../../../../store/reducers/code-table";
 import { useParams } from "react-router-dom";
+import { getSelectedOfficer } from "../../../../common/methods";
+import { CompSelect } from "../../../common/comp-select";
 
 export const HWCRComplaintAssessment: FC = () => {
     const dispatch = useAppDispatch();
@@ -20,6 +18,7 @@ export const HWCRComplaintAssessment: FC = () => {
         complaintType: string;
       };
     const [actionRequired, setActionRequired] = useState<string>();
+    const [selectedDate, setSelectedDate] = useState<Date>();
     const complaintData = useAppSelector(selectComplaint);
     const { id = "", complaintType = "" } = useParams<ComplaintParams>();
     const {
@@ -33,13 +32,14 @@ export const HWCRComplaintAssessment: FC = () => {
         }))
         : [];
     const handleDateChange = (date: Date) => {
-
+        setSelectedDate(date);
           };
     const handleActionRequiredChange = (selected: Option | null) => {
         setActionRequired(selected?.value);
           };
-    const actionRequiredList = useAppSelector(selectActionRequiredCodeDropdown);
+    const actionRequiredList = useAppSelector(selectYesNoCodeDropdown);
     const justificationList = useAppSelector(selectJustificationCodeDropdown);
+    const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
     const {
         personGuid,
       } = useAppSelector(selectComplaintHeader(complaintType));
@@ -50,32 +50,6 @@ export const HWCRComplaintAssessment: FC = () => {
     }
   }, [id, complaintType, complaintData, dispatch]);
       
-    const getSelectedOfficer = (officers: Option[], personGuid: UUID | string, update: ComplaintDto | undefined): any => {
-        if (update && personGuid) {
-          const { delegates } = update;
-    
-          const assignees = delegates.filter((item) => item.type === "ASSIGNEE" && item.isActive);
-          if (!from(assignees).any()) {
-            return undefined;
-          }
-    
-          const selected = officers.find(({ value }) => {
-            const first = from(assignees).firstOrDefault();
-            if (first) {
-              const {
-                person: { id },
-              } = first;
-              return value === id;
-            }
-    
-            return false;
-          });
-    
-          return selected;
-        }
-    
-        return undefined;
-      };
       const justificationLabelClass = actionRequired === "No" ? "comp-outcome-report-label-half-column" : "comp-outcome-report-label-half-column comp-outcome-hide";
       const justificationEditClass = actionRequired === "No" ? "comp-outcome-report-edit-column" : "comp-outcome-report-edit-column comp-outcome-hide";
       let selectedAssignedOfficer;
@@ -92,22 +66,13 @@ export const HWCRComplaintAssessment: FC = () => {
                         Assessment
                     </div>
                     <div className="comp-outcome-report-edit-column">
-                        <div className="form-check form-check-spacing">
-                            <input className="form-check-input" id="assessed-risk" type="checkbox" />
-                            <label className="form-check-label" htmlFor="assessed-risk">Assessed public safety risk</label>
-                        </div>
-                        <div className="form-check form-check-spacing">
-                            <input className="form-check-input" id="assessed-health" type="checkbox" />
-                            <label className="form-check-label" htmlFor="assessed-health">Assessed health as per animal welfare guidelines</label>
-                        </div>
-                        <div className="form-check form-check-spacing">
-                            <input className="form-check-input" id="assessed-conflict" type="checkbox" />
-                            <label className="form-check-label" htmlFor="assessed-conflict">Assessed known conflict history</label>
-                        </div>
-                        <div className="form-check form-check-spacing">
-                            <input className="form-check-input" id="identification" type="checkbox" />
-                            <label className="form-check-label" htmlFor="identification">Confirmed idenfication of offending animals</label>
-                        </div>
+                        {assessmentTypeList.map(assessmentType => (
+                            <div className="form-check form-check-spacing">
+                                <input className="form-check-input" id={assessmentType.value} type="checkbox" />
+                                <label className="form-check-label" htmlFor="assessed-risk">{assessmentType.label}</label>
+                            </div>
+                            ))
+                        }
                     </div>
                 </div>
                 <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
@@ -115,13 +80,13 @@ export const HWCRComplaintAssessment: FC = () => {
                         Action required?
                     </div>
                     <div className="comp-outcome-report-edit-column">
-                        <OutcomeSelect id="action-required" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
+                        <CompSelect id="action-required" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
                     </div>
                     <div className={justificationLabelClass}>
                             Justification
                         </div>
                         <div className={justificationEditClass}>
-                            <OutcomeSelect id="justification" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
+                            <CompSelect id="justification" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
                         </div>
                 </div>
                 <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
@@ -129,17 +94,17 @@ export const HWCRComplaintAssessment: FC = () => {
                         Officer
                     </div>
                     <div className="comp-outcome-report-edit-column">
-                        <OutcomeSelect id="outcome-officer" options={assignableOfficers} enableValidation={false} placeholder="Select" value={selectedAssignedOfficer} onChange={(e) => (e)} />
+                        <CompSelect id="outcome-officer" options={assignableOfficers} enableValidation={false} placeholder="Select" value={selectedAssignedOfficer} onChange={(e) => (e)} />
                     </div>
                     <div className="comp-outcome-report-label-half-column">
                         Date
                     </div>
                     <div className="comp-outcome-report-edit-column">
                         <DatePicker
-                            id="complaint-incident-time"
+                            id="complaint-outcome-date"
                             showIcon
                             onChange={handleDateChange}
-                            selected={new Date()}
+                            selected={selectedDate}
                             dateFormat="yyyy-MM-dd"
                             wrapperClassName="comp-details-edit-calendar-input"
                         />
