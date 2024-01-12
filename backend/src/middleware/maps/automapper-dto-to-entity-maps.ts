@@ -81,10 +81,10 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       })
     ),
     forMember(
-      (dest) => dest.cos_geo_org_unit,
+      (dest) => dest.geo_organization_unit_code,
       mapFrom((src) => {
         const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
+        return { geo_organization_unit_code: area }
       })
     ),
     forMember(

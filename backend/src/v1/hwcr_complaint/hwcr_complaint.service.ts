@@ -53,70 +53,70 @@ export class HwcrComplaintService {
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
-  async create(hwcrComplaint: string): Promise<HwcrComplaint> {
-    const queryRunner = this.dataSource.createQueryRunner();
+  // async create(hwcrComplaint: string): Promise<HwcrComplaint> {
+  //   const queryRunner = this.dataSource.createQueryRunner();
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
 
-    const createHwcrComplaintDto: CreateHwcrComplaintDto =
-      JSON.parse(hwcrComplaint);
-    createHwcrComplaintDto.hwcr_complaint_guid = randomUUID();
-    createHwcrComplaintDto.update_utc_timestamp =
-      createHwcrComplaintDto.create_utc_timestamp = new Date();
-    let newHwcrComplaintString;
-    try {
-      const complaint: Complaint = await this.complaintService.create(
-        JSON.stringify(createHwcrComplaintDto.complaint_identifier),
-        queryRunner
-      );
-      createHwcrComplaintDto.create_user_id =
-        createHwcrComplaintDto.update_user_id = complaint.create_user_id;
-      createHwcrComplaintDto.complaint_identifier.complaint_identifier =
-        complaint.complaint_identifier;
-      newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
-        createHwcrComplaintDto
-      );
-      let newHwcrComplaint: HwcrComplaint;
-      newHwcrComplaint = <HwcrComplaint>(
-        await queryRunner.manager.save(newHwcrComplaintString)
-      );
+  //   const createHwcrComplaintDto: CreateHwcrComplaintDto =
+  //     JSON.parse(hwcrComplaint);
+  //   createHwcrComplaintDto.hwcr_complaint_guid = randomUUID();
+  //   createHwcrComplaintDto.update_utc_timestamp =
+  //     createHwcrComplaintDto.create_utc_timestamp = new Date();
+  //   let newHwcrComplaintString;
+  //   try {
+  //     const complaint: Complaint = await this.complaintService.create(
+  //       JSON.stringify(createHwcrComplaintDto.complaint_identifier),
+  //       queryRunner
+  //     );
+  //     createHwcrComplaintDto.create_user_id =
+  //       createHwcrComplaintDto.update_user_id = complaint.create_user_id;
+  //     createHwcrComplaintDto.complaint_identifier.complaint_identifier =
+  //       complaint.complaint_identifier;
+  //     newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
+  //       createHwcrComplaintDto
+  //     );
+  //     let newHwcrComplaint: HwcrComplaint;
+      // newHwcrComplaint = <HwcrComplaint>(
+  //       await queryRunner.manager.save(newHwcrComplaintString)
+  //     );
 
-      if (
-        createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !==
-        undefined
-      ) {
-        createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
-          newHwcrComplaint.complaint_identifier;
-        await this.personComplaintXrefService.assignOfficer(queryRunner,
-          newHwcrComplaint.complaint_identifier.complaint_identifier,
-          createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
-        );
-      }
+  //     if (
+  //       createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !==
+  //       undefined
+  //     ) {
+  //       createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
+  //         newHwcrComplaint.complaint_identifier;
+  //       await this.personComplaintXrefService.assignOfficer(queryRunner,
+  //         newHwcrComplaint.complaint_identifier.complaint_identifier,
+  //         createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
+  //       );
+  //     }
 
-      if (newHwcrComplaint.attractant_hwcr_xref != null) {
-        for (let i = 0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
-          const blankHwcrComplaint = new HwcrComplaint();
-          blankHwcrComplaint.hwcr_complaint_guid =
-            newHwcrComplaint.hwcr_complaint_guid;
-          newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint_guid =
-            blankHwcrComplaint;
-          await this.attractantHwcrXrefService.create(
-            queryRunner,
-            newHwcrComplaint.attractant_hwcr_xref[i]
-          );
-        }
-      }
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
-    }
-    return newHwcrComplaintString;
-  }
+  //     if (newHwcrComplaint.attractant_hwcr_xref != null) {
+  //       for (let i = 0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
+  //         const blankHwcrComplaint = new HwcrComplaint();
+  //         blankHwcrComplaint.hwcr_complaint_guid =
+  //           newHwcrComplaint.hwcr_complaint_guid;
+  //         newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint_guid =
+  //           blankHwcrComplaint;
+  //         await this.attractantHwcrXrefService.create(
+  //           queryRunner,
+  //           newHwcrComplaint.attractant_hwcr_xref[i]
+  //         );
+  //       }
+  //     }
+  //     await queryRunner.commitTransaction();
+  //   } catch (err) {
+  //     this.logger.error(err);
+  //     await queryRunner.rollbackTransaction();
+  //     throw new BadRequestException(err);
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  //   return newHwcrComplaintString;
+  // }
 
   search = async (model: SearchPayload): Promise<SearchResults> => {
     const { sortColumn, sortOrder, page, pageSize, query, ...filters } = model;

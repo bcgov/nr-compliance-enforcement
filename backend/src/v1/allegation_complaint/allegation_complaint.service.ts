@@ -50,59 +50,57 @@ export class AllegationComplaintService {
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
 
-  async create(allegationComplaint: string): Promise<AllegationComplaint> {
-    const queryRunner = this.dataSource.createQueryRunner();
+  // async create(model: string): Promise<AllegationComplaint> {
+  //   const queryRunner = this.dataSource.createQueryRunner();
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
 
-    const createAllegationComplaintDto: CreateAllegationComplaintDto =
-      JSON.parse(allegationComplaint);
-    createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
-    createAllegationComplaintDto.update_utc_timestamp =
-      createAllegationComplaintDto.create_utc_timestamp = new Date();
-    let newAllegationComplaintString;
-    try {
-      const complaint: Complaint = await this.complaintService.create(
-        JSON.stringify(createAllegationComplaintDto.complaint_identifier),
-        queryRunner
-      );
-      createAllegationComplaintDto.create_user_id =
-        createAllegationComplaintDto.update_user_id = complaint.create_user_id;
-      createAllegationComplaintDto.complaint_identifier.complaint_identifier =
-        complaint.complaint_identifier;
-      newAllegationComplaintString =
-        await this.allegationComplaintsRepository.create(
-          createAllegationComplaintDto
-        );
-      let newAllegationComplaint: AllegationComplaint;
-      newAllegationComplaint = <AllegationComplaint>(
-        await queryRunner.manager.save(newAllegationComplaintString)
-      );
+  //   const allegation: CreateAllegationComplaintDto =
+  //     JSON.parse(model);
+  //   allegation.allegation_complaint_guid = randomUUID();
+  //   allegation.update_utc_timestamp =
+  //     allegation.create_utc_timestamp = new Date();
+  //   let newAllegationComplaintString;
+  //   try {
+  //     const complaint: Complaint = await this.complaintService.create(
+  //       JSON.stringify(allegation.complaint_identifier),
+  //       queryRunner
+  //     );
+  //     allegation.create_user_id = allegation.update_user_id = complaint.create_user_id;
+  //     allegation.complaint_identifier.complaint_identifier = complaint.complaint_identifier;
+  //     newAllegationComplaintString =
+  //       await this.allegationComplaintsRepository.create(
+  //         allegation
+  //       );
+      // let newAllegationComplaint: AllegationComplaint;
+  //     newAllegationComplaint = <AllegationComplaint>(
+  //       await queryRunner.manager.save(newAllegationComplaintString)
+  //     );
 
-      if (
-        createAllegationComplaintDto.complaint_identifier
-          .person_complaint_xref?.[0]
-      ) {
-        createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
-          newAllegationComplaint.complaint_identifier;
-        await this.personComplaintXrefService.assignOfficer(queryRunner,
-          newAllegationComplaint.complaint_identifier.complaint_identifier,
-          createAllegationComplaintDto.complaint_identifier
-            .person_complaint_xref[0]
-        );
-      }
+  //     if (
+  //       allegation.complaint_identifier
+  //         .person_complaint_xref?.[0]
+  //     ) {
+  //       allegation.complaint_identifier.person_complaint_xref[0].complaint_identifier =
+  //         newAllegationComplaint.complaint_identifier;
+  //       await this.personComplaintXrefService.assignOfficer(queryRunner,
+  //         newAllegationComplaint.complaint_identifier.complaint_identifier,
+  //         allegation.complaint_identifier
+  //           .person_complaint_xref[0]
+  //       );
+  //     }
 
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
-    }
-    return newAllegationComplaintString;
-  }
+  //     await queryRunner.commitTransaction();
+  //   } catch (err) {
+  //     this.logger.error(err);
+  //     await queryRunner.rollbackTransaction();
+  //     throw new BadRequestException(err);
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  //   return newAllegationComplaintString;
+  // }
 
   findAll = async (
     sortColumn: string,

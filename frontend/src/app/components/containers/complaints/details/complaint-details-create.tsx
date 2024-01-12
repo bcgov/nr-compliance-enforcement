@@ -366,9 +366,9 @@ export const CreateComplaint: FC = () => {
     }
 
     selectedItems.forEach(({ value: selected }) => {
-      if (!from(attractants).any(({ attractant }) => attractant === selected)) {
-        const _item: AttractantXref = { attractant: selected as string, isActive: true };
-        updates.push(_item);
+      if (attractants && !from(attractants).any(({ attractant }) => attractant === selected)) {
+        const record: AttractantXref = { attractant: selected as string, isActive: true };
+        updates.push(record);
       }
     });
 
