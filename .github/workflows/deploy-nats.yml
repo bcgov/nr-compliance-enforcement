@@ -1,0 +1,26 @@
+name: Deploy NATS to OpenShift
+
+on:
+    pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up OpenShift CLI
+      uses: redhat-actions/oc-login@v1
+      with:
+        openshift_server_url: ${{ vars.OC_SERVER }}
+        openshift_token: ${{ secrets.OC_TOKEN }}
+        namespace: ${{ vars.OC_NAMESPACE }}
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+
+    - name: Deploy NATS using Helm
+      run: |
+        helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+        helm repo update
