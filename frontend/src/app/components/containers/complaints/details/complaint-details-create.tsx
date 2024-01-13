@@ -609,7 +609,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleHwcrComplaint = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto ) => {
-    const complaintId = await dispatch(createComplaint(complaint));
+    const complaintId = await dispatch(createComplaint(complaintType, complaint));
     if (complaintId) {
       await dispatch(getComplaintById(complaintId, complaintType));
   

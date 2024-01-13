@@ -83,7 +83,7 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.geo_organization_unit_code,
       mapFrom((src) => {
-        const { area, zone, region } = src.organization;
+        const { area } = src.organization;
         return { geo_organization_unit_code: area }
       })
     ),
@@ -212,10 +212,10 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       })
     ),
     forMember(
-      (dest) => dest.complaint_identifier.cos_geo_org_unit,
+      (dest) => dest.complaint_identifier.geo_organization_unit_code,
       mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
+        const { area } = src.organization;
+        return { geo_organization_unit_code: area }
       })
     ),
     forMember(
@@ -398,10 +398,10 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (
       })
     ),
     forMember(
-      (dest) => dest.complaint_identifier.cos_geo_org_unit,
+      (dest) => dest.complaint_identifier.geo_organization_unit_code,
       mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
+        const { area } = src.organization;
+        return { geo_organization_unit_code: area }
       })
     ),
     forMember(

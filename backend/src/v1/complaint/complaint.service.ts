@@ -983,12 +983,13 @@ export class ComplaintService {
     const idir = getIdirFromRequest(this.request);
 
     const queryRunner = this.dataSource.createQueryRunner();
+    let complaintId = "";
 
     try {
       queryRunner.connect();
       queryRunner.startTransaction();
 
-      const complaintId = await generateComplaintId(queryRunner);
+      complaintId = await generateComplaintId(queryRunner);
 
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to create the comaplaint
@@ -1014,21 +1015,24 @@ export class ComplaintService {
           ({ person_complaint_xref_code: { person_complaint_xref_code }, active_ind }) =>
             person_complaint_xref_code === "ASSIGNEE" && active_ind
         );
-        const {
-          person_guid: { person_guid: id },
-        } = selectedAssignee;
-
-        const assignee = {
-          active_ind: true,
-          person_guid: {
-            person_guid: id,
-          },
-          complaint_identifier: complaintId,
-          person_complaint_xref_code: "ASSIGNEE",
-          create_user_id: idir,
-        } as any;
-
-        this._personService.assignNewOfficer(complaintId, assignee);
+        
+        if(selectedAssignee){ 
+          const {
+            person_guid: { person_guid: id },
+          } = selectedAssignee;
+  
+          const assignee = {
+            active_ind: true,
+            person_guid: {
+              person_guid: id,
+            },
+            complaint_identifier: complaintId,
+            person_complaint_xref_code: "ASSIGNEE",
+            create_user_id: idir,
+          } as any;
+  
+          this._personService.assignNewOfficer(complaintId, assignee);
+        }
       }
 
       switch (complaintType) {
@@ -1040,8 +1044,8 @@ export class ComplaintService {
             allegation_complaint_guid: ersId,
             complaint_identifier: complaintId,
             violation_code: violation,
-            in_progress_ind: isInProgress,
-            observed_ind: wasObserved,
+            in_progress_ind: !!isInProgress,
+            observed_ind: !!wasObserved,
             suspect_witnesss_dtl_text: violationDetails,
             create_user_id: idir,
             update_user_id: idir,
@@ -1093,15 +1097,13 @@ export class ComplaintService {
       return derp as WildlifeComplaintDto | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      // this.logger.log(
-      //   `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`
-      // );
-      // this.logger.log(error);
-      //throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.BAD_REQUEST);
+      this.logger.log(
+        `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(model)}`
+      );
+      this.logger.log(error);
+      throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);
     } finally {
       await queryRunner.release();
     }
-
-    return Promise.resolve(model);
   }
 }
