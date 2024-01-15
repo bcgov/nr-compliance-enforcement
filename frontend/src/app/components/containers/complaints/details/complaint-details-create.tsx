@@ -54,7 +54,7 @@ import { Complaint as ComplaintDto } from "../../../../types/app/complaints/comp
 import { Delegate } from "../../../../types/app/people/delegate";
 import { UUID } from "crypto";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
-import { BaseComplaintType } from "../../../../types/app/aliases";
+import { ComplaintAlias } from "../../../../types/app/aliases";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -85,7 +85,7 @@ export const CreateComplaint: FC = () => {
 
   const currentDate = useMemo(() => new Date(), []);
 
-  const [complaintData, applyComplaintData] = useState<BaseComplaintType>();
+  const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
   const [complaintType, setComplaintType] = useState<string>(COMPLAINT_TYPES.HWCR);
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
@@ -538,7 +538,7 @@ export const CreateComplaint: FC = () => {
     );
   };
 
-  const setErrors = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto) => {
+  const setErrors = async (complaint: ComplaintAlias) => {
     let noError = true;
     if (!complaintType) {
       setComplaintTypeMsg("Required");
@@ -593,7 +593,7 @@ export const CreateComplaint: FC = () => {
     }
   };
 
-  const handleComplaintProcessing = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto) => {
+  const handleComplaintProcessing = async (complaint: ComplaintAlias) => {
     let complaintId = await handleHwcrComplaint(complaint);
     if (complaintId) {
       handlePersistAttachments(
@@ -609,7 +609,7 @@ export const CreateComplaint: FC = () => {
     setErrorNotificationClass("comp-complaint-error display-none");
   };
 
-  const handleHwcrComplaint = async (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto ) => {
+  const handleHwcrComplaint = async (complaint: ComplaintAlias ) => {
     const complaintId = await dispatch(createComplaint(complaintType, complaint));
     if (complaintId) {
       await dispatch(getComplaintById(complaintId, complaintType));
@@ -646,7 +646,7 @@ export const CreateComplaint: FC = () => {
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
-              <label id="nature-of-complaint-label-id">
+              <label id="nature-of-complaint-label-id" htmlFor="complaint-type-select-id">
                 Complaint Type<span className="required-ind">*</span>
               </label>
               <ValidationSelect
@@ -662,7 +662,7 @@ export const CreateComplaint: FC = () => {
             </div>
             {complaintType === COMPLAINT_TYPES.HWCR && (
               <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
-                <label id="nature-of-complaint-label-id">
+                <label id="nature-of-complaint-label-id" htmlFor="nature-of-complaint-select-id">
                   Nature of Complaint<span className="required-ind">*</span>
                 </label>
                 <ValidationSelect
@@ -741,7 +741,7 @@ export const CreateComplaint: FC = () => {
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair" id="complaint-description-pair-id">
-                <label id="complaint-description-edit-label-id" className="col-auto">
+                <label id="complaint-description-edit-label-id" className="col-auto" htmlFor="complaint-description-textarea-id">
                   Complaint Description<span className="required-ind">*</span>
                 </label>
                 <ValidationTextArea
@@ -815,7 +815,7 @@ export const CreateComplaint: FC = () => {
             </div>
             <div className="comp-details-edit-column comp-details-right-column">
               <div className="comp-details-label-input-pair" id="complaint-location-pair-id">
-                <label id="complaint-location-label-id">Complaint Location</label>
+                <label id="complaint-location-label-id" htmlFor="location-edit-id">Complaint Location</label>
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
@@ -914,7 +914,7 @@ export const CreateComplaint: FC = () => {
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair" id="name-pair-id">
-                <label id="complaint-caller-info-name-label-id" className="col-auto">
+                <label id="complaint-caller-info-name-label-id" className="col-auto" htmlFor="caller-name-id">
                   Name
                 </label>
                 <div className="comp-details-edit-input">
@@ -928,7 +928,7 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="primary-phone-pair-id">
-                <label id="complaint-caller-info-primary-phone-label-id" className="col-auto">
+                <label id="complaint-caller-info-primary-phone-label-id" className="col-auto" htmlFor="caller-primary-phone-id">
                   Primary Phone
                 </label>
                 <div className="comp-details-edit-input">
@@ -944,7 +944,7 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="secondary-phone-pair-id">
-                <label id="complaint-caller-info-secondary-phone-label-id" className="col-auto">
+                <label id="complaint-caller-info-secondary-phone-label-id" className="col-auto" htmlFor="caller-info-secondary-phone-id">
                   Alternate 1 Phone
                 </label>
                 <div className="comp-details-edit-input">
@@ -960,7 +960,7 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="alternate-phone-pair-id">
-                <label id="complaint-caller-info-alternate-phone-label-id" className="col-auto">
+                <label id="complaint-caller-info-alternate-phone-label-id" className="col-auto" htmlFor="caller-info-alternate-phone-id">
                   Alternate 2 Phone
                 </label>
                 <div className="comp-details-edit-input">
@@ -978,7 +978,7 @@ export const CreateComplaint: FC = () => {
             </div>
             <div className="comp-details-edit-column comp-details-right-column">
               <div className="comp-details-label-input-pair" id="address-pair-id">
-                <label>Address</label>
+                <label htmlFor="complaint-address-id">Address</label>
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
@@ -991,7 +991,7 @@ export const CreateComplaint: FC = () => {
               </div>
 
               <div className="comp-details-label-input-pair" id="email-pair-id">
-                <label>Email</label>
+                <label htmlFor="complaint-email-id">Email</label>
                 <div className="comp-details-edit-input">
                   <ValidationInput
                     type="text"

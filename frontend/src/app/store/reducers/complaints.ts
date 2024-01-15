@@ -458,7 +458,6 @@ export const createComplaint =
         result = id;
 
         await dispatch(getComplaintById(id, "HWCR"));
-        // result = newHwcrComplaint.complaint_identifier.complaint_identifier;
       });
       ToggleSuccess("Complaint has been saved");
       return result;

@@ -6,4 +6,4 @@ import { AllegationComplaint as AllegationComplaintDto } from "./complaints/alle
 //-- type aliases: Sonar cloud is recommending creating aliases for when multiple types are 
 //-- are used opposed to unions
 //---
-export type BaseComplaintType = ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
+export type ComplaintAlias = ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
