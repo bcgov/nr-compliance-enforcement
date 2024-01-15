@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { CodeTableService } from "./code-table.service";
-import { CodeTableController } from "./code-table.controller";
+import { CaseManagementCodeTableController, CodeTableController } from "./code-table.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -30,7 +30,7 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([ReportedByCode]),
   ],
-  controllers: [CodeTableController],
+  controllers: [CodeTableController, CaseManagementCodeTableController],
   providers: [CodeTableService],
   exports: [CodeTableService]
 })
