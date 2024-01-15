@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { bcBoundaries, formatDate, formatTime } from "../../../../common/methods";
+import { bcBoundaries, formatDate, formatTime, getSelectedOfficer } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   setComplaint,
@@ -312,32 +312,6 @@ export const ComplaintDetailsEdit: FC = () => {
     return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
   };
 
-  const getSelectedOfficer = (officers: Option[], personGuid: UUID | string, update: ComplaintDto | undefined): any => {
-    if (update && personGuid) {
-      const { delegates } = update;
-
-      const assignees = delegates.filter((item) => item.type === "ASSIGNEE" && item.isActive);
-      if (!from(assignees).any()) {
-        return undefined;
-      }
-
-      const selected = officers.find(({ value }) => {
-        const first = from(assignees).firstOrDefault();
-        if (first) {
-          const {
-            person: { id },
-          } = first;
-          return value === id;
-        }
-
-        return false;
-      });
-
-      return selected;
-    }
-
-    return undefined;
-  };
   const selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, complaintUpdate);
 
   const selectedAttractants = attractantCodes.filter(

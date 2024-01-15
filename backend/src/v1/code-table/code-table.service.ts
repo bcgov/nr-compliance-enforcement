@@ -31,6 +31,8 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
+import { Justification } from "src/types/models/code-tables/justification";
+import { AssessmentType } from "src/types/models/code-tables/assessment-type";
 
 @Injectable()
 export class CodeTableService {
@@ -62,6 +64,7 @@ export class CodeTableService {
   private _reportedByRepository: Repository<ReportedByCode>;
 
   getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
+    console.log("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find(
@@ -339,6 +342,53 @@ export class CodeTableService {
           }
         );
         return results;
+      }
+      case "justification": {
+        const justificationCodes: Justification[] = [
+          { justification: "No public safety concern",
+            shortDescription: "No public safety concern",
+            longDescription: "No public safety concern",
+            displayOrder: 1,
+            isActive: true,
+          },
+          { justification: "Other operational priorities",
+            shortDescription: "Other operational priorities",
+            longDescription: "Other operational priorities",
+            displayOrder: 2,
+            isActive: true,
+          },
+        ];
+        return justificationCodes;
+      }
+      case "assessment-type": {
+        console.log("in assessment type")
+        const assessmentTypeCodes: AssessmentType[] = [
+          { assessmentType: "Assessed public safety risk",
+            shortDescription: "Assessed public safety risk",
+            longDescription: "Assessed public safety risk",
+            displayOrder: 1,
+            isActive: true,
+          },
+          { assessmentType: "Assessed health as per animal welfare guidelines",
+            shortDescription: "Assessed health as per animal welfare guidelines",
+            longDescription: "Assessed health as per animal welfare guidelines",
+            displayOrder: 2,
+            isActive: true,
+          },
+          { assessmentType: "Assessed known conflict history",
+            shortDescription: "Assessed known conflict history",
+            longDescription: "Assessed known conflict history",
+            displayOrder: 3,
+            isActive: true,
+          },
+          { assessmentType: "Confirmed idenfication of offending animals",
+            shortDescription: "Confirmed idenfication of offending animals",
+            longDescription: "Confirmed idenfication of offending animals",
+            displayOrder: 4,
+            isActive: true,
+          },
+        ];
+        return assessmentTypeCodes;
       }
     }
   };

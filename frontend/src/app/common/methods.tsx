@@ -6,6 +6,9 @@ import { from } from "linq-to-typescript";
 import { Violation } from "../types/app/code-tables/violation";
 import { Species } from "../types/app/code-tables/species";
 import { NatureOfComplaint } from "../types/app/code-tables/nature-of-complaint";
+import Option from "../types/app/option";
+import { UUID } from "crypto";
+import { Complaint as ComplaintDto } from "../types/app/complaints/complaint";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -21,6 +24,33 @@ export const getAvatarInitials = (input: string): string => {
   } else {
     return input.charAt(0);
   }
+};
+
+export const getSelectedOfficer = (officers: Option[], personGuid: UUID | string, update: ComplaintDto | undefined): any => {
+  if (update && personGuid) {
+    const { delegates } = update;
+
+    const assignees = delegates.filter((item) => item.type === "ASSIGNEE" && item.isActive);
+    if (!from(assignees).any()) {
+      return undefined;
+    }
+
+    const selected = officers.find(({ value }) => {
+      const first = from(assignees).firstOrDefault();
+      if (first) {
+        const {
+          person: { id },
+        } = first;
+        return value === id;
+      }
+
+      return false;
+    });
+
+    return selected;
+  }
+
+  return undefined;
 };
 
 export const getFirstInitialAndLastName = (fullName: string): string => {
