@@ -1,9 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -30,12 +27,6 @@ export class HwcrComplaintController {
   constructor(private readonly hwcrComplaintService: HwcrComplaintService) {}
 
   private readonly logger = new Logger(HwcrComplaintController.name);
-
-  // @Post()
-  // @Roles(Role.COS_OFFICER)
-  // create(@Body("hwcrComplaint") createHwcrComplaintDto: string) {
-  //   return this.hwcrComplaintService.create(createHwcrComplaintDto);
-  // }
 
   @Get()
   @Roles(Role.COS_OFFICER)

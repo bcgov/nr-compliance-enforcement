@@ -1,17 +1,14 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   Logger,
   Scope,
 } from "@nestjs/common";
-import { CreateHwcrComplaintDto } from "./dto/create-hwcr_complaint.dto";
-import { UpdateHwcrComplaintDto } from "./dto/update-hwcr_complaint.dto";
 import { HwcrComplaint } from "./entities/hwcr_complaint.entity";
 import { ComplaintService } from "../complaint/complaint.service";
 import { Brackets, DataSource, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UUID, randomUUID } from "crypto";
+import { UUID } from "crypto";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import {
   OfficeStats,
@@ -22,7 +19,6 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
-import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchResults } from "../complaint/models/search-results";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { REQUEST } from "@nestjs/core";
@@ -52,71 +48,6 @@ export class HwcrComplaintService {
   protected readonly attractantHwcrXrefService: AttractantHwcrXrefService;
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
-
-  // async create(hwcrComplaint: string): Promise<HwcrComplaint> {
-  //   const queryRunner = this.dataSource.createQueryRunner();
-
-  //   await queryRunner.connect();
-  //   await queryRunner.startTransaction();
-
-  //   const createHwcrComplaintDto: CreateHwcrComplaintDto =
-  //     JSON.parse(hwcrComplaint);
-  //   createHwcrComplaintDto.hwcr_complaint_guid = randomUUID();
-  //   createHwcrComplaintDto.update_utc_timestamp =
-  //     createHwcrComplaintDto.create_utc_timestamp = new Date();
-  //   let newHwcrComplaintString;
-  //   try {
-  //     const complaint: Complaint = await this.complaintService.create(
-  //       JSON.stringify(createHwcrComplaintDto.complaint_identifier),
-  //       queryRunner
-  //     );
-  //     createHwcrComplaintDto.create_user_id =
-  //       createHwcrComplaintDto.update_user_id = complaint.create_user_id;
-  //     createHwcrComplaintDto.complaint_identifier.complaint_identifier =
-  //       complaint.complaint_identifier;
-  //     newHwcrComplaintString = await this.hwcrComplaintsRepository.create(
-  //       createHwcrComplaintDto
-  //     );
-  //     let newHwcrComplaint: HwcrComplaint;
-      // newHwcrComplaint = <HwcrComplaint>(
-  //       await queryRunner.manager.save(newHwcrComplaintString)
-  //     );
-
-  //     if (
-  //       createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0] !==
-  //       undefined
-  //     ) {
-  //       createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
-  //         newHwcrComplaint.complaint_identifier;
-  //       await this.personComplaintXrefService.assignOfficer(queryRunner,
-  //         newHwcrComplaint.complaint_identifier.complaint_identifier,
-  //         createHwcrComplaintDto.complaint_identifier.person_complaint_xref[0]
-  //       );
-  //     }
-
-  //     if (newHwcrComplaint.attractant_hwcr_xref != null) {
-  //       for (let i = 0; i < newHwcrComplaint.attractant_hwcr_xref.length; i++) {
-  //         const blankHwcrComplaint = new HwcrComplaint();
-  //         blankHwcrComplaint.hwcr_complaint_guid =
-  //           newHwcrComplaint.hwcr_complaint_guid;
-  //         newHwcrComplaint.attractant_hwcr_xref[i].hwcr_complaint_guid =
-  //           blankHwcrComplaint;
-  //         await this.attractantHwcrXrefService.create(
-  //           queryRunner,
-  //           newHwcrComplaint.attractant_hwcr_xref[i]
-  //         );
-  //       }
-  //     }
-  //     await queryRunner.commitTransaction();
-  //   } catch (err) {
-  //     this.logger.error(err);
-  //     await queryRunner.rollbackTransaction();
-  //     throw new BadRequestException(err);
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  //   return newHwcrComplaintString;
-  // }
 
   search = async (model: SearchPayload): Promise<SearchResults> => {
     const { sortColumn, sortOrder, page, pageSize, query, ...filters } = model;

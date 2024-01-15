@@ -1,6 +1,5 @@
 import { map } from "lodash";
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -108,78 +107,6 @@ export class ComplaintService {
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
   }
-
-  // async create(complaint: string, queryRunner: QueryRunner): Promise<Complaint> {
-  //   try {
-  //     const createComplaintDto: CreateComplaintDto = JSON.parse(complaint);
-  //     const agencyCode = await this._getAgencyByUser();
-
-  //     let reportedByCode = createComplaintDto.reported_by_code;
-  //     let sequenceNumber;
-  //     await queryRunner.manager.query("SELECT nextval('complaint_sequence')").then(function (returnData) {
-  //       sequenceNumber = map(returnData, "nextval");
-  //     });
-  //     const complaintId = new Date().getFullYear().toString().substring(2) + "-" + sequenceNumber;
-  //     createComplaintDto.incident_reported_utc_timestmp = new Date();
-  //     if (!createComplaintDto.incident_utc_datetime) {
-  //       createComplaintDto.incident_utc_datetime = null;
-  //     }
-  //     createComplaintDto.complaint_identifier = complaintId;
-  //     if (reportedByCode !== null && reportedByCode.reported_by_code === "") {
-  //       reportedByCode = null;
-  //     }
-  //     const createData = {
-  //       complaint_status_code: createComplaintDto.complaint_status_code,
-  //       detail_text: createComplaintDto.detail_text,
-  //       location_detailed_text: createComplaintDto.location_detailed_text,
-  //       cos_geo_org_unit: createComplaintDto.cos_geo_org_unit,
-  //       incident_utc_datetime: createComplaintDto.incident_utc_datetime,
-  //       incident_reported_utc_timestmp: createComplaintDto.incident_reported_utc_timestmp,
-  //       location_geometry_point: createComplaintDto.location_geometry_point,
-  //       location_summary_text: createComplaintDto.location_summary_text,
-  //       caller_name: createComplaintDto.caller_name,
-  //       caller_email: createComplaintDto.caller_email,
-  //       caller_address: createComplaintDto.caller_address,
-  //       caller_phone_1: createComplaintDto.caller_phone_1,
-  //       caller_phone_2: createComplaintDto.caller_phone_2,
-  //       caller_phone_3: createComplaintDto.caller_phone_3,
-  //       reported_by_code: reportedByCode,
-  //       complaint_identifier: createComplaintDto.complaint_identifier,
-  //       create_utc_timestamp: createComplaintDto.create_utc_timestamp,
-  //       update_utc_timestamp: createComplaintDto.update_utc_timestamp,
-  //       create_user_id: createComplaintDto.create_user_id,
-  //       update_user_id: createComplaintDto.update_user_id,
-  //       owned_by_agency_code: agencyCode,
-  //     };
-
-  //     const createdValue = await this.complaintsRepository.create(createData);
-  //     return await queryRunner.manager.save(createdValue);
-  //   } catch (err) {
-  //     this.logger.error(err);
-  //     throw new BadRequestException(err);
-  //   }
-  // }
-
-  // async findAll(): Promise<Complaint[]> {
-  //   return this.complaintsRepository.find({
-  //     relations: {
-  //       reported_by_code: true,
-  //       owned_by_agency_code: true,
-  //       complaint_status_code: true,
-  //     },
-  //   });
-  // }
-
-  // async findOne(id: any): Promise<Complaint> {
-  //   return this.complaintsRepository.findOneOrFail({
-  //     where: { complaint_identifier: id },
-  //     relations: {
-  //       reported_by_code: true,
-  //       owned_by_agency_code: true,
-  //       complaint_status_code: true,
-  //     },
-  //   });
-  // }
 
   async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
     try {

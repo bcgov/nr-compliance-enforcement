@@ -1,6 +1,5 @@
 import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
-import { CreateComplaintDto } from "./dto/create-complaint.dto";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -20,17 +19,6 @@ import { ComplaintSearchParameters } from "../../types/models/complaints/complai
 export class ComplaintController {
   constructor(private readonly service: ComplaintService) {}
 
-  // @Get()
-  // @Roles(Role.COS_OFFICER)
-  // findAll() {
-  //   return this.service.findAll();
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} geoOrgUnitStructure`;
-  // } 
-
-  //-- refactors starts here
   @Get(":complaintType")
   @Roles(Role.COS_OFFICER)
   async findAllByType(
@@ -74,8 +62,7 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
-    const result = (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
-    return result;
+    return (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
   }
 
   @Post("/create/:complaintType")
@@ -84,8 +71,6 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Body() model: WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
-
-    const result = await this.service.create(complaintType, model)
-    return result;
+    return await this.service.create(complaintType, model);
   }
 }
