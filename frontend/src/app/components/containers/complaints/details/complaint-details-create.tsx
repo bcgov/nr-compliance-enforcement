@@ -1029,7 +1029,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-suspect-witness-edit-container">
               <div className="comp-details-edit-column comp-details-right-column">
                 <div className="comp-details-label-input-pair" id="subject-of-complaint-pair-id">
-                  <label id="complaint-caller-info-name-label-id" className="col-auto">
+                  <label id="complaint-witness-details-label-id" className="col-auto" htmlFor="complaint-witness-details-textarea-id">
                     Description
                   </label>
                   <textarea
