@@ -54,6 +54,7 @@ import { Complaint as ComplaintDto } from "../../../../types/app/complaints/comp
 import { Delegate } from "../../../../types/app/people/delegate";
 import { UUID } from "crypto";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
+import { BaseComplaintType } from "../../../../types/app/aliases";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -84,15 +85,15 @@ export const CreateComplaint: FC = () => {
 
   const currentDate = useMemo(() => new Date(), []);
 
-  const [complaintData, applyComplaintData] = useState<ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto>();
+  const [complaintData, applyComplaintData] = useState<BaseComplaintType>();
 
   const [complaintType, setComplaintType] = useState<string>(COMPLAINT_TYPES.HWCR);
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
-  const [nocErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
+  const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
-  const [complaintDescErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
+  const [complaintDescriptionErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
   const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
@@ -167,7 +168,7 @@ export const CreateComplaint: FC = () => {
     let noErrors = false;
     if (
       statusErrorMsg === "" &&
-      complaintDescErrorMsg === "" &&
+      complaintDescriptionErrorMsg === "" &&
       communityErrorMsg === "" &&
       geoPointXMsg === "" &&
       geoPointYMsg === "" &&
@@ -177,7 +178,7 @@ export const CreateComplaint: FC = () => {
       alternatePhoneMsg === ""
     ) {
       if (complaintType === COMPLAINT_TYPES.HWCR) {
-        if (nocErrorMsg === "" && speciesErrorMsg === "") {
+        if (natureOfComplaintErrorMsg === "" && speciesErrorMsg === "") {
           noErrors = true;
         }
       } else if (complaintType === COMPLAINT_TYPES.ERS) {
@@ -190,7 +191,7 @@ export const CreateComplaint: FC = () => {
   }
 
   const handleComplaintChange = (selected: Option | null) => {
-    if (selected && selected.value) {
+    if (selected?.value) {
       const { value } = selected;
 
       setComplaintTypeMsg("");
@@ -216,7 +217,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleNatureOfComplaintChange = (selected: Option | null) => {
-    if (selected && selected.value) {
+    if (selected?.value) {
       const { value } = selected;
 
       const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
@@ -242,7 +243,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleViolationTypeChange = (selected: Option | null) => {
-    if (selected && selected.value) {
+    if (selected?.value) {
       const { value } = selected;
 
       const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
@@ -323,7 +324,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleViolationInProgessChange = (selected: Option | null) => {
-    if (selected && selected?.value) {
+    if (selected?.value) {
       const { value } = selected;
 
       const complaint = { ...complaintData, isInProgress: value === "Yes" } as AllegationComplaintDto;
@@ -332,7 +333,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleViolationObservedChange = (selected: Option | null) => {
-    if (selected && selected?.value) {
+    if (selected?.value) {
       const { value } = selected;
 
       const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
@@ -671,7 +672,7 @@ export const CreateComplaint: FC = () => {
                   className="comp-details-input"
                   classNamePrefix="comp-select"
                   onChange={(e) => handleNatureOfComplaintChange(e)}
-                  errMsg={nocErrorMsg}
+                  errMsg={natureOfComplaintErrorMsg}
                 />
               </div>
             )}
@@ -747,7 +748,7 @@ export const CreateComplaint: FC = () => {
                   className="comp-form-control"
                   id="complaint-description-textarea-id"
                   rows={4}
-                  errMsg={complaintDescErrorMsg}
+                  errMsg={complaintDescriptionErrorMsg}
                   onChange={handleComplaintDescriptionChange}
                   maxLength={4000}
                 />

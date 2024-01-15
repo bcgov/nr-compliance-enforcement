@@ -439,7 +439,6 @@ export const selectJustificationCodeDropdown = (
     const item: Option = { label: longDescription, value: justification };
     return item;
   });
-  console.log("justificationCodes: " + JSON.stringify(data))
   return data;
 };
 
