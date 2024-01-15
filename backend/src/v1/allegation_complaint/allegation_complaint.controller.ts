@@ -31,12 +31,6 @@ export class AllegationComplaintController {
 
   private readonly logger = new Logger(AllegationComplaintController.name);
 
-  // @Post()
-  // @Roles(Role.COS_OFFICER)
-  // create(@Body('allegationComplaint') createAllegationComplaintDto: string) {
-  //   return this.allegationComplaintService.create(createAllegationComplaintDto);
-  // }
-
   @Get()
   @Roles(Role.COS_OFFICER)
   findAll(
