@@ -693,7 +693,7 @@ export const CreateComplaint: FC = () => {
               </div>
             )}
             <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="officer-assigned-select-label-id">Officer Assigned</label>
+              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">Officer Assigned</label>
               <CompSelect
                 id="officer-assigned-select-id"
                 classNamePrefix="comp-select"

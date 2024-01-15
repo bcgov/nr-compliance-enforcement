@@ -618,7 +618,7 @@ export const selectComplaintDetails =
     let result: ComplaintDetails = {};
 
 
-    if (complaint && complaint.location) {
+    if (complaint?.location) {
       const {
         details,
         locationSummary: location,
