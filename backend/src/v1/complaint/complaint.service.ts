@@ -1,13 +1,5 @@
 import { map } from "lodash";
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  Scope,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -896,7 +888,7 @@ export class ComplaintService {
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
-  
+
   async create(
     complaintType: COMPLAINT_TYPE,
     model: WildlifeComplaintDto | AllegationComplaintDto
@@ -947,12 +939,12 @@ export class ComplaintService {
           ({ person_complaint_xref_code: { person_complaint_xref_code }, active_ind }) =>
             person_complaint_xref_code === "ASSIGNEE" && active_ind
         );
-        
-        if(selectedAssignee){ 
+
+        if (selectedAssignee) {
           const {
             person_guid: { person_guid: id },
           } = selectedAssignee;
-  
+
           const assignee = {
             active_ind: true,
             person_guid: {
@@ -962,7 +954,7 @@ export class ComplaintService {
             person_complaint_xref_code: "ASSIGNEE",
             create_user_id: idir,
           } as any;
-  
+
           this._personService.assignNewOfficer(complaintId, assignee);
         }
       }
@@ -972,7 +964,7 @@ export class ComplaintService {
           const { violation, isInProgress, wasObserved, violationDetails } = model as AllegationComplaintDto;
           const ersId = randomUUID();
 
-          const ers = { 
+          const ers = {
             allegation_complaint_guid: ersId,
             complaint_identifier: complaintId,
             violation_code: violation,
@@ -981,13 +973,13 @@ export class ComplaintService {
             suspect_witnesss_dtl_text: violationDetails,
             create_user_id: idir,
             update_user_id: idir,
-          } as any
+          } as any;
 
-          const newAllegation = await this._allegationComplaintRepository.create(ers)
+          const newAllegation = await this._allegationComplaintRepository.create(ers);
           await this._allegationComplaintRepository.save(newAllegation);
           break;
         }
-        case "HWCR": 
+        case "HWCR":
         default: {
           const { species, natureOfComplaint, otherAttractants, attractants } = model as WildlifeComplaintDto;
           const hwcrId = randomUUID();
@@ -1030,7 +1022,9 @@ export class ComplaintService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.log(
-        `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(model)}`
+        `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(
+          model
+        )}`
       );
       this.logger.log(error);
       throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);
@@ -1038,8 +1032,7 @@ export class ComplaintService {
       await queryRunner.release();
     }
   }
-    
-    
+
   private _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
@@ -1206,8 +1199,8 @@ export class ComplaintService {
 
       const officers = await query.getMany();
 
-      for (let x = 0; x < officers.length; x++) {
-        const { person_guid: person, officer_guid: officerId } = officers[x];
+      for (const officer of officers) {
+        const { person_guid: person, officer_guid: officerId } = officer;
         const { first_name, last_name } = person;
 
         const assigned = await this._getTotalAssignedComplaintsByOfficer(complaintType, officerId);
@@ -1277,8 +1270,8 @@ export class ComplaintService {
 
     const offices = await officeQuery.getMany();
 
-    for (let x = 0; x < offices.length; x++) {
-      const { office_location_code: code, office_location_name: name } = offices[x];
+    for (const office of offices) {
+      const { office_location_code: code, office_location_name: name } = office;
 
       const total = await this._getTotalComplaintsByOffice(complaintType, code);
       const assigned = await this._getTotalAssignedComplaintsByOffice(complaintType, code);
@@ -1308,7 +1301,7 @@ export class ComplaintService {
     const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone);
     const unassigned = total - assigned;
 
-    const offices = (await this._getComplaintsByOffice(complaintType, zone)) as Array<OfficeStats>;
+    const offices = await this._getComplaintsByOffice(complaintType, zone);
 
     results = { ...results, total, assigned, unassigned, offices };
     return results;
