@@ -88,3 +88,11 @@ services:
       - /app/node_modules
     user: root
     working_dir: "/app"
+  nats:
+    image: nats:latest  # Using the latest official NATS image
+    ports:
+      - "4222:4222"  # Default NATS client port
+      - "8222:8222"  # NATS monitoring port
+    environment:
+      - NATS_USER=natsuser  # this is just for the developer instance of nats
+      - NATS_PASSWORD=natspass  # this is just for the developer instance of nats

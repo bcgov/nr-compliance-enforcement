@@ -163,10 +163,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3000-tcp
+        - name: 3002-tcp
           protocol: TCP
           port: 80
-          targetPort: 3000
+          targetPort: 3002
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -178,7 +178,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3000-tcp
+        targetPort: 3002-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}
