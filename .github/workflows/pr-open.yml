@@ -41,12 +41,16 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, database, database-migrations, frontend]
+        package: [backend, database, database-migrations, frontend, webeoc]
         include:
           - package: backend
             triggers: ('backend/')
             build_file: ./backend/Dockerfile
             build_context: ./backend
+          - package: webeoc
+            triggers: ('webeoc/')
+            build_file: ./webeoc/Dockerfile
+            build_context: ./webeoc
           - package: database
             triggers: ('database/')
             build_file: ./database/Dockerfile
