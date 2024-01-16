@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ComplaintsService } from './complaints/complaints.service';
 import { ComplaintsPublisherService } from './complaints-publisher/complaints-publisher.service';
+import { WebEOCComplaintsScheduler } from './webeoc-complaints-scheduler/webeoc-complaints-scheduler.service';
 import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ComplaintsSubscriberService } from './complaints-subscriber/complaints-subscriber.service';
@@ -12,8 +12,8 @@ import { ComplaintsSubscriberService } from './complaints-subscriber/complaints-
   controllers: [AppController],
   providers: [
     AppService,
-    ComplaintsService,
     ComplaintsPublisherService,
+    WebEOCComplaintsScheduler,
     ComplaintsSubscriberService,
   ],
 })
