@@ -1,18 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ComplaintsService } from '../complaints/complaints.service'; // The service to handle NATS publishing
-import { AxiosRequestConfig } from 'axios';
 import { Complaint } from 'src/types/Complaints';
+import axios, { AxiosRequestConfig } from 'axios';
 
 @Injectable()
 export class ScheduledTaskService {
   private cookie: string;
 
-  constructor(
-    private httpService: HttpService,
-    private complaintsService: ComplaintsService,
-  ) {}
+  constructor(private complaintsService: ComplaintsService) {}
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCron() {
@@ -26,7 +22,7 @@ export class ScheduledTaskService {
     }
   }
 
-  async authenticateWithWebEOC(): Promise<string> {
+  public async authenticateWithWebEOC(): Promise<string> {
     const authUrl = 'https://bc.demo.webeocasp.com/bc/api/rest.svc/sessions';
     const credentials = {
       username: process.env.WEBEOC_USERNAME,
@@ -40,9 +36,7 @@ export class ScheduledTaskService {
     };
 
     try {
-      const response = await this.httpService
-        .post(authUrl, credentials, config)
-        .toPromise();
+      const response = await axios.post(authUrl, credentials, config);
 
       // Extract the cookie from the response
       const cookie = response.headers['set-cookie'][0];
@@ -55,25 +49,51 @@ export class ScheduledTaskService {
     }
   }
 
-  async fetchComplaintsFromWebEOC(): Promise<Complaint[]> {
-    const complaintsUrl = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - COS Integration Incidents`;
+  public async fetchComplaintsFromWebEOC(): Promise<Complaint[]> {
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+    const formattedDate = this.formatDate(oneDayAgo);
+
     if (!this.cookie) {
       throw new Error(
         'No authentication cookie available. Please authenticate first.',
       );
     }
-    const headers = {
-      Cookie: this.cookie,
+
+    // add the auth cookie to the header.  Note that WebEOC requires this format, which is why we're not using the encrypted authorization header.
+    const config: AxiosRequestConfig = {
+      headers: {
+        Cookie: this.cookie,
+      },
     };
 
+    const body = {
+      customFilter: {
+        boolean: 'or',
+        items: [
+          {
+            fieldname: 'incident_datetime',
+            operator: 'GreaterThan',
+            fieldvalue: formattedDate,
+          },
+        ],
+      },
+    };
+
+    const url =
+      'https://bc.demo.webeocasp.com/bc/api/rest.svc/board/Conservation Officer Service/display/List - COS Integration Incidents';
+
     try {
-      const response = await this.httpService
-        .get(complaintsUrl, { headers })
-        .toPromise();
-      return response.data;
+      const response = await axios.post(url, body, config);
+      return response.data as Complaint[];
     } catch (error) {
       console.error('Error fetching complaints from WebEOC:', error);
       throw error;
     }
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().replace('T', ' ').substring(0, 19);
   }
 }
