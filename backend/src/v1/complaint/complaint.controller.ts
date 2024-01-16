@@ -10,6 +10,7 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
+import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -45,28 +46,20 @@ export class ComplaintController {
 
   @Get("/map/search/:complaintType")
   @Roles(Role.COS_OFFICER)
-  mapSearch(
-    @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Query() model: ComplaintSearchParameters
-  ) {
+  mapSearch(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
     return this.service.mapSearch(complaintType, model);
   }
 
   @Get("/search/:complaintType")
   @Roles(Role.COS_OFFICER)
-  search(
-    @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Query() model: ComplaintSearchParameters
-  ) {
+  search(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
     return this.service.search(complaintType, model);
   }
-  
+
   @Patch("/update-status-by-id/:id")
   @Roles(Role.COS_OFFICER)
-  async updateComplaintStatusById(
-    @Param("id") id: string, @Body() model: any
-  ): Promise<ComplaintDto> {
-    const { status } = model
+  async updateComplaintStatusById(@Param("id") id: string, @Body() model: any): Promise<ComplaintDto> {
+    const { status } = model;
     return await this.service.updateComplaintStatusById(id, status);
   }
 
@@ -87,6 +80,12 @@ export class ComplaintController {
     @Param("id") id: string
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     const result = (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
-    return result
+    return result;
+  }
+
+  @Get("/stats/:complaintType/by-zone/:zone")
+  @Roles(Role.COS_OFFICER)
+  statsByZone(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Param("zone") zone: string): Promise<ZoneAtAGlanceStats> {
+    return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
   }
 }

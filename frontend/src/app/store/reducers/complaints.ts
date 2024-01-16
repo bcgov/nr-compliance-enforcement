@@ -280,9 +280,7 @@ export const getZoneAtAGlanceStats =
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/${
-          type === ComplaintType.HWCR_COMPLAINT ? "hwcr" : "allegation"
-        }-complaint/stats/by-zone/${zone}`
+        `${config.API_BASE_URL}/v1/complaint/stats/${type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : "ERS"}/by-zone/${zone}`
       );
 
       const response = await get<ZoneAtAGlanceStats>(dispatch, parameters);
