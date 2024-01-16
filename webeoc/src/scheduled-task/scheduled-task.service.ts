@@ -1,16 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { CronExpression } from '@nestjs/schedule';
 import { ComplaintsService } from '../complaints/complaints.service'; // The service to handle NATS publishing
 import { Complaint } from 'src/types/Complaints';
 import axios, { AxiosRequestConfig } from 'axios';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class ScheduledTaskService {
   private cookie: string;
+  private cronJob: CronJob;
 
   constructor(private complaintsService: ComplaintsService) {}
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  onModuleInit() {
+    this.cronJob = new CronJob(this.getCronExpression(), async () => {
+      await this.handleCron();
+    });
+
+    this.cronJob.start();
+  }
+
+  private getCronExpression(): string {
+    const defaultCron = CronExpression.EVERY_5_MINUTES;
+    const envCronExpression = process.env.WEBEOC_CRON_EXPRESSION || defaultCron;
+
+    // Add any additional validation if necessary
+    return envCronExpression;
+  }
+
   async handleCron() {
     await this.authenticateWithWebEOC();
     // Fetch complaints from WebEOC here
@@ -50,10 +67,20 @@ export class ScheduledTaskService {
   }
 
   public async fetchComplaintsFromWebEOC(): Promise<Complaint[]> {
-    const oneDayAgo = new Date();
-    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    const complaintsAsOfDate = new Date(); // Grab complaints that have been created on a date greater than or equal to this date
+    const complaintHistoryDays = parseInt(
+      process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || '1',
+      10,
+    );
 
-    const formattedDate = this.formatDate(oneDayAgo);
+    if (isNaN(complaintHistoryDays)) {
+      throw new Error('WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number');
+    }
+    complaintsAsOfDate.setDate(
+      complaintsAsOfDate.getDate() - complaintHistoryDays,
+    );
+
+    const formattedDate = this.formatDate(complaintsAsOfDate);
 
     if (!this.cookie) {
       throw new Error(
