@@ -831,6 +831,72 @@ export class ComplaintService {
           agency: agency.agency_code,
         });
       }
+
+      //-- filter locations without coordinates
+      complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+      complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+
+      //-- run query
+      const mappedComplaints = await complaintBuilder.getMany();
+
+      //-- get unmapable complaints
+      let unMappedBuilder = this._generateQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        unMappedBuilder = this._applySearch(unMappedBuilder, complaintType, query);
+      }
+
+      //-- apply filters
+      if (Object.keys(filters).length !== 0) {
+        unMappedBuilder = this._applyFilters(unMappedBuilder, filters as ComplaintFilterParameters, complaintType);
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      if (agency) {
+        unMappedBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
+          agency: agency.agency_code,
+        });
+      }
+
+      //-- filter locations without coordinates
+      unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+      unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+
+      //-- run query
+      const unmappedComplaints = await unMappedBuilder.getCount();
+      results = { ...results, unmappedComplaints };
+
+      //-- map results
+      switch (complaintType) {
+        case "ERS": {
+          const items = this.mapper.mapArray<AllegationComplaint, AllegationComplaintDto>(
+            mappedComplaints as Array<AllegationComplaint>,
+            "AllegationComplaint",
+            "AllegationComplaintDto"
+          );
+          results.complaints = items;
+          break;
+        }
+        case "HWCR":
+        default: {
+          const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
+            mappedComplaints as Array<HwcrComplaint>,
+            "HwcrComplaint",
+            "WildlifeComplaintDto"
+          );
+
+          results.complaints = items;
+          break;
+        }
+      }
+      return results;
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
+    }
+  };
+  
   async create(
     complaintType: COMPLAINT_TYPE,
     model: WildlifeComplaintDto | AllegationComplaintDto
