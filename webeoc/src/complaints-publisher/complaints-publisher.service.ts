@@ -4,6 +4,7 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { NATS_NEW_COMPLAINTS_TOPIC_NAME } from 'src/common/constants';
 import { Complaint } from 'src/types/Complaints';
 
 @Injectable()
@@ -22,14 +23,13 @@ export class ComplaintsPublisherService {
   }
 
   async publishComplaint(complaint: Complaint): Promise<void> {
-    const topic = 'complaint';
     try {
       const message = {
-        id: complaint.incident_number, // Generate a unique identifier
+        id: complaint.incident_number, // complaint identifier - we use this as the id so that we don't get the same complaint added to the topic multiple times
         data: complaint,
       };
 
-      this.client.emit(topic, message);
+      this.client.emit(NATS_NEW_COMPLAINTS_TOPIC_NAME, message);
       this.logger.log(`Complaint published: ${JSON.stringify(complaint)}`);
     } catch (error) {
       this.logger.error(

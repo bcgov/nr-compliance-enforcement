@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { connect, NatsConnection, Subscription } from 'nats';
+import { NATS_NEW_COMPLAINTS_TOPIC_NAME } from 'src/common/constants';
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {
@@ -18,9 +19,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   }
 
   private subscribeToComplaints(): Subscription {
-    const subject = 'complaint'; // The subject to subscribe to
-
-    const subscription: Subscription = this.natsConnection.subscribe(subject);
+    const subscription: Subscription = this.natsConnection.subscribe(
+      NATS_NEW_COMPLAINTS_TOPIC_NAME,
+    );
 
     (async () => {
       for await (const msg of subscription) {
