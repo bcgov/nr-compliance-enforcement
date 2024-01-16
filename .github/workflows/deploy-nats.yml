@@ -20,4 +20,4 @@ jobs:
     - name: Deploy NATS using Helm
       run: |
         helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-        helm install nats nats/nats --set natsbox.enabled=false --set nameOverride=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+        helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats --set natsbox.enabled=false
