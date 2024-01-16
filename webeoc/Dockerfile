@@ -6,8 +6,6 @@ USER root
 WORKDIR /app
 COPY *.json ./
 COPY ./src /app/src
-RUN npm ci --omit=dev && \
-    npm run build
 
 # Install dependencies
 RUN npm ci --omit=dev
