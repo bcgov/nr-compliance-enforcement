@@ -36,7 +36,6 @@ export const UserManagement: FC = () => {
   useEffect(() => {
     const { type } = notification;
     if (type !== "") {
-      console.log(notification);
       dispatch(clearNotification());
     }
   }, [dispatch, notification]);
