@@ -6,7 +6,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { CronJob } from 'cron';
 
 @Injectable()
-export class ScheduledTaskService {
+export class ComplaintsPublisherService {
   private cookie: string;
   private cronJob: CronJob;
 

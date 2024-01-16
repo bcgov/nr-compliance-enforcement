@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { ScheduledTaskService } from './scheduled-task/scheduled-task.service';
+import { ComplaintsPublisherService } from './complaints-publisher/complaints-publisher.service';
 import * as dotenv from 'dotenv';
 
 async function bootstrap() {
@@ -17,7 +17,7 @@ async function bootstrap() {
   );
 
   // Manually trigger the complaints processing
-  const tasksService = app.get(ScheduledTaskService);
+  const tasksService = app.get(ComplaintsPublisherService);
   tasksService.handleCron();
 
   await app.listen();
