@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend, database, init, frontend]
+        name: [backend, database, init, frontend, webeoc]
         include:
           - name: backend
             file: backend/openshift.deploy.yml
@@ -88,6 +88,11 @@ jobs:
             parameters:
               -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
               -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:${{ github.event.number }}
+          - name: webeoc
+            file: webeoc/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false

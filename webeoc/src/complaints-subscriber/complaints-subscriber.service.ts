@@ -9,7 +9,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   async onModuleInit() {
     try {
       this.natsConnection = await connect({
-        servers: 'nats://localhost:4222',
+        servers: process.env.NATS_HOST,
       });
       console.log('Connected to NATS');
     } catch (error) {
