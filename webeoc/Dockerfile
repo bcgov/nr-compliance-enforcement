@@ -9,6 +9,12 @@ COPY ./src /app/src
 RUN npm ci --omit=dev && \
     npm run build
 
+# Install dependencies
+RUN npm ci --omit=dev
+
+# Run build
+RUN npm run build
+
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro:8.7-6@sha256:af0a83c2fb7db1b63a5655c85f3f37d32b114443b8969fd8a40d47429cd87016
 
