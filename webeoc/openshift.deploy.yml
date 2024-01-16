@@ -128,7 +128,7 @@ objects:
                       name: webeoc
                       key: webeoc-cron-expression
               ports:
-                - containerPort: 3000
+                - containerPort: 3002
                   protocol: TCP
               resources:
                 requests:
@@ -139,8 +139,8 @@ objects:
                   memory: ${MEMORY_LIMIT}
               readinessProbe:
                 httpGet:
-                  path: /
-                  port: 3000
+                  path: /health
+                  port: 3002
                   scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 15
@@ -149,8 +149,8 @@ objects:
                 successThreshold: 1
                 failureThreshold: 3
                 httpGet:
-                  path: /
-                  port: 3000
+                  path: /health
+                  port: 3002
                   scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 30
