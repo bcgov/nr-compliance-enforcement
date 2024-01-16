@@ -1,16 +1,13 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   Logger,
   Scope,
 } from "@nestjs/common";
-import { CreateAllegationComplaintDto } from "./dto/create-allegation_complaint.dto";
-import { UpdateAllegationComplaintDto } from "./dto/update-allegation_complaint.dto";
 import { AllegationComplaint } from "./entities/allegation_complaint.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, Repository, SelectQueryBuilder } from "typeorm";
-import { UUID, randomUUID } from "crypto";
+import { UUID } from "crypto";
 import { ComplaintService } from "../complaint/complaint.service";
 import {
   OfficeStats,
@@ -21,7 +18,6 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
-import { Complaint } from "../complaint/entities/complaint.entity";
 import { SearchPayload } from "../complaint/models/search-payload";
 import { SearchResults } from "../complaint/models/search-results";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
@@ -49,60 +45,6 @@ export class AllegationComplaintService {
   protected readonly complaintService: ComplaintService;
   @Inject(PersonComplaintXrefService)
   protected readonly personComplaintXrefService: PersonComplaintXrefService;
-
-  async create(allegationComplaint: string): Promise<AllegationComplaint> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    const createAllegationComplaintDto: CreateAllegationComplaintDto =
-      JSON.parse(allegationComplaint);
-    createAllegationComplaintDto.allegation_complaint_guid = randomUUID();
-    createAllegationComplaintDto.update_utc_timestamp =
-      createAllegationComplaintDto.create_utc_timestamp = new Date();
-    let newAllegationComplaintString;
-    try {
-      const complaint: Complaint = await this.complaintService.create(
-        JSON.stringify(createAllegationComplaintDto.complaint_identifier),
-        queryRunner
-      );
-      createAllegationComplaintDto.create_user_id =
-        createAllegationComplaintDto.update_user_id = complaint.create_user_id;
-      createAllegationComplaintDto.complaint_identifier.complaint_identifier =
-        complaint.complaint_identifier;
-      newAllegationComplaintString =
-        await this.allegationComplaintsRepository.create(
-          createAllegationComplaintDto
-        );
-      let newAllegationComplaint: AllegationComplaint;
-      newAllegationComplaint = <AllegationComplaint>(
-        await queryRunner.manager.save(newAllegationComplaintString)
-      );
-
-      if (
-        createAllegationComplaintDto.complaint_identifier
-          .person_complaint_xref?.[0]
-      ) {
-        createAllegationComplaintDto.complaint_identifier.person_complaint_xref[0].complaint_identifier =
-          newAllegationComplaint.complaint_identifier;
-        await this.personComplaintXrefService.assignOfficer(queryRunner,
-          newAllegationComplaint.complaint_identifier.complaint_identifier,
-          createAllegationComplaintDto.complaint_identifier
-            .person_complaint_xref[0]
-        );
-      }
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
-    }
-    return newAllegationComplaintString;
-  }
 
   findAll = async (
     sortColumn: string,

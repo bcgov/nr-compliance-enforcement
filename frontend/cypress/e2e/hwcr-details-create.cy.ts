@@ -7,7 +7,7 @@ describe("Complaint Create Page spec - Create View", () => {
     description:
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves ---- testing",
     location: "2975 Jutland Rd.",
-    locationDescription: " ---- testing",
+    locationDescription: "---- testing",
     incidentDateDay: "01",
     attractants: ["Livestock", "BBQ", "Beehive"],
     attractantCodes: ["LIVESTCK", "BBQ", "BEEHIVE"],

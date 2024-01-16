@@ -506,8 +506,6 @@ export const ComplaintDetailsEdit: FC = () => {
     const { attractants } = complaintUpdate as WildlifeComplaintDto;
     let updates: Array<AttractantXref> = [];
 
-    console.log(options);
-
     attractants.forEach((item) => {
       const { attractant, xrefId } = item;
 

@@ -2,8 +2,6 @@ import { Action, Dispatch, PayloadAction, ThunkAction, createSlice, current } fr
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import { ComplaintCollection, ComplaintState } from "../../types/state/complaint-state";
-import { AllegationComplaint } from "../../types/complaints/allegation-complaint";
-import { HwcrComplaint } from "../../types/complaints/hwcr-complaint";
 import { ComplaintHeader } from "../../types/complaints/details/complaint-header";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
@@ -108,10 +106,10 @@ export const complaintSlice = createSlice({
       const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcrId);
 
       if (index !== -1) {
-        debugger;
         const { status, delegates } = updatedComplaint;
 
         let complaint = { ...wildlife[index], status, delegates };
+
         const update = [...wildlife];
         update[index] = complaint;
 
@@ -132,6 +130,7 @@ export const complaintSlice = createSlice({
         const { status, delegates } = updatedComplaint;
 
         let complaint = { ...allegations[index], status, delegates };
+
         const update = [...allegations];
         update[index] = complaint;
 
@@ -330,93 +329,6 @@ const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: str
   await patch<ComplaintDto>(dispatch, parameters);
 };
 
-export const createAllegationComplaint =
-  (
-    allegationComplaint: AllegationComplaint
-  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-  async (dispatch) => {
-    let newComplaintId: string = "";
-    try {
-      if (
-        allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 &&
-        allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0
-      ) {
-        const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${allegationComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${allegationComplaint.complaint_identifier.location_summary_text}`
-        );
-        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
-          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
-          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] =
-            coordinates[Coordinates.Latitude];
-          allegationComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] =
-            coordinates[Coordinates.Longitude];
-        }
-      }
-
-      const postParameters = generateApiParameters(`${config.API_BASE_URL}/v1/allegation-complaint/`, {
-        allegationComplaint: JSON.stringify(allegationComplaint),
-      });
-      await post<AllegationComplaint>(dispatch, postParameters).then(async (res) => {
-        const newAllegationComplaint: AllegationComplaint = res;
-
-        const { complaint_identifier: complaint } = res;
-        const { complaint_identifier: complaintId } = complaint;
-
-        await dispatch(getComplaintById(complaintId, "ERS"));
-
-        newComplaintId = newAllegationComplaint.complaint_identifier.complaint_identifier;
-      });
-      ToggleSuccess("Complaint has been saved");
-      return newComplaintId;
-    } catch (error) {
-      ToggleError("Unable to create complaint");
-      //-- add error handling
-    }
-  };
-
-export const createWildlifeComplaint =
-  (hwcrComplaint: HwcrComplaint): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-  async (dispatch) => {
-    debugger;
-    let newComplaintId: string = "";
-    try {
-      if (
-        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] === 0 &&
-        hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] === 0
-      ) {
-        const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${hwcrComplaint.complaint_identifier.geo_organization_unit_code.long_description}&addressString=${hwcrComplaint.complaint_identifier.location_summary_text}`
-        );
-        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
-        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
-          const coordinates = geocodeResponse?.features[0].geometry.coordinates;
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Latitude] =
-            coordinates[Coordinates.Latitude];
-          hwcrComplaint.complaint_identifier.location_geometry_point.coordinates[Coordinates.Longitude] =
-            coordinates[Coordinates.Longitude];
-        }
-      }
-
-      const postParameters = generateApiParameters(`${config.API_BASE_URL}/v1/hwcr-complaint/`, {
-        hwcrComplaint: JSON.stringify(hwcrComplaint),
-      });
-      await post<HwcrComplaint>(dispatch, postParameters).then(async (res) => {
-        const newHwcrComplaint: HwcrComplaint = res;
-        const { complaint_identifier: complaint } = res;
-        const { complaint_identifier: complaintId } = complaint;
-
-        await dispatch(getComplaintById(complaintId, "HWCR"));
-        newComplaintId = newHwcrComplaint.complaint_identifier.complaint_identifier;
-      });
-      ToggleSuccess("Complaint has been saved");
-      return newComplaintId;
-    } catch (error) {
-      ToggleError("Unable to create complaint");
-      //-- add error handling
-    }
-  };
-
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
@@ -428,7 +340,7 @@ export const updateWildlifeComplaintStatus =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/HWCR/${complaint_identifier}`
       );
-      debugger
+
       const response = await get<WildlifeComplaintDto>(dispatch, parameters);
 
       dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
@@ -495,6 +407,63 @@ export const getComplaintById =
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
+    }
+  };
+
+export const createComplaint =
+  (
+    complaintType: string,
+    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      codeTables: { "area-codes": areaCodes },
+    } = getState();
+
+    try {
+      let result = "";
+
+      const {
+        location,
+        locationSummary,
+        organization: { area: community },
+      } = complaint as ComplaintDto;
+      const { coordinates } = location;
+      const selectedCommunity = areaCodes.find(({ area }) => area === community);
+
+      if (coordinates[Coordinates.Latitude] === 0 && coordinates[Coordinates.Longitude] === 0) {
+        const geocodeParameters = generateApiParameters(
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${selectedCommunity?.areaName}&addressString=${locationSummary}`
+        );
+        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+
+        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
+          const geoCoderCoordinates = geocodeResponse?.features[0].geometry.coordinates;
+          complaint = { ...complaint, location: { ...location, coordinates: geoCoderCoordinates } };
+        }
+      }
+
+      if (selectedCommunity) {
+        const { area, zone, region } = selectedCommunity;
+        complaint = { ...complaint, organization: { area, region, zone } };
+      }
+
+      const postParameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/create/${complaintType}`,
+        complaint
+      );
+
+      await post<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, postParameters).then(async (res) => {
+        const { id } = res;
+        result = id;
+
+        await dispatch(getComplaintById(id, "HWCR"));
+      });
+      ToggleSuccess("Complaint has been saved");
+      return result;
+    } catch (error) {
+      ToggleError("Unable to create complaint");
+      //-- add error handling
     }
   };
 
@@ -648,7 +617,8 @@ export const selectComplaintDetails =
 
     let result: ComplaintDetails = {};
 
-    if (complaint) {
+
+    if (complaint?.location) {
       const {
         details,
         locationSummary: location,
