@@ -96,3 +96,31 @@ services:
     environment:
       - NATS_USER=natsuser  # this is just for the developer instance of nats
       - NATS_PASSWORD=natspass  # this is just for the developer instance of nats
+  webeoc:
+    env_file:
+        - ./webeoc/.env
+    container_name: webeoc
+    entrypoint:
+      - "sh"
+      - "-c"
+      - "npm i && npm run start"
+    environment:
+      WEBEOC_USERNAME: ${WEBEOC_USERNAME}
+      WEBEOC_PASSWORD: Vd7ztkZE!Ab=
+      WEBEOC_POSITION: ${WEBEOC_POSITION}
+      WEBEOC_INCIDENT: ${WEBEOC_INCIDENT}
+      WEBEOC_URL: ${WEBEOC_URL}
+      WEBEOC_COMPLAINT_HISTORY_DAYS: ${WEBEOC_COMPLAINT_HISTORY_DAYS}
+      WEBEOC_CRON_EXPRESSION: "*/1 * * * *"
+      NATS_HOST: "nats://nats:4222"
+    hostname: webeoc
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
+    links:
+      - nats
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./webeoc:/app:z
+      - /app/node_modules
+    user: root
+    working_dir: "/app"
