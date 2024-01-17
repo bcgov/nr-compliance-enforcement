@@ -10,6 +10,7 @@ async function bootstrap() {
 
   // Create an Express instance
   const server = express();
+  server.disable('x-powered-by');
   server.get('/health', (req, res) => res.status(200).send('ok'));
 
   // Create a Nest application with the Express instance

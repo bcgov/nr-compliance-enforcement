@@ -8,7 +8,7 @@ COPY *.json ./
 COPY ./src /app/src
 
 # Install dependencies
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # Run build
 RUN npm run build
