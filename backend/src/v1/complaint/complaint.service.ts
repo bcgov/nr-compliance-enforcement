@@ -1,13 +1,5 @@
 import { map } from "lodash";
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  Scope,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -57,7 +49,9 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
-import { randomUUID } from "crypto";
+import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
+import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { UUID, randomUUID } from "crypto";
 import { format } from "date-fns";
 
 @Injectable({ scope: Scope.REQUEST })
@@ -78,11 +72,14 @@ export class ComplaintService {
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
   private _officeRepository: Repository<Office>;
-  @InjectRepository(Office)
+  @InjectRepository(ComplaintStatusCode)
   private _complaintStatusCode: Repository<ComplaintStatusCode>;
 
   @InjectRepository(Complaint)
   private complaintsRepository: Repository<Complaint>;
+
+  @InjectRepository(CosGeoOrgUnit)
+  private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   constructor(
     @Inject(REQUEST) private request: Request,
@@ -942,12 +939,12 @@ export class ComplaintService {
           ({ person_complaint_xref_code: { person_complaint_xref_code }, active_ind }) =>
             person_complaint_xref_code === "ASSIGNEE" && active_ind
         );
-        
-        if(selectedAssignee){ 
+
+        if (selectedAssignee) {
           const {
             person_guid: { person_guid: id },
           } = selectedAssignee;
-  
+
           const assignee = {
             active_ind: true,
             person_guid: {
@@ -957,7 +954,7 @@ export class ComplaintService {
             person_complaint_xref_code: "ASSIGNEE",
             create_user_id: idir,
           } as any;
-  
+
           this._personService.assignNewOfficer(complaintId, assignee);
         }
       }
@@ -967,7 +964,7 @@ export class ComplaintService {
           const { violation, isInProgress, wasObserved, violationDetails } = model as AllegationComplaintDto;
           const ersId = randomUUID();
 
-          const ers = { 
+          const ers = {
             allegation_complaint_guid: ersId,
             complaint_identifier: complaintId,
             violation_code: violation,
@@ -976,13 +973,13 @@ export class ComplaintService {
             suspect_witnesss_dtl_text: violationDetails,
             create_user_id: idir,
             update_user_id: idir,
-          } as any
+          } as any;
 
-          const newAllegation = await this._allegationComplaintRepository.create(ers)
+          const newAllegation = await this._allegationComplaintRepository.create(ers);
           await this._allegationComplaintRepository.save(newAllegation);
           break;
         }
-        case "HWCR": 
+        case "HWCR":
         default: {
           const { species, natureOfComplaint, otherAttractants, attractants } = model as WildlifeComplaintDto;
           const hwcrId = randomUUID();
@@ -1025,7 +1022,9 @@ export class ComplaintService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.log(
-        `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(model)}`
+        `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(
+          model
+        )}`
       );
       this.logger.log(error);
       throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);
@@ -1033,4 +1032,278 @@ export class ComplaintService {
       await queryRunner.release();
     }
   }
+
+  private _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
+    const agency = await this._getAgencyByUser();
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+
+    switch (complaintType) {
+      case "ERS": {
+        builder = this._allegationComplaintRepository
+          .createQueryBuilder("allegation")
+          .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
+        break;
+      }
+      case "HWCR":
+      default: {
+        builder = this._wildlifeComplaintRepository
+          .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
+          .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
+        break;
+      }
+    }
+
+    builder
+      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
+      .where("area_code.zone_code = :zone", { zone })
+      .andWhere("complaint.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+
+    const result = await builder.getCount();
+
+    return result;
+  };
+
+  private _getTotalComplaintsByOffice = async (complaintType: COMPLAINT_TYPE, office: string): Promise<number> => {
+    const agency = await this._getAgencyByUser();
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+
+    switch (complaintType) {
+      case "ERS": {
+        builder = this._allegationComplaintRepository
+          .createQueryBuilder("allegation")
+          .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
+        break;
+      }
+      case "HWCR":
+      default: {
+        builder = this._wildlifeComplaintRepository
+          .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
+          .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
+        break;
+      }
+    }
+
+    builder
+      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
+      .where("area_code.offloc_code = :office", { office })
+      .andWhere("complaint.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+
+    return await builder.getCount();
+  };
+
+  private _getTotalAssignedComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
+    const agency = await this._getAgencyByUser();
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+
+    switch (complaintType) {
+      case "ERS": {
+        builder = this._allegationComplaintRepository
+          .createQueryBuilder("allegation")
+          .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
+        break;
+      }
+      case "HWCR":
+      default: {
+        builder = this._wildlifeComplaintRepository
+          .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
+          .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
+        break;
+      }
+    }
+
+    builder
+      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
+      .innerJoinAndSelect(
+        "complaint.person_complaint_xref",
+        "person_complaint_xref",
+        "person_complaint_xref.active_ind = true"
+      )
+      .where("area_code.zone_code = :zone", { zone })
+      .andWhere("complaint.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+
+    const result = await builder.getCount();
+
+    return result;
+  };
+
+  private _getTotalAssignedComplaintsByOffice = async (
+    complaintType: COMPLAINT_TYPE,
+    office: string
+  ): Promise<number> => {
+    const agency = await this._getAgencyByUser();
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+
+    switch (complaintType) {
+      case "ERS": {
+        builder = this._allegationComplaintRepository
+          .createQueryBuilder("allegation")
+          .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
+        break;
+      }
+      case "HWCR":
+      default: {
+        builder = this._wildlifeComplaintRepository
+          .createQueryBuilder("wildlife")
+          .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
+        break;
+      }
+    }
+
+    builder
+      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
+      .innerJoinAndSelect("complaint.person_complaint_xref", "person")
+      .where("area_code.offloc_code = :office", { office })
+      .andWhere("complaint.complaint_status_code = :status", {
+        status: "OPEN",
+      })
+      .andWhere("person.active_ind = true")
+      .andWhere("person.person_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+
+    const result = await builder.getCount();
+
+    return result;
+  };
+
+  private _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
+    try {
+      const officeGuidQuery = await this._officeRepository
+        .createQueryBuilder("office")
+        .where("office.geo_organization_unit_code = :code", { code });
+
+      const office = await officeGuidQuery.getOne();
+
+      if (office) {
+        return office.office_guid;
+      }
+    } catch (error) {}
+  };
+
+  private _getOfficersByOffice = async (complaintType: COMPLAINT_TYPE, officeGuid: string): Promise<OfficerStats[]> => {
+    let results: Array<OfficerStats> = [];
+
+    try {
+      const query = await this._officertRepository
+        .createQueryBuilder("officers")
+        .leftJoinAndSelect("officers.person_guid", "person")
+        .where("officers.office_guid = :officeGuid", { officeGuid });
+
+      const officers = await query.getMany();
+
+      for (const officer of officers) {
+        const { person_guid: person, officer_guid: officerId } = officer;
+        const { first_name, last_name } = person;
+
+        const assigned = await this._getTotalAssignedComplaintsByOfficer(complaintType, officerId);
+
+        let record = {
+          name: `${first_name} ${last_name}`,
+          hwcrAssigned: complaintType === "HWCR" ? assigned : 0,
+          allegationAssigned: complaintType === "ERS" ? assigned : 0,
+          officerGuid: officerId,
+        };
+
+        results = [...results, record];
+      }
+
+      return results;
+    } catch (error) {}
+  };
+
+  private _getTotalAssignedComplaintsByOfficer = async (complaintType: string, officerId: string): Promise<number> => {
+    const agency = await this._getAgencyByUser();
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+
+    try {
+      switch (complaintType) {
+        case "ERS": {
+          builder = this._allegationComplaintRepository
+            .createQueryBuilder("allegation")
+            .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
+          break;
+        }
+        case "HWCR":
+        default: {
+          builder = this._wildlifeComplaintRepository
+            .createQueryBuilder("wildlife")
+            .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
+          break;
+        }
+      }
+
+      builder
+        .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
+        .leftJoinAndSelect("complaint.person_complaint_xref", "person_complaint_xref")
+        .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
+        .leftJoinAndSelect("person.officer", "officer")
+        .where("person_complaint_xref.active_ind = true")
+        .andWhere("person_complaint_xref.person_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
+        .andWhere("officer.officer_guid = :officerId", { officerId })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+
+      return builder.getCount();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  private _getComplaintsByOffice = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<OfficeStats[]> => {
+    let results: OfficeStats[] = [];
+
+    const officeQuery = await this._cosOrganizationUnitRepository
+      .createQueryBuilder("cos_geo_org_unit")
+      .where("cos_geo_org_unit.zone_code = :zone", { zone })
+      .distinctOn(["cos_geo_org_unit.offloc_code"])
+      .orderBy("cos_geo_org_unit.offloc_code");
+
+    const offices = await officeQuery.getMany();
+
+    for (const office of offices) {
+      const { office_location_code: code, office_location_name: name } = office;
+
+      const total = await this._getTotalComplaintsByOffice(complaintType, code);
+      const assigned = await this._getTotalAssignedComplaintsByOffice(complaintType, code);
+      const unassigned = total - assigned;
+
+      const officeGuid = await this._getOfficeIdByOrganizationUnitCode(code);
+      const officers = await this._getOfficersByOffice(complaintType, officeGuid);
+
+      const record: OfficeStats = {
+        name,
+        assigned,
+        unassigned,
+        officeGuid,
+        officers,
+      };
+
+      results = [...results, record];
+    }
+
+    return Promise.resolve(results);
+  };
+
+  getZoneAtAGlanceStatistics = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<ZoneAtAGlanceStats> => {
+    let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0 };
+
+    const total = await this._getTotalComplaintsByZone(complaintType, zone);
+    const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone);
+    const unassigned = total - assigned;
+
+    const offices = await this._getComplaintsByOffice(complaintType, zone);
+
+    results = { ...results, total, assigned, unassigned, offices };
+    return results;
+  };
 }

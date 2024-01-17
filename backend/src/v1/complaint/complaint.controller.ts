@@ -9,6 +9,7 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
+import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -72,5 +73,11 @@ export class ComplaintController {
     @Body() model: WildlifeComplaintDto | AllegationComplaintDto
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return await this.service.create(complaintType, model);
+  }
+  
+  @Get("/stats/:complaintType/by-zone/:zone")
+  @Roles(Role.COS_OFFICER)
+  statsByZone(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Param("zone") zone: string): Promise<ZoneAtAGlanceStats> {
+    return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
   }
 }
