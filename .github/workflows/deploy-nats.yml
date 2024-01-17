@@ -17,7 +17,20 @@ jobs:
         openshift_token: ${{ secrets.OC_TOKEN }}
         namespace: ${{ vars.OC_NAMESPACE }}
 
-    - name: Deploy NATS using Helm
+    - name: Add NATS Helm repo
+      run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+  
+    - name: Check if NATS release exists
+      id: check_release
       run: |
-        helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+        RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+        if helm list -q | grep -q $RELEASE_NAME; then
+          echo "Release $RELEASE_NAME already exists. Skipping install."
+          echo "release_exists=true" >> $GITHUB_ENV
+        else
+          echo "Release $RELEASE_NAME does not exist. Proceeding with install."
+          echo "release_exists=false" >> $GITHUB_ENV  
+    - name: Deploy NATS using Helm
+      if: env.release_exists == 'false'
+      run: |
         helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats --set natsbox.enabled=false
