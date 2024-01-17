@@ -17,9 +17,9 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 ///
 import { Complaint } from "./entities/complaint.entity";
-import { UpdateComplaintDto } from "./dto/update-complaint.dto";
+import { UpdateComplaintDto } from "../../types/models/complaints/update-complaint.dto";
 
-import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
+import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
@@ -35,11 +35,11 @@ import {
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
-import { SearchResults } from "./models/search-results";
+import { SearchResults } from "src/types/models/complaints/search-results";
 import { ComplaintFilterParameters } from "../../types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
-import { MapSearchResults } from "../../types/complaints/map-search-results";
+import { MapSearchResults } from "../../types/models/complaints/map-search-results";
 import {
   mapComplaintDtoToComplaintTable,
   mapDelegateDtoToPersonComplaintXrefTable,
@@ -53,6 +53,7 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 import { format } from "date-fns";
+
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
