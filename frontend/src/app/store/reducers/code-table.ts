@@ -19,6 +19,8 @@ import { Zone } from "../../types/app/code-tables/zone";
 import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
+import { Justification } from "../../types/app/code-tables/justification";
+import { AssessmentType } from "../../types/app/code-tables/assesment-type";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -33,6 +35,8 @@ const initialState: CodeTableState = {
   communities: [],
   "area-codes": [],
   "reported-by": [],
+  justification: [],
+  "assessment-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -74,6 +78,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       zones,
       communities,
       "reported-by": reportedBy,
+      justification,
+      "assessment-type": assessmentType,
     },
   } = state;
 
@@ -123,6 +129,12 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(reportedBy).any()) {
       dispatch(fetchReportedByCodes());
+    }
+    if (!from(justification).any()) {
+      dispatch(fetchJustificationCodes());
+    }
+    if (!from(assessmentType).any()) {
+      dispatch(fetchAssessmentTypeCodes());
     }
   } catch (error) {}
 };
@@ -306,6 +318,28 @@ export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.JUSTIFICATION}`
+  );
+  const response = await get<Array<Justification>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.JUSTIFICATION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.ASSESSMENT_TYPE}`
+  );
+  const response = await get<Array<AssessmentType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ASSESSMENT_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -390,6 +424,44 @@ export const selectViolationCodeDropdown = (
     const item: Option = { label: longDescription, value: violation };
     return item;
   });
+  return data;
+};
+
+export const selectJustificationCodeDropdown = (
+  state: RootState
+): Array<Option> => {
+  const {
+    codeTables: { justification },
+  } = state;
+
+  const data = justification.map(({ justification, longDescription }) => {
+    const item: Option = { label: longDescription, value: justification };
+    return item;
+  });
+  return data;
+};
+
+export const selectAssessmentTypeCodeDropdown = (
+  state: RootState
+): Array<Option> => {
+  const {
+    codeTables: { "assessment-type": assessmentType },
+  } = state;
+
+  const data = assessmentType.map(({ assessmentType, longDescription }) => {
+    const item: Option = { label: longDescription, value: assessmentType };
+    return item;
+  });
+  return data;
+};
+
+export const selectYesNoCodeDropdown = (
+): Array<Option> => {
+  const data: Option[] = 
+    [ 
+      {value: "Yes", label: "Yes"}, 
+      {value: "No", label: "No"},
+    ]
   return data;
 };
 
