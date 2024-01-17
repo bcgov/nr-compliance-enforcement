@@ -15,6 +15,7 @@ import { Community } from "../app/code-tables/community";
 import { ReportedBy } from "../app/code-tables/reported-by";
 import { Justification } from "../app/code-tables/justification";
 import { AssessmentType } from "../app/code-tables/assesment-type";
+import { PreventEducationAction } from "../app/code-tables/prevent-education-action";
 
 export interface CodeTableState {
   [key: string]:
@@ -34,7 +35,8 @@ export interface CodeTableState {
     | Array<Community>
     | Array<ReportedBy>
     | Array<Justification>
-    | Array<AssessmentType>;
+    | Array<AssessmentType>
+    | Array<PreventEducationAction>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -50,4 +52,5 @@ export interface CodeTableState {
   "reported-by": Array<ReportedBy>;
   justification: Array<Justification>;
   "assessment-type": Array<AssessmentType>;
+  "prevent-education-action": Array<PreventEducationAction>;
 }
