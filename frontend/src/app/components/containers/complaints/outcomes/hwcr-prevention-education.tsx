@@ -68,7 +68,7 @@ export const HWCRPreventionEducation: FC = () => {
                 <div className="comp-outcome-report-complaint-assessment">
                   <div className="comp-outcome-report-container">
                       <div className="comp-outcome-report-label-column">
-                          Prevent and education
+                          Prevention and education
                       </div>
                       <div className="comp-outcome-report-edit-column">
                           {actionList.map(action => (
