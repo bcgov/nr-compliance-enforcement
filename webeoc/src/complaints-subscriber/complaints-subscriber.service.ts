@@ -1,19 +1,20 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { connect, NatsConnection, Subscription } from 'nats';
 import { NATS_NEW_COMPLAINTS_TOPIC_NAME } from 'src/common/constants';
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection;
+  private readonly logger = new Logger(ComplaintsSubscriberService.name);
 
   async onModuleInit() {
     try {
       this.natsConnection = await connect({
         servers: process.env.NATS_HOST,
       });
-      console.log('Connected to NATS');
+      this.logger.debug(`Connected to NATS ${process.env.NATS_HOST}`);
     } catch (error) {
-      console.error('Failed to connect to NATS:', error);
+      this.logger.error('Failed to connect to NATS:', error);
     }
     this.subscribeToComplaints();
   }
@@ -25,10 +26,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     (async () => {
       for await (const msg of subscription) {
-        console.log(`Received complaint: ${msg}`);
+        this.logger.debug(`Received complaint: ${msg}`);
       }
     })().catch((error) => {
-      console.error('Error in NATS subscription:', error);
+      this.logger.error('Error in NATS subscription:', error);
     });
 
     return subscription;
