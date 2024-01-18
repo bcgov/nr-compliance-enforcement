@@ -195,7 +195,7 @@ describe("Testing: Complaint Service", () => {
 
     //-- assert
     expect(result).not.toBe(null);
-    expect(result.length).toBe(5)
+    expect(result.length).toBe(5);
   });
 
   it("should return list of complaints by type: ERS", async () => {
@@ -207,7 +207,7 @@ describe("Testing: Complaint Service", () => {
 
     //-- assert
     expect(result).not.toBe(null);
-    expect(result.length).toBe(5)
+    expect(result.length).toBe(5);
   });
 
   it("should return complaint by id: ", async () => {
@@ -223,42 +223,58 @@ describe("Testing: Complaint Service", () => {
 
     const { id, reportedBy } = result;
     expect(id).toBe(_id);
-    expect(reportedBy).toBe("911")
+    expect(reportedBy).toBe("911");
   });
 
   it("should return list of complaints by search:", async () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
-    const payload: ComplaintSearchParameters = { 
+    const payload: ComplaintSearchParameters = {
       sortBy: "incident_reported_utc_timestmp",
-      orderBy: "DESC", 
+      orderBy: "DESC",
       zone: "CRBOTMPSN",
-      status: "OPEN", 
-      page: 1, 
-      pageSize: 50, 
-      query: "bear"
-    }
+      status: "OPEN",
+      page: 1,
+      pageSize: 50,
+      query: "bear",
+    };
 
     //-- act
-    const results = await service.search(_complaintType, payload)
+    const results = await service.search(_complaintType, payload);
 
     //-- assert
     expect(results).not.toBe(null);
-    
+
     const { totalCount, complaints } = results;
 
-    expect(complaints.length).toBe(5)
-    expect(totalCount).toBe(35)
+    expect(complaints.length).toBe(5);
+    expect(totalCount).toBe(35);
   });
 
-  // it("should return list of complaints by mapSearch", async () => {
-  //   //-- arrange
+  it("should return list of complaints by mapSearch", async () => {
+    //-- arrange
+    const _complaintType: COMPLAINT_TYPE = "HWCR";
+    const payload: ComplaintSearchParameters = {
+      sortBy: "incident_reported_utc_timestmp",
+      orderBy: "DESC",
+      zone: "CRBOTMPSN",
+      status: "OPEN",
+      page: 1,
+      pageSize: 50,
+      query: "bear",
+    };
 
-  //   //-- act
+    //-- act
+    const results = await service.mapSearch(_complaintType, payload);
 
-  //   //-- assert
-  //   fail();
-  // });
+    //-- assert
+    expect(results).not.toBe(null);
+
+    const { unmappedComplaints, complaints } = results;
+
+    expect(complaints.length).toBe(5);
+    expect(unmappedComplaints).toBe(55);
+  });
 
   // it("should update complaint status by id:", async () => {
   //   //-- arrange
