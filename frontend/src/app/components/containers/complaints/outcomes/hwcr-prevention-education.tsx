@@ -86,12 +86,12 @@ export const HWCRPreventionEducation: FC = () => {
                       </div>
                       <div className="comp-outcome-report-edit-column">
                         <CompSelect 
-                          id="outcome-officer" 
-                          options={assignableOfficers} 
-                          enableValidation={false} 
-                          placeholder="Select" 
-                          value={selectedOfficer} 
-                          onChange={(officer: any) => setSelectedOfficer(officer)} 
+                          id="outcome-officer"
+                          options={assignableOfficers}
+                          enableValidation={false}
+                          placeholder="Select"
+                          value={selectedOfficer}
+                          onChange={(officer: any) => setSelectedOfficer(officer)}
                         />
                       </div>
                       <div className="comp-outcome-report-label-half-column">
