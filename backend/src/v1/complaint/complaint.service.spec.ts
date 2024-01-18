@@ -52,6 +52,8 @@ import {
   MockComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { assert } from "console";
+import { fail } from "assert";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -168,15 +170,102 @@ describe("Testing: Complaint Service", () => {
     expect(service).toBeDefined();
   });
 
-  it("should return list of complaints by type: HWCR", async () => {});
-  it("should return list of complaints by type: ERS", async () => {});
-  it("should return complaint by id: ", async () => {});
-  it("should return list of complaints by search:", async () => {});
-  it("should return list of complaints by mapSearch", async () => {});
-  it("should update complaint status by id:", async () => {});
-  it("should update complaint by id:", async () => {});
-  it("should create new HWCR complaint: ", async () => {});
-  it("should create new ERS complaint: ", async () => {});
-  it("should return zone at a glance stats by complaint type: HWCR", async () => {});
-  it("should return zone at a glance stats by complaint type: ERS", async () => {});
+  it("should return list of complaints by type: HWCR", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should return list of complaints by type: ERS", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+  
+  it("should return complaint by id: ", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should return list of complaints by search:", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should return list of complaints by mapSearch", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should update complaint status by id:", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should update complaint by id:", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should create new HWCR complaint: ", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should create new ERS complaint: ", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should return zone at a glance stats by complaint type: HWCR", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
+
+  it("should return zone at a glance stats by complaint type: ERS", async () => {
+    //-- arrange
+
+    //-- act
+
+    //-- assert
+    fail();
+  });
 });
