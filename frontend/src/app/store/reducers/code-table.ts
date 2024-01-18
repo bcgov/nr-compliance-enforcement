@@ -353,7 +353,6 @@ export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
   );
   
   const response = await get<Array<PreventEducationAction>>(dispatch, parameters);
-  console.log(response);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION, data: response };
     dispatch(setCodeTable(payload));
