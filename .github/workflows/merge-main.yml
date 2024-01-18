@@ -45,11 +45,14 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend, database, frontend, init]
+        name: [backend, database, frontend, init, webeoc]
         include:
           - name: backend
             file: backend/openshift.deploy.yml
             parameters: -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
+            overwrite: true
+          - name: webeoc
+            file: webeoc/openshift.deploy.yml
             overwrite: true
           - name: database
             file: database/openshift.deploy.yml
@@ -126,7 +129,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        component: [backend, database, database-migrations, frontend]
+        component: [backend, database, database-migrations, frontend, webeoc]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
