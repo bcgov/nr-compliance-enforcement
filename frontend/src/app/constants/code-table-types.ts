@@ -13,6 +13,7 @@ export const CODE_TABLE_TYPES = {
   REPORTED_BY: "reported-by",
   JUSTIFICATION: "justification",
   ASSESSMENT_TYPE: "assessment-type",
+  PREVENT_EDUCATION_ACTION: "prevent-education-action"
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",
   //  PERSON_TYPE: "person-complaint",
