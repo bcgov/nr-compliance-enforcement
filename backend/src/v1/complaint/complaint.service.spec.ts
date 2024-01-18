@@ -6,8 +6,6 @@ import { pojos } from "@automapper/pojos";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
-import { createWildlifeComplaintMetadata } from "../../middleware/maps/automapper-meta-data";
-
 import { ComplaintService } from "./complaint.service";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";

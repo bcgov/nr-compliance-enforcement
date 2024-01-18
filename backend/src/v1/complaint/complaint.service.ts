@@ -25,7 +25,6 @@ import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 
 import { ComplaintDto } from "../../types/models/complaints/complaint";
-import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 import {
   mapAllegationComplaintDtoToAllegationComplaint,
@@ -48,7 +47,6 @@ import { DelegateDto } from "../../types/models/people/delegate";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
-import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
