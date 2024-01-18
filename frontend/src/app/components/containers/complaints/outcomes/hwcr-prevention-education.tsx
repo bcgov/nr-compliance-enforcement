@@ -16,7 +16,7 @@ import { selectPreventEducationDropdown } from "../../../../store/reducers/code-
 export const HWCRPreventionEducation: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option>();
-  const [showContent, setShowContent] = useState<Boolean>(false);
+  const [showContent, setShowContent] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const { id = "", complaintType = "" } = useParams<{id: string, complaintType: string}>();
@@ -114,7 +114,7 @@ export const HWCRPreventionEducation: FC = () => {
                         id="outcome-cancel-button"
                         title="Cancel Outcome"
                         className="comp-outcome-cancel"
-                        onClick={(e) => (e)}
+                        onClick={() => (setShowContent(false))}
                       >
                         Cancel
                       </Button>
