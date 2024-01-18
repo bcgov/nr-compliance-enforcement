@@ -31,6 +31,9 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
+import { fail } from "assert";
+import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
+
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
 import {
@@ -52,8 +55,8 @@ import {
   MockComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import { assert } from "console";
-import { fail } from "assert";
+import { applyAllegationComplaintMap, applyWildlifeComplaintMap, complaintToComplaintDtoMap } from "../../middleware/maps/automapper-entity-to-dto-maps";
+
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -168,15 +171,23 @@ describe("Testing: Complaint Service", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+
+    const unused = null;
   });
 
   it("should return list of complaints by type: HWCR", async () => {
+    // complaintToComplaintDtoMap(mapper);
+    applyWildlifeComplaintMap(mapper);
+    // applyAllegationComplaintMap(mapper);
+  
     //-- arrange
-
+    const _complaintType: COMPLAINT_TYPE = "HWCR";
+    
     //-- act
+    const result = service.findAllByType(_complaintType);
 
     //-- assert
-    fail();
+    expect(result).not.toBe(null);
   });
 
   it("should return list of complaints by type: ERS", async () => {
@@ -187,7 +198,7 @@ describe("Testing: Complaint Service", () => {
     //-- assert
     fail();
   });
-  
+
   it("should return complaint by id: ", async () => {
     //-- arrange
 
