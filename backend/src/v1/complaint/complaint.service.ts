@@ -60,25 +60,17 @@ export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
   private mapper: Mapper;
 
+  @InjectRepository(Complaint)
+  private complaintsRepository: Repository<Complaint>;
   @InjectRepository(HwcrComplaint)
   private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
 
-  @InjectRepository(AgencyCode)
-  private _agencyRepository: Repository<AgencyCode>;
-  @InjectRepository(ReportedByCode)
-  private _reportedByRepository: Repository<ReportedByCode>;
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
   private _officeRepository: Repository<Office>;
-  @InjectRepository(ComplaintStatusCode)
-  private _complaintStatusCode: Repository<ComplaintStatusCode>;
-
-  @InjectRepository(Complaint)
-  private complaintsRepository: Repository<Complaint>;
-
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
