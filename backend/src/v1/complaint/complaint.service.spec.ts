@@ -61,6 +61,7 @@ import {
   complaintToComplaintDtoMap,
 } from "../../middleware/maps/automapper-entity-to-dto-maps";
 import { createWildlifeComplaintMetadata } from "src/middleware/maps/automapper-meta-data";
+import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -225,14 +226,30 @@ describe("Testing: Complaint Service", () => {
     expect(reportedBy).toBe("911")
   });
 
-  // it("should return list of complaints by search:", async () => {
-  //   //-- arrange
+  it("should return list of complaints by search:", async () => {
+    //-- arrange
+    const _complaintType: COMPLAINT_TYPE = "HWCR";
+    const payload: ComplaintSearchParameters = { 
+      sortBy: "incident_reported_utc_timestmp",
+      orderBy: "DESC", 
+      zone: "CRBOTMPSN",
+      status: "OPEN", 
+      page: 1, 
+      pageSize: 50, 
+      query: "bear"
+    }
 
-  //   //-- act
+    //-- act
+    const results = await service.search(_complaintType, payload)
 
-  //   //-- assert
-  //   fail();
-  // });
+    //-- assert
+    expect(results).not.toBe(null);
+    
+    const { totalCount, complaints } = results;
+
+    expect(complaints.length).toBe(5)
+    expect(totalCount).toBe(35)
+  });
 
   // it("should return list of complaints by mapSearch", async () => {
   //   //-- arrange
