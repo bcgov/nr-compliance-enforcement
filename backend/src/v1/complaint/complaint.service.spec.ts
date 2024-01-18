@@ -168,5 +168,15 @@ describe("Testing: Complaint Service", () => {
     expect(service).toBeDefined();
   });
 
-  it("should return list of complaint by type: HWCR", async () => {});
+  it("should return list of complaints by type: HWCR", async () => {});
+  it("should return list of complaints by type: ERS", async () => {});
+  it("should return complaint by id: ", async () => {});
+  it("should return list of complaints by search:", async () => {});
+  it("should return list of complaints by mapSearch", async () => {});
+  it("should update complaint status by id:", async () => {});
+  it("should update complaint by id:", async () => {});
+  it("should create new HWCR complaint: ", async () => {});
+  it("should create new ERS complaint: ", async () => {});
+  it("should return zone at a glance stats by complaint type: HWCR", async () => {});
+  it("should return zone at a glance stats by complaint type: ERS", async () => {});
 });
