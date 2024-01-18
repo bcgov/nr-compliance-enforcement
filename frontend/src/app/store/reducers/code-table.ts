@@ -339,7 +339,6 @@ export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
     `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.ASSESSMENT_TYPE}`
   );
-  console.log("in fetchAssessmentTypeCodes");
   const response = await get<Array<AssessmentType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.ASSESSMENT_TYPE, data: response };

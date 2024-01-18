@@ -66,7 +66,7 @@ export class Complaint {
     description:
       "The geographical organization code of the organization that currently owns the complaint",
   })
-  @OneToOne(() => CosGeoOrgUnit)
+  @OneToOne(() => CosGeoOrgUnit, { cascade: true})
   @JoinColumn({ name: "geo_organization_unit_code" })
   cos_geo_org_unit: CosGeoOrgUnit;
 

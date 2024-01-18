@@ -506,8 +506,6 @@ export const ComplaintDetailsEdit: FC = () => {
     const { attractants } = complaintUpdate as WildlifeComplaintDto;
     let updates: Array<AttractantXref> = [];
 
-    console.log(options);
-
     attractants.forEach((item) => {
       const { attractant, xrefId } = item;
 
@@ -1119,20 +1117,19 @@ export const ComplaintDetailsEdit: FC = () => {
                   </div>
                   <div className="comp-details-label-input-pair" id="reported-pair-id">
                     <label htmlFor="reported-select-id">Reported By</label>
-                    <div className="comp-details-edit-input">
                       <CompSelect
                         id="reported-select-id"
                         classNamePrefix="comp-select"
-                        className="comp-details-edit-input"
-                        options={reportedByCodes}
-                        defaultOption={{ label: selectedReportedByCode?.label, value: selectedReportedByCode?.value }}
+                        className="comp-details-input"
+                        defaultOption={selectedReportedByCode}
                         placeholder="Select"
+                        options={reportedByCodes}
                         enableValidation={false}
                         onChange={(e) => handleReportedByChange(e)}
                       />
-                    </div>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
