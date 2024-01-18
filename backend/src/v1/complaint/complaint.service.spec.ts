@@ -167,4 +167,6 @@ describe("Testing: Complaint Service", () => {
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
+
+  it("should return list of complaint by type: HWCR", async () => {});
 });
