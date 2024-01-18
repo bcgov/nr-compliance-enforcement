@@ -689,7 +689,7 @@ export class ComplaintService {
         default:
           return this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             results as Array<HwcrComplaint>,
-            "WildlifeComplaint",
+            "HwcrComplaint",
             "WildlifeComplaintDto"
           );
       }
@@ -706,55 +706,60 @@ export class ComplaintService {
   ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto> => {
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
-    if (complaintType) {
-      builder = this._generateQueryBuilder(complaintType);
-    } else {
-      builder = this.complaintsRepository
-        .createQueryBuilder("complaint")
-        .leftJoin("complaint.complaint_status_code", "complaint_status")
-        .addSelect([
-          "complaint_status.complaint_status_code",
-          "complaint_status.short_description",
-          "complaint_status.long_description",
-        ])
-        .leftJoin("complaint.reported_by_code", "reported_by")
-        .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
-        .leftJoin("complaint.owned_by_agency_code", "owned_by")
-        .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
-        .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
-        .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
-        .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
-        .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
-        .addSelect([
-          "person.person_guid",
-          "person.first_name",
-          "person.middle_name_1",
-          "person.middle_name_2",
-          "person.last_name",
-        ]);
-    }
-
-    builder.where("complaint.complaint_identifier = :id", { id });
-    const result = await builder.getOne();
-
-    switch (complaintType) {
-      case "ERS": {
-        return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
-          result as AllegationComplaint,
-          "AllegationComplaint",
-          "AllegationComplaintDto"
-        );
+    try { 
+      if (complaintType) {
+        builder = this._generateQueryBuilder(complaintType);
+      } else {
+        builder = this.complaintsRepository
+          .createQueryBuilder("complaint")
+          .leftJoin("complaint.complaint_status_code", "complaint_status")
+          .addSelect([
+            "complaint_status.complaint_status_code",
+            "complaint_status.short_description",
+            "complaint_status.long_description",
+          ])
+          .leftJoin("complaint.reported_by_code", "reported_by")
+          .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
+          .leftJoin("complaint.owned_by_agency_code", "owned_by")
+          .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
+          .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
+          .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
+          .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
+          .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
+          .addSelect([
+            "person.person_guid",
+            "person.first_name",
+            "person.middle_name_1",
+            "person.middle_name_2",
+            "person.last_name",
+          ]);
       }
-      case "HWCR": {
-        return this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
-          result as HwcrComplaint,
-          "HwcrComplaint",
-          "WildlifeComplaintDto"
-        );
+  
+      builder.where("complaint.complaint_identifier = :id", { id });
+      const result = await builder.getOne();
+  
+      switch (complaintType) {
+        case "ERS": {
+          return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
+            result as AllegationComplaint,
+            "AllegationComplaint",
+            "AllegationComplaintDto"
+          );
+        }
+        case "HWCR": {
+          const hwcr = this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
+            result as HwcrComplaint,
+            "HwcrComplaint",
+            "WildlifeComplaintDto"
+          );
+          return hwcr;
+        }
+        default: {
+          return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
+        }
       }
-      default: {
-        return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
-      }
+    } catch (error) { 
+      console.log(error);
     }
   };
 

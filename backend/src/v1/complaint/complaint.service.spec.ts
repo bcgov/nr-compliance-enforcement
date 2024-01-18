@@ -55,11 +55,16 @@ import {
   MockComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import { applyAllegationComplaintMap, applyWildlifeComplaintMap, complaintToComplaintDtoMap } from "../../middleware/maps/automapper-entity-to-dto-maps";
-
+import {
+  applyAllegationComplaintMap,
+  applyWildlifeComplaintMap,
+  complaintToComplaintDtoMap,
+} from "../../middleware/maps/automapper-entity-to-dto-maps";
+import { createWildlifeComplaintMetadata } from "src/middleware/maps/automapper-meta-data";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
+  // let mapper: Mapper;
   let mapper: Mapper;
 
   beforeEach(async () => {
@@ -167,6 +172,11 @@ describe("Testing: Complaint Service", () => {
     }).compile();
 
     service = await module.resolve<ComplaintService>(ComplaintService);
+    // mapper = await module.get<Mapper>(getMapperToken());
+    // mapper = await module.get(AutomapperModule);
+    mapper = module.get<Mapper>(getMapperToken());
+
+    const test = 0;
   });
 
   it("should be defined", () => {
@@ -176,107 +186,114 @@ describe("Testing: Complaint Service", () => {
   });
 
   it("should return list of complaints by type: HWCR", async () => {
-    // complaintToComplaintDtoMap(mapper);
-    applyWildlifeComplaintMap(mapper);
-    // applyAllegationComplaintMap(mapper);
-  
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
-    
+
     //-- act
-    const result = service.findAllByType(_complaintType);
+    const result = await service.findAllByType(_complaintType);
 
     //-- assert
     expect(result).not.toBe(null);
+    expect(result.length).toBe(5)
   });
 
   it("should return list of complaints by type: ERS", async () => {
     //-- arrange
+    const _complaintType: COMPLAINT_TYPE = "ERS";
 
     //-- act
+    const result = await service.findAllByType(_complaintType);
 
     //-- assert
-    fail();
+    expect(result).not.toBe(null);
+    expect(result.length).toBe(5)
   });
 
   it("should return complaint by id: ", async () => {
     //-- arrange
+    const _id = "24-46247";
+    const _complaintType: COMPLAINT_TYPE = "HWCR";
 
     //-- act
+    const result = await service.findById(_id, _complaintType);
 
     //-- assert
-    fail();
+    expect(result).not.toBe(null);
+
+    const { id, reportedBy } = result;
+    expect(id).toBe(_id);
+    expect(reportedBy).toBe("911")
   });
 
-  it("should return list of complaints by search:", async () => {
-    //-- arrange
+  // it("should return list of complaints by search:", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should return list of complaints by mapSearch", async () => {
-    //-- arrange
+  // it("should return list of complaints by mapSearch", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should update complaint status by id:", async () => {
-    //-- arrange
+  // it("should update complaint status by id:", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should update complaint by id:", async () => {
-    //-- arrange
+  // it("should update complaint by id:", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should create new HWCR complaint: ", async () => {
-    //-- arrange
+  // it("should create new HWCR complaint: ", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should create new ERS complaint: ", async () => {
-    //-- arrange
+  // it("should create new ERS complaint: ", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should return zone at a glance stats by complaint type: HWCR", async () => {
-    //-- arrange
+  // it("should return zone at a glance stats by complaint type: HWCR", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 
-  it("should return zone at a glance stats by complaint type: ERS", async () => {
-    //-- arrange
+  // it("should return zone at a glance stats by complaint type: ERS", async () => {
+  //   //-- arrange
 
-    //-- act
+  //   //-- act
 
-    //-- assert
-    fail();
-  });
+  //   //-- assert
+  //   fail();
+  // });
 });
