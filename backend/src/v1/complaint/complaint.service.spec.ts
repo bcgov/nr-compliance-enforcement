@@ -4,7 +4,7 @@ import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { Mapper, createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { DataSource } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 
 import { ComplaintService } from "./complaint.service";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
@@ -52,16 +52,12 @@ import {
 import {
   MockComplaintsAgencyRepository,
   MockComplaintsOfficerRepository,
-  MockComplaintsRepository,
+  MockComplaintsRepositoryV2,
+  MockUpdateComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import {
-  applyAllegationComplaintMap,
-  applyWildlifeComplaintMap,
-  complaintToComplaintDtoMap,
-} from "../../middleware/maps/automapper-entity-to-dto-maps";
-import { createWildlifeComplaintMetadata } from "src/middleware/maps/automapper-meta-data";
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { ComplaintDto } from "src/types/models/complaints/complaint";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -85,7 +81,7 @@ describe("Testing: Complaint Service", () => {
         CodeTableService,
         {
           provide: getRepositoryToken(Complaint),
-          useFactory: MockComplaintsRepository,
+          useFactory: MockComplaintsRepositoryV2,
         },
         {
           provide: getRepositoryToken(AllegationComplaint),
@@ -173,8 +169,6 @@ describe("Testing: Complaint Service", () => {
     }).compile();
 
     service = await module.resolve<ComplaintService>(ComplaintService);
-    // mapper = await module.get<Mapper>(getMapperToken());
-    // mapper = await module.get(AutomapperModule);
     mapper = module.get<Mapper>(getMapperToken());
 
     const test = 0;
@@ -276,42 +270,6 @@ describe("Testing: Complaint Service", () => {
     expect(unmappedComplaints).toBe(55);
   });
 
-  // it("should update complaint status by id:", async () => {
-  //   //-- arrange
-
-  //   //-- act
-
-  //   //-- assert
-  //   fail();
-  // });
-
-  // it("should update complaint by id:", async () => {
-  //   //-- arrange
-
-  //   //-- act
-
-  //   //-- assert
-  //   fail();
-  // });
-
-  // it("should create new HWCR complaint: ", async () => {
-  //   //-- arrange
-
-  //   //-- act
-
-  //   //-- assert
-  //   fail();
-  // });
-
-  // it("should create new ERS complaint: ", async () => {
-  //   //-- arrange
-
-  //   //-- act
-
-  //   //-- assert
-  //   fail();
-  // });
-
   // it("should return zone at a glance stats by complaint type: HWCR", async () => {
   //   //-- arrange
 
@@ -329,4 +287,134 @@ describe("Testing: Complaint Service", () => {
   //   //-- assert
   //   fail();
   // });
+});
+
+describe("Testing: Complaint Service", () => {
+  let service: ComplaintService;
+  let mapper: Mapper;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AutomapperModule],
+      providers: [
+        AutomapperModule,
+        {
+          provide: getMapperToken(),
+          useValue: createMapper({
+            strategyInitializer: pojos(),
+          }),
+        },
+        ComplaintService,
+        PersonComplaintXrefService,
+        AttractantHwcrXrefService,
+        CodeTableService,
+        {
+          provide: getRepositoryToken(Complaint),
+          useFactory: MockUpdateComplaintsRepository,
+        },
+        {
+          provide: getRepositoryToken(AllegationComplaint),
+          useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(HwcrComplaint),
+          useFactory: MockWildlifeConflictComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(AgencyCode),
+          useFactory: MockComplaintsAgencyRepository,
+        },
+        {
+          provide: getRepositoryToken(Officer),
+          useFactory: MockComplaintsOfficerRepository,
+        },
+        {
+          provide: getRepositoryToken(Office),
+          useFactory: MockWildlifeConflictComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(AttractantCode),
+          useFactory: MockAttractantCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintStatusCode),
+          useFactory: MockComplaintStatusCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(HwcrComplaintNatureCode),
+          useFactory: MockNatureOfComplaintCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GeoOrgUnitTypeCode),
+          useFactory: MockOrganizationUnitTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GeoOrganizationUnitCode),
+          useFactory: MockOrganizationUnitCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(PersonComplaintXrefCode),
+          useFactory: MockPersonComplaintCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(SpeciesCode),
+          useFactory: MockSpeciesCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ViolationCode),
+          useFactory: MockViolationsCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(CosGeoOrgUnit),
+          useFactory: MockCosOrganizationUnitCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintTypeCode),
+          useFactory: MockComplaintTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(ReportedByCode),
+          useFactory: MockReportedByCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(PersonComplaintXref),
+          useValue: {},
+        },
+        {
+          provide: DataSource,
+          useFactory: dataSourceMockFactory,
+        },
+        {
+          provide: getRepositoryToken(AttractantHwcrXref),
+          useValue: {},
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            user: { idir_username: "TEST" },
+          },
+        },
+      ],
+    }).compile();
+
+    service = await module.resolve<ComplaintService>(ComplaintService);
+    mapper = module.get<Mapper>(getMapperToken());
+  });
+
+  it("should update complaint status by id:", async () => {
+    //-- arrange
+    const _id = "23-031396";
+    const _status = "CLOSED";
+
+    //-- act
+    const result = await service.updateComplaintStatusById(_id, _status);
+
+    //-- assert
+    expect(result).not.toBe(null);
+    if (result) {
+      const { id } = result;
+
+      expect(id).toBe(_id);
+    }
+  });
 });

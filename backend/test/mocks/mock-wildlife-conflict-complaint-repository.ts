@@ -30,9 +30,13 @@ const createQueryBuilder: any = {
     return Promise.resolve(true);
   }),
   update: jest.fn(() => {
+    console.log("DERP")
     return Promise.resolve(true);
   }),
   delete: jest.fn(() => {
+    return Promise.resolve(true);
+  }),
+  set: jest.fn(() => {
     return Promise.resolve(true);
   }),
   createQueryBuilder: jest.fn(() => ({
@@ -53,5 +57,7 @@ const createQueryBuilder: any = {
     take: jest.fn().mockReturnThis(),
     getManyAndCount: jest.fn().mockResolvedValue([manyItems, 35]),
     getCount: jest.fn().mockResolvedValue(55),
+    update: jest.fn().mockReturnThis(),
+    set: jest.fn().mockReturnThis(),
     })),
  });
