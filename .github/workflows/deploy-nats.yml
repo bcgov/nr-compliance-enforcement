@@ -43,5 +43,5 @@ jobs:
     - name: Label NATS Deployment
       run: |
         RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
-        oc label deployment $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
+        oc label deploymentconfig $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
       
