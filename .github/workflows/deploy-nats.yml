@@ -35,7 +35,13 @@ jobs:
       if: env.release_exists == 'false'
       run: |
         helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
-          --set natsbox.enabled=false \
-          --set nats.resources.requests.cpu=50m \
-          --set nats.resources.limits.cpu=500m \
+          --set natsBox.enabled=false \
+          --set nats.resources.requests.cpu=25m \
+          --set nats.resources.limits.cpu=100m \
           --set replicaCount=1
+
+    - name: Label NATS Deployment
+      run: |
+        RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+        oc label statefulset $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
+      
