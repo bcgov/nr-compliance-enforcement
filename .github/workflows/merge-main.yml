@@ -137,3 +137,42 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
+
+  deploys-nats-test:
+    name: Deploy NATS to TEST
+    needs:
+      - deploys-test  # This ensures NATS is deployed after your other services
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up OpenShift CLI
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ vars.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ vars.OC_NAMESPACE }}
+
+      - name: Add NATS Helm repo
+        run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+
+      - name: Check if NATS release exists in TEST
+        id: check_release_test
+        run: |
+          RELEASE_NAME=test-${{ github.event.repository.name }}-nats
+          if helm list -q | grep -q $RELEASE_NAME; then
+            echo "TEST Release $RELEASE_NAME already exists. Skipping install."
+            echo "release_exists=true" >> $GITHUB_ENV
+          else
+            echo "TEST Release $RELEASE_NAME does not exist. Proceeding with install."
+            echo "release_exists=false" >> $GITHUB_ENV
+
+      - name: Deploy NATS to TEST using Helm
+        if: env.release_exists == 'false'
+        run: |
+          helm install test-${{ github.event.repository.name }}-nats nats/nats \
+            --set natsbox.enabled=false \
+            --set nats.resources.requests.cpu=25m \
+            --set nats.resources.limits.cpu=100m \
+            --set replicaCount=1
