@@ -85,13 +85,13 @@ export const HWCRComplaintAssessment: FC = () => {
                         Action required?
                     </div>
                     <div className="comp-outcome-report-edit-column">
-                        <CompSelect id="action-required" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
+                        <CompSelect id="action-required" classNamePrefix="comp-select" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
                     </div>
                     <div className={justificationLabelClass}>
                             Justification
                         </div>
                         <div className={justificationEditClass}>
-                            <CompSelect id="justification" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
+                            <CompSelect id="justification" classNamePrefix="comp-select" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
                         </div>
                 </div>
                 <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
@@ -101,6 +101,7 @@ export const HWCRComplaintAssessment: FC = () => {
                     <div className="comp-outcome-report-edit-column">
                         <CompSelect 
                           id="outcome-officer"
+                          classNamePrefix="comp-select"
                           options={assignableOfficers}
                           enableValidation={false}
                           placeholder="Select"
