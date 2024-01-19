@@ -24,6 +24,11 @@ jobs:
           # Remove old build runs, build pods and deployment pods
           oc delete all,pvc,secret -l app=${{ github.event.repository.name }}-${{ github.event.number }}
 
+      - name: Uninstall NATS Helm Release
+        run: |
+          RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+          helm uninstall $RELEASE_NAME
+
   # If merged into main, then handle any image promotions
   image-promotions:
     name: Image Promotions
