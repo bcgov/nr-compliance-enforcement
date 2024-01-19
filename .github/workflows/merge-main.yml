@@ -72,7 +72,7 @@ jobs:
         if: env.release_exists == 'false'
         run: |
           helm install test-${{ github.event.repository.name }}-nats nats/nats \
-            --set natsbox.enabled=false \
+            --set natsBox.enabled=false \
             --set nats.resources.requests.cpu=25m \
             --set nats.resources.limits.cpu=100m \
             --set replicaCount=1
