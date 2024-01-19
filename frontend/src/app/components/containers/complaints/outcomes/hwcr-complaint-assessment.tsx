@@ -19,6 +19,8 @@ export const HWCRComplaintAssessment: FC = () => {
       };
     const [actionRequired, setActionRequired] = useState<string>();
     const [selectedDate, setSelectedDate] = useState<Date>();
+    const [selectedOfficer, setSelectedOfficer] = useState<Option>();
+
     const complaintData = useAppSelector(selectComplaint);
     const { id = "", complaintType = "" } = useParams<ComplaintParams>();
     const {
@@ -49,14 +51,17 @@ export const HWCRComplaintAssessment: FC = () => {
       dispatch(getComplaintById(id, complaintType));
     }
   }, [id, complaintType, complaintData, dispatch]);
+
+  useEffect(() => {
+    if(complaintData) {
+      const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
+      setSelectedOfficer(officer);
+    }
+  }, [complaintData]);
       
       const justificationLabelClass = actionRequired === "No" ? "comp-outcome-report-label-half-column" : "comp-outcome-report-label-half-column comp-outcome-hide";
       const justificationEditClass = actionRequired === "No" ? "comp-outcome-report-edit-column" : "comp-outcome-report-edit-column comp-outcome-hide";
-      let selectedAssignedOfficer;
-      if(complaintData)
-      {
-        selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
-      }
+
     return (
         <div className="comp-outcome-report-block">
             <h6>Complaint assessment</h6>
@@ -80,13 +85,13 @@ export const HWCRComplaintAssessment: FC = () => {
                         Action required?
                     </div>
                     <div className="comp-outcome-report-edit-column">
-                        <CompSelect id="action-required" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
+                        <CompSelect id="action-required" classNamePrefix="comp-select" options={actionRequiredList} enableValidation={false} placeholder="Select" onChange={(e) => handleActionRequiredChange(e)} />
                     </div>
                     <div className={justificationLabelClass}>
                             Justification
                         </div>
                         <div className={justificationEditClass}>
-                            <CompSelect id="justification" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
+                            <CompSelect id="justification" classNamePrefix="comp-select" options={justificationList} enableValidation={false} placeholder="Select" onChange={(e) => (e)} />
                         </div>
                 </div>
                 <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
@@ -94,7 +99,15 @@ export const HWCRComplaintAssessment: FC = () => {
                         Officer
                     </div>
                     <div className="comp-outcome-report-edit-column">
-                        <CompSelect id="outcome-officer" options={assignableOfficers} enableValidation={false} placeholder="Select" value={selectedAssignedOfficer} onChange={(e) => (e)} />
+                        <CompSelect 
+                          id="outcome-officer"
+                          classNamePrefix="comp-select"
+                          options={assignableOfficers}
+                          enableValidation={false}
+                          placeholder="Select"
+                          value={selectedOfficer}
+                          onChange={(officer: any) => setSelectedOfficer(officer)}
+                        />
                     </div>
                     <div className="comp-outcome-report-label-half-column">
                         Date

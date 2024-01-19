@@ -21,6 +21,7 @@ import { OrganizationCodeTable } from "../../types/app/code-tables/organization-
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { Justification } from "../../types/app/code-tables/justification";
 import { AssessmentType } from "../../types/app/code-tables/assesment-type";
+import { PreventEducationAction } from "../../types/app/code-tables/prevent-education-action";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -37,6 +38,7 @@ const initialState: CodeTableState = {
   "reported-by": [],
   justification: [],
   "assessment-type": [],
+  "prevent-education-action": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -80,6 +82,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       "reported-by": reportedBy,
       justification,
       "assessment-type": assessmentType,
+      "prevent-education-action": preventEducationAction,
     },
   } = state;
 
@@ -135,6 +138,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(assessmentType).any()) {
       dispatch(fetchAssessmentTypeCodes());
+    }
+    if (!from(preventEducationAction).any()) {
+      dispatch(fetchPreventEducationAction());
     }
   } catch (error) {}
 };
@@ -340,6 +346,18 @@ export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION}`
+  );
+  
+  const response = await get<Array<PreventEducationAction>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -462,6 +480,20 @@ export const selectYesNoCodeDropdown = (
       {value: "Yes", label: "Yes"}, 
       {value: "No", label: "No"},
     ]
+  return data;
+};
+
+export const selectPreventEducationDropdown = (
+  state: RootState
+): Array<Option> => {
+  const {
+    codeTables: { "prevent-education-action" : action },
+  } = state;
+
+  const data = action.map(({ action, longDescription }) => {
+    const item: Option = { label: longDescription, value: action };
+    return item;
+  });
   return data;
 };
 
