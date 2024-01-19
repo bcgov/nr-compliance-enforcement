@@ -91,6 +91,7 @@ jobs:
           else
             echo "TEST Release $RELEASE_NAME does not exist. Proceeding with install."
             echo "release_exists=false" >> $GITHUB_ENV
+          fi
 
       - name: Deploy NATS to TEST using Helm
         if: env.release_exists == 'false'
