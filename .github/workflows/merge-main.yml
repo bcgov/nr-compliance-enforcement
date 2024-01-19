@@ -41,6 +41,7 @@ jobs:
     name: TEST Deployments
     needs:
       - codeql
+      - deploys-nats-test
     environment: test
     runs-on: ubuntu-22.04
     strategy:
@@ -140,8 +141,6 @@ jobs:
 
   deploys-nats-test:
     name: Deploy NATS to TEST
-    needs:
-      - deploys-test  # This ensures NATS is deployed after your other services
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
