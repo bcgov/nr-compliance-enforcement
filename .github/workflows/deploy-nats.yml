@@ -36,6 +36,6 @@ jobs:
       run: |
         helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
           --set natsbox.enabled=false \
-          --set nats.resources.requests.cpu=50m \
-          --set nats.resources.limits.cpu=500m \
+          --set nats.resources.requests.cpu=25m \
+          --set nats.resources.limits.cpu=100m \
           --set replicaCount=1
