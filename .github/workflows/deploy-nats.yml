@@ -39,3 +39,9 @@ jobs:
           --set nats.resources.requests.cpu=25m \
           --set nats.resources.limits.cpu=100m \
           --set replicaCount=1
+
+    - name: Label NATS Deployment
+      run: |
+        RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+        oc label deployment $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
+      
