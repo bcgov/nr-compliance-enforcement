@@ -91,7 +91,7 @@ objects:
                 - name: NODE_TLS_REJECT_UNAUTHORIZED 
                   value: '0'
                 - name: NATS_HOST
-                  value: nats://${NAME}-${ZONE}-${COMPONENT}:4222
+                  value: nats://${NAME}-${ZONE}-nats:4222
                 - name: WEBEOC_USERNAME
                   valueFrom:
                     secretKeyRef:
