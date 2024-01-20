@@ -4,7 +4,7 @@ import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { Mapper, createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource } from "typeorm";
 
 import { ComplaintService } from "./complaint.service";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
@@ -31,7 +31,6 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
-import { fail } from "assert";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
@@ -57,12 +56,9 @@ import {
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
-import { ComplaintDto } from "src/types/models/complaints/complaint";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
-  // let mapper: Mapper;
-  let mapper: Mapper;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -169,9 +165,6 @@ describe("Testing: Complaint Service", () => {
     }).compile();
 
     service = await module.resolve<ComplaintService>(ComplaintService);
-    mapper = module.get<Mapper>(getMapperToken());
-
-    const test = 0;
   });
 
   it("should be defined", () => {

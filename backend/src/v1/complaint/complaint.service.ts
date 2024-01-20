@@ -1263,9 +1263,7 @@ export class ComplaintService {
 
       await queryRunner.commitTransaction();
 
-      const derp = await this.findById(complaintId, complaintType);
-
-      return derp as WildlifeComplaintDto | AllegationComplaintDto;
+      return await this.findById(complaintId, complaintType) as WildlifeComplaintDto | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.log(
