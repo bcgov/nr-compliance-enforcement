@@ -12,6 +12,7 @@ import { AgencyCode } from "../../v1/agency_code/entities/agency_code.entity";
 import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { ViolationCode } from "../../v1/violation_code/entities/violation_code.entity";
 import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
+import { ReportedByCode } from "../../v1/reported_by_code/entities/reported_by_code.entity";
 
 //-- models (dto for now)
 import {
@@ -28,7 +29,6 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 // @SONAR_STOP@
 
@@ -155,7 +155,7 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.reportedBy,
       mapFrom((source) => {
-        if (source.reported_by_code !== null) {
+        if (source.reported_by_code) {
           const {
             reported_by_code: { reported_by_code },
           } = source;
@@ -354,7 +354,9 @@ const reportedByCodeToReportedByDto = (mapper: Mapper) => {
     "ReportedByCodeDto",
     forMember(
       (destination) => destination.reportedBy,
-      mapFrom((source) => source.reported_by_code)
+      mapFrom((source) => {
+        return source.reported_by_code;
+      })
     ),
     forMember(
       (destination) => destination.shortDescription,
@@ -529,12 +531,8 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         const {
           complaint_identifier: { reported_by_code: reported_by },
         } = source;
-        if (reported_by !== null) {
-          const code = mapper.map<ReportedByCode, ReportedBy>(
-            reported_by,
-            "ReportedByCode",
-            "ReportedByCodeDto"
-          );
+        if (reported_by) {
+          const code = mapper.map<ReportedByCode, ReportedBy>(reported_by, "ReportedByCode", "ReportedByCodeDto");
           return code.reportedBy;
         }
 
@@ -557,9 +555,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedByOther,
-      mapFrom(
-        (source) => source.complaint_identifier.reported_by_other_text
-      )
+      mapFrom((source) => source.complaint_identifier.reported_by_other_text)
     ),
     forMember(
       (destination) => destination.incidentDateTime,
@@ -763,12 +759,8 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         const {
           complaint_identifier: { reported_by_code: reportedBy },
         } = source;
-        if (reportedBy !== null) {
-          const code = mapper.map<ReportedByCode, ReportedBy>(
-            reportedBy,
-            "ReportedByCode",
-            "ReportedByCodeDto"
-          );
+        if (reportedBy) {
+          const code = mapper.map<ReportedByCode, ReportedBy>(reportedBy, "ReportedByCode", "ReportedByCodeDto");
           return code.reportedBy;
         }
 
@@ -791,9 +783,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedByOther,
-      mapFrom(
-        (source) => source.complaint_identifier.reported_by_other_text
-      )
+      mapFrom((source) => source.complaint_identifier.reported_by_other_text)
     ),
     forMember(
       (destination) => destination.incidentDateTime,

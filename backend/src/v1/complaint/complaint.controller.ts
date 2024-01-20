@@ -4,7 +4,7 @@ import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { COMPLAINT_TYPE } from "../../types/complaints/complaint-type";
+import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
