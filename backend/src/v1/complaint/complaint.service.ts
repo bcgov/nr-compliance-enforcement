@@ -1028,7 +1028,6 @@ export class ComplaintService {
 
       //set the audit field
       complaintTable.update_user_id = idir;
-      console.log(complaintTable);
 
       const complaintUpdateResult = await this.complaintsRepository
         .createQueryBuilder("complaint")
@@ -1152,6 +1151,7 @@ export class ComplaintService {
     };
 
     const idir = getIdirFromRequest(this.request);
+    const agencyCode = await this._getAgencyByUser();
 
     const queryRunner = this.dataSource.createQueryRunner();
     let complaintId = "";
@@ -1174,6 +1174,7 @@ export class ComplaintService {
       entity.create_user_id = idir;
       entity.update_user_id = idir;
       entity.complaint_identifier = complaintId;
+      entity.owned_by_agency_code = agencyCode;
 
       const complaint = await this.complaintsRepository.create(entity);
       await this.complaintsRepository.save(complaint);
