@@ -88,7 +88,6 @@ export const CreateComplaint: FC = () => {
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
-  // const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   const [complaintDescriptionErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
