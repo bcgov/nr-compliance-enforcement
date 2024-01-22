@@ -36,8 +36,11 @@ jobs:
       run: |
         helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
           --set natsBox.enabled=false \
-          --set nats.resources.requests.cpu=25m \
-          --set nats.resources.limits.cpu=100m \
+          --set container.merge.resources.requests.cpu=25m \
+          --set container.merge.resources.limits.cpu=100m \
+          --set container.merge.resources.requests.memory=100Mi \
+          --set container.merge.resources.limits.memory=200Mi \
+          --set reloader.enabled=false \
           --set replicaCount=1
 
     - name: Label NATS Deployment

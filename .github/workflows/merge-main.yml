@@ -59,7 +59,7 @@ jobs:
   
       - name: Check if NATS release exists in TEST
         run: |
-          RELEASE_NAME=test-${{ github.event.repository.name }}-nats
+          RELEASE_NAME=${{ github.event.repository.name }}-test-nats
           if helm list -q | grep -q $RELEASE_NAME; then
             echo "TEST Release $RELEASE_NAME already exists. Skipping install."
             echo "release_exists=true" >> $GITHUB_ENV
@@ -71,10 +71,12 @@ jobs:
       - name: Deploy NATS to TEST using Helm
         if: env.release_exists == 'false'
         run: |
-          helm install test-${{ github.event.repository.name }}-nats nats/nats \
-            --set natsbox.enabled=false \
-            --set nats.resources.requests.cpu=25m \
-            --set nats.resources.limits.cpu=100m \
+          helm install ${{ github.event.repository.name }}-test-nats nats/nats \
+            --set natsBox.enabled=false \
+            --set nats.resources.requests.cpu=50m \
+            --set nats.resources.limits.cpu=200m \
+            --set nats.resources.requests.memory=100Mi \
+            --set nats.resources.limits.memory=400Mi \
             --set replicaCount=1
   
       # Deploy other components using matrix strategy
