@@ -29,11 +29,7 @@ import { Officer } from "../../../../types/person/person";
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import {
-  createComplaint,
-  getComplaintById,
-  setComplaint,
-} from "../../../../store/reducers/complaints";
+import { createComplaint, getComplaintById, setComplaint } from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
@@ -92,7 +88,7 @@ export const CreateComplaint: FC = () => {
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
-  const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
+  // const [statusErrorMsg, setStatusErrorMsg] = useState<string>("");
   const [complaintDescriptionErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
   const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
@@ -164,32 +160,6 @@ export const CreateComplaint: FC = () => {
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
-  function noErrors() {
-    let noErrors = false;
-    if (
-      statusErrorMsg === "" &&
-      complaintDescriptionErrorMsg === "" &&
-      communityErrorMsg === "" &&
-      geoPointXMsg === "" &&
-      geoPointYMsg === "" &&
-      emailMsg === "" &&
-      primaryPhoneMsg === "" &&
-      secondaryPhoneMsg === "" &&
-      alternatePhoneMsg === ""
-    ) {
-      if (complaintType === COMPLAINT_TYPES.HWCR) {
-        if (natureOfComplaintErrorMsg === "" && speciesErrorMsg === "") {
-          noErrors = true;
-        }
-      } else if (complaintType === COMPLAINT_TYPES.ERS) {
-        if (violationTypeErrorMsg === "") {
-          noErrors = true;
-        }
-      }
-    }
-    return noErrors;
-  }
-
   const handleComplaintChange = (selected: Option | null) => {
     if (selected?.value) {
       const { value } = selected;
@@ -217,13 +187,17 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleNatureOfComplaintChange = (selected: Option | null) => {
-    if (selected?.value) {
+    if (selected) {
       const { value } = selected;
 
-      const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
-      applyComplaintData(complaint);
-    } else {
-      setNatureOfComplaintErrorMsg("Required");
+      if (!value) {
+        setNatureOfComplaintErrorMsg("Required");
+      } else {
+        setNatureOfComplaintErrorMsg("");
+
+        const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
+        applyComplaintData(complaint);
+      }
     }
   };
 
@@ -243,13 +217,17 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleViolationTypeChange = (selected: Option | null) => {
-    if (selected?.value) {
+    if (selected) {
       const { value } = selected;
 
-      const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
-      applyComplaintData(complaint);
-    } else {
-      setNatureOfComplaintErrorMsg("Required");
+      if (!value) {
+        setNatureOfComplaintErrorMsg("Required");
+      } else {
+        setNatureOfComplaintErrorMsg("");
+
+        const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
+        applyComplaintData(complaint);
+      }
     }
   };
 
@@ -501,7 +479,7 @@ export const CreateComplaint: FC = () => {
   const handleSuspectDetailsChange = (value: string) => {
     const complaint = { ...complaintData, violationDetails: value?.trim() } as AllegationComplaintDto;
     applyComplaintData(complaint);
-  }
+  };
 
   const handleIncidentDateTimeChange = (date: Date) => {
     setSelectedIncidentDateTime(date);
@@ -538,45 +516,53 @@ export const CreateComplaint: FC = () => {
     );
   };
 
-  const setErrors = async (complaint: ComplaintAlias) => {
-    let noError = true;
-    if (!complaintType) {
-      setComplaintTypeMsg("Required");
-    }
-    if (complaintType === COMPLAINT_TYPES.HWCR) {
-      const { species, natureOfComplaint } = complaint as WildlifeComplaintDto;
+  const hasErrors = (complaintType: string): boolean => {
+    let result: boolean = false;
 
-      if (!natureOfComplaint) {
-        setNatureOfComplaintErrorMsg("Required");
-        noError = false;
-      }
-      if (!species) {
-        setSpeciesErrorMsg("Required");
-        noError = false;
-      }
-    } else if (complaintType === COMPLAINT_TYPES.ERS) {
-      const { violation } = complaint as AllegationComplaintDto
+    const {
+      organization: { area },
+      details,
+    } = complaintData as ComplaintDto;
 
-      if (!violation) {
-        setViolationTypeErrorMsg("Required");
-        noError = false;
-      }
-    }
-
-    const { status, organization: { area}, details } = complaint as ComplaintDto
-    if (!status) {
-      setStatusErrorMsg("Required");
-      noError = false;
-    }
     if (!area) {
       setCommunityErrorMsg("Required");
-      noError = false;
+      result = true;
     }
+
     if (!details) {
       setComplaintDescriptionErrorMsg("Required");
-      noError = false;
+      result = true;
     }
-    return noError;
+
+    switch (complaintType) {
+      case "ERS": {
+        const { violation } = complaintData as AllegationComplaintDto;
+
+        if (!violation) {
+          setViolationTypeErrorMsg("Required");
+          result = true;
+        }
+
+        break;
+      }
+      case "HWCR":
+      default: {
+        const { species, natureOfComplaint } = complaintData as WildlifeComplaintDto;
+
+        if (!species) {
+          setSpeciesErrorMsg("Required");
+          result = true;
+        }
+
+        if (!natureOfComplaint) {
+          setNatureOfComplaintErrorMsg("Required");
+          result = true;
+        }
+        break;
+      }
+    }
+
+    return result;
   };
 
   const saveButtonClick = async () => {
@@ -584,9 +570,7 @@ export const CreateComplaint: FC = () => {
       return;
     }
 
-    const noError = await setErrors(complaintData);
-
-    if (noError && noErrors()) {
+    if (!hasErrors(complaintType)) {
       await handleComplaintProcessing(complaintData);
     } else {
       handleFormErrors();
@@ -609,11 +593,11 @@ export const CreateComplaint: FC = () => {
     setErrorNotificationClass("comp-complaint-error display-none");
   };
 
-  const handleHwcrComplaint = async (complaint: ComplaintAlias ) => {
+  const handleHwcrComplaint = async (complaint: ComplaintAlias) => {
     const complaintId = await dispatch(createComplaint(complaintType, complaint));
     if (complaintId) {
       await dispatch(getComplaintById(complaintId, complaintType));
-  
+
       navigate(`/complaint/${complaintType}/${complaintId}`);
     }
     return complaintId;
@@ -693,7 +677,9 @@ export const CreateComplaint: FC = () => {
               </div>
             )}
             <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">Officer Assigned</label>
+              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
+                Officer Assigned
+              </label>
               <CompSelect
                 id="officer-assigned-select-id"
                 classNamePrefix="comp-select"
@@ -741,7 +727,11 @@ export const CreateComplaint: FC = () => {
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair" id="complaint-description-pair-id">
-                <label id="complaint-description-edit-label-id" className="col-auto" htmlFor="complaint-description-textarea-id">
+                <label
+                  id="complaint-description-edit-label-id"
+                  className="col-auto"
+                  htmlFor="complaint-description-textarea-id"
+                >
                   Complaint Description<span className="required-ind">*</span>
                 </label>
                 <ValidationTextArea
@@ -815,7 +805,9 @@ export const CreateComplaint: FC = () => {
             </div>
             <div className="comp-details-edit-column comp-details-right-column">
               <div className="comp-details-label-input-pair" id="complaint-location-pair-id">
-                <label id="complaint-location-label-id" htmlFor="location-edit-id">Complaint Location</label>
+                <label id="complaint-location-label-id" htmlFor="location-edit-id">
+                  Complaint Location
+                </label>
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
@@ -928,7 +920,11 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="primary-phone-pair-id">
-                <label id="complaint-caller-info-primary-phone-label-id" className="col-auto" htmlFor="caller-primary-phone-id">
+                <label
+                  id="complaint-caller-info-primary-phone-label-id"
+                  className="col-auto"
+                  htmlFor="caller-primary-phone-id"
+                >
                   Primary Phone
                 </label>
                 <div className="comp-details-edit-input">
@@ -944,7 +940,11 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="secondary-phone-pair-id">
-                <label id="complaint-caller-info-secondary-phone-label-id" className="col-auto" htmlFor="caller-info-secondary-phone-id">
+                <label
+                  id="complaint-caller-info-secondary-phone-label-id"
+                  className="col-auto"
+                  htmlFor="caller-info-secondary-phone-id"
+                >
                   Alternate 1 Phone
                 </label>
                 <div className="comp-details-edit-input">
@@ -960,7 +960,11 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
               <div className="comp-details-label-input-pair" id="alternate-phone-pair-id">
-                <label id="complaint-caller-info-alternate-phone-label-id" className="col-auto" htmlFor="caller-info-alternate-phone-id">
+                <label
+                  id="complaint-caller-info-alternate-phone-label-id"
+                  className="col-auto"
+                  htmlFor="caller-info-alternate-phone-id"
+                >
                   Alternate 2 Phone
                 </label>
                 <div className="comp-details-edit-input">
@@ -1029,7 +1033,11 @@ export const CreateComplaint: FC = () => {
             <div className="comp-suspect-witness-edit-container">
               <div className="comp-details-edit-column comp-details-right-column">
                 <div className="comp-details-label-input-pair" id="subject-of-complaint-pair-id">
-                  <label id="complaint-witness-details-label-id" className="col-auto" htmlFor="complaint-witness-details-textarea-id">
+                  <label
+                    id="complaint-witness-details-label-id"
+                    className="col-auto"
+                    htmlFor="complaint-witness-details-textarea-id"
+                  >
                     Description
                   </label>
                   <textarea
