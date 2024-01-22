@@ -4,7 +4,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { DelegateDto } from "../../types/models/people/delegate";
 import { AttractantXrefTable } from "../../types/tables/attractant-xref.table";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
-import { UpdateComplaintDto } from "../../v1/complaint/dto/update-complaint.dto";
+import { UpdateComplaintDto } from "../../types/models/complaints/update-complaint.dto";
 
 export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
   createMap<ComplaintDto, UpdateComplaintDto>(
