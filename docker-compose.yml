@@ -106,7 +106,7 @@ services:
       - "npm i && npm run start"
     environment:
       WEBEOC_USERNAME: ${WEBEOC_USERNAME}
-      WEBEOC_PASSWORD: Vd7ztkZE!Ab=
+      WEBEOC_PASSWORD: ${WEBEOC_PASSWORD}
       WEBEOC_POSITION: ${WEBEOC_POSITION}
       WEBEOC_INCIDENT: ${WEBEOC_INCIDENT}
       WEBEOC_URL: ${WEBEOC_URL}
