@@ -234,12 +234,14 @@ export class CodeTableService {
             short_description,
             long_description,
             display_order,
+            active_ind,
           }) => {
             let table: PersonComplaintType = {
               personComplaintType: person_complaint_xref_code,
               shortDescription: short_description,
               longDescription: long_description,
               displayOrder: display_order,
+              isActive: active_ind
             };
             return table;
           }
