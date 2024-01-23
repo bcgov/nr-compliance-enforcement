@@ -59,6 +59,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
+import { CaseManangementService } from "../../external_api/case_management/case_management.service";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -69,7 +70,6 @@ export class ComplaintService {
   private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
-
   @InjectRepository(AgencyCode)
   private _agencyRepository: Repository<AgencyCode>;
   @InjectRepository(ReportedByCode)
@@ -80,9 +80,11 @@ export class ComplaintService {
   private _officeRepository: Repository<Office>;
   @InjectRepository(Office)
   private _complaintStatusCode: Repository<ComplaintStatusCode>;
-
   @InjectRepository(Complaint)
   private complaintsRepository: Repository<Complaint>;
+
+  @Inject(CaseManangementService)
+  protected readonly caseManagementService: CaseManangementService;
 
   constructor(
     @Inject(REQUEST) private request: Request,
@@ -170,6 +172,11 @@ export class ComplaintService {
   }
 
   async findOne(id: any): Promise<Complaint> {
+    console.log("hmmmmmmmmmmmmmmmmmmmstart");
+    const response = this.caseManagementService.findAll();
+    console.log("hmmmmmmmmmmmmmmmmmmm1");
+    console.log(JSON.stringify(response));
+    console.log("hmmmmmmmmmmmmmmmmmmm2");
     return this.complaintsRepository.findOneOrFail({
       where: { complaint_identifier: id },
       relations: {
@@ -567,6 +574,13 @@ export class ComplaintService {
           "person.last_name",
         ]);
     }
+
+    console.log("hmmmmmmmmmmmmmmmmmmmstart");
+    const response = this.caseManagementService.findAll();
+    console.log("hmmmmmmmmmmmmmmmmmmm1");
+    console.log(JSON.stringify(response));
+    console.log("hmmmmmmmmmmmmmmmmmmm2");
+    
 
     builder.where("complaint.complaint_identifier = :id", { id });
     const result = await builder.getOne();

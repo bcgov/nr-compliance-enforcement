@@ -30,11 +30,13 @@ import { PersonService } from "../person/person.service";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { BcGeoCoderService } from "../../external_api/bc_geo_coder/bc_geo_coder.service";
-import { HttpModule } from "@nestjs/axios";
+import { HttpModule, HttpService } from "@nestjs/axios";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { CodeTableModule } from "../code-table/code-table.module";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { ReportedByCodeService } from "../reported_by_code/reported_by_code.service";
+import { CaseManangementService } from "../../external_api/case_management/case_management.service";
+import { CaseManangementModule } from "src/external_api/case_management/case_management.module";
 
 @Module({
   imports: [
@@ -56,6 +58,7 @@ import { ReportedByCodeService } from "../reported_by_code/reported_by_code.serv
     TypeOrmModule.forFeature([ReportedByCode]),
     CodeTableModule,
     HttpModule,
+    CaseManangementModule,
   ],
   controllers: [HwcrComplaintController],
   providers: [
@@ -75,6 +78,7 @@ import { ReportedByCodeService } from "../reported_by_code/reported_by_code.serv
     PersonComplaintXrefService,
     BcGeoCoderService,
     ReportedByCodeService,
+    CaseManangementService,
   ],
 })
 export class HwcrComplaintModule {}

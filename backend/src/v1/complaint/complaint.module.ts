@@ -22,6 +22,7 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CodeTableModule } from "../code-table/code-table.module";
 import { PersonComplaintXrefModule } from "../person_complaint_xref/person_complaint_xref.module";
 import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwcr_xref.module";
+import { CaseManangementModule } from "src/external_api/case_management/case_management.module";
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwc
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     CodeTableModule,
     PersonComplaintXrefModule,
-    AttractantHwcrXrefModule
+    AttractantHwcrXrefModule,
+    CaseManangementModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],

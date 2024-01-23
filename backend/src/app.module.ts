@@ -32,6 +32,7 @@ import { ConfigurationModule } from "./v1/configuration/configuration.module";
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
 import { CodeTableModule } from "./v1/code-table/code-table.module";
 import { ReportedByCodeModule } from "./v1/reported_by_code/reported_by_code.module";
+import { CaseManangementModule } from "./external_api/case_management/case_management.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -85,6 +86,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     ComplaintTypeCodeModule,
     CodeTableModule,
     ReportedByCodeModule,
+    CaseManangementModule,
     AutomapperModule.forRoot({
       strategyInitializer: pojos(),
     }),

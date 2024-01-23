@@ -28,6 +28,7 @@ import { CodeTableModule } from "../code-table/code-table.module";
 import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwcr_xref.module";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { ReportedByCodeService } from "../reported_by_code/reported_by_code.service";
+import { CaseManangementModule } from "src/external_api/case_management/case_management.module";
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { ReportedByCodeService } from "../reported_by_code/reported_by_code.serv
     TypeOrmModule.forFeature([HwcrComplaint]),
     TypeOrmModule.forFeature([ReportedByCode]),
     CodeTableModule,
-    AttractantHwcrXrefModule
+    AttractantHwcrXrefModule,
+    CaseManangementModule,
   ],
   controllers: [AllegationComplaintController],
   providers: [
