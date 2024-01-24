@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { Column, Entity, Index, OneToMany } from "typeorm";
 
@@ -26,8 +27,9 @@ export class PersonComplaintXrefCode {
   @Column("integer", { name: "display_order" })
   display_order: number;
 
-  // @Column("boolean", { name: "active_ind" })
-  // active_ind: boolean;
+  @ApiProperty({ example: "True", description: "A boolean indicator to determine if the attractant code is active." })
+  @Column()
+  active_ind: boolean;
 
   @Column("character varying", { name: "create_user_id", length: 32 })
   create_user_id: string;

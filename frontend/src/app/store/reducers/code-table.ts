@@ -858,15 +858,6 @@ export const selectCascadedZone =
       codeTables: { communities },
     } = state;
 
-    let results = communities;
-
-    if (community) {
-      const selected = communities.find((item) => item.code === community);
-      if (selected) {
-        results = communities.filter((item) => item.zone === selected.zone);
-      }
-    }
-
     if(zone){ 
       return communities
       .filter((item) => item.zone === zone)
@@ -891,7 +882,7 @@ export const selectCascadedZone =
       });
     }
 
-    return results.map(({ code, name }) => {
+    return communities.map(({ code, name }) => {
       return {
         label: name,
         value: code,
