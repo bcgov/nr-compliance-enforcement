@@ -73,11 +73,11 @@ jobs:
         run: |
           helm install ${{ github.event.repository.name }}-test-nats nats/nats \
             --set natsBox.enabled=false \
-            --set nats.resources.requests.cpu=50m \
-            --set nats.resources.limits.cpu=200m \
-            --set nats.resources.requests.memory=100Mi \
-            --set nats.resources.limits.memory=400Mi \
-            --set replicaCount=1
+            --set container.merge.resources.requests.cpu=100m \
+            --set container.merge.resources.limits.cpu=200m \
+            --set container.merge.resources.requests.memory=100Mi \
+            --set container.merge.resources.limits.memory=400Mi \
+            --set reloader.enabled=false \
   
       # Deploy other components using matrix strategy
       - name: Deploy Components
