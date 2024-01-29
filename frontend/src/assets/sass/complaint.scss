@@ -506,13 +506,34 @@ p {
 
 .comp-details-edit-column {
   flex: 1;
-  display: flex;
   flex-direction: column;
   margin-right: 60px;
+  button span {
+    padding-right: 8px;
+  }
+  button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+   }
 }
 
 .comp-details-right-column {
   margin-right: 0px;
+  button span {
+    font-size: 14px;
+    padding-right: 8px;
+  }
+  button svg {
+    font-size: 14px;
+    vertical-align: text-top;
+    margin-top: 5px;
+
+   }
+}
+
+.comp-details-right-spacing {
+  margin-right: 300px;
 }
 
 .comp-details-label-input-pair {
@@ -533,6 +554,25 @@ p {
     i.bi {
       color: $gray-500;
     }
+  }
+}
+
+.comp-details-content-label {
+  padding-right: 25px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.comp-details-content {
+  margin-bottom: 16px;
+  display: inline-block;
+
+  i:first-child {
+    padding-right: 5px;
+  }
+  i:last-child {
+    padding-left: 5px;
+    padding-right: 5px;
   }
 }
 
@@ -655,6 +695,7 @@ p {
     .comp-cell-break-word {
       word-break: break-word;
     }
+
 
     .comp-cell-expanded-location {
       max-width: 800px;
