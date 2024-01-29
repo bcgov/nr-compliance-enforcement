@@ -76,7 +76,7 @@ export const HWCRSupplementalNotes: FC = () => {
                     <div className="comp-details-edit-container">
                         <div className="comp-details-edit-column">
                             <div className="comp-details-label-input-pair" id="officer-supporting-notes-pair-id">
-                                <label id="officer-supporting-notes-pair-id">Officer</label>
+                                <label id="officer-supporting-notes-pair-id" htmlFor="officer-supporting-notes-select-id">Officer</label>
                                 <CompSelect
                                     id="officer-supporting-notes-select-id"
                                     classNamePrefix="comp-select"
@@ -89,13 +89,14 @@ export const HWCRSupplementalNotes: FC = () => {
                         </div>
                         <div className="comp-details-edit-column comp-details-right-column">
                             <div className="comp-details-label-input-pair" id="supporting-notes-time-pair-id">
-                                <label>Date</label>
+                                <label htmlFor="supporting-notes-time-pair-id">Date</label>
                                 <DatePicker
                                     id="supporting-notes-time-pair-id"
                                     selected={new Date()}
                                     onChange={e => (e)}
                                     dateFormat="yyyy-MM-dd"
                                     wrapperClassName="comp-details-edit-calendar-input"
+                                    readOnly
                                     disabled
                                     />
                             </div>

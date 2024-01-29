@@ -566,6 +566,7 @@ p {
 .comp-details-content {
   margin-bottom: 16px;
   display: inline-block;
+  padding-top: 7px;
 
   i:first-child {
     padding-right: 5px;
@@ -590,10 +591,6 @@ p {
 
 .comp-details-edit-input {
   flex: 1;
-}
-
-.comp-details-content {
-  padding-top: 7px;
 }
 
 .comp-filter-btn {
