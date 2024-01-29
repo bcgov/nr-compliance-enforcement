@@ -57,8 +57,8 @@ create table public.staging_complaint (
 create table public.staging_metadata_mapping (
 	staging_metadata_mapping_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
 	entity_code varchar(10) NOT NULL,
-	staged_data_value varchar(4000) NOT NULL,
-	live_data_value varchar(4000) NOT NULL,
+	staged_data_value varchar(120) NOT NULL,
+	live_data_value varchar(10) NOT NULL,
   create_user_id varchar(32) NOT NULL,
   create_utc_timestamp timestamp NOT NULL,
   update_user_id varchar(32) NOT NULL,
