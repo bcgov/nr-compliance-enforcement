@@ -22,6 +22,10 @@ import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { Justification } from "../../types/app/code-tables/justification";
 import { AssessmentType } from "../../types/app/code-tables/assesment-type";
 import { PreventEducationAction } from "../../types/app/code-tables/prevent-education-action";
+import { Sex } from "../../types/app/code-tables/sex";
+import { Age } from "../../types/app/code-tables/age";
+import { ThreatLevel } from "../../types/app/code-tables/threat-level";
+import { ConflictHistory } from "../../types/app/code-tables/conflict-history";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -39,6 +43,10 @@ const initialState: CodeTableState = {
   justification: [],
   "assessment-type": [],
   "prevent-education-action": [],
+  sex: [],
+  age: [],
+  "threat-level": [],
+  "conflict-history": []
 };
 
 export const codeTableSlice = createSlice({
@@ -83,6 +91,10 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       justification,
       "assessment-type": assessmentType,
       "prevent-education-action": preventEducationAction,
+      sex,
+      age,
+      "threat-level": threatLevels,
+      "conflict-history": conflictHistory
     },
   } = state;
 
@@ -141,6 +153,18 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(preventEducationAction).any()) {
       dispatch(fetchPreventEducationAction());
+    }
+    if (!from(sex).any()) {
+      dispatch(fetchSexes());
+    }
+    if (!from(age).any()) {
+      dispatch(fetchAges());
+    }
+    if (!from(threatLevels).any()) {
+      dispatch(fetchThreatLevels());
+    }
+    if (!from(conflictHistory).any()) {
+      dispatch(fetchConfictHistories());
     }
   } catch (error) {}
 };
@@ -354,6 +378,54 @@ export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
   const response = await get<Array<PreventEducationAction>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchSexes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SEX}`
+  );
+  
+  const response = await get<Array<Sex>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.SEX, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchAges = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.AGE}`
+  );
+  
+  const response = await get<Array<Age>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.AGE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchThreatLevels = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.THREAT_LEVEL}`
+  );
+  
+  const response = await get<Array<ThreatLevel>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.THREAT_LEVEL, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchConfictHistories = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.CONFLICT_HISTORY}`
+  );
+  
+  const response = await get<Array<ConflictHistory>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.CONFLICT_HISTORY, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -889,6 +961,66 @@ export const selectCascadedZone =
         description: name,
       };
     });
+  };
+
+  export const selectSexDropdown = (
+    state: RootState
+  ): Array<Option> => {
+    const {
+      codeTables: { sex },
+    } = state;
+  
+    const data = sex.map(({ sex: value, longDescription: label }) => {
+      const item: Option = { label, value };
+      return item;
+    });
+
+    return data;
+  };
+
+  export const selectAgeDropdown = (
+    state: RootState
+  ): Array<Option> => {
+    const {
+      codeTables: { age },
+    } = state;
+  
+    const data = age.map(({ age: value, longDescription:label }) => {
+      const item: Option = { label, value };
+      return item;
+    });
+    
+    return data;
+  };
+
+  export const selectThreatLevelDropdown = (
+    state: RootState
+  ): Array<Option> => {
+    const {
+      codeTables: { "threat-level": threatLevels },
+    } = state;
+  
+    const data = threatLevels.map(({ threatLevel: value, longDescription:label }) => {
+      const item: Option = { label, value };
+      return item;
+    });
+    
+    return data;
+  };
+
+  export const selectConflictHistoryDropdown = (
+    state: RootState
+  ): Array<Option> => {
+    const {
+      codeTables: { "conflict-history": conflictHistory },
+    } = state;
+  
+    const data = conflictHistory.map(({ conflictHistory: value, longDescription:label }) => {
+      const item: Option = { label, value };
+      return item;
+    });
+    
+    return data;
   };
 
 export default codeTableSlice.reducer;
