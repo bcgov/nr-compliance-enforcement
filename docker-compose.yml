@@ -52,6 +52,7 @@ services:
       POSTGRESQL_USER: postgres
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: postgres
+      CASE_MANAGEMENT_API_URL: 'http://host.docker.internal:3003/graphql'
     hostname: backend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
     links:
