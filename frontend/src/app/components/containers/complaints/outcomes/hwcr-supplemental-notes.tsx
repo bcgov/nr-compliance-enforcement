@@ -49,8 +49,8 @@ export const HWCRSupplementalNotes: FC = () => {
                         id="outcome-report-add-outcome"
                         title="Add outcome"
                         variant="primary"
-                        onClick={e => handleStateChange(1)}>
-                        <span>Supporting notes</span>
+                        onClick={e => handleStateChange(EDIT_STATE)}>
+                        <span>Add supporting notes</span>
                         <BsPlusCircle />
                     </Button>
                 </div>
@@ -118,7 +118,7 @@ export const HWCRSupplementalNotes: FC = () => {
                                 className="comp-outcome-save"
                                 onClick={handleSupportingNotesSave}
                                 >
-                                Save
+                                Add
                             </Button>
                         </div>
                     </div>
@@ -135,9 +135,14 @@ export const HWCRSupplementalNotes: FC = () => {
                                     <div className="comp-details-edit-column" id="complaint-supporting-officer-div">
                                         <div className="comp-details-content-label">Officer</div>
                                         <div
-                                            data-initials-listview={initials}
-                                            className="comp-profile-avatar comp-details-content"
-                                        >{displayName}
+                                            data-initials-sm={initials}
+                                            className="comp-orange-avatar-sm comp-details-content">
+                                                <span
+                                                    id="comp-details-assigned-officer-name-text-id"
+                                                    className="comp-padding-left-xs"
+                                                >
+                                                    {displayName}
+                                                </span>
                                         </div>
                                     </div>
                                     <div className="comp-details-edit-column" id="complaint-supporting-date-div">
