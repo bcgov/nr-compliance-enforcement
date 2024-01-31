@@ -1,15 +1,22 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { StagingComplaintService } from './staging_complaint.service';
-import { CreateStagingComplaintDto } from './dto/create-staging_complaint.dto';
 import { UpdateStagingComplaintDto } from './dto/update-staging_complaint.dto';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
+import { WebEOCComplaint } from 'src/types/webeoc-complaint';
 
-@Controller('staging-complaint')
+@ApiTags("staging-complaint")
+@Controller({
+  path: "staging-complaint",
+  version: "1",
+})
 export class StagingComplaintController {
   constructor(private readonly stagingComplaintService: StagingComplaintService) {}
 
   @Post()
-  create(@Body() createStagingComplaintDto: CreateStagingComplaintDto) {
-    return this.stagingComplaintService.create(createStagingComplaintDto);
+  @Public()
+  create(@Body() createStagingComplaint: WebEOCComplaint) {
+    return this.stagingComplaintService.create(createStagingComplaint);
   }
 
   @Get()

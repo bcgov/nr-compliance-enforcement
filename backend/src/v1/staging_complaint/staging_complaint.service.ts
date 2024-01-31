@@ -1,9 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateStagingComplaintDto } from './dto/create-staging_complaint.dto';
 import { UpdateStagingComplaintDto } from './dto/update-staging_complaint.dto';
-import { StagingComplaint } from './entities/staging_complaint.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { StagingStatusCodeEnum } from 'src/enum/staging_status_code.enum';
+import { StagingStatusCode } from '../staging_status_code/entities/staging_status_code.entity';
+import { StagingActivityCodeEnum } from 'src/enum/staging_activity_code.enum';
+import { StagingActivityCode } from '../staging_activity_code/entities/staging_activity_code.entity';
+import { WebEOCComplaint } from 'src/types/webeoc-complaint';
+import { StagingComplaint } from './entities/staging_complaint.entity';
 
 @Injectable()
 export class StagingComplaintService {
@@ -15,8 +19,18 @@ export class StagingComplaintService {
     private stagingComplaintRepository: Repository<StagingComplaint>
   ) {}
 
-  async create(stagingComplaint: CreateStagingComplaintDto): Promise<StagingComplaint> {
-    const newStagingComplaint = this.stagingComplaintRepository.create(stagingComplaint);
+  async create(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
+    
+    const newStagingComplaint = this.stagingComplaintRepository.create();
+    newStagingComplaint.stagingStatusCode = { stagingStatusCode: StagingStatusCodeEnum.PENDING } as StagingStatusCode;
+    newStagingComplaint.stagingActivityCode = { stagingActivityCode: StagingActivityCodeEnum.INSERT } as StagingActivityCode;
+    newStagingComplaint.complaintIdentifer = stagingComplaint.incident_number;
+    newStagingComplaint.complaintJsonb = stagingComplaint;
+    newStagingComplaint.createUserId = 'WebEOC';
+    newStagingComplaint.createUtcTimestamp = new Date;
+    newStagingComplaint.updateUserId = 'WebEOC';
+    newStagingComplaint.updateUtcTimestamp = new Date;
+    
     await this.stagingComplaintRepository.save(newStagingComplaint);
     return newStagingComplaint;
   }

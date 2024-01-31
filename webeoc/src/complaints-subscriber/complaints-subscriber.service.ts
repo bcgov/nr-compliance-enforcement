@@ -1,12 +1,14 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { connect, NatsConnection, Subscription } from 'nats';
 import { NATS_NEW_COMPLAINTS_TOPIC_NAME } from 'src/common/constants';
+import { StagingComplaintsApiService } from 'src/staging-complaints-api-service/staging-complaints-api-service.service';
+import { ComplaintMessage } from 'src/types/Complaints';
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection;
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
-
+  constructor(private readonly service: StagingComplaintsApiService) {}
   async onModuleInit() {
     try {
       this.natsConnection = await connect({
@@ -26,12 +28,30 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     (async () => {
       for await (const msg of subscription) {
-        this.logger.debug(`Received complaint: ${msg}`);
+        try {
+          // Assuming msg.data is the JSON message; adjust as per your NATS client library
+          const messageData =
+            msg.data instanceof Uint8Array
+              ? this.decodeMessage(msg.data)
+              : msg.data;
+          const messageJson = JSON.parse(messageData);
+
+          const complaintData = messageJson as ComplaintMessage;
+          this.logger.debug(
+            `Received complaint: ${JSON.stringify(complaintData)}`,
+          );
+          this.service.postComplaint(complaintData.data.complaintData);
+        } catch (error) {
+          this.logger.error('Error processing received complaint:', error);
+        }
       }
     })().catch((error) => {
       this.logger.error('Error in NATS subscription:', error);
     });
-
     return subscription;
+  }
+
+  private decodeMessage(data: Uint8Array): string {
+    return new TextDecoder().decode(data);
   }
 }

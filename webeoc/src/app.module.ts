@@ -6,7 +6,7 @@ import { WebEOCComplaintsScheduler } from './webeoc-complaints-scheduler/webeoc-
 import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ComplaintsSubscriberService } from './complaints-subscriber/complaints-subscriber.service';
-import { StagingComplaintsApiServiceService } from './staging-complaints-api-service/staging-complaints-api-service.service';
+import { StagingComplaintsApiService } from './staging-complaints-api-service/staging-complaints-api-service.service';
 
 @Module({
   imports: [HttpModule, ScheduleModule.forRoot()],
@@ -16,7 +16,7 @@ import { StagingComplaintsApiServiceService } from './staging-complaints-api-ser
     ComplaintsPublisherService,
     WebEOCComplaintsScheduler,
     ComplaintsSubscriberService,
-    StagingComplaintsApiServiceService,
+    StagingComplaintsApiService,
   ],
 })
 export class AppModule {}

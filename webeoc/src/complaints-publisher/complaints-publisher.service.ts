@@ -26,7 +26,7 @@ export class ComplaintsPublisherService {
     try {
       const message = {
         id: complaint.incident_number, // complaint identifier - we use this as the id so that we don't get the same complaint added to the topic multiple times
-        data: complaint,
+        complaintData: complaint,
       };
 
       this.client.emit(NATS_NEW_COMPLAINTS_TOPIC_NAME, message);
