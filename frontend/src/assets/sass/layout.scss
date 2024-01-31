@@ -12,10 +12,6 @@
   z-index: 9000;
 }
 
-.supporting-width {
-  width: 25%;
-}
-
 .fixed-nav-header {
   position: sticky !important;
   padding-bottom: 0px !important;
@@ -517,4 +513,8 @@ button.modal-buttons {
 p {
   word-break: break-all;
   white-space: normal;
+}
+
+.supporting-width {
+  width: 25%;
 }
