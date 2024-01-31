@@ -14,7 +14,6 @@ export const HWCRFileReview: FC = () => {
     const EDIT_STATE = 2;
     const DISPLAY_STATE = 3;
     const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
-    const [supportingNotes, setSupportingNotes] = useState<string>("");
 
     const handleStateChange = (value: number) => {
         setComponentState(value);
