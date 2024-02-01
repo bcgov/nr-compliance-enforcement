@@ -160,7 +160,7 @@ export const HWCRFileReview: FC = () => {
                                 <div className="comp-details-edit-container">
                                     <div className="comp-details-edit-column">
                                         <div className="comp-details-label-div-pair">
-                                            <label className="comp-details-inner-content-label">Officer</label>
+                                            <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">Officer</label>
                                             <div
                                                 data-initials-sm={initials}
                                                 className="comp-orange-avatar-sm comp-details-inner-content"
@@ -171,10 +171,10 @@ export const HWCRFileReview: FC = () => {
                                     </div>
                                     <div className="comp-details-edit-column" id="complaint-supporting-date-div">
                                         <div className="comp-details-label-div-pair">
-                                            <label className="comp-details-inner-content-label">Date</label>
+                                            <label className="comp-details-inner-content-label" htmlFor="file-review-supporting-date">Date</label>
                                             <div
                                                 className="bi comp-margin-right-xxs comp-details-inner-content"
-                                                id="complaint-complaint-supporting-date"
+                                                id="file-review-supporting-date"
                                             >{formatDate(new Date().toString())}
                                             </div>
                                         </div>
