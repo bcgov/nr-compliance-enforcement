@@ -26,6 +26,8 @@ import { Sex } from "../../types/app/code-tables/sex";
 import { Age } from "../../types/app/code-tables/age";
 import { ThreatLevel } from "../../types/app/code-tables/threat-level";
 import { ConflictHistory } from "../../types/app/code-tables/conflict-history";
+import { EarTag } from "../../types/app/code-tables/ear-tag";
+import { WildlifeComplaintOutcome } from "../../types/app/code-tables/wildlife-complaint-outcome";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -46,7 +48,9 @@ const initialState: CodeTableState = {
   sex: [],
   age: [],
   "threat-level": [],
-  "conflict-history": []
+  "conflict-history": [],
+  "ear-tag": [],
+  "wildlife-outcomes": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -54,10 +58,7 @@ export const codeTableSlice = createSlice({
   initialState,
 
   reducers: {
-    setCodeTable: (
-      state: CodeTableState,
-      action: PayloadAction<{ key: string; data: Array<any> }>
-    ) => {
+    setCodeTable: (state: CodeTableState, action: PayloadAction<{ key: string; data: Array<any> }>) => {
       const {
         payload: { key, data },
       } = action;
@@ -94,7 +95,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       sex,
       age,
       "threat-level": threatLevels,
-      "conflict-history": conflictHistory
+      "conflict-history": conflictHistory,
+      "ear-tag": ears,
+      "wildlife-outcomes": wildlifeOutcomes,
     },
   } = state;
 
@@ -166,13 +169,17 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(conflictHistory).any()) {
       dispatch(fetchConfictHistories());
     }
+    if (!from(ears).any()) {
+      dispatch(fetchEars());
+    }
+    if (!from(wildlifeOutcomes).any()) {
+      dispatch(fetchWildlifeComplaintOutcomes());
+    }
   } catch (error) {}
 };
 
 export const fetchAgencies = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.AGENCY}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.AGENCY}`);
   const response = await get<Array<Agency>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -182,9 +189,7 @@ export const fetchAgencies = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchAttractants = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ATTRACTANT}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ATTRACTANT}`);
   const response = await get<Array<Attractant>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -194,9 +199,7 @@ export const fetchAttractants = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchComplaintStatus = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COMPLAINT_STATUS}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COMPLAINT_STATUS}`);
   const response = await get<Array<ComplaintStatusCode>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -221,9 +224,7 @@ export const fetchNatureOfComplaints = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchSpecies = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SPECIES}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SPECIES}`);
   const response = await get<Array<Species>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -236,9 +237,7 @@ export const fetchSpecies = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchViolations = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.VIOLATIONS}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.VIOLATIONS}`);
   const response = await get<Array<Violation>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -251,9 +250,7 @@ export const fetchViolations = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchComplaintTypeCodes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COMPLAINT_TYPE}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COMPLAINT_TYPE}`);
   const response = await get<Array<ComplaintType>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -269,13 +266,8 @@ export const fetchComplaintTypeCodes = (): AppThunk => async (dispatch) => {
 export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
   const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
 
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/organization-by-agency/${agency}`
-  );
-  const response = await get<Array<OrganizationCodeTable>>(
-    dispatch,
-    parameters
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/organization-by-agency/${agency}`);
+  const response = await get<Array<OrganizationCodeTable>>(dispatch, parameters);
 
   if (response && from(response).any()) {
     const payload = {
@@ -289,9 +281,7 @@ export const fetchAreaCodes = (): AppThunk => async (dispatch) => {
 export const fetchRegions = (): AppThunk => async (dispatch) => {
   const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
 
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/regions-by-agency/${agency}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/regions-by-agency/${agency}`);
   const response = await get<Array<Region>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -306,9 +296,7 @@ export const fetchRegions = (): AppThunk => async (dispatch) => {
 export const fetchZones = (): AppThunk => async (dispatch) => {
   const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
 
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/zones-by-agency/${agency}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/zones-by-agency/${agency}`);
   const response = await get<Array<Zone>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -323,9 +311,7 @@ export const fetchZones = (): AppThunk => async (dispatch) => {
 export const fetchCommunities = (): AppThunk => async (dispatch) => {
   const agency = "cos"; //-- TODO: when CE-212 is started this needs to be updated
 
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/communities-by-agency/${agency}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/communities-by-agency/${agency}`);
   const response = await get<Array<Community>>(dispatch, parameters);
 
   if (response && from(response).any()) {
@@ -338,9 +324,7 @@ export const fetchCommunities = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REPORTED_BY}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REPORTED_BY}`);
   const response = await get<Array<ReportedBy>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.REPORTED_BY, data: response };
@@ -374,7 +358,7 @@ export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
     `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION}`
   );
-  
+
   const response = await get<Array<PreventEducationAction>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION, data: response };
@@ -383,10 +367,8 @@ export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchSexes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SEX}`
-  );
-  
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SEX}`);
+
   const response = await get<Array<Sex>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.SEX, data: response };
@@ -395,10 +377,8 @@ export const fetchSexes = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchAges = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.AGE}`
-  );
-  
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.AGE}`);
+
   const response = await get<Array<Age>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.AGE, data: response };
@@ -407,10 +387,8 @@ export const fetchAges = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchThreatLevels = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.THREAT_LEVEL}`
-  );
-  
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.THREAT_LEVEL}`);
+
   const response = await get<Array<ThreatLevel>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.THREAT_LEVEL, data: response };
@@ -419,13 +397,33 @@ export const fetchThreatLevels = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchConfictHistories = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.CONFLICT_HISTORY}`
-  );
-  
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.CONFLICT_HISTORY}`);
+
   const response = await get<Array<ConflictHistory>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.CONFLICT_HISTORY, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchEars = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EARS}`);
+
+  const response = await get<Array<EarTag>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.EARS, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchWildlifeComplaintOutcomes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.WILDLIFE_OUTCOMES}`
+  );
+
+  const response = await get<Array<WildlifeComplaintOutcome>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.WILDLIFE_OUTCOMES, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -439,9 +437,7 @@ export const selectCodeTable =
     return selected;
   };
 
-export const selectComplaintTypeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "complaint-type": complaintTypes },
   } = state;
@@ -477,9 +473,7 @@ export const selectReportedByDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectComplaintStatusCodeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectComplaintStatusCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "complaint-status": complaintStatus },
   } = state;
@@ -503,9 +497,7 @@ export const selectSpeciesCodeDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectViolationCodeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectViolationCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { violation },
   } = state;
@@ -517,9 +509,7 @@ export const selectViolationCodeDropdown = (
   return data;
 };
 
-export const selectJustificationCodeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectJustificationCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { justification },
   } = state;
@@ -531,9 +521,7 @@ export const selectJustificationCodeDropdown = (
   return data;
 };
 
-export const selectAssessmentTypeCodeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectAssessmentTypeCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "assessment-type": assessmentType },
   } = state;
@@ -545,21 +533,17 @@ export const selectAssessmentTypeCodeDropdown = (
   return data;
 };
 
-export const selectYesNoCodeDropdown = (
-): Array<Option> => {
-  const data: Option[] = 
-    [ 
-      {value: "Yes", label: "Yes"}, 
-      {value: "No", label: "No"},
-    ]
+export const selectYesNoCodeDropdown = (): Array<Option> => {
+  const data: Option[] = [
+    { value: "Yes", label: "Yes" },
+    { value: "No", label: "No" },
+  ];
   return data;
 };
 
-export const selectPreventEducationDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectPreventEducationDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "prevent-education-action" : action },
+    codeTables: { "prevent-education-action": action },
   } = state;
 
   const data = action.map(({ action, longDescription }) => {
@@ -569,19 +553,15 @@ export const selectPreventEducationDropdown = (
   return data;
 };
 
-export const selectHwcrNatureOfComplaintCodeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectHwcrNatureOfComplaintCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "nature-of-complaint": natureOfComplaints },
   } = state;
 
-  const data = natureOfComplaints.map(
-    ({ natureOfComplaint, longDescription }) => {
-      const item: Option = { label: longDescription, value: natureOfComplaint };
-      return item;
-    }
-  );
+  const data = natureOfComplaints.map(({ natureOfComplaint, longDescription }) => {
+    const item: Option = { label: longDescription, value: natureOfComplaint };
+    return item;
+  });
   return data;
 };
 
@@ -598,9 +578,7 @@ export const selectAreaCodeDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectAttractantCodeDropdown = (
-  state: RootState
-): Array<Option> => {
+export const selectAttractantCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { attractant },
   } = state;
@@ -613,58 +591,51 @@ export const selectAttractantCodeDropdown = (
   return data;
 };
 
-export const selectZoneCodeDropdown = (
-  state: RootState
-): Array<DropdownOption> => {
+export const selectZoneCodeDropdown = (state: RootState): Array<DropdownOption> => {
   const {
     codeTables: { zones },
   } = state;
 
   const data = zones.map(({ code, name }) => {
-      const item: DropdownOption = {
-        label: name,
-        value: code,
-        description: name,
-      };
-      return item;
-    });
+    const item: DropdownOption = {
+      label: name,
+      value: code,
+      description: name,
+    };
+    return item;
+  });
   return data;
 };
 
-export const selectRegionCodeDropdown = (
-  state: RootState
-): Array<DropdownOption> => {
+export const selectRegionCodeDropdown = (state: RootState): Array<DropdownOption> => {
   const {
     codeTables: { regions },
   } = state;
 
   const data = regions.map(({ code, name }) => {
-      const item: DropdownOption = {
-        label: name,
-        value: code,
-        description: name,
-      };
-      return item;
-    });
+    const item: DropdownOption = {
+      label: name,
+      value: code,
+      description: name,
+    };
+    return item;
+  });
   return data;
 };
 
-export const selectCommunityCodeDropdown = (
-  state: RootState
-): Array<DropdownOption> => {
+export const selectCommunityCodeDropdown = (state: RootState): Array<DropdownOption> => {
   const {
     codeTables: { communities },
   } = state;
 
-  const data = communities
-    .map(({ code, name }) => {
-      const item: DropdownOption = {
-        label: name,
-        value: code,
-        description: name,
-      };
-      return item;
-    });
+  const data = communities.map(({ code, name }) => {
+    const item: DropdownOption = {
+      label: name,
+      value: code,
+      description: name,
+    };
+    return item;
+  });
 
   return data;
 };
@@ -923,35 +894,35 @@ export const selectCascadedZone =
     });
   };
 
-  export const selectCascadedCommunity =
+export const selectCascadedCommunity =
   (region?: string, zone?: string, community?: string) =>
   (state: RootState): Array<Option> => {
     const {
       codeTables: { communities },
     } = state;
 
-    if(zone){ 
+    if (zone) {
       return communities
-      .filter((item) => item.zone === zone)
-      .map(({ code, name }) => {
-        return {
-          label: name,
-          value: code,
-          description: name,
-        };
-      });
+        .filter((item) => item.zone === zone)
+        .map(({ code, name }) => {
+          return {
+            label: name,
+            value: code,
+            description: name,
+          };
+        });
     }
 
-    if(region){ 
+    if (region) {
       return communities
-      .filter((item) => item.region === region)
-      .map(({ code, name }) => {
-        return {
-          label: name,
-          value: code,
-          description: name,
-        };
-      });
+        .filter((item) => item.region === region)
+        .map(({ code, name }) => {
+          return {
+            label: name,
+            value: code,
+            description: name,
+          };
+        });
     }
 
     return communities.map(({ code, name }) => {
@@ -963,64 +934,82 @@ export const selectCascadedZone =
     });
   };
 
-  export const selectSexDropdown = (
-    state: RootState
-  ): Array<Option> => {
-    const {
-      codeTables: { sex },
-    } = state;
-  
-    const data = sex.map(({ sex: value, longDescription: label }) => {
-      const item: Option = { label, value };
-      return item;
-    });
+export const selectSexDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { sex },
+  } = state;
 
-    return data;
-  };
+  const data = sex.map(({ sex: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
 
-  export const selectAgeDropdown = (
-    state: RootState
-  ): Array<Option> => {
-    const {
-      codeTables: { age },
-    } = state;
-  
-    const data = age.map(({ age: value, longDescription:label }) => {
-      const item: Option = { label, value };
-      return item;
-    });
-    
-    return data;
-  };
+  return data;
+};
 
-  export const selectThreatLevelDropdown = (
-    state: RootState
-  ): Array<Option> => {
-    const {
-      codeTables: { "threat-level": threatLevels },
-    } = state;
-  
-    const data = threatLevels.map(({ threatLevel: value, longDescription:label }) => {
-      const item: Option = { label, value };
-      return item;
-    });
-    
-    return data;
-  };
+export const selectAgeDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { age },
+  } = state;
 
-  export const selectConflictHistoryDropdown = (
-    state: RootState
-  ): Array<Option> => {
-    const {
-      codeTables: { "conflict-history": conflictHistory },
-    } = state;
-  
-    const data = conflictHistory.map(({ conflictHistory: value, longDescription:label }) => {
-      const item: Option = { label, value };
-      return item;
-    });
-    
-    return data;
-  };
+  const data = age.map(({ age: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectThreatLevelDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "threat-level": threatLevels },
+  } = state;
+
+  const data = threatLevels.map(({ threatLevel: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectConflictHistoryDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "conflict-history": conflictHistory },
+  } = state;
+
+  const data = conflictHistory.map(({ conflictHistory: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectEarDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "ear-tag": ears },
+  } = state;
+
+  const data = ears.map(({ earTag: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "wildlife-outcomes": outcomes },
+  } = state;
+
+  const data = outcomes.map(({ outcome: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
 
 export default codeTableSlice.reducer;

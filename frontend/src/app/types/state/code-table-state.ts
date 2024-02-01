@@ -20,6 +20,8 @@ import { Sex } from "../app/code-tables/sex";
 import { Age } from "../app/code-tables/age";
 import { ThreatLevel } from "../app/code-tables/threat-level";
 import { ConflictHistory } from "../app/code-tables/conflict-history";
+import { EarTag } from "../app/code-tables/ear-tag";
+import { WildlifeComplaintOutcome } from "../app/code-tables/wildlife-complaint-outcome";
 
 export interface CodeTableState {
   [key: string]:
@@ -45,6 +47,8 @@ export interface CodeTableState {
     | Array<Age>
     | Array<ThreatLevel>
     | Array<ConflictHistory>
+    | Array<EarTag>
+    | Array<WildlifeComplaintOutcome>
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -65,4 +69,6 @@ export interface CodeTableState {
   age: Array<Age>,
   "threat-level": Array<ThreatLevel>,
   "conflict-history": Array<ConflictHistory>
+  "ear-tag": Array<EarTag>
+  "wildlife-outcomes": Array<WildlifeComplaintOutcome>
 }

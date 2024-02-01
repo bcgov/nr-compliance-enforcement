@@ -94,15 +94,5 @@ export const CompInput: FC<Props> = ({
         {error && <div className="error-message">{error}</div>}
       </div>
     </div>
-
-    //   <div className={formClass}>
-    //  {label && (
-    //    <label className="text-box" htmlFor={id}>
-    //      {label}
-    //    </label>
-    //  )}
-    //    {Component}
-    //    {error && <div className="error-message">{error}</div>}
-    //  </div>
   );
 };

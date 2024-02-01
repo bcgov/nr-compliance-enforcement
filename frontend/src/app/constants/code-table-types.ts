@@ -17,7 +17,9 @@ export const CODE_TABLE_TYPES = {
   SEX: "sex",
   AGE: "age",
   THREAT_LEVEL: "threat-level",
-  CONFLICT_HISTORY: "conflict-history"
+  CONFLICT_HISTORY: "conflict-history",
+  EARS: "ear-tag",
+  WILDLIFE_OUTCOMES: "wildlife-outcomes"
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",
   //  PERSON_TYPE: "person-complaint",

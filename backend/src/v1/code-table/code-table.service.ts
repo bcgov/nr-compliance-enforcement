@@ -501,6 +501,8 @@ export class CodeTableService {
           { method: "HINJ", shortDescription: "Hand injection", longDescription: "Hand injection", displayOrder: 2, isActive: true },
           { method: "PSRG", shortDescription: "Pole syringe", longDescription: "Pole syringe", displayOrder: 3, isActive: true },
         ]
+
+        return data;
       }
       case "drug-remaining-outcomes": { 
         const data: Array<DrugRemainingOutcome> = [
@@ -508,6 +510,8 @@ export class CodeTableService {
           { outcome: "STOR", shortDescription: "Storage", longDescription: "Storage", displayOrder: 2, isActive: true },
           { outcome: "RDIS", shortDescription: "Reverse distribution", longDescription: "Reverse distribution", displayOrder: 3, isActive: true },
         ]
+
+        return data;
       }
       case "wildlife-outcomes": { 
         const data: Array<WildlifeComplaintOutcome> = [
@@ -520,6 +524,8 @@ export class CodeTableService {
           { outcome: "TRANSLCTD", shortDescription: "Translocated", longDescription: "Translocated", displayOrder: 7, isActive: true },
           { outcome: "TRANSREHB", shortDescription: "Transfer to rehab", longDescription: "Transfer to rehab", displayOrder: 8, isActive: true },
         ]
+
+        return data;
       }
     }
   };

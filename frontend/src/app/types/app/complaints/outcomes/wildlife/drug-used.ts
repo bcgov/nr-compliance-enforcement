@@ -1,4 +1,6 @@
 export interface DrugUsed {
+  id: number;
+  
   vial: string;
   drug: string;
   amountUsed: number;
