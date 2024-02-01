@@ -43,6 +43,16 @@
        }
     }
 
+    .comp-outcome-report-edit-column button svg {
+      font-size: 16px;
+      vertical-align: text-top;
+      margin-top: 1px;
+     }
+
+    .comp-outcome-report-right-column {
+      margin-right: 0px;
+    }
+
     .comp-outcome-report-label-column {
         flex: .1;
         display: flex;
@@ -80,7 +90,7 @@
     .comp-outcome-report-button button svg {
         font-size: 18px;
         vertical-align: text-top;
-        margin-top: 1px;
+        margin-top: 3px;
     }
   
     .comp-outcome-report-complaint-assessment {
@@ -98,6 +108,14 @@
         border-radius: 3px;
         padding: 24px;
     }
+
+    .comp-outcome-supporting-notes {
+      margin-top: 24px;
+      margin-bottom: 24px;
+      border: 1px solid $gray-300;
+      border-radius: 3px;
+      padding: 24px;
+  }
 
     .comp-outcome-report-actions {
         display: flex;
