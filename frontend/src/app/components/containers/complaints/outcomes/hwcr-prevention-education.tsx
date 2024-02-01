@@ -70,7 +70,7 @@ export const HWCRPreventionEducation: FC = () => {
                     <div className="comp-details-edit-column">
                       <div className="comp-details-label-checkbox-div-pair">
                         <label htmlFor="checkbox-div" className="comp-details-inner-content-label checkbox-label-padding">
-                          Assessment
+                          Prevention and education
                         </label>
                         <div id="checkbox-div" className="checkbox-left-padding">
                           {actionList.map(action => (
