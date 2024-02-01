@@ -558,9 +558,35 @@ p {
   }
 }
 
+.comp-details-label-div-pair {
+  display: flex;
+  align-items: center;
+  min-height: 70px;
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .comp-details-div {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
 .comp-details-content-label {
   padding-right: 25px;
   margin-bottom: 16px;
+  display: inline-block;
+}
+
+.comp-details-inner-content-label {
+  padding-right: 25px;
   display: inline-block;
 }
 
@@ -568,6 +594,18 @@ p {
   margin-bottom: 16px;
   display: inline-block;
   padding-top: 7px;
+
+  i:first-child {
+    padding-right: 5px;
+  }
+  i:last-child {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+.comp-details-inner-content {
+  display: inline-block;
 
   i:first-child {
     padding-right: 5px;
@@ -1271,3 +1309,23 @@ p {
 .comp-filter-search {
   margin-left: 16px;
 }
+
+.sub-section-edit-button {
+  color: black;
+  border-color: white;
+}
+
+.sub-section-edit-button:hover {
+  color: black;
+  background-color: white;
+  border-color: white;
+  text-decoration-line: underline;
+}
+
+.sub-section-edit-button:not(:disabled):not(.disabled):active:focus {
+  color: black;
+  background-color: white;
+  border-color: white;
+  text-decoration-line: underline;
+}
+
