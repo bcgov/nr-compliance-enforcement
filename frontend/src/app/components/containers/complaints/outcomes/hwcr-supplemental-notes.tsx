@@ -159,6 +159,7 @@ export const HWCRSupplementalNotes: FC = () => {
                         <div className="comp-details-right-column">
                             <Button
                                 id="details-screen-edit-button"
+                                className="sub-section-edit-button"
                                 title="Edit Complaint"
                                 variant="outline-primary"
                                 onClick={e => handleStateChange(EDIT_STATE)}
