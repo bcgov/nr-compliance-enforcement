@@ -5,7 +5,6 @@ import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectEarDropdown } from "../../../../../store/reducers/code-table";
 import { BsXCircle } from "react-icons/bs";
-import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 
 type props = {
   id: number;

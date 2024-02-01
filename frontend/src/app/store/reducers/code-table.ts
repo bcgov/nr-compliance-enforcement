@@ -28,6 +28,9 @@ import { ThreatLevel } from "../../types/app/code-tables/threat-level";
 import { ConflictHistory } from "../../types/app/code-tables/conflict-history";
 import { EarTag } from "../../types/app/code-tables/ear-tag";
 import { WildlifeComplaintOutcome } from "../../types/app/code-tables/wildlife-complaint-outcome";
+import { Drug } from "../../types/app/code-tables/drug";
+import { DrugMethod } from "../../types/app/code-tables/drug-method";
+import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining-outcome";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -51,6 +54,9 @@ const initialState: CodeTableState = {
   "conflict-history": [],
   "ear-tag": [],
   "wildlife-outcomes": [],
+  drugs: [],
+  "drug-methods":[],
+  "drug-remaining-outcomes":[],
 };
 
 export const codeTableSlice = createSlice({
@@ -98,6 +104,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       "conflict-history": conflictHistory,
       "ear-tag": ears,
       "wildlife-outcomes": wildlifeOutcomes,
+      drugs,
+      "drug-methods": drugUseMethods,
+      "drug-remaining-outcomes": remainingDrugUse
     },
   } = state;
 
@@ -174,6 +183,16 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(wildlifeOutcomes).any()) {
       dispatch(fetchWildlifeComplaintOutcomes());
+    }
+
+    if (!from(drugs).any()) {
+      dispatch(fetchDrugs());
+    }
+    if (!from(drugUseMethods).any()) {
+      dispatch(fetchDrugUseMethods());
+    }
+    if (!from(remainingDrugUse).any()) {
+      dispatch(fetchRemainingDrugUse());
     }
   } catch (error) {}
 };
@@ -424,6 +443,43 @@ export const fetchWildlifeComplaintOutcomes = (): AppThunk => async (dispatch) =
   const response = await get<Array<WildlifeComplaintOutcome>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.WILDLIFE_OUTCOMES, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+
+export const fetchDrugs = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DRUGS}`
+  );
+
+  const response = await get<Array<Drug>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.DRUGS, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchDrugUseMethods = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DRUG_METHOD_USE}`
+  );
+
+  const response = await get<Array<DrugMethod>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.DRUG_METHOD_USE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchRemainingDrugUse = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REMAINING_DRUG_USE}`
+  );
+
+  const response = await get<Array<DrugRemainingOutcome>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.REMAINING_DRUG_USE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -936,10 +992,10 @@ export const selectCascadedCommunity =
 
 export const selectSexDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { sex },
+    codeTables: { sex: items },
   } = state;
 
-  const data = sex.map(({ sex: value, longDescription: label }) => {
+  const data = items.map(({ sex: value, longDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -949,10 +1005,10 @@ export const selectSexDropdown = (state: RootState): Array<Option> => {
 
 export const selectAgeDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { age },
+    codeTables: { age: items },
   } = state;
 
-  const data = age.map(({ age: value, longDescription: label }) => {
+  const data = items.map(({ age: value, longDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -962,10 +1018,10 @@ export const selectAgeDropdown = (state: RootState): Array<Option> => {
 
 export const selectThreatLevelDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "threat-level": threatLevels },
+    codeTables: { "threat-level": items },
   } = state;
 
-  const data = threatLevels.map(({ threatLevel: value, longDescription: label }) => {
+  const data = items.map(({ threatLevel: value, longDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -975,10 +1031,10 @@ export const selectThreatLevelDropdown = (state: RootState): Array<Option> => {
 
 export const selectConflictHistoryDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "conflict-history": conflictHistory },
+    codeTables: { "conflict-history": items },
   } = state;
 
-  const data = conflictHistory.map(({ conflictHistory: value, longDescription: label }) => {
+  const data = items.map(({ conflictHistory: value, longDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -988,10 +1044,10 @@ export const selectConflictHistoryDropdown = (state: RootState): Array<Option> =
 
 export const selectEarDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "ear-tag": ears },
+    codeTables: { "ear-tag": items },
   } = state;
 
-  const data = ears.map(({ earTag: value, longDescription: label }) => {
+  const data = items.map(({ earTag: value, longDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1001,10 +1057,49 @@ export const selectEarDropdown = (state: RootState): Array<Option> => {
 
 export const selectWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "wildlife-outcomes": outcomes },
+    codeTables: { "wildlife-outcomes": items },
   } = state;
 
-  const data = outcomes.map(({ outcome: value, longDescription: label }) => {
+  const data = items.map(({ outcome: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectDrugs = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { drugs: items },
+  } = state;
+
+  const data = items.map(({ drug: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectDrugUseMethods = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "drug-methods": items },
+  } = state;
+
+  const data = items.map(({ method: value, longDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "drug-remaining-outcomes": items },
+  } = state;
+
+  const data = items.map(({ outcome: value, longDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });

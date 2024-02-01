@@ -15,10 +15,11 @@ import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wild
 import { pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { AddEarTag } from "./add-ear-tag";
-import { BsPlusCircle, BsTags } from "react-icons/bs";
+import { BsPlusCircle } from "react-icons/bs";
 import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import { from } from "linq-to-typescript";
+import { AddDrug } from "./add-drug";
 
 type props = {
   animalCount: number;
@@ -48,8 +49,6 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     outcome: "",
     officer: "",
   });
-
-  const [showTagInput, setShowTagInput] = useState(false);
 
   const isValid = (): boolean => {
     const { species, sex, age, threatLevel, conflictHistory, outcome, officer, date } = data;
@@ -90,10 +89,6 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     updateModel("tags", update);
   };
 
-  const addDrug = () => {};
-
-  const style = { border: "1px solid black" };
-
   const renderEarTags = () => {
     const { tags } = data;
 
@@ -131,6 +126,58 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
 
     updateModel("tags", update);
   };
+
+  const addDrug = () => {
+    const { drugs } = data;
+
+    let id = drugs.length + 1;
+
+    const update = [
+      ...drugs,
+      { id, vial: "", drug: "", amountUsed: -1, amountDiscarded: -1, reactions: "", remainingUse: "", injectionMethod: "", discardMethod: "", officer: "" },
+    ];
+    updateModel("drugs", update);
+  };
+
+  const renderDrugs = () => {
+    const { drugs } = data;
+
+    if (drugs && from(drugs).any()) {
+      return from(drugs)
+        .orderBy((item) => item.id)
+        .toArray()
+        .map(item => {
+          return <AddDrug {...item} update={updateDrug} remove={removeDrug} />;
+        });
+    }
+  };
+
+  const removeDrug = (id: number) => {
+    const { drugs: source } = data;
+    const items = source.filter((drug) => id !== drug.id);
+    let updatedId = 0;
+
+    const update = from(items)
+      .orderBy((item) => item.id)
+      .toArray()
+      .map((item) => {
+        updatedId = updatedId + 1;
+        return { ...item, id: updatedId };
+      });
+
+    updateModel("drugs", update);
+  };
+
+  const updateDrug = (drug: DrugUsed) => {
+    const { drugs: source } = data;
+
+    const items = source.filter(({ id }) => id !== drug.id);
+    const update = [...items, drug];
+
+    updateModel("drugs", update);
+  };
+
+  const style = { border: "1px solid black" };
 
   return (
     <div className="comp-outcome-report-complaint-assessment">
@@ -211,8 +258,8 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
         <span> Add ear tag</span>
       </Button>
       <br />
-      <br />
-      <Button id="outcome-report-add-animal" title="Add animal" variant="link" onClick={() => addEarTag()}>
+      {renderDrugs()}
+      <Button id="outcome-report-add-animal" title="Add animal" variant="link" onClick={() => addDrug()}>
         <BsPlusCircle />
         <span> Add drug</span>
       </Button>

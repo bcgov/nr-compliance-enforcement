@@ -6,9 +6,12 @@ export interface DrugUsed {
   amountUsed: number;
   amountDiscarded: number;
 
+  injectionMethod: string;
+  discardMethod: string;
+
   reactions: string;
   remainingUse: string;
 
   officer: string;
-  date: Date;
+  date?: Date;
 }

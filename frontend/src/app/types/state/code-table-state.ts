@@ -22,6 +22,9 @@ import { ThreatLevel } from "../app/code-tables/threat-level";
 import { ConflictHistory } from "../app/code-tables/conflict-history";
 import { EarTag } from "../app/code-tables/ear-tag";
 import { WildlifeComplaintOutcome } from "../app/code-tables/wildlife-complaint-outcome";
+import { Drug } from "../app/code-tables/drug";
+import { DrugMethod } from "../app/code-tables/drug-method";
+import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome";
 
 export interface CodeTableState {
   [key: string]:
@@ -49,6 +52,9 @@ export interface CodeTableState {
     | Array<ConflictHistory>
     | Array<EarTag>
     | Array<WildlifeComplaintOutcome>
+    | Array<Drug>
+    | Array<DrugMethod>
+    | Array<DrugRemainingOutcome>
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -71,4 +77,7 @@ export interface CodeTableState {
   "conflict-history": Array<ConflictHistory>
   "ear-tag": Array<EarTag>
   "wildlife-outcomes": Array<WildlifeComplaintOutcome>
+  drugs: Array<Drug>,
+  "drug-methods": Array<DrugMethod>,
+  "drug-remaining-outcomes": Array<DrugRemainingOutcome>,
 }
