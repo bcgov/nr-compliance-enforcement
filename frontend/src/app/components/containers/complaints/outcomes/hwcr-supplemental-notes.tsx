@@ -95,9 +95,10 @@ export const HWCRSupplementalNotes: FC = () => {
                                     selected={new Date()}
                                     onChange={e => (e)}
                                     dateFormat="yyyy-MM-dd"
-                                    wrapperClassName="comp-details-edit-calendar-input"
+                                    wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
                                     readOnly
                                     disabled
+                                    showIcon
                                     />
                             </div>
                         </div>
