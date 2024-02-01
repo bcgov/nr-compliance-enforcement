@@ -15,7 +15,7 @@ export class WebEOCComplaintsScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.publishComplaints();
+      await this.fetchAndPublishComplaintsFromWebEOC();
     });
 
     this.cronJob.start();
@@ -32,7 +32,7 @@ export class WebEOCComplaintsScheduler {
   }
 
   // Grabs the complaints and publishes them to NATS
-  async publishComplaints() {
+  async fetchAndPublishComplaintsFromWebEOC() {
     await this.authenticateWithWebEOC();
     // Fetch complaints from WebEOC here
     const complaints = await this.fetchComplaintsFromWebEOC();
@@ -41,7 +41,9 @@ export class WebEOCComplaintsScheduler {
 
     // Publish each complaint to NATS
     for (const complaint of complaints) {
-      await this.complaintsPublisherService.publishComplaint(complaint);
+      await this.complaintsPublisherService.publishComplaintsFromWebEOC(
+        complaint,
+      );
     }
   }
 

@@ -1,10 +1,16 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { connect, NatsConnection, Subscription } from 'nats';
-import { NATS_NEW_COMPLAINTS_TOPIC_NAME } from 'src/common/constants';
+import {
+  NATS_NEW_COMPLAINTS_TOPIC_NAME,
+  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+} from 'src/common/constants';
 import { StagingComplaintsApiService } from 'src/staging-complaints-api-service/staging-complaints-api-service.service';
 import { ComplaintMessage } from 'src/types/Complaints';
 
 @Injectable()
+/**
+ * Used to subscribe to topics.
+ */
 export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection;
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
@@ -18,10 +24,15 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     } catch (error) {
       this.logger.error('Failed to connect to NATS:', error);
     }
-    this.subscribeToComplaints();
+    this.subscribeToNewComplaintsFromWebEOC();
+    this.subscribeToNewStagingComplaints();
   }
 
-  private subscribeToComplaints(): Subscription {
+  /**
+   * Listen for new messages on topics indicating that a new complaint was added in WebEOC
+   * @returns
+   */
+  private subscribeToNewComplaintsFromWebEOC(): Subscription {
     const subscription: Subscription = this.natsConnection.subscribe(
       NATS_NEW_COMPLAINTS_TOPIC_NAME,
     );
@@ -29,7 +40,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     (async () => {
       for await (const msg of subscription) {
         try {
-          // Assuming msg.data is the JSON message; adjust as per your NATS client library
           const messageData =
             msg.data instanceof Uint8Array
               ? this.decodeMessage(msg.data)
@@ -40,9 +50,34 @@ export class ComplaintsSubscriberService implements OnModuleInit {
           this.logger.debug(
             `Received complaint: ${JSON.stringify(complaintData)}`,
           );
-          this.service.postComplaint(complaintData.data.complaintData);
+          this.service.postComplaintToStaging(complaintData.data.complaintData);
         } catch (error) {
           this.logger.error('Error processing received complaint:', error);
+        }
+      }
+    })().catch((error) => {
+      this.logger.error('Error in NATS subscription:', error);
+    });
+    return subscription;
+  }
+
+  /**
+   * Listen for new messages to indicate that a new complaint has been added to the staging tables
+   * @returns
+   */
+  private subscribeToNewStagingComplaints(): Subscription {
+    const subscription: Subscription = this.natsConnection.subscribe(
+      NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+    );
+
+    (async () => {
+      for await (const msg of subscription) {
+        try {
+          const complaintIdentifier = msg.data;
+          this.logger.debug(`New complaint in staging: ${complaintIdentifier}`);
+          //this.service.postComplaint(complaintData.data.complaintData);
+        } catch (error) {
+          this.logger.error('Error processing complaint in staging:', error);
         }
       }
     })().catch((error) => {
