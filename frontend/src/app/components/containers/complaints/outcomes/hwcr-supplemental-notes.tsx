@@ -132,25 +132,25 @@ export const HWCRSupplementalNotes: FC = () => {
                                 {supportingNotes}
                             </p>
                             <div className="comp-details-edit-container">
-                                    <div className="comp-details-edit-column" id="complaint-supporting-officer-div">
-                                        <div className="comp-details-content-label">Officer</div>
-                                        <div
-                                            data-initials-sm={initials}
-                                            className="comp-orange-avatar-sm comp-details-content">
-                                                <span
-                                                    id="comp-details-assigned-officer-name-text-id"
-                                                    className="comp-padding-left-xs"
-                                                >
-                                                    {displayName}
-                                                </span>
+                                <div className="comp-details-edit-column">
+                                        <div className="comp-details-label-div-pair">
+                                            <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">Officer</label>
+                                            <div
+                                                data-initials-sm={initials}
+                                                className="comp-orange-avatar-sm comp-details-inner-content"
+                                            >
+                                                <span id="comp-review-required-officer" className="comp-padding-left-xs">{displayName}</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="comp-details-edit-column" id="complaint-supporting-date-div">
-                                        <div className="comp-details-content-label">Date</div>
-                                        <div
-                                            className="bi comp-margin-right-xxs comp-details-content"
-                                            id="complaint-complaint-supporting-date"
+                                        <div className="comp-details-label-div-pair">
+                                            <label className="comp-details-inner-content-label" htmlFor="file-review-supporting-date">Date</label>
+                                            <div
+                                                className="bi comp-margin-right-xxs comp-details-inner-content"
+                                                id="file-review-supporting-date"
                                             >{formatDate(new Date().toString())}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="supporting-width"></div>
