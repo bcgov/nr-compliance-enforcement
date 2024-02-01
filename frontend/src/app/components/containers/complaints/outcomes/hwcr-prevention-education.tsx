@@ -66,39 +66,43 @@ export const HWCRPreventionEducation: FC = () => {
                 </Button> 
                 :
                 <div className="comp-outcome-report-complaint-assessment">
-                  <div className="comp-outcome-report-container">
-                      <div className="comp-outcome-report-label-column">
-                          Prevention and education
-                      </div>
-                      <div className="comp-outcome-report-edit-column">
+                  <div className="comp-details-edit-container">
+                    <div className="comp-details-edit-column">
+                      <div className="comp-details-label-checkbox-div-pair">
+                        <label className="comp-details-inner-content-label checkbox-label-padding">
+                          Assessment
+                        </label>
+                        <div className="checkbox-left-padding">
                           {actionList.map(action => (
-                              <div className="form-check form-check-spacing" key={action.label}>
-                                  <input className="form-check-input" id={action.value} type="checkbox" />
-                                  <label className="form-check-label" htmlFor={action.value}>{action.label}</label>
-                              </div>
-                              ))
+                            <div className="form-check check-spacing" key={action.label}>
+                              <input className="form-check-input" id={action.value} type="checkbox" />
+                              <label className="form-check-label checkbox-label" htmlFor={action.value}>{action.label}</label>
+                            </div>
+                          ))
                           }
+                        </div>
                       </div>
+                    </div>
                   </div>
-                  <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
-                      <div className="comp-outcome-report-label-half-column">
-                          Officer
-                      </div>
-                      <div className="comp-outcome-report-edit-column">
+                  <div className="comp-details-edit-container">
+                    <div className="comp-details-edit-column">
+                      <div className="comp-details-label-input-pair">
+                        <label htmlFor="outcome-officer">Officer</label>
                         <CompSelect 
                           id="outcome-officer"
                           classNamePrefix="comp-select"
                           options={assignableOfficers}
+                          className="comp-details-input"
                           enableValidation={false}
                           placeholder="Select"
                           value={selectedOfficer}
                           onChange={(officer: any) => setSelectedOfficer(officer)}
                         />
                       </div>
-                      <div className="comp-outcome-report-label-half-column">
-                        Date
-                      </div>
-                      <div className="comp-outcome-report-edit-column">
+                    </div>
+                    <div className="comp-details-edit-column comp-details-right-column">
+                      <div className="comp-details-label-input-pair">
+                        <label htmlFor="complaint-outcome-date">Date</label>
                         <DatePicker
                           id="complaint-outcome-date"
                           showIcon
@@ -108,7 +112,9 @@ export const HWCRPreventionEducation: FC = () => {
                           wrapperClassName="comp-details-edit-calendar-input"
                         />
                       </div>
+                    </div>
                   </div>
+                  
                   <div className="comp-outcome-report-container">
                     <div className="comp-outcome-report-actions">
                       <Button
