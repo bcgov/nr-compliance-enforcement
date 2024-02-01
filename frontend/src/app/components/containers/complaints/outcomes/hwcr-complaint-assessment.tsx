@@ -69,10 +69,10 @@ export const HWCRComplaintAssessment: FC = () => {
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
             <div className="comp-details-label-checkbox-div-pair">
-              <label className="comp-details-inner-content-label checkbox-label-padding">
+              <label htmlFor="checkbox-div" className="comp-details-inner-content-label checkbox-label-padding">
                 Assessment
               </label>
-              <div className="checkbox-left-padding">
+              <div id="checkbox-div" className="checkbox-left-padding">
                 {assessmentTypeList.map(assessmentType => (
                   <div className="form-check check-spacing" key={assessmentType.label}>
                     <input className="form-check-input" id={assessmentType.value} type="checkbox" />
