@@ -96,8 +96,9 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
       return from(tags)
         .orderBy((item) => item.id)
         .toArray()
-        .map(({ id, ear, number }) => {
-          return <AddEarTag id={id} ear={ear} number={number} update={updateEarTag} remove={removeEarTag} />;
+        .map((item) => {
+          const { id } = item;
+          return <AddEarTag {...item} update={updateEarTag} remove={removeEarTag} key={id} />;
         });
     }
   };
@@ -134,7 +135,18 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
 
     const update = [
       ...drugs,
-      { id, vial: "", drug: "", amountUsed: -1, amountDiscarded: -1, reactions: "", remainingUse: "", injectionMethod: "", discardMethod: "", officer: "" },
+      {
+        id,
+        vial: "",
+        drug: "",
+        amountUsed: -1,
+        amountDiscarded: -1,
+        reactions: "",
+        remainingUse: "",
+        injectionMethod: "",
+        discardMethod: "",
+        officer: "",
+      },
     ];
     updateModel("drugs", update);
   };
@@ -146,8 +158,9 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
       return from(drugs)
         .orderBy((item) => item.id)
         .toArray()
-        .map(item => {
-          return <AddDrug {...item} update={updateDrug} remove={removeDrug} />;
+        .map((item) => {
+          const { id } = item;
+          return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
         });
     }
   };

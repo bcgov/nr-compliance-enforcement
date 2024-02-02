@@ -11,7 +11,4 @@ export interface DrugUsed {
 
   reactions: string;
   remainingUse: string;
-
-  officer: string;
-  date?: Date;
 }

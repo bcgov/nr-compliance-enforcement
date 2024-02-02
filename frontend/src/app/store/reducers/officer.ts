@@ -286,4 +286,19 @@ export const assignOfficerToOffice =
     }
   };
 
+export const selectOfficerByIdir =
+  (idir: string) =>
+  (state: RootState): Officer | null => {
+    const {
+      officers: { officers: data },
+    } = state;
+    const selected = data.find(({ user_id }) => user_id === idir);
+
+    if (selected && selected.person_guid) {
+      return selected;
+    }
+
+    return null;
+  };
+
 export default officerSlice.reducer;

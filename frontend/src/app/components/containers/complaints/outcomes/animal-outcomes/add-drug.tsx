@@ -17,12 +17,9 @@ type props = {
   reactions: string;
   remainingUse: string;
 
-  officer: string;
-  date?: Date;
-
   injectionMethod: string;
   discardMethod: string;
-  
+
   remove: Function;
   update: Function;
 };
@@ -37,8 +34,6 @@ export const AddDrug: FC<props> = ({
   amountDiscarded,
   reactions,
   remainingUse,
-  officer,
-  date,
   remove,
   update,
 }) => {
@@ -46,9 +41,19 @@ export const AddDrug: FC<props> = ({
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
-  const updateModel = (property: string, value: string | number | undefined) => {
+  const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     if (value) {
-      const source = { id, vial, drug, amountUsed, amountDiscarded, reactions, remainingUse, injectionMethod, discardMethod, officer, date };
+      const source = {
+        id,
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        reactions,
+        remainingUse,
+        injectionMethod,
+        discardMethod,
+      };
       const updatedTag = { ...source, [property]: value };
 
       update(updatedTag);
@@ -59,10 +64,10 @@ export const AddDrug: FC<props> = ({
     <div className="comp-outcome-report-inner-spacing">
       <Row>
         <Col>
-          <label htmlFor="select-species">Vial number</label>
+          <label htmlFor={`vial-number-${id}`}>Vial number</label>
           <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divId="comp-details-edit-y-coordinate-div"
+            id={`vial-number-${id}`}
+            divid={`vial-number-${id}-div`}
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
@@ -76,9 +81,9 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor="select-ears">Drug name</label>
+          <label htmlFor={`select-drug-name-${id}`}>Drug name</label>
           <CompSelect
-            id="select-ears"
+            id={`select-drug-name-${id}`}
             options={drugs}
             enableValidation={false}
             placeholder={"Please select"}
@@ -88,10 +93,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor="select-species">Amount used</label>
+          <label htmlFor={`amount-used-${id}`}>Amount used</label>
           <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divId="comp-details-edit-y-coordinate-div"
+            id={`amount-used-${id}`}
+            divid={`amount-used-${id}-div`}
             type="number"
             placeholder="Enter number"
             inputClass="comp-form-control"
@@ -105,9 +110,9 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor="select-ears">Injection method</label>
+          <label htmlFor={`injection-method-${id}`}>Injection method</label>
           <CompSelect
-            id="select-ears"
+            id={`injection-method-${id}`}
             options={drugUseMethods}
             enableValidation={false}
             placeholder={"Please select"}
@@ -117,10 +122,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor="select-species">Adverse reactions</label>
+          <label htmlFor={`adverse-reactions-${id}`}>Adverse reactions</label>
           <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divId="comp-details-edit-y-coordinate-div"
+            id={`adverse-reactions-${id}`}
+            divid={`adverse-reactions-${id}-div`}
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
@@ -139,9 +144,9 @@ export const AddDrug: FC<props> = ({
       </Row>
       <Row>
         <Col>
-          <label htmlFor="select-ears">Fate of remaining drug in vial</label>
+          <label htmlFor={`remaining-drug-use-${id}`}>Fate of remaining drug in vial</label>
           <CompSelect
-            id="select-ears"
+            id={`remaining-drug-use-${id}`}
             options={remainingDrugUse}
             enableValidation={false}
             placeholder={"Please select"}
@@ -151,10 +156,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor="select-species">Amount discarded</label>
+          <label htmlFor={`amount-discarded-${id}`}>Amount discarded</label>
           <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divId="comp-details-edit-y-coordinate-div"
+            id={`amount-discarded-${id}`}
+            divid={`amount-discarded-${id}-div`}
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
@@ -168,10 +173,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor="select-species">Discard method</label>
+          <label htmlFor={`discard-method-${id}`}>Discard method</label>
           <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divId="comp-details-edit-y-coordinate-div"
+            id={`discard-method-${id}`}
+            divid={`discard-method-${id}-div`}
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"

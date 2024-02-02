@@ -43,7 +43,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, update, remove }) => {
           <label htmlFor="select-species">Ear Tag</label>
           <CompInput
             id="comp-details-edit-y-coordinate-input"
-            divId="comp-details-edit-y-coordinate-div"
+            divid="comp-details-edit-y-coordinate-div"
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
