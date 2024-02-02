@@ -35,14 +35,13 @@ export const EquipmentItem: FC<IEquipmentItem> = ({
           <h6>{equipment.type?.label}</h6>
           {isActive && <div>Active</div>}
         </div>
-        <div 
+        <button
           className="equipment-item-edit" 
-          role="button" 
           onClick={() => handleEdit(equipment)}
         >
           <span>Edit</span>
           <BsPencil />
-        </div>
+        </button>
       </div>
       <div className="equipment-item-content">
         <div className="label">Address</div>

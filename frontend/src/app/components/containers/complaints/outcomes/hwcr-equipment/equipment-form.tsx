@@ -141,13 +141,11 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
       if(setEquipmentData) setEquipmentData(newEquipmentArr)
       setIsInEditMode(false);
     }
-    else {
-      if(setEquipmentData && setShowEquipmentForm) {
-        setEquipmentData((prevState: Array<IEquipment>) => [...prevState, newEquipment]);
-        setShowEquipmentForm(false);
-      }
-      else return
+    if(!isInEditMode && setEquipmentData && setShowEquipmentForm) {
+      setEquipmentData((prevState: Array<IEquipment>) => [...prevState, newEquipment]);
+      setShowEquipmentForm(false);
     }
+    else return
   }
 
   const handleCancelEditEquipment = () => {
@@ -195,11 +193,10 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                   value={address}
                 />
                 {complaintData?.locationSummary && 
-                  <div 
-                    role="button"
+                  <button
                     className="copy-text" 
                     onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
-                  >Copy location from complaint details</div>
+                  >Copy location from complaint details</button>
                 }
               </div>
             </div>
@@ -219,8 +216,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                   maxLength={120}
                 />
                 {hasCoordinates &&
-                  <div
-                    role="button"
+                  <button
                     className="copy-text"
                     onClick={() => {
                       setXCoordinate(complaintData?.location?.coordinates[0].toString() ?? '')
@@ -228,7 +224,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                     }}
                   >
                     Copy location from complaint details
-                  </div>
+                  </button>
                 }
               </div>
             </div>
