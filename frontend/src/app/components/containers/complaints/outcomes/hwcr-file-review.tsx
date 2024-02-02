@@ -104,7 +104,7 @@ export const HWCRFileReview: FC = () => {
                                 selected={new Date()}
                                 onChange={e => (e)}
                                 dateFormat="yyyy-MM-dd"
-                                wrapperClassName="comp-details-edit-calendar-input disabled-calendar"
+                                wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
                                 showIcon
                                 readOnly
                                 disabled

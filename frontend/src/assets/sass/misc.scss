@@ -220,12 +220,6 @@
   margin: 10px;
   position: absolute;
 }
-
-.disabled-calendar > .react-datepicker__view-calendar-icon input
-{
-  background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 90%);
-}
   
 .datepicker-disabled > .react-datepicker__view-calendar-icon input{
   background-color: hsl(0, 0%, 95%);
