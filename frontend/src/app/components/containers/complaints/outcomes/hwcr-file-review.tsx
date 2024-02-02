@@ -100,7 +100,7 @@ export const HWCRFileReview: FC = () => {
                         <div className="comp-details-label-input-pair" id="file-review-time-pair-id">
                             <label htmlFor="file-review-time-pair-id">Date</label>
                             <DatePicker
-                                id="supporting-notes-time-pair-id"
+                                id="file-review-time-pair-id"
                                 selected={new Date()}
                                 onChange={e => (e)}
                                 dateFormat="yyyy-MM-dd"
@@ -137,7 +137,7 @@ export const HWCRFileReview: FC = () => {
                     <div className="comp-details-edit-column">
                         <div className="comp-details-edit-container">
                             <div className="comp-details-edit-column">
-                                <div className="comp-details-label-input-pair" id="review-required-supporting-notes-pair-id">
+                                <div className="comp-details-label-input-pair" id="review-required-file-review-notes-pair-id">
                                     <label className="form-check-label" htmlFor="review-required">Review required</label>
                                     <input className="form-check-input" id="review-required" type="checkbox" checked disabled />
                                 </div>
@@ -156,13 +156,13 @@ export const HWCRFileReview: FC = () => {
                             </div>
                         </div>
                         <div className="comp-details-edit-container">
-                            <div className="comp-details-label-input-pair" id="review-complete-supporting-notes-id">
+                            <div className="comp-details-label-input-pair" id="review-complete-file-review-notes-id">
                                 <label className="form-check-label" htmlFor="review-complete">Review complete</label>
                                 <input className="form-check-input" id="review-complete" type="checkbox" checked disabled />
                             </div>
                         </div>
                         <div className="comp-details-edit-container">
-                            <div className="comp-details-edit-column" id="complaint-supporting-officer-div">
+                            <div className="comp-details-edit-column" id="complaint-file-review-officer-div">
                                 <div className="comp-details-edit-container">
                                     <div className="comp-details-edit-column">
                                         <div className="comp-details-label-div-pair">
@@ -175,12 +175,12 @@ export const HWCRFileReview: FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="comp-details-edit-column" id="complaint-supporting-date-div">
+                                    <div className="comp-details-edit-column" id="complaint-file-review-date-div">
                                         <div className="comp-details-label-div-pair">
-                                            <label className="comp-details-inner-content-label" htmlFor="file-review-supporting-date">Date</label>
+                                            <label className="comp-details-inner-content-label" htmlFor="file-review-date">Date</label>
                                             <div
                                                 className="bi comp-margin-right-xxs comp-details-inner-content"
-                                                id="file-review-supporting-date"
+                                                id="file-review-date"
                                             >{formatDate(new Date().toString())}
                                             </div>
                                         </div>
