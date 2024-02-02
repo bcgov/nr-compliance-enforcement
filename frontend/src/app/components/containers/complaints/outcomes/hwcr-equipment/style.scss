@@ -1,0 +1,73 @@
+@import "../../../../../../assets/sass/colours.scss";
+
+label {
+  padding-left: 0px !important;
+}
+
+.copy-text {
+  font-size: 14px;
+  color: $gray-500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.edit-input {
+  flex: 1;
+  margin: 14px 0px;
+}
+
+.equipment-item {
+  position: relative;
+
+  .status-bar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color:#328443;
+    width: 12px;
+    height: 100%;
+  }
+
+  .equipment-item-header {
+    display: flex;
+    justify-content: space-between;
+  
+    .title {
+      display: flex;
+  
+      h6 {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 120%;
+        margin-right: 16px;
+      }
+      div {
+        color: #328443;
+        background-color: #EAF3EC;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 0px 12px;
+        line-height: 24px;
+      }
+    }
+  
+    .equipment-item-edit {
+      font-size: 14px;
+      cursor: pointer;
+  
+      span {
+        margin-right: 7px;
+      }
+    }
+  }
+  
+  .equipment-item-content {
+    display: flex;
+    margin: 16px 0px;
+    
+    .label {
+      color: $gray-500;
+      min-width: 155px;
+    }
+  }
+}

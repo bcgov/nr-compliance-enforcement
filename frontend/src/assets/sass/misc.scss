@@ -161,6 +161,22 @@
   margin-right: 5px;
 }
 
+.comp-pink-avatar-sm::before {
+  color: $bc-standard-12-600;
+  background: $bc-standard-12-200;
+  opacity: 1;
+  content: attr(data-initials-sm);
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 16px;
+  text-align: center;
+  margin-right: 5px;
+}
+
 .comp-blue-avatar-sm {
   span {
     position: relative;
@@ -169,6 +185,14 @@
 }
 
 .comp-orange-avatar-sm {
+  span {
+    position: relative;
+    top: 3px;
+  }
+}
+
+.comp-pink-avatar-sm {
+  margin-top: -12px;
   span {
     position: relative;
     top: 3px;

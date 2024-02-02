@@ -116,6 +116,7 @@ export const HWCRComplaintAssessment: FC = () => {
                         <DatePicker
                             id="complaint-outcome-date"
                             showIcon
+                            maxDate={new Date()}
                             onChange={handleDateChange}
                             selected={selectedDate}
                             dateFormat="yyyy-MM-dd"
