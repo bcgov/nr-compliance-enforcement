@@ -191,6 +191,8 @@ export const AddDrug: FC<props> = ({
         </Col>
         <Col></Col>
       </Row>
+
+      <hr/>
     </div>
   );
 };

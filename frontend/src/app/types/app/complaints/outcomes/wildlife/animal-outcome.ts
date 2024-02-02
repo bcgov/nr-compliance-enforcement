@@ -1,4 +1,5 @@
 import { AnimalTag } from "./animal-tag";
+import { DrugAuthorization } from "./drug-authorization";
 import { DrugUsed } from "./drug-used";
 
 export interface AnimalOutcome {
@@ -10,7 +11,8 @@ export interface AnimalOutcome {
 
   tags: Array<AnimalTag>;
   drugs: Array<DrugUsed>;
-
+  drugAuthorization?: DrugAuthorization
+  
   outcome: string;
   officer: string;
   date?: Date;

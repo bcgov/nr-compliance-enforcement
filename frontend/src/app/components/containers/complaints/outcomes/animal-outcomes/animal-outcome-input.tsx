@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import DatePicker from "react-datepicker";
 import {
@@ -12,7 +12,7 @@ import {
 import { Button, Col, Row } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { pad } from "../../../../../common/methods";
+import { getSelectedOfficer, pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { AddEarTag } from "./add-ear-tag";
 import { BsPlusCircle } from "react-icons/bs";
@@ -20,6 +20,9 @@ import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife
 import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import { from } from "linq-to-typescript";
 import { AddDrug } from "./add-drug";
+import { DrugAuthorization } from "./drug-authorization";
+import { selectComplaint } from "../../../../../store/reducers/complaints";
+import { WildlifeComplaint } from "../../../../../types/app/complaints/wildlife-complaint";
 
 type props = {
   animalCount: number;
@@ -29,6 +32,8 @@ type props = {
 };
 
 export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel }) => {
+  const { delegates } = useAppSelector(selectComplaint) as WildlifeComplaint ;
+
   const species = useAppSelector(selectSpeciesCodeDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -37,6 +42,8 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
 
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+
+  const [assignedOfficer, setAssignedOfficer] = useState<string | undefined>("")
 
   const [data, applyData] = useState<AnimalOutcome>({
     species: "",
@@ -49,6 +56,19 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     outcome: "",
     officer: "",
   });
+
+  useEffect(() => { 
+    if(delegates && from(delegates).any()){ 
+      const assigned = delegates.find(item => item.type === "ASSIGNEE")
+
+      if(assigned !== null){ 
+        
+        setAssignedOfficer(assigned?.person.id.toString());
+
+        console.log(assigned)
+      }
+    }
+  }, [delegates])
 
   const isValid = (): boolean => {
     const { species, sex, age, threatLevel, conflictHistory, outcome, officer, date } = data;
@@ -67,9 +87,8 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
   };
 
   const updateModel = (property: string, value: string | Date | Array<AnimalTag | DrugUsed> | null | undefined) => {
-    const update = { ...data, [property]: value };
-
-    applyData(update);
+    const model = { ...data, [property]: value };
+    applyData(model);
   };
 
   const save = () => {
@@ -93,12 +112,21 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     const { tags } = data;
 
     if (tags && from(tags).any()) {
+      let isLeftEarUsed = false;
+
+      const selected = tags.find((item) => item.ear === "L");
+      if (selected) {
+        isLeftEarUsed = true;
+      }
+
       return from(tags)
         .orderBy((item) => item.id)
         .toArray()
         .map((item) => {
           const { id } = item;
-          return <AddEarTag {...item} update={updateEarTag} remove={removeEarTag} key={id} />;
+          return (
+            <AddEarTag {...item} isLeftEarUsed={isLeftEarUsed} update={updateEarTag} remove={removeEarTag} key={id} />
+          );
         });
     }
   };
@@ -155,13 +183,22 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     const { drugs } = data;
 
     if (drugs && from(drugs).any()) {
-      return from(drugs)
-        .orderBy((item) => item.id)
-        .toArray()
-        .map((item) => {
-          const { id } = item;
-          return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
-        });
+      const { drugAuthorization } = data;
+      const { officer, date } = drugAuthorization || { officer: "", date: undefined };
+
+      return (
+        <>
+          {from(drugs)
+            .orderBy((item) => item.id)
+            .toArray()
+            .map((item) => {
+              const { id } = item;
+              return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
+            })}
+
+          <DrugAuthorization officer={officer} date={date} agency={agency} update={updateModel} />
+        </>
+      );
     }
   };
 

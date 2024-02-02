@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
@@ -10,12 +10,23 @@ type props = {
   id: number;
   ear: string;
   number: string;
+  isLeftEarUsed: boolean;
   update: Function;
   remove: Function;
 };
 
-export const AddEarTag: FC<props> = ({ id, ear, number, update, remove }) => {
+export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, remove }) => {
   const ears = useAppSelector(selectEarDropdown);
+  const leftEar = ears.find((ear) => ear.value === "L");
+  const rightEar = ears.find((ear) => ear.value === "R");
+
+  let selectedEar = ear === "R" ? rightEar : leftEar;
+
+  useEffect(() => {
+    if (!ear) {
+      updateModel("ear", isLeftEarUsed ? "R" : "L");
+    }
+  }, [ear, isLeftEarUsed]);
 
   const isValid = (): boolean => {
     let isValid = true;
@@ -42,7 +53,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, update, remove }) => {
         <Col>
           <label htmlFor="select-species">Ear Tag</label>
           <CompInput
-            id="comp-details-edit-y-coordinate-input"
+            id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
             type="input"
             placeholder="Enter number"
@@ -59,13 +70,14 @@ export const AddEarTag: FC<props> = ({ id, ear, number, update, remove }) => {
         <Col>
           <label htmlFor="select-ears"></label>
           <CompSelect
-            id="select-ears"
+            id={`comp-ear-tag-${id}`}
             options={ears}
             enableValidation={false}
             placeholder={"Please select"}
             onChange={(evt) => {
               updateModel("ear", evt?.value);
             }}
+            value={selectedEar}
           />
         </Col>
         <Col style={{ textAlign: "left" }} className="mt-auto mb-2">
