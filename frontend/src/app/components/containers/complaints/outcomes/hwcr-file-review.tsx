@@ -22,12 +22,18 @@ export const HWCRFileReview: FC = () => {
     };
 
     const handleFileReviewSave = () => {
-        setComponentState(DISPLAY_STATE);
+        if(componentState === EDIT_STATE)
+        {
+            setComponentState(DISPLAY_STATE);
+        }
     };
 
     const handleFileReviewCancel = () => {
-        setComponentState(COMPLETE_REVIEW_STATE);
-        setReviewCompleted(false);
+        if(componentState === EDIT_STATE)
+        {
+            setComponentState(COMPLETE_REVIEW_STATE);
+            setReviewCompleted(false);
+        }
     };
 
     const handleReviewRequiredClick = () => {
@@ -106,7 +112,7 @@ export const HWCRFileReview: FC = () => {
                         </div>
                     </div>
                 </div>)}
-                {componentState === EDIT_STATE && (
+                {componentState !== DISPLAY_STATE && (
                 <div className="comp-outcome-report-container">
                     <div className="comp-outcome-report-actions">
                         <Button
