@@ -102,7 +102,7 @@ export const HWCRComplaintAssessment: FC = () => {
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair">
               <label htmlFor="outcome-officer">Officer</label>
-              <CompSelect id="outcome-officer" className="comp-details-input" classNamePrefix="comp-select" options={assignableOfficers} enableValidation={false} value={selectedOfficer} placeholder="Select" onChange={(e) => (e)} />
+              <CompSelect id="outcome-officer" className="comp-details-input" classNamePrefix="comp-select" options={assignableOfficers} enableValidation={false} value={selectedOfficer} placeholder="Select "onChange={(officer: any) => setSelectedOfficer(officer)} />
             </div>
           </div>
           <div className="comp-details-edit-column comp-details-right-column">
