@@ -135,7 +135,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
     }
     if(isInEditMode) {
       const newEquipmentArr = equipmentData?.map((equipment,i) => {
-        if(i === indexItem) return equipment = newEquipment
+        if(i === indexItem) return newEquipment
         else return equipment
       })
       if(setEquipmentData) setEquipmentData(newEquipmentArr)
@@ -146,6 +146,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
         setEquipmentData((prevState: Array<IEquipment>) => [...prevState, newEquipment]);
         setShowEquipmentForm(false);
       }
+      else return
     }
   }
 
@@ -195,6 +196,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                 />
                 {complaintData?.locationSummary && 
                   <div 
+                    role="button"
                     className="copy-text" 
                     onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
                   >Copy location from complaint details</div>
@@ -218,6 +220,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                 />
                 {hasCoordinates &&
                   <div
+                    role="button"
                     className="copy-text"
                     onClick={() => {
                       setXCoordinate(complaintData?.location?.coordinates[0].toString() ?? '')
