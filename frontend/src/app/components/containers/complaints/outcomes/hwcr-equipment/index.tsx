@@ -1,4 +1,3 @@
-import React from "react";
 import { FC, useState, memo } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
@@ -21,7 +20,7 @@ export const HWCREquipment: FC = memo(() => {
       {equipmentData.map((equipment,indexItem)=>
         isInEditMode && equipment.isEdit? 
           <EquipmentForm
-            key={indexItem}
+            key={equipment.id}
             isInEditMode={isInEditMode}
             setIsInEditMode={setIsInEditMode}
             equipmentItemData={editEquipment}
@@ -32,7 +31,7 @@ export const HWCREquipment: FC = memo(() => {
           />
           :
           <EquipmentItem
-            key={indexItem}
+            key={equipment.id}
             isInEditMode={isInEditMode} 
             equipment={equipment}
             setIsInEditMode={setIsInEditMode}

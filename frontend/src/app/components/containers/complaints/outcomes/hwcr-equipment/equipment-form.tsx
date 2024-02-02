@@ -13,7 +13,8 @@ import { IEquipment } from "./types";
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
 
-//Todo: get data from GraphQL
+import { v4 as uuidv4 } from 'uuid';
+
 const equipmentTypeList = [
   {
     label: 'Bear snare',
@@ -122,6 +123,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
 
   const handleSaveEquipment = () => {
     const newEquipment = {
+      id: isInEditMode? equipmentItemData?.id : uuidv4(),
       type,
       address,
       xCoordinate,
@@ -156,7 +158,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
   }
 
   const hasCoordinates = (complaintData?.location?.coordinates[0] !== 0 || 
-    complaintData?.location?.coordinates[1] !== 0) ? true : false
+    complaintData?.location?.coordinates[1] !== 0)
 
   return (
     <div className="comp-outcome-report-complaint-assessment">
@@ -164,7 +166,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
         <Row>
           <Col xs={12} md={6}>
             <div className="comp-details-label-input-pair">
-              <label>Equipment type</label>
+              <label htmlFor="equipment-type-select">Equipment type</label>
               <CompSelect
                 id="equipment-type-select"
                 classNamePrefix="comp-select"
@@ -181,10 +183,11 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
         <Row>
           <Col xs={12} md={6}>
             <div className="comp-details-label-input-pair">
-              <label style={{ marginTop: complaintData?.locationSummary? '-21px' : '0px' }}>Address</label>
+              <label htmlFor="equipment-address" style={{ marginTop: complaintData?.locationSummary? '-21px' : '0px' }}>Address</label>
               <div className="edit-input">
                 <input
                   type="text"
+                  id="equipment-address"
                   className="comp-form-control"
                   onChange={(e) => setAddress(e.target.value)}
                   maxLength={120}
@@ -203,10 +206,11 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
         <Row>
           <Col xs={12} md={6}>
             <div className="comp-details-label-input-pair">
-            <label style={{ marginTop: hasCoordinates? '-20px' :'0px' }}>X Coordinate</label>
+            <label htmlFor="equipment-x-coordinate" style={{ marginTop: hasCoordinates? '-20px' :'0px' }}>X Coordinate</label>
               <div className="edit-input">
                 <input
                   type="text"
+                  id="equipment-x-coordinate"
                   className="comp-form-control"
                   onChange={(e) => setXCoordinate(e.target.value)}
                   value={xCoordinate?? ''}
@@ -228,10 +232,11 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
           </Col>
           <Col xs={12} md={6}>
             <div className="comp-details-label-input-pair">
-              <label>Y Coordinate</label>
+              <label htmlFor="equipment-y-coordinate">Y Coordinate</label>
               <div className="edit-input">
                 <input
                   type="text"
+                  id="equipment-y-coordinate"
                   className="comp-form-control"
                   onChange={(e) => setYCoordinate(e.target.value)}
                   value={yCoordinate?? ''}
