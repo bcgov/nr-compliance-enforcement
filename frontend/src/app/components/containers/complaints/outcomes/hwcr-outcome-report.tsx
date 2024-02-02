@@ -4,6 +4,7 @@ import { HWCRPreventionEducation } from "./hwcr-prevention-education";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCROutcomeByAnimal } from "./hwcr-outcome-by-animal";
 import { HWCRFileReview } from "./hwcr-file-review";
+import { HWCRSupplementalNotes } from "./hwcr-supplemental-notes";
 
 export const HWCROutcomeReport: FC = () => {  
     return (
@@ -16,6 +17,7 @@ export const HWCROutcomeReport: FC = () => {
         <HWCRPreventionEducation/>
         <HWCREquipment/>
         <HWCROutcomeByAnimal/>
+        <HWCRSupplementalNotes/>
         <HWCRFileReview/>
       </div>
     );

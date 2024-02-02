@@ -60,7 +60,7 @@ export const HWCRComplaintAssessment: FC = () => {
   }, [complaintData]);
       
       const justificationLabelClass = actionRequired === "No" ? "comp-outcome-report-label-half-column" : "comp-outcome-report-label-half-column comp-outcome-hide";
-      const justificationEditClass = actionRequired === "No" ? "comp-outcome-report-edit-column" : "comp-outcome-report-edit-column comp-outcome-hide";
+      const justificationEditClass = actionRequired === "No" ? "comp-outcome-report-edit-column comp-outcome-report-right-column" : "comp-outcome-report-edit-column comp-outcome-report-right-column comp-outcome-hide";
 
     return (
         <div className="comp-outcome-report-block">
@@ -112,7 +112,7 @@ export const HWCRComplaintAssessment: FC = () => {
                     <div className="comp-outcome-report-label-half-column">
                         Date
                     </div>
-                    <div className="comp-outcome-report-edit-column">
+                    <div className="comp-outcome-report-edit-column comp-outcome-report-right-column">
                         <DatePicker
                             id="complaint-outcome-date"
                             showIcon

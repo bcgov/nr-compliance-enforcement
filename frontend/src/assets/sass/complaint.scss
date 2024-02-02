@@ -47,13 +47,14 @@ p {
     align-items: center;
     font-size: 16px;
 
-    .comp-details-content-label + div {
+    .comp-details-content-label+div {
       margin-top: 10px;
     }
 
     i:first-child {
       padding-right: 5px;
     }
+
     i:last-child {
       padding-left: 5px;
       padding-right: 5px;
@@ -144,6 +145,7 @@ p {
   float: right;
   cursor: pointer;
 }
+
 .comp-top-right {
   border-top-right-radius: 4px;
 }
@@ -151,6 +153,7 @@ p {
 .comp-bottom-left {
   border-bottom-left-radius: 4px;
 }
+
 .comp-bottom-right {
   border-bottom-right-radius: 4px;
 }
@@ -210,7 +213,7 @@ p {
 
   .comp-box-actions-non-header button {
     border-radius: 4px;
-    border-color:  $bc-gov-primary-400;
+    border-color: $bc-gov-primary-400;
     color: $bc-gov-primary-400;
     font-size: 14px;
   }
@@ -308,8 +311,8 @@ p {
 
 .comp-complaint-details-alert {
   display: flex;
-  justify-content:flex-start;
-  align-items:center;
+  justify-content: flex-start;
+  align-items: center;
   border-radius: 4px;
   background-color: $bc-brand-background-light-gray;
   border: 1px solid $gray-300;
@@ -322,6 +325,7 @@ p {
 
 .comp-complaint-details-header {
   margin: 24px 24px 24px 24px;
+
   h6 {
     padding-top: 0px;
     font-weight: 700;
@@ -357,11 +361,13 @@ p {
     i:first-child {
       padding-right: 5px;
     }
+
     i:last-child {
       padding-left: 5px;
       padding-right: 5px;
     }
   }
+
   .comp-attactant-badge {
     background-color: $gray-200;
     color: $black;
@@ -410,11 +416,13 @@ p {
     i:first-child {
       padding-right: 5px;
     }
+
     i:last-child {
       padding-left: 5px;
       padding-right: 5px;
     }
   }
+
   .comp-attactant-badge {
     background-color: $gray-200;
     color: $black;
@@ -509,10 +517,32 @@ p {
   display: flex;
   flex-direction: column;
   margin-right: 60px;
+  button span {
+    padding-right: 8px;
+  }
+  button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+   }
 }
 
 .comp-details-right-column {
   margin-right: 0px;
+  button span {
+    font-size: 14px;
+    padding-right: 8px;
+  }
+  button svg {
+    font-size: 14px;
+    vertical-align: text-top;
+    margin-top: 5px;
+
+   }
+}
+
+.comp-details-right-spacing {
+  margin-right: 300px;
 }
 
 .comp-details-label-input-pair {
@@ -536,6 +566,41 @@ p {
   }
 }
 
+.comp-details-label-div-pair {
+  display: flex;
+  align-items: center;
+  min-height: 70px;
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .comp-details-div {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+.comp-details-inner-content-label {
+  padding-right: 25px;
+  display: inline-block;
+}
+.comp-details-inner-content {
+  display: inline-block;
+
+  i:first-child {
+    padding-right: 5px;
+  }
+  i:last-child {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
 .required-ind {
   color: $bc-gov-danger;
   margin-left: 5px;
@@ -550,10 +615,6 @@ p {
 
 .comp-details-edit-input {
   flex: 1;
-}
-
-.comp-details-content {
-  padding-top: 7px;
 }
 
 .comp-filter-btn {
@@ -583,6 +644,7 @@ p {
   opacity: 0.5;
   margin-top: 6px;
 }
+
 // COMPLAINT DETAILS END
 
 #complaint-list {
@@ -604,10 +666,10 @@ p {
       background-color: #e4e4e4;
       border-color: $gray-400;
     }
-    
+
     th.unsortable {
       cursor: default;
-     }
+    }
   }
 
   tbody {
@@ -617,7 +679,8 @@ p {
       cursor: pointer;
     }
 
-    tr .comp-table-icons { // don't display unless row is hovered on
+    tr .comp-table-icons {
+      // don't display unless row is hovered on
       display: none;
     }
 
@@ -634,7 +697,7 @@ p {
       margin-top: 10px;
       display: block;
     }
-    
+
     // hide the date when the row is hovered on
     tr:hover .comp-table-update-date {
       display: none;
@@ -659,6 +722,7 @@ p {
     .comp-cell-expanded-location {
       max-width: 800px;
     }
+
     .comp-cell-child-actions {
       vertical-align: bottom !important;
       text-align: right !important;
@@ -729,7 +793,7 @@ p {
   border-collapse: initial;
   margin-left: 12px;
 
-  > :not(caption) > * > * {
+  > :not(caption)>*>* {
     background: $gray-500;
     background-color: $gray-200;
     border-color: $gray-500;
@@ -786,8 +850,10 @@ p {
 
 .comp-filter-pill-container {
   display: flex;
-  align-items: center; /* Vertically center items */
-  height: 46px; /* Set the container's height */
+  align-items: center;
+  /* Vertically center items */
+  height: 46px;
+  /* Set the container's height */
   width: 1330px;
   margin: 7px 0px;
 }
@@ -858,7 +924,7 @@ p {
   border-bottom: none !important;
 }
 
-.comp-cell-parent-expanded:hover + tr{  
+.comp-cell-parent-expanded:hover+tr {
   background-color: $gray-110;
 }
 
@@ -892,6 +958,7 @@ p {
 .comp-location-cell {
   width: 170px;
 }
+
 //override for horizontal dual month display
 .react-datepicker__month-container {
   float: left;
@@ -900,6 +967,7 @@ p {
 .collapsible .content {
   padding: 6px;
 }
+
 .collapsible .header {
   padding: 6px;
   cursor: pointer;
@@ -936,9 +1004,12 @@ p {
 }
 
 .no-bullets {
-  list-style-type: none; /* Remove bullets */
-  padding: 0; /* Remove padding */
-  margin: 0; /* Remove margins */
+  list-style-type: none;
+  /* Remove bullets */
+  padding: 0;
+  /* Remove padding */
+  margin: 0;
+  /* Remove margins */
 }
 
 .hidden {
@@ -1144,6 +1215,7 @@ p {
 .input-field-select__option {
   min-height: 35px;
 }
+
 .error-message {
   color: $bc-gov-danger;
 }
@@ -1228,4 +1300,51 @@ p {
 
 .comp-filter-search {
   margin-left: 16px;
+}
+
+.comp-outcome-report-file-review {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  border: 1px solid $gray-300;
+  border-radius: 3px;
+  padding: 24px;
+}
+
+.comp-outcome-report-file-review>.comp-details-content-label {
+  padding-right: 25px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.comp-outcome-report-file-review>.comp-details-content {
+  margin-bottom: 16px;
+  display: inline-block;
+
+  i:first-child {
+    padding-right: 5px;
+  }
+
+  i:last-child {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+.sub-section-edit-button {
+  color: black;
+  border-color: white;
+}
+
+.sub-section-edit-button:hover {
+  color: black;
+  background-color: white;
+  border-color: white;
+  text-decoration-line: underline;
+}
+
+.sub-section-edit-button:not(:disabled):not(.disabled):active:focus {
+  color: black;
+  background-color: white;
+  border-color: white;
+  text-decoration-line: underline;
 }

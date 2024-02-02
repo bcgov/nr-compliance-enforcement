@@ -509,3 +509,12 @@ button.modal-buttons {
   margin-left: 24px;
   margin-right: 24px;
 }
+
+p {
+  word-break: break-all;
+  white-space: normal;
+}
+
+.supporting-width {
+  width: 25%;
+}
