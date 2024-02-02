@@ -69,14 +69,14 @@ export const HWCRFileReview: FC = () => {
             <h6>File review</h6>
             <div className="comp-outcome-report-file-review">
                 {(componentState === REQUEST_REVIEW_STATE || componentState === COMPLETE_REVIEW_STATE || componentState === EDIT_STATE) && (<div className="comp-details-edit-container">
-                    <div className="comp-details-label-input-pair" id="review-required-supporting-notes-pair-id">
+                    <div className="comp-details-label-input-pair" id="review-required-file-review-pair-id">
                         <label className="form-check-label" htmlFor="review-required">Review required</label>
                         <input className="form-check-input" id="review-required" type="checkbox" checked={reviewRequired} onChange={handleReviewRequiredClick} />
                     </div>
                 </div>)}
                 {(componentState === COMPLETE_REVIEW_STATE || componentState === EDIT_STATE) && (
                 <div className="comp-details-edit-container">
-                    <div className="comp-details-label-input-pair" id="review-complete-supporting-notes-id">
+                    <div className="comp-details-label-input-pair" id="review-complete-file-review-id">
                         <label className="form-check-label" htmlFor="review-complete">Review complete</label>
                         <input className="form-check-input" id="review-complete" type="checkbox" checked={reviewCompleted} onClick={handleReviewCompleteClick} />
                     </div>
@@ -84,10 +84,10 @@ export const HWCRFileReview: FC = () => {
                 {componentState === EDIT_STATE && (
                 <div className="comp-details-edit-container">
                     <div className="comp-details-edit-column">
-                        <div className="comp-details-label-input-pair" id="supporting-notes-pair-id">
-                            <label id="officer-supporting-notes-pair-id" htmlFor="officer-supporting-notes-select-id">Officer</label>
+                        <div className="comp-details-label-input-pair" id="file-review-pair-id">
+                            <label id="officer-file-review-pair-id" htmlFor="officer-file-review-select-id">Officer</label>
                             <CompSelect
-                                id="officer-supporting-notes-select-id"
+                                id="officer-file-review-select-id"
                                 classNamePrefix="comp-select"
                                 className="comp-details-input"
                                 isDisabled={true}
@@ -97,8 +97,8 @@ export const HWCRFileReview: FC = () => {
                         </div>
                     </div>
                     <div className="comp-details-edit-column comp-details-right-column">
-                        <div className="comp-details-label-input-pair" id="supporting-notes-time-pair-id">
-                            <label htmlFor="supporting-notes-time-pair-id">Date</label>
+                        <div className="comp-details-label-input-pair" id="file-review-time-pair-id">
+                            <label htmlFor="file-review-time-pair-id">Date</label>
                             <DatePicker
                                 id="supporting-notes-time-pair-id"
                                 selected={new Date()}
@@ -116,16 +116,16 @@ export const HWCRFileReview: FC = () => {
                 <div className="comp-outcome-report-container">
                     <div className="comp-outcome-report-actions">
                         <Button
-                            id="supporting-notes-cancel-button"
-                            title="Cancel Supporting Notes"
+                            id="file-review-cancel-button"
+                            title="Cancel File Review"
                             className="comp-outcome-cancel"
                             onClick={handleFileReviewCancel}
                         >
                             Cancel
                         </Button>
                         <Button
-                            id="supporting-notes-save-button"
-                            title="Save Supporting Notes"
+                            id="file-review-save-button"
+                            title="Save File Review"
                             className="comp-outcome-save"
                             onClick={handleFileReviewSave}
                         >
