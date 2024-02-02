@@ -586,6 +586,36 @@ p {
     }
   }
 }
+
+.comp-details-label-checkbox-div-pair {
+  display: flex;
+  min-height: 70px;
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .checkbox-label {
+    max-width: 100%;
+    color: black
+  }
+
+  .check-spacing {
+    padding: 10px 0;
+  }
+
+  .comp-details-div {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
 .comp-details-inner-content-label {
   padding-right: 25px;
   display: inline-block;
