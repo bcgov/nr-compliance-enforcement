@@ -1,10 +1,10 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectEarDropdown } from "../../../../../store/reducers/code-table";
-import { BsXCircle } from "react-icons/bs";
+import { BsXCircle, BsFillXCircleFill } from "react-icons/bs";
 
 type props = {
   id: number;
@@ -81,7 +81,11 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           />
         </Col>
         <Col style={{ textAlign: "left" }} className="mt-auto mb-2">
-          <BsXCircle size={24} onClick={() => remove(id)} />
+          {/* <BsXCircle size={24} onClick={() => remove(id)} className="remove" /> */}
+          <div className="icon-container" onClick={() => remove(id)}>
+            <BsXCircle size={24} />
+            <BsFillXCircleFill size={24} />
+          </div>
         </Col>
         <Col></Col>
         <Col></Col>

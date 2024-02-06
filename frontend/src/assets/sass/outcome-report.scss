@@ -178,4 +178,16 @@
   .column:last-child {
     padding-right: 0px;
   }
+
+  .icon-container {
+    overflow: hidden;
+    width: 24px;
+    height: 25px;
+    white-space: nowrap;
+  }
+  
+  .icon-container:hover > *:first-child,
+  .icon-container:hover > *:last-child {
+    transform: translateX(-100%);
+  }
 }
