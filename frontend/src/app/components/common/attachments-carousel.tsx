@@ -19,6 +19,7 @@ import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
+import { getFileExtension, loadGifFrameList } from "../../common/methods";
 
 type Props = {
   complaintIdentifier?: string;
@@ -87,8 +88,8 @@ export const AttachmentsCarousel: FC<Props> = ({
   const onFileSelect = (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    selectedFilesArray.forEach((file) => {
-      newSlides.push(createSlideFromFile(file));
+    selectedFilesArray.forEach(async (file) => {
+      newSlides.push(await createSlideFromFile(file));
     });
     
     removeInvalidFiles(selectedFilesArray);
@@ -104,9 +105,31 @@ export const AttachmentsCarousel: FC<Props> = ({
       onFilesSelected(validFiles);
     }
   }
+  
 
   // given a file, create a carousel slide
-  const createSlideFromFile = (file: File) => {
+  const createSlideFromFile = async (file: File) => {
+/*
+    const extension = getFileExtension(file.name);
+    let fileIcon;
+    if(extension === "gif")
+    {
+      console.log("test1");
+      const gifFrames = await loadGifFrameList(URL.createObjectURL(file));
+      gifFrames[0].toBlob(function(blob){
+        fileIcon = blob;
+        console.log("test3");
+      },'image/png');
+      console.log("test2");
+    }
+    else
+    {
+      console.log("test4");
+      fileIcon = URL.createObjectURL(file);
+    }
+
+    console.log("fileIcon: " + fileIcon);*/
+
     const newSlide: COMSObject = {
       name: encodeURIComponent(file.name),
       id: uuidv4(), // generate a unique identifier in case the user uploads non-unique file names.  This allows us to know which one the user wants to delete
@@ -116,7 +139,8 @@ export const AttachmentsCarousel: FC<Props> = ({
       bucketId: "",
       createdBy: "",
       updatedBy: "",
-      pendingUpload: true
+      pendingUpload: true,
+      fileIcon: URL.createObjectURL(file),
     };
 
     // check for large file sizes      

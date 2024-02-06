@@ -1,3 +1,5 @@
+import { StringIterator } from "lodash";
+
 export interface COMSObject {
   id?: string;
   path?: string;
@@ -9,6 +11,7 @@ export interface COMSObject {
   createdAt?: Date;
   updatedBy?: string;
   updatedAt?: Date;
-  pendingUpload?: boolean
-  errorMesage?: string
+  pendingUpload?: boolean;
+  fileIcon?: string;
+  errorMesage?: string;
 }

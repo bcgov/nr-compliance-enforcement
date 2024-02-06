@@ -24,6 +24,7 @@ export const AttachmentSlide: FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
 
+  console.log("attachment: " + JSON.stringify(attachment));
   // download attachment
   const handleAttachmentClick = async (objectid: string, filename: string) => {
     const parameters = generateApiParameters(
@@ -68,7 +69,7 @@ export const AttachmentSlide: FC<Props> = ({
           {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(attachment)}  />}
         </div>
         <div className="top-section">
-        <AttachmentIcon filename={attachment.name}/>
+        <AttachmentIcon filename={attachment.name} fileIcon={attachment.fileIcon}/>
         </div>
         <div className="bottom-section">
           <div className="slide_text slide_file_name" >{decodeURIComponent(attachment.name)}</div>
