@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
@@ -28,16 +28,6 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
     }
   }, [ear, isLeftEarUsed]);
 
-  const isValid = (): boolean => {
-    let isValid = true;
-
-    if (!number || !ear) {
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
   const updateModel = (property: string, value: string | undefined) => {
     if (value) {
       const source = { id, ear, number };
@@ -55,10 +45,11 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           <CompInput
             id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
-            type="input"
+            type="number"
             placeholder="Enter number"
             inputClass="comp-form-control"
             value={number}
+            maxLength={4}
             onChange={(evt: any) => {
               const {
                 target: { value },
@@ -80,9 +71,8 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
             value={selectedEar}
           />
         </Col>
-        <Col style={{ textAlign: "left" }} className="mt-auto mb-2">
-          {/* <BsXCircle size={24} onClick={() => remove(id)} className="remove" /> */}
-          <div className="icon-container" onClick={() => remove(id)}>
+        <Col className="mt-auto mb-2">
+          <div className="comp-outcome-button-container" onClick={() => remove(id)}>
             <BsXCircle size={24} />
             <BsFillXCircleFill size={24} />
           </div>

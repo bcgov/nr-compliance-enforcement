@@ -5,37 +5,46 @@ import { from } from "linq-to-typescript";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { AnimalOutcomeInput } from "./animal-outcomes/animal-outcome-input";
 import { AnimalOutcome } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
+import { selectComplaint } from "../../../../store/reducers/complaints";
+import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
+import { AnimalOutcomeItem } from "./animal-outcomes/animal-outcome-item";
 
 export const HWCROutcomeByAnimal: FC = () => {
-  const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
+  const complaint = useAppSelector(selectComplaint);
 
-  const [agency, setAgency] = useState<string>("");
+  const { species, delegates, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
   const [animals, setAnimals] = useState<Array<AnimalOutcome>>([]);
   const [showForm, setShowForm] = useState(false);
+  const [assigned, setAssigned] = useState("");
 
   useEffect(() => {
-    console.log(ownedByAgencyCode)
-    if (ownedByAgencyCode) {
-        const { agency } = ownedByAgencyCode;
-        
-        setAgency(!agency ? "" : agency)
+    if (delegates && from(delegates).any()) {
+      const assigned = delegates.find((item) => item.type === "ASSIGNEE");
+      if (assigned && assigned?.person !== null) {
+        const {
+          person: { id },
+        } = assigned;
+        setAssigned(id);
+      }
     }
-  }, [ownedByAgencyCode]);
+  }, [complaint]);
 
   const renderAnimals = () => {
     if (animals && from(animals).any()) {
-      return <>animal list</>;
+      return animals.map(outcome => {
+        const { id } = outcome;
+        return <AnimalOutcomeItem {...outcome} agency={agency} key={id}/>
+      })
     }
   };
 
   const add = (model: AnimalOutcome) => {
     const update = [...animals, model];
     setAnimals(update);
+    setShowForm(false);
   };
 
   const cancel = () => {
-    setAnimals([]);
     setShowForm(false);
   };
 
@@ -57,7 +66,14 @@ export const HWCROutcomeByAnimal: FC = () => {
             </Button>
           </>
         ) : (
-          <AnimalOutcomeInput animalCount={1 + animals.length} agency={agency} add={add} cancel={cancel} />
+          <AnimalOutcomeInput
+            animalCount={1 + animals.length}
+            agency={agency}
+            assigned={assigned}
+            species={species}
+            add={add}
+            cancel={cancel}
+          />
         )}
       </div>
     </div>

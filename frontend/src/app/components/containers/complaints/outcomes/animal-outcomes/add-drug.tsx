@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
-import { BsXCircle } from "react-icons/bs";
+import { BsFillXCircleFill, BsXCircle } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 
@@ -138,8 +138,11 @@ export const AddDrug: FC<props> = ({
             }}
           />
         </Col>
-        <Col style={{ textAlign: "left" }} className="mt-auto mb-2">
-          <BsXCircle size={24} onClick={() => remove(id)} />
+        <Col className="mt-auto mb-2">
+          <div className="comp-outcome-button-container" onClick={() => remove(id)}>
+            <BsXCircle size={24} />
+            <BsFillXCircleFill size={24} />
+          </div>
         </Col>
       </Row>
       <Row>
@@ -192,7 +195,7 @@ export const AddDrug: FC<props> = ({
         <Col></Col>
       </Row>
 
-      <hr/>
+      <hr />
     </div>
   );
 };

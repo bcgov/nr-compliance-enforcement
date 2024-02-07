@@ -4,21 +4,29 @@ import { CompSelect } from "../../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import Option from "../../../../../types/app/option";
 
 type Props = {
-  officer: string;
+  assigned: string | null;
   date?: Date;
   agency: string;
-
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+
+  const getValue = (property: string): Option | undefined => {
+    switch (property) {
+      case "officer": {
+        return officers.find((item) => item.value === assigned);
+      }
+    }
+  };
 
   const updateModel = (property: string, value: string | Date | null | undefined) => {
     if (value) {
-      const source = { officer, date };
+      const source = { officer: assigned, date };
       const authorization = { ...source, [property]: value };
 
       update("drugAuthorization", authorization);
@@ -41,6 +49,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) 
               options={officers}
               placeholder="Select"
               enableValidation={false}
+              value={getValue("officer")}
             />
           </div>
         </Col>

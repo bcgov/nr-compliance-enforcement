@@ -3,6 +3,8 @@ import { DrugAuthorization } from "./drug-authorization";
 import { DrugUsed } from "./drug-used";
 
 export interface AnimalOutcome {
+  id: number; 
+  
   species: string;
   sex: string;
   age: string;

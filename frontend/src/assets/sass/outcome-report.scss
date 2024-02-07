@@ -166,8 +166,8 @@
       padding-right: 0px;
       padding-left: 0px;
     }
-    flex-grow:.75;
-    align-self:stretch;
+    flex-grow: 0.75;
+    align-self: stretch;
     padding: 6px 6px 6px 6px;
   }
 
@@ -179,15 +179,15 @@
     padding-right: 0px;
   }
 
-  .icon-container {
+  .comp-outcome-button-container {
     overflow: hidden;
     width: 24px;
     height: 25px;
     white-space: nowrap;
   }
-  
-  .icon-container:hover > *:first-child,
-  .icon-container:hover > *:last-child {
+
+  .comp-outcome-button-container:hover > *:first-child,
+  .comp-outcome-button-container:hover > *:last-child {
     transform: translateX(-100%);
   }
 }

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import DatePicker from "react-datepicker";
 import {
@@ -12,7 +12,7 @@ import {
 import { Button, Col, Row } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { getSelectedOfficer, pad } from "../../../../../common/methods";
+import { pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { AddEarTag } from "./add-ear-tag";
 import { BsPlusCircle } from "react-icons/bs";
@@ -21,20 +21,19 @@ import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/
 import { from } from "linq-to-typescript";
 import { AddDrug } from "./add-drug";
 import { DrugAuthorization } from "./drug-authorization";
-import { selectComplaint } from "../../../../../store/reducers/complaints";
-import { WildlifeComplaint } from "../../../../../types/app/complaints/wildlife-complaint";
+import Option from "../../../../../types/app/option";
 
 type props = {
   animalCount: number;
   agency: string;
+  species: string;
+  assigned: string | null;
   add: Function;
   cancel: Function;
 };
 
-export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel }) => {
-  const { delegates } = useAppSelector(selectComplaint) as WildlifeComplaint ;
-
-  const species = useAppSelector(selectSpeciesCodeDropdown);
+export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, assigned, add, cancel }) => {
+  const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
@@ -43,9 +42,8 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
 
-  const [assignedOfficer, setAssignedOfficer] = useState<string | undefined>("")
-
   const [data, applyData] = useState<AnimalOutcome>({
+    id: animalCount,
     species: "",
     sex: "",
     age: "",
@@ -57,18 +55,53 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     officer: "",
   });
 
-  useEffect(() => { 
-    if(delegates && from(delegates).any()){ 
-      const assigned = delegates.find(item => item.type === "ASSIGNEE")
+  useEffect(() => {
+    if (species) {
+      updateModel("species", species);
+    }
 
-      if(assigned !== null){ 
-        
-        setAssignedOfficer(assigned?.person.id.toString());
+    if (assigned) {
+      updateModel("officer", assigned);
+    }
+  }, [species, assigned]);
 
-        console.log(assigned)
+  const getValue = (property: string): Option | undefined => {
+    switch (property) {
+      case "species": {
+        const { species } = data;
+        return speciesList.find((item) => item.value === species);
+      }
+      case "sex": {
+        const { sex } = data;
+        return sexes.find((item) => item.value === sex);
+      }
+
+      case "age": {
+        const { age } = data;
+        return ages.find((item) => item.value === age);
+      }
+
+      case "threatLevel": {
+        const { threatLevel } = data;
+        return threatLevels.find((item) => item.value === threatLevel);
+      }
+
+      case "conflictHistory": {
+        const { conflictHistory } = data;
+        return conflictHistories.find((item) => item.value === conflictHistory);
+      }
+
+      case "assigned": {
+        const { officer } = data;
+        return officers.find((item) => item.value === officer);
+      }
+
+      case "outcome": {
+        const { outcome } = data;
+        return outcomes.find((item) => item.value === outcome);
       }
     }
-  }, [delegates])
+  };
 
   const isValid = (): boolean => {
     const { species, sex, age, threatLevel, conflictHistory, outcome, officer, date } = data;
@@ -94,6 +127,8 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
   const save = () => {
     if (isValid()) {
       console.log("add animal");
+      add(data)
+
     } else {
       console.log("show errors");
     }
@@ -196,7 +231,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <DrugAuthorization officer={officer} date={date} agency={agency} update={updateModel} />
+          <DrugAuthorization assigned={assigned} date={date} agency={agency} update={updateModel} />
         </>
       );
     }
@@ -227,8 +262,6 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
     updateModel("drugs", update);
   };
 
-  const style = { border: "1px solid black" };
-
   return (
     <div className="comp-outcome-report-complaint-assessment">
       <div className="comp-outcome-report-container">
@@ -242,12 +275,13 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
             <label htmlFor="select-species">Species</label>
             <CompSelect
               id="select-species"
-              options={species}
+              options={speciesList}
               enableValidation={false}
               placeholder={"Please select"}
               onChange={(evt) => {
                 updateModel("species", evt?.value);
               }}
+              value={getValue("species")}
             />
           </Col>
           <Col>
@@ -260,6 +294,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
               onChange={(evt) => {
                 updateModel("sex", evt?.value);
               }}
+              value={getValue("sex")}
             />
           </Col>
           <Col>
@@ -272,6 +307,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
               onChange={(evt) => {
                 updateModel("age", evt?.value);
               }}
+              value={getValue("age")}
             />
           </Col>
           <Col>
@@ -284,6 +320,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
               onChange={(evt) => {
                 updateModel("threatLevel", evt?.value);
               }}
+              value={getValue("threatLevel")}
             />
           </Col>
           <Col>
@@ -296,6 +333,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
               onChange={(evt) => {
                 updateModel("conflictHistory", evt?.value);
               }}
+              value={getValue("conflictHistory")}
             />
           </Col>
         </Row>
@@ -313,11 +351,10 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
         <BsPlusCircle />
         <span> Add drug</span>
       </Button>
-      {/* <AddEarTag add={() => {}} /> */}
 
       <div className="comp-outcome-report-container">Outcome</div>
       <div className="comp-outcome-report-inner-spacing">
-        <Row style={style}>
+        <Row>
           <Col className="mt-auto mb-3" md={4}>
             <CompSelect
               id="select-ears"
@@ -327,6 +364,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
               onChange={(evt) => {
                 updateModel("outcome", evt?.value);
               }}
+              value={getValue("outcome")}
             />
           </Col>
           <Col md={4}>
@@ -342,6 +380,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
                 options={officers}
                 placeholder="Select"
                 enableValidation={false}
+                value={getValue("assigned")}
               />
             </div>
           </Col>
@@ -380,7 +419,6 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, add, cancel
           Save
         </Button>
       </div>
-      {/* </div> */}
     </div>
   );
 };
