@@ -43,7 +43,7 @@ create table public.staging_complaint (
 	staging_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
 	staging_status_code varchar(10) NOT NULL,
 	staging_activity_code varchar(10) NOT NULL,
-	complaint_identifer varchar(20) NOT NULL,
+	complaint_identifier varchar(20) NOT NULL,
 	complaint_jsonb jsonb NOT NULL,
   create_user_id varchar(32) NOT NULL,
   create_utc_timestamp timestamp NOT NULL,
@@ -67,9 +67,10 @@ create table public.staging_metadata_mapping (
   CONSTRAINT "staging_staging_metadata_mapping_entity_code" FOREIGN KEY (entity_code) REFERENCES public.entity_code(entity_code)
 );
 
--- function to copy webeoc complaints from staging to operational tables
-CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(complaint_identifier varchar)
-RETURNS void AS $$
+CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
     complaint_data jsonb; -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
 
@@ -88,8 +89,14 @@ DECLARE
     _update_utc_timestamp timestamp := NOW();
     _create_userid varchar(200);
 	_update_userid varchar(200);
+    _geo_organization_unit_code varchar(10);
+    _incident_reported_utc_timestmp timestamp;
+    _location_geometry_point geometry;
 
     -- Variables for 'hwcr_complaint' table
+    _webeoc_species varchar(200);
+    _webeoc_hwcr_complaint_nature_code varchar(200);
+    _webeoc_cos_area_community varchar(200);
     _species_code varchar(10);
     _hwcr_complaint_nature_code varchar(10);
     _other_attractants_text varchar(4000);
@@ -97,10 +104,10 @@ BEGIN
     -- Fetch the JSONB data from complaint_staging using the provided identifier
     SELECT sc.complaint_jsonb  INTO complaint_data
     FROM staging_complaint sc
-    WHERE complaint_identifier = complaint_identifier;
+    WHERE sc.complaint_identifier = _complaint_identifier;
 
     IF complaint_data IS NULL THEN
-        RAISE EXCEPTION 'No data found for complaint identifier %', complaint_identifier;
+        RAISE EXCEPTION 'No data found for complaint identifier %', _complaint_identifier;
     END IF;
 
     -- Extract and prepare data for 'complaint' table
@@ -113,25 +120,45 @@ BEGIN
     _caller_phone_3 := LEFT(complaint_data->>'cos_alt_phone_2', 100) || CASE WHEN LENGTH(complaint_data->>'cos_alt_phone_2') > 100 THEN '… DATA TRUNCATED' ELSE '' END;
     _location_summary_text := LEFT(complaint_data->>'address', 100) || CASE WHEN LENGTH(complaint_data->>'address') > 100 THEN '… DATA TRUNCATED' ELSE '' END;
     _location_detailed_text := complaint_data->>'cos_location_description';
-    _incident_utc_datetime := (complaint_data->>'incident_datetime')::timestamp AT TIME ZONE 'UTC'; -- Adjust timezone conversion as needed
+    _incident_utc_datetime := (complaint_data->>'incident_datetime')::timestamp AT TIME ZONE 'UTC';
+    _incident_reported_utc_timestmp := (complaint_data->>'created_by_datetime')::timestamp AT TIME ZONE 'UTC';
+    _location_geometry_point := (complaint_data->>'location')::geometry;
     
     _create_userid := complaint_data->>'username';
     _update_userid := _create_userid;
 
+    _webeoc_cos_area_community := complaint_data->>'cos_area_community';
+    SELECT smm.live_data_value INTO _geo_organization_unit_code
+    FROM staging_metadata_mapping smm 
+    WHERE smm.entity_code = 'geoorgutcd' and smm.staged_data_value = _webeoc_cos_area_community;
+
+   
     -- Insert data into 'complaint' table
     INSERT INTO public.complaint (
         complaint_identifier, detail_text, caller_name, caller_address, caller_email,
         caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text,
-        location_detailed_text, incident_utc_datetime, create_user_id, create_utc_timestamp, update_user_id ,update_utc_timestamp
+        location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, create_user_id, create_utc_timestamp, update_user_id ,update_utc_timestamp, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point
     ) VALUES (
-        complaint_identifier, _detail_text, _caller_name, _caller_address, _caller_email,
+        _complaint_identifier, _detail_text, _caller_name, _caller_address, _caller_email,
         _caller_phone_1, _caller_phone_2, _caller_phone_3, _location_summary_text,
-        _location_detailed_text, _incident_utc_datetime, _create_userid, _create_utc_timestamp, _update_userid, _update_utc_timestamp
+        _location_detailed_text, _incident_utc_datetime, _incident_reported_utc_timestmp, _create_userid, _create_utc_timestamp, _update_userid, _update_utc_timestamp, 'COS', 'OPEN', _geo_organization_unit_code, _location_geometry_point
     );
 
     -- Prepare data for 'hwcr_complaint' table
-    _species_code := complaint_data->>'species';
-    _hwcr_complaint_nature_code := complaint_data->>'nature_of_complaint';
+ 
+   
+    -- convert webeoc species to our species code	
+    _webeoc_species := complaint_data->>'species';
+    SELECT smm.live_data_value INTO _species_code
+    FROM staging_metadata_mapping smm 
+    WHERE smm.entity_code = 'speciescd' and smm.staged_data_value = _webeoc_species;
+    
+    _webeoc_hwcr_complaint_nature_code := complaint_data->>'nature_of_complaint';
+    SELECT smm.live_data_value INTO _hwcr_complaint_nature_code
+    FROM staging_metadata_mapping smm 
+    WHERE smm.entity_code = 'cmpltntrcd' and smm.staged_data_value = _webeoc_hwcr_complaint_nature_code;
+   
+   
     _other_attractants_text := complaint_data->>'attractant_other_text';
 
     -- Insert data into 'hwcr_complaint' table
@@ -140,10 +167,12 @@ BEGIN
         update_user_id, update_utc_timestamp, complaint_identifier, species_code, hwcr_complaint_nature_code
     ) VALUES (
         uuid_generate_v4(), _other_attractants_text, _create_userid, _create_utc_timestamp,
-        _create_userid, _update_utc_timestamp, complaint_identifier, _species_code, _hwcr_complaint_nature_code
+        _create_userid, _update_utc_timestamp, _complaint_identifier, _species_code, _hwcr_complaint_nature_code
     );
 END;
-$$ LANGUAGE plpgsql;
+$function$
+;
+
 
 
 -- comments

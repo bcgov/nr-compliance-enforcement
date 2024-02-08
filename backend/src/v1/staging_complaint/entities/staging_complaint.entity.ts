@@ -12,7 +12,7 @@ export class StagingComplaint {
   })
   stagingComplaintGuid: string;
 
-  @Column("character varying", { name: "complaint_identifer", length: 20 })
+  @Column("character varying", { name: "complaint_identifier", length: 20 })
   complaintIdentifer: string;
 
   @Column("jsonb", { name: "complaint_jsonb" })
