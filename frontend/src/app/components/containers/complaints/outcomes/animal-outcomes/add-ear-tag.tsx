@@ -41,7 +41,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
     <div className="comp-outcome-report-inner-spacing">
       <Row>
         <Col>
-          <label htmlFor="select-species">Ear Tag</label>
+          <label htmlFor={`comp-ear-tag-value-${id}`}>Ear Tag</label>
           <CompInput
             id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
@@ -59,7 +59,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           />
         </Col>
         <Col>
-          <label htmlFor="select-ears"></label>
+          <label htmlFor={`comp-ear-tag-${id}`}></label>
           <CompSelect
             id={`comp-ear-tag-${id}`}
             options={ears}
@@ -72,7 +72,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           />
         </Col>
         <Col className="mt-auto mb-2">
-          <div className="comp-outcome-button-container" onClick={() => remove(id)}>
+          <div className="comp-outcome-button-container" role="button" onMouseDown={() => remove(id)}>
             <BsXCircle size={24} />
             <BsFillXCircleFill size={24} />
           </div>
