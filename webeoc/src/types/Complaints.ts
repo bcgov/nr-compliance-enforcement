@@ -1,13 +1,7 @@
 export interface ComplaintMessage {
   pattern: string;
-  data: ComplaintMessageData;
+  data: Complaint;
 }
-
-export interface ComplaintMessageData {
-  id: string;
-  complaintData: Complaint;
-}
-
 export interface Complaint {
   tablename: string;
   dataid: string;

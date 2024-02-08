@@ -4,8 +4,9 @@ import {
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
 } from 'src/common/constants';
+import { convertToComplaintDto } from 'src/common/webeoc-complaint-to-dto';
 import { StagingComplaintsApiService } from 'src/staging-complaints-api-service/staging-complaints-api-service.service';
-import { ComplaintMessage } from 'src/types/Complaints';
+import { Complaint, ComplaintMessage } from 'src/types/Complaints';
 
 @Injectable()
 /**
@@ -46,11 +47,11 @@ export class ComplaintsSubscriberService implements OnModuleInit {
               : msg.data;
           const messageJson = JSON.parse(messageData);
 
-          const complaintData = messageJson as ComplaintMessage;
+          const complaintMessage = messageJson as ComplaintMessage;
           this.logger.debug(
-            `Received complaint: ${JSON.stringify(complaintData)}`,
+            `Received complaint: ${complaintMessage.data.incident_number}`,
           );
-          this.service.postComplaintToStaging(complaintData.data.complaintData);
+          this.service.postComplaintToStaging(complaintMessage.data);
         } catch (error) {
           this.logger.error('Error processing received complaint:', error);
         }
@@ -73,9 +74,15 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     (async () => {
       for await (const msg of subscription) {
         try {
-          const complaintIdentifier = msg.data;
-          this.logger.debug(`New complaint in staging: ${complaintIdentifier}`);
-          //this.service.postComplaint(complaintData.data.complaintData);
+          const messageData =
+            msg.data instanceof Uint8Array
+              ? this.decodeMessage(msg.data)
+              : msg.data;
+
+          const messageJson = JSON.parse(messageData);
+
+          this.logger.debug(`New complaint in staging: ${messageJson.data}`);
+          this.service.postComplaint(messageJson.data);
         } catch (error) {
           this.logger.error('Error processing complaint in staging:', error);
         }

@@ -31,13 +31,8 @@ export class ComplaintsPublisherService {
    */
   async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
     try {
-      const message = {
-        id: complaint.incident_number, // complaint identifier - we use this as the id so that we don't get the same complaint added to the topic multiple times
-        complaintData: complaint,
-      };
-
-      this.client.emit(NATS_NEW_COMPLAINTS_TOPIC_NAME, message);
-      this.logger.log(`Complaint published: ${JSON.stringify(complaint)}`);
+      this.client.emit(NATS_NEW_COMPLAINTS_TOPIC_NAME, complaint);
+      this.logger.log(`Complaint published: ${complaint.incident_number}`);
     } catch (error) {
       this.logger.error(
         `Error publishing complaint: ${error.message}`,
@@ -52,12 +47,12 @@ export class ComplaintsPublisherService {
    * @param incident_number Publish message to topic to indicate that a new complaint was added to the staging table and is ready to be moved to the operation complaints tables
    */
   async publishStagingComplaintInserted(
-    incident_number: string,
+    complaint_identifier: string,
   ): Promise<void> {
     try {
-      this.client.emit(NEW_STAGING_COMPLAINTS_TOPIC_NAME, incident_number);
+      this.client.emit(NEW_STAGING_COMPLAINTS_TOPIC_NAME, complaint_identifier);
       this.logger.log(
-        `Complaint ready to be moved to operational tables: ${incident_number}`,
+        `Complaint ready to be moved to operational tables: ${complaint_identifier}`,
       );
     } catch (error) {
       this.logger.error(

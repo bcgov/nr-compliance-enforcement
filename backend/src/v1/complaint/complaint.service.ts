@@ -1137,8 +1137,10 @@ export class ComplaintService {
 
   create = async (
     complaintType: COMPLAINT_TYPE,
-    model: WildlifeComplaintDto | AllegationComplaintDto
+    model: WildlifeComplaintDto | AllegationComplaintDto,
+    webeocInd?: boolean
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
+    this.logger.debug('Creating new complaint');
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
       await queryRunner.manager.query("SELECT nextval('complaint_sequence')").then(function (returnData) {
@@ -1147,11 +1149,15 @@ export class ComplaintService {
       const prefix = format(new Date(), "yy");
 
       const complaintId = `${prefix}-${sequence}`;
+      this.logger.debug(`Created new complaint ${complaintId}`);
       return complaintId;
     };
 
-    const idir = getIdirFromRequest(this.request);
-    const agencyCode = await this._getAgencyByUser();
+    const idir = webeocInd ? "webeoc" : getIdirFromRequest(this.request);
+
+    const agencyCodeInstance = new AgencyCode("COS");
+
+    const agencyCode = webeocInd ? agencyCodeInstance : await this._getAgencyByUser();
 
     const queryRunner = this.dataSource.createQueryRunner();
     let complaintId = "";

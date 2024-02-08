@@ -34,6 +34,15 @@ export class StagingComplaintService {
     await this.stagingComplaintRepository.save(newStagingComplaint);
     return newStagingComplaint;
   }
+
+  async process(complaintIdentifier: string): Promise<any> {
+    await this.stagingComplaintRepository.manager.query(
+      'SELECT public.insert_complaint_from_staging($1)', 
+      [complaintIdentifier]
+    );
+  }
+    
+
   findAll() {
     return `This action returns all stagingComplaint`;
   }
