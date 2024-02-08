@@ -6,14 +6,15 @@ type Props = {
   id: string;
   className?: string;
   classNames?: {};
-  options: Array<Option>;
+  options?: Array<Option>;
   enableValidation: boolean;
   errorMessage?: string;
   classNamePrefix?: string;
-  placeholder: string;
+  placeholder?: string;
   defaultOption?: Option;
   value?: Option | null;
-  onChange: (selectedOption: Option | null) => void;
+  onChange?: (selectedOption: Option | null) => void;
+  isDisabled?: boolean;
 };
 
 export const CompSelect: FC<Props> = ({
@@ -28,10 +29,16 @@ export const CompSelect: FC<Props> = ({
   onChange,
   classNamePrefix,
   errorMessage,
+  isDisabled,
 }) => {
   let styles: StylesConfig = {};
 
-  let items = [...options];
+  let items: Option[] = [];
+
+  if(options)
+  {
+    items = [...options]
+  }
 
   // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
     styles = {
@@ -47,7 +54,10 @@ export const CompSelect: FC<Props> = ({
 
   //-- pass through the onChange event
   const handleChange = (s: any) => {
-    onChange(s);
+    if(onChange)
+    {
+      onChange(s);
+    }
   };
 
   return (
@@ -65,6 +75,7 @@ export const CompSelect: FC<Props> = ({
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}
+        isDisabled={isDisabled}
       />
       {enableValidation && <div className="error-message">{errorMessage}</div>}
     </>
