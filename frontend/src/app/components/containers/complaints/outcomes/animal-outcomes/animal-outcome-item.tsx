@@ -194,14 +194,13 @@ export const AnimalOutcomeItem: FC<props> = ({
                     Drugs
                   </label>
 
-                  <div>
+                  <div style={{width: "100%"}}>
                     {drugs.map((item) => (
                       <DrugItem {...item} agency={agency} key={item.id} />
                     ))}
                   </div>
                 </div>
               </div>
-              <div className="supporting-width"></div>
             </div>
           )}
 

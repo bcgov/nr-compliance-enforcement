@@ -342,16 +342,13 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
 
       {/* <!-- ear tag component --> */}
       {renderEarTags()}
-      <Button id="outcome-report-add-animal" title="Add animal" variant="link" onClick={() => addEarTag()}>
-        <BsPlusCircle />
-        <span> Add ear tag</span>
-      </Button>
-      <br />
+      <div className="comp-animal-outcome-add-button" onClick={() => addEarTag()}>
+        <BsPlusCircle /> Add ear tag
+      </div>
       {renderDrugs()}
-      <Button id="outcome-report-add-animal" title="Add animal" variant="link" onClick={() => addDrug()}>
-        <BsPlusCircle />
-        <span> Add drug</span>
-      </Button>
+      <div className="comp-animal-outcome-add-button" onClick={() => addDrug()}>
+        <BsPlusCircle /> Add drug
+      </div>
 
       <div className="comp-outcome-report-container">Outcome</div>
       <div className="comp-outcome-report-inner-spacing">

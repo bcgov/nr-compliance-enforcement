@@ -87,7 +87,7 @@ export const DrugItem: FC<props> = ({
   }, [drug, drugs]);
 
   return (
-    <div className="comp-padding-xs" style={style}>
+    <div className="comp-padding-xs comp-drug-item">
       <Row>
         <Col>
           <b>Vial #{vial}</b>
