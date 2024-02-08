@@ -170,7 +170,7 @@ export const AnimalOutcomeItem: FC<props> = ({
                   >
                     Ear tag
                   </label>
-                  <ul>
+                  <ul className="comp-ear-tag-list">
                     {tags.map(({ id, number, ear }) => (
                       <li className="comp-ear-tag-list" key={id}>
                         {number} {ear === "L" ? leftEar?.label : rightEar?.label} side

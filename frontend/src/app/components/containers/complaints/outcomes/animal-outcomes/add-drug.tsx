@@ -139,7 +139,7 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col className="mt-auto mb-2">
-          <div className="comp-outcome-button-container" onClick={() => remove(id)}>
+          <div className="comp-outcome-button-container" role="button" onMouseDown={() => remove(id)}>
             <BsXCircle size={24} />
             <BsFillXCircleFill size={24} />
           </div>
