@@ -27,7 +27,7 @@ export const HWCROutcomeByAnimal: FC = () => {
         setAssigned(id);
       }
     }
-  }, [complaint]);
+  }, [complaint, delegates]);
 
   const renderAnimals = () => {
     if (animals && from(animals).any()) {

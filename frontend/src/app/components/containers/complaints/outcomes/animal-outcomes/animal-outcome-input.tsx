@@ -59,11 +59,13 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
     if (species) {
       updateModel("species", species);
     }
+  }, [species]);
 
+  useEffect(() => {
     if (assigned) {
       updateModel("officer", assigned);
     }
-  }, [species, assigned]);
+  }, [assigned]);
 
   const getValue = (property: string): Option | undefined => {
     switch (property) {
@@ -127,8 +129,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
   const save = () => {
     if (isValid()) {
       console.log("add animal");
-      add(data)
-
+      add(data);
     } else {
       console.log("show errors");
     }
@@ -219,7 +220,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
 
     if (drugs && from(drugs).any()) {
       const { drugAuthorization } = data;
-      const { officer, date } = drugAuthorization || { officer: "", date: undefined };
+      const { date } = drugAuthorization || { officer: "", date: undefined };
 
       return (
         <>

@@ -57,7 +57,7 @@ export const DrugItem: FC<props> = ({
         setAssignedOfficert(selected.label);
       }
     }
-  }, [officer]);
+  }, [officer, officers]);
 
   useEffect(() => {
     if (injectionMethod) {
@@ -66,7 +66,7 @@ export const DrugItem: FC<props> = ({
         setInjectionMethod(selected.label);
       }
     }
-  }, [injectionMethod]);
+  }, [drugUseMethods, injectionMethod]);
 
   useEffect(() => {
     if (remainingUse) {
@@ -75,7 +75,7 @@ export const DrugItem: FC<props> = ({
         setRemaining(selected.label);
       }
     }
-  }, [remainingUse]);
+  }, [remainingDrugUse, remainingUse]);
 
   useEffect(() => {
     if (drug) {
@@ -84,7 +84,7 @@ export const DrugItem: FC<props> = ({
         setDrugUsed(selected.label);
       }
     }
-  }, [drug]);
+  }, [drug, drugs]);
 
   return (
     <div className="comp-padding-xs" style={style}>
