@@ -143,10 +143,10 @@ export const EquipmentForm: FC<EquipmentForm> = ({
     setXCoordinateErrorMsg("");
     const regex=/^[a-zA-Z]+$/;
 
-    if (latitude.match(regex)) {
+    if (regex.exec(latitude)) {
       setYCoordinateErrorMsg("Value must be a number")
     }
-    if(longitude.match(regex)) {
+    if(regex.exec(longitude)) {
       setXCoordinateErrorMsg("Value must be a number")
     }
     if (latitude && !Number.isNaN(latitude)) {
@@ -228,177 +228,177 @@ export const EquipmentForm: FC<EquipmentForm> = ({
   return (
     <div className="comp-outcome-report-complaint-assessment">
       <ToastContainer />
-      <Container style={{ padding: 0 }}>
-        <Row>
-          <Col xs={12} md={6}>
-            <div className="comp-details-label-input-pair">
-              <label htmlFor="equipment-type-select">Equipment type</label>
-              <CompSelect
-                id="equipment-type-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                placeholder="Select"
-                options={equipmentTypeList}
-                enableValidation={false}
-                onChange={(type: any) => setType(type)}
-                defaultOption={equipmentItemData?.type}
+      <div className="comp-details-edit-container">
+        <div className="comp-details-edit-column">
+          <div className="comp-details-label-input-pair">
+            <label htmlFor="equipment-type-select">Equipment type</label>
+            <CompSelect
+              id="equipment-type-select"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
+              placeholder="Select"
+              options={equipmentTypeList}
+              enableValidation={false}
+              onChange={(type: any) => setType(type)}
+              defaultOption={equipmentItemData?.type}
+            />
+          </div>
+        </div>
+        <div className="comp-details-edit-column comp-details-right-column"></div>
+      </div>
+      <div className="comp-details-edit-container">
+        <div className="comp-details-edit-column">
+          <div className="comp-details-label-input-pair">
+            <label htmlFor="equipment-address" style={{ marginTop: complaintData?.locationSummary? '-21px' : '0px' }}>Address</label>
+            <div className="edit-input">
+              <input
+                type="text"
+                id="equipment-address"
+                className="comp-form-control"
+                onChange={(e) => setAddress(e.target.value)}
+                maxLength={120}
+                value={address}
               />
             </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6}>
-            <div className="comp-details-label-input-pair">
-              <label htmlFor="equipment-address" style={{ marginTop: complaintData?.locationSummary? '-21px' : '0px' }}>Address</label>
-              <div className="edit-input">
-                <input
-                  type="text"
-                  id="equipment-address"
-                  className="comp-form-control"
-                  onChange={(e) => setAddress(e.target.value)}
-                  maxLength={120}
-                  value={address}
-                />
-              </div>
-            </div>
-            {complaintData?.locationSummary && 
-              <button
-                className="copy-text" 
-                onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
-              >Copy location from complaint details</button>
-            }
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6}>
-            <CompInput
-              id="comp-details-edit-x-coordinate-input"
-              divId="comp-details-edit-x-coordinate-input-div"
-              type="input"
-              label="X Coordinate"
-              containerClass="comp-details-edit-input"
-              formClass="comp-details-label-input-pair"
-              inputClass="comp-form-control"
-              value={xCoordinate ?? ''}
-              error={xCoordinateErrorMsg}
-              step="any"
-              onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+          </div>
+          {complaintData?.locationSummary && 
+            <button
+              className="button-text copy-text" 
+              onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
+            >Copy location from complaint details</button>
+          }
+        </div>
+        <div className="comp-details-edit-column comp-details-right-column"></div>
+      </div>
+      <div className="comp-details-edit-container">
+        <div className="comp-details-edit-column">
+          <CompInput
+            id="comp-details-edit-x-coordinate-input"
+            divId="comp-details-edit-x-coordinate-input-div"
+            type="input"
+            label="X Coordinate"
+            containerClass="comp-details-edit-input"
+            formClass="comp-details-label-input-pair"
+            inputClass="comp-form-control"
+            value={xCoordinate ?? ''}
+            error={xCoordinateErrorMsg}
+            step="any"
+            onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+          />
+          {hasCoordinates &&
+            <button
+              className="button-text copy-text"
+              onClick={() => {
+                const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
+                const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
+                setXCoordinate(xCoordinate);
+                setYCoordinate(yCoordinate);
+                handleGeoPointChange(yCoordinate, xCoordinate);
+              }}
+            >
+              Copy location from complaint details
+            </button>
+          }
+        </div>
+        <div className="comp-details-edit-column comp-details-right-column">
+          <CompInput
+            id="comp-details-edit-y-coordinate-input"
+            divId="comp-details-edit-y-coordinate-input-div"
+            type="input"
+            label="Y Coordinate"
+            containerClass="comp-details-edit-input"
+            formClass="comp-details-label-input-pair"
+            inputClass="comp-form-control"
+            value={yCoordinate ?? ''}
+            error={yCoordinateErrorMsg}
+            step="any"
+            onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+          />
+        </div>
+      </div>
+      <div className="comp-details-edit-container">
+        <div className="comp-details-edit-column">
+          <div className="comp-details-label-input-pair" id="reported-pair-id">
+            <label htmlFor="equipment-officer-set-select">Set by</label>
+            <CompSelect
+              id="equipment-officer-set-select"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
+              placeholder="Select"
+              options={assignableOfficers}
+              value={officerSet}
+              enableValidation={false}
+              onChange={(officer: any) => setOfficerSet(officer)}
             />
-            {hasCoordinates &&
-              <button
-                className="copy-text"
-                onClick={() => {
-                  const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
-                  const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
-                  setXCoordinate(xCoordinate);
-                  setYCoordinate(yCoordinate);
-                  handleGeoPointChange(yCoordinate, xCoordinate);
-                }}
-              >
-                Copy location from complaint details
-              </button>
-            }
-          </Col>
-          <Col xs={12} md={6}>
-            <CompInput
-              id="comp-details-edit-y-coordinate-input"
-              divId="comp-details-edit-y-coordinate-input-div"
-              type="input"
-              label="Y Coordinate"
-              containerClass="comp-details-edit-input"
-              formClass="comp-details-label-input-pair"
-              inputClass="comp-form-control"
-              value={yCoordinate ?? ''}
-              error={yCoordinateErrorMsg}
-              step="any"
-              onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+          </div>
+        </div>
+        <div className="comp-details-edit-column comp-details-right-column">
+          <div className="comp-details-label-input-pair" id="reported-pair-id">
+            <label htmlFor="equipment-day-set">Set date</label>
+            <DatePicker
+              id="equipment-day-set"
+              showIcon
+              maxDate={dateRemoved ?? new Date()}
+              onChange={(date: Date) => setDateSet(date)}
+              selected={dateSet}
+              dateFormat="yyyy-MM-dd"
+              wrapperClassName="comp-details-edit-calendar-input"
             />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6}>
+          </div>
+        </div>
+      </div>
+      {officerSet && dateSet && 
+        <div className="comp-details-edit-container">
+          <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair" id="reported-pair-id">
-              <label htmlFor="equipment-officer-set-select">Set by</label>
+              <label htmlFor="equipment-officer-removed-select">Removed by</label>
                 <CompSelect
-                  id="equipment-officer-set-select"
+                  id="equipment-officer-removed-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   placeholder="Select"
                   options={assignableOfficers}
-                  value={officerSet}
+                  value={officerRemoved}
                   enableValidation={false}
-                  onChange={(officer: any) => setOfficerSet(officer)}
+                  onChange={(officer: any) => setOfficerRemoved(officer)}
                 />
             </div>
-          </Col>
-          <Col xs={12} md={6}>
+          </div>
+          <div className="comp-details-edit-column comp-details-right-column">
             <div className="comp-details-label-input-pair" id="reported-pair-id">
-              <label htmlFor="equipment-day-set">Set date</label>
+              <label htmlFor="equipment-date-removed">Removed date</label>
                 <DatePicker
-                  id="equipment-day-set"
+                  id="equipment-date-removed"
                   showIcon
-                  maxDate={dateRemoved ?? new Date()}
-                  onChange={(date: Date) => setDateSet(date)}
-                  selected={dateSet}
+                  maxDate={new Date()}
+                  minDate={dateSet ?? null}
+                  onChange={(date: Date) => setDateRemoved(date)}
+                  selected={dateRemoved}
                   dateFormat="yyyy-MM-dd"
                   wrapperClassName="comp-details-edit-calendar-input"
-                />
+              />
             </div>
-          </Col>
-        </Row>
-        {officerSet && dateSet && 
-          <Row>
-            <Col xs={12} md={6}>
-              <div className="comp-details-label-input-pair" id="reported-pair-id">
-                <label htmlFor="equipment-officer-removed-select">Removed by</label>
-                  <CompSelect
-                    id="equipment-officer-removed-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    placeholder="Select"
-                    options={assignableOfficers}
-                    value={officerRemoved}
-                    enableValidation={false}
-                    onChange={(officer: any) => setOfficerRemoved(officer)}
-                  />
-              </div>
-            </Col>
-            <Col xs={12} md={6}>
-              <div className="comp-details-label-input-pair" id="reported-pair-id">
-                <label htmlFor="equipment-date-removed">Removed date</label>
-                  <DatePicker
-                    id="equipment-date-removed"
-                    showIcon
-                    maxDate={new Date()}
-                    minDate={dateSet ?? null}
-                    onChange={(date: Date) => setDateRemoved(date)}
-                    selected={dateRemoved}
-                    dateFormat="yyyy-MM-dd"
-                    wrapperClassName="comp-details-edit-calendar-input"
-                />
-              </div>
-            </Col>
-          </Row>
-        }
-        <div className="comp-outcome-report-actions">
-          <Button
-            id="equipment-cancel-button"
-            title="Cancel Outcome"
-            className="comp-outcome-cancel"
-            onClick={handleCancelEquipment}
-          >
-            Cancel
-          </Button>
-          <Button
-            id="equipment-save-button"
-            title="Save Outcome"
-            className="comp-outcome-save"
-            onClick={handleSaveEquipment}
-          >
-            Save
-          </Button>
+          </div>
         </div>
-      </Container>
+      }
+      <div className="comp-outcome-report-actions">
+        <Button
+          id="equipment-cancel-button"
+          title="Cancel Outcome"
+          className="comp-outcome-cancel"
+          onClick={handleCancelEquipment}
+        >
+          Cancel
+        </Button>
+        <Button
+          id="equipment-save-button"
+          title="Save Outcome"
+          className="comp-outcome-save"
+          onClick={handleSaveEquipment}
+        >
+          Save
+        </Button>
+      </div>
     </div>
   );
 };

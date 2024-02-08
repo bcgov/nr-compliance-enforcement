@@ -36,7 +36,7 @@ export const EquipmentItem: FC<EquipmentItem> = ({
           {isActive && <div>Active</div>}
         </div>
         <button
-          className="equipment-item-edit" 
+          className="button-text equipment-item-edit" 
           onClick={() => handleEdit(equipment)}
         >
           <span>Edit</span>
