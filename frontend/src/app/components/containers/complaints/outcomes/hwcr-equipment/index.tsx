@@ -4,15 +4,28 @@ import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 
-import { IEquipment } from "./types";
+import Option from "../../../../../types/app/option";
 
-import "./style.scss"
+import "../../../../../../assets/sass/hwcr-equipment.scss"
+
+export interface Equipment {
+  id: string | undefined;
+  type: Option | undefined;
+  address: string | undefined;
+  xCoordinate: string;
+  yCoordinate: string;
+  officerSet: Option | undefined;
+  dateSet: Date | undefined;
+  officerRemoved?: Option;
+  dateRemoved?: Date;
+  isEdit?: boolean;
+}
 
 export const HWCREquipment: FC = memo(() => {
-  const [equipmentData, setEquipmentData] = useState<Array<IEquipment>>([]);
+  const [equipmentData, setEquipmentData] = useState<Array<Equipment>>([]);
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
   const [isInEditMode, setIsInEditMode] = useState<boolean>(false);
-  const [editEquipment, setEditEquipment] = useState<IEquipment|null>(null);
+  const [editEquipment, setEditEquipment] = useState<Equipment|null>(null);
 
   return (
     <div className="comp-outcome-report-block">

@@ -3,16 +3,16 @@ import { Row, Col } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
-import { IEquipment } from "./types";
+import { Equipment } from "./index";
 
-interface IEquipmentItem {
+interface EquipmentItem {
   isInEditMode: boolean
-  equipment: IEquipment
+  equipment: Equipment
   setIsInEditMode: (param: any) => void | null
   setEditEquipment: (param: any) => void | null
 }
 
-export const EquipmentItem: FC<IEquipmentItem> = ({ 
+export const EquipmentItem: FC<EquipmentItem> = ({ 
   equipment,
   isInEditMode,
   setIsInEditMode,
@@ -20,7 +20,7 @@ export const EquipmentItem: FC<IEquipmentItem> = ({
 }) => {
   const isActive = !equipment.dateRemoved
 
-  const handleEdit = (equipment: IEquipment) => {
+  const handleEdit = (equipment: Equipment) => {
     if(!isInEditMode) {
       equipment.isEdit = true;
       setIsInEditMode(true);

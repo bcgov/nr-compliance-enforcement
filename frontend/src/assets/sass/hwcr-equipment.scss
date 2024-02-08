@@ -1,4 +1,4 @@
-@import "../../../../../../assets/sass/colours.scss";
+@import "./colours.scss";
 
 label {
   padding-left: 0px !important;
@@ -15,10 +15,12 @@ button {
 }
 
 .copy-text {
+  text-align: left;
   font-size: 14px;
   color: $gray-500;
   text-decoration: underline;
   cursor: pointer;
+  margin-left: 191px;
 }
 
 .edit-input {

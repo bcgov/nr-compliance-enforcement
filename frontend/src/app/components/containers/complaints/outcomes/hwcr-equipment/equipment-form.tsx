@@ -2,18 +2,23 @@ import { FC, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { Button, Container, Row, Col } from "react-bootstrap";
+import { ToastContainer } from "react-toastify";
+import { v4 as uuidv4 } from 'uuid';
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
 import { getComplaintById, selectComplaint, selectComplaintCallerInformation, selectComplaintHeader } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { getSelectedOfficer } from "../../../../../common/methods";
+import { CompInput } from "../../../../common/comp-input";
+import { ToggleError } from "../../../../../common/toast";
+import { getSelectedOfficer, bcBoundaries } from "../../../../../common/methods";
 
-import { IEquipment } from "./types";
+import { Equipment } from "./index";
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
 
-import { v4 as uuidv4 } from 'uuid';
+import "react-toastify/dist/ReactToastify.css";
+import { Coordinates } from "../../../../../types/app/coordinate-type";
 
 const equipmentTypeList = [
   {
@@ -46,18 +51,18 @@ const equipmentTypeList = [
   },
 ]
 
-export interface IEquipmentForm {
+export interface EquipmentForm {
   isInEditMode: boolean
   setIsInEditMode: (param: any) => void | null
-  equipmentItemData?: IEquipment | null
+  equipmentItemData?: Equipment | null
   setEquipmentItemData?: (param: any) => void | null
-  equipmentData?: Array<IEquipment>
+  equipmentData?: Array<Equipment>
   setEquipmentData?: (param: any) => void | null
   indexItem?: number
   setShowEquipmentForm?: (param: boolean) => void | null
 }
 
-export const EquipmentForm: FC<IEquipmentForm> = ({
+export const EquipmentForm: FC<EquipmentForm> = ({
   isInEditMode,
   equipmentData,
   indexItem,
@@ -75,6 +80,8 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
   const [address, setAddress] = useState<string|undefined>("");
   const [xCoordinate, setXCoordinate] = useState<string>('');
   const [yCoordinate, setYCoordinate] = useState<string>('');
+  const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>('');
+  const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>('');
   
   const dispatch = useAppDispatch();
   const { id = "", complaintType = "" } = useParams<{id: string, complaintType: string}>();
@@ -121,7 +128,49 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
     }
   }, [equipmentItemData])
 
+  const handleCoordinateChange = (input: string, type: Coordinates) => {
+    if (type === Coordinates.Latitude) {
+      setYCoordinate(input);
+      handleGeoPointChange(input, xCoordinate);
+    } else {
+      setXCoordinate(input);
+      handleGeoPointChange(yCoordinate, input);
+    }
+  };
+
+  const handleGeoPointChange = async (latitude: string, longitude: string) => {
+    setYCoordinateErrorMsg("");
+    setXCoordinateErrorMsg("");
+    const regex=/^[a-zA-Z]+$/;
+
+    if (latitude.match(regex)) {
+      setYCoordinateErrorMsg("Value must be a number")
+    }
+    if(longitude.match(regex)) {
+      setXCoordinateErrorMsg("Value must be a number")
+    }
+    if (latitude && !Number.isNaN(latitude)) {
+      const item = parseFloat(latitude);
+      if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
+        setYCoordinateErrorMsg(`Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`);
+      }
+    }
+
+    if (longitude && !Number.isNaN(longitude)) {
+      const item = parseFloat(longitude);
+      if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
+        setXCoordinateErrorMsg(`Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`);
+      }
+    }
+  };
+
   const handleSaveEquipment = () => {
+    if(xCoordinateErrorMsg || yCoordinateErrorMsg) {
+      handleFormErrors();
+      return;
+    }
+
+    //No errors then create/save new equipment info
     const newEquipment = {
       id: isInEditMode? equipmentItemData?.id : uuidv4(),
       type,
@@ -142,18 +191,35 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
       setIsInEditMode(false);
     }
     if(!isInEditMode && setEquipmentData && setShowEquipmentForm) {
-      setEquipmentData((prevState: Array<IEquipment>) => [...prevState, newEquipment]);
+      setEquipmentData((prevState: Array<Equipment>) => [...prevState, newEquipment]);
       setShowEquipmentForm(false);
     }
     else return
   }
 
-  const handleCancelEditEquipment = () => {
-    if(equipmentItemData){
-      equipmentItemData.isEdit = false;
+  const handleFormErrors = () => {
+    const errorMsg = isInEditMode? 'Errors editing equipment' : 'Errors creating equipment'
+    ToggleError(errorMsg);
+  };
+
+  const handleCancelEquipment = () => {
+    resetData();
+    if(isInEditMode) {
+      if(equipmentItemData){
+        equipmentItemData.isEdit = false;
+      }
+      setIsInEditMode(false);
+      if(setEquipmentItemData) setEquipmentItemData(null)
     }
-    setIsInEditMode(false);
-    if(setEquipmentItemData) setEquipmentItemData(null)
+    if(setShowEquipmentForm) setShowEquipmentForm(false);
+  }
+
+  const resetData = () => {
+    setAddress('')
+    setXCoordinate('')
+    setYCoordinate('')
+    setXCoordinateErrorMsg('')
+    setYCoordinateErrorMsg('')
   }
 
   const hasCoordinates = (complaintData?.location?.coordinates[0] !== 0 || 
@@ -161,6 +227,7 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
 
   return (
     <div className="comp-outcome-report-complaint-assessment">
+      <ToastContainer />
       <Container style={{ padding: 0 }}>
         <Row>
           <Col xs={12} md={6}>
@@ -192,57 +259,60 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                   maxLength={120}
                   value={address}
                 />
-                {complaintData?.locationSummary && 
-                  <button
-                    className="copy-text" 
-                    onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
-                  >Copy location from complaint details</button>
-                }
               </div>
             </div>
+            {complaintData?.locationSummary && 
+              <button
+                className="copy-text" 
+                onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
+              >Copy location from complaint details</button>
+            }
           </Col>
         </Row>
         <Row>
           <Col xs={12} md={6}>
-            <div className="comp-details-label-input-pair">
-            <label htmlFor="equipment-x-coordinate" style={{ marginTop: hasCoordinates? '-20px' :'0px' }}>X Coordinate</label>
-              <div className="edit-input">
-                <input
-                  type="text"
-                  id="equipment-x-coordinate"
-                  className="comp-form-control"
-                  onChange={(e) => setXCoordinate(e.target.value)}
-                  value={xCoordinate?? ''}
-                  maxLength={120}
-                />
-                {hasCoordinates &&
-                  <button
-                    className="copy-text"
-                    onClick={() => {
-                      setXCoordinate(complaintData?.location?.coordinates[0].toString() ?? '')
-                      setYCoordinate(complaintData?.location?.coordinates[1].toString() ?? '')
-                    }}
-                  >
-                    Copy location from complaint details
-                  </button>
-                }
-              </div>
-            </div>
+            <CompInput
+              id="comp-details-edit-x-coordinate-input"
+              divId="comp-details-edit-x-coordinate-input-div"
+              type="input"
+              label="X Coordinate"
+              containerClass="comp-details-edit-input"
+              formClass="comp-details-label-input-pair"
+              inputClass="comp-form-control"
+              value={xCoordinate ?? ''}
+              error={xCoordinateErrorMsg}
+              step="any"
+              onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+            />
+            {hasCoordinates &&
+              <button
+                className="copy-text"
+                onClick={() => {
+                  const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
+                  const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
+                  setXCoordinate(xCoordinate);
+                  setYCoordinate(yCoordinate);
+                  handleGeoPointChange(yCoordinate, xCoordinate);
+                }}
+              >
+                Copy location from complaint details
+              </button>
+            }
           </Col>
           <Col xs={12} md={6}>
-            <div className="comp-details-label-input-pair">
-              <label htmlFor="equipment-y-coordinate">Y Coordinate</label>
-              <div className="edit-input">
-                <input
-                  type="text"
-                  id="equipment-y-coordinate"
-                  className="comp-form-control"
-                  onChange={(e) => setYCoordinate(e.target.value)}
-                  value={yCoordinate?? ''}
-                  maxLength={120}
-                />
-              </div>
-            </div>
+            <CompInput
+              id="comp-details-edit-y-coordinate-input"
+              divId="comp-details-edit-y-coordinate-input-div"
+              type="input"
+              label="Y Coordinate"
+              containerClass="comp-details-edit-input"
+              formClass="comp-details-label-input-pair"
+              inputClass="comp-form-control"
+              value={yCoordinate ?? ''}
+              error={yCoordinateErrorMsg}
+              step="any"
+              onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+            />
           </Col>
         </Row>
         <Row>
@@ -272,48 +342,50 @@ export const EquipmentForm: FC<IEquipmentForm> = ({
                   selected={dateSet}
                   dateFormat="yyyy-MM-dd"
                   wrapperClassName="comp-details-edit-calendar-input"
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6}>
-            <div className="comp-details-label-input-pair" id="reported-pair-id">
-              <label htmlFor="equipment-officer-removed-select">Removed by</label>
-                <CompSelect
-                  id="equipment-officer-removed-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  placeholder="Select"
-                  options={assignableOfficers}
-                  value={officerRemoved}
-                  enableValidation={false}
-                  onChange={(officer: any) => setOfficerRemoved(officer)}
                 />
             </div>
           </Col>
-          <Col xs={12} md={6}>
-            <div className="comp-details-label-input-pair" id="reported-pair-id">
-              <label htmlFor="equipment-date-removed">Removed date</label>
-                <DatePicker
-                  id="equipment-date-removed"
-                  showIcon
-                  maxDate={new Date()}
-                  minDate={dateSet ?? null}
-                  onChange={(date: Date) => setDateRemoved(date)}
-                  selected={dateRemoved}
-                  dateFormat="yyyy-MM-dd"
-                  wrapperClassName="comp-details-edit-calendar-input"
-              />
-            </div>
-          </Col>
         </Row>
+        {officerSet && dateSet && 
+          <Row>
+            <Col xs={12} md={6}>
+              <div className="comp-details-label-input-pair" id="reported-pair-id">
+                <label htmlFor="equipment-officer-removed-select">Removed by</label>
+                  <CompSelect
+                    id="equipment-officer-removed-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    placeholder="Select"
+                    options={assignableOfficers}
+                    value={officerRemoved}
+                    enableValidation={false}
+                    onChange={(officer: any) => setOfficerRemoved(officer)}
+                  />
+              </div>
+            </Col>
+            <Col xs={12} md={6}>
+              <div className="comp-details-label-input-pair" id="reported-pair-id">
+                <label htmlFor="equipment-date-removed">Removed date</label>
+                  <DatePicker
+                    id="equipment-date-removed"
+                    showIcon
+                    maxDate={new Date()}
+                    minDate={dateSet ?? null}
+                    onChange={(date: Date) => setDateRemoved(date)}
+                    selected={dateRemoved}
+                    dateFormat="yyyy-MM-dd"
+                    wrapperClassName="comp-details-edit-calendar-input"
+                />
+              </div>
+            </Col>
+          </Row>
+        }
         <div className="comp-outcome-report-actions">
           <Button
             id="equipment-cancel-button"
             title="Cancel Outcome"
             className="comp-outcome-cancel"
-            onClick={() => setShowEquipmentForm? setShowEquipmentForm(false) : handleCancelEditEquipment()}
+            onClick={handleCancelEquipment}
           >
             Cancel
           </Button>
