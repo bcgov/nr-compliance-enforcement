@@ -48,8 +48,6 @@ export const DrugItem: FC<props> = ({
   const [remaining, setRemaining] = useState("");
   const [drugUsed, setDrugUsed] = useState("");
 
-  const style = { border: "black solid 1px", width: "100%" };
-
   useEffect(() => {
     if (officer) {
       const selected = from(officers).firstOrDefault((item) => item.value === officer);

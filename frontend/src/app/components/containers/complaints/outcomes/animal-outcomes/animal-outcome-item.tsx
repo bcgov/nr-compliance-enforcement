@@ -194,7 +194,7 @@ export const AnimalOutcomeItem: FC<props> = ({
                     Drugs
                   </label>
 
-                  <div style={{width: "100%"}}>
+                  <div style={{ width: "100%" }}>
                     {drugs.map((item) => (
                       <DrugItem {...item} agency={agency} key={item.id} />
                     ))}
@@ -208,11 +208,26 @@ export const AnimalOutcomeItem: FC<props> = ({
             <div className="comp-details-edit-column">
               <div className="comp-details-label-div-pair">
                 <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
+                  Outcome
+                </label>
+                {animalOutcome}
+              </div>
+            </div>
+            <div className="supporting-width"></div>
+          </div>
+
+          <div className="comp-details-edit-container">
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-div-pair">
+                <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
                   Officer
                 </label>
-                <div data-initials-sm={"MS"} className="comp-orange-avatar-sm comp-details-inner-content">
+                <div
+                  data-initials-sm={getAvatarInitials(assignedOfficer())}
+                  className="comp-orange-avatar-sm comp-details-inner-content"
+                >
                   <span id="comp-review-required-officer" className="comp-padding-left-xs">
-                    Mike
+                    {assignedOfficer()}
                   </span>
                 </div>
               </div>
@@ -245,81 +260,4 @@ export const AnimalOutcomeItem: FC<props> = ({
       </div>
     </div>
   );
-
-  // return (
-  //   <div className="comp-outcome-report-complaint-assessment">
-  //     <div className="comp-outcome-report-container">
-  //       <div className="comp-outcome-report-label-column">Animal</div>
-  //       <div className="comp-outcome-report-edit-column">
-  //         <div className="flex-container">
-  //           <div className="comp-margin-right-xxs">
-  //             <b>{animal}</b>,
-  //           </div>
-  //           <div className="comp-margin-right-xxs">{animalSex},</div>
-  //           <div className="comp-margin-right-xxs">{animalAge}</div>
-  //           <div className="badge comp-status-badge-threat-level comp-margin-right-xxs">
-  //             Threat level: {animalThreatLevel}
-  //           </div>
-  //           <div className="badge comp-status-badge-conflict-history comp-margin-right-xxs">
-  //             Conflict history: {animalHistory}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-
-  //     {from(tags).any() && (
-  //       <div className="comp-outcome-report-container">
-  //         <div className="comp-outcome-report-label-column">Ear tag</div>
-  //         <div className="comp-outcome-report-edit-column">
-  // {tags.map(({ id, number, ear }) => (
-  //   <div className="flex-container" key={id}>
-  //     <div className="comp-margin-right-xxs">{number}</div>
-  //     <div>{ear === "L" ? leftEar?.label : rightEar?.label} side</div>
-  //   </div>
-  // ))}
-  //         </div>
-  //       </div>
-  //     )}
-
-  //     {from(drugs).any() && (
-  //       <div className="comp-outcome-report-container">
-  //         <div className="comp-outcome-report-label-column">Drug</div>
-  //         <div className="comp-outcome-report-edit-column">
-  //           {drugs.map((item) => (
-  //             <div className="flex-container" key={id}>
-  //               <DrugItem {...item} {...drugAuthorization} agency={agency} />
-  //             </div>
-  //           ))}
-  //         </div>
-  //       </div>
-  //     )}
-
-  //     <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
-  //       <div className="comp-outcome-report-label-half-column">Outcome</div>
-  //       <div className="comp-outcome-report-edit-column">
-  //         <div data-initials-sm={getAvatarInitials(assignedOfficer())} className="comp-pink-avatar-sm">
-  //           <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">
-  //             {animalOutcome}
-  //           </span>
-  //         </div>
-  //       </div>
-  //       <div className="comp-outcome-report-label-half-column"></div>
-  //       <div className="comp-outcome-report-edit-column"></div>
-  //     </div>
-
-  //     <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
-  //       <div className="comp-outcome-report-label-half-column">Officer</div>
-  //       <div className="comp-outcome-report-edit-column">
-  //         {" "}
-  //         <div data-initials-sm={getAvatarInitials(assignedOfficer())} className="comp-pink-avatar-sm">
-  //           <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">
-  //             {assignedOfficer()}
-  //           </span>
-  //         </div>
-  //       </div>
-  //       <div className="comp-outcome-report-label-half-column">Date</div>
-  //       <div className="comp-outcome-report-edit-column">{formatDate(date?.toString())}</div>
-  //     </div>
-  //   </div>
-  // );
 };
