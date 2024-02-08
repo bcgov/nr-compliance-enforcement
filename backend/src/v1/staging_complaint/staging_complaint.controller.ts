@@ -4,8 +4,6 @@ import { UpdateStagingComplaintDto } from './dto/update-staging_complaint.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { WebEOCComplaint } from 'src/types/webeoc-complaint';
-import { COMPLAINT_TYPE } from 'src/types/models/complaints/complaint-type';
-import { AllegationComplaintDto } from 'src/types/models/complaints/allegation-complaint';
 
 @ApiTags("staging-complaint")
 @Controller({

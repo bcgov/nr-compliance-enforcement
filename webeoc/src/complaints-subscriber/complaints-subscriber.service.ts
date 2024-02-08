@@ -4,9 +4,8 @@ import {
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
 } from 'src/common/constants';
-import { convertToComplaintDto } from 'src/common/webeoc-complaint-to-dto';
 import { StagingComplaintsApiService } from 'src/staging-complaints-api-service/staging-complaints-api-service.service';
-import { Complaint, ComplaintMessage } from 'src/types/Complaints';
+import { ComplaintMessage } from 'src/types/Complaints';
 
 @Injectable()
 /**
