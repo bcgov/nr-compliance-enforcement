@@ -11,7 +11,7 @@ import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
-import ColorReference from "./components/reference";
+import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
@@ -63,7 +63,7 @@ const App: FC = () => {
         </Route>
         <Route path="/not-authorized" element={<NotAuthorized />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/reference" element={<ColorReference />} />
+        <Route path="/reference" element={<><ColorReference/> <MiscReference/> <SpaceReference /></>} />
       </Routes>
     </Router>
   );

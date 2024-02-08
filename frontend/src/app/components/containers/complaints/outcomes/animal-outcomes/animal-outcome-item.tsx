@@ -10,10 +10,12 @@ import {
   selectThreatLevelDropdown,
   selectConflictHistoryDropdown,
   selectWildlifeComplaintOutcome,
+  selectEarDropdown,
 } from "../../../../../store/reducers/code-table";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { from } from "linq-to-typescript";
+import { DrugItem } from "./drug-item";
 
 type props = {
   id: number;
@@ -51,6 +53,10 @@ export const AnimalOutcomeItem: FC<props> = ({
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
 
+  const ears = useAppSelector(selectEarDropdown);
+  const leftEar = ears.find((ear) => ear.value === "L");
+  const rightEar = ears.find((ear) => ear.value === "R");
+
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
 
@@ -59,12 +65,13 @@ export const AnimalOutcomeItem: FC<props> = ({
   const [animalAge, setAnimalAge] = useState("");
   const [animalThreatLevel, setAnimalThreatLevel] = useState("");
   const [animalHistory, setAnimalHistory] = useState("");
+  const [animalOutcome, setAnimalOutcome] = useState("")
 
   useEffect(() => {
     if (species) {
       const selected = from(speciesList).firstOrDefault((item) => item.value === species);
       if (selected && selected.label) {
-        setAnimalSex(selected.label);
+        setAnimal(selected.label);
       }
     }
   }, [species]);
@@ -73,7 +80,7 @@ export const AnimalOutcomeItem: FC<props> = ({
     if (sex) {
       const selected = from(sexes).firstOrDefault((item) => item.value === sex);
       if (selected && selected.label) {
-        setAnimal(selected.label);
+        setAnimalSex(selected.label);
       }
     }
   }, [sex]);
@@ -105,6 +112,15 @@ export const AnimalOutcomeItem: FC<props> = ({
     }
   }, [conflictHistory]);
 
+  useEffect(() => {
+    if (outcome) {
+      const selected = from(outcomes).firstOrDefault((item) => item.value === outcome);
+      if (selected && selected.label) {
+        setAnimalOutcome(selected.label);
+      }
+    }
+  }, [outcome]);
+
   const assignedOfficer = () => {
     if (officer) {
       const selected = officers.find((item) => item.value === officer);
@@ -119,9 +135,62 @@ export const AnimalOutcomeItem: FC<props> = ({
       <div className="comp-outcome-report-container">
         <div className="comp-outcome-report-label-column">Animal</div>
         <div className="comp-outcome-report-edit-column">
-          <span>{animal}</span>, {animalSex}, {animalAge} {animalThreatLevel} {animalHistory}
+          <div className="flex-container">
+            <div className="comp-margin-right-xxs">
+              <b>{animal}</b>,
+            </div>
+            <div className="comp-margin-right-xxs">{animalSex},</div>
+            <div className="comp-margin-right-xxs">{animalAge}</div>
+            <div className="badge comp-status-badge-threat-level comp-margin-right-xxs">
+              Threat level: {animalThreatLevel}
+            </div>
+            <div className="badge comp-status-badge-conflict-history comp-margin-right-xxs">
+              Conflict history: {animalHistory}
+            </div>
+          </div>
         </div>
       </div>
+
+      {from(tags).any() && (
+        <div className="comp-outcome-report-container">
+          <div className="comp-outcome-report-label-column">Ear tag</div>
+          <div className="comp-outcome-report-edit-column">
+            {tags.map(({ id, number, ear }) => (
+              <div className="flex-container" key={id}>
+                <div className="comp-margin-right-xxs">{number}</div>
+                <div>{ear === "L" ? leftEar?.label : rightEar?.label} side</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {from(drugs).any() && (
+        <div className="comp-outcome-report-container">
+          <div className="comp-outcome-report-label-column">Drug</div>
+          <div className="comp-outcome-report-edit-column">
+            {drugs.map((item) => (
+              <div className="flex-container" key={id}>
+                <DrugItem {...item} {...drugAuthorization} agency={agency} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
+        <div className="comp-outcome-report-label-half-column">Outcome</div>
+        <div className="comp-outcome-report-edit-column">
+          <div data-initials-sm={getAvatarInitials(assignedOfficer())} className="comp-pink-avatar-sm">
+            <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">
+              {animalOutcome}
+            </span>
+          </div>
+        </div>
+        <div className="comp-outcome-report-label-half-column"></div>
+        <div className="comp-outcome-report-edit-column"></div>
+      </div>
+
       <div className="comp-outcome-report-container comp-outcome-report-inner-spacing">
         <div className="comp-outcome-report-label-half-column">Officer</div>
         <div className="comp-outcome-report-edit-column">
