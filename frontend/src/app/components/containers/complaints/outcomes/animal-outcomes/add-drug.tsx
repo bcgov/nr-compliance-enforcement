@@ -43,22 +43,20 @@ export const AddDrug: FC<props> = ({
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
-    if (value) {
-      const source = {
-        id,
-        vial,
-        drug,
-        amountUsed,
-        amountDiscarded,
-        reactions,
-        remainingUse,
-        injectionMethod,
-        discardMethod,
-      };
-      const updatedTag = { ...source, [property]: value };
+    const source = {
+      id,
+      vial,
+      drug,
+      amountUsed,
+      amountDiscarded,
+      reactions,
+      remainingUse,
+      injectionMethod,
+      discardMethod,
+    };
+    const updatedTag = { ...source, [property]: value };
 
-      update(updatedTag);
-    }
+    update(updatedTag);
   };
 
   const handleAmountUsed = (input: string) => {

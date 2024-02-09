@@ -30,12 +30,10 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
   }, [ear, isLeftEarUsed]);
 
   const updateModel = (property: string, value: string | undefined) => {
-    if (value) {
-      const source = { id, ear, number };
-      const updatedTag = { ...source, [property]: value };
+    const source = { id, ear, number };
+    const updatedTag = { ...source, [property]: value };
 
-      update(updatedTag);
-    }
+    update(updatedTag);
   };
 
   return (
@@ -50,13 +48,13 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
             placeholder="Enter number"
             inputClass="comp-form-control"
             value={number}
-            maxLength={4}
+            maxLength={7}
             onChange={(evt: any) => {
               const {
                 target: { value },
               } = evt;
 
-              if (value.length <= 4) {
+              if (value.length <= 6) {
                 updateModel("number", value);
               }
             }}

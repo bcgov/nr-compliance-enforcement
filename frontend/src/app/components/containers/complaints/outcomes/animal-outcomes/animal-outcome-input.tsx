@@ -223,7 +223,6 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
     if (drugs && from(drugs).any()) {
       const { drugAuthorization } = data;
 
-      console.log("drugAuthorization", data.drugAuthorization);
       return (
         <>
           {from(drugs)
