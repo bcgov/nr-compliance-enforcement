@@ -107,12 +107,17 @@ export class WebEOCComplaintsScheduler {
 
     const body = {
       customFilter: {
-        boolean: 'or',
+        boolean: 'and',
         items: [
           {
             fieldname: 'incident_datetime',
             operator: 'GreaterThan',
             fieldvalue: formattedDate,
+          },
+          {
+            fieldname: 'report_type',
+            operator: '=',
+            fieldvalue: 'HWCR',
           },
         ],
       },

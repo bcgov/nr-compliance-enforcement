@@ -92,6 +92,8 @@ objects:
                   value: '0'
                 - name: NATS_HOST
                   value: nats://${NAME}-${ZONE}-nats:4222
+                - name: COMPLAINTS_MANAGEMENT_API_URL
+                  value: nats://${NAME}-${ZONE}-backend:3000
                 - name: WEBEOC_USERNAME
                   valueFrom:
                     secretKeyRef:

@@ -20,6 +20,18 @@ export class StagingComplaintService {
   ) {}
 
   async create(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
+
+    const existingStagingComplaint = await this.stagingComplaintRepository
+    .createQueryBuilder('stagingComplaint')
+    .leftJoinAndSelect('stagingComplaint.stagingActivityCode', 'stagingActivityCode')
+    .where('stagingComplaint.complaintIdentifer = :complaintIdentifier', { complaintIdentifier: stagingComplaint.incident_number })
+    .andWhere('stagingActivityCode.stagingActivityCode = :activityCode', { activityCode: 'INSERT' })
+    .getOne();
+
+    // ignore duplicates
+    if (existingStagingComplaint) {
+      return;
+    }
     
     const newStagingComplaint = this.stagingComplaintRepository.create();
     newStagingComplaint.stagingStatusCode = { stagingStatusCode: StagingStatusCodeEnum.PENDING } as StagingStatusCode;
