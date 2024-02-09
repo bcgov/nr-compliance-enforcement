@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UpdateStagingComplaintDto } from './dto/update-staging_complaint.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StagingStatusCodeEnum } from '../../enum/staging_status_code.enum';
@@ -52,22 +51,5 @@ export class StagingComplaintService {
       'SELECT public.insert_complaint_from_staging($1)', 
       [complaintIdentifier]
     );
-  }
-    
-
-  findAll() {
-    return `This action returns all stagingComplaint`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} stagingComplaint`;
-  }
-
-  update(id: number, updateStagingComplaintDto: UpdateStagingComplaintDto) {
-    return `This action updates a #${id} stagingComplaint`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} stagingComplaint`;
   }
 }
