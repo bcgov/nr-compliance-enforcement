@@ -8,28 +8,31 @@ import Option from "../../../../../types/app/option";
 
 type Props = {
   assigned: string | null;
+  officer?: string;
   date?: Date;
   agency: string;
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
-
+  
   const getValue = (property: string): Option | undefined => {
     if(property === "officer"){ 
-      return officers.find((item) => item.value === assigned);
+      return officers.find((item) => item.value === (!officer ? assigned : officer));
     }
   };
 
   const updateModel = (property: string, value: string | Date | null | undefined) => {
     if (value) {
-      const source = { officer: assigned, date };
+      const source = { officer, date };
       const authorization = { ...source, [property]: value };
 
       update("drugAuthorization", authorization);
     }
   };
+
+  console.log("officer: ", officer)
 
   return (
     <div className="comp-outcome-report-inner-spacing">
@@ -41,6 +44,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update })
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
               onChange={(evt) => {
+                console.log(evt?.value)
                 updateModel("officer", evt?.value);
               }}
               className="comp-details-input"

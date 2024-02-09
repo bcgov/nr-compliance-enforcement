@@ -222,8 +222,8 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
 
     if (drugs && from(drugs).any()) {
       const { drugAuthorization } = data;
-      const { date } = drugAuthorization || { officer: "", date: undefined };
 
+      console.log("drugAuthorization", data.drugAuthorization);
       return (
         <>
           {from(drugs)
@@ -234,7 +234,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <DrugAuthorization assigned={assigned} date={date} agency={agency} update={updateModel} />
+          <DrugAuthorization {...drugAuthorization} assigned={assigned} agency={agency} update={updateModel} />
         </>
       );
     }
