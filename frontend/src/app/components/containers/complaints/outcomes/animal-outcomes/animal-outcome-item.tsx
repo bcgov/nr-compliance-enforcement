@@ -72,7 +72,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   useEffect(() => {
     if (species) {
       const selected = from(speciesList).firstOrDefault((item) => item.value === species);
-      if (selected && selected.label) {
+      if (selected?.label) {
         setAnimal(selected.label);
       }
     }
@@ -81,7 +81,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   useEffect(() => {
     if (sex) {
       const selected = from(sexes).firstOrDefault((item) => item.value === sex);
-      if (selected && selected.label) {
+      if (selected?.label) {
         setAnimalSex(selected.label);
       }
     }
@@ -90,7 +90,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   useEffect(() => {
     if (age) {
       const selected = from(ages).firstOrDefault((item) => item.value === age);
-      if (selected && selected.label) {
+      if (selected?.label) {
         setAnimalAge(selected.label);
       }
     }
@@ -99,7 +99,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   useEffect(() => {
     if (threatLevel) {
       const selected = from(threatLevels).firstOrDefault((item) => item.value === threatLevel);
-      if (selected && selected.label) {
+      if (selected?.label) {
         setAnimalThreatLevel(selected.label);
       }
     }
@@ -108,7 +108,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   useEffect(() => {
     if (conflictHistory) {
       const selected = from(conflictHistories).firstOrDefault((item) => item.value === conflictHistory);
-      if (selected && selected.label) {
+      if (selected?.label) {
         setAnimalHistory(selected.label);
       }
     }
@@ -117,7 +117,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   useEffect(() => {
     if (outcome) {
       const selected = from(outcomes).firstOrDefault((item) => item.value === outcome);
-      if (selected && selected.label) {
+      if (selected?.label) {
         setAnimalOutcome(selected.label);
       }
     }

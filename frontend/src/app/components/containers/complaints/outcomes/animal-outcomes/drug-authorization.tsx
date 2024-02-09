@@ -17,10 +17,8 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update })
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
 
   const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "officer": {
-        return officers.find((item) => item.value === assigned);
-      }
+    if(property === "officer"){ 
+      return officers.find((item) => item.value === assigned);
     }
   };
 
@@ -38,9 +36,9 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update })
       <Row>
         <Col md={5}>
           <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="officer-assigned-select-label-id">Officer Assigned</label>
+            <label id="officer-assigned-authorization-select-label-id" htmlFor="officer-assigned-authorization-select-id">Officer Assigned</label>
             <CompSelect
-              id="officer-assigned-select-id"
+              id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
               onChange={(evt) => {
                 updateModel("officer", evt?.value);
@@ -56,9 +54,9 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update })
 
         <Col md="4">
           <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="officer-assigned-select-label-id">Date</label>
+            <label id="drug-authorization-incident-time-label-id" htmlFor="drug-authorization-incident-time">Date</label>
             <DatePicker
-              id="complaint-incident-time"
+              id="drug-authorization-incident-time"
               showIcon
               dateFormat="yyyy-MM-dd"
               wrapperClassName="comp-details-edit-calendar-input"

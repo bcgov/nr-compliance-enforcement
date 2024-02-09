@@ -370,7 +370,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
           </Col>
           <Col md={4}>
             <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="officer-assigned-select-label-id">Officer Assigned</label>
+              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">Officer Assigned</label>
               <CompSelect
                 id="officer-assigned-select-id"
                 classNamePrefix="comp-select"
@@ -388,7 +388,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
 
           <Col>
             <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="officer-assigned-select-label-id">Date</label>
+              <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">Date</label>
               <DatePicker
                 id="complaint-incident-time"
                 showIcon
