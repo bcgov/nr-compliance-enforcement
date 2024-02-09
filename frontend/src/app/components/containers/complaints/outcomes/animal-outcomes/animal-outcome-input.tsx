@@ -15,7 +15,7 @@ import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wild
 import { pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { AddEarTag } from "./add-ear-tag";
-import { BsPlusCircle } from "react-icons/bs";
+import { BsPlusCircle, BsTags } from "react-icons/bs";
 import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import { from } from "linq-to-typescript";
@@ -138,10 +138,12 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
   const addEarTag = () => {
     const { tags } = data;
 
-    let id = tags.length + 1;
+    if (tags.length < 2) {
+      let id = tags.length + 1;
 
-    const update = [...tags, { id, ear: "", number: "" }];
-    updateModel("tags", update);
+      const update = [...tags, { id, ear: "", number: "" }];
+      updateModel("tags", update);
+    }
   };
 
   const renderEarTags = () => {
@@ -340,12 +342,18 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
         </Row>
       </div>
 
-      {/* <!-- ear tag component --> */}
       {renderEarTags()}
-      <Button className="comp-animal-outcome-add-button" title="Add ear tag" variant="link" onClick={() => addEarTag()}>
-        <BsPlusCircle size={16} />
-        <span> Add ear tag</span>
-      </Button>
+      {data.tags.length < 2 && (
+        <Button
+          className="comp-animal-outcome-add-button"
+          title="Add ear tag"
+          variant="link"
+          onClick={() => addEarTag()}
+        >
+          <BsPlusCircle size={16} />
+          <span> Add ear tag</span>
+        </Button>
+      )}
 
       {renderDrugs()}
       <Button className="comp-animal-outcome-add-button" title="Add drug" variant="link" onClick={() => addDrug()}>
@@ -370,7 +378,9 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
           </Col>
           <Col md={4}>
             <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">Officer Assigned</label>
+              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
+                Officer Assigned
+              </label>
               <CompSelect
                 id="officer-assigned-select-id"
                 classNamePrefix="comp-select"
@@ -388,7 +398,9 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
 
           <Col>
             <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">Date</label>
+              <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
+                Date
+              </label>
               <DatePicker
                 id="complaint-incident-time"
                 showIcon
