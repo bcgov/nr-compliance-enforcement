@@ -15,8 +15,8 @@ _caller_phone_3 varchar(15);
 _location_summary_text varchar(120);
 _location_detailed_text varchar(4000);
 _incident_utc_datetime timestamp;
-_create_utc_timestamp timestamp := NOW();
-_update_utc_timestamp timestamp := NOW();
+_create_utc_timestamp timestamp := (NOW() AT TIME ZONE 'UTC');
+_update_utc_timestamp timestamp := (NOW() AT TIME ZONE 'UTC');
 _create_userid varchar(200);
 _update_userid varchar(200);
 _geo_organization_unit_code varchar(10);
@@ -90,10 +90,10 @@ _location_summary_text := left(complaint_data ->> 'address', 100) || case when L
 _location_detailed_text := complaint_data ->> 'cos_location_description';
 _incident_utc_datetime := (
   complaint_data ->> 'incident_datetime'
-):: timestamp at TIME zone 'UTC';
+):: timestamp AT TIME ZONE 'America/Los_Angeles';
 _incident_reported_utc_timestmp := (
   complaint_data ->> 'created_by_datetime'
-):: timestamp at TIME zone 'UTC';
+):: timestamp AT TIME ZONE 'America/Los_Angeles';
 _location_geometry_point := coalesce(
   nullif(complaint_data ->> 'location', ''):: geometry, 
   'POINT(0 0)' :: geometry
@@ -227,6 +227,7 @@ where
 end;
 $function$
 ;
+
 
 CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
  RETURNS character varying
