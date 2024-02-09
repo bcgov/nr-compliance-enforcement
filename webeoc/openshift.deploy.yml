@@ -93,7 +93,7 @@ objects:
                 - name: NATS_HOST
                   value: nats://${NAME}-${ZONE}-nats:4222
                 - name: COMPLAINTS_MANAGEMENT_API_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}/v1
                 - name: COMPLAINTS_API_KEY
                   valueFrom:
                     secretKeyRef:
