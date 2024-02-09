@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { StagingComplaintService } from './staging_complaint.service';
 import { ApiTags } from '@nestjs/swagger';
-import { WebEOCComplaint } from 'src/types/webeoc-complaint';
-import { ApiKeyGuard } from 'src/auth/apikey.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { WebEOCComplaint } from '../../types/webeoc-complaint';
+import { ApiKeyGuard } from '../../auth/apikey.guard';
+import { Public } from '../../auth/decorators/public.decorator';
 
 @ApiTags("staging-complaint")
 @Public()
