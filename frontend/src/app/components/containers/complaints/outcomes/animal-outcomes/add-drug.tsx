@@ -61,6 +61,14 @@ export const AddDrug: FC<props> = ({
     }
   };
 
+  const handleAmountUsed = (input: string) => {
+    updateModel("amountUsed", input);
+  };
+
+  const handleAmountDiscarded = (input: string) => {
+    updateModel("amountDiscarded", input);
+  };
+
   return (
     <div className="comp-outcome-report-inner-spacing">
       <Row>
@@ -94,11 +102,11 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-used-${id}`}>Amount used</label>
+          <label htmlFor={`amount-used-${id}`}>Amount used in mL</label>
           <CompInput
             id={`amount-used-${id}`}
             divid={`amount-used-${id}-div`}
-            type="number"
+            type="input"
             placeholder="Example"
             inputClass="comp-form-control"
             value={amountUsed === -1 ? "" : amountUsed}
@@ -106,7 +114,7 @@ export const AddDrug: FC<props> = ({
               const {
                 target: { value },
               } = evt;
-              updateModel("amountUsed", parseInt(value));
+              handleAmountUsed(value);
             }}
           />
         </Col>
@@ -160,7 +168,7 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-discarded-${id}`}>Amount discarded</label>
+          <label htmlFor={`amount-discarded-${id}`}>Amount discarded in mL</label>
           <CompInput
             id={`amount-discarded-${id}`}
             divid={`amount-discarded-${id}-div`}
@@ -172,7 +180,7 @@ export const AddDrug: FC<props> = ({
               const {
                 target: { value },
               } = evt;
-              updateModel("amountDiscarded", parseInt(value));
+              handleAmountDiscarded(value);
             }}
           />
         </Col>
