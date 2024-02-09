@@ -1,8 +1,14 @@
 export interface ComplaintMessage {
   pattern: string;
-  data: Complaint;
+  data: WebEOCComplaintMessageData;
 }
-export interface Complaint {
+
+export interface WebEOCComplaintMessageData {
+  id: string;
+  complaintData: WebEOCComplaint;
+}
+
+export interface WebEOCComplaint {
   tablename: string;
   dataid: string;
   username: string;
