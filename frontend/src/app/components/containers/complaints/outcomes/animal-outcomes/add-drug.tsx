@@ -154,7 +154,7 @@ export const AddDrug: FC<props> = ({
           </CompIconButton>
         </Col>
       </Row>
-      <Row>
+      <Row className="comp-padding-top-md">
         <Col>
           <label htmlFor={`remaining-drug-use-${id}`}>Fate of remaining drug in vial</label>
           <CompSelect
@@ -204,7 +204,7 @@ export const AddDrug: FC<props> = ({
         <Col></Col>
       </Row>
 
-      <hr />
+      <hr className="comp-margin-top-lg comp-nmargin-bottom-xs" />
     </div>
   );
 };
