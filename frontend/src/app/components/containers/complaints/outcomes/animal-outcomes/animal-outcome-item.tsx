@@ -195,9 +195,10 @@ export const AnimalOutcomeItem: FC<props> = ({
                   </label>
 
                   <div style={{ width: "100%" }}>
-                    {drugs.map((item) => (
-                      <DrugItem {...item} agency={agency} key={item.id} />
-                    ))}
+                    {drugs.map((item) => {
+                      const { officer, date } = drugAuthorization || {};
+                      return <DrugItem {...item} officer={officer} date={date} agency={agency} key={item.id} />;
+                    })}
                   </div>
                 </div>
               </div>

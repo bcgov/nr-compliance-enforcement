@@ -294,7 +294,7 @@ export const selectOfficerByIdir =
     } = state;
     const selected = data.find(({ user_id }) => user_id === idir);
 
-    if (selected && selected.person_guid) {
+    if (selected?.person_guid) {
       return selected;
     }
 
