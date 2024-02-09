@@ -49,7 +49,7 @@ export class WebEOCComplaintsScheduler {
 
   // WebEOC requires that a cookie be attached to each authenticated request.  This method grabs that cookie.
   public async authenticateWithWebEOC(): Promise<string> {
-    const authUrl = 'https://bc.demo.webeocasp.com/bc/api/rest.svc/sessions';
+    const authUrl = `${process.env.WEBEOC_URL}/sessions`;
     const credentials = {
       username: process.env.WEBEOC_USERNAME,
       password: process.env.WEBEOC_PASSWORD,
@@ -123,8 +123,7 @@ export class WebEOCComplaintsScheduler {
       },
     };
 
-    const url =
-      'https://bc.demo.webeocasp.com/bc/api/rest.svc/board/Conservation Officer Service/display/List - COS Integration Incidents';
+    const url = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - COS Integration Incidents`;
 
     try {
       const response = await axios.post(url, body, config);
