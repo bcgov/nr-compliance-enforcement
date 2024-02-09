@@ -37,7 +37,6 @@ import { EntityCodeModule } from './v1/entity_code/entity_code.module';
 import { StagingMetaDataMappingModule } from './v1/staging_meta_data_mapping/staging_meta_data_mapping.module';
 import { StagingStatusCodeModule } from './v1/staging_status_code/staging_status_code.module';
 import { StagingActivityCodeModule } from './v1/staging_activity_code/staging_activity_code.module';
-import { ComplaintInternalModule } from "./v1/complaint-internal/complaint-internal.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -99,7 +98,6 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     StagingStatusCodeModule,
     StagingMetaDataMappingModule,
     EntityCodeModule,
-    ComplaintInternalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

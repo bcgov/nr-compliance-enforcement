@@ -67,271 +67,232 @@ create table public.staging_metadata_mapping (
   CONSTRAINT "staging_staging_metadata_mapping_entity_code" FOREIGN KEY (entity_code) REFERENCES public.entity_code(entity_code)
 );
 
-create or replace
-function public.insert_complaint_from_staging(_complaint_identifier character varying)
- returns void
- language plpgsql
-as $function$
-declare
-    complaint_data jsonb;
+CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$ declare complaint_data jsonb;
 -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
 -- Variables for 'complaint' table
-
 _report_type varchar(120);
-
 _detail_text varchar(4000);
-
 _caller_name varchar(120);
-
 _caller_address varchar(120);
-
 _caller_email varchar(120);
-
 _caller_phone_1 varchar(15);
-
 _caller_phone_2 varchar(15);
-
 _caller_phone_3 varchar(15);
-
 _location_summary_text varchar(120);
-
 _location_detailed_text varchar(4000);
-
 _incident_utc_datetime timestamp;
-
 _create_utc_timestamp timestamp := NOW();
-
 _update_utc_timestamp timestamp := NOW();
-
 _create_userid varchar(200);
-
 _update_userid varchar(200);
-
 _geo_organization_unit_code varchar(10);
-
 _incident_reported_utc_timestmp timestamp;
-
 _location_geometry_point geometry;
 -- Variables for 'hwcr_complaint' table
 _webeoc_species varchar(200);
-
 _webeoc_hwcr_complaint_nature_code varchar(200);
-
 _webeoc_cos_area_community varchar(200);
-
+_webeoc_attracts_list varchar(1000);
 _species_code varchar(10);
-
 _hwcr_complaint_nature_code varchar(10);
-
 _other_attractants_text varchar(4000);
-
-begin
--- Fetch the JSONB data from complaint_staging using the provided identifier
-    select
-	sc.complaint_jsonb
-into
-	complaint_data
-from
-	staging_complaint sc
-where
-	sc.complaint_identifier = _complaint_identifier
-	and sc.staging_status_code = 'PENDING';
-
-if complaint_data is null then
-    return;
+-- used to generate a uuid.  We use this to create the PK in hwcr_complaint, but
+-- we need to also use it when creating the attractants
+generated_uuid uuid;
+-- parsed attractants from the jsonb object
+attractants_array text[];
+attractant_item text;
+_attractant_code varchar(10);
+begin -- Fetch the JSONB data from complaint_staging using the provided identifier
+select 
+  sc.complaint_jsonb into complaint_data 
+from 
+  staging_complaint sc 
+where 
+  sc.complaint_identifier = _complaint_identifier 
+  and sc.staging_status_code = 'PENDING';
+if complaint_data is null then return;
 end if;
-
-_report_type := complaint_data->>'report_type';
-
-if _report_type is null or _report_type <> 'HWCR' then
---        raise exception 'Data is not a HWCR complaint for complaint identifier %', _complaint_identifier;
-	return;
+_report_type := complaint_data ->> 'report_type';
+if _report_type is null 
+or _report_type <> 'HWCR' then --        raise exception 'Data is not a HWCR complaint for complaint identifier %', _complaint_identifier;
+return;
 end if;
-
 -- Extract and prepare data for 'complaint' table
-_detail_text := left(complaint_data->>'cos_call_details', 3980) || case
-	when LENGTH(complaint_data->>'cos_call_details') > 3980 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_caller_name := left(complaint_data->>'cos_caller_name', 100) || case
-	when LENGTH(complaint_data->>'cos_caller_name') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_caller_address := left(complaint_data->>'caller_address', 100) || case
-	when LENGTH(complaint_data->>'caller_address') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_caller_email := left(complaint_data->>'cos_caller_email', 100) || case
-	when LENGTH(complaint_data->>'cos_caller_email') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_caller_phone_1 := left(complaint_data->>'cos_primary_phone', 100) || case
-	when LENGTH(complaint_data->>'cos_primary_phone') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_caller_phone_2 := left(complaint_data->>'cos_alt_phone', 100) || case
-	when LENGTH(complaint_data->>'cos_alt_phone') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_caller_phone_3 := left(complaint_data->>'cos_alt_phone_2', 100) || case
-	when LENGTH(complaint_data->>'cos_alt_phone_2') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_location_summary_text := left(complaint_data->>'address', 100) || case
-	when LENGTH(complaint_data->>'address') > 100 then '… DATA TRUNCATED'
-	else ''
-end;
-
-_location_detailed_text := complaint_data->>'cos_location_description';
-
-_incident_utc_datetime := (complaint_data->>'incident_datetime')::timestamp at TIME zone 'UTC';
-
-_incident_reported_utc_timestmp := (complaint_data->>'created_by_datetime')::timestamp at TIME zone 'UTC';
-
+_detail_text := left(
+  complaint_data ->> 'cos_call_details', 
+  3980
+) || case when LENGTH(
+  complaint_data ->> 'cos_call_details'
+) > 3980 then '… DATA TRUNCATED' else '' end;
+_caller_name := left(
+  complaint_data ->> 'cos_caller_name', 
+  100
+) || case when LENGTH(
+  complaint_data ->> 'cos_caller_name'
+) > 100 then '… DATA TRUNCATED' else '' end;
+_caller_address := left(
+  complaint_data ->> 'caller_address', 
+  100
+) || case when LENGTH(
+  complaint_data ->> 'caller_address'
+) > 100 then '… DATA TRUNCATED' else '' end;
+_caller_email := left(
+  complaint_data ->> 'cos_caller_email', 
+  100
+) || case when LENGTH(
+  complaint_data ->> 'cos_caller_email'
+) > 100 then '… DATA TRUNCATED' else '' end;
+_caller_phone_1 := left(
+  complaint_data ->> 'cos_primary_phone', 
+  100
+) || case when LENGTH(
+  complaint_data ->> 'cos_primary_phone'
+) > 100 then '… DATA TRUNCATED' else '' end;
+_caller_phone_2 := left(
+  complaint_data ->> 'cos_alt_phone', 
+  100
+) || case when LENGTH(
+  complaint_data ->> 'cos_alt_phone'
+) > 100 then '… DATA TRUNCATED' else '' end;
+_caller_phone_3 := left(
+  complaint_data ->> 'cos_alt_phone_2', 
+  100
+) || case when LENGTH(
+  complaint_data ->> 'cos_alt_phone_2'
+) > 100 then '… DATA TRUNCATED' else '' end;
+_location_summary_text := left(complaint_data ->> 'address', 100) || case when LENGTH(complaint_data ->> 'address') > 100 then '… DATA TRUNCATED' else '' end;
+_location_detailed_text := complaint_data ->> 'cos_location_description';
+_incident_utc_datetime := (
+  complaint_data ->> 'incident_datetime'
+):: timestamp at TIME zone 'UTC';
+_incident_reported_utc_timestmp := (
+  complaint_data ->> 'created_by_datetime'
+):: timestamp at TIME zone 'UTC';
 _location_geometry_point := coalesce(
-    nullif(complaint_data->>'location', '')::geometry,
-    'POINT(0 0)'::geometry
+  nullif(complaint_data ->> 'location', ''):: geometry, 
+  'POINT(0 0)' :: geometry
 );
-
-_create_userid := complaint_data->>'username';
-
+_create_userid := complaint_data ->> 'username';
 _update_userid := _create_userid;
-
-_webeoc_cos_area_community := complaint_data->>'cos_area_community';
-
-select
-	*
-from
-	public.insert_and_return_code(_webeoc_cos_area_community,
-	'geoorgutcd')
-into
-	_geo_organization_unit_code;
--- convert webeoc species to our species code	
-_webeoc_species := complaint_data->>'species';
-
-select
-	*
-from
-	public.insert_and_return_code(_webeoc_species,
-	'speciescd')
-into
-	_species_code;
-
-_webeoc_hwcr_complaint_nature_code := complaint_data->>'nature_of_complaint';
-
-select
-	*
-from
-	public.insert_and_return_code(_webeoc_hwcr_complaint_nature_code,
-	'cmpltntrcd')
-into
-	_hwcr_complaint_nature_code;
+_webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
+select 
+  * 
+from 
+  public.insert_and_return_code(
+    _webeoc_cos_area_community, 'geoorgutcd'
+  ) into _geo_organization_unit_code;
+-- convert webeoc species to our species code  
+_webeoc_species := complaint_data ->> 'species';
+select 
+  * 
+from 
+  public.insert_and_return_code(_webeoc_species, 'speciescd') into _species_code;
+_webeoc_hwcr_complaint_nature_code := complaint_data ->> 'nature_of_complaint';
+select 
+  * 
+from 
+  public.insert_and_return_code(
+    _webeoc_hwcr_complaint_nature_code, 
+    'cmpltntrcd'
+  ) into _hwcr_complaint_nature_code;
 -- Insert data into 'complaint' table
-    insert
-	into
-	public.complaint (
-        complaint_identifier,
-	detail_text,
-	caller_name,
-	caller_address,
-	caller_email,
-	caller_phone_1,
-	caller_phone_2,
-	caller_phone_3,
-	location_summary_text,
-	location_detailed_text,
-	incident_utc_datetime,
-	incident_reported_utc_timestmp,
-	create_user_id,
-	create_utc_timestamp,
-	update_user_id ,
-	update_utc_timestamp,
-	owned_by_agency_code,
-	complaint_status_code,
-	geo_organization_unit_code,
-	location_geometry_point
-    )
-values (
-        _complaint_identifier,
-_detail_text,
-_caller_name,
-_caller_address,
-_caller_email,
-        _caller_phone_1,
-_caller_phone_2,
-_caller_phone_3,
-_location_summary_text,
-        _location_detailed_text,
-_incident_utc_datetime,
-_incident_reported_utc_timestmp,
-_create_userid,
-_create_utc_timestamp,
-_update_userid,
-_update_utc_timestamp,
-'COS',
-'OPEN',
-_geo_organization_unit_code,
-_location_geometry_point
-    );
+insert into public.complaint (
+  complaint_identifier, detail_text, 
+  caller_name, caller_address, caller_email, 
+  caller_phone_1, caller_phone_2, 
+  caller_phone_3, location_summary_text, 
+  location_detailed_text, incident_utc_datetime, 
+  incident_reported_utc_timestmp, 
+  create_user_id, create_utc_timestamp, 
+  update_user_id, update_utc_timestamp, 
+  owned_by_agency_code, complaint_status_code, 
+  geo_organization_unit_code, location_geometry_point
+) 
+values 
+  (
+    _complaint_identifier, _detail_text, 
+    _caller_name, _caller_address, _caller_email, 
+    _caller_phone_1, _caller_phone_2, 
+    _caller_phone_3, _location_summary_text, 
+    _location_detailed_text, _incident_utc_datetime, 
+    _incident_reported_utc_timestmp, 
+    _create_userid, _create_utc_timestamp, 
+    _update_userid, _update_utc_timestamp, 
+    'COS', 'OPEN', _geo_organization_unit_code, 
+    _location_geometry_point
+  );
 -- Prepare data for 'hwcr_complaint' table
-   
-   
-_other_attractants_text := complaint_data->>'attractant_other_text';
+_other_attractants_text := complaint_data ->> 'attractant_other_text';
+select 
+  uuid_generate_v4() into generated_uuid;
 -- Insert data into 'hwcr_complaint' table
-    insert
-	into
-	public.hwcr_complaint (
-        hwcr_complaint_guid,
-	other_attractants_text,
-	create_user_id,
-	create_utc_timestamp,
-	update_user_id,
-	update_utc_timestamp,
-	complaint_identifier,
-	species_code,
-	hwcr_complaint_nature_code
-    )
-values (
-        uuid_generate_v4(),
-_other_attractants_text,
-_create_userid,
-_create_utc_timestamp,
-        _create_userid,
-_update_utc_timestamp,
-_complaint_identifier,
-_species_code,
-_hwcr_complaint_nature_code
-    );
+insert into public.hwcr_complaint (
+  hwcr_complaint_guid, other_attractants_text, 
+  create_user_id, create_utc_timestamp, 
+  update_user_id, update_utc_timestamp, 
+  complaint_identifier, species_code, 
+  hwcr_complaint_nature_code
+) 
+values 
+  (
+    generated_uuid, _other_attractants_text, 
+    _create_userid, _create_utc_timestamp, 
+    _create_userid, _update_utc_timestamp, 
+    _complaint_identifier, _species_code, 
+    _hwcr_complaint_nature_code
+  );
+-- Convert the comma-separated list into an array
+attractants_array := string_to_array(
+  complaint_data ->> 'attractants_list', 
+  ','
+);
+-- Iterate over the array
+foreach attractant_item in array attractants_array loop -- Trim whitespace and check if the item is 'Not Applicable'
+if TRIM(attractant_item) <> 'Not Applicable' then -- Your insertion logic here
 
-update
-	staging_complaint
-set
-	staging_status_code = 'SUCCESS'
-where
-	complaint_identifier = _complaint_identifier;
+select 
+  * 
+from 
+  public.insert_and_return_code(
+    TRIM(attractant_item), 'atractntcd'
+  ) into _attractant_code;
 
-exception
-when others then
--- Handle other types of exceptions
-            raise notice 'An unexpected error occurred: %',
+
+insert into public.attractant_hwcr_xref (
+  attractant_code, hwcr_complaint_guid, 
+  create_user_id, create_utc_timestamp, 
+  update_user_id, update_utc_timestamp
+) 
+values 
+  (
+    _attractant_code, 
+    generated_uuid, 
+    'webeoc', 
+    _create_utc_timestamp, 
+    'webeoc', 
+    _update_utc_timestamp
+  );
+end if;
+end loop;
+update 
+  staging_complaint 
+set 
+  staging_status_code = 'SUCCESS' 
+where 
+  complaint_identifier = _complaint_identifier;
+exception when others then raise notice 'An unexpected error occurred: %', 
 sqlerrm;
--- Optionally, re-throw the exception or handle it accordingly
-           update
-	staging_complaint
-set
-	staging_status_code = 'ERROR'
-where
-	complaint_identifier = _complaint_identifier;
-
+update 
+  staging_complaint 
+set 
+  staging_status_code = 'ERROR' 
+where 
+  complaint_identifier = _complaint_identifier;
 end;
-
 $function$
 ;
 
