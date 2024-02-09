@@ -15,7 +15,7 @@ export class WebEOCComplaintsScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.publishComplaints();
+      await this.fetchAndPublishComplaintsFromWebEOC();
     });
 
     this.cronJob.start();
@@ -32,7 +32,7 @@ export class WebEOCComplaintsScheduler {
   }
 
   // Grabs the complaints and publishes them to NATS
-  async publishComplaints() {
+  async fetchAndPublishComplaintsFromWebEOC() {
     await this.authenticateWithWebEOC();
     // Fetch complaints from WebEOC here
     const complaints = await this.fetchComplaintsFromWebEOC();
@@ -41,13 +41,15 @@ export class WebEOCComplaintsScheduler {
 
     // Publish each complaint to NATS
     for (const complaint of complaints) {
-      await this.complaintsPublisherService.publishComplaint(complaint);
+      await this.complaintsPublisherService.publishComplaintsFromWebEOC(
+        complaint,
+      );
     }
   }
 
   // WebEOC requires that a cookie be attached to each authenticated request.  This method grabs that cookie.
   public async authenticateWithWebEOC(): Promise<string> {
-    const authUrl = 'https://bc.demo.webeocasp.com/bc/api/rest.svc/sessions';
+    const authUrl = `${process.env.WEBEOC_URL}/sessions`;
     const credentials = {
       username: process.env.WEBEOC_USERNAME,
       password: process.env.WEBEOC_PASSWORD,
@@ -105,19 +107,23 @@ export class WebEOCComplaintsScheduler {
 
     const body = {
       customFilter: {
-        boolean: 'or',
+        boolean: 'and',
         items: [
           {
             fieldname: 'incident_datetime',
             operator: 'GreaterThan',
             fieldvalue: formattedDate,
           },
+          {
+            fieldname: 'report_type',
+            operator: '=',
+            fieldvalue: 'HWCR',
+          },
         ],
       },
     };
 
-    const url =
-      'https://bc.demo.webeocasp.com/bc/api/rest.svc/board/Conservation Officer Service/display/List - COS Integration Incidents';
+    const url = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - COS Integration Incidents`;
 
     try {
       const response = await axios.post(url, body, config);
