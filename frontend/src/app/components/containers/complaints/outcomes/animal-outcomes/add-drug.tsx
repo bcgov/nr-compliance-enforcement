@@ -102,7 +102,7 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-used-${id}`}>Amount used in mL</label>
+          <label htmlFor={`amount-used-${id}`}>Amount used (mL)</label>
           <CompInput
             id={`amount-used-${id}`}
             divid={`amount-used-${id}-div`}
@@ -168,7 +168,7 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-discarded-${id}`}>Amount discarded in mL</label>
+          <label htmlFor={`amount-discarded-${id}`}>Amount discarded (mL)</label>
           <CompInput
             id={`amount-discarded-${id}`}
             divid={`amount-discarded-${id}-div`}
