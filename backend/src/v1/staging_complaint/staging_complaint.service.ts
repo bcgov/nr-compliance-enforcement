@@ -32,7 +32,7 @@ export class StagingComplaintService {
     if (existingStagingComplaint) {
       return;
     }
-    
+        
     const newStagingComplaint = this.stagingComplaintRepository.create();
     newStagingComplaint.stagingStatusCode = { stagingStatusCode: StagingStatusCodeEnum.PENDING } as StagingStatusCode;
     newStagingComplaint.stagingActivityCode = { stagingActivityCode: StagingActivityCodeEnum.INSERT } as StagingActivityCode;
