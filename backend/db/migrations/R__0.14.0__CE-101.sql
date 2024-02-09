@@ -30,6 +30,10 @@ _webeoc_attracts_list varchar(1000);
 _species_code varchar(10);
 _hwcr_complaint_nature_code varchar(10);
 _other_attractants_text varchar(4000);
+_cos_reffered_by_txt varchar(4000);
+_webeoc_cos_reffered_by_lst varchar(200);
+_cos_reffered_by_lst varchar(200);
+
 -- used to generate a uuid.  We use this to create the PK in hwcr_complaint, but
 -- we need to also use it when creating the attractants
 generated_uuid uuid;
@@ -77,24 +81,11 @@ _caller_email := left(
 ) || case when LENGTH(
   complaint_data ->> 'cos_caller_email'
 ) > 100 then '… DATA TRUNCATED' else '' end;
-_caller_phone_1 := left(
-  complaint_data ->> 'cos_primary_phone', 
-  100
-) || case when LENGTH(
-  complaint_data ->> 'cos_primary_phone'
-) > 100 then '… DATA TRUNCATED' else '' end;
-_caller_phone_2 := left(
-  complaint_data ->> 'cos_alt_phone', 
-  100
-) || case when LENGTH(
-  complaint_data ->> 'cos_alt_phone'
-) > 100 then '… DATA TRUNCATED' else '' end;
-_caller_phone_3 := left(
-  complaint_data ->> 'cos_alt_phone_2', 
-  100
-) || case when LENGTH(
-  complaint_data ->> 'cos_alt_phone_2'
-) > 100 then '… DATA TRUNCATED' else '' end;
+
+_caller_phone_1 := LEFT(REGEXP_REPLACE(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g'), 15);
+_caller_phone_2 := LEFT(REGEXP_REPLACE(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g'), 15);
+_caller_phone_3 := LEFT(REGEXP_REPLACE(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g'), 15);
+
 _location_summary_text := left(complaint_data ->> 'address', 100) || case when LENGTH(complaint_data ->> 'address') > 100 then '… DATA TRUNCATED' else '' end;
 _location_detailed_text := complaint_data ->> 'cos_location_description';
 _incident_utc_datetime := (
@@ -110,12 +101,22 @@ _location_geometry_point := coalesce(
 _create_userid := complaint_data ->> 'username';
 _update_userid := _create_userid;
 _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
+_webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
+_cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
+select 
+  * 
+from 
+  public.insert_and_return_code(
+    _webeoc_cos_reffered_by_lst, 'reprtdbycd'
+  ) into _cos_reffered_by_lst;
+
 select 
   * 
 from 
   public.insert_and_return_code(
     _webeoc_cos_area_community, 'geoorgutcd'
   ) into _geo_organization_unit_code;
+ 
 -- convert webeoc species to our species code  
 _webeoc_species := complaint_data ->> 'species';
 select 
@@ -141,7 +142,7 @@ insert into public.complaint (
   create_user_id, create_utc_timestamp, 
   update_user_id, update_utc_timestamp, 
   owned_by_agency_code, complaint_status_code, 
-  geo_organization_unit_code, location_geometry_point
+  geo_organization_unit_code, location_geometry_point, reported_by_code, reported_by_other_text
 ) 
 values 
   (
@@ -154,7 +155,7 @@ values
     _create_userid, _create_utc_timestamp, 
     _update_userid, _update_utc_timestamp, 
     'COS', 'OPEN', _geo_organization_unit_code, 
-    _location_geometry_point
+    _location_geometry_point, _cos_reffered_by_lst, _cos_reffered_by_txt
   );
 -- Prepare data for 'hwcr_complaint' table
 _other_attractants_text := complaint_data ->> 'attractant_other_text';
