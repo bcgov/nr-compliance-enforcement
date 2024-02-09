@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StagingComplaintsApiServiceService } from './staging-complaints-api-service.service';
+import { StagingComplaintsApiService } from './staging-complaints-api-service.service';
+import { ComplaintsPublisherService } from '../complaints-publisher/complaints-publisher.service';
 
 describe('StagingComplaintsApiServiceService', () => {
-  let service: StagingComplaintsApiServiceService;
+  let service: StagingComplaintsApiService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StagingComplaintsApiServiceService],
+      providers: [StagingComplaintsApiService, ComplaintsPublisherService],
     }).compile();
 
-    service = module.get<StagingComplaintsApiServiceService>(StagingComplaintsApiServiceService);
+    service = module.get<StagingComplaintsApiService>(
+      StagingComplaintsApiService,
+    );
   });
 
   it('should be defined', () => {

@@ -7,7 +7,7 @@ import {
 import {
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-} from 'src/common/constants';
+} from '../common/constants';
 import { Complaint } from 'src/types/Complaints';
 
 @Injectable()

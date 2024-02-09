@@ -3,9 +3,9 @@ import { connect, NatsConnection, Subscription } from 'nats';
 import {
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-} from 'src/common/constants';
-import { StagingComplaintsApiService } from 'src/staging-complaints-api-service/staging-complaints-api-service.service';
-import { ComplaintMessage } from 'src/types/Complaints';
+} from '../common/constants';
+import { StagingComplaintsApiService } from '../staging-complaints-api-service/staging-complaints-api-service.service';
+import { ComplaintMessage } from '../types/Complaints';
 
 @Injectable()
 /**
