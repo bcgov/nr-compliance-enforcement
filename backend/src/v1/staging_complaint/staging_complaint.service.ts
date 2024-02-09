@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StagingStatusCodeEnum } from '../../enum/staging_status_code.enum';
 import { StagingStatusCode } from '../staging_status_code/entities/staging_status_code.entity';
-import { StagingActivityCodeEnum } from 'src/enum/staging_activity_code.enum';
+import { StagingActivityCodeEnum } from '../../enum/staging_activity_code.enum';
 import { StagingActivityCode } from '../staging_activity_code/entities/staging_activity_code.entity';
 import { WebEOCComplaint } from '../../types/webeoc-complaint';
 import { StagingComplaint } from './entities/staging_complaint.entity';
