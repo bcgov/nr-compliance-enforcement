@@ -70,7 +70,7 @@ export const AddDrug: FC<props> = ({
             id={`vial-number-${id}`}
             divid={`vial-number-${id}-div`}
             type="input"
-            placeholder="Enter number"
+            placeholder="Example"
             inputClass="comp-form-control"
             value={vial}
             onChange={(evt: any) => {
@@ -99,7 +99,7 @@ export const AddDrug: FC<props> = ({
             id={`amount-used-${id}`}
             divid={`amount-used-${id}-div`}
             type="number"
-            placeholder="Enter number"
+            placeholder="Example"
             inputClass="comp-form-control"
             value={amountUsed === -1 ? "" : amountUsed}
             onChange={(evt: any) => {
@@ -128,7 +128,7 @@ export const AddDrug: FC<props> = ({
             id={`adverse-reactions-${id}`}
             divid={`adverse-reactions-${id}-div`}
             type="input"
-            placeholder="Enter number"
+            placeholder="Example"
             inputClass="comp-form-control"
             value={reactions}
             onChange={(evt: any) => {
@@ -165,7 +165,7 @@ export const AddDrug: FC<props> = ({
             id={`amount-discarded-${id}`}
             divid={`amount-discarded-${id}-div`}
             type="input"
-            placeholder="Enter number"
+            placeholder="Example"
             inputClass="comp-form-control"
             value={amountDiscarded === -1 ? "" : amountDiscarded}
             onChange={(evt: any) => {
@@ -182,7 +182,7 @@ export const AddDrug: FC<props> = ({
             id={`discard-method-${id}`}
             divid={`discard-method-${id}-div`}
             type="input"
-            placeholder="Enter number"
+            placeholder="Example"
             inputClass="comp-form-control"
             value={discardMethod}
             onChange={(evt: any) => {

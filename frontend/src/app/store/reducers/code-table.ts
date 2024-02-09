@@ -995,7 +995,7 @@ export const selectSexDropdown = (state: RootState): Array<Option> => {
     codeTables: { sex: items },
   } = state;
 
-  const data = items.map(({ sex: value, longDescription: label }) => {
+  const data = items.map(({ sex: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1008,7 +1008,7 @@ export const selectAgeDropdown = (state: RootState): Array<Option> => {
     codeTables: { age: items },
   } = state;
 
-  const data = items.map(({ age: value, longDescription: label }) => {
+  const data = items.map(({ age: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1021,7 +1021,7 @@ export const selectThreatLevelDropdown = (state: RootState): Array<Option> => {
     codeTables: { "threat-level": items },
   } = state;
 
-  const data = items.map(({ threatLevel: value, longDescription: label }) => {
+  const data = items.map(({ threatLevel: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1034,7 +1034,7 @@ export const selectConflictHistoryDropdown = (state: RootState): Array<Option> =
     codeTables: { "conflict-history": items },
   } = state;
 
-  const data = items.map(({ conflictHistory: value, longDescription: label }) => {
+  const data = items.map(({ conflictHistory: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1047,7 +1047,7 @@ export const selectEarDropdown = (state: RootState): Array<Option> => {
     codeTables: { "ear-tag": items },
   } = state;
 
-  const data = items.map(({ earTag: value, longDescription: label }) => {
+  const data = items.map(({ earTag: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1060,7 +1060,7 @@ export const selectWildlifeComplaintOutcome = (state: RootState): Array<Option> 
     codeTables: { "wildlife-outcomes": items },
   } = state;
 
-  const data = items.map(({ outcome: value, longDescription: label }) => {
+  const data = items.map(({ outcome: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1073,7 +1073,7 @@ export const selectDrugs = (state: RootState): Array<Option> => {
     codeTables: { drugs: items },
   } = state;
 
-  const data = items.map(({ drug: value, longDescription: label }) => {
+  const data = items.map(({ drug: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1086,7 +1086,7 @@ export const selectDrugUseMethods = (state: RootState): Array<Option> => {
     codeTables: { "drug-methods": items },
   } = state;
 
-  const data = items.map(({ method: value, longDescription: label }) => {
+  const data = items.map(({ method: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
@@ -1099,7 +1099,7 @@ export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
     codeTables: { "drug-remaining-outcomes": items },
   } = state;
 
-  const data = items.map(({ outcome: value, longDescription: label }) => {
+  const data = items.map(({ outcome: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });

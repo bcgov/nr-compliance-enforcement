@@ -36,7 +36,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, date, update })
       <Row>
         <Col md={5}>
           <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="officer-assigned-authorization-select-label-id" htmlFor="officer-assigned-authorization-select-id">Officer Assigned</label>
+            <label id="officer-assigned-authorization-select-label-id" htmlFor="officer-assigned-authorization-select-id">Officer</label>
             <CompSelect
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"

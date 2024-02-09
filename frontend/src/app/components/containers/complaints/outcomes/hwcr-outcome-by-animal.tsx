@@ -31,10 +31,10 @@ export const HWCROutcomeByAnimal: FC = () => {
 
   const renderAnimals = () => {
     if (animals && from(animals).any()) {
-      return animals.map(outcome => {
+      return animals.map((outcome) => {
         const { id } = outcome;
-        return <AnimalOutcomeItem {...outcome} agency={agency} key={id}/>
-      })
+        return <AnimalOutcomeItem {...outcome} agency={agency} key={id} />;
+      });
     }
   };
 
@@ -52,9 +52,10 @@ export const HWCROutcomeByAnimal: FC = () => {
     <div className="comp-outcome-report-block">
       <h6>Outcome by animal</h6>
       <div className="comp-outcome-report-button">
+        {renderAnimals()}
+
         {!showForm ? (
           <>
-            {renderAnimals()}
             <Button
               id="outcome-report-add-animal"
               title="Add animal"
