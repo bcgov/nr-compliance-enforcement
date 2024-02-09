@@ -1,0 +1,80 @@
+@import "./colours.scss";
+
+.button-text {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.copy-text {
+  text-align: left;
+  font-size: 14px;
+  color: $gray-500;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 191px;
+}
+
+.edit-input {
+  flex: 1;
+  margin: 14px 0px;
+}
+
+.equipment-item {
+  position: relative;
+
+  .status-bar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color:#328443;
+    width: 12px;
+    height: 100%;
+  }
+
+  .equipment-item-header {
+    display: flex;
+    justify-content: space-between;
+  
+    .title {
+      display: flex;
+  
+      h6 {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 120%;
+        margin-right: 16px;
+      }
+      div {
+        color: #328443;
+        background-color: #EAF3EC;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 0px 12px;
+        line-height: 24px;
+      }
+    }
+  
+    .equipment-item-edit {
+      font-size: 14px;
+  
+      span {
+        margin-right: 7px;
+      }
+    }
+  }
+  
+  .equipment-item-content {
+    display: flex;
+    margin: 16px 0px;
+    
+    .label {
+      color: $gray-500;
+      min-width: 155px;
+    }
+  }
+}

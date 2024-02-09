@@ -64,7 +64,6 @@ export const CompInput: FC<Props> = ({
 
   const props = {
     id: id,
-    divId: divId,
     value: value,
     //  defaultValue: defaultValue,
     className: inputClasses.join(" "),
