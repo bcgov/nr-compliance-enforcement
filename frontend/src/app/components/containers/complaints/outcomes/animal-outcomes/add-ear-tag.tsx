@@ -5,6 +5,7 @@ import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectEarDropdown } from "../../../../../store/reducers/code-table";
 import { BsXCircle, BsFillXCircleFill } from "react-icons/bs";
+import { CompIconButton } from "../../../../common/comp-icon-button";
 
 type props = {
   id: number;
@@ -72,10 +73,10 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           />
         </Col>
         <Col className="mt-auto mb-2">
-          <div className="comp-outcome-button-container" role="button" onMouseDown={() => remove(id)}>
+          <CompIconButton onClick={() => remove(id)}>
             <BsXCircle size={24} />
             <BsFillXCircleFill size={24} />
-          </div>
+          </CompIconButton>
         </Col>
         <Col></Col>
         <Col></Col>

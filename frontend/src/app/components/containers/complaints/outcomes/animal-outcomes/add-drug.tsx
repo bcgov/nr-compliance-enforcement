@@ -5,6 +5,7 @@ import { CompSelect } from "../../../../common/comp-select";
 import { BsFillXCircleFill, BsXCircle } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
+import { CompIconButton } from "../../../../common/comp-icon-button";
 
 type props = {
   id: number;
@@ -139,10 +140,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col className="mt-auto mb-2">
-          <div className="comp-outcome-button-container" role="button" onMouseDown={() => remove(id)}>
+          <CompIconButton onClick={() => remove(id)}>
             <BsXCircle size={24} />
             <BsFillXCircleFill size={24} />
-          </div>
+          </CompIconButton>
         </Col>
       </Row>
       <Row>

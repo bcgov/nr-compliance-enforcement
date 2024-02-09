@@ -162,32 +162,7 @@
   .checkbox-left-padding {
     padding: 0 0 0 25px;
   }
-
-  .comp-outcome-button-container {
-    overflow: hidden;
-    width: 24px;
-    height: 25px;
-    white-space: nowrap;
-  }
-
-  .comp-outcome-button-container:hover > *:first-child,
-  .comp-outcome-button-container:hover > *:last-child {
-    transform: translateX(-100%);
-  }
-
-  .flex-container {
-    display: flex;
-  }
-
-  .flex-child {
-    flex: 1;
-    border: 2px solid yellow;
-  }
-
-  .flex-child:first-child {
-    margin-right: 20px;
-  }
-
+  
   .comp-animal-outcome-add-button {
     text-decoration: none;
     margin-bottom: 24px;
