@@ -46,7 +46,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           <CompInput
             id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
-            type="number"
+            type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
             value={number}
@@ -55,7 +55,10 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
               const {
                 target: { value },
               } = evt;
-              updateModel("number", value);
+
+              if (value.length <= 4) {
+                updateModel("number", value);
+              }
             }}
           />
         </Col>
