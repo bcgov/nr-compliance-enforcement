@@ -18,7 +18,6 @@ export class StagingComplaintService {
     private stagingComplaintRepository: Repository<StagingComplaint>
   ) {}
 
-  
   async create(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
 
     const existingStagingComplaint = await this.stagingComplaintRepository
@@ -30,6 +29,11 @@ export class StagingComplaintService {
 
     // ignore duplicates
     if (existingStagingComplaint) {
+      return;
+    }
+
+    // ignore non HWCR/ERS complaints
+    if (stagingComplaint.report_type !== 'HWCR' && stagingComplaint.report_type !== 'ERS') {
       return;
     }
     
