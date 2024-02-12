@@ -15,6 +15,10 @@
     margin-bottom: 0px;
   }
 
+  label {
+    color: $gray-500
+  }
+
   .comp-outcome-checkbox-spacing {
     padding-bottom: 12px;
   }
@@ -187,9 +191,11 @@
     border-radius: 3px;
     padding: 24px;
 
-    .comp-outcome-anima-label {
+    .comp-outcome-animal-label {
       align-self: flex-start;
     }
+
+
 
     .comp-ear-tag-list {
       list-style: none;
@@ -204,10 +210,15 @@
       border-radius: 3px;
       padding: 24px;
 
-
-      .comp-orange-avatar-sm::before { 
+      .comp-orange-avatar-sm::before {
         margin-left: 25px;
       }
     }
   }
+
+  .comp-outcome-drug-label {
+    margin-right: 10px;
+    min-width: 10px !important;
+    max-width: inherit;
+   }
 }

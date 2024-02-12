@@ -165,7 +165,7 @@ export const AnimalOutcomeItem: FC<props> = ({
               <div className="comp-details-edit-column">
                 <div className="comp-details-label-div-pair">
                   <label
-                    className="comp-outcome-anima-label comp-details-inner-content-label"
+                    className="comp-outcome-animal-label comp-details-inner-content-label"
                     htmlFor="comp-review-required-officer"
                   >
                     Ear tag
@@ -188,10 +188,10 @@ export const AnimalOutcomeItem: FC<props> = ({
               <div className="comp-details-edit-column">
                 <div className="comp-details-label-div-pair">
                   <label
-                    className="comp-outcome-anima-label comp-details-inner-content-label"
+                    className="comp-outcome-animal-label comp-details-inner-content-label"
                     htmlFor="comp-review-required-officer"
                   >
-                    Drugs
+                    Drug{drugs.length>1 && "s"}
                   </label>
 
                   <div style={{ width: "100%" }}>

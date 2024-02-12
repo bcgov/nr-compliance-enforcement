@@ -85,26 +85,38 @@ export const DrugItem: FC<props> = ({
   return (
     <div className="comp-padding-xs comp-drug-item">
       <Row>
-        <Col>
+        <Col md={2}>
           <b>Vial #{vial}</b>
         </Col>
-        <Col>
+        <Col md={8}>
           <b>{drugUsed}</b>
         </Col>
       </Row>
       <Row>
-        <Col>Amount used {amountUsed}ml</Col>
-        <Col>Injection method {injectedMethod}</Col>
-        <Col>Adverse reactions {reactions}</Col>
+        <Col md={4}>
+          <label className="comp-outcome-drug-label">Amount used</label> {amountUsed}ml
+        </Col>
+        <Col md={4}>
+          <label className="comp-outcome-drug-label">Injection method</label> {injectedMethod}
+        </Col>
+        <Col md={3}>
+          <label className="comp-outcome-drug-label">Adverse reactions</label> {reactions}
+        </Col>
       </Row>
       <Row>
-        <Col>Fate of remaining drug in vial {remaining}</Col>
-        <Col>Amount discarded {amountDiscarded}ml</Col>
-        <Col>Discard method {discardMethod}</Col>
+        <Col md={5}>
+          <label className="comp-outcome-drug-label">Fate of remaining drug in vial</label> {remaining}
+        </Col>
+        <Col md={4}>
+          <label className="comp-outcome-drug-label">Amount discarded</label> {amountDiscarded}ml
+        </Col>
+        <Col md={3}>
+          <label className="comp-outcome-drug-label">Discard method</label> {discardMethod}
+        </Col>
       </Row>
       <Row>
         <Col>
-          Officer
+          <label className="comp-outcome-drug-label">Officer</label>
           <div
             data-initials-sm={getAvatarInitials(assignedOfficer())}
             className="comp-orange-avatar-sm comp-details-inner-content"
@@ -114,7 +126,9 @@ export const DrugItem: FC<props> = ({
             </span>
           </div>
         </Col>
-        <Col>Date {formatDate(date?.toString())}</Col>
+        <Col>
+          <label className="comp-outcome-drug-label">Date</label> {formatDate(date?.toString())}
+        </Col>
       </Row>
     </div>
   );

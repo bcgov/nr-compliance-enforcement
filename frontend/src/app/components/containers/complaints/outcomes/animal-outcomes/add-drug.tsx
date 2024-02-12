@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
@@ -42,6 +42,8 @@ export const AddDrug: FC<props> = ({
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
+  const [showDiscarded, setShowDiscarded] = useState(true);
+
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {
       id,
@@ -65,6 +67,11 @@ export const AddDrug: FC<props> = ({
 
   const handleAmountDiscarded = (input: string) => {
     updateModel("amountDiscarded", input);
+  };
+
+  const handleRemainingUsed = (input: string) => {
+    setShowDiscarded(input === "DISC");
+    updateModel("remainingUse", input);
   };
 
   return (
@@ -161,43 +168,52 @@ export const AddDrug: FC<props> = ({
             enableValidation={false}
             placeholder={"Please select"}
             onChange={(evt) => {
-              updateModel("remainingUse", evt?.value);
+              handleRemainingUsed(evt?.value ?? "");
             }}
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-discarded-${id}`}>Amount discarded (mL)</label>
-          <CompInput
-            id={`amount-discarded-${id}`}
-            divid={`amount-discarded-${id}-div`}
-            type="input"
-            placeholder="Example"
-            inputClass="comp-form-control"
-            value={amountDiscarded === -1 ? "" : amountDiscarded}
-            onChange={(evt: any) => {
-              const {
-                target: { value },
-              } = evt;
-              handleAmountDiscarded(value);
-            }}
-          />
+          {showDiscarded && (
+            <>
+              {" "}
+              <label htmlFor={`amount-discarded-${id}`}>Amount discarded (mL)</label>
+              <CompInput
+                id={`amount-discarded-${id}`}
+                divid={`amount-discarded-${id}-div`}
+                type="input"
+                placeholder="Example"
+                inputClass="comp-form-control"
+                value={amountDiscarded === -1 ? "" : amountDiscarded}
+                onChange={(evt: any) => {
+                  const {
+                    target: { value },
+                  } = evt;
+                  handleAmountDiscarded(value);
+                }}
+              />
+            </>
+          )}
         </Col>
         <Col>
-          <label htmlFor={`discard-method-${id}`}>Discard method</label>
-          <CompInput
-            id={`discard-method-${id}`}
-            divid={`discard-method-${id}-div`}
-            type="input"
-            placeholder="Example"
-            inputClass="comp-form-control"
-            value={discardMethod}
-            onChange={(evt: any) => {
-              const {
-                target: { value },
-              } = evt;
-              updateModel("discardMethod", value);
-            }}
-          />
+          {showDiscarded && (
+            <>
+              <label htmlFor={`discard-method-${id}`}>Discard method</label>
+              <CompInput
+                id={`discard-method-${id}`}
+                divid={`discard-method-${id}-div`}
+                type="input"
+                placeholder="Example"
+                inputClass="comp-form-control"
+                value={discardMethod}
+                onChange={(evt: any) => {
+                  const {
+                    target: { value },
+                  } = evt;
+                  updateModel("discardMethod", value);
+                }}
+              />
+            </>
+          )}
         </Col>
         <Col></Col>
       </Row>
