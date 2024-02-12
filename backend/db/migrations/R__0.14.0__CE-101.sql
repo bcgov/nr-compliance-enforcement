@@ -1,4 +1,4 @@
-  CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
+ CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
 AS
   $function$
   DECLARE
@@ -92,9 +92,30 @@ AS
     ELSE
       ''
     END;
-    _caller_phone_1 := left(regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g'), 15);
-    _caller_phone_2 := left(regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g'), 15);
-    _caller_phone_3 := left(regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g'), 15);
+	
+    -- phone numbers must be formatted as +1##########.  
+    -- If the numbers from webeoc contain non-numeric characters, strip those and 
+    -- add the + (or +1) prefix
+   
+	_caller_phone_1 := CASE
+	    WHEN left(regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g'), 15) ~ '^1'
+	    THEN '+' || left(regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g'), 15)
+	    ELSE '+1' || regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g')
+	END;
+	
+	_caller_phone_2 := CASE
+	    WHEN left(regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g'), 15) ~ '^1'
+	    THEN '+' || left(regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g'), 15)
+	    ELSE '+1' || regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g')
+	END;
+	
+	_caller_phone_3 := CASE
+	    WHEN left(regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g'), 15) ~ '^1'
+	    THEN '+' || left(regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g'), 15)
+	    ELSE '+1' || regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g')
+	END;
+
+   
     _location_summary_text := left(complaint_data ->> 'address', 100)
     ||
     CASE
