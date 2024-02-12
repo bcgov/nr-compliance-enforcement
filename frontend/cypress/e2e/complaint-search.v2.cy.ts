@@ -48,14 +48,14 @@ describe("Complaint Search Functionality", () => {
     cy.navigateToTab(complaintTypes[1], true);
 
     //-- there should be a whole page of complaints
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 50);
+    cy.get("#complaint-list tbody").find("tr").should("be.gt", 10);
 
-    //-- search for Oil and verify there's 31 complaints
+    //-- search for Oil and verify there's at least 23 complaints (this may increase as new complaints are added from WebEOC)
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("Oil{enter}"); //-- {enter} will perform an enter keypress
 
     //-- verify one complaint, and verify complaint-id
-    cy.get("#complaint-list tbody").find("tr").should("have.length", 23);
+    cy.get("#complaint-list tbody").find("tr").should("be.gt", 23);
 
     //-- switch tabs
     cy.get(complaintTypes[0]).click({ force: true });

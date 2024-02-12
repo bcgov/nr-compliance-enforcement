@@ -114,11 +114,6 @@ export class WebEOCComplaintsScheduler {
             operator: 'GreaterThan',
             fieldvalue: formattedDate,
           },
-          {
-            fieldname: 'report_type',
-            operator: '=',
-            fieldvalue: 'HWCR',
-          },
         ],
       },
     };

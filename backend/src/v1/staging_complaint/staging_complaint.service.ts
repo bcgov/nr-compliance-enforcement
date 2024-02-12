@@ -31,6 +31,11 @@ export class StagingComplaintService {
     if (existingStagingComplaint) {
       return;
     }
+
+    // ignore non HWCR/ERS complaints
+    if (stagingComplaint.report_type !== 'HWCR' && stagingComplaint.report_type !== 'ERS') {
+      return;
+    }
     
     const newStagingComplaint = this.stagingComplaintRepository.create();
     newStagingComplaint.stagingStatusCode = { stagingStatusCode: StagingStatusCodeEnum.PENDING } as StagingStatusCode;
