@@ -1,4 +1,4 @@
- CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
+  CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
 AS
   $function$
   DECLARE
@@ -248,9 +248,9 @@ AS
       END LOOP;
     ELSIF _report_type = 'ERS' THEN
       -- Extract and prepare data for 'allegation_complaint' table
-      _in_progress_ind := (complaint_data->>'in_progress_ind');
-      _observed_ind := (complaint_data->>'observed_ind');
-      _suspect_witnesss_dtl_text := complaint_data->>'suspect_witnesss_dtl_text';
+      _in_progress_ind := (complaint_data->>'violation_in_progress');
+      _observed_ind := (complaint_data->>'observe_violation');
+      _suspect_witnesss_dtl_text := complaint_data->>'suspect_details';
       SELECT *
       FROM   PUBLIC.insert_and_return_code( complaint_data->>'violation_type', 'violatncd' )
       INTO   _violation_code;
