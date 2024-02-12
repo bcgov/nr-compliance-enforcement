@@ -115,7 +115,7 @@ export const DrugItem: FC<props> = ({
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col md={4}>
           <label className="comp-outcome-drug-label">Officer</label>
           <div
             data-initials-sm={getAvatarInitials(assignedOfficer())}
@@ -126,7 +126,7 @@ export const DrugItem: FC<props> = ({
             </span>
           </div>
         </Col>
-        <Col>
+        <Col md={8}>
           <label className="comp-outcome-drug-label">Date</label> {formatDate(date?.toString())}
         </Col>
       </Row>
