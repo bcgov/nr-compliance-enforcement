@@ -33,10 +33,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, 
     const source = { officer, date };
     const authorization = { ...source, [property]: value };
 
-    console.log("auth: ", property)
-    console.log("auth: ", value)
-    console.log("auth: ", authorization)
-
     update("drugAuthorization", authorization);
   };
 
