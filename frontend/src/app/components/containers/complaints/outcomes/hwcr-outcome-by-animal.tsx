@@ -3,11 +3,12 @@ import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { from } from "linq-to-typescript";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { AnimalOutcomeInput } from "./animal-outcomes/animal-outcome-input";
+import { AddAnimalOutcome } from "./animal-outcomes/add-animal-outcome";
 import { AnimalOutcome } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { selectComplaint } from "../../../../store/reducers/complaints";
 import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
 import { AnimalOutcomeItem } from "./animal-outcomes/animal-outcome-item";
+import { EditAnimalOutcome } from "./animal-outcomes/edit-animal-outcome";
 
 export const HWCROutcomeByAnimal: FC = () => {
   const complaint = useAppSelector(selectComplaint);
@@ -29,15 +30,6 @@ export const HWCROutcomeByAnimal: FC = () => {
     }
   }, [complaint, delegates]);
 
-  const renderAnimals = () => {
-    if (animals && from(animals).any()) {
-      return animals.map((outcome) => {
-        const { id } = outcome;
-        return <AnimalOutcomeItem {...outcome} agency={agency} key={id} />;
-      });
-    }
-  };
-
   const add = (model: AnimalOutcome) => {
     const update = [...animals, model];
     setAnimals(update);
@@ -46,6 +38,37 @@ export const HWCROutcomeByAnimal: FC = () => {
 
   const cancel = () => {
     setShowForm(false);
+  };
+
+  const edit = (id: number) => {
+    if (from(animals).any((item) => item.id === id)) {
+      let original = from(animals).first((item) => item.id === id);
+      let editable = { ...original, isEditable: true };
+
+      let index = animals.findIndex((item) => item.id === id);
+
+      let update = [...animals.slice(0, index), editable, ...animals.slice(index + 1)];
+      setAnimals(update);
+    }
+  };
+
+  const update = (model: AnimalOutcome) => {
+    console.log(model)
+  };
+
+  const renderAnimals = () => {
+    if (animals && from(animals).any()) {
+      return animals.map((outcome) => {
+        const { id, isEditable } = outcome;
+
+        console.log(`outcome ${id}: `, outcome);
+        return isEditable ? (
+          <EditAnimalOutcome {...outcome} agency={agency} update={update} key={id} />
+        ) : (
+          <AnimalOutcomeItem {...outcome} agency={agency} edit={edit} key={id} />
+        );
+      });
+    }
   };
 
   return (
@@ -67,7 +90,7 @@ export const HWCROutcomeByAnimal: FC = () => {
             </Button>
           </>
         ) : (
-          <AnimalOutcomeInput
+          <AddAnimalOutcome
             animalCount={1 + animals.length}
             agency={agency}
             assigned={assigned}

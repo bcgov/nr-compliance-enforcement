@@ -18,4 +18,6 @@ export interface AnimalOutcome {
   outcome: string;
   officer: string;
   date?: Date;
+
+  isEditable: boolean
 }

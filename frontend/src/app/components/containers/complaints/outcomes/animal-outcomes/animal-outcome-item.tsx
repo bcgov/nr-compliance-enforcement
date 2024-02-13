@@ -33,6 +33,8 @@ type props = {
   outcome: string;
   officer: string;
   date?: Date;
+  isEditable: boolean;
+  edit: Function;
 };
 export const AnimalOutcomeItem: FC<props> = ({
   id,
@@ -47,7 +49,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   drugAuthorization,
   outcome,
   officer,
-  date,
+  edit,
 }) => {
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const ages = useAppSelector(selectAgeDropdown);
@@ -191,7 +193,7 @@ export const AnimalOutcomeItem: FC<props> = ({
                     className="comp-outcome-animal-label comp-details-inner-content-label"
                     htmlFor="comp-review-required-officer"
                   >
-                    Drug{drugs.length>1 && "s"}
+                    Drug{drugs.length > 1 && "s"}
                   </label>
 
                   <div style={{ width: "100%" }}>
@@ -252,7 +254,7 @@ export const AnimalOutcomeItem: FC<props> = ({
             className="sub-section-edit-button"
             title="Edit Complaint"
             variant="outline-primary"
-            onClick={(evt) => {}}
+            onClick={(evt) => edit(id)}
           >
             <span>Edit</span>
             <BsPencil />

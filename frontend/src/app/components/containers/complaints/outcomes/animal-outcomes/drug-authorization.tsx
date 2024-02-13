@@ -36,8 +36,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, 
     update("drugAuthorization", authorization);
   };
 
-  console.log("officer: ", officer);
-  console.log("assigned: ", assigned);
 
   return (
     <div className="comp-outcome-report-inner-spacing">
@@ -54,7 +52,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, 
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
               onChange={(evt) => {
-                console.log(evt?.value);
                 updateModel("officer", evt?.value);
               }}
               className="comp-details-input"

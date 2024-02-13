@@ -15,7 +15,7 @@ import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wild
 import { pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { AddEarTag } from "./add-ear-tag";
-import { BsPlusCircle, BsTags } from "react-icons/bs";
+import { BsPlusCircle } from "react-icons/bs";
 import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import { from } from "linq-to-typescript";
@@ -32,7 +32,7 @@ type props = {
   cancel: Function;
 };
 
-export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, assigned, add, cancel }) => {
+export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assigned, add, cancel }) => {
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -53,6 +53,7 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
     drugs: [],
     outcome: "",
     officer: "",
+    isEditable: false
   });
 
   useEffect(() => {
@@ -407,7 +408,6 @@ export const AnimalOutcomeInput: FC<props> = ({ animalCount, agency, species, as
                 wrapperClassName="comp-details-edit-calendar-input"
                 maxDate={new Date()}
                 onChange={(evt) => {
-                  console.log(evt);
                   updateModel("date", evt);
                 }}
                 selected={data.date}
