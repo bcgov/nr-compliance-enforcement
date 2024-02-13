@@ -1,170 +1,229 @@
 .comp-hwcr-outcome-report {
-
-    .comp-sub-header {
-        margin-bottom: 24px;
-        margin-left: 24px;
-    }
-    
+  .comp-sub-header {
+    margin-bottom: 24px;
+    margin-left: 24px;
+  }
 }
 
 .comp-outcome-report-block {
-    margin-left: 24px;
-    margin-right: 24px;
-  
-    h6 {
-      padding-top: 0px;
-      font-weight: 700;
-      margin-bottom: 0px;
-    }
+  margin-left: 24px;
+  margin-right: 24px;
 
-    .comp-outcome-checkbox-spacing {
-      padding-bottom: 12px;
-    }
-
-    .comp-outcome-report-container {
-        display: flex;
-     }
-
-     .comp-outcome-report-top-spacing {
-        padding: 12px 0px 0px 0px;
-     }
-
-     .comp-outcome-report-inner-spacing {
-        padding: 18px 0px 18px 0px;
-     }
-
-     .comp-outcome-report-bottom-spacing {
-        padding: 0px 0px 12px 0px;
-     }
-
-    .comp-outcome-report-edit-column {
-       flex: 1;
-       display: flex;
-       flex-direction: column;
-       margin-right: 60px;
-       .form-check-spacing {
-        padding-bottom: 12px;
-       }
-    }
-
-    .comp-outcome-report-edit-column button svg {
-      font-size: 16px;
-      vertical-align: text-top;
-      margin-top: 1px;
-     }
-
-    .comp-outcome-report-right-column {
-      margin-right: 0px;
-    }
-
-    .comp-outcome-report-label-column {
-        flex: .1;
-        display: flex;
-        flex-direction: column;
-        margin-right: 60px;
-     }
-
-     .comp-outcome-report-label-half-column {
-        flex: .25;
-        display: flex;
-        flex-direction: column;
-        margin-right: 60px;
-     }
-
-     .comp-outcome-hide {
-      visibility: hidden;
-     }
-
-     .comp-outcome-report-label-half-column-hidden {
-      flex: .25;
-      display: none;
-      flex-direction: column;
-      margin-right: 60px;
-   }
-    
-    .comp-outcome-report-button {
-        margin-top: 24px;
-        margin-bottom: 24px;
-    }
-    
-    .comp-outcome-report-button span {
-        margin-right: 8px;
-    }
-
-    .comp-outcome-report-button button svg {
-        font-size: 18px;
-        vertical-align: text-top;
-        margin-top: 3px;
-    }
-  
-    .comp-outcome-report-complaint-assessment {
-      margin-top: 24px;
-      margin-bottom: 24px;
-      border: 1px solid $gray-300;
-      border-radius: 3px;
-      padding: 24px;
-    }
-    
-    .comp-outcome-supporting-notes {
-      margin-top: 24px;
-      margin-bottom: 24px;
-      border: 1px solid $gray-300;
-      border-radius: 3px;
-      padding: 24px;
+  h6 {
+    padding-top: 0px;
+    font-weight: 700;
+    margin-bottom: 0px;
   }
 
-    .comp-outcome-report-actions {
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
-        gap: 8px;
-        flex: 1 0 0;
-      }
-    
-      .comp-outcome-report-actions button {
-        border-radius: 4px;
-        font-size: 14px;
-      }
+  label {
+    color: $gray-500
+  }
 
-      .comp-outcome-cancel {
-        color: $bc-gov-primary-400;
-        border-color: $bc-gov-primary-400;
-        background-color: $white;
-      }
+  .comp-outcome-checkbox-spacing {
+    padding-bottom: 12px;
+  }
 
-      .comp-outcome-cancel:hover
-      {
-        background-color: $bc-gov-primary-400;
-        color: $white;
-      }
+  .comp-outcome-report-container {
+    display: flex;
+  }
 
-      .comp-outcome-save {
-        color: $white;
-        background-color: $bc-gov-primary-400;
-      }
+  .comp-outcome-report-top-spacing {
+    padding: 12px 0px 0px 0px;
+  }
 
-      .comp-outcome-save:hover {
-        background-color: $white;
-        color: $bc-gov-primary-400;
-      }
-    
-      .comp-outcome-report-actions button span {
-        padding-right: 8px;
-      }
-    
-      .comp-outcome-report-actions button svg {
-        font-size: 16px;
-        vertical-align: text-top;
-        margin-top: 1px;
-      }
+  .comp-outcome-report-inner-spacing {
+    padding: 18px 0px 18px 0px;
+  }
 
-    .checkbox-label-padding
-    {
-      padding: 10px 0 0 0;
+  .comp-outcome-report-bottom-spacing {
+    padding: 0px 0px 12px 0px;
+  }
+
+  .comp-outcome-report-edit-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 60px;
+    .form-check-spacing {
+      padding-bottom: 12px;
     }
-    
-    .checkbox-left-padding
-    {
-      padding: 0 0 0 25px;
+  }
+
+  .comp-outcome-report-edit-column button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+  }
+
+  .comp-outcome-report-right-column {
+    margin-right: 0px;
+  }
+
+  .comp-outcome-report-label-column {
+    flex: 0.1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 60px;
+  }
+
+  .comp-outcome-report-label-half-column {
+    flex: 0.25;
+    display: flex;
+    flex-direction: column;
+    margin-right: 60px;
+  }
+
+  .comp-outcome-hide {
+    visibility: hidden;
+  }
+
+  .comp-outcome-report-label-half-column-hidden {
+    flex: 0.25;
+    display: none;
+    flex-direction: column;
+    margin-right: 60px;
+  }
+
+  .comp-outcome-report-button {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .comp-outcome-report-button span {
+    margin-right: 8px;
+  }
+
+  .comp-outcome-report-button button svg {
+    font-size: 18px;
+    vertical-align: text-top;
+    margin-top: 3px;
+  }
+
+  .comp-outcome-report-complaint-assessment {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+  }
+
+  .comp-outcome-supporting-notes {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+  }
+
+  .comp-outcome-report-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 0 0;
+  }
+
+  .comp-outcome-report-actions button {
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .comp-outcome-cancel {
+    color: $bc-gov-primary-400;
+    border-color: $bc-gov-primary-400;
+    background-color: $white;
+  }
+
+  .comp-outcome-cancel:hover {
+    background-color: $bc-gov-primary-400;
+    color: $white;
+  }
+
+  .comp-outcome-save {
+    color: $white;
+    background-color: $bc-gov-primary-400;
+  }
+
+  .comp-outcome-save:hover {
+    background-color: $white;
+    color: $bc-gov-primary-400;
+  }
+
+  .comp-outcome-report-actions button span {
+    padding-right: 8px;
+  }
+
+  .comp-outcome-report-actions button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+  }
+
+  .checkbox-label-padding {
+    padding: 10px 0 0 0;
+  }
+
+  .checkbox-left-padding {
+    padding: 0 0 0 25px;
+  }
+
+  .flex-container {
+    display: flex;
+  }
+
+  .flex-child:first-child {
+    margin-right: 20px;
+  }
+
+  .comp-animal-outcome-add-button {
+    text-decoration: none;
+    margin-bottom: 24px;
+    padding: 0px;
+    border-width: 0px;
+    color: $bc-gov-primary;
+    display: block;
+  }
+
+  .comp-outcome-animal {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+
+    .comp-outcome-animal-label {
+      align-self: flex-start;
     }
+
+
+
+    .comp-ear-tag-list {
+      list-style: none;
+      padding-inline-start: 0px;
+      padding-left: 0px;
+    }
+
+    .comp-drug-item {
+      margin-top: 24px;
+      margin-bottom: 24px;
+      border: 1px solid $gray-300;
+      border-radius: 3px;
+      padding: 24px;
+
+      .comp-orange-avatar-sm::before {
+        margin-left: 25px;
+      }
+      
+      .row { 
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  .comp-outcome-drug-label {
+    margin-right: 10px;
+    min-width: 10px !important;
+    max-width: inherit;
+   }
 }

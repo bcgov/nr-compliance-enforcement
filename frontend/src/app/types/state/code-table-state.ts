@@ -16,6 +16,15 @@ import { ReportedBy } from "../app/code-tables/reported-by";
 import { Justification } from "../app/code-tables/justification";
 import { AssessmentType } from "../app/code-tables/assesment-type";
 import { PreventEducationAction } from "../app/code-tables/prevent-education-action";
+import { Sex } from "../app/code-tables/sex";
+import { Age } from "../app/code-tables/age";
+import { ThreatLevel } from "../app/code-tables/threat-level";
+import { ConflictHistory } from "../app/code-tables/conflict-history";
+import { EarTag } from "../app/code-tables/ear-tag";
+import { WildlifeComplaintOutcome } from "../app/code-tables/wildlife-complaint-outcome";
+import { Drug } from "../app/code-tables/drug";
+import { DrugMethod } from "../app/code-tables/drug-method";
+import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome";
 
 export interface CodeTableState {
   [key: string]:
@@ -36,7 +45,16 @@ export interface CodeTableState {
     | Array<ReportedBy>
     | Array<Justification>
     | Array<AssessmentType>
-    | Array<PreventEducationAction>;
+    | Array<PreventEducationAction>
+    | Array<Sex>
+    | Array<Age>
+    | Array<ThreatLevel>
+    | Array<ConflictHistory>
+    | Array<EarTag>
+    | Array<WildlifeComplaintOutcome>
+    | Array<Drug>
+    | Array<DrugMethod>
+    | Array<DrugRemainingOutcome>
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -53,4 +71,13 @@ export interface CodeTableState {
   justification: Array<Justification>;
   "assessment-type": Array<AssessmentType>;
   "prevent-education-action": Array<PreventEducationAction>;
+  sex: Array<Sex>
+  age: Array<Age>,
+  "threat-level": Array<ThreatLevel>,
+  "conflict-history": Array<ConflictHistory>
+  "ear-tag": Array<EarTag>
+  "wildlife-outcomes": Array<WildlifeComplaintOutcome>
+  drugs: Array<Drug>,
+  "drug-methods": Array<DrugMethod>,
+  "drug-remaining-outcomes": Array<DrugRemainingOutcome>,
 }

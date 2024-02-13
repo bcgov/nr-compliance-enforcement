@@ -1,0 +1,22 @@
+.comp-icon-button-container {
+  width: 24px;
+  height: 28px;
+  padding: 0px;
+  border: 0px;
+  background: transparent;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.comp-icon-button-container:hover > *:first-child,
+.comp-icon-button-container:hover > *:last-child {
+  transform: translateX(-100%);
+}
+
+.comp-fake-label {
+  display: inline-block;
+  margin-right: 10px;
+  min-width: 10px !important;
+  max-width: inherit;
+  color: $gray-500;
+}

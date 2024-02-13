@@ -2,7 +2,7 @@ import { FC } from "react";
 
 type Props = {
   id: string;
-  divId: string;
+  divid: string;
   type: "input" | "number" | "text";
   label?: string;
   inputClass?: string;
@@ -26,7 +26,7 @@ const noop = () => {};
 
 export const CompInput: FC<Props> = ({
   id,
-  divId,
+  divid,
   type,
   inputClass,
   formClass,
@@ -64,6 +64,7 @@ export const CompInput: FC<Props> = ({
 
   const props = {
     id: id,
+    divid,
     value: value,
     //  defaultValue: defaultValue,
     className: inputClasses.join(" "),
@@ -82,7 +83,7 @@ export const CompInput: FC<Props> = ({
   }
 
   return (
-    <div className={formClass} id={divId}>
+    <div className={formClass} id={divid}>
       {label && (
         <label className="text-box" htmlFor={id}>
           {label}
@@ -93,15 +94,5 @@ export const CompInput: FC<Props> = ({
         {error && <div className="error-message">{error}</div>}
       </div>
     </div>
-
-    //   <div className={formClass}>
-    //  {label && (
-    //    <label className="text-box" htmlFor={id}>
-    //      {label}
-    //    </label>
-    //  )}
-    //    {Component}
-    //    {error && <div className="error-message">{error}</div>}
-    //  </div>
   );
 };
