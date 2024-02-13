@@ -19,7 +19,7 @@ import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
-import { getFileExtension, loadGifFrameList } from "../../common/methods";
+import { fromImage } from 'imtool';
 
 type Props = {
   complaintIdentifier?: string;
@@ -46,6 +46,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   );
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
+  const SLIDE_HEIGHT = 130; // width of the carousel slide, in pixels
   const [visibleSlides, setVisibleSlides] = useState<number>(4); // Adjust the initial number of visible slides as needed
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
@@ -85,13 +86,13 @@ export const AttachmentsCarousel: FC<Props> = ({
 }
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
-  const onFileSelect = (newFiles: FileList) => {
+  const onFileSelect = async (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    selectedFilesArray.forEach(async (file) => {
-      newSlides.push(await createSlideFromFile(file));
-    });
-    
+    for (var i = 0; i < selectedFilesArray.length; i++)
+    {
+      newSlides.push(await createSlideFromFile(selectedFilesArray[i]));
+    }
     removeInvalidFiles(selectedFilesArray);
 
     setSlides([...newSlides, ...slides]);
@@ -109,26 +110,10 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // given a file, create a carousel slide
   const createSlideFromFile = async (file: File) => {
-/*
-    const extension = getFileExtension(file.name);
-    let fileIcon;
-    if(extension === "gif")
-    {
-      console.log("test1");
-      const gifFrames = await loadGifFrameList(URL.createObjectURL(file));
-      gifFrames[0].toBlob(function(blob){
-        fileIcon = blob;
-        console.log("test3");
-      },'image/png');
-      console.log("test2");
-    }
-    else
-    {
-      console.log("test4");
-      fileIcon = URL.createObjectURL(file);
-    }
-
-    console.log("fileIcon: " + fileIcon);*/
+    
+    const tool = await fromImage(file);
+    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+    const imageIconString = await tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).toDataURL();
 
     const newSlide: COMSObject = {
       name: encodeURIComponent(file.name),
@@ -139,14 +124,14 @@ export const AttachmentsCarousel: FC<Props> = ({
       bucketId: "",
       createdBy: "",
       updatedBy: "",
+      imageIconString: imageIconString,
       pendingUpload: true,
-      fileIcon: URL.createObjectURL(file),
     };
 
     // check for large file sizes      
     if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
       newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
-    }
+    }    
 
     return newSlide;
   }
@@ -231,3 +216,4 @@ export const AttachmentsCarousel: FC<Props> = ({
     </div>
   );
 };
+

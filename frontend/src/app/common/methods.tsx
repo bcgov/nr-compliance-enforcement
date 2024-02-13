@@ -155,6 +155,23 @@ export const injectComplaintIdentifierToFilename = (filename: string, complaintI
   return (`${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`);
 }
 
+// given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
+export const injectComplaintIdentifierToThumbFilename = (filename: string, complaintIdentifier: string): string => {
+  // Find the last dot in the filename to separate the extension
+  const lastDotIndex = filename.lastIndexOf('.');
+
+  // If there's no dot, just append the complaintId at the end
+  if (lastDotIndex === -1) {
+      return (`${filename} ${complaintIdentifier}`);
+  }
+
+  const fileNameWithoutExtension = filename.substring(0, lastDotIndex) + "-thumb";
+  const fileExtension = filename.substring(lastDotIndex);
+
+  // Otherwise, insert the complaintId before the extension
+  return (`${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`);
+}
+
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (
   coordinates: Coordinate,

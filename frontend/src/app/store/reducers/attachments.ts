@@ -10,13 +10,16 @@ import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
-import { injectComplaintIdentifierToFilename } from "../../common/methods";
+import { injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import axios from "axios";
+import { fromImage } from 'imtool';
 
 const initialState: AttachmentsState = {
   attachments: [],
 };
+
+const SLIDE_HEIGHT = 130;
 
 /**
  * Attachments for each complaint
@@ -74,9 +77,21 @@ export const getAttachments =
       );
       const response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
+        "x-amz-meta-is-thumb": "N",
       });
       if (response && from(response).any()) {
-        
+        for(var i = 0; i < response.length; i++)
+        {
+          console.log("response[i]: " + JSON.stringify(response[i]));
+          const thumbResponse = await get<string>(dispatch, parameters, {
+            "x-amz-meta-complaint-id": complaint_identifier,
+            "x-amz-meta-is-thumb": "Y",
+            "x-amz-meta-thumb-for": response[i].id,
+          });
+          console.log("thumbResponse: " + JSON.stringify(thumbResponse));
+
+          response[i].imageIconString = thumbResponse;
+        }
         dispatch(
           setAttachments({
             attachments: response ?? [],
@@ -116,8 +131,10 @@ export const saveAttachments =
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
+        console.log("attachment?.type: " + attachment?.type)
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
+          "x-amz-meta-is-thumb": "N",
           "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
             attachment.name,
             complaint_identifier
@@ -139,11 +156,34 @@ export const saveAttachments =
 
           dispatch(addAttachment(response)); // dispatch with serializable payload
 
+          const thumbHeader = {
+            "x-amz-meta-complaint-id": complaint_identifier,
+            "x-amz-meta-is-thumb": "Y",
+            "x-amz-meta-thumb-for": response.id,
+            "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
+              attachment.name,
+              complaint_identifier
+            ))}"`,
+            "Content-Type": "image/jpeg",
+          };  
+
+          const tool = await fromImage(attachment);
+          const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+          const thumbnailFile = await tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).toFile("thumbnail.jpg");
+
+          await putFile<COMSObject>(
+            dispatch,
+            parameters,
+            thumbHeader,
+            thumbnailFile
+          );
+
           if (response) {
             ToggleSuccess(`Attachment "${attachment.name}" saved`);
           }
 
         } catch (error) {
+          console.log(error);
           if (axios.isAxiosError(error) && error.response?.status === 409) {
             ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
           } else {
