@@ -12,3 +12,11 @@
 .comp-icon-button-container:hover > *:last-child {
   transform: translateX(-100%);
 }
+
+.comp-fake-label {
+  display: inline-block;
+  margin-right: 10px;
+  min-width: 10px !important;
+  max-width: inherit;
+  color: $gray-500;
+}

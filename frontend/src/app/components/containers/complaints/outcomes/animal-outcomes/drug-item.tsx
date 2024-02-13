@@ -94,24 +94,24 @@ export const DrugItem: FC<props> = ({
       </Row>
       <Row>
         <Col md={4}>
-          <label className="comp-outcome-drug-label">Amount used</label> {amountUsed}ml
+          <span className="comp-fake-label">Amount used</span> {amountUsed}ml
         </Col>
         <Col md={4}>
-          <label className="comp-outcome-drug-label">Injection method</label> {injectedMethod}
+          <span className="comp-fake-label">Injection method</span> {injectedMethod}
         </Col>
         <Col md={3}>
-          <label className="comp-outcome-drug-label">Adverse reactions</label> {reactions}
+          <span className="comp-fake-label">Adverse reactions</span> {reactions}
         </Col>
       </Row>
       <Row>
         <Col md={5}>
-          <label className="comp-outcome-drug-label">Fate of remaining drug in vial</label> {remaining}
+          <span className="comp-fake-label">Fate of remaining drug in vial</span> {remaining}
         </Col>
         <Col md={4}>
-          <label className="comp-outcome-drug-label">Amount discarded</label> {amountDiscarded}ml
+          <span className="comp-fake-label">Amount discarded</span> {amountDiscarded}ml
         </Col>
         <Col md={3}>
-          <label className="comp-outcome-drug-label">Discard method</label> {discardMethod}
+          <span className="comp-fake-label">Discard method</span> {discardMethod}
         </Col>
       </Row>
       <Row>

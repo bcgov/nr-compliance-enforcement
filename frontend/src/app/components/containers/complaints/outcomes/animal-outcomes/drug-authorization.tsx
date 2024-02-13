@@ -25,13 +25,17 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, 
 
   const getValue = (property: string): Option | undefined => {
     if (property === "officer") {
-      return officers.find((item) => item.value === (!officer ? assigned : officer));
+      return officers.find((item) => item.value === (officer));
     }
   };
 
   const updateModel = (property: string, value: string | Date | null | undefined) => {
     const source = { officer, date };
     const authorization = { ...source, [property]: value };
+
+    console.log("auth: ", property)
+    console.log("auth: ", value)
+    console.log("auth: ", authorization)
 
     update("drugAuthorization", authorization);
   };

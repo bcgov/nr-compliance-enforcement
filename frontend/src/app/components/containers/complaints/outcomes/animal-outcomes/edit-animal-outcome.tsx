@@ -81,6 +81,7 @@ export const EditAnimalOutcome: FC<props> = ({
     drugs,
     outcome,
     officer,
+    date,
     isEditable,
   });
 
@@ -400,7 +401,7 @@ export const EditAnimalOutcome: FC<props> = ({
               onChange={(evt) => {
                 updateModel("date", evt);
               }}
-              selected={date}
+              selected={data.date}
             />
           </div>
         </Col>
