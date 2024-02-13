@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="public" type="PostgreSQL - 16.1 (Debian 16.1-1.pgdg110+1)">
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="public" type="PostgreSQL - 16.2 (Debian 16.2-1.pgdg110+2)">
    <sequences>
       <sequence increment="1" name="complaint_sequence" startValue="40000"/>
    </sequences>
