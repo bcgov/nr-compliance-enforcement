@@ -1,8 +1,9 @@
-import { FC, useState, memo } from "react";
+import { FC, useState, memo, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
+import axios from "axios";
 
 import Option from "../../../../../types/app/option";
 
@@ -26,6 +27,29 @@ export const HWCREquipment: FC = memo(() => {
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
   const [isInEditMode, setIsInEditMode] = useState<boolean>(false);
   const [editEquipment, setEditEquipment] = useState<Equipment|null>(null);
+  const [equipmentTypeList, setEquipmentTypeList] = useState();
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:3003/graphql',
+      method: 'post',
+      data: {
+        query: `
+          {
+            equipmentCodes {
+              equipment_code
+              short_description
+            }
+          }
+        `
+      }
+    }).then((result) => {
+      console.log(result.data)
+      setEquipmentTypeList(result.data.data)
+    });
+  }, []);
+
+  console.log(equipmentTypeList);
 
   return (
     <div className="comp-outcome-report-block">
