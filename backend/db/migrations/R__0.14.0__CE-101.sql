@@ -1,7 +1,16 @@
  CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
 AS
   $function$
-  DECLARE
+  declare
+    non_digit_regex CONSTANT text := '[^\d]'; -- used to strip out non-numeric characters from the phone number fields
+    
+    -- jsonb attribute names
+    jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
+    jsonb_cos_alt_phone CONSTANT text := 'cos_alt_phone';
+    jsonb_cos_alt_phone_2 CONSTANT text := 'cos_alt_phone_2';
+   
+
+   
     complaint_data jsonb;
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
@@ -98,21 +107,21 @@ AS
     -- add the + (or +1) prefix
    
 	_caller_phone_1 := CASE
-	    WHEN left(regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g'), 15) ~ '^1'
-	    THEN '+' || left(regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g'), 15)
-	    ELSE '+1' || regexp_replace(complaint_data ->> 'cos_primary_phone', '[^\d]', '', 'g')
+	    WHEN left(regexp_replace(complaint_data ->> jsonb_cos_primary_phone, non_digit_regex, '', 'g'), 15) ~ '^1'
+	    THEN '+' || left(regexp_replace(complaint_data ->> jsonb_cos_primary_phone, non_digit_regex, '', 'g'), 15)
+	    ELSE '+1' || regexp_replace(complaint_data ->> jsonb_cos_primary_phone, non_digit_regex, '', 'g')
 	END;
 	
 	_caller_phone_2 := CASE
-	    WHEN left(regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g'), 15) ~ '^1'
-	    THEN '+' || left(regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g'), 15)
-	    ELSE '+1' || regexp_replace(complaint_data ->> 'cos_alt_phone', '[^\d]', '', 'g')
+	    WHEN left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone, non_digit_regex, '', 'g'), 15) ~ '^1'
+	    THEN '+' || left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone, non_digit_regex, '', 'g'), 15)
+	    ELSE '+1' || regexp_replace(complaint_data ->> jsonb_cos_alt_phone, non_digit_regex, '', 'g')
 	END;
 	
 	_caller_phone_3 := CASE
-	    WHEN left(regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g'), 15) ~ '^1'
-	    THEN '+' || left(regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g'), 15)
-	    ELSE '+1' || regexp_replace(complaint_data ->> 'cos_alt_phone_2', '[^\d]', '', 'g')
+	    WHEN left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone_2, non_digit_regex, '', 'g'), 15) ~ '^1'
+	    THEN '+' || left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone_2, non_digit_regex, '', 'g'), 15)
+	    ELSE '+1' || regexp_replace(complaint_data ->> jsonb_cos_alt_phone_2, non_digit_regex, '', 'g')
 	END;
 
    
