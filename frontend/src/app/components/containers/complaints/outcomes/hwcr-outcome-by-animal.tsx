@@ -95,17 +95,10 @@ export const HWCROutcomeByAnimal: FC = () => {
         {renderAnimals()}
 
         {!showForm ? (
-          <>
-            <Button
-              id="outcome-report-add-animal"
-              title="Add animal"
-              variant="primary"
-              onClick={() => setShowForm(true)}
-            >
-              <span>Add animal</span>
-              <BsPlusCircle />
-            </Button>
-          </>
+          <Button id="outcome-report-add-animal" title="Add animal" variant="primary" onClick={() => setShowForm(true)}>
+            <span>Add animal</span>
+            <BsPlusCircle />
+          </Button>
         ) : (
           <AddAnimalOutcome
             animalCount={1 + animals.length}
