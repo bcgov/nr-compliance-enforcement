@@ -40,10 +40,10 @@ export const HWCROutcomeByAnimal: FC = () => {
     setShowForm(false);
   };
 
-  const edit = (id: number) => {
+  const updateEditFlag = (id: number, isEditable: boolean) => {
     if (from(animals).any((item) => item.id === id)) {
       let original = from(animals).first((item) => item.id === id);
-      let editable = { ...original, isEditable: true };
+      let editable = { ...original, isEditable };
 
       let index = animals.findIndex((item) => item.id === id);
 
@@ -52,8 +52,26 @@ export const HWCROutcomeByAnimal: FC = () => {
     }
   };
 
+  const edit = (id: number) => {
+    updateEditFlag(id, true);
+  };
+
+  const cancelEdit = (id: number) => {
+    updateEditFlag(id, false);
+  };
+
   const update = (model: AnimalOutcome) => {
-    console.log(model)
+    const { id } = model;
+
+    if (from(animals).any((item) => item.id === id)) {
+      const filtered = animals.filter((item) => item.id !== id);
+      const updated = [...filtered, model];
+      const update = from(updated)
+        .orderBy((item) => item.id)
+        .toArray();
+
+      setAnimals(update);
+    }
   };
 
   const renderAnimals = () => {
@@ -61,9 +79,8 @@ export const HWCROutcomeByAnimal: FC = () => {
       return animals.map((outcome) => {
         const { id, isEditable } = outcome;
 
-        console.log(`outcome ${id}: `, outcome);
         return isEditable ? (
-          <EditAnimalOutcome {...outcome} agency={agency} update={update} key={id} />
+          <EditAnimalOutcome {...outcome} agency={agency} update={update} cancel={cancelEdit} key={id} />
         ) : (
           <AnimalOutcomeItem {...outcome} agency={agency} edit={edit} key={id} />
         );

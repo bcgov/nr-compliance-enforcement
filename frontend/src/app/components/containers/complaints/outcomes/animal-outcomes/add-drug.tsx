@@ -6,6 +6,7 @@ import { BsFillXCircleFill, BsXCircle } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { CompIconButton } from "../../../../common/comp-icon-button";
+import Option from "../../../../../types/app/option";
 
 type props = {
   id: number;
@@ -61,6 +62,22 @@ export const AddDrug: FC<props> = ({
     update(updatedTag);
   };
 
+  const getValue = (property: string): Option | undefined => {
+    switch (property) {
+      case "drug": {
+        return drugs.find((item) => item.value === drug);
+      }
+
+      case "injection-method": {
+        return drugUseMethods.find((item) => item.value === injectionMethod);
+      }
+
+      case "remaining": {
+        return remainingDrugUse.find((item) => item.value === remainingUse);
+      }
+    }
+  };
+
   const handleAmountUsed = (input: string) => {
     updateModel("amountUsed", input);
   };
@@ -104,6 +121,7 @@ export const AddDrug: FC<props> = ({
             onChange={(evt) => {
               updateModel("drug", evt?.value);
             }}
+            value={getValue("drug")}
           />
         </Col>
         <Col>
@@ -133,6 +151,7 @@ export const AddDrug: FC<props> = ({
             onChange={(evt) => {
               updateModel("injectionMethod", evt?.value);
             }}
+            value={getValue("injection-method")}
           />
         </Col>
         <Col>
@@ -170,6 +189,7 @@ export const AddDrug: FC<props> = ({
             onChange={(evt) => {
               handleRemainingUsed(evt?.value ?? "");
             }}
+            value={getValue("remaining")}
           />
         </Col>
         <Col>
