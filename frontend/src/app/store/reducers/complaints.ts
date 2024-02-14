@@ -279,7 +279,9 @@ export const getZoneAtAGlanceStats =
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/stats/${type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : "ERS"}/by-zone/${zone}`
+        `${config.API_BASE_URL}/v1/complaint/stats/${
+          type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : "ERS"
+        }/by-zone/${zone}`
       );
 
       const response = await get<ZoneAtAGlanceStats>(dispatch, parameters);
@@ -507,7 +509,6 @@ export const selectAllegationComplaints = (state: RootState): Array<any> => {
   return allegations;
 };
 
-///---
 export const selectTotalComplaintsByType =
   (complaintType: string) =>
   (state: RootState): number => {
@@ -614,7 +615,6 @@ export const selectComplaintDetails =
     };
 
     let result: ComplaintDetails = {};
-
 
     if (complaint?.location) {
       const {
@@ -845,5 +845,28 @@ export const selectComplaintSuspectWitnessDetails = (state: RootState): Complain
 
   return results;
 };
+
+export const selectComplaintAssignedBy =
+  (state: RootState): string | null => {
+    const {
+      complaints: { complaint },
+    } = state;
+
+    if (complaint?.delegates) {
+      const { delegates } = complaint;
+      if (from(delegates).any()) {
+        const assigned = delegates.find((item) => item.type === "ASSIGNEE");
+        if (assigned && assigned?.person !== null) {
+          const {
+            person: { id },
+          } = assigned;
+
+          return id;
+        }
+      }
+    }
+
+    return null;
+  };
 
 export default complaintSlice.reducer;

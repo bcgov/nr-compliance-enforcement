@@ -44,7 +44,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
 
   const [data, applyData] = useState<AnimalOutcome>({
     id: animalCount,
-    species: "",
+    species: species,
     sex: "",
     age: "",
     threatLevel: "",
@@ -54,18 +54,11 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
     outcome: "",
     officer: "",
     isEditable: false,
+    drugAuthorization: undefined
   });
 
   useEffect(() => {
-    if (species) {
-      updateModel("species", species);
-    }
-  }, [species]);
-
-  useEffect(() => {
-    if (assigned) {
-      updateModel("officer", assigned);
-    }
+    updateModel("officer", assigned);
   }, [assigned]);
 
   const getValue = (property: string): Option | undefined => {
@@ -226,7 +219,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
 
       return (
         <>
-          <div className="comp-outcome-report-container">Drug{drugs.length >1 && "s"}</div>
+          <div className="comp-outcome-report-container">Drug{drugs.length > 1 && "s"}</div>
 
           {from(drugs)
             .orderBy((item) => item.id)
@@ -236,7 +229,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <DrugAuthorization {...drugAuthorization} assigned={assigned} agency={agency} update={updateModel} />
+          <DrugAuthorization {...drugAuthorization} agency={agency} update={updateModel} />
         </>
       );
     }
