@@ -286,19 +286,19 @@ export const EquipmentForm: FC<EquipmentForm> = ({
           </div>
           <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
           {hasCoordinates &&
-              <div
-                className="copy-text"
-                onClick={() => {
-                  const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
-                  const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
-                  setXCoordinate(xCoordinate);
-                  setYCoordinate(yCoordinate);
-                  handleGeoPointChange(yCoordinate, xCoordinate);
-                }}
-              >
-                Copy location from complaint details
-              </div>
-            }
+            <button
+              className="copy-text"
+              onClick={() => {
+                const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
+                const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
+                setXCoordinate(xCoordinate);
+                setYCoordinate(yCoordinate);
+                handleGeoPointChange(yCoordinate, xCoordinate);
+              }}
+            >
+              Copy location from complaint details
+            </button>
+          }
         </div>
         <div className="comp-details-edit-column comp-details-right-column">
           <div className="equipment-form-label-input-pair">
