@@ -26,7 +26,11 @@ export const getAvatarInitials = (input: string): string => {
   }
 };
 
-export const getSelectedOfficer = (officers: Option[], personGuid: UUID | string, update: ComplaintDto | undefined): any => {
+export const getSelectedOfficer = (
+  officers: Option[],
+  personGuid: UUID | string,
+  update: ComplaintDto | undefined
+): any => {
   if (update && personGuid) {
     const { delegates } = update;
 
@@ -106,24 +110,22 @@ export const formatDateTime = (input: string | undefined): string => {
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
 export const injectComplaintIdentifierToFilename = (filename: string, complaintIdentifier: string): string => {
   // Find the last dot in the filename to separate the extension
-  const lastDotIndex = filename.lastIndexOf('.');
+  const lastDotIndex = filename.lastIndexOf(".");
 
   // If there's no dot, just append the complaintId at the end
   if (lastDotIndex === -1) {
-      return (`${filename} ${complaintIdentifier}`);
+    return `${filename} ${complaintIdentifier}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex);
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return (`${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`);
-}
+  return `${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`;
+};
 
 // Used to retrieve the coordinates in the decimal format
-export const parseDecimalDegreesCoordinates = (
-  coordinates: Coordinate,
-): { lat: number; lng: number } => {
+export const parseDecimalDegreesCoordinates = (coordinates: Coordinate): { lat: number; lng: number } => {
   if (!coordinates) {
     return { lat: 0, lng: 0 };
   }
@@ -155,10 +157,7 @@ export const isWithinBC = (coordinates: Coordinate): boolean => {
   );
 };
 
-export const parseCoordinates = (
-  coordinates: Coordinate,
-  coordinateType: Coordinates,
-): number | string => {
+export const parseCoordinates = (coordinates: Coordinate, coordinateType: Coordinates): number | string => {
   if (!coordinates) {
     return 0;
   }
@@ -179,10 +178,7 @@ export const getComplaintTypeFromUrl = (): number => {
   return -1;
 };
 
-export const renderCoordinates = (
-  coordinates: Coordinate,
-  coordinateType: Coordinates,
-): JSX.Element => {
+export const renderCoordinates = (coordinates: Coordinate, coordinateType: Coordinates): JSX.Element => {
   const result = parseCoordinates(coordinates, coordinateType);
 
   return result === 0 ? <>{"Not Provided"}</> : <>{result}</>;
@@ -199,60 +195,66 @@ export const applyStatusClass = (state: string): string => {
   }
 };
 
-export const truncateString = (str: string, maxLength: number): string=> {
+export const truncateString = (str: string, maxLength: number): string => {
   if (str?.length > maxLength) {
-    return str.substring(0, maxLength) + '...'; // Adds an ellipsis to indicate truncation
+    return str.substring(0, maxLength) + "..."; // Adds an ellipsis to indicate truncation
   } else {
     return str;
   }
-}
+};
 
 export const removeFile = (fileList: FileList, fileToRemove: File): File[] => {
   // Convert the FileList to an array
   const filesArray = Array.from(fileList);
 
   // Filter out the file you want to remove
-  const updatedFilesArray = filesArray.filter(file => file !== fileToRemove);
+  const updatedFilesArray = filesArray.filter((file) => file !== fileToRemove);
 
   return updatedFilesArray;
-}
+};
 
-export const getStatusByStatusCode = (code: string, codes: Array<ComplaintStatus>): string => { 
-  if(from(codes).any(({complaintStatus}) => complaintStatus === code)){ 
-    const selected = from(codes).first(({complaintStatus}) => complaintStatus === code)
+export const getStatusByStatusCode = (code: string, codes: Array<ComplaintStatus>): string => {
+  if (from(codes).any(({ complaintStatus }) => complaintStatus === code)) {
+    const selected = from(codes).first(({ complaintStatus }) => complaintStatus === code);
 
-    return selected.longDescription
+    return selected.longDescription;
   }
 
   return "";
-}
+};
 
-export const getViolationByViolationCode = (code: string, codes: Array<Violation>): string => { 
-  if(codes && from(codes).any(({violation}) => violation === code)){ 
-    const selected = from(codes).first(({violation}) => violation === code);
-
-    return selected.longDescription;
-  }
-
-  return ""
-}
-
-export const getSpeciesBySpeciesCode = (code: string, codes: Array<Species>): string => { 
-  if(codes && from(codes).any(({species}) => species === code)){ 
-    const selected = from(codes).first(({species}) => species === code);
+export const getViolationByViolationCode = (code: string, codes: Array<Violation>): string => {
+  if (codes && from(codes).any(({ violation }) => violation === code)) {
+    const selected = from(codes).first(({ violation }) => violation === code);
 
     return selected.longDescription;
   }
 
-  return ""
-}
+  return "";
+};
 
-export const getNatureOfComplaintByNatureOfComplaintCode = (code: string, codes: Array<NatureOfComplaint>): string => { 
-  if(codes && from(codes).any(({natureOfComplaint}) => natureOfComplaint === code)){ 
-    const selected = from(codes).first(({natureOfComplaint}) => natureOfComplaint === code);
+export const getSpeciesBySpeciesCode = (code: string, codes: Array<Species>): string => {
+  if (codes && from(codes).any(({ species }) => species === code)) {
+    const selected = from(codes).first(({ species }) => species === code);
 
     return selected.longDescription;
   }
 
-  return ""
-}
+  return "";
+};
+
+export const getNatureOfComplaintByNatureOfComplaintCode = (code: string, codes: Array<NatureOfComplaint>): string => {
+  if (codes && from(codes).any(({ natureOfComplaint }) => natureOfComplaint === code)) {
+    const selected = from(codes).first(({ natureOfComplaint }) => natureOfComplaint === code);
+
+    return selected.longDescription;
+  }
+
+  return "";
+};
+
+export const pad = (num: string, size: number): string => {
+  num = num.toString();
+  while (num.length < size) num = "0" + num;
+  return num;
+};

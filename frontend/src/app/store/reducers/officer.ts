@@ -6,11 +6,7 @@ import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/complaints/person-complaint-xref";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import {
-  updateWildlifeComplaintByRow,
-  updateAllegationComplaintByRow,
-  getComplaintById,
-} from "./complaints";
+import { updateWildlifeComplaintByRow, updateAllegationComplaintByRow, getComplaintById } from "./complaints";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
@@ -18,7 +14,6 @@ import Option from "../../types/app/option";
 import { toggleNotification } from "./app";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
-
 
 const initialState: OfficerState = {
   officers: [],
@@ -206,18 +201,38 @@ export const selectOfficersByAgency =
     });
   };
 
-export const selectOfficersByReportedBy =
-(reportedBy: string) =>
-(state: RootState): Officer[] | null => {
-  const { officers: officerRoot } = state;
-  const { officers } = officerRoot;
+export const selectOfficersByAgencyDropdown =
+  (agency: string) =>
+  (state: RootState): Array<Option> => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
 
-  return officers.filter((officer) => {
-    // check for nulls
-    const reportedByCode = officer?.office_guid?.reported_by_code?.reported_by_code ?? null;
-    return reportedBy === reportedByCode;
-  });
-};
+    const data = officers
+      .filter((officer) => {
+        // check for nulls
+        const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
+        return agency === agencyCode;
+      })
+      .map((officer: Officer) => ({
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+      }));
+
+    return data;
+  };
+
+export const selectOfficersByReportedBy =
+  (reportedBy: string) =>
+  (state: RootState): Officer[] | null => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
+
+    return officers.filter((officer) => {
+      // check for nulls
+      const reportedByCode = officer?.office_guid?.reported_by_code?.reported_by_code ?? null;
+      return reportedBy === reportedByCode;
+    });
+  };
 
 export const selectOfficersByZoneAndAgency =
   (agency: string, zone?: string) =>
@@ -269,6 +284,21 @@ export const assignOfficerToOffice =
       //-- handle errors
       dispatch(toggleNotification("error", "unable to assign officer to office"));
     }
+  };
+
+export const selectOfficerByIdir =
+  (idir: string) =>
+  (state: RootState): Officer | null => {
+    const {
+      officers: { officers: data },
+    } = state;
+    const selected = data.find(({ user_id }) => user_id === idir);
+
+    if (selected?.person_guid) {
+      return selected;
+    }
+
+    return null;
   };
 
 export default officerSlice.reducer;
