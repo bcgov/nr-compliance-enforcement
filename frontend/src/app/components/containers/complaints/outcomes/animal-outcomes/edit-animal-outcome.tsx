@@ -249,7 +249,7 @@ export const EditAnimalOutcome: FC<props> = ({
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <AddDrugAuthorization {...drugAuthorization} assigned={officer} agency={agency} update={updateModel} />
+          <AddDrugAuthorization {...drugAuthorization} agency={agency} update={updateModel} />
         </>
       );
     }

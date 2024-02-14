@@ -234,7 +234,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <DrugAuthorization {...drugAuthorization} assigned={assigned} agency={agency} update={updateModel} />
+          <DrugAuthorization {...drugAuthorization} agency={agency} update={updateModel} />
         </>
       );
     }
