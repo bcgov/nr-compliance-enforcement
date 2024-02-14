@@ -852,7 +852,7 @@ export const selectComplaintAssignedBy =
       complaints: { complaint },
     } = state;
 
-    if (complaint && complaint.delegates) {
+    if (complaint?.delegates) {
       const { delegates } = complaint;
       if (from(delegates).any()) {
         const assigned = delegates.find((item) => item.type === "ASSIGNEE");
