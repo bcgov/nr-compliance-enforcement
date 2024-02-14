@@ -334,7 +334,8 @@ AS
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
     UPDATE staging_complaint
     SET    staging_status_code = 'ERROR'
-    WHERE  complaint_identifier = _complaint_identifier;
+    WHERE  complaint_identifier = _complaint_identifier
+    and staging_status_code = 'PENDING';
   
   END;
   $function$ ; 
@@ -344,19 +345,19 @@ AS
  LANGUAGE plpgsql
 AS $function$
 DECLARE
-    truncated_code VARCHAR(10);
+    new_code VARCHAR(10);  -- used in case we're creating a new code
+    truncated_code varchar(10); -- if we're creating a new code, base it off of the webeoc_value.  We'll truncate this and get rid of spaces, and possibly append a number to make it unique
     live_code_value VARCHAR;
     current_utc_timestamp TIMESTAMP WITH TIME ZONE := NOW();
     target_code_table VARCHAR;
     column_name VARCHAR;
+    code_exists BOOLEAN;
+    suffix VARCHAR(10) := ''; -- Suffix for uniqueness
+    counter INTEGER := 1; -- Counter for unique code generation
 BEGIN
-    -- Truncate and uppercase the webEOC value
-    truncated_code := UPPER(LEFT(webEOC_value, 10));
+    -- Truncate and uppercase the webEOC value, get rid of spaces, and truncate to 9 characters to ensure we have room for adding a number for uniqueness
+    truncated_code := UPPER(LEFT(regexp_replace(webeoc_value, '\s', '', 'g'), 9));
    
-    IF truncated_code IS NULL OR truncated_code = '' THEN
-        RETURN NULL;
-    END IF;
-    
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
         WHEN 'reprtdbycd' THEN
@@ -384,24 +385,47 @@ BEGIN
     -- Check if the code exists in staging_metadata_mapping
     SELECT live_data_value INTO live_code_value
     FROM staging_metadata_mapping
-    WHERE UPPER(LEFT(staged_data_value, 10)) = truncated_code
+    WHERE staged_data_value = webEOC_value
     AND entity_code = code_table_type;
     
     -- If the code exists, return the live_data_value
     IF live_code_value IS NOT NULL THEN
         RETURN live_code_value;
     END IF;
+   
 
-    -- Insert the new code into the specified code table
-    EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, $5)', target_code_table, column_name)
-    USING truncated_code, webEOC_value, webEOC_value, current_utc_timestamp, 2;
-    
-    -- Insert the new code into staging_metadata_mapping
-    INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-    VALUES (code_table_type, truncated_code, truncated_code, 'webeoc', current_utc_timestamp, 'webeoc', current_utc_timestamp);
-    
-    -- Return the newly created code
-    RETURN truncated_code;
+    -- We're creating a new code because the webeoc code doesn't exist in staging_metadata_mapping.  We want to add this new code to our code tables, as well as the staging_meta_mapping table.
+    -- Before we create new codes in our code tables, we want to make sure we're not creating a duplicate.  If the new code doesn't exist
+    -- in staging_metamapping, and the code doesn't exist in the code table, then create the code in both tables.
+    -- If the code doesn't exist in staging_meta_mapping, but does exist in the code table, then create a new unique code
+    -- in both the staging_meta_mapping table and the code table.
+
+    LOOP
+        -- Append a numeric suffix if necessary
+        new_code := truncated_code || suffix;
+        
+        -- Check if the new_code exists in the specific code table
+        EXECUTE format('SELECT EXISTS(SELECT 1 FROM %I WHERE %I = $1)', target_code_table, column_name)
+        INTO code_exists
+        USING new_code;
+        
+        IF NOT code_exists THEN
+            -- If the code does not exist, insert into the specific code table
+            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, 2)', target_code_table, column_name)
+            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp;
+
+            -- Insert into staging_metadata_mapping
+            INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+            VALUES (code_table_type, webeoc_value, new_code, 'webeoc', current_utc_timestamp, 'webeoc', current_utc_timestamp);
+
+            RETURN new_code; -- Return the new unique code
+        ELSE
+            -- If the code exists, increment the suffix and try again
+            suffix := counter::text;
+            counter := counter + 1;
+        END IF;
+    END LOOP;
+   
 END;
 $function$
 ;
