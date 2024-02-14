@@ -54,6 +54,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
     outcome: "",
     officer: "",
     isEditable: false,
+    drugAuthorization: undefined
   });
 
   useEffect(() => {
@@ -111,7 +112,8 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
 
     let isValid = true;
 
-    if (!species || !age || !sex || !threatLevel || !conflictHistory) {
+    // if (!species || !age || !sex || !threatLevel || !conflictHistory) {
+    if (!species) {
       isValid = false;
     }
 

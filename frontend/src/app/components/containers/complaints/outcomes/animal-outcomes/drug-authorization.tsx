@@ -23,7 +23,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) 
 
   useEffect(() => {
     if (assigned && !authorizedBy) {
-      console.log(assigned);
       setAuthorizedBy(assigned);
     }
   }, [assigned, authorizedBy]);
@@ -93,7 +92,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) 
               onChange={(evt) => {
                 handleAuthorizedOnChange(evt);
               }}
-              selected={date}
+              selected={authorizedOn}
             />
           </div>
         </Col>
