@@ -53,7 +53,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
     drugs: [],
     outcome: "",
     officer: "",
-    isEditable: false
+    isEditable: false,
   });
 
   useEffect(() => {
@@ -226,6 +226,8 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
 
       return (
         <>
+          <div className="comp-outcome-report-container">Drug{drugs.length >1 && "s"}</div>
+
           {from(drugs)
             .orderBy((item) => item.id)
             .toArray()
