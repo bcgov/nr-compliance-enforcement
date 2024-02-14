@@ -112,8 +112,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
 
     let isValid = true;
 
-    // if (!species || !age || !sex || !threatLevel || !conflictHistory) {
-    if (!species) {
+    if (!species || !age || !sex || !threatLevel || !conflictHistory) {
       isValid = false;
     }
 
