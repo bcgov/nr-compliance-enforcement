@@ -18,14 +18,18 @@ export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) 
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
+  const [assignedOfficer] = useState(assigned)
+
   const [authorizedBy, setAuthorizedBy] = useState(officer);
   const [authorizedOn, setAuthorizedOn] = useState(date);
 
   useEffect(() => {
-    if (assigned && !authorizedBy) {
+    if ((assigned && !authorizedBy)) {
       setAuthorizedBy(assigned);
+    } else if(assigned !== assignedOfficer && authorizedBy){
+      setAuthorizedBy(assigned || "");
     }
-  }, [assigned, authorizedBy]);
+  }, [assigned, authorizedBy, assignedOfficer]);
 
   const getValue = (property: string): Option | undefined => {
     if (property === "officer") {
