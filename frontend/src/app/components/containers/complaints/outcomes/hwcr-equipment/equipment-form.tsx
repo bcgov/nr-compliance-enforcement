@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
 import { getComplaintById, selectComplaint, selectComplaintCallerInformation, selectComplaintHeader } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { CompInput } from "../../../../common/comp-input";
 import { ToggleError } from "../../../../../common/toast";
 import { getSelectedOfficer, bcBoundaries } from "../../../../../common/methods";
 
@@ -228,9 +227,9 @@ export const EquipmentForm: FC<EquipmentForm> = ({
   return (
     <div className="comp-outcome-report-complaint-assessment">
       <ToastContainer />
-      <div className="comp-details-edit-container">
+      <div className="equipment-form-edit-container" style={{ marginTop: '10px'}}>
         <div className="comp-details-edit-column">
-          <div className="comp-details-label-input-pair">
+          <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-type-select">Equipment type</label>
             <CompSelect
               id="equipment-type-select"
@@ -246,10 +245,10 @@ export const EquipmentForm: FC<EquipmentForm> = ({
         </div>
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
-      <div className="comp-details-edit-container">
+      <div className="equipment-form-edit-container">
         <div className="comp-details-edit-column">
-          <div className="comp-details-label-input-pair">
-            <label htmlFor="equipment-address" style={{ marginTop: complaintData?.locationSummary? '-21px' : '0px' }}>Address</label>
+          <div className="equipment-form-label-input-pair">
+            <label htmlFor="equipment-address">Address</label>
             <div className="edit-input">
               <input
                 type="text"
@@ -270,55 +269,57 @@ export const EquipmentForm: FC<EquipmentForm> = ({
         </div>
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
-      <div className="comp-details-edit-container">
+      <div className="equipment-form-edit-container">
         <div className="comp-details-edit-column">
-          <CompInput
-            id="comp-details-edit-x-coordinate-input"
-            divid="comp-details-edit-x-coordinate-input-div"
-            type="input"
-            label="X Coordinate"
-            containerClass="comp-details-edit-input"
-            formClass="comp-details-label-input-pair"
-            inputClass="comp-form-control"
-            value={xCoordinate ?? ''}
-            error={xCoordinateErrorMsg}
-            step="any"
-            onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-          />
+          <div className="equipment-form-label-input-pair">
+            <label htmlFor="equipment-x-coordinate">X Coordinate</label>
+            <div className="edit-input">
+              <input
+                type="text"
+                id="equipment-x-coordinate"
+                className={xCoordinateErrorMsg? "comp-form-control error-border" : "comp-form-control"}
+                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+                value={xCoordinate?? ''}
+                maxLength={120}
+              />
+            </div>
+          </div>
+          <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
           {hasCoordinates &&
-            <button
-              className="button-text copy-text"
-              onClick={() => {
-                const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
-                const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
-                setXCoordinate(xCoordinate);
-                setYCoordinate(yCoordinate);
-                handleGeoPointChange(yCoordinate, xCoordinate);
-              }}
-            >
-              Copy location from complaint details
-            </button>
-          }
+              <div
+                className="copy-text"
+                onClick={() => {
+                  const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
+                  const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
+                  setXCoordinate(xCoordinate);
+                  setYCoordinate(yCoordinate);
+                  handleGeoPointChange(yCoordinate, xCoordinate);
+                }}
+              >
+                Copy location from complaint details
+              </div>
+            }
         </div>
         <div className="comp-details-edit-column comp-details-right-column">
-          <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divid="comp-details-edit-y-coordinate-input-div"
-            type="input"
-            label="Y Coordinate"
-            containerClass="comp-details-edit-input"
-            formClass="comp-details-label-input-pair"
-            inputClass="comp-form-control"
-            value={yCoordinate ?? ''}
-            error={yCoordinateErrorMsg}
-            step="any"
-            onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-          />
+          <div className="equipment-form-label-input-pair">
+            <label htmlFor="equipment-y-coordinate">Y Coordinate</label>
+            <div className="edit-input">
+              <input
+                type="text"
+                id="equipment-y-coordinate"
+                className={yCoordinateErrorMsg? "comp-form-control error-border" : "comp-form-control"}
+                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+                value={yCoordinate ?? ''}
+                maxLength={120}
+              />
+            </div>
+          </div>
+          <div className="equipment-form-error-msg">{yCoordinateErrorMsg}</div>
         </div>
       </div>
-      <div className="comp-details-edit-container">
+      <div className="equipment-form-edit-container">
         <div className="comp-details-edit-column">
-          <div className="comp-details-label-input-pair" id="reported-pair-id">
+          <div className="equipment-form-label-input-pair" id="reported-pair-id">
             <label htmlFor="equipment-officer-set-select">Set by</label>
             <CompSelect
               id="equipment-officer-set-select"
@@ -333,7 +334,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
           </div>
         </div>
         <div className="comp-details-edit-column comp-details-right-column">
-          <div className="comp-details-label-input-pair" id="reported-pair-id">
+          <div className="equipment-form-label-input-pair" id="reported-pair-id">
             <label htmlFor="equipment-day-set">Set date</label>
             <DatePicker
               id="equipment-day-set"
@@ -348,9 +349,9 @@ export const EquipmentForm: FC<EquipmentForm> = ({
         </div>
       </div>
       {officerSet && dateSet && 
-        <div className="comp-details-edit-container">
+        <div className="equipment-form-edit-container">
           <div className="comp-details-edit-column">
-            <div className="comp-details-label-input-pair" id="reported-pair-id">
+            <div className="equipment-form-label-input-pair" id="reported-pair-id">
               <label htmlFor="equipment-officer-removed-select">Removed by</label>
                 <CompSelect
                   id="equipment-officer-removed-select"
@@ -365,7 +366,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
             </div>
           </div>
           <div className="comp-details-edit-column comp-details-right-column">
-            <div className="comp-details-label-input-pair" id="reported-pair-id">
+            <div className="equipment-form-label-input-pair" id="reported-pair-id">
               <label htmlFor="equipment-date-removed">Removed date</label>
                 <DatePicker
                   id="equipment-date-removed"
