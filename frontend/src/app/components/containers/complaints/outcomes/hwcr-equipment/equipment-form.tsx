@@ -287,7 +287,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
           <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
           {hasCoordinates &&
             <button
-              className="copy-text"
+              className="button-text copy-text"
               onClick={() => {
                 const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
                 const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
