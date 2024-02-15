@@ -1,9 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { connect, StringCodec } from 'nats';
 import {
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
@@ -12,11 +9,23 @@ import { Complaint } from 'src/types/Complaints';
 
 @Injectable()
 export class ComplaintsPublisherService {
-  private client: ClientProxy;
-
+  private client: any; // Use `any` or the specific type for JetStream clients
   private readonly logger = new Logger(ComplaintsPublisherService.name);
+  private js: any; // JetStream client
+  private sc = StringCodec();
 
   constructor() {
+    this.initializeJetStream().catch((error) =>
+      this.logger.error('Error initializing JetStream:', error),
+    );
+  }
+
+  private async initializeJetStream() {
+    const nc = await connect({
+      servers: [process.env.NATS_HOST],
+    });
+    this.js = nc.jetstream();
+
     this.client = ClientProxyFactory.create({
       transport: Transport.NATS,
       options: {
@@ -26,12 +35,13 @@ export class ComplaintsPublisherService {
   }
 
   /**
-   * Publish meessage to topic to indicate that a new complaint is available from webeoc
+   * Publish message to topic to indicate that a new complaint is available from webeoc
    * @param complaint
    */
   async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
     try {
-      this.client.emit(NATS_NEW_COMPLAINTS_TOPIC_NAME, complaint);
+      const message = this.sc.encode(JSON.stringify(complaint));
+      await this.js.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, message);
       this.logger.log(`Complaint published: ${complaint.incident_number}`);
     } catch (error) {
       this.logger.error(
@@ -50,7 +60,10 @@ export class ComplaintsPublisherService {
     complaint_identifier: string,
   ): Promise<void> {
     try {
-      this.client.emit(NEW_STAGING_COMPLAINTS_TOPIC_NAME, complaint_identifier);
+      await this.js.publish(
+        NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+        complaint_identifier,
+      );
       this.logger.log(
         `Complaint ready to be moved to operational tables: ${complaint_identifier}`,
       );

@@ -3,10 +3,47 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
+import { connect, JetStreamManager } from 'nats';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import {
+  NATS_NEW_COMPLAINTS_TOPIC_NAME,
+  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+} from './common/constants';
+
+async function initializeJetStream() {
+  const nc = await connect({
+    servers: [process.env.NATS_HOST],
+  });
+
+  // Access the JetStream Management (JSM) interface
+  const jsm: JetStreamManager = await nc.jetstreamManager();
+
+  // Define your stream and subjects
+  const streamName = 'WEBEOC';
+  const subjects = [
+    NATS_NEW_COMPLAINTS_TOPIC_NAME,
+    NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+  ]; // List of subjects
+
+  try {
+    // Check if the stream already exists
+    await jsm.streams.info(streamName);
+    console.log(`Stream '${streamName}' already exists.`);
+  } catch (error) {
+    // If the stream does not exist, create it
+    console.log(
+      `Creating stream '${streamName}' for subjects: ${subjects.join(', ')}`,
+    );
+    await jsm.streams.add({
+      name: streamName,
+      subjects: subjects,
+    });
+  }
+}
 
 async function bootstrap() {
   dotenv.config();
+  await initializeJetStream(); // Ensure JetStream is initialized before starting the app
 
   // Create an Express instance
   const server = express();
@@ -29,4 +66,5 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 }
-bootstrap();
+
+bootstrap().catch(console.error);
