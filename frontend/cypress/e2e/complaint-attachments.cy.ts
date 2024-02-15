@@ -49,9 +49,9 @@ describe("Complaint Attachments", () => {
   Cypress._.times(complaintTypes.length, (index) => {
     it("Verifies that upload option exists on edit page", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
-        cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+        cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
       } else {
-        cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
+        cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
       }
 
       // should be able to upload on details view
