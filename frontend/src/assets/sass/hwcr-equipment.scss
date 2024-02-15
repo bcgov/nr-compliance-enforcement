@@ -19,9 +19,39 @@
   margin-left: 191px;
 }
 
+.equipment-form-edit-container {
+  display: flex;
+  margin: 30px 0px;
+}
+
+.equipment-form-label-input-pair {
+  display: flex;
+  align-items: center;
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .comp-details-input {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
 .edit-input {
   flex: 1;
-  margin: 14px 0px;
+}
+
+.equipment-form-error-msg {
+  color: $bc-gov-danger;
+  font-size: 14px;
+  margin: 2px 0px 2px 191px;
 }
 
 .equipment-item {

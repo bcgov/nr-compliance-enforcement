@@ -1,41 +1,60 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector } from "../../../../../hooks/hooks";
+import { selectComplaintAssignedBy } from "../../../../../store/reducers/complaints";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import Option from "../../../../../types/app/option";
 
 type Props = {
-  assigned: string | null;
   officer?: string;
   date?: Date;
   agency: string;
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const assigned = useAppSelector(selectComplaintAssignedBy);
 
-  useEffect(() => { 
-    if(!officer && assigned){ 
-      updateModel("officer", assigned)
+  const [assignedOfficer] = useState(assigned)
+
+  const [authorizedBy, setAuthorizedBy] = useState(officer);
+  const [authorizedOn, setAuthorizedOn] = useState(date);
+
+  useEffect(() => {
+    if ((assigned && !authorizedBy)) {
+      setAuthorizedBy(assigned);
+    } else if(assigned !== assignedOfficer && authorizedBy){
+      setAuthorizedBy(assigned || "");
     }
-  }, [officer, assigned])
+  }, [assigned, authorizedBy, assignedOfficer]);
 
   const getValue = (property: string): Option | undefined => {
     if (property === "officer") {
-      return officers.find((item) => item.value === (officer));
+      return officers.find((item) => item.value === authorizedBy);
     }
   };
 
   const updateModel = (property: string, value: string | Date | null | undefined) => {
-    const source = { officer, date };
+    const source = { officer: authorizedBy, date: authorizedOn };
     const authorization = { ...source, [property]: value };
 
     update("drugAuthorization", authorization);
   };
 
+  const handleAuthorizedByChange = (input: string | undefined) => {
+    setAuthorizedBy(input);
+    updateModel("officer", input);
+  };
+
+  const handleAuthorizedOnChange = (input: Date | undefined | null) => {
+    if (input) {
+      setAuthorizedOn(input);
+      updateModel("date", input);
+    }
+  };
 
   return (
     <div className="comp-outcome-report-inner-spacing">
@@ -52,7 +71,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, 
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
               onChange={(evt) => {
-                updateModel("officer", evt?.value);
+                handleAuthorizedByChange(evt?.value);
               }}
               className="comp-details-input"
               options={officers}
@@ -75,9 +94,9 @@ export const DrugAuthorization: FC<Props> = ({ agency, assigned, officer, date, 
               wrapperClassName="comp-details-edit-calendar-input"
               maxDate={new Date()}
               onChange={(evt) => {
-                updateModel("date", evt);
+                handleAuthorizedOnChange(evt);
               }}
-              selected={date}
+              selected={authorizedOn}
             />
           </div>
         </Col>

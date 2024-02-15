@@ -83,7 +83,10 @@ export const EditAnimalOutcome: FC<props> = ({
     officer,
     date,
     isEditable,
+    drugAuthorization
   });
+
+  console.log(drugAuthorization);
 
   const updateModel = (property: string, value: string | Date | Array<AnimalTag | DrugUsed> | null | undefined) => {
     const model = { ...data, [property]: value };
@@ -249,11 +252,16 @@ export const EditAnimalOutcome: FC<props> = ({
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <AddDrugAuthorization {...drugAuthorization} assigned={officer} agency={agency} update={updateModel} />
+          <AddDrugAuthorization {...drugAuthorization} agency={agency} update={updateModel} />
         </>
       );
     }
   };
+
+  //update({ ...data, isEditable: false })
+  const handleEditAnimalOutcomeUpdate = () => { 
+    update({ ...data, isEditable: false })
+  }
 
   return (
     <div className="comp-outcome-report-complaint-assessment">
@@ -421,7 +429,7 @@ export const EditAnimalOutcome: FC<props> = ({
           id="outcome-save-button"
           title="Save Outcome"
           className="comp-outcome-save"
-          onClick={() => update({ ...data, isEditable: false })}
+          onClick={() => handleEditAnimalOutcomeUpdate()}
         >
           Save
         </Button>
