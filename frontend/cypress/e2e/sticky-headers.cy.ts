@@ -63,7 +63,7 @@ describe("Sticky Headers", () => {
             cy.visit("/");
             cy.waitForSpinner();
 
-            cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+            cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
             //scroll to the bottom of the page
             cy.scrollTo("bottom");
