@@ -32,6 +32,11 @@ import { ConfigurationModule } from "./v1/configuration/configuration.module";
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
 import { CodeTableModule } from "./v1/code-table/code-table.module";
 import { ReportedByCodeModule } from "./v1/reported_by_code/reported_by_code.module";
+import { StagingComplaintModule } from './v1/staging_complaint/staging_complaint.module';
+import { EntityCodeModule } from './v1/entity_code/entity_code.module';
+import { StagingMetaDataMappingModule } from './v1/staging_meta_data_mapping/staging_meta_data_mapping.module';
+import { StagingStatusCodeModule } from './v1/staging_status_code/staging_status_code.module';
+import { StagingActivityCodeModule } from './v1/staging_activity_code/staging_activity_code.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -88,6 +93,11 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     AutomapperModule.forRoot({
       strategyInitializer: pojos(),
     }),
+    StagingComplaintModule,
+    StagingActivityCodeModule,
+    StagingStatusCodeModule,
+    StagingMetaDataMappingModule,
+    EntityCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

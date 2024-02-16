@@ -34,6 +34,15 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
 import { Justification } from "src/types/models/code-tables/justification";
 import { AssessmentType } from "src/types/models/code-tables/assessment-type";
 import { PreventEducationAction } from "src/types/models/code-tables/prevent-education-action";
+import { Sex } from "src/types/models/code-tables/sex";
+import { Age } from "src/types/models/code-tables/age";
+import { ThreatLevel } from "src/types/models/code-tables/threat-level";
+import { ConflictHistory } from "src/types/models/code-tables/conflict-history";
+import { EarTag } from "src/types/models/code-tables/ear-tag";
+import { Drug } from "src/types/models/code-tables/drug";
+import { DrugMethod } from "src/types/models/code-tables/drug-method";
+import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
+import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
 
 @Injectable()
 export class CodeTableService {
@@ -426,6 +435,96 @@ export class CodeTableService {
             isActive: true,
           },
         ];
+        return data;
+      }
+      case "sex": { 
+        const data: Array<Sex> = [
+          { sex: "M", shortDescription: "Male", longDescription: "Male", displayOrder: 1, isActive: true },
+          { sex: "F", shortDescription: "Female", longDescription: "Female", displayOrder: 2, isActive: true },
+          { sex: "U", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 3, isActive: true },
+        ]
+
+        return data;
+      }
+      case "age": { 
+        const data: Array<Age> = [
+          { age: "ADLT", shortDescription: "Adult", longDescription: "Adult", displayOrder: 1, isActive: true },
+          { age: "YRLN", shortDescription: "Yearling", longDescription: "Yearling", displayOrder: 2, isActive: true },
+          { age: "YOFY", shortDescription: "Young of the year", longDescription: "Young of the year", displayOrder: 3, isActive: true },
+          { age: "UNKN", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 4, isActive: true },
+        ]
+
+        return data;
+      }
+      case "threat-level": { 
+        const data: Array<ThreatLevel> = [
+          { threatLevel: "1", shortDescription: "Category 1", longDescription: "Category 1", displayOrder: 1, isActive: true },
+          { threatLevel: "2", shortDescription: "Category 2", longDescription: "Category 2", displayOrder: 2, isActive: true },
+          { threatLevel: "3", shortDescription: "Category 3", longDescription: "Category 3", displayOrder: 3, isActive: true },
+          { threatLevel: "U", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 4, isActive: true },
+        ]
+
+        return data;
+      }
+      case "conflict-history": { 
+        const data: Array<ConflictHistory> = [
+          { conflictHistory: "L", shortDescription: "Low", longDescription: "Low", displayOrder: 1, isActive: true },
+          { conflictHistory: "M", shortDescription: "Medium", longDescription: "Medium", displayOrder: 2, isActive: true },
+          { conflictHistory: "H", shortDescription: "High", longDescription: "High", displayOrder: 3, isActive: true },
+          { conflictHistory: "U", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 4, isActive: true },
+        ]
+
+        return data;
+      }
+      case "ear-tag": { 
+        const data: Array<EarTag> = [
+          { earTag: "L", shortDescription: "Left", longDescription: "Left", displayOrder: 1, isActive: true },
+          { earTag: "R", shortDescription: "Right", longDescription: "Right", displayOrder: 2, isActive: true },
+        ]
+
+        return data;
+      }
+      case "drugs": { 
+        const data: Array<Drug> = [
+          { drug: "ATPMZ", shortDescription: "Atipamezole", longDescription: "Atipamezole", displayOrder: 1, isActive: true },
+          { drug: "BAMII", shortDescription: "BAM II", longDescription: "Butorphanol Azaperone Medetomidine", displayOrder: 2, isActive: true },
+          { drug: "MDTMD", shortDescription: "Medetomidine", longDescription: "Medetomidine", displayOrder: 3, isActive: true },
+          { drug: "NLTRX", shortDescription: "Naltrexone", longDescription: "Naltrexone", displayOrder: 4, isActive: true },
+          { drug: "ZLTIL", shortDescription: "Zoletil", longDescription: "Zoletil", displayOrder: 5, isActive: true },
+        ]
+
+        return data;
+      }
+      case "drug-methods": { 
+        const data: Array<DrugMethod> = [
+          { method: "DART", shortDescription: "Dart", longDescription: "Dart", displayOrder: 1, isActive: true },
+          { method: "HINJ", shortDescription: "Hand injection", longDescription: "Hand injection", displayOrder: 2, isActive: true },
+          { method: "PSRG", shortDescription: "Pole syringe", longDescription: "Pole syringe", displayOrder: 3, isActive: true },
+        ]
+
+        return data;
+      }
+      case "drug-remaining-outcomes": { 
+        const data: Array<DrugRemainingOutcome> = [
+          { outcome: "DISC", shortDescription: "Discarded", longDescription: "Discarded", displayOrder: 1, isActive: true },
+          { outcome: "STOR", shortDescription: "Storage", longDescription: "Storage", displayOrder: 2, isActive: true },
+          { outcome: "RDIS", shortDescription: "Reverse distribution", longDescription: "Reverse distribution", displayOrder: 3, isActive: true },
+        ]
+
+        return data;
+      }
+      case "wildlife-outcomes": { 
+        const data: Array<WildlifeComplaintOutcome> = [
+          { outcome: "DEADONARR", shortDescription: "Dead on arrival", longDescription: "Dead on arrival", displayOrder: 1, isActive: true },
+          { outcome: "DESTRYCOS", shortDescription: "Destroyed by COS", longDescription: "Destroyed by COS", displayOrder: 2, isActive: true },
+          { outcome: "DESTRYOTH", shortDescription: "Destroyed by other", longDescription: "Destroyed by other", displayOrder: 3, isActive: true },
+          { outcome: "GONEONARR", shortDescription: "Gone on arrival", longDescription: "Gone on arrival", displayOrder: 4, isActive: true },
+          { outcome: "REFRTOBIO", shortDescription: "Referred to biologist", longDescription: "Referred to biologist", displayOrder: 5, isActive: true },
+          { outcome: "SHRTRELOC", shortDescription: "Short-distance relocation", longDescription: "Short-distance relocation", displayOrder: 6, isActive: true },
+          { outcome: "TRANSLCTD", shortDescription: "Translocated", longDescription: "Translocated", displayOrder: 7, isActive: true },
+          { outcome: "TRANSREHB", shortDescription: "Transfer to rehab", longDescription: "Transfer to rehab", displayOrder: 8, isActive: true },
+        ]
+
         return data;
       }
     }

@@ -115,6 +115,7 @@ export const HWCRComplaintAssessment: FC = () => {
                 selected={selectedDate}
                 dateFormat="yyyy-MM-dd"
                 wrapperClassName="comp-details-edit-calendar-input"
+                maxDate={new Date()}
               />
             </div>
           </div>

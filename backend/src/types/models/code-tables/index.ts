@@ -35,11 +35,18 @@ export const AvailableCodeTables = [
   "justification",
   "assessment-type",
   "prevent-education-action",
+  "sex",
+  "age",
+  "threat-level",
+  "conflict-history",
+  "ear-tag",
+  "drugs",
+  "drug-methods",
+  "drug-remaining-outcomes",
+  "wildlife-outcomes",
 ];
 
-export const AvailableAgencies = [
-   "cos"
-]
+export const AvailableAgencies = ["cos"];
 
 export default BaseCodeTable;
 export {
@@ -60,5 +67,5 @@ export {
   ReportedBy,
   Justification,
   AssessmentType,
-  PreventEducationAction
+  PreventEducationAction,
 };

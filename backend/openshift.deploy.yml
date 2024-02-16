@@ -157,6 +157,11 @@ objects:
                     secretKeyRef:
                       name: bc-geo-coder
                       key: BC_GEOCODER_API_URL
+                - name: COMPLAINTS_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: webeoc
+                      key: complaints-api-key
               ports:
                 - containerPort: 3000
                   protocol: TCP

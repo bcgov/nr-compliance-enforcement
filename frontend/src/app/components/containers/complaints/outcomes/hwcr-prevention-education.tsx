@@ -106,6 +106,7 @@ export const HWCRPreventionEducation: FC = () => {
                         <DatePicker
                           id="complaint-outcome-date"
                           showIcon
+                          maxDate={new Date()}
                           onChange={(date: Date) => setSelectedDate(date)}
                           selected={selectedDate}
                           dateFormat="yyyy-MM-dd"

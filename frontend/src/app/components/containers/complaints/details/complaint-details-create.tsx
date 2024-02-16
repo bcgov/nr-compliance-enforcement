@@ -402,7 +402,7 @@ export const CreateComplaint: FC = () => {
       coordinates[Coordinates.Latitude] = parseFloat(latitude);
     }
 
-    const complaint = { ...complaintData, location: { coordinates } } as ComplaintDto;
+    const complaint = { ...complaintData, location: { type: "Point", coordinates } } as ComplaintDto;
     applyComplaintData(complaint);
   };
 
@@ -829,7 +829,7 @@ export const CreateComplaint: FC = () => {
               </div>
               <CompInput
                 id="comp-details-edit-x-coordinate-input"
-                divId="comp-details-edit-x-coordinate-div"
+                divid="comp-details-edit-x-coordinate-div"
                 type="input"
                 label="X Coordinate"
                 containerClass="comp-details-edit-input"
@@ -841,7 +841,7 @@ export const CreateComplaint: FC = () => {
               />
               <CompInput
                 id="comp-details-edit-y-coordinate-input"
-                divId="comp-details-edit-y-coordinate-div"
+                divid="comp-details-edit-y-coordinate-div"
                 type="input"
                 label="Y Coordinate"
                 containerClass="comp-details-edit-input"

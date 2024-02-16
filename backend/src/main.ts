@@ -3,6 +3,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { VersioningType } from "@nestjs/common";
 import {customLogger} from "./common/logger.config";
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,{logger: customLogger,});
@@ -10,12 +11,16 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.enableCors();
+
+  app.use(bodyParser.json({limit: '10mb'}));
+  app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+
   process.env.TZ='UTC';
   const config = new DocumentBuilder()
-    .setTitle("Compliance and Enforcement API")
-    .setDescription("The Complicance and Enforcement API")
+    .setTitle("Compliance and Enforcement - Complaint Management API")
+    .setDescription("The Complicance and Enforcement - Complaint Management API")
     .setVersion("1.0")
-    .addTag("Compliance and Enforcement")
+    .addTag("Compliance and Enforcement - Complaint Management")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

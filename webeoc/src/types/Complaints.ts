@@ -1,3 +1,7 @@
+export interface ComplaintMessage {
+  pattern: string;
+  data: Complaint;
+}
 export interface Complaint {
   tablename: string;
   dataid: string;

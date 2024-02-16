@@ -13,7 +13,17 @@ export const CODE_TABLE_TYPES = {
   REPORTED_BY: "reported-by",
   JUSTIFICATION: "justification",
   ASSESSMENT_TYPE: "assessment-type",
-  PREVENT_EDUCATION_ACTION: "prevent-education-action"
+  PREVENT_EDUCATION_ACTION: "prevent-education-action",
+  SEX: "sex",
+  AGE: "age",
+  THREAT_LEVEL: "threat-level",
+  CONFLICT_HISTORY: "conflict-history",
+  EARS: "ear-tag",
+  WILDLIFE_OUTCOMES: "wildlife-outcomes",
+  DRUGS: "drugs",
+  DRUG_METHOD_USE: "drug-methods",
+  REMAINING_DRUG_USE: "drug-remaining-outcomes",
+
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",
   //  PERSON_TYPE: "person-complaint",
