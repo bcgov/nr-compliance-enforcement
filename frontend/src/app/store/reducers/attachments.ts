@@ -83,12 +83,19 @@ export const getAttachments =
         for(var i = 0; i < response.length; i++)
         {
           console.log("response[i]: " + JSON.stringify(response[i]));
-          const thumbResponse = await get<string>(dispatch, parameters, {
+
+          const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
             "x-amz-meta-complaint-id": complaint_identifier,
             "x-amz-meta-is-thumb": "Y",
             "x-amz-meta-thumb-for": response[i].id,
           });
-          console.log("thumbResponse: " + JSON.stringify(thumbResponse));
+      
+          console.log("thumbArrayResponse[0].name: " + thumbArrayResponse[0].name);
+          const thumbParameters = generateApiParameters(
+            `${config.COMS_URL}/object/${thumbArrayResponse[0].name}?download=url`
+          );
+      
+          const thumbResponse = await get<string>(dispatch, thumbParameters);
 
           response[i].imageIconString = thumbResponse;
         }
@@ -131,6 +138,7 @@ export const saveAttachments =
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
+        console.log("baconattachment: " + attachment);
         console.log("attachment?.type: " + attachment?.type)
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
@@ -146,15 +154,16 @@ export const saveAttachments =
           const parameters = generateApiParameters(
             `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
           );
-
+          console.log("pre-save attachment: " + attachment);
           const response = await putFile<COMSObject>(
             dispatch,
             parameters,
             header,
             attachment
           );
-
+          console.log("post-save attachment: " + attachment);
           dispatch(addAttachment(response)); // dispatch with serializable payload
+          console.log("add attachment: " + attachment);
 
           const thumbHeader = {
             "x-amz-meta-complaint-id": complaint_identifier,
@@ -166,10 +175,14 @@ export const saveAttachments =
             ))}"`,
             "Content-Type": "image/jpeg",
           };  
-
+          console.log("kkkkkkkkkkkkkkkkkkattachment: " + attachment);
           const tool = await fromImage(attachment);
+          console.log("test2");
           const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-          const thumbnailFile = await tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).toFile("thumbnail.jpg");
+          console.log("test3");
+          const thumbnailFile = await tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).toFile(attachment.name + "-thumb.jpg");
+          
+          console.log("saveThumbnailFile: " + thumbnailFile);
 
           await putFile<COMSObject>(
             dispatch,
