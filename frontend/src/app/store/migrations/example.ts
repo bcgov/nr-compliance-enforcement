@@ -1,5 +1,6 @@
 export const ExampleMigration = {
   1: (state: any) => {
+    console.log("inserting data")
     return {
       ...state,
       codeTables: {

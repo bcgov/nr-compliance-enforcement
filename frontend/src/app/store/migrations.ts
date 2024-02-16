@@ -1,4 +1,4 @@
-// import { ExampleMigration } from "./migrations/example";
+import { ExampleMigration } from "./migrations/example";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -9,6 +9,6 @@ const BaseMigration = {
 };
 
 let migration = {...BaseMigration}
-// migration = {...migration, ...ExampleMigration }
+migration = {...migration, ...ExampleMigration }
 
 export default migration;

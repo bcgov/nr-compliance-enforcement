@@ -57,7 +57,7 @@ export interface CodeTableState {
     | Array<DrugMethod>
     | Array<DrugRemainingOutcome>
     //-- REMOVE EXAMPLE
-    // | Array<TestItem>
+    | Array<TestItem>
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -84,5 +84,5 @@ export interface CodeTableState {
   "drug-methods": Array<DrugMethod>,
   "drug-remaining-outcomes": Array<DrugRemainingOutcome>,
   //-- REMOVE EXAMPLE
-  // example: Array<TestItem>
+  example: Array<TestItem>
 }
