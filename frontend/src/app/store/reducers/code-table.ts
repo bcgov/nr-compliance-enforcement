@@ -57,7 +57,7 @@ const initialState: CodeTableState = {
   drugs: [],
   "drug-methods":[],
   "drug-remaining-outcomes":[],
-  example: []
+  // example: []
 };
 
 export const codeTableSlice = createSlice({
