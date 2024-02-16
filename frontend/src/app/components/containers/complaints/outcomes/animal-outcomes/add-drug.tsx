@@ -43,7 +43,7 @@ export const AddDrug: FC<props> = ({
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
-  const [showDiscarded, setShowDiscarded] = useState(true);
+  const [showDiscarded, setShowDiscarded] = useState(remainingUse === "DISC");
 
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {

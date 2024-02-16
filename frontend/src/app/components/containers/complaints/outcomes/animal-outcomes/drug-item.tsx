@@ -108,15 +108,23 @@ export const DrugItem: FC<props> = ({
           <span className="comp-fake-label">Fate of remaining drug in vial</span> {remaining}
         </Col>
         <Col md={4}>
-          <span className="comp-fake-label">Amount discarded</span> {amountDiscarded}ml
+          {remainingUse === "DISC" && (
+            <>
+              <span className="comp-fake-label">Amount discarded</span> {amountDiscarded}ml
+            </>
+          )}
         </Col>
         <Col md={3}>
-          <span className="comp-fake-label">Discard method</span> {discardMethod}
+          {remainingUse === "DISC" && (
+            <>
+              <span className="comp-fake-label">Discard method</span> {discardMethod}
+            </>
+          )}
         </Col>
       </Row>
       <Row>
         <Col md={4}>
-        <span className="comp-fake-label">Officer</span>
+          <span className="comp-fake-label">Officer</span>
           <div
             data-initials-sm={getAvatarInitials(assignedOfficer())}
             className="comp-orange-avatar-sm comp-details-inner-content"
@@ -127,7 +135,7 @@ export const DrugItem: FC<props> = ({
           </div>
         </Col>
         <Col md={8}>
-        <span className="comp-fake-label">Date</span> {formatDate(date?.toString())}
+          <span className="comp-fake-label">Date</span> {formatDate(date?.toString())}
         </Col>
       </Row>
     </div>
