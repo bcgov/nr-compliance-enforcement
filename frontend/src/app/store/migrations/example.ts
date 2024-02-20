@@ -1,6 +1,6 @@
 export const ExampleMigration = {
   1: (state: any) => {
-    console.log("inserting data")
+
     return {
       ...state,
       codeTables: {
@@ -14,14 +14,14 @@ export const ExampleMigration = {
             isActive: true,
           },
           {
-            name: "EXAMPLE01",
+            name: "EXAMPLE02",
             shortDescription: "Example 02",
             longDescription: "Example - 02",
             displayOrder: 2,
             isActive: true,
           },
           {
-            name: "EXAMPLE01",
+            name: "EXAMPLE03",
             shortDescription: "Example 03",
             longDescription: "Example - 03",
             displayOrder: 3,
