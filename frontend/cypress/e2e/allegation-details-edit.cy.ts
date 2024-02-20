@@ -102,7 +102,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data", function () {
     //start edit
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", false);
     cy.get("#caller-name-id").click({force: true}).click({force: true}).clear().type(editCallerInformation.name);
     cy.get("#complaint-address-id").click({force: true}).clear().type(editCallerInformation.address);
     cy.get("#complaint-email-id").click({force: true}).clear().type(editCallerInformation.email);
@@ -249,7 +249,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
   it("Puts everything back to the original details", () => {
     //start reverting changes
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
     cy.get("#caller-name-id").click({force: true}).click({force: true}).clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
     .click({force: true}).clear()
@@ -394,7 +394,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("Navigate to the Complaint Edit page & check inputs", () => {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs
@@ -566,13 +566,13 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888", true);
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032528");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032528", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });

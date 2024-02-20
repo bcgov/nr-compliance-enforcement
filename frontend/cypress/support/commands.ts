@@ -147,45 +147,55 @@ Cypress.Commands.add("verifyMapMarkerExists", (existIndicator: boolean) => {
 
 Cypress.Commands.add(
   "navigateToDetailsScreen",
-  (complaintType: string, complaintIdentifier: string) => {
-    //-- navigate to application root
-    cy.visit("/");
+  (complaintType: string, complaintIdentifier: string, navigateByURL: boolean) => {
 
-    //Need to make sure the filters are loaded before switching tabs.
-    cy.waitForSpinner();
+    if (navigateByURL)
+    {
+      cy.visit(`/complaint/${complaintType.toUpperCase()}/${complaintIdentifier}`); //errors happen without converting to upper case!
 
-    //-- click on HWCR tab
-    cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
+      cy.waitForSpinner();
+    } else  // go to the list, remove filters and find complaint (must be sure it will be in the first 50 results)
+    {
+      //-- navigate to application root
+      cy.visit("/");
 
-    cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear zone filter so this complaint is in the list view
-    cy.get("#comp-zone-filter").should("not.exist");
-    cy.waitForSpinner();
+      //Need to make sure the filters are loaded before switching tabs.
+      cy.waitForSpinner();
 
-    cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
-    cy.get("#comp-status-filter").should("not.exist");
-    cy.waitForSpinner();
+      //-- click on HWCR tab
+      cy.get(`#${complaintType.toLowerCase()}-tab`).click({ force: true });
 
-    //-- check to make sure there are items in the table
-    cy.get("#complaint-list")
-      .find("tr")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.gt(0);
-      });
+      cy.get("#comp-zone-filter").should("exist").click({ force: true }); //clear zone filter so this complaint is in the list view
+      cy.get("#comp-zone-filter").should("not.exist");
+      cy.waitForSpinner();
 
-    cy.get("#complaint-list > tbody > tr")
-      .contains(complaintIdentifier)
-      .click({ force: true });
+      cy.get("#comp-status-filter").should("exist").click({ force: true }); //clear status filter so this complaint is in the list view
+      cy.get("#comp-status-filter").should("not.exist");
+      cy.waitForSpinner();
 
-    cy.waitForSpinner();
+      //-- check to make sure there are items in the table
+      cy.get("#complaint-list")
+        .find("tr")
+        .then(({ length }) => {
+          expect(length, "rows N").to.be.gt(0);
+        });
+
+      cy.get("#complaint-list > tbody > tr")
+        .contains(complaintIdentifier)
+        .click({ force: true });
+
+      cy.waitForSpinner();
+    }
   },
 );
 
 Cypress.Commands.add(
   "navigateToEditScreen",
-  (complaintType: string, complaintIdentifier: string) => {
+  (complaintType: string, complaintIdentifier: string, navigateByUrl: boolean) => {
     cy.navigateToDetailsScreen(
       complaintType.toLowerCase(),
       complaintIdentifier,
+      navigateByUrl
     );
     cy.get("#details-screen-edit-button").click({ force: true });
   },
