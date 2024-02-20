@@ -23,7 +23,6 @@ export const AttachmentSlide: FC<Props> = ({
   onFileRemove,
 }) => {
   const dispatch = useAppDispatch();
-  console.log("attachment: " + JSON.stringify(attachment));
 
   // download attachment
   const handleAttachmentClick = async (objectid: string, filename: string) => {

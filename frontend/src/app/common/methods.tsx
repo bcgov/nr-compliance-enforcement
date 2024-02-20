@@ -159,6 +159,10 @@ export const injectComplaintIdentifierToFilename = (filename: string, complaintI
   return `${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`;
 };
 
+export const isImage = (filename: string) : boolean => {
+  return ["jpg","jpeg","png", "gif", "bmp","tif","tiff","webp","abif","tiff","svg"].includes(getFileExtension(filename));
+};
+
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
 export const injectComplaintIdentifierToThumbFilename = (filename: string, complaintIdentifier: string): string => {
   // Find the last dot in the filename to separate the extension

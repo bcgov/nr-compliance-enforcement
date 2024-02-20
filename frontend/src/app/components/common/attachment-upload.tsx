@@ -10,7 +10,6 @@ export const AttachmentUpload: FC<Props> = ({
 }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      console.log("event.target.files: " + JSON.stringify(event.target.files));
       onFileSelect(event.target.files);
     }
   };

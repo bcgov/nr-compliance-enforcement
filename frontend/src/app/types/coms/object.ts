@@ -13,5 +13,6 @@ export interface COMSObject {
   updatedAt?: Date;
   pendingUpload?: boolean;
   imageIconString?: string;
+  imageIconId?: string;
   errorMesage?: string;
 }

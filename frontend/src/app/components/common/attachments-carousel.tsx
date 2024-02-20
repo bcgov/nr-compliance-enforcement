@@ -20,6 +20,7 @@ import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
 import { fromImage } from 'imtool';
+import { isImage } from "../../common/methods";
 
 type Props = {
   complaintIdentifier?: string;
@@ -89,7 +90,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   const onFileSelect = async (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    for (var i = 0; i < selectedFilesArray.length; i++)
+    for (let i = 0; i < selectedFilesArray.length; i++)
     {
       newSlides.push(await createSlideFromFile(selectedFilesArray[i]));
     }
@@ -111,10 +112,14 @@ export const AttachmentsCarousel: FC<Props> = ({
   // given a file, create a carousel slide
   const createSlideFromFile = async (file: File) => {
     
-    const tool = await fromImage(file);
-    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-    const imageIconString = await tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).toDataURL();
-
+    let imageIconString;
+    if(isImage(file.name))
+          {
+      const tool = await fromImage(file);
+      const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+      const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+      imageIconString = await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
+    }
     const newSlide: COMSObject = {
       name: encodeURIComponent(file.name),
       id: uuidv4(), // generate a unique identifier in case the user uploads non-unique file names.  This allows us to know which one the user wants to delete

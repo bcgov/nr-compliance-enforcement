@@ -10,7 +10,7 @@ import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
-import { injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename } from "../../common/methods";
+import { injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename, isImage } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import axios from "axios";
 import { fromImage } from 'imtool';
@@ -20,6 +20,7 @@ const initialState: AttachmentsState = {
 };
 
 const SLIDE_HEIGHT = 130;
+const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
 
 /**
  * Attachments for each complaint
@@ -80,31 +81,34 @@ export const getAttachments =
         "x-amz-meta-is-thumb": "N",
       });
       if (response && from(response).any()) {
-        for(var i = 0; i < response.length; i++)
+        for(let i = 0; i < response.length; i++)
         {
-          console.log("response[i]: " + JSON.stringify(response[i]));
 
-          const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
-            "x-amz-meta-complaint-id": complaint_identifier,
-            "x-amz-meta-is-thumb": "Y",
-            "x-amz-meta-thumb-for": response[i].id,
-          });
-      
-          console.log("thumbArrayResponse[0].name: " + thumbArrayResponse[0].name);
-          const thumbParameters = generateApiParameters(
-            `${config.COMS_URL}/object/${thumbArrayResponse[0].name}?download=url`
-          );
-      
-          const thumbResponse = await get<string>(dispatch, thumbParameters);
+          if(isImage(response[i].name))
+          {
+            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
+              "x-amz-meta-complaint-id": complaint_identifier,
+              "x-amz-meta-is-thumb": "Y",
+              "x-amz-meta-thumb-for": response[i].id,
+            });
+        
+            const thumbParameters = generateApiParameters(
+              `${config.COMS_URL}/object/${thumbArrayResponse[0].id}?download=url`
+            );
 
-          response[i].imageIconString = thumbResponse;
+        
+            const thumbResponse = await get<string>(dispatch, thumbParameters);
+            response[i].imageIconString = thumbResponse;
+            response[i].imageIconId = thumbArrayResponse[0].id;
+            }
+
+          }
         }
         dispatch(
           setAttachments({
             attachments: response ?? [],
           })
         );
-      }
     } catch (error) {
       ToggleError(`Error retrieving attachments`);
     }
@@ -121,8 +125,14 @@ export const deleteAttachments =
             `${config.COMS_URL}/object/${attachment.id}`
           );
 
+          const thumbParameters = generateApiParameters(
+            `${config.COMS_URL}/object/${attachment.imageIconId}`
+          );
+
           await deleteMethod<string>(dispatch, parameters);
+          await deleteMethod<string>(dispatch, thumbParameters);
           dispatch(removeAttachment(attachment.id)); // delete from store
+          dispatch(removeAttachment(attachment.imageIconId)); // delete from store
           ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
         } catch (error) {
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
@@ -138,8 +148,6 @@ export const saveAttachments =
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
-        console.log("baconattachment: " + attachment);
-        console.log("attachment?.type: " + attachment?.type)
         const header = {
           "x-amz-meta-complaint-id": complaint_identifier,
           "x-amz-meta-is-thumb": "N",
@@ -154,42 +162,38 @@ export const saveAttachments =
           const parameters = generateApiParameters(
             `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
           );
-          console.log("pre-save attachment: " + attachment);
           const response = await putFile<COMSObject>(
             dispatch,
             parameters,
             header,
             attachment
           );
-          console.log("post-save attachment: " + attachment);
           dispatch(addAttachment(response)); // dispatch with serializable payload
-          console.log("add attachment: " + attachment);
-
-          const thumbHeader = {
-            "x-amz-meta-complaint-id": complaint_identifier,
-            "x-amz-meta-is-thumb": "Y",
-            "x-amz-meta-thumb-for": response.id,
-            "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
-              attachment.name,
-              complaint_identifier
-            ))}"`,
-            "Content-Type": "image/jpeg",
-          };  
-          console.log("kkkkkkkkkkkkkkkkkkattachment: " + attachment);
-          const tool = await fromImage(attachment);
-          console.log("test2");
-          const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-          console.log("test3");
-          const thumbnailFile = await tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).toFile(attachment.name + "-thumb.jpg");
-          
-          console.log("saveThumbnailFile: " + thumbnailFile);
-
-          await putFile<COMSObject>(
-            dispatch,
-            parameters,
-            thumbHeader,
-            thumbnailFile
-          );
+          if(isImage(attachment.name))
+          {
+            const thumbHeader = {
+              "x-amz-meta-complaint-id": complaint_identifier,
+              "x-amz-meta-is-thumb": "Y",
+              "x-amz-meta-thumb-for": response.id,
+              "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
+                attachment.name,
+                complaint_identifier
+              ))}"`,
+              "Content-Type": "image/jpeg",
+            };  
+            const tool = await fromImage(attachment);
+            const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+            const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+            const thumbnailFile = await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(attachment.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(attachment.name + "-thumb.jpg"));
+  
+  
+            await putFile<COMSObject>(
+              dispatch,
+              parameters,
+              thumbHeader,
+              thumbnailFile
+            );
+          }
 
           if (response) {
             ToggleSuccess(`Attachment "${attachment.name}" saved`);

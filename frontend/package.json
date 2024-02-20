@@ -49,6 +49,7 @@
     "fs": "^0.0.1-security",
     "image-thumbnail": "^1.0.15",
     "immutable": "^4.3.0",
+    "imtool": "^1.2.1",
     "install": "^0.13.0",
     "invariant": "^2.2.4",
     "jest-jasmine2": "^29.7.0",
