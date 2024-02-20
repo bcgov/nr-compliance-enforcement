@@ -102,7 +102,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only", function () {
     //start edit
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
     cy.get("#caller-name-id").click({ force: true }).clear().type(editCallerInformation.name);
     cy.get("#complaint-address-id").click({ force: true }).clear().type(editCallerInformation.address);
     cy.get("#complaint-email-id").click({ force: true }).clear().type(editCallerInformation.email);
@@ -227,7 +227,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
   it("Puts everything back to the original details", function () {
     //start reverting changes
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
     cy.get("#caller-name-id").click({ force: true }).clear().type(originalCallerInformation.name);
     cy.get("#complaint-address-id")
       .click({ force: true }).clear()
@@ -366,7 +366,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
   });
 
   it("Navigate to the Complaint Edit page & check inputs", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-007023");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-007023", true);
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs
@@ -524,13 +524,13 @@ describe("Complaint Edit Page spec - Edit View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032525");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032525", true);
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032527");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032527", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });

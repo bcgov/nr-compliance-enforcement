@@ -9,10 +9,12 @@ declare namespace Cypress {
     navigateToDetailsScreen(
       complaintType: string,
       complaintIdentifier: string,
+      navigateByURL: boolean
     ): Chainable<any>;
     navigateToEditScreen(
       complaintType: string,
       complaintIdentifier: string,
+      navigateByURL: boolean
     ): Chainable<any>;
     navigateToCreateScreen(): Chainable<any>;
     isInViewport(): Chainable<any>;

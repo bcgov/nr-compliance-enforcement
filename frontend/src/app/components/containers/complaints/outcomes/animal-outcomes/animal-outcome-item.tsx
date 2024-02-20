@@ -148,14 +148,18 @@ export const AnimalOutcomeItem: FC<props> = ({
                   <div className="comp-margin-right-xxs">
                     <b>{animal}</b>,
                   </div>
-                  <div className="comp-margin-right-xxs">{animalSex},</div>
-                  <div className="comp-margin-right-xxs">{animalAge}</div>
-                  <div className="badge comp-status-badge-threat-level comp-margin-right-xxs">
-                    Threat level: {animalThreatLevel}
-                  </div>
-                  <div className="badge comp-status-badge-conflict-history comp-margin-right-xxs">
-                    Conflict history: {animalHistory}
-                  </div>
+                  {animalSex && <div className="comp-margin-right-xxs">{animalSex},</div>}
+                  {animalAge && <div className="comp-margin-right-xxs">{animalAge}</div>}
+                  {animalThreatLevel && (
+                    <div className="badge comp-status-badge-threat-level comp-margin-right-xxs">
+                      Threat level: {animalThreatLevel}
+                    </div>
+                  )}
+                  {animalHistory && (
+                    <div className="badge comp-status-badge-conflict-history comp-margin-right-xxs">
+                      Conflict history: {animalHistory}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
