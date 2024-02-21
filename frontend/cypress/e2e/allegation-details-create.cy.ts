@@ -27,7 +27,7 @@ describe("Complaint Create Page spec - Create View", () => {
         violationType: "Boating",
         violationIndex: 1,
       };
-      
+ 
       const createCallerInformation = {
         name: "Phoebe ---- testing",
         phone: "(250) 555-5555",

@@ -47,7 +47,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   it("it can select record", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", false);
 
     //-- verify the right complaint identifier is selected and the animal type
     cy.get(".comp-box-complaint-id").contains("23-000076");
@@ -55,7 +55,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   it("it has correct call details", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
     //-- verify the call details block
     cy.get('p[id="comp-details-description"]').contains(
@@ -86,7 +86,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
 
   it("it has correct call information details", () => {
     //-- navigate to application root
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
     //-- verify the call details block
     cy.get('div[id="comp-details-name"]').contains(callerInformation.name);
@@ -108,19 +108,19 @@ describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032525");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032525", true);
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032527");
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032527", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
 
   it("validates breadcrumb styles", function () {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-007023");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-007023", true);
 
     cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'text-decoration').should('include', 'underline');
     cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'color').should('include', 'rgb(255, 255, 255)');
