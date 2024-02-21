@@ -19,8 +19,7 @@ import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
-import { fromImage } from 'imtool';
-import { isImage } from "../../common/methods";
+import { getThumbnailDataURL, isImage } from "../../common/methods";
 
 type Props = {
   complaintIdentifier?: string;
@@ -47,7 +46,6 @@ export const AttachmentsCarousel: FC<Props> = ({
   );
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
-  const SLIDE_HEIGHT = 130; // width of the carousel slide, in pixels
   const [visibleSlides, setVisibleSlides] = useState<number>(4); // Adjust the initial number of visible slides as needed
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
@@ -90,9 +88,9 @@ export const AttachmentsCarousel: FC<Props> = ({
   const onFileSelect = async (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    for (let i = 0; i < selectedFilesArray.length; i++)
+    for (let selectedFile of selectedFilesArray)
     {
-      newSlides.push(await createSlideFromFile(selectedFilesArray[i]));
+      newSlides.push(await createSlideFromFile(selectedFile));
     }
     removeInvalidFiles(selectedFilesArray);
 
@@ -114,11 +112,8 @@ export const AttachmentsCarousel: FC<Props> = ({
     
     let imageIconString;
     if(isImage(file.name))
-          {
-      const tool = await fromImage(file);
-      const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-      const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-      imageIconString = await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
+    {
+      imageIconString = await getThumbnailDataURL(file);
     }
     const newSlide: COMSObject = {
       name: encodeURIComponent(file.name),

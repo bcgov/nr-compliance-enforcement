@@ -10,8 +10,12 @@ import Option from "../types/app/option";
 import { UUID } from "crypto";
 import { Complaint as ComplaintDto } from "../types/app/complaints/complaint";
 import { GifReader } from 'omggif';
+import { fromImage } from "imtool";
 
 type Coordinate = number[] | string[] | undefined;
+
+const SLIDE_HEIGHT = 130;
+const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
 
 export const loadGifFrameList = async (
   gifUrl: string,
@@ -313,4 +317,18 @@ export const pad = (num: string, size: number): string => {
   num = num.toString();
   while (num.length < size) num = "0" + num;
   return num;
+};
+
+export const getThumbnailFile = async (file: File): Promise<File> => {
+  const tool = await fromImage(file);
+  const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+  const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+  return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg"));
+};
+
+export const getThumbnailDataURL = async (file: File): Promise<string> => {
+  const tool = await fromImage(file);
+  const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+  const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+  return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
 };

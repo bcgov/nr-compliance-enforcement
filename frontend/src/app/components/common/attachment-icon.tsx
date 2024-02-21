@@ -31,9 +31,8 @@ const AttachmentIcon: React.FC<Props> = ({ filename, imageIconString }) => {
     case "tiff":
     case "webp":
     case "abif":
-    case "tiff":
     case "svg":
-      return (imageIconString ? <img src={imageIconString} /> : <FontAwesomeIcon icon={faImage} />);
+      return (imageIconString ? <img alt="thumbnail" src={imageIconString} /> : <FontAwesomeIcon icon={faImage} />);
     case "mp4":
     case "asf":
     case "flv":

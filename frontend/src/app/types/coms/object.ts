@@ -1,5 +1,3 @@
-import { StringIterator } from "lodash";
-
 export interface COMSObject {
   id?: string;
   path?: string;

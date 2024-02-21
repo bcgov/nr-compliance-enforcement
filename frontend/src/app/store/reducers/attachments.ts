@@ -10,17 +10,13 @@ import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
-import { injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename, isImage } from "../../common/methods";
+import { getThumbnailFile, injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename, isImage } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import axios from "axios";
-import { fromImage } from 'imtool';
 
 const initialState: AttachmentsState = {
   attachments: [],
 };
-
-const SLIDE_HEIGHT = 130;
-const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
 
 /**
  * Attachments for each complaint
@@ -81,15 +77,15 @@ export const getAttachments =
         "x-amz-meta-is-thumb": "N",
       });
       if (response && from(response).any()) {
-        for(let i = 0; i < response.length; i++)
+        for(let attachment of response)
         {
 
-          if(isImage(response[i].name))
+          if(isImage(attachment.name))
           {
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
               "x-amz-meta-complaint-id": complaint_identifier,
               "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": response[i].id,
+              "x-amz-meta-thumb-for": attachment.id,
             });
         
             const thumbParameters = generateApiParameters(
@@ -98,8 +94,8 @@ export const getAttachments =
 
         
             const thumbResponse = await get<string>(dispatch, thumbParameters);
-            response[i].imageIconString = thumbResponse;
-            response[i].imageIconId = thumbArrayResponse[0].id;
+            attachment.imageIconString = thumbResponse;
+            attachment.imageIconId = thumbArrayResponse[0].id;
             }
 
           }
@@ -181,10 +177,7 @@ export const saveAttachments =
               ))}"`,
               "Content-Type": "image/jpeg",
             };  
-            const tool = await fromImage(attachment);
-            const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-            const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-            const thumbnailFile = await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(attachment.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(attachment.name + "-thumb.jpg"));
+            const thumbnailFile = await getThumbnailFile(attachment);
   
   
             await putFile<COMSObject>(
