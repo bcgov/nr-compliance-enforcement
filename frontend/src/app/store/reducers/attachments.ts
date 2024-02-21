@@ -121,14 +121,17 @@ export const deleteAttachments =
             `${config.COMS_URL}/object/${attachment.id}`
           );
 
-          const thumbParameters = generateApiParameters(
-            `${config.COMS_URL}/object/${attachment.imageIconId}`
-          );
-
           await deleteMethod<string>(dispatch, parameters);
-          await deleteMethod<string>(dispatch, thumbParameters);
           dispatch(removeAttachment(attachment.id)); // delete from store
-          dispatch(removeAttachment(attachment.imageIconId)); // delete from store
+          if(isImage(attachment.name))
+          {
+            const thumbParameters = generateApiParameters(
+              `${config.COMS_URL}/object/${attachment.imageIconId}`
+            );
+
+            await deleteMethod<string>(dispatch, thumbParameters);
+            dispatch(removeAttachment(attachment.imageIconId)); // delete from store
+          }
           ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
         } catch (error) {
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
