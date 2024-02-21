@@ -16,7 +16,7 @@
   }
 
   label {
-    color: $gray-500
+    color: $gray-500;
   }
 
   .comp-outcome-checkbox-spacing {
@@ -195,8 +195,6 @@
       align-self: flex-start;
     }
 
-
-
     .comp-ear-tag-list {
       list-style: none;
       padding-inline-start: 0px;
@@ -213,8 +211,8 @@
       .comp-orange-avatar-sm::before {
         margin-left: 25px;
       }
-      
-      .row { 
+
+      .row {
         margin-top: 5px;
         margin-bottom: 5px;
       }
@@ -225,5 +223,26 @@
     margin-right: 10px;
     min-width: 10px !important;
     max-width: inherit;
-   }
+  }
+
+  .comp-outcome-remove-botton {
+    color: $gray-500;
+  }
+
+  .comp-outcome-remove-botton-hover {
+    color: $black;
+  }
+
+  #comp-outcome-report-animal-information-heading {
+    margin-bottom: -12px;
+  }
+
+  #comp-outcome-report-outcome-heading {
+    margin-bottom: -22px;
+  }
+
+  .comp-outcome-animal-seperator { 
+    clear: both;
+    margin-top: 28px;
+  }
 }

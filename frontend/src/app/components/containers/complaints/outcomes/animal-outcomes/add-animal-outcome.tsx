@@ -54,7 +54,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
     outcome: "",
     officer: "",
     isEditable: false,
-    drugAuthorization: undefined
+    drugAuthorization: undefined,
   });
 
   useEffect(() => {
@@ -265,17 +265,23 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
       <div className="comp-outcome-report-container">
         <h5>Animal {pad(animalCount.toString(), 2)}</h5>
       </div>
-      <div className="comp-outcome-report-container">Animal information</div>
+      <div id="comp-outcome-report-animal-information-heading" className="comp-outcome-report-container">
+        Animal information
+      </div>
 
       <div className="comp-outcome-report-inner-spacing">
         <Row>
           <Col>
-            <label htmlFor="select-species">Species</label>
+            <label htmlFor="select-species" className="comp-margin-bottom-8">
+              Species
+            </label>
             <CompSelect
               id="select-species"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={speciesList}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("species", evt?.value);
               }}
@@ -283,12 +289,16 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Sex</label>
+            <label htmlFor="select-sex" className="comp-margin-bottom-8">
+              Sex
+            </label>
             <CompSelect
-              id="select-species"
+              id="select-sex"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={sexes}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("sex", evt?.value);
               }}
@@ -296,12 +306,16 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Age</label>
+            <label htmlFor="select-age" className="comp-margin-bottom-8">
+              Age
+            </label>
             <CompSelect
-              id="select-species"
+              id="select-age"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={ages}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("age", evt?.value);
               }}
@@ -309,12 +323,16 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Threat level</label>
+            <label htmlFor="select-threat-level" className="comp-margin-bottom-8">
+              Threat level
+            </label>
             <CompSelect
-              id="select-species"
+              id="select-threat-level"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={threatLevels}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("threatLevel", evt?.value);
               }}
@@ -322,12 +340,16 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Conflict history</label>
+            <label htmlFor="select-conflict-history" className="comp-margin-bottom-8">
+              Conflict history
+            </label>
             <CompSelect
-              id="select-species"
+              id="select-conflict-history"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={conflictHistories}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("conflictHistory", evt?.value);
               }}
@@ -356,15 +378,19 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
         <span> Add drug</span>
       </Button>
 
-      <div className="comp-outcome-report-container">Outcome</div>
+      <div id="comp-outcome-report-outcome-heading" className="comp-outcome-report-container">
+        Outcome
+      </div>
       <div className="comp-outcome-report-inner-spacing">
         <Row>
           <Col className="mt-auto mb-3" md={4}>
             <CompSelect
               id="select-ears"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={outcomes}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("outcome", evt?.value);
               }}
@@ -379,10 +405,10 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
               <CompSelect
                 id="officer-assigned-select-id"
                 classNamePrefix="comp-select"
+                className="comp-details-input"
                 onChange={(evt) => {
                   updateModel("officer", evt?.value);
                 }}
-                className="comp-details-input"
                 options={officers}
                 placeholder="Select"
                 enableValidation={false}

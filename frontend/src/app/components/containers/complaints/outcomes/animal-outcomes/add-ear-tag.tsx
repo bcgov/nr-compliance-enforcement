@@ -37,10 +37,10 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
   };
 
   return (
-    <div className="comp-outcome-report-inner-spacing">
+    <div className="comp-outcome-report-inner-spacing comp-padding-top-2">
       <Row>
         <Col>
-          <label htmlFor={`comp-ear-tag-value-${id}`}>Ear Tag</label>
+          <label htmlFor={`comp-ear-tag-value-${id}`} className="comp-margin-bottom-8">Ear Tag</label>
           <CompInput
             id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
@@ -61,12 +61,14 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
           />
         </Col>
         <Col>
-          <label htmlFor={`comp-ear-tag-${id}`}></label>
+          <label htmlFor={`comp-ear-tag-${id}`} className="comp-margin-bottom-8">&nbsp;</label>
           <CompSelect
             id={`comp-ear-tag-${id}`}
+            classNamePrefix="comp-select"
+            className="comp-details-input"
             options={ears}
             enableValidation={false}
-            placeholder={"Please select"}
+            placeholder={"Select"}
             onChange={(evt) => {
               updateModel("ear", evt?.value);
             }}
@@ -75,8 +77,8 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
         </Col>
         <Col className="mt-auto mb-2">
           <CompIconButton onClick={() => remove(id)}>
-            <BsXCircle size={24} />
-            <BsFillXCircleFill size={24} />
+            <BsXCircle size={24} className="comp-outcome-remove-botton" />
+            <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
           </CompIconButton>
         </Col>
         <Col></Col>
