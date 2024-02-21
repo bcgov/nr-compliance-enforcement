@@ -31,6 +31,7 @@ import { WildlifeComplaintOutcome } from "../../types/app/code-tables/wildlife-c
 import { Drug } from "../../types/app/code-tables/drug";
 import { DrugMethod } from "../../types/app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining-outcome";
+import { Equipment } from "../../types/app/code-tables/equipment";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -57,6 +58,7 @@ const initialState: CodeTableState = {
   drugs: [],
   "drug-methods":[],
   "drug-remaining-outcomes":[],
+  equipment: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -106,7 +108,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       "wildlife-outcomes": wildlifeOutcomes,
       drugs,
       "drug-methods": drugUseMethods,
-      "drug-remaining-outcomes": remainingDrugUse
+      "drug-remaining-outcomes": remainingDrugUse,
+      equipment,
     },
   } = state;
 
@@ -193,6 +196,9 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(remainingDrugUse).any()) {
       dispatch(fetchRemainingDrugUse());
+    }
+    if (!from(equipment).any()) {
+      dispatch(fetchEquipment());
     }
   } catch (error) {}
 };
@@ -480,6 +486,18 @@ export const fetchRemainingDrugUse = (): AppThunk => async (dispatch) => {
   const response = await get<Array<DrugRemainingOutcome>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.REMAINING_DRUG_USE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchEquipment = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EQUIPMENT}`
+  );
+
+  const response = await get<Array<Equipment>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.EQUIPMENT, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -1100,6 +1118,19 @@ export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
   } = state;
 
   const data = items.map(({ outcome: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "equipment": items },
+  } = state;
+
+  const data = items.map(({ equipment: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });

@@ -18,6 +18,7 @@ import BaseCodeTable, {
   Zone,
   Community,
   ReportedBy,
+  Equipment,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -43,6 +44,7 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
+import { EquipmentApi } from "src/graphql/equipmentApi";
 
 @Injectable()
 export class CodeTableService {
@@ -526,6 +528,26 @@ export class CodeTableService {
         ]
 
         return data;
+      }
+      case "equipment": {
+        const data = await EquipmentApi.getAllEquipmentCodes();
+        let results = data.map(
+          ({
+            equipment_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            let table: Equipment = {
+              equipment: equipment_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
     }
   };
