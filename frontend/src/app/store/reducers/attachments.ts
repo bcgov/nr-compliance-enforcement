@@ -144,75 +144,68 @@ export const deleteAttachments =
 // save new attachment(s) to object store
 export const saveAttachments =
   (attachments: File[], complaint_identifier: string): AppThunk =>
-  async () => {
+  async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
-        await saveAttachment(attachment, complaint_identifier);
+        const header = {
+          "x-amz-meta-complaint-id": complaint_identifier,
+          "x-amz-meta-is-thumb": "N",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
+            attachment.name,
+            complaint_identifier
+          ))}"`,
+          "Content-Type": attachment?.type,
+        };
+
+        try {
+          const parameters = generateApiParameters(
+            `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
+          );
+          const response = await putFile<COMSObject>(
+            dispatch,
+            parameters,
+            header,
+            attachment
+          );
+          dispatch(addAttachment(response)); // dispatch with serializable payload
+          if(isImage(attachment.name))
+          {
+            const thumbHeader = {
+              "x-amz-meta-complaint-id": complaint_identifier,
+              "x-amz-meta-is-thumb": "Y",
+              "x-amz-meta-thumb-for": response.id,
+              "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
+                attachment.name,
+                complaint_identifier
+              ))}"`,
+              "Content-Type": "image/jpeg",
+            };  
+            const thumbnailFile = await getThumbnailFile(attachment);
+  
+  
+            await putFile<COMSObject>(
+              dispatch,
+              parameters,
+              thumbHeader,
+              thumbnailFile
+            );
+          }
+
+          if (response) {
+            ToggleSuccess(`Attachment "${attachment.name}" saved`);
+          }
+
+        } catch (error) {
+          console.log(error);
+          if (axios.isAxiosError(error) && error.response?.status === 409) {
+            ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
+          } else {
+            ToggleError(`Attachment "${attachment.name}" could not be saved.`);
+          }
+        }
       }
     }
   };
-
-  // save new attachment(s) to object store
-export const saveAttachment =
-(attachment: File, complaint_identifier: string): AppThunk =>
-async (dispatch) => {
-      const header = {
-        "x-amz-meta-complaint-id": complaint_identifier,
-        "x-amz-meta-is-thumb": "N",
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
-          attachment.name,
-          complaint_identifier
-        ))}"`,
-        "Content-Type": attachment?.type,
-      };
-
-      try {
-        const parameters = generateApiParameters(
-          `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
-        );
-        const response = await putFile<COMSObject>(
-          dispatch,
-          parameters,
-          header,
-          attachment
-        );
-        dispatch(addAttachment(response)); // dispatch with serializable payload
-        if(isImage(attachment.name))
-        {
-          const thumbHeader = {
-            "x-amz-meta-complaint-id": complaint_identifier,
-            "x-amz-meta-is-thumb": "Y",
-            "x-amz-meta-thumb-for": response.id,
-            "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
-              attachment.name,
-              complaint_identifier
-            ))}"`,
-            "Content-Type": "image/jpeg",
-          };  
-          const thumbnailFile = await getThumbnailFile(attachment);
-
-
-          await putFile<COMSObject>(
-            dispatch,
-            parameters,
-            thumbHeader,
-            thumbnailFile
-          );
-        }
-
-        if (response) {
-          ToggleSuccess(`Attachment "${attachment.name}" saved`);
-        }
-
-      } catch (error) {
-        console.log(error);
-        if (axios.isAxiosError(error) && error.response?.status === 409) {
-          ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
-        } else {
-          ToggleError(`Attachment "${attachment.name}" could not be saved.`);
-        }
-  }
-};
 
 //-- selectors
 export const selectAttachments = (state: RootState): COMSObject[]  => {
