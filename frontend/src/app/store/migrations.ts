@@ -1,4 +1,4 @@
-import { ExampleMigration } from "./migrations/example";
+import { Migration1 } from "./migrations/migration-1";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -9,6 +9,7 @@ const BaseMigration = {
 };
 
 let migration = {...BaseMigration}
-migration = {...migration, ...ExampleMigration }
+// Uncomment the line below when Migration1 has been filled out
+//migration = {...migration, ...Migration1 }
 
 export default migration;

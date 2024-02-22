@@ -9,7 +9,7 @@ const persistConfig = {
   storage,
   blacklist: ["app"],
   whitelist: ["codeTables"],
-  version: 1,
+  version: 0,  // This needs to be incremented every time a new migration is added
   debug: true,
   migrate: createMigrate(migration, { debug: false }),
 };

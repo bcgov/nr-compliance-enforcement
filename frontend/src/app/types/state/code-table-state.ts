@@ -25,7 +25,6 @@ import { WildlifeComplaintOutcome } from "../app/code-tables/wildlife-complaint-
 import { Drug } from "../app/code-tables/drug";
 import { DrugMethod } from "../app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome";
-import { TestItem } from "../app/code-tables/test-item";
 
 export interface CodeTableState {
   [key: string]:
@@ -56,8 +55,6 @@ export interface CodeTableState {
     | Array<Drug>
     | Array<DrugMethod>
     | Array<DrugRemainingOutcome>
-    //-- REMOVE EXAMPLE
-    | Array<TestItem>
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -83,6 +80,4 @@ export interface CodeTableState {
   drugs: Array<Drug>,
   "drug-methods": Array<DrugMethod>,
   "drug-remaining-outcomes": Array<DrugRemainingOutcome>,
-  //-- REMOVE EXAMPLE
-  example: Array<TestItem>
 }
