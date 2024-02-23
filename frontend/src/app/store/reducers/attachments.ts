@@ -72,40 +72,54 @@ export const getAttachments =
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
+      console.log("test1");
       const response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
       });
+      console.log("test2");
       if (response && from(response).any()) {
         for(let attachment of response)
         {
-
+          //try{
+          console.log("test3");
           if(isImage(attachment.name))
           {
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
               "x-amz-meta-complaint-id": complaint_identifier,
               "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": attachment.id,
+              "x-amz-meta-thumb-for": attachment?.id,
             });
-        
-            const thumbParameters = generateApiParameters(
-              `${config.COMS_URL}/object/${thumbArrayResponse[0].id}?download=url`
-            );
-
-        
-            const thumbResponse = await get<string>(dispatch, thumbParameters);
-            attachment.imageIconString = thumbResponse;
-            attachment.imageIconId = thumbArrayResponse[0].id;
-            }
-
+            
+            console.log("thumbArrayResponse[0]?.id: " + thumbArrayResponse[0]?.id)
+            if(thumbArrayResponse[0]?.id)
+            {
+              console.log("test4");
+              const thumbParameters = generateApiParameters(
+                `${config.COMS_URL}/object/${thumbArrayResponse[0]?.id}?download=url`
+              );
+              console.log("test5");
+          
+              const thumbResponse = await get<string>(dispatch, thumbParameters);
+              attachment.imageIconString = thumbResponse;
+              attachment.imageIconId = thumbArrayResponse[0]?.id;
+              }
           }
+
+          /*}catch (error) {
+            console.log("getThumbError: " + error);
+            ToggleError(`Error retrieving thumbnail`);
+          }*/
         }
+        
         dispatch(
           setAttachments({
             attachments: response ?? [],
           })
         );
+      }
     } catch (error) {
+      console.log("getError: " + error);
       ToggleError(`Error retrieving attachments`);
     }
   };
@@ -130,7 +144,6 @@ export const deleteAttachments =
             );
 
             await deleteMethod<string>(dispatch, thumbParameters);
-            dispatch(removeAttachment(attachment.imageIconId)); // delete from store
           }
           ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
         } catch (error) {
