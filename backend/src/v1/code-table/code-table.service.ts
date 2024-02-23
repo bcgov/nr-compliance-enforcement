@@ -44,7 +44,7 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
-import { EquipmentApi } from "src/graphql/equipmentApi";
+import { EquipmentApi } from "../../graphql/equipmentApi";
 
 @Injectable()
 export class CodeTableService {

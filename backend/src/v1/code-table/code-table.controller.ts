@@ -10,6 +10,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { CodeTableService } from "./code-table.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { Token } from "../../auth/decorators/token.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 
 import BaseCodeTable, {
@@ -18,7 +19,6 @@ import BaseCodeTable, {
   OrganizationCodeTable,
   Sector,
 } from "../../types/models/code-tables";
-import { Token } from "src/auth/decorators/token.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("code-table")
@@ -99,14 +99,13 @@ export class CaseManagementCodeTableController {
   @Roles(Role.COS_OFFICER)
   async getCodeTableByName(
     @Param("table") table: string,
-    @Token() token
   ): Promise<BaseCodeTable[]> {
     console.log("in case management: " + JSON.stringify(table));
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getCodeTableByName(table, token);
+    const result = await this.service.getCodeTableByName(table);
     return result;
   }
 }

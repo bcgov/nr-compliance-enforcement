@@ -8,7 +8,7 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
   use(request: Request, response: Response, next: NextFunction): void {
     const {method, originalUrl} = request;
 
-    const authHeader = request.header('authorization');
+    const authHeader = request.get('authorization');
     if (!authHeader) {
       throw new HttpException('No auth token', HttpStatus.UNAUTHORIZED);
     }
