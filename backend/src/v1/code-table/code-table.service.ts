@@ -75,7 +75,7 @@ export class CodeTableService {
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
 
-  getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
+  getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     console.log("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
@@ -530,7 +530,7 @@ export class CodeTableService {
         return data;
       }
       case "equipment": {
-        const data = await EquipmentApi.getAllEquipmentCodes();
+        const data = await EquipmentApi.getAllEquipmentCodes(token);
         let results = data.map(
           ({
             equipment_code,

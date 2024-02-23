@@ -7,10 +7,12 @@ axios.interceptors.response.use(undefined, (error: AxiosError) => {
   return Promise.reject(error)
 })
 
-export const get = (params? : {}) => {
+export const get = (token, params? : {}) => {
   let config: AxiosRequestConfig = { headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
   } };
+
   if (params) {
     config.params = params;
   }
@@ -19,6 +21,9 @@ export const get = (params? : {}) => {
     .then((response: AxiosResponse) => {
       const { data } = response;
       return data
+    })
+    .catch((error: AxiosError) => {
+      console.log(error)
     })
 };
 

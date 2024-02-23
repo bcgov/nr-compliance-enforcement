@@ -18,6 +18,7 @@ import BaseCodeTable, {
   OrganizationCodeTable,
   Sector,
 } from "../../types/models/code-tables";
+import { Token } from "src/auth/decorators/token.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("code-table")
@@ -28,13 +29,14 @@ export class CodeTableController {
   @Get(":table")
   @Roles(Role.COS_OFFICER)
   async getCodeTableByName(
-    @Param("table") table: string
+    @Param("table") table: string,
+    @Token() token
   ): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getCodeTableByName(table);
+    const result = await this.service.getCodeTableByName(table, token);
     return result;
   }
 
@@ -96,14 +98,15 @@ export class CaseManagementCodeTableController {
   @Get(":table")
   @Roles(Role.COS_OFFICER)
   async getCodeTableByName(
-    @Param("table") table: string
+    @Param("table") table: string,
+    @Token() token
   ): Promise<BaseCodeTable[]> {
     console.log("in case management: " + JSON.stringify(table));
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getCodeTableByName(table);
+    const result = await this.service.getCodeTableByName(table, token);
     return result;
   }
 }
