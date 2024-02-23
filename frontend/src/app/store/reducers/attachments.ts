@@ -72,17 +72,14 @@ export const getAttachments =
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      console.log("test1");
       const response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
       });
-      console.log("test2");
       if (response && from(response).any()) {
         for(let attachment of response)
         {
           //try{
-          console.log("test3");
           if(isImage(attachment.name))
           {
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
@@ -91,14 +88,11 @@ export const getAttachments =
               "x-amz-meta-thumb-for": attachment?.id,
             });
             
-            console.log("thumbArrayResponse[0]?.id: " + thumbArrayResponse[0]?.id)
             if(thumbArrayResponse[0]?.id)
             {
-              console.log("test4");
               const thumbParameters = generateApiParameters(
                 `${config.COMS_URL}/object/${thumbArrayResponse[0]?.id}?download=url`
               );
-              console.log("test5");
           
               const thumbResponse = await get<string>(dispatch, thumbParameters);
               attachment.imageIconString = thumbResponse;
@@ -119,7 +113,6 @@ export const getAttachments =
         );
       }
     } catch (error) {
-      console.log("getError: " + error);
       ToggleError(`Error retrieving attachments`);
     }
   };
@@ -158,63 +151,65 @@ export const deleteAttachments =
 export const saveAttachments =
   (attachments: File[], complaint_identifier: string): AppThunk =>
   async (dispatch) => {
-    if (attachments) {
-      for (const attachment of attachments) {
-        const header = {
-          "x-amz-meta-complaint-id": complaint_identifier,
-          "x-amz-meta-is-thumb": "N",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
-            attachment.name,
-            complaint_identifier
-          ))}"`,
-          "Content-Type": attachment?.type,
-        };
 
-        try {
-          const parameters = generateApiParameters(
-            `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
-          );
-          const response = await putFile<COMSObject>(
+    if (!attachments) {
+      return;
+    }
+
+    for (const attachment of attachments) {
+      const header = {
+        "x-amz-meta-complaint-id": complaint_identifier,
+        "x-amz-meta-is-thumb": "N",
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
+          attachment.name,
+          complaint_identifier
+        ))}"`,
+        "Content-Type": attachment?.type,
+      };
+
+      try {
+        const parameters = generateApiParameters(
+          `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
+        );
+        const response = await putFile<COMSObject>(
+          dispatch,
+          parameters,
+          header,
+          attachment
+        );
+        dispatch(addAttachment(response)); // dispatch with serializable payload
+        if(isImage(attachment.name))
+        {
+          const thumbHeader = {
+            "x-amz-meta-complaint-id": complaint_identifier,
+            "x-amz-meta-is-thumb": "Y",
+            "x-amz-meta-thumb-for": response.id,
+            "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
+              attachment.name,
+              complaint_identifier
+            ))}"`,
+            "Content-Type": "image/jpeg",
+          };  
+          const thumbnailFile = await getThumbnailFile(attachment);
+
+
+          await putFile<COMSObject>(
             dispatch,
             parameters,
-            header,
-            attachment
+            thumbHeader,
+            thumbnailFile
           );
-          dispatch(addAttachment(response)); // dispatch with serializable payload
-          if(isImage(attachment.name))
-          {
-            const thumbHeader = {
-              "x-amz-meta-complaint-id": complaint_identifier,
-              "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": response.id,
-              "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
-                attachment.name,
-                complaint_identifier
-              ))}"`,
-              "Content-Type": "image/jpeg",
-            };  
-            const thumbnailFile = await getThumbnailFile(attachment);
-  
-  
-            await putFile<COMSObject>(
-              dispatch,
-              parameters,
-              thumbHeader,
-              thumbnailFile
-            );
-          }
+        }
 
-          if (response) {
-            ToggleSuccess(`Attachment "${attachment.name}" saved`);
-          }
+        if (response) {
+          ToggleSuccess(`Attachment "${attachment.name}" saved`);
+        }
 
-        } catch (error) {
-          console.log(error);
-          if (axios.isAxiosError(error) && error.response?.status === 409) {
-            ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
-          } else {
-            ToggleError(`Attachment "${attachment.name}" could not be saved.`);
-          }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 409) {
+          ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
+        } else {
+          ToggleError(`Attachment "${attachment.name}" could not be saved.`);
         }
       }
     }
