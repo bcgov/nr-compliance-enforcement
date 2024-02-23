@@ -10,7 +10,7 @@ import { from } from "linq-to-typescript";
 import { COMSObject } from "../../types/coms/object";
 import { AttachmentsState } from "../../types/state/attachments-state";
 import config from "../../../config";
-import { injectComplaintIdentifierToFilename } from "../../common/methods";
+import { getThumbnailFile, injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename, isImage } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import axios from "axios";
 
@@ -74,8 +74,37 @@ export const getAttachments =
       );
       const response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
+        "x-amz-meta-is-thumb": "N",
       });
       if (response && from(response).any()) {
+        for(let attachment of response)
+        {
+          //try{
+          if(isImage(attachment.name))
+          {
+            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
+              "x-amz-meta-complaint-id": complaint_identifier,
+              "x-amz-meta-is-thumb": "Y",
+              "x-amz-meta-thumb-for": attachment?.id,
+            });
+            
+            if(thumbArrayResponse[0]?.id)
+            {
+              const thumbParameters = generateApiParameters(
+                `${config.COMS_URL}/object/${thumbArrayResponse[0]?.id}?download=url`
+              );
+          
+              const thumbResponse = await get<string>(dispatch, thumbParameters);
+              attachment.imageIconString = thumbResponse;
+              attachment.imageIconId = thumbArrayResponse[0]?.id;
+              }
+          }
+
+          /*}catch (error) {
+            console.log("getThumbError: " + error);
+            ToggleError(`Error retrieving thumbnail`);
+          }*/
+        }
         
         dispatch(
           setAttachments({
@@ -101,6 +130,14 @@ export const deleteAttachments =
 
           await deleteMethod<string>(dispatch, parameters);
           dispatch(removeAttachment(attachment.id)); // delete from store
+          if(isImage(attachment.name))
+          {
+            const thumbParameters = generateApiParameters(
+              `${config.COMS_URL}/object/${attachment.imageIconId}`
+            );
+
+            await deleteMethod<string>(dispatch, thumbParameters);
+          }
           ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
         } catch (error) {
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
@@ -114,41 +151,65 @@ export const deleteAttachments =
 export const saveAttachments =
   (attachments: File[], complaint_identifier: string): AppThunk =>
   async (dispatch) => {
-    if (attachments) {
-      for (const attachment of attachments) {
-        const header = {
-          "x-amz-meta-complaint-id": complaint_identifier,
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
-            attachment.name,
-            complaint_identifier
-          ))}"`,
-          "Content-Type": attachment?.type,
-        };
 
-        try {
-          const parameters = generateApiParameters(
-            `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
-          );
+    if (!attachments) {
+      return;
+    }
 
-          const response = await putFile<COMSObject>(
+    for (const attachment of attachments) {
+      const header = {
+        "x-amz-meta-complaint-id": complaint_identifier,
+        "x-amz-meta-is-thumb": "N",
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
+          attachment.name,
+          complaint_identifier
+        ))}"`,
+        "Content-Type": attachment?.type,
+      };
+
+      try {
+        const parameters = generateApiParameters(
+          `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
+        );
+        const response = await putFile<COMSObject>(
+          dispatch,
+          parameters,
+          header,
+          attachment
+        );
+        dispatch(addAttachment(response)); // dispatch with serializable payload
+        if(isImage(attachment.name))
+        {
+          const thumbHeader = {
+            "x-amz-meta-complaint-id": complaint_identifier,
+            "x-amz-meta-is-thumb": "Y",
+            "x-amz-meta-thumb-for": response.id,
+            "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
+              attachment.name,
+              complaint_identifier
+            ))}"`,
+            "Content-Type": "image/jpeg",
+          };  
+          const thumbnailFile = await getThumbnailFile(attachment);
+
+
+          await putFile<COMSObject>(
             dispatch,
             parameters,
-            header,
-            attachment
+            thumbHeader,
+            thumbnailFile
           );
+        }
 
-          dispatch(addAttachment(response)); // dispatch with serializable payload
+        if (response) {
+          ToggleSuccess(`Attachment "${attachment.name}" saved`);
+        }
 
-          if (response) {
-            ToggleSuccess(`Attachment "${attachment.name}" saved`);
-          }
-
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status === 409) {
-            ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
-          } else {
-            ToggleError(`Attachment "${attachment.name}" could not be saved.`);
-          }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 409) {
+          ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
+        } else {
+          ToggleError(`Attachment "${attachment.name}" could not be saved.`);
         }
       }
     }
