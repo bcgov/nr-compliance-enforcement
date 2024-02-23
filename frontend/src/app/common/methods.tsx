@@ -9,8 +9,41 @@ import { NatureOfComplaint } from "../types/app/code-tables/nature-of-complaint"
 import Option from "../types/app/option";
 import { UUID } from "crypto";
 import { Complaint as ComplaintDto } from "../types/app/complaints/complaint";
+import { GifReader } from 'omggif';
+import { fromImage } from "imtool";
 
 type Coordinate = number[] | string[] | undefined;
+
+const SLIDE_HEIGHT = 130;
+const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
+
+export const loadGifFrameList = async (
+  gifUrl: string,
+): Promise<HTMLCanvasElement[]> => {
+  const response = await fetch(gifUrl);
+  const blob = await response.blob();
+  const arrayBuffer = await blob.arrayBuffer();
+  const intArray = new Uint8Array(arrayBuffer);
+
+  const reader = new GifReader(intArray as Buffer);
+
+  const info = reader.frameInfo(0);
+
+  return new Array(reader.numFrames()).fill(0).map((_, k) => {
+      const image = new ImageData(info.width, info.height);
+
+      reader.decodeAndBlitFrameRGBA(k, image.data as any);
+
+      let canvas = document.createElement('canvas');
+
+      canvas.width = info.width;
+      canvas.height = info.height;
+
+      canvas.getContext('2d')!.putImageData(image, 0, 0);
+
+      return canvas;
+  });
+};
 
 export const getAvatarInitials = (input: string): string => {
   const tokens = input.split(" ");
@@ -83,6 +116,12 @@ export const getFirstInitialAndLastName = (fullName: string): string => {
   }
 };
 
+export const getFileExtension = (filename: string) => {
+  return filename
+    .slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2)
+    .toLowerCase();
+};
+
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
     return "";
@@ -123,6 +162,27 @@ export const injectComplaintIdentifierToFilename = (filename: string, complaintI
   // Otherwise, insert the complaintId before the extension
   return `${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`;
 };
+
+export const isImage = (filename: string) : boolean => {
+  return ["jpg","jpeg","png", "gif", "bmp","tif","tiff","webp","abif","tiff","svg"].includes(getFileExtension(filename));
+};
+
+// given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
+export const injectComplaintIdentifierToThumbFilename = (filename: string, complaintIdentifier: string): string => {
+  // Find the last dot in the filename to separate the extension
+  const lastDotIndex = filename.lastIndexOf('.');
+
+  // If there's no dot, just append the complaintId at the end
+  if (lastDotIndex === -1) {
+      return (`${filename} ${complaintIdentifier}`);
+  }
+
+  const fileNameWithoutExtension = filename.substring(0, lastDotIndex) + "-thumb";
+  const fileExtension = filename.substring(lastDotIndex);
+
+  // Otherwise, insert the complaintId before the extension
+  return (`${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`);
+}
 
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (coordinates: Coordinate): { lat: number; lng: number } => {
@@ -257,4 +317,18 @@ export const pad = (num: string, size: number): string => {
   num = num.toString();
   while (num.length < size) num = "0" + num;
   return num;
+};
+
+export const getThumbnailFile = async (file: File): Promise<File> => {
+  const tool = await fromImage(file);
+  const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+  const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+  return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg"));
+};
+
+export const getThumbnailDataURL = async (file: File): Promise<string> => {
+  const tool = await fromImage(file);
+  const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+  const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+  return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
 };

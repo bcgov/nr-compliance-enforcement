@@ -10,18 +10,14 @@ import {
   faFile,
   faMap,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { getFileExtension } from "../../common/methods";
 type Props = {
   filename: string;
+  imageIconString?: string;
 };
 
 // given a file name, display an icon
-const AttachmentIcon: React.FC<Props> = ({ filename }) => {
-  const getFileExtension = (filename: string) => {
-    return filename
-      .slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2)
-      .toLowerCase();
-  };
+const AttachmentIcon: React.FC<Props> = ({ filename, imageIconString }) => {
 
   const extension = getFileExtension(filename);
 
@@ -33,7 +29,10 @@ const AttachmentIcon: React.FC<Props> = ({ filename }) => {
     case "bmp":
     case "tif":
     case "tiff":
-      return <FontAwesomeIcon icon={faImage} />;
+    case "webp":
+    case "abif":
+    case "svg":
+      return (imageIconString ? <img alt="thumbnail" src={imageIconString} /> : <FontAwesomeIcon icon={faImage} />);
     case "mp4":
     case "asf":
     case "flv":
