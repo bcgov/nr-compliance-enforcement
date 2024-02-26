@@ -1,4 +1,4 @@
- CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
+CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
 AS
   $function$
   declare
@@ -340,7 +340,7 @@ AS
   END;
   $function$ ; 
 
-  CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
+CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
  RETURNS character varying
  LANGUAGE plpgsql
 AS $function$
@@ -356,7 +356,7 @@ DECLARE
     counter INTEGER := 1; -- Counter for unique code generation
 BEGIN
     -- Truncate and uppercase the webEOC value, get rid of spaces, and truncate to 9 characters to ensure we have room for adding a number for uniqueness
-    truncated_code := UPPER(LEFT(regexp_replace(webeoc_value, '\s', '', 'g'), 9));
+    truncated_code := UPPER(LEFT(regexp_replace(webeoc_value, '\s', '', 'g'), 10));
    
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
@@ -400,7 +400,13 @@ BEGIN
     -- If the code doesn't exist in staging_meta_mapping, but does exist in the code table, then create a new unique code
     -- in both the staging_meta_mapping table and the code table.
 
-    LOOP
+    loop
+
+	    -- if a suffix is required, truncate the code to 9 characters so that there's room for the suffix
+	    IF suffix <> '' THEN
+            truncated_code := LEFT(truncated_code, 9);
+        END IF;
+
         -- Append a numeric suffix if necessary
         new_code := truncated_code || suffix;
         
