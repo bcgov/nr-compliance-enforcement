@@ -354,6 +354,7 @@ DECLARE
     code_exists BOOLEAN;
     suffix VARCHAR(10) := ''; -- Suffix for uniqueness
     counter INTEGER := 1; -- Counter for unique code generation
+    new_display_order INTEGER; -- used for setting the display_order value of the new code
 BEGIN
     -- Truncate and uppercase the webEOC value, get rid of spaces, and truncate to 9 characters to ensure we have room for adding a number for uniqueness
     truncated_code := UPPER(LEFT(regexp_replace(webeoc_value, '\s', '', 'g'), 10));
@@ -415,8 +416,18 @@ BEGIN
         INTO code_exists
         USING new_code;
         
-        IF NOT code_exists THEN
-            -- If the code does not exist, insert into the specific code table
+        IF NOT code_exists then
+        
+        	-- Determine the correct display_order for the new code
+            EXECUTE format('SELECT COALESCE(MAX(display_order) + 1, 1) FROM %I WHERE %I < $1', target_code_table, column_name)
+            INTO new_display_order
+            USING new_code;
+           
+			-- Re-index the display_orders
+            EXECUTE format('UPDATE %I SET display_order = display_order + 1 WHERE display_order >= $1', target_code_table)
+            USING new_display_order;
+           
+            -- Insert new code into the specific code table
             EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, 2)', target_code_table, column_name)
             USING new_code, webeoc_value, webeoc_value, current_utc_timestamp;
 
