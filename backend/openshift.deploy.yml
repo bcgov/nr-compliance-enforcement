@@ -163,7 +163,10 @@ objects:
                       name: webeoc
                       key: complaints-api-key
                 - name: CASE_MANAGEMENT_API_URL
-                  value: https://dc0a4a-compenf-dev-backend.apps.emerald.devops.gov.bc.ca/graphql
+                  valueFrom:
+                    secretKeyRef:
+                      name: case-management
+                      key: case-management-api-url
               ports:
                 - containerPort: 3000
                   protocol: TCP
