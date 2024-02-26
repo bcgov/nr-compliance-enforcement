@@ -12,6 +12,10 @@
     color: $gray-500;
   }
 
+  & .comp-details-label-input-pair {
+    clear: both;
+  }
+
   .comp-animal-outcome-report {
     margin-top: 24px;
     margin-bottom: 24px;
@@ -110,12 +114,12 @@
     .animal-item-edit {
       font-size: 14px;
 
-      span { 
+      span {
         font-size: inherit;
         padding-right: 0px;
       }
 
-      svg { 
+      svg {
         font-size: inherit;
       }
     }
@@ -189,6 +193,10 @@
 
   .comp-outcome-animal-seperator {
     clear: both;
-    margin-top: 28px;
+    // margin-bottom: -8px;
+    // margin-top: 28px;
+
+    margin-bottom: -20px;
+    margin-top: 16px;
   }
 }

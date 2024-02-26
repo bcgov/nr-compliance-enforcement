@@ -365,64 +365,63 @@ export const EditAnimalOutcome: FC<props> = ({
         <span> Add drug</span>
       </Button>
 
-      <div>Outcome</div>
-      <div className="comp-animal-outcome-report-inner-spacing"></div>
-
-      <Row>
-        <Col className="mt-auto mb-3" md={4}>
-          <CompSelect
-            id="select-ears"
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={outcomes}
-            enableValidation={false}
-            placeholder={"Select"}
-            onChange={(evt) => {
-              updateModel("outcome", evt?.value);
-            }}
-            value={getValue("outcome")}
-          />
-        </Col>
-        <Col md={4}>
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
-              Officer
-            </label>
+      <div id="comp-outcome-report-outcome-heading">Outcome</div>
+      <div className="comp-animal-outcome-report-inner-spacing">
+        <Row>
+          <Col className="mt-auto mb-3" md={4}>
             <CompSelect
-              id="officer-assigned-select-id"
+              id="select-ears"
               classNamePrefix="comp-select"
               className="comp-details-input"
-              onChange={(evt) => {
-                updateModel("officer", evt?.value);
-              }}
-              options={officers}
-              placeholder="Select"
+              options={outcomes}
               enableValidation={false}
-              value={getValue("assigned")}
-            />
-          </div>
-        </Col>
-
-        <Col>
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
-              Date
-            </label>
-            <DatePicker
-              id="complaint-incident-time"
-              showIcon
-              dateFormat="yyyy-MM-dd"
-              wrapperClassName="comp-details-edit-calendar-input"
-              maxDate={new Date()}
+              placeholder={"Select"}
               onChange={(evt) => {
-                updateModel("date", evt);
+                updateModel("outcome", evt?.value);
               }}
-              selected={data.date}
+              value={getValue("outcome")}
             />
-          </div>
-        </Col>
-      </Row>
+          </Col>
+          <Col md={4}>
+            <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
+                Officer
+              </label>
+              <CompSelect
+                id="officer-assigned-select-id"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                onChange={(evt) => {
+                  updateModel("officer", evt?.value);
+                }}
+                options={officers}
+                placeholder="Select"
+                enableValidation={false}
+                value={getValue("assigned")}
+              />
+            </div>
+          </Col>
 
+          <Col>
+            <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+              <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
+                Date
+              </label>
+              <DatePicker
+                id="complaint-incident-time"
+                showIcon
+                dateFormat="yyyy-MM-dd"
+                wrapperClassName="comp-details-edit-calendar-input"
+                maxDate={new Date()}
+                onChange={(evt) => {
+                  updateModel("date", evt);
+                }}
+                selected={data.date}
+              />
+            </div>
+          </Col>
+        </Row>
+      </div>
       <div className="comp-animal-outcome-report-actions">
         <Button
           id="outcome-cancel-button"

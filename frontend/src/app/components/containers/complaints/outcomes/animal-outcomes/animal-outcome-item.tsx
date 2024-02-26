@@ -170,6 +170,8 @@ export const AnimalOutcomeItem: FC<props> = ({
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
                 <label className="comp-details-inner-content-label top">Ear Tag{tags.length > 1 && "s"}</label>
+
+                <div className="comp-animal-outcome-fill-space">
                 <ul className="comp-ear-tag-list">
                   {tags.map(({ id, number, ear }) => (
                     <li key={id}>
@@ -178,6 +180,8 @@ export const AnimalOutcomeItem: FC<props> = ({
                   ))}
                 </ul>
               </div>
+              </div>
+            
             </div>
           )}
 
@@ -200,7 +204,6 @@ export const AnimalOutcomeItem: FC<props> = ({
               <label className="comp-details-inner-content-label center">Outcome</label>
               <div>{animalOutcome}</div>
             </div>
-            
           </div>
 
           <div className="comp-details-edit-container">
@@ -233,7 +236,12 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
         </div>
         <div className="comp-details-right-column">
-          <CompTextIconButton buttonClasses="button-text animal-item-edit" text="Edit" icon={BsPencil} click={(evt) => edit(id)} />
+          <CompTextIconButton
+            buttonClasses="button-text animal-item-edit"
+            text="Edit"
+            icon={BsPencil}
+            click={(evt) => edit(id)}
+          />
         </div>
       </div>
     </div>

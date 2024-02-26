@@ -92,7 +92,7 @@ export const AddDrug: FC<props> = ({
   };
 
   return (
-    <div className="comp-animal-outcome-report-inner-spacing comp-nmargin-bottom-20">
+    <div className="comp-animal-outcome-report-inner-spacing comp-nmargin-bottom-xxs">
       <Row>
         <Col>
           <label htmlFor={`vial-number-${id}`} className="comp-margin-bottom-8">
