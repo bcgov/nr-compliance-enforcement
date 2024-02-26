@@ -366,7 +366,7 @@ export const EditAnimalOutcome: FC<props> = ({
       </Button>
 
       <div id="comp-outcome-report-outcome-heading">Outcome</div>
-      <div className="comp-animal-outcome-report-inner-spacing">
+      <div className="comp-animal-outcome-report-inner-spacing comp-margin-top-sm">
         <Row>
           <Col className="mt-auto mb-3" md={4}>
             <CompSelect

@@ -62,7 +62,6 @@ export const HWCROutcomeByAnimal: FC = () => {
 
   const update = (model: AnimalOutcome) => {
     const { id } = model;
-    debugger;
 
     if (from(animals).any((item) => item.id === id)) {
       const filtered = animals.filter((item) => item.id !== id);
