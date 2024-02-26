@@ -16,7 +16,6 @@ import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/of
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { from } from "linq-to-typescript";
 import { DrugItem } from "./drug-item";
-import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 
