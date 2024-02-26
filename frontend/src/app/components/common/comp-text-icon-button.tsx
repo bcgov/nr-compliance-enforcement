@@ -2,7 +2,7 @@ import { FC, MouseEventHandler } from "react";
 import { IconType } from "react-icons/lib";
 
 type Props = {
-  id: string;
+  id?: string;
   buttonClasses?: string;
   text: string;
   icon: IconType;
@@ -13,7 +13,7 @@ export const CompTextIconButton: FC<Props> = ({ id, buttonClasses, text, icon, c
   const Icon = icon;
 
   return (
-    <button id={id} className={`button-text${buttonClasses ? buttonClasses : ''}`} onClick={click}>
+    <button id={id} className={buttonClasses} onClick={click}>
       <span>{text}</span>
       <Icon />
     </button>

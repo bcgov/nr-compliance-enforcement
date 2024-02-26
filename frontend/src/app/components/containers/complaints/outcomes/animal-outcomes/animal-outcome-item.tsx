@@ -234,7 +234,7 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
         </div>
         <div className="comp-details-right-column">
-          <CompTextIconButton id="test" text="Edit" icon={BsPencil} click={(evt) => edit(id)} />
+          <CompTextIconButton buttonClasses="button-text animal-item-edit" text="Edit" icon={BsPencil} click={(evt) => edit(id)} />
         </div>
       </div>
     </div>

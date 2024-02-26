@@ -107,6 +107,19 @@
     border-radius: 3px;
     padding: 24px;
 
+    .animal-item-edit {
+      font-size: 14px;
+
+      span { 
+        font-size: inherit;
+        padding-right: 0px;
+      }
+
+      svg { 
+        font-size: inherit;
+      }
+    }
+
     .comp-ear-tag-list {
       list-style: none;
       padding-inline-start: 0px;
