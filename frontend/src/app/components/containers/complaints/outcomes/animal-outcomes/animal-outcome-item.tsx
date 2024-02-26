@@ -234,20 +234,6 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
         </div>
         <div className="comp-details-right-column">
-          {/* <Button
-            id="details-screen-edit-button"
-            className="sub-section-edit-button"
-            title="Edit Complaint"
-            variant="outline-primary"
-            onClick={(evt) => edit(id)}
-          >
-            <span>Edit</span>
-            <BsPencil />
-          </Button> */}
-          {/* <button className="button-text animal-outcome-item-edit" onClick={(evt) => edit(id)}>
-            <span>Edit</span>
-            <BsPencil />
-          </button> */}
           <CompTextIconButton id="test" text="Edit" icon={BsPencil} click={(evt) => edit(id)} />
         </div>
       </div>
