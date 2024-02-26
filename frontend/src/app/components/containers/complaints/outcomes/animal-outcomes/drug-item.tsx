@@ -123,7 +123,7 @@ export const DrugItem: FC<props> = ({
         </Col>
       </Row>
       <Row>
-        <Col md={4}>
+        <Col md={6}>
           <span className="comp-fake-label">Officer</span>
           <div
             data-initials-sm={getAvatarInitials(assignedOfficer())}
@@ -134,7 +134,7 @@ export const DrugItem: FC<props> = ({
             </span>
           </div>
         </Col>
-        <Col md={8}>
+        <Col md={6}>
           <span className="comp-fake-label">Date</span> {formatDate(date?.toString())}
         </Col>
       </Row>

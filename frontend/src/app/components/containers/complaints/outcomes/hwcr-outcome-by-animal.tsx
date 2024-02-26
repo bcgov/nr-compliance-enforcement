@@ -90,9 +90,9 @@ export const HWCROutcomeByAnimal: FC = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
+    <div className="comp-animal-outcome-report-block">
       <h6>Outcome by animal</h6>
-      <div className="comp-outcome-report-button">
+      <div className="comp-animal-outcome-report-button">
         {renderAnimals()}
 
         {!showForm ? (

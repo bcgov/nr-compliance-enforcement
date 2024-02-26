@@ -37,7 +37,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
   };
 
   return (
-    <div className="comp-outcome-report-inner-spacing comp-padding-top-2">
+    <div className="comp-animal-outcome-report-inner-spacing comp-padding-top-2">
       <Row>
         <Col>
           <label htmlFor={`comp-ear-tag-value-${id}`} className="comp-margin-bottom-8">Ear Tag</label>

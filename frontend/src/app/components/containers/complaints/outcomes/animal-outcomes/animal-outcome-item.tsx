@@ -18,6 +18,7 @@ import { from } from "linq-to-typescript";
 import { DrugItem } from "./drug-item";
 import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
+import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 
 type props = {
   id: number;
@@ -135,7 +136,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   };
 
   return (
-    <div className="comp-outcome-animal">
+    <div className="comp-animal-outcome">
       <div className="comp-details-edit-container">
         <div className="comp-details-edit-column">
           <div className="comp-details-edit-container">
@@ -152,7 +153,7 @@ export const AnimalOutcomeItem: FC<props> = ({
                   {animalAge && <div className="comp-margin-right-xxs">{animalAge}</div>}
                   {animalThreatLevel && (
                     <div className="badge comp-status-badge-threat-level comp-margin-right-xxs">
-                      Threat level: {animalThreatLevel}
+                      Category level: {animalThreatLevel}
                     </div>
                   )}
                   {animalHistory && (
@@ -167,66 +168,46 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
 
           {from(tags).any() && (
-            <div className="comp-details-edit-container">
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-div-pair">
-                  <label
-                    className="comp-outcome-animal-label comp-details-inner-content-label"
-                    htmlFor="comp-review-required-officer"
-                  >
-                    Ear tag
-                  </label>
-                  <ul className="comp-ear-tag-list">
-                    {tags.map(({ id, number, ear }) => (
-                      <li className="comp-ear-tag-list" key={id}>
-                        {number} {ear === "L" ? leftEar?.label : rightEar?.label} side
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-input-pair">
+                <label className="comp-details-inner-content-label top">Ear Tag{tags.length > 1 && "s"}</label>
+                <ul className="comp-ear-tag-list">
+                  {tags.map(({ id, number, ear }) => (
+                    <li key={id}>
+                      {number} {ear === "L" ? leftEar?.label : rightEar?.label} side
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="supporting-width"></div>
             </div>
           )}
 
           {from(drugs).any() && (
-            <div className="comp-details-edit-container">
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-div-pair">
-                  <label
-                    className="comp-outcome-animal-label comp-details-inner-content-label"
-                    htmlFor="comp-review-required-officer"
-                  >
-                    Drug{drugs.length > 1 && "s"}
-                  </label>
-
-                  <div style={{ width: "100%" }}>
-                    {drugs.map((item) => {
-                      const { officer, date } = drugAuthorization || {};
-                      return <DrugItem {...item} officer={officer} date={date} agency={agency} key={item.id} />;
-                    })}
-                  </div>
+            <div className="comp-details-edit-column">
+              <div className="comp-details-label-input-pair">
+                <label className="comp-details-inner-content-label top">Drug{drugs.length > 1 && "s"}</label>
+                <div className="comp-animal-outcome-fill-space">
+                  {drugs.map((item) => {
+                    const { officer, date } = drugAuthorization || {};
+                    return <DrugItem {...item} officer={officer} date={date} agency={agency} key={item.id} />;
+                  })}
                 </div>
               </div>
             </div>
           )}
 
-          <div className="comp-details-edit-container">
-            <div className="comp-details-edit-column">
-              <div className="comp-details-label-div-pair">
-                <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
-                  Outcome
-                </label>
-                {animalOutcome}
-              </div>
+          <div className="comp-details-edit-column">
+            <div className="comp-details-label-input-pair">
+              <label className="comp-details-inner-content-label center">Outcome</label>
+              <div>{animalOutcome}</div>
             </div>
-            <div className="supporting-width"></div>
+            
           </div>
 
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
               <div className="comp-details-label-div-pair">
-                <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
+                <label className="comp-details-inner-content-label center" htmlFor="comp-review-required-officer">
                   Officer
                 </label>
                 <div
@@ -253,7 +234,7 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
         </div>
         <div className="comp-details-right-column">
-          <Button
+          {/* <Button
             id="details-screen-edit-button"
             className="sub-section-edit-button"
             title="Edit Complaint"
@@ -262,7 +243,12 @@ export const AnimalOutcomeItem: FC<props> = ({
           >
             <span>Edit</span>
             <BsPencil />
-          </Button>
+          </Button> */}
+          {/* <button className="button-text animal-outcome-item-edit" onClick={(evt) => edit(id)}>
+            <span>Edit</span>
+            <BsPencil />
+          </button> */}
+          <CompTextIconButton id="test" text="Edit" icon={BsPencil} click={(evt) => edit(id)} />
         </div>
       </div>
     </div>

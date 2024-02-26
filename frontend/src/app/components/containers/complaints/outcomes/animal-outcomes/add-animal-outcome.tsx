@@ -219,7 +219,7 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
 
       return (
         <>
-          <div className="comp-outcome-report-container">Drug{drugs.length > 1 && "s"}</div>
+          <div>Drug{drugs.length > 1 && "s"}</div>
 
           {from(drugs)
             .orderBy((item) => item.id)
@@ -261,15 +261,14 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
   };
 
   return (
-    <div className="comp-outcome-report-complaint-assessment">
-      <div className="comp-outcome-report-container">
-        <h5>Animal {pad(animalCount.toString(), 2)}</h5>
-      </div>
-      <div id="comp-outcome-report-animal-information-heading" className="comp-outcome-report-container">
+    <div className="comp-animal-outcome-report">
+      <h5>Animal {pad(animalCount.toString(), 2)}</h5>
+
+      <div id="comp-outcome-report-animal-information-heading">
         Animal information
       </div>
 
-      <div className="comp-outcome-report-inner-spacing">
+      <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col>
             <label htmlFor="select-species" className="comp-margin-bottom-8">
@@ -323,11 +322,11 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
             />
           </Col>
           <Col>
-            <label htmlFor="select-threat-level" className="comp-margin-bottom-8">
-              Threat level
+            <label htmlFor="select-category-level" className="comp-margin-bottom-8">
+              Category level
             </label>
             <CompSelect
-              id="select-threat-level"
+              id="select-category-level"
               classNamePrefix="comp-select"
               className="comp-details-input"
               options={threatLevels}
@@ -378,10 +377,8 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
         <span> Add drug</span>
       </Button>
 
-      <div id="comp-outcome-report-outcome-heading" className="comp-outcome-report-container">
-        Outcome
-      </div>
-      <div className="comp-outcome-report-inner-spacing">
+      <div id="comp-outcome-report-outcome-heading">Outcome</div>
+      <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col className="mt-auto mb-3" md={4}>
             <CompSelect
@@ -438,17 +435,22 @@ export const AddAnimalOutcome: FC<props> = ({ animalCount, agency, species, assi
         </Row>
       </div>
 
-      <div className="comp-outcome-report-actions">
+      <div className="comp-animal-outcome-report-actions">
         <Button
-          id="outcome-cancel-button"
+          id="outcome-animal-cancel-button"
           title="Cancel Outcome"
           placeholder="Enter number"
-          className="comp-outcome-cancel"
+          className="comp-animal-outcome-cancel"
           onClick={() => cancel()}
         >
           Cancel
         </Button>
-        <Button id="outcome-save-button" title="Save Outcome" className="comp-outcome-save" onClick={() => save()}>
+        <Button
+          id="outcome-save-button"
+          title="Save Outcome"
+          className="comp-animal-outcome-save"
+          onClick={() => save()}
+        >
           Save
         </Button>
       </div>

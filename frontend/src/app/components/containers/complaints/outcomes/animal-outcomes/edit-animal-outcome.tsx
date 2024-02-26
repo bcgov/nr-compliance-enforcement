@@ -83,10 +83,8 @@ export const EditAnimalOutcome: FC<props> = ({
     officer,
     date,
     isEditable,
-    drugAuthorization
+    drugAuthorization,
   });
-
-  console.log(drugAuthorization);
 
   const updateModel = (property: string, value: string | Date | Array<AnimalTag | DrugUsed> | null | undefined) => {
     const model = { ...data, [property]: value };
@@ -259,26 +257,26 @@ export const EditAnimalOutcome: FC<props> = ({
   };
 
   //update({ ...data, isEditable: false })
-  const handleEditAnimalOutcomeUpdate = () => { 
-    update({ ...data, isEditable: false })
-  }
+  const handleEditAnimalOutcomeUpdate = () => {
+    update({ ...data, isEditable: false });
+  };
 
   return (
-    <div className="comp-outcome-report-complaint-assessment">
-      <div className="comp-outcome-report-container">
-        <h5>Animal {pad(id.toString(), 2)}</h5>
-      </div>
-      <div className="comp-outcome-report-container">Animal information</div>
+    <div className="comp-animal-outcome-report">
+      <h5>Animal {pad(id.toString(), 2)}</h5>
+      <div>Animal information</div>
 
-      <div className="comp-outcome-report-inner-spacing">
+      <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col>
             <label htmlFor="select-species">Species</label>
             <CompSelect
               id="select-species"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={speciesList}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("species", evt?.value);
               }}
@@ -286,12 +284,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Sex</label>
+            <label htmlFor="select-sex">Sex</label>
             <CompSelect
-              id="select-species"
+              id="select-sex"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={sexes}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("sex", evt?.value);
               }}
@@ -299,12 +299,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Age</label>
+            <label htmlFor="select-age">Age</label>
             <CompSelect
-              id="select-species"
+              id="select-age"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={ages}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("age", evt?.value);
               }}
@@ -312,12 +314,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Threat level</label>
+            <label htmlFor="select-category-level">Category level</label>
             <CompSelect
-              id="select-species"
+              id="select-category-level"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={threatLevels}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("threatLevel", evt?.value);
               }}
@@ -325,12 +329,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Conflict history</label>
+            <label htmlFor="select-conflict-history">Conflict history</label>
             <CompSelect
-              id="select-species"
+              id="select-conflict-history"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={conflictHistories}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("conflictHistory", evt?.value);
               }}
@@ -359,16 +365,18 @@ export const EditAnimalOutcome: FC<props> = ({
         <span> Add drug</span>
       </Button>
 
-      <div className="comp-outcome-report-container">Outcome</div>
-      <div className="comp-outcome-report-inner-spacing"></div>
+      <div>Outcome</div>
+      <div className="comp-animal-outcome-report-inner-spacing"></div>
 
       <Row>
         <Col className="mt-auto mb-3" md={4}>
           <CompSelect
             id="select-ears"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
             options={outcomes}
             enableValidation={false}
-            placeholder={"Please select"}
+            placeholder={"Select"}
             onChange={(evt) => {
               updateModel("outcome", evt?.value);
             }}
@@ -383,10 +391,10 @@ export const EditAnimalOutcome: FC<props> = ({
             <CompSelect
               id="officer-assigned-select-id"
               classNamePrefix="comp-select"
+              className="comp-details-input"
               onChange={(evt) => {
                 updateModel("officer", evt?.value);
               }}
-              className="comp-details-input"
               options={officers}
               placeholder="Select"
               enableValidation={false}
@@ -415,12 +423,12 @@ export const EditAnimalOutcome: FC<props> = ({
         </Col>
       </Row>
 
-      <div className="comp-outcome-report-actions">
+      <div className="comp-animal-outcome-report-actions">
         <Button
           id="outcome-cancel-button"
           title="Cancel Outcome"
           placeholder="Enter number"
-          className="comp-outcome-cancel"
+          className="comp-animal-outcome-cancel"
           onClick={() => cancel(id)}
         >
           Cancel
@@ -428,7 +436,7 @@ export const EditAnimalOutcome: FC<props> = ({
         <Button
           id="outcome-save-button"
           title="Save Outcome"
-          className="comp-outcome-save"
+          className="comp-animal-outcome-save"
           onClick={() => handleEditAnimalOutcomeUpdate()}
         >
           Save
