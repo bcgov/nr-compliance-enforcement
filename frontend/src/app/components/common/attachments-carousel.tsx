@@ -19,6 +19,7 @@ import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
+import { getThumbnailDataURL, isImage } from "../../common/methods";
 
 type Props = {
   complaintIdentifier?: string;
@@ -84,13 +85,13 @@ export const AttachmentsCarousel: FC<Props> = ({
 }
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
-  const onFileSelect = (newFiles: FileList) => {
+  const onFileSelect = async (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    selectedFilesArray.forEach((file) => {
-      newSlides.push(createSlideFromFile(file));
-    });
-    
+    for (let selectedFile of selectedFilesArray)
+    {
+      newSlides.push(await createSlideFromFile(selectedFile));
+    }
     removeInvalidFiles(selectedFilesArray);
 
     setSlides([...newSlides, ...slides]);
@@ -104,9 +105,16 @@ export const AttachmentsCarousel: FC<Props> = ({
       onFilesSelected(validFiles);
     }
   }
+  
 
   // given a file, create a carousel slide
-  const createSlideFromFile = (file: File) => {
+  const createSlideFromFile = async (file: File) => {
+    
+    let imageIconString;
+    if(isImage(file.name))
+    {
+      imageIconString = await getThumbnailDataURL(file);
+    }
     const newSlide: COMSObject = {
       name: encodeURIComponent(file.name),
       id: uuidv4(), // generate a unique identifier in case the user uploads non-unique file names.  This allows us to know which one the user wants to delete
@@ -116,13 +124,14 @@ export const AttachmentsCarousel: FC<Props> = ({
       bucketId: "",
       createdBy: "",
       updatedBy: "",
-      pendingUpload: true
+      imageIconString: imageIconString,
+      pendingUpload: true,
     };
 
     // check for large file sizes      
     if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
       newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
-    }
+    }    
 
     return newSlide;
   }
@@ -207,3 +216,4 @@ export const AttachmentsCarousel: FC<Props> = ({
     </div>
   );
 };
+

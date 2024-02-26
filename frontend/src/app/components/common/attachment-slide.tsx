@@ -68,7 +68,7 @@ export const AttachmentSlide: FC<Props> = ({
           {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(attachment)}  />}
         </div>
         <div className="top-section">
-        <AttachmentIcon filename={attachment.name}/>
+        <AttachmentIcon filename={attachment.name} imageIconString={attachment.imageIconString}/>
         </div>
         <div className="bottom-section">
           <div className="slide_text slide_file_name" >{decodeURIComponent(attachment.name)}</div>
