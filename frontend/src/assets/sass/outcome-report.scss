@@ -1,3 +1,5 @@
+@import "./hwcr-animal-outcome.scss";
+
 .comp-hwcr-outcome-report {
   .comp-sub-header {
     margin-bottom: 24px;
@@ -16,7 +18,7 @@
   }
 
   label {
-    color: $gray-500
+    color: $gray-500;
   }
 
   .comp-outcome-checkbox-spacing {
@@ -183,47 +185,4 @@
     color: $bc-gov-primary;
     display: block;
   }
-
-  .comp-outcome-animal {
-    margin-top: 24px;
-    margin-bottom: 24px;
-    border: 1px solid $gray-300;
-    border-radius: 3px;
-    padding: 24px;
-
-    .comp-outcome-animal-label {
-      align-self: flex-start;
-    }
-
-
-
-    .comp-ear-tag-list {
-      list-style: none;
-      padding-inline-start: 0px;
-      padding-left: 0px;
-    }
-
-    .comp-drug-item {
-      margin-top: 24px;
-      margin-bottom: 24px;
-      border: 1px solid $gray-300;
-      border-radius: 3px;
-      padding: 24px;
-
-      .comp-orange-avatar-sm::before {
-        margin-left: 25px;
-      }
-      
-      .row { 
-        margin-top: 5px;
-        margin-bottom: 5px;
-      }
-    }
-  }
-
-  .comp-outcome-drug-label {
-    margin-right: 10px;
-    min-width: 10px !important;
-    max-width: inherit;
-   }
 }
