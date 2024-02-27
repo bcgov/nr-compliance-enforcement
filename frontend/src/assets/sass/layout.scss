@@ -186,7 +186,6 @@
     text-decoration: none;
     color: $bc-brand-links;
   }
-
 }
 
 .spacer-seperator {
@@ -200,7 +199,7 @@
     text-decoration: underline;
     color: $bc-brand-links;
   }
-  
+
   a:hover {
     font-weight: bold;
   }
@@ -217,7 +216,6 @@
     color: $white;
     font-weight: bold;
   }
-
 }
 
 .comp-nav-item-icon {
@@ -339,8 +337,8 @@ button.modal-buttons {
   flex-grow: 0;
   cursor: pointer;
   &:hover {
-    background-color: #DEEBFF;
-    }
+    background-color: #deebff;
+  }
 }
 
 .assign_officer_modal_profile_card_selected {
@@ -365,10 +363,38 @@ button.modal-buttons {
   &:hover {
     background-color: $white;
     cursor: default;
-    }
+  }
 }
 
 .assign_officer_modal_profile_card_column {
+  display: flex;
+  flex-direction: column;
+}
+
+#assign_officer_modal_search {
+  .input_row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px 24px 10px 24px;
+    color: $gray-500;
+  }
+
+  .input_row svg {
+    color: green;
+    background-color: pink;
+    border: 1px solid black;
+    position: absolute;
+  }
+
+  .icon {
+    padding: 10px;
+    min-width: 40px;
+  }
+}
+
+#assign_officer_modal_search_input {
   display: flex;
   flex-direction: column;
 }
@@ -520,7 +546,7 @@ p {
 }
 
 .pending-slide {
-  img{
+  img {
     opacity: 0.5;
   }
 }

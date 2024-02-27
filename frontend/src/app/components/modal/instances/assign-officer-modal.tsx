@@ -1,19 +1,15 @@
 import { FC, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import {
-  profileDisplayName,
-  profileIdir,
-  profileInitials,
-  selectModalData,
-  userId,
-} from "../../../store/reducers/app";
+import { profileDisplayName, profileIdir, profileInitials, selectModalData, userId } from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
   selectOfficersByZoneAndAgency,
   updateComplaintAssignee,
 } from "../../../store/reducers/officer";
 import { UUID } from "crypto";
+import { CompInput } from "../../common/comp-input";
+import { BsPerson } from "react-icons/bs";
 
 type AssignOfficerModalProps = {
   close: () => void;
@@ -24,13 +20,7 @@ type AssignOfficerModalProps = {
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
-export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
-  close,
-  submit,
-  complaint_type,
-  zone,
-  agency,
-}) => {
+export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type, zone, agency }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const { title, complaint_identifier } = modalData;
@@ -52,28 +42,14 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   // assigns the selected officer to a complaint
   const handleSubmit = () => {
     if (selectedAssignee !== "") {
-      dispatch(
-        updateComplaintAssignee(
-          userid,
-          complaint_identifier,
-          complaint_type,
-          selectedAssignee as UUID,
-        ),
-      );
+      dispatch(updateComplaintAssignee(userid, complaint_identifier, complaint_type, selectedAssignee as UUID));
       submit();
     }
   };
 
   // assigns the logged in user to a complaint
   const handleSelfAssign = () => {
-    dispatch(
-      assignCurrentUserToComplaint(
-        userid,
-        idir,
-        complaint_identifier,
-        complaint_type,
-      ),
-    );
+    dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type));
     submit();
   };
 
@@ -105,50 +81,49 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
         <div className="assign_officer_modal_profile_card self-assign">
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_profile-picture">
-              <div
-                data-initials-modal={initials}
-                className="comp-profile-avatar"
-              ></div>
+              <div data-initials-modal={initials} className="comp-profile-avatar"></div>
             </div>
           </div>
           <div className="assign_officer_modal_profile_card_column">
-            <div className="assign_officer_modal_profile_card_row_1">
-              {displayName}
-            </div>
-            <div className="assign_officer_modal_profile_card_row_2">
-              Officer
-            </div>
+            <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
+            <div className="assign_officer_modal_profile_card_row_2">Officer</div>
           </div>
           <div className="assign_officer_modal_profile_card_column">
-            <Button
-              id="self_assign_button"
-              title="Self Assign Button"
-              onClick={handleSelfAssign}
-            >
+            <Button id="self_assign_button" title="Self Assign Button" onClick={handleSelfAssign}>
               Self Assign
             </Button>
           </div>
         </div>
         <hr className="modal_hr" />
+        <div id="assign_officer_modal_search">
+          <div className="assign_officer_modal_subtitle">Everyone</div>
+          <div className="input_row">
+            <BsPerson className="icon" />
+            <input className="comp-form-control" placeholder="Type name to search" type="input" />
+          </div>
+        </div>
+        <hr className="modal_hr" />
         <div className="assign_officer_modal_subtitle">Suggested Officers</div>
         {officersJson?.map((val, key) => {
-          const firstName = val.person_guid.first_name;
-          const lastName = val.person_guid.last_name;
-          const displayName = firstName + " " + lastName;
-          const officerInitials =
-            firstName?.substring(0, 1) + lastName?.substring(0, 1);
-          const person_guid = val.person_guid.person_guid;
-          const auth_user_guid = val.auth_user_guid;
+          const {
+            person_guid: { first_name: firstName, last_name: lastName },
+          } = val;
+          const {
+            person_guid: { person_guid },
+            auth_user_guid,
+          } = val;
+
+          const displayName = `${firstName} ${lastName}`;
+          const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
 
           // don't display the current user in the list since we already have the current user at the top of the modal
-          if (
-            auth_user_guid === undefined ||
-            !compareUuidToString(auth_user_guid, idir)
-          ) {
+          if (auth_user_guid === undefined || !compareUuidToString(auth_user_guid, idir)) {
             return (
               <div
                 className={`${
-                  selectedAssigneeIndex === key ? "assign_officer_modal_profile_card_selected" : "assign_officer_modal_profile_card"
+                  selectedAssigneeIndex === key
+                    ? "assign_officer_modal_profile_card_selected"
+                    : "assign_officer_modal_profile_card"
                 }`}
                 key={key}
                 onClick={() => handleAssigneeClick(key, person_guid)}
@@ -159,12 +134,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
                   </div>
                 </div>
                 <div className="assign_officer_modal_profile_card_column">
-                  <div className="assign_officer_modal_profile_card_row_1">
-                    {displayName}
-                  </div>
-                  <div className="assign_officer_modal_profile_card_row_2">
-                    Officer
-                  </div>
+                  <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
+                  <div className="assign_officer_modal_profile_card_row_2">Officer</div>
                 </div>
                 <div className="assign_officer_modal_profile_card_column"></div>
               </div>
@@ -175,11 +146,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
         })}
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          variant="outline-primary"
-          onClick={close}
-          className="modal-buttons"
-        >
+        <Button variant="outline-primary" onClick={close} className="modal-buttons">
           Cancel
         </Button>
         <Button onClick={handleSubmit}>Assign</Button>
