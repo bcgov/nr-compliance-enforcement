@@ -1,6 +1,7 @@
-CREATE OR replace FUNCTION PUBLIC.insert_complaint_from_staging(_complaint_identifier CHARACTER varying) returns void LANGUAGE plpgsql
-AS
-  $function$
+CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
   declare
     non_digit_regex CONSTANT text := '[^\d]'; -- used to strip out non-numeric characters from the phone number fields
     
@@ -150,17 +151,6 @@ AS
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_area_community, 'geoorgutcd' )
     INTO   _geo_organization_unit_code;
     
-    -- convert webeoc species to our species code
-    _webeoc_species := complaint_data ->> 'species';
-    SELECT *
-    FROM   PUBLIC.insert_and_return_code(_webeoc_species, 'speciescd')
-    INTO   _species_code;
-    
-    _webeoc_hwcr_complaint_nature_code := complaint_data ->> 'nature_of_complaint';
-    SELECT *
-    FROM   PUBLIC.insert_and_return_code( _webeoc_hwcr_complaint_nature_code, 'cmpltntrcd' )
-    INTO   _hwcr_complaint_nature_code;
-    
     -- Insert data into 'complaint' table
     INSERT INTO PUBLIC.complaint
                 (
@@ -213,7 +203,19 @@ AS
                             _cos_reffered_by_txt
                 );
     
-    IF _report_type = 'HWCR' THEN
+    IF _report_type = 'HWCR' then
+    
+      -- convert webeoc species to our species code
+	  _webeoc_species := complaint_data ->> 'species';
+	  SELECT *
+	  FROM   PUBLIC.insert_and_return_code(_webeoc_species, 'speciescd')
+	  INTO   _species_code;
+	    
+	  _webeoc_hwcr_complaint_nature_code := complaint_data ->> 'nature_of_complaint';
+	  SELECT *
+	  FROM   PUBLIC.insert_and_return_code( _webeoc_hwcr_complaint_nature_code, 'cmpltntrcd' )
+	  INTO   _hwcr_complaint_nature_code;
+    
       -- Prepare data for 'hwcr_complaint' table
       _other_attractants_text := complaint_data ->> 'attractant_other_text';
       SELECT uuid_generate_v4()
@@ -338,7 +340,8 @@ AS
     and staging_status_code = 'PENDING';
   
   END;
-  $function$ ; 
+  $function$
+;
 
 CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
  RETURNS character varying
@@ -428,8 +431,8 @@ BEGIN
             USING new_display_order;
            
             -- Insert new code into the specific code table
-            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, 2)', target_code_table, column_name)
-            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp;
+            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, $5)', target_code_table, column_name)
+            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order;
 
             -- Insert into staging_metadata_mapping
             INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
