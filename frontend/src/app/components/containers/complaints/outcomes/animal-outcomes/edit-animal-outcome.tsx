@@ -83,10 +83,8 @@ export const EditAnimalOutcome: FC<props> = ({
     officer,
     date,
     isEditable,
-    drugAuthorization
+    drugAuthorization,
   });
-
-  console.log(drugAuthorization);
 
   const updateModel = (property: string, value: string | Date | Array<AnimalTag | DrugUsed> | null | undefined) => {
     const model = { ...data, [property]: value };
@@ -259,26 +257,26 @@ export const EditAnimalOutcome: FC<props> = ({
   };
 
   //update({ ...data, isEditable: false })
-  const handleEditAnimalOutcomeUpdate = () => { 
-    update({ ...data, isEditable: false })
-  }
+  const handleEditAnimalOutcomeUpdate = () => {
+    update({ ...data, isEditable: false });
+  };
 
   return (
-    <div className="comp-outcome-report-complaint-assessment">
-      <div className="comp-outcome-report-container">
-        <h5>Animal {pad(id.toString(), 2)}</h5>
-      </div>
-      <div className="comp-outcome-report-container">Animal information</div>
+    <div className="comp-animal-outcome-report">
+      <h5>Animal {pad(id.toString(), 2)}</h5>
+      <div>Animal information</div>
 
-      <div className="comp-outcome-report-inner-spacing">
+      <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col>
             <label htmlFor="select-species">Species</label>
             <CompSelect
               id="select-species"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={speciesList}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("species", evt?.value);
               }}
@@ -286,12 +284,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Sex</label>
+            <label htmlFor="select-sex">Sex</label>
             <CompSelect
-              id="select-species"
+              id="select-sex"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={sexes}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("sex", evt?.value);
               }}
@@ -299,12 +299,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Age</label>
+            <label htmlFor="select-age">Age</label>
             <CompSelect
-              id="select-species"
+              id="select-age"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={ages}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("age", evt?.value);
               }}
@@ -312,12 +314,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Threat level</label>
+            <label htmlFor="select-category-level">Category level</label>
             <CompSelect
-              id="select-species"
+              id="select-category-level"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={threatLevels}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("threatLevel", evt?.value);
               }}
@@ -325,12 +329,14 @@ export const EditAnimalOutcome: FC<props> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-species">Conflict history</label>
+            <label htmlFor="select-conflict-history">Conflict history</label>
             <CompSelect
-              id="select-species"
+              id="select-conflict-history"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
               options={conflictHistories}
               enableValidation={false}
-              placeholder={"Please select"}
+              placeholder={"Select"}
               onChange={(evt) => {
                 updateModel("conflictHistory", evt?.value);
               }}
@@ -359,68 +365,69 @@ export const EditAnimalOutcome: FC<props> = ({
         <span> Add drug</span>
       </Button>
 
-      <div className="comp-outcome-report-container">Outcome</div>
-      <div className="comp-outcome-report-inner-spacing"></div>
-
-      <Row>
-        <Col className="mt-auto mb-3" md={4}>
-          <CompSelect
-            id="select-ears"
-            options={outcomes}
-            enableValidation={false}
-            placeholder={"Please select"}
-            onChange={(evt) => {
-              updateModel("outcome", evt?.value);
-            }}
-            value={getValue("outcome")}
-          />
-        </Col>
-        <Col md={4}>
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
-              Officer
-            </label>
+      <div id="comp-outcome-report-outcome-heading">Outcome</div>
+      <div className="comp-animal-outcome-report-inner-spacing comp-margin-top-sm">
+        <Row>
+          <Col className="mt-auto mb-3" md={4}>
             <CompSelect
-              id="officer-assigned-select-id"
+              id="select-ears"
               classNamePrefix="comp-select"
-              onChange={(evt) => {
-                updateModel("officer", evt?.value);
-              }}
               className="comp-details-input"
-              options={officers}
-              placeholder="Select"
+              options={outcomes}
               enableValidation={false}
-              value={getValue("assigned")}
-            />
-          </div>
-        </Col>
-
-        <Col>
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
-              Date
-            </label>
-            <DatePicker
-              id="complaint-incident-time"
-              showIcon
-              dateFormat="yyyy-MM-dd"
-              wrapperClassName="comp-details-edit-calendar-input"
-              maxDate={new Date()}
+              placeholder={"Select"}
               onChange={(evt) => {
-                updateModel("date", evt);
+                updateModel("outcome", evt?.value);
               }}
-              selected={data.date}
+              value={getValue("outcome")}
             />
-          </div>
-        </Col>
-      </Row>
+          </Col>
+          <Col md={4}>
+            <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
+                Officer
+              </label>
+              <CompSelect
+                id="officer-assigned-select-id"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                onChange={(evt) => {
+                  updateModel("officer", evt?.value);
+                }}
+                options={officers}
+                placeholder="Select"
+                enableValidation={false}
+                value={getValue("assigned")}
+              />
+            </div>
+          </Col>
 
-      <div className="comp-outcome-report-actions">
+          <Col>
+            <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+              <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
+                Date
+              </label>
+              <DatePicker
+                id="complaint-incident-time"
+                showIcon
+                dateFormat="yyyy-MM-dd"
+                wrapperClassName="comp-details-edit-calendar-input"
+                maxDate={new Date()}
+                onChange={(evt) => {
+                  updateModel("date", evt);
+                }}
+                selected={data.date}
+              />
+            </div>
+          </Col>
+        </Row>
+      </div>
+      <div className="comp-animal-outcome-report-actions">
         <Button
           id="outcome-cancel-button"
           title="Cancel Outcome"
           placeholder="Enter number"
-          className="comp-outcome-cancel"
+          className="comp-animal-outcome-cancel"
           onClick={() => cancel(id)}
         >
           Cancel
@@ -428,7 +435,7 @@ export const EditAnimalOutcome: FC<props> = ({
         <Button
           id="outcome-save-button"
           title="Save Outcome"
-          className="comp-outcome-save"
+          className="comp-animal-outcome-save"
           onClick={() => handleEditAnimalOutcomeUpdate()}
         >
           Save
