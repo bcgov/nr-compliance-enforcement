@@ -163,7 +163,6 @@ export const AnimalOutcomeItem: FC<props> = ({
                 </div>
               </div>
             </div>
-            <div className="supporting-width"></div>
           </div>
 
           {from(tags).any() && (
