@@ -18,6 +18,7 @@ import BaseCodeTable, {
   Zone,
   Community,
   ReportedBy,
+  Equipment,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -43,6 +44,7 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
+import { get } from "../../external_api/case_management";
 
 @Injectable()
 export class CodeTableService {
@@ -73,7 +75,7 @@ export class CodeTableService {
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
 
-  getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
+  getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     console.log("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
@@ -526,6 +528,28 @@ export class CodeTableService {
         ]
 
         return data;
+      }
+      case "equipment": {
+        const { data } = await get(token, { 
+          query : "{getAllEquipmentCodes{equipment_code short_description long_description display_order active_ind}}"
+        });
+        let results = data.getAllEquipmentCodes.map(
+          ({
+            equipment_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            let table: Equipment = {
+              equipment: equipment_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
     }
   };
