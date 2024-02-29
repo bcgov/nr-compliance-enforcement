@@ -138,9 +138,9 @@ export const AnimalOutcomeItem: FC<props> = ({
     <div className="comp-animal-outcome">
       <div className="comp-details-edit-container">
         <div className="comp-details-edit-column">
-          <div className="comp-details-edit-container">
+          <div className="comp-details-edit-container comp-details-nmargin-right-xxl">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-div-pair">
+              <div className="comp-details-label-div-pair ">
                 <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
                   Animal
                 </label>
