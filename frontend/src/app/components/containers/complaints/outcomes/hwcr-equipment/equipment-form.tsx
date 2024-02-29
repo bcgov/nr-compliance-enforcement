@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
+import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
 import { getComplaintById, selectComplaint, selectComplaintCallerInformation, selectComplaintHeader } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { ToggleError } from "../../../../../common/toast";
@@ -18,37 +19,6 @@ import { Officer } from "../../../../../types/person/person";
 
 import "react-toastify/dist/ReactToastify.css";
 import { Coordinates } from "../../../../../types/app/coordinate-type";
-
-const equipmentTypeList = [
-  {
-    label: 'Bear snare',
-    value: 'Bear snare'
-  },
-  {
-    label: 'Bear live trap',
-    value: 'Bear live trap'
-  },
-  {
-    label: 'Cougar foothold trap',
-    value: 'Cougar foothold trap'
-  },
-  {
-    label: 'Cougar live trap',
-    value: 'Cougar live trap'
-  },
-  {
-    label: 'Neck snare',
-    value: 'Neck snare'
-  },
-  {
-    label: 'Signage',
-    value: 'Signage'
-  },
-  {
-    label: 'Trail camera',
-    value: 'Trail camera'
-  },
-]
 
 export interface EquipmentForm {
   isInEditMode: boolean
@@ -92,6 +62,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
     personGuid,
   } = useAppSelector(selectComplaintHeader(complaintType));
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const equipmentList = useAppSelector(selectEquipmentDropdown);
 
   const assignableOfficers: Option[] = officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
@@ -236,7 +207,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
               classNamePrefix="comp-select"
               className="comp-details-input"
               placeholder="Select"
-              options={equipmentTypeList}
+              options={equipmentList}
               enableValidation={false}
               onChange={(type: any) => setType(type)}
               defaultOption={equipmentItemData?.type}
