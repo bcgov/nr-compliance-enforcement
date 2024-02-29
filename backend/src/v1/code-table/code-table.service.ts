@@ -44,7 +44,7 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
-import { EquipmentApi } from "../../graphql/equipmentApi";
+import { get } from "../../external_api/case_management";
 
 @Injectable()
 export class CodeTableService {
@@ -530,8 +530,10 @@ export class CodeTableService {
         return data;
       }
       case "equipment": {
-        const data = await EquipmentApi.getAllEquipmentCodes(token);
-        let results = data.map(
+        const { data } = await get(token, { 
+          query : "{getAllEquipmentCodes{equipment_code short_description long_description display_order active_ind}}"
+        });
+        let results = data.getAllEquipmentCodes.map(
           ({
             equipment_code,
             short_description,

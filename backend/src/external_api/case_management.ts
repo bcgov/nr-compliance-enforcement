@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 
-const graphqlURL = process.env.CASE_MANAGEMENT_API_URL
+const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL
 
 axios.interceptors.response.use(undefined, (error: AxiosError) => {
   console.error(error);
@@ -17,7 +17,7 @@ export const get = (token, params? : {}) => {
     config.params = params;
   }
   return axios
-    .get(graphqlURL, config)
+    .get(caseManagementlURL, config)
     .then((response: AxiosResponse) => {
       const { data } = response;
       return data

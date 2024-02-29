@@ -99,13 +99,14 @@ export class CaseManagementCodeTableController {
   @Roles(Role.COS_OFFICER)
   async getCodeTableByName(
     @Param("table") table: string,
+    @Token() token
   ): Promise<BaseCodeTable[]> {
     console.log("in case management: " + JSON.stringify(table));
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getCodeTableByName(table);
+    const result = await this.service.getCodeTableByName(table, token);
     return result;
   }
 }
