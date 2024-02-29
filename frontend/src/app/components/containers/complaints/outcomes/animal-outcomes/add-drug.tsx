@@ -92,10 +92,12 @@ export const AddDrug: FC<props> = ({
   };
 
   return (
-    <div className="comp-outcome-report-inner-spacing">
+    <div className="comp-animal-outcome-report-inner-spacing">
       <Row>
         <Col>
-          <label htmlFor={`vial-number-${id}`}>Vial number</label>
+          <label htmlFor={`vial-number-${id}`} className="comp-margin-bottom-8">
+            Vial number
+          </label>
           <CompInput
             id={`vial-number-${id}`}
             divid={`vial-number-${id}-div`}
@@ -112,12 +114,16 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`select-drug-name-${id}`}>Drug name</label>
+          <label htmlFor={`select-drug-name-${id}`} className="comp-margin-bottom-8">
+            Drug name
+          </label>
           <CompSelect
             id={`select-drug-name-${id}`}
+            classNamePrefix="comp-select"
+            className="comp-details-input"
             options={drugs}
             enableValidation={false}
-            placeholder={"Please select"}
+            placeholder={"Select"}
             onChange={(evt) => {
               updateModel("drug", evt?.value);
             }}
@@ -125,7 +131,9 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-used-${id}`}>Amount used (mL)</label>
+          <label htmlFor={`amount-used-${id}`} className="comp-margin-bottom-8">
+            Amount used (mL)
+          </label>
           <CompInput
             id={`amount-used-${id}`}
             divid={`amount-used-${id}-div`}
@@ -142,12 +150,16 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`injection-method-${id}`}>Injection method</label>
+          <label htmlFor={`injection-method-${id}`} className="comp-margin-bottom-8">
+            Injection method
+          </label>
           <CompSelect
             id={`injection-method-${id}`}
+            classNamePrefix="comp-select"
+            className="comp-details-input"
             options={drugUseMethods}
             enableValidation={false}
-            placeholder={"Please select"}
+            placeholder={"Select"}
             onChange={(evt) => {
               updateModel("injectionMethod", evt?.value);
             }}
@@ -155,7 +167,9 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`adverse-reactions-${id}`}>Adverse reactions</label>
+          <label htmlFor={`adverse-reactions-${id}`} className="comp-margin-bottom-8">
+            Adverse reactions
+          </label>
           <CompInput
             id={`adverse-reactions-${id}`}
             divid={`adverse-reactions-${id}-div`}
@@ -173,19 +187,23 @@ export const AddDrug: FC<props> = ({
         </Col>
         <Col className="mt-auto mb-2">
           <CompIconButton onClick={() => remove(id)}>
-            <BsXCircle size={24} />
-            <BsFillXCircleFill size={24} />
+            <BsXCircle size={24} className="comp-outcome-remove-botton" />
+            <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
           </CompIconButton>
         </Col>
       </Row>
       <Row className="comp-padding-top-md">
         <Col>
-          <label htmlFor={`remaining-drug-use-${id}`}>Fate of remaining drug in vial</label>
+          <label htmlFor={`remaining-drug-use-${id}`} className="comp-margin-bottom-8">
+            Fate of remaining drug in vial
+          </label>
           <CompSelect
             id={`remaining-drug-use-${id}`}
+            classNamePrefix="comp-select"
+            className="comp-details-input"
             options={remainingDrugUse}
             enableValidation={false}
-            placeholder={"Please select"}
+            placeholder={"Select"}
             onChange={(evt) => {
               handleRemainingUsed(evt?.value ?? "");
             }}
@@ -196,7 +214,9 @@ export const AddDrug: FC<props> = ({
           {showDiscarded && (
             <>
               {" "}
-              <label htmlFor={`amount-discarded-${id}`}>Amount discarded (mL)</label>
+              <label htmlFor={`amount-discarded-${id}`} className="comp-margin-bottom-8">
+                Amount discarded (mL)
+              </label>
               <CompInput
                 id={`amount-discarded-${id}`}
                 divid={`amount-discarded-${id}-div`}
@@ -217,7 +237,9 @@ export const AddDrug: FC<props> = ({
         <Col>
           {showDiscarded && (
             <>
-              <label htmlFor={`discard-method-${id}`}>Discard method</label>
+              <label htmlFor={`discard-method-${id}`} className="comp-margin-bottom-8">
+                Discard method
+              </label>
               <CompInput
                 id={`discard-method-${id}`}
                 divid={`discard-method-${id}-div`}
@@ -238,7 +260,7 @@ export const AddDrug: FC<props> = ({
         <Col></Col>
       </Row>
 
-      <hr className="comp-margin-top-lg comp-nmargin-bottom-xs" />
+      <hr className="comp-outcome-animal-seperator" />
     </div>
   );
 };

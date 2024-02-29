@@ -57,7 +57,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) 
   };
 
   return (
-    <div className="comp-outcome-report-inner-spacing">
+    <div className="comp-animal-outcome-report-inner-spacing">
       <Row>
         <Col md={5}>
           <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
