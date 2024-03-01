@@ -164,7 +164,7 @@ export const injectComplaintIdentifierToFilename = (filename: string, complaintI
 };
 
 export const isImage = (filename: string) : boolean => {
-  return ["jpg","jpeg","png", "gif", "bmp","tif","tiff","webp","abif","tiff","svg"].includes(getFileExtension(filename));
+  return ["jpg","jpeg","png", "gif", "bmp","webp","abif","svg"].includes(getFileExtension(filename));
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
@@ -320,15 +320,23 @@ export const pad = (num: string, size: number): string => {
 };
 
 export const getThumbnailFile = async (file: File): Promise<File> => {
-  const tool = await fromImage(file);
-  const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-  const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-  return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg"));
+  try {
+    const tool = await fromImage(file);
+    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+    const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+    return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg"));
+  } catch {
+    return Promise.reject('Unable to create thumbnail');
+  }
 };
 
 export const getThumbnailDataURL = async (file: File): Promise<string> => {
-  const tool = await fromImage(file);
-  const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-  const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-  return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
+  try {
+    const tool = await fromImage(file);
+    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
+    const widthRatio = SLIDE_WIDTH / tool.originalWidth;
+    return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
+  } catch {
+    return "";
+  }
 };

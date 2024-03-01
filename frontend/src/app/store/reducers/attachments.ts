@@ -190,15 +190,20 @@ export const saveAttachments =
             ))}"`,
             "Content-Type": "image/jpeg",
           };  
-          const thumbnailFile = await getThumbnailFile(attachment);
 
+          const thumbnailFile = await getThumbnailFile(attachment).catch(error => {
+            //we are just going to ignore this and move on
+            console.error('Error occurred while getting thumbnail file:', error);
+          });
 
-          await putFile<COMSObject>(
-            dispatch,
-            parameters,
-            thumbHeader,
-            thumbnailFile
-          );
+          if (thumbnailFile) {
+            await putFile<COMSObject>(
+              dispatch,
+              parameters,
+              thumbHeader,
+              thumbnailFile
+            );
+          }
         }
 
         if (response) {
