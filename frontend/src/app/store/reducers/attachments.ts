@@ -147,6 +147,8 @@ export const deleteAttachments =
 
   };
 
+
+
 // save new attachment(s) to object store
 export const saveAttachments =
   (attachments: File[], complaint_identifier: string): AppThunk =>
@@ -211,12 +213,16 @@ export const saveAttachments =
         }
 
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 409) {
-          ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
-        } else {
-          ToggleError(`Attachment "${attachment.name}" could not be saved.`);
-        }
+        handleError(attachment, error);
       }
+    }
+  };
+
+  const handleError = (attachment: File, error: any) => {
+    if (axios.isAxiosError(error) && error.response?.status === 409) {
+      ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
+    } else {
+      ToggleError(`Attachment "${attachment.name}" could not be saved.`);
     }
   };
 
