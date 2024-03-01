@@ -359,6 +359,11 @@ button.modal-buttons {
   background-color: $gray-100;
 }
 
+.modal-scroll { 
+  max-height: 264px;
+  overflow-y: scroll;
+}
+
 .self-assign {
   &:hover {
     background-color: $white;
@@ -377,20 +382,18 @@ button.modal-buttons {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 0px 24px 10px 24px;
+    padding: 0px 24px 32px 24px;
     color: $gray-500;
+
+  }
+
+  .input_row input { 
+    padding-left: 32px;
   }
 
   .input_row svg {
-    color: green;
-    background-color: pink;
-    border: 1px solid black;
     position: absolute;
-  }
-
-  .icon {
-    padding: 10px;
-    min-width: 40px;
+    left: 36px;
   }
 }
 

@@ -1,15 +1,16 @@
-import { FC, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { profileDisplayName, profileIdir, profileInitials, selectModalData, userId } from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
+  searchOfficers,
   selectOfficersByZoneAndAgency,
   updateComplaintAssignee,
 } from "../../../store/reducers/officer";
 import { UUID } from "crypto";
-import { CompInput } from "../../common/comp-input";
 import { BsPerson } from "react-icons/bs";
+import { from } from "linq-to-typescript";
 
 type AssignOfficerModalProps = {
   close: () => void;
@@ -30,8 +31,10 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const userid = useAppSelector(userId);
   const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
+  const [searchInput, setSearchInput] = useState<string>("");
 
   const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData?.agency_code, zone));
+  const searchResults = useAppSelector(searchOfficers(searchInput));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (index: number, person_guid: string) => {
@@ -70,6 +73,111 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     return cleanUuid === cleanStr;
   }
 
+  const handleInputChange = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    const {
+      target: { value },
+    } = evt;
+
+    setSearchInput(value);
+  };
+
+  const renderOfficers = () => {
+    if (searchInput.length >= 3 && !from(searchResults).any()) {
+      return <></>;
+    } else if (from(searchResults).any()) {
+      return searchResults.map((val, key) => {
+        const {
+          person_guid: { first_name: firstName, last_name: lastName },
+        } = val;
+        const {
+          person_guid: { person_guid },
+          auth_user_guid,
+        } = val;
+
+        const displayName = `${firstName} ${lastName}`;
+        const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
+
+        // don't display the current user in the list since we already have the current user at the top of the modal
+        if (auth_user_guid === undefined || !compareUuidToString(auth_user_guid, idir)) {
+          return (
+            <div
+              className={`${
+                selectedAssigneeIndex === key
+                  ? "assign_officer_modal_profile_card_selected"
+                  : "assign_officer_modal_profile_card"
+              }`}
+              key={key}
+              onClick={() => handleAssigneeClick(key, person_guid)}
+            >
+              <div className="assign_officer_modal_profile_card_column">
+                <div className="assign_officer_modal_profile_card_profile-picture">
+                  <div data-initials-modal={officerInitials}></div>
+                </div>
+              </div>
+              <div className="assign_officer_modal_profile_card_column">
+                <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
+                <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+              </div>
+              <div className="assign_officer_modal_profile_card_column"></div>
+            </div>
+          );
+        } else {
+          return <></>;
+        }
+      });
+    }
+
+    return officersJson?.map((val, key) => {
+      const {
+        person_guid: { first_name: firstName, last_name: lastName },
+      } = val;
+      const {
+        person_guid: { person_guid },
+        auth_user_guid,
+      } = val;
+
+      const displayName = `${firstName} ${lastName}`;
+      const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
+
+      // don't display the current user in the list since we already have the current user at the top of the modal
+      if (auth_user_guid === undefined || !compareUuidToString(auth_user_guid, idir)) {
+        return (
+          <div
+            className={`${
+              selectedAssigneeIndex === key
+                ? "assign_officer_modal_profile_card_selected"
+                : "assign_officer_modal_profile_card"
+            }`}
+            key={key}
+            onClick={() => handleAssigneeClick(key, person_guid)}
+          >
+            <div className="assign_officer_modal_profile_card_column">
+              <div className="assign_officer_modal_profile_card_profile-picture">
+                <div data-initials-modal={officerInitials}></div>
+              </div>
+            </div>
+            <div className="assign_officer_modal_profile_card_column">
+              <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
+              <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+            </div>
+            <div className="assign_officer_modal_profile_card_column"></div>
+          </div>
+        );
+      } else {
+        return <></>;
+      }
+    });
+  };
+
+  const renderHeading = () => {
+    if (searchInput.length >= 3 && !from(searchResults).any()) {
+      return "No officers found";
+    } else if (from(searchResults).any()) {
+      return "Search results";
+    } else {
+      return "Suggested Officers";
+    }
+  };
   return (
     <>
       {title && (
@@ -99,51 +207,21 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           <div className="assign_officer_modal_subtitle">Everyone</div>
           <div className="input_row">
             <BsPerson className="icon" />
-            <input className="comp-form-control" placeholder="Type name to search" type="input" />
+            <input
+              id="officer-search"
+              className="comp-form-control"
+              placeholder="Type name to search"
+              type="input"
+              aria-label="Search"
+              aria-describedby="basic-addon2"
+              onChange={(evt) => handleInputChange(evt)}
+              value={searchInput}
+            />
           </div>
         </div>
         <hr className="modal_hr" />
-        <div className="assign_officer_modal_subtitle">Suggested Officers</div>
-        {officersJson?.map((val, key) => {
-          const {
-            person_guid: { first_name: firstName, last_name: lastName },
-          } = val;
-          const {
-            person_guid: { person_guid },
-            auth_user_guid,
-          } = val;
-
-          const displayName = `${firstName} ${lastName}`;
-          const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
-
-          // don't display the current user in the list since we already have the current user at the top of the modal
-          if (auth_user_guid === undefined || !compareUuidToString(auth_user_guid, idir)) {
-            return (
-              <div
-                className={`${
-                  selectedAssigneeIndex === key
-                    ? "assign_officer_modal_profile_card_selected"
-                    : "assign_officer_modal_profile_card"
-                }`}
-                key={key}
-                onClick={() => handleAssigneeClick(key, person_guid)}
-              >
-                <div className="assign_officer_modal_profile_card_column">
-                  <div className="assign_officer_modal_profile_card_profile-picture">
-                    <div data-initials-modal={officerInitials}></div>
-                  </div>
-                </div>
-                <div className="assign_officer_modal_profile_card_column">
-                  <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-                  <div className="assign_officer_modal_profile_card_row_2">Officer</div>
-                </div>
-                <div className="assign_officer_modal_profile_card_column"></div>
-              </div>
-            );
-          } else {
-            return <></>;
-          }
-        })}
+        <div className="assign_officer_modal_subtitle">{renderHeading()}</div>
+        <div className="modal-scroll">{renderOfficers()}</div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={close} className="modal-buttons">
