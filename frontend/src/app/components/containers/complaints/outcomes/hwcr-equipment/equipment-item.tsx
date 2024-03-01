@@ -33,7 +33,7 @@ export const EquipmentItem: FC<EquipmentItem> = ({
       <div className="equipment-item-header">
         <div className="title">
           <h6>{equipment.type?.label}</h6>
-          {isActive && <div>Active</div>}
+          {isActive && <div className="badge">Active</div>}
         </div>
         <button
           className="button-text equipment-item-edit" 
