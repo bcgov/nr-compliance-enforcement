@@ -61,7 +61,7 @@
     position: absolute;
     top: 0px;
     left: 0px;
-    background-color:#328443;
+    background-color: $bc-gov-success;
     width: 12px;
     height: 100%;
   }
@@ -80,8 +80,8 @@
         margin-right: 16px;
       }
       div {
-        color: #328443;
-        background-color: #EAF3EC;
+        color: $bc-standard-06;
+        background-color: $bc-gov-info;
         font-size: 12px;
         font-weight: 700;
         padding: 0px 12px;
@@ -91,10 +91,14 @@
   
     .equipment-item-edit {
       font-size: 14px;
-  
+
       span {
         margin-right: 7px;
       }
+    }
+
+    .equipment-item-edit:hover {
+      text-decoration-line: underline;
     }
   }
   
