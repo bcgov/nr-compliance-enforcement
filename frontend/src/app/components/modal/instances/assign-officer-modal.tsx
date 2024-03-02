@@ -175,7 +175,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     } else if (from(searchResults).any()) {
       return "Search results";
     } else {
-      return "Suggested Officers";
+      return "Suggested officers";
     }
   };
   return (
@@ -198,7 +198,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <Button id="self_assign_button" title="Self Assign Button" onClick={handleSelfAssign}>
-              Self Assign
+              Self assign
             </Button>
           </div>
         </div>
@@ -217,6 +217,11 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               onChange={(evt) => handleInputChange(evt)}
               value={searchInput}
             />
+            {searchInput && (
+              <button type="reset" onClick={() => setSearchInput("")}>
+                &times;
+              </button>
+            )}
           </div>
         </div>
         <hr className="modal_hr" />

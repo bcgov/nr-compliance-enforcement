@@ -360,8 +360,10 @@ button.modal-buttons {
 }
 
 .modal-scroll { 
+  min-height: 70px;
   max-height: 264px;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .self-assign {
@@ -394,6 +396,26 @@ button.modal-buttons {
   .input_row svg {
     position: absolute;
     left: 36px;
+  }
+
+  button { 
+    position: absolute;
+    border: none;
+    display: block;
+    width: 24px;
+    height: 24px;
+    line-height: 16px;
+    font-size: 26px;
+    border-radius: 20%;
+    top: 0;
+    bottom: 14px;
+    right: 31px;
+    margin: auto;
+    padding: 0;
+    outline: none;
+    cursor: pointer;
+    background-color: $bc-gov-primary;
+    color: #fff;
   }
 }
 
