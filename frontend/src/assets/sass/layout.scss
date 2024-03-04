@@ -407,15 +407,14 @@ button.modal-buttons {
     line-height: 16px;
     font-size: 26px;
     border-radius: 20%;
-    top: 0;
-    bottom: 14px;
+    top: 144px;
     right: 31px;
     margin: auto;
     padding: 0;
     outline: none;
     cursor: pointer;
     background-color: $bc-gov-primary;
-    color: #fff;
+    color: $white
   }
 }
 
