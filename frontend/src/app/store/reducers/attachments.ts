@@ -147,6 +147,8 @@ export const deleteAttachments =
 
   };
 
+
+
 // save new attachment(s) to object store
 export const saveAttachments =
   (attachments: File[], complaint_identifier: string): AppThunk =>
@@ -190,15 +192,20 @@ export const saveAttachments =
             ))}"`,
             "Content-Type": "image/jpeg",
           };  
-          const thumbnailFile = await getThumbnailFile(attachment);
 
+          const thumbnailFile = await getThumbnailFile(attachment).catch(error => {
+            //we are just going to ignore this and move on
+            console.error('Error occurred while getting thumbnail file:', error);
+          });
 
-          await putFile<COMSObject>(
-            dispatch,
-            parameters,
-            thumbHeader,
-            thumbnailFile
-          );
+          if (thumbnailFile) {
+            await putFile<COMSObject>(
+              dispatch,
+              parameters,
+              thumbHeader,
+              thumbnailFile
+            );
+          }
         }
 
         if (response) {
@@ -206,12 +213,16 @@ export const saveAttachments =
         }
 
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 409) {
-          ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
-        } else {
-          ToggleError(`Attachment "${attachment.name}" could not be saved.`);
-        }
+        handleError(attachment, error);
       }
+    }
+  };
+
+  const handleError = (attachment: File, error: any) => {
+    if (axios.isAxiosError(error) && error.response?.status === 409) {
+      ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
+    } else {
+      ToggleError(`Attachment "${attachment.name}" could not be saved.`);
     }
   };
 

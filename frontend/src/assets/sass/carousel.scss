@@ -74,7 +74,7 @@
 .coms-carousel-slide:hover .coms-carousel-actions {
   display: flex;
   gap: 10px;
-  
+  z-index: 1; //sit above the preview
 }
 
 .coms-carousel-slide .top-section {
