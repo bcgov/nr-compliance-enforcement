@@ -113,7 +113,10 @@ export const AttachmentsCarousel: FC<Props> = ({
     let imageIconString;
     if(isImage(file.name))
     {
-      imageIconString = await getThumbnailDataURL(file);
+      const thumbnail = await getThumbnailDataURL(file);
+      if(thumbnail) {
+        imageIconString = thumbnail;
+      }
     }
     const newSlide: COMSObject = {
       name: encodeURIComponent(file.name),
