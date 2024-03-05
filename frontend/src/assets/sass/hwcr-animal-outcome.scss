@@ -114,6 +114,10 @@
     .animal-item-edit {
       font-size: 14px;
 
+      :hover
+          {
+            text-decoration: underline;
+          }
       span {
         font-size: inherit;
         padding-right: 0px;
@@ -127,6 +131,10 @@
     .animal-item-delete {
       font-size: 14px;
       padding-right: 10px;
+      :hover
+          {
+            text-decoration: underline;
+          }
         span {
           font-size: inherit;
           margin-right: 4px;
