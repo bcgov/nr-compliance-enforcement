@@ -40,6 +40,13 @@ export const HWCROutcomeByAnimal: FC = () => {
     setShowForm(false);
   };
 
+  const deleteAnimal = (id: number) => {
+    const updatedList = animals.filter(animal => { return animal.id != id
+    });
+    setAnimals(updatedList);
+    setShowForm(false);
+  };
+
   const updateEditFlag = (id: number, isEditable: boolean) => {
     if (from(animals).any((item) => item.id === id)) {
       let original = from(animals).first((item) => item.id === id);
@@ -49,6 +56,7 @@ export const HWCROutcomeByAnimal: FC = () => {
 
       let update = [...animals.slice(0, index), editable, ...animals.slice(index + 1)];
       setAnimals(update);
+      setShowForm(false);
     }
   };
 
@@ -82,7 +90,7 @@ export const HWCROutcomeByAnimal: FC = () => {
         return isEditable ? (
           <EditAnimalOutcome {...outcome} agency={agency} update={update} cancel={cancelEdit} key={id} />
         ) : (
-          <AnimalOutcomeItem {...outcome} agency={agency} edit={edit} key={id} />
+          <AnimalOutcomeItem {...outcome} agency={agency} edit={edit} deleteAnimal={deleteAnimal} key={id} />
         );
       });
     }

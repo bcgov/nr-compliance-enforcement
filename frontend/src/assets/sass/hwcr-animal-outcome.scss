@@ -124,6 +124,20 @@
       }
     }
 
+    .animal-item-delete {
+      font-size: 14px;
+      padding-right: 10px;
+        span {
+          font-size: inherit;
+          margin-right: 4px;
+          padding-right: 0px;
+        }
+
+        svg {
+          font-size: 16px;
+        }
+    }
+
     .comp-ear-tag-list {
       list-style: none;
       padding-inline-start: 0px;

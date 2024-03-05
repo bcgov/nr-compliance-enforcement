@@ -16,7 +16,7 @@ import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/of
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { from } from "linq-to-typescript";
 import { DrugItem } from "./drug-item";
-import { BsPencil } from "react-icons/bs";
+import { BsPencil, BsTrash } from "react-icons/bs";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 
 type props = {
@@ -35,6 +35,7 @@ type props = {
   date?: Date;
   isEditable: boolean;
   edit: Function;
+  deleteAnimal: Function;
 };
 export const AnimalOutcomeItem: FC<props> = ({
   id,
@@ -50,6 +51,7 @@ export const AnimalOutcomeItem: FC<props> = ({
   outcome,
   officer,
   edit,
+  deleteAnimal,
 }) => {
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const ages = useAppSelector(selectAgeDropdown);
@@ -235,6 +237,14 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
         </div>
         <div className="comp-details-right-column">
+        <CompTextIconButton
+            buttonClasses="button-text animal-item-delete"
+            text="Delete"
+            icon={BsTrash}
+            click={(evt) => deleteAnimal(id)}
+          />
+          </div>
+          <div className="comp-details-right-column">
           <CompTextIconButton
             buttonClasses="button-text animal-item-edit"
             text="Edit"
