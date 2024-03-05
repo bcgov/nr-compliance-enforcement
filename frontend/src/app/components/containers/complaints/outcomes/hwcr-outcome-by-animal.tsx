@@ -99,25 +99,25 @@ export const HWCROutcomeByAnimal: FC = () => {
   return (
     <div className="comp-animal-outcome-report-block">
       <h6>Outcome by animal</h6>
-      <div className="comp-animal-outcome-report-button">
-        {renderAnimals()}
+      {renderAnimals()}
 
-        {!showForm ? (
+      {!showForm ? (
+        <div className="comp-animal-outcome-report-button">
           <Button id="outcome-report-add-animal" title="Add animal" variant="primary" onClick={() => setShowForm(true)}>
             <span>Add animal</span>
             <BsPlusCircle />
           </Button>
-        ) : (
-          <AddAnimalOutcome
-            animalCount={1 + animals.length}
-            agency={agency}
-            assigned={assigned}
-            species={species}
-            add={add}
-            cancel={cancel}
-          />
-        )}
-      </div>
+        </div>
+      ) : (
+        <AddAnimalOutcome
+          animalCount={1 + animals.length}
+          agency={agency}
+          assigned={assigned}
+          species={species}
+          add={add}
+          cancel={cancel}
+        />
+      )}
     </div>
   );
 };

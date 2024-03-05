@@ -42,7 +42,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
     endDate: endDateFilter,
   } = filters;
 
-  const assignText = assigned_ind ? "Reassign Complaint" : "Assign Complaint";
+  const assignText = assigned_ind ? "Reassign complaint" : "Assign complaint";
 
   const renderPopover = () => (
     <Popover>
@@ -95,7 +95,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
         modalSize: "md",
         modalType: ASSIGN_OFFICER,
         data: {
-          title: "Assign Complaint",
+          title: "Assign complaint",
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,

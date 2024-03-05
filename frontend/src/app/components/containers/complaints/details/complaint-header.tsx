@@ -76,8 +76,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         modalSize: "md",
         modalType: ASSIGN_OFFICER,
         data: {
-          title: "Assign Complaint",
-          description: "Suggested Officers",
+          title: "Assign complaint",
+          description: "Suggested officers",
           complaint_identifier: id,
           complaint_type: complaintType,
           zone: zone,
