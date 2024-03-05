@@ -246,7 +246,7 @@ export const AnimalOutcomeItem: FC<props> = ({
           </div>
           <div className="comp-details-right-column">
           <CompTextIconButton
-            buttonClasses="button-text animal-item-edit"
+            buttonClasses="button-text"
             text="Edit"
             icon={BsPencil}
             click={(evt) => edit(id)}

@@ -4,6 +4,7 @@ import { BsPencil } from "react-icons/bs";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
 import { Equipment } from "./index";
+import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 
 interface EquipmentItem {
   isInEditMode: boolean
@@ -35,13 +36,12 @@ export const EquipmentItem: FC<EquipmentItem> = ({
           <h6>{equipment.type?.label}</h6>
           {isActive && <div className="badge">Active</div>}
         </div>
-        <button
-          className="button-text equipment-item-edit" 
-          onClick={() => handleEdit(equipment)}
-        >
-          <span>Edit</span>
-          <BsPencil />
-        </button>
+        <CompTextIconButton
+          buttonClasses="button-text"
+          text="Edit"
+          icon={BsPencil}
+          click={() => handleEdit(equipment)}
+        />
       </div>
       <div className="equipment-item-content">
         <div className="label">Address</div>
