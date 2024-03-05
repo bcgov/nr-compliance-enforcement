@@ -1,15 +1,5 @@
 @import "./colours.scss";
 
-.button-text {
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit;
-}
-
 .copy-text {
   text-align: left;
   font-size: 14px;
@@ -87,18 +77,6 @@
         padding: 0px 12px;
         line-height: 24px;
       }
-    }
-  
-    .equipment-item-edit {
-      font-size: 14px;
-
-      span {
-        margin-right: 7px;
-      }
-    }
-
-    .equipment-item-edit:hover {
-      text-decoration-line: underline;
     }
   }
   
