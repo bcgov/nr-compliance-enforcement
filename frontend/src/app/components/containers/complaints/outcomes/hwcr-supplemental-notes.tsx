@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import { profileDisplayName, profileInitials } from "../../../../store/reducers/app";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { formatDate } from "../../../../common/methods";
+import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 
 export const HWCRSupplementalNotes: FC = () => {  
@@ -158,16 +159,12 @@ export const HWCRSupplementalNotes: FC = () => {
                             </div>
                         </div>
                         <div className="comp-details-right-column">
-                            <Button
-                                id="details-screen-edit-button"
-                                className="sub-section-edit-button"
-                                title="Edit Complaint"
-                                variant="outline-primary"
-                                onClick={e => handleStateChange(EDIT_STATE)}
-                                >
-                                <span>Edit</span>
-                                <BsPencil />
-                            </Button>
+                            <CompTextIconButton
+                                buttonClasses="button-text"
+                                text="Edit"
+                                icon={BsPencil}
+                                click={e => handleStateChange(EDIT_STATE)}
+                            />
                         </div>
                     </div>
                 </div>
