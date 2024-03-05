@@ -43,6 +43,12 @@ export const HWCROutcomeByAnimal: FC = () => {
   const deleteAnimal = (id: number) => {
     const updatedList = animals.filter(animal => { return animal.id != id
     });
+    updatedList.forEach(animal => {
+      if(animal.id > id)
+      {
+        animal.id = id;
+      }
+    });
     setAnimals(updatedList);
     setShowForm(false);
   };
