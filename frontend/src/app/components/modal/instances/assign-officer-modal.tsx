@@ -81,6 +81,11 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     setSearchInput(value);
   };
 
+  const handleInputFocus = (): void => {
+    setSelectedAssigneeIndex(-1);
+    setSelectedAssignee("");
+  };
+
   const renderOfficers = () => {
     if (searchInput.length >= 3 && !from(searchResults).any()) {
       return <></>;
@@ -90,15 +95,15 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           person_guid: { first_name: firstName, last_name: lastName },
         } = val;
         const {
-          person_guid: { person_guid },
-          auth_user_guid,
+          person_guid: { person_guid: personId },
+          auth_user_guid: authUserId,
         } = val;
 
         const displayName = `${firstName} ${lastName}`;
         const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
 
         // don't display the current user in the list since we already have the current user at the top of the modal
-        if (auth_user_guid === undefined || !compareUuidToString(auth_user_guid, idir)) {
+        if (authUserId === undefined || !compareUuidToString(authUserId, idir)) {
           return (
             <div
               className={`${
@@ -107,7 +112,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
                   : "assign_officer_modal_profile_card"
               }`}
               key={key}
-              onClick={() => handleAssigneeClick(key, person_guid)}
+              onClick={() => handleAssigneeClick(key, personId)}
             >
               <div className="assign_officer_modal_profile_card_column">
                 <div className="assign_officer_modal_profile_card_profile-picture">
@@ -225,6 +230,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               aria-label="Search"
               aria-describedby="basic-addon2"
               onChange={(evt) => handleInputChange(evt)}
+              onFocus={() => handleInputFocus()}
               value={searchInput}
             />
             {searchInput && (
