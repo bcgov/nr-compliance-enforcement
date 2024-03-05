@@ -29,7 +29,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const displayName = useAppSelector(profileDisplayName);
   const idir = useAppSelector(profileIdir);
   const userid = useAppSelector(userId);
-  const [selectedAssigneeIndex, setSelectedAssigneeIndex] = useState(-1);
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [searchInput, setSearchInput] = useState<string>("");
 
@@ -37,9 +36,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const searchResults = useAppSelector(searchOfficers(searchInput));
 
   // stores the state of the officer that was clicked
-  const handleAssigneeClick = (index: number, person_guid: string) => {
-    setSelectedAssigneeIndex(index);
-    setSelectedAssignee(person_guid);
+  const handleAssigneeClick = (personId: string) => {
+    setSelectedAssignee(personId);
   };
 
   // assigns the selected officer to a complaint
@@ -82,15 +80,14 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   };
 
   const handleInputFocus = (): void => {
-    setSelectedAssigneeIndex(-1);
     setSelectedAssignee("");
   };
 
   const renderOfficers = () => {
-    if (searchInput.length >= 3 && !from(searchResults).any()) {
-      return <></>;
-    } else if (from(searchResults).any()) {
-      return searchResults.map((val, key) => {
+    const items = from(searchResults).any() ? searchResults : officersJson;
+
+    if (items && from(items).any()) {
+      return items.map((val) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
         } = val;
@@ -107,12 +104,12 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           return (
             <div
               className={`${
-                selectedAssigneeIndex === key
+                selectedAssignee === personId
                   ? "assign_officer_modal_profile_card_selected"
                   : "assign_officer_modal_profile_card"
               }`}
-              key={key}
-              onClick={() => handleAssigneeClick(key, personId)}
+              key={personId}
+              onClick={() => handleAssigneeClick(personId)}
             >
               <div className="assign_officer_modal_profile_card_column">
                 <div className="assign_officer_modal_profile_card_profile-picture">
@@ -131,47 +128,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         }
       });
     }
-
-    return officersJson?.map((val, key) => {
-      const {
-        person_guid: { first_name: firstName, last_name: lastName },
-      } = val;
-      const {
-        person_guid: { person_guid: personId },
-        auth_user_guid: authUserId,
-      } = val;
-
-      const displayName = `${firstName} ${lastName}`;
-      const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
-
-      // don't display the current user in the list since we already have the current user at the top of the modal
-      if (authUserId === undefined || !compareUuidToString(authUserId, idir)) {
-        return (
-          <div
-            className={`${
-              selectedAssigneeIndex === key
-                ? "assign_officer_modal_profile_card_selected"
-                : "assign_officer_modal_profile_card"
-            }`}
-            key={personId}
-            onClick={() => handleAssigneeClick(key, personId)}
-          >
-            <div className="assign_officer_modal_profile_card_column">
-              <div className="assign_officer_modal_profile_card_profile-picture">
-                <div data-initials-modal={officerInitials}></div>
-              </div>
-            </div>
-            <div className="assign_officer_modal_profile_card_column">
-              <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-              <div className="assign_officer_modal_profile_card_row_2">Officer</div>
-            </div>
-            <div className="assign_officer_modal_profile_card_column"></div>
-          </div>
-        );
-      } else {
-        return <></>;
-      }
-    });
   };
 
   const renderHeading = () => {
