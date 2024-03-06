@@ -16,7 +16,7 @@ import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/of
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { from } from "linq-to-typescript";
 import { DrugItem } from "./drug-item";
-import { BsPencil, BsTrash } from "react-icons/bs";
+import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 
 type props = {
@@ -240,7 +240,7 @@ export const AnimalOutcomeItem: FC<props> = ({
         <CompTextIconButton
             buttonClasses="button-text animal-item-delete"
             text="Delete"
-            icon={BsTrash}
+            icon={BsTrash3}
             click={(evt) => deleteAnimal(id)}
           />
           </div>
