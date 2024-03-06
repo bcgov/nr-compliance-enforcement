@@ -22,7 +22,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
         modalSize: "md",
         modalType: ASSIGN_OFFICER,
         data: {
-          title: "Assign Complaint",
+          title: "Assign complaint",
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,

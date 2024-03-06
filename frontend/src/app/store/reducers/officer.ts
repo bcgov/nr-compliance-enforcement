@@ -155,6 +155,36 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
   return officers;
 };
 
+export const searchOfficers =
+  (input: string) =>
+  (state: RootState): Array<Officer> => {
+    const {
+      officers: { officers: items },
+    } = state;
+    let results: Array<Officer> = [];
+
+    //-- look for any officers that match firstname, lastname, or office
+    if(input.length >= 3){ 
+      results = items.filter((officer) => {
+        const {
+          person_guid: { first_name: firstName, last_name: lastName },
+        } = officer;
+  
+        if (firstName.toLocaleLowerCase().includes(input)) {
+          return true;
+        }
+  
+        if (lastName.toLocaleLowerCase().includes(input)) {
+          return true;
+        }
+
+        return false;
+      });
+    }
+
+    return results;
+  };
+
 export const selectOfficersDropdown = (state: RootState): Array<Option> => {
   const { officers: officerRoot } = state;
   const { officers } = officerRoot;
