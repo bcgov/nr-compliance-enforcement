@@ -1,32 +1,34 @@
-import React, { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import Option from '../types/app/option';
 
 interface ValidationCheckboxGroupProps {
   options: Option[];
   errMsg: string;
+  onCheckboxChange: (checkedItems: string[]) => void;
 }
 
 export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   options,
   errMsg,
+  onCheckboxChange,
 }) => {
-  const [checkedState, setCheckedState] = useState(new Array(options.length).fill(false));
-  const [isError, setIsError] = useState(false);
-  const inputClassName="form-check-input";
-  const labelClassName="form-check-label checkbox-label"
-  const handleOnChange = (position: number) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const inputClassName = "form-check-input";
+  const labelClassName = "form-check-label checkbox-label";
 
-    setCheckedState(updatedCheckedState);
+  const handleCheckboxChange = (value: string) => {
+    const updatedCheckedItems = checkedItems.includes(value)
+      ? checkedItems.filter((item) => item !== value)
+      : [...checkedItems, value];
 
-    // Check if at least one checkbox is selected
-    setIsError(!updatedCheckedState.some(state => state));
+    setCheckedItems(updatedCheckedItems);
+    onCheckboxChange(updatedCheckedItems);
   };
 
-  const calculatedClass =
-    isError ? inputClassName + " error-border" : inputClassName;
+  useEffect(() => {
+    // You can use the checkedItems state as needed in the component or for any other logic
+    console.log("Checked items:", checkedItems);
+  }, [checkedItems]);
 
   return (
     <div id="checkbox-div" className="checkbox-left-padding">
@@ -35,14 +37,16 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
           <input
             type="checkbox"
             id={option.value}
-            className={calculatedClass}
-            checked={checkedState[index]}
-            onChange={() => handleOnChange(index)}
+            className={inputClassName}
+            checked={checkedItems.includes(option.value!)}
+            onChange={() => handleCheckboxChange(option.value!)}
           />
-          <label className={labelClassName} htmlFor={option.value}>{option.label}</label>
+          <label className={labelClassName} htmlFor={option.value}>
+            {option.label}
+          </label>
         </div>
       ))}
-      {isError && <div className="error-message">{errMsg}</div>}
+      <div className="error-message">{errMsg}</div>
     </div>
   );
 };
