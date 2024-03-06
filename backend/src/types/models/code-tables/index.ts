@@ -17,6 +17,7 @@ import { ReportedBy } from "./reported-by";
 import { Justification } from "./justification";
 import { AssessmentType } from "./assessment-type";
 import { PreventEducationAction } from "./prevent-education-action";
+import { Equipment } from "./equipment";
 
 export const AvailableCodeTables = [
   "agency",
@@ -44,6 +45,7 @@ export const AvailableCodeTables = [
   "drug-methods",
   "drug-remaining-outcomes",
   "wildlife-outcomes",
+  "equipment"
 ];
 
 export const AvailableAgencies = ["cos"];
@@ -68,4 +70,5 @@ export {
   Justification,
   AssessmentType,
   PreventEducationAction,
+  Equipment
 };

@@ -6,6 +6,7 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import { profileDisplayName, profileInitials } from "../../../../store/reducers/app";
 import { formatDate } from "../../../../common/methods";
 import { BsPencil } from "react-icons/bs";
+import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 export const HWCRFileReview: FC = () => {
 
@@ -136,23 +137,9 @@ export const HWCRFileReview: FC = () => {
                 {componentState === DISPLAY_STATE && (<div className="comp-details-edit-container">
                     <div className="comp-details-edit-column">
                         <div className="comp-details-edit-container">
-                            <div className="comp-details-edit-column">
-                                <div className="comp-details-label-input-pair" id="review-required-file-review-notes-pair-id">
-                                    <label className="form-check-label" htmlFor="review-required">Review required</label>
-                                    <input className="form-check-input" id="review-required" type="checkbox" checked disabled />
-                                </div>
-                            </div>
-                            <div className="comp-details-right-column">
-                                <Button
-                                    id="file-review-edit-button"
-                                    title="Edit Complaint"
-                                    variant="outline-primary"
-                                    className="sub-section-edit-button"
-                                    onClick={e => handleStateChange(EDIT_STATE)}
-                                >
-                                    <span>Edit</span>
-                                    <BsPencil />
-                                </Button>
+                            <div className="comp-details-label-input-pair" id="review-required-file-review-notes-pair-id">
+                                <label className="form-check-label" htmlFor="review-required">Review required</label>
+                                <input className="form-check-input" id="review-required" type="checkbox" checked disabled />
                             </div>
                         </div>
                         <div className="comp-details-edit-container">
@@ -162,33 +149,37 @@ export const HWCRFileReview: FC = () => {
                             </div>
                         </div>
                         <div className="comp-details-edit-container">
-                            <div className="comp-details-edit-column" id="complaint-file-review-officer-div">
-                                <div className="comp-details-edit-container">
-                                    <div className="comp-details-edit-column">
-                                        <div className="comp-details-label-div-pair">
-                                            <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">Officer</label>
-                                            <div
-                                                data-initials-sm={initials}
-                                                className="comp-orange-avatar-sm comp-details-inner-content"
-                                            >
-                                                <span id="comp-review-required-officer" className="comp-padding-left-xs">{displayName}</span>
-                                            </div>
-                                        </div>
+                            <div className="comp-details-edit-column">
+                                <div className="comp-details-label-div-pair">
+                                    <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">Officer</label>
+                                    <div
+                                        data-initials-sm={initials}
+                                        className="comp-orange-avatar-sm comp-details-inner-content"
+                                    >
+                                        <span id="comp-review-required-officer" className="comp-padding-left-xs">{displayName}</span>
                                     </div>
-                                    <div className="comp-details-edit-column" id="complaint-file-review-date-div">
-                                        <div className="comp-details-label-div-pair">
-                                            <label className="comp-details-inner-content-label" htmlFor="file-review-date">Date</label>
-                                            <div
-                                                className="bi comp-margin-right-xxs comp-details-inner-content"
-                                                id="file-review-date"
-                                            >{formatDate(new Date().toString())}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="supporting-width"></div>
                                 </div>
                             </div>
+                            <div className="comp-details-edit-column" id="complaint-file-review-date-div">
+                                <div className="comp-details-label-div-pair">
+                                    <label className="comp-details-inner-content-label" htmlFor="file-review-date">Date</label>
+                                    <div
+                                        className="bi comp-margin-right-xxs comp-details-inner-content"
+                                        id="file-review-date"
+                                    >{formatDate(new Date().toString())}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="supporting-width"></div>
                         </div>
+                    </div>
+                    <div className="comp-details-right-column">
+                        <CompTextIconButton
+                            buttonClasses="button-text"
+                            text="Edit"
+                            icon={BsPencil}
+                            click={e => handleStateChange(EDIT_STATE)}
+                        />
                     </div>
                 </div>)}
             </div>

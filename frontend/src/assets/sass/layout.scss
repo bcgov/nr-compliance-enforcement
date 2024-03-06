@@ -186,7 +186,6 @@
     text-decoration: none;
     color: $bc-brand-links;
   }
-
 }
 
 .spacer-seperator {
@@ -200,7 +199,7 @@
     text-decoration: underline;
     color: $bc-brand-links;
   }
-  
+
   a:hover {
     font-weight: bold;
   }
@@ -217,7 +216,6 @@
     color: $white;
     font-weight: bold;
   }
-
 }
 
 .comp-nav-item-icon {
@@ -339,8 +337,8 @@ button.modal-buttons {
   flex-grow: 0;
   cursor: pointer;
   &:hover {
-    background-color: #DEEBFF;
-    }
+    background-color: #deebff;
+  }
 }
 
 .assign_officer_modal_profile_card_selected {
@@ -361,14 +359,66 @@ button.modal-buttons {
   background-color: $gray-100;
 }
 
+.modal-scroll { 
+  min-height: 70px;
+  max-height: 264px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 .self-assign {
   &:hover {
     background-color: $white;
     cursor: default;
-    }
+  }
 }
 
 .assign_officer_modal_profile_card_column {
+  display: flex;
+  flex-direction: column;
+}
+
+#assign_officer_modal_search {
+  .input_row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px 24px 32px 24px;
+    color: $gray-500;
+
+  }
+
+  .input_row input { 
+    padding-left: 32px;
+  }
+
+  .input_row svg {
+    position: absolute;
+    left: 36px;
+  }
+
+  button { 
+    position: absolute;
+    border: none;
+    display: block;
+    width: 24px;
+    height: 24px;
+    line-height: 16px;
+    font-size: 26px;
+    border-radius: 20%;
+    top: 144px;
+    right: 31px;
+    margin: auto;
+    padding: 0;
+    outline: none;
+    cursor: pointer;
+    background-color: $bc-gov-primary;
+    color: $white
+  }
+}
+
+#assign_officer_modal_search_input {
   display: flex;
   flex-direction: column;
 }
@@ -520,7 +570,7 @@ p {
 }
 
 .pending-slide {
-  img{
+  img {
     opacity: 0.5;
   }
 }

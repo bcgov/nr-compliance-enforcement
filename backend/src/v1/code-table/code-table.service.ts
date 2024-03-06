@@ -18,6 +18,7 @@ import BaseCodeTable, {
   Zone,
   Community,
   ReportedBy,
+  Equipment,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -43,6 +44,7 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
+import { get } from "../../external_api/case_management";
 
 @Injectable()
 export class CodeTableService {
@@ -73,7 +75,7 @@ export class CodeTableService {
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
 
-  getCodeTableByName = async (table: string): Promise<BaseCodeTable[]> => {
+  getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     console.log("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
@@ -437,95 +439,225 @@ export class CodeTableService {
         ];
         return data;
       }
-      case "sex": { 
-        const data: Array<Sex> = [
-          { sex: "M", shortDescription: "Male", longDescription: "Male", displayOrder: 1, isActive: true },
-          { sex: "F", shortDescription: "Female", longDescription: "Female", displayOrder: 2, isActive: true },
-          { sex: "U", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 3, isActive: true },
-        ]
-
-        return data;
+      case "sex": {
+        const { data } = await get(token, { 
+          query : "{getAllSexCodes{sex_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllSexCodes.map(
+          ({
+            sex_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: Sex = {
+              sex: sex_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "age": { 
-        const data: Array<Age> = [
-          { age: "ADLT", shortDescription: "Adult", longDescription: "Adult", displayOrder: 1, isActive: true },
-          { age: "YRLN", shortDescription: "Yearling", longDescription: "Yearling", displayOrder: 2, isActive: true },
-          { age: "YOFY", shortDescription: "Young of the year", longDescription: "Young of the year", displayOrder: 3, isActive: true },
-          { age: "UNKN", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 4, isActive: true },
-        ]
-
-        return data;
+      case "age": {
+        const { data } = await get(token, { 
+          query : "{getAllAgeCodes{age_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllAgeCodes.map(
+          ({
+            age_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: Age = {
+              age: age_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
       case "threat-level": { 
-        const data: Array<ThreatLevel> = [
-          { threatLevel: "1", shortDescription: "Category 1", longDescription: "Category 1", displayOrder: 1, isActive: true },
-          { threatLevel: "2", shortDescription: "Category 2", longDescription: "Category 2", displayOrder: 2, isActive: true },
-          { threatLevel: "3", shortDescription: "Category 3", longDescription: "Category 3", displayOrder: 3, isActive: true },
-          { threatLevel: "U", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 4, isActive: true },
-        ]
-
-        return data;
+        const { data } = await get(token, { 
+          query : "{getAllThreatLevelCodes{threat_level_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllThreatLevelCodes.map(
+          ({
+            threat_level_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: ThreatLevel = {
+              threatLevel: threat_level_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "conflict-history": { 
-        const data: Array<ConflictHistory> = [
-          { conflictHistory: "L", shortDescription: "Low", longDescription: "Low", displayOrder: 1, isActive: true },
-          { conflictHistory: "M", shortDescription: "Medium", longDescription: "Medium", displayOrder: 2, isActive: true },
-          { conflictHistory: "H", shortDescription: "High", longDescription: "High", displayOrder: 3, isActive: true },
-          { conflictHistory: "U", shortDescription: "Unknown", longDescription: "Unknown", displayOrder: 4, isActive: true },
-        ]
-
-        return data;
+      case "conflict-history": {
+        const { data } = await get(token, { 
+          query : "{getAllConflictHistoryCodes{conflict_history_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllConflictHistoryCodes.map(
+          ({
+            conflict_history_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: ConflictHistory = {
+              conflictHistory: conflict_history_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "ear-tag": { 
-        const data: Array<EarTag> = [
-          { earTag: "L", shortDescription: "Left", longDescription: "Left", displayOrder: 1, isActive: true },
-          { earTag: "R", shortDescription: "Right", longDescription: "Right", displayOrder: 2, isActive: true },
-        ]
-
-        return data;
+      case "ear-tag": {
+        const { data } = await get(token, { 
+          query : "{getAllEarCodes{ear_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllEarCodes.map(
+          ({
+            ear_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: EarTag = {
+              earTag: ear_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "drugs": { 
-        const data: Array<Drug> = [
-          { drug: "ATPMZ", shortDescription: "Atipamezole", longDescription: "Atipamezole", displayOrder: 1, isActive: true },
-          { drug: "BAMII", shortDescription: "BAM II", longDescription: "Butorphanol Azaperone Medetomidine", displayOrder: 2, isActive: true },
-          { drug: "MDTMD", shortDescription: "Medetomidine", longDescription: "Medetomidine", displayOrder: 3, isActive: true },
-          { drug: "NLTRX", shortDescription: "Naltrexone", longDescription: "Naltrexone", displayOrder: 4, isActive: true },
-          { drug: "ZLTIL", shortDescription: "Zoletil", longDescription: "Zoletil", displayOrder: 5, isActive: true },
-        ]
-
-        return data;
+      case "drugs": {
+        const { data } = await get(token, { 
+          query : "{getAllDrugCodes{drug_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllDrugCodes.map(
+          ({
+            drug_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: Drug = {
+              drug: drug_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "drug-methods": { 
-        const data: Array<DrugMethod> = [
-          { method: "DART", shortDescription: "Dart", longDescription: "Dart", displayOrder: 1, isActive: true },
-          { method: "HINJ", shortDescription: "Hand injection", longDescription: "Hand injection", displayOrder: 2, isActive: true },
-          { method: "PSRG", shortDescription: "Pole syringe", longDescription: "Pole syringe", displayOrder: 3, isActive: true },
-        ]
-
-        return data;
+      case "drug-methods": {
+        const { data } = await get(token, { 
+          query : "{getAllDrugMethodCodes{drug_method_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllDrugMethodCodes.map(
+          ({
+            drug_method_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: DrugMethod = {
+              method: drug_method_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "drug-remaining-outcomes": { 
-        const data: Array<DrugRemainingOutcome> = [
-          { outcome: "DISC", shortDescription: "Discarded", longDescription: "Discarded", displayOrder: 1, isActive: true },
-          { outcome: "STOR", shortDescription: "Storage", longDescription: "Storage", displayOrder: 2, isActive: true },
-          { outcome: "RDIS", shortDescription: "Reverse distribution", longDescription: "Reverse distribution", displayOrder: 3, isActive: true },
-        ]
-
-        return data;
+      case "drug-remaining-outcomes": {
+        const { data } = await get(token, { 
+          query : "{getAllDrugRemainingOutcomeCodes{drug_remaining_outcome_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllDrugRemainingOutcomeCodes.map(
+          ({
+            drug_remaining_outcome_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: DrugRemainingOutcome = {
+              outcome: drug_remaining_outcome_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
-      case "wildlife-outcomes": { 
-        const data: Array<WildlifeComplaintOutcome> = [
-          { outcome: "DEADONARR", shortDescription: "Dead on arrival", longDescription: "Dead on arrival", displayOrder: 1, isActive: true },
-          { outcome: "DESTRYCOS", shortDescription: "Destroyed by COS", longDescription: "Destroyed by COS", displayOrder: 2, isActive: true },
-          { outcome: "DESTRYOTH", shortDescription: "Destroyed by other", longDescription: "Destroyed by other", displayOrder: 3, isActive: true },
-          { outcome: "GONEONARR", shortDescription: "Gone on arrival", longDescription: "Gone on arrival", displayOrder: 4, isActive: true },
-          { outcome: "REFRTOBIO", shortDescription: "Referred to biologist", longDescription: "Referred to biologist", displayOrder: 5, isActive: true },
-          { outcome: "SHRTRELOC", shortDescription: "Short-distance relocation", longDescription: "Short-distance relocation", displayOrder: 6, isActive: true },
-          { outcome: "TRANSLCTD", shortDescription: "Translocated", longDescription: "Translocated", displayOrder: 7, isActive: true },
-          { outcome: "TRANSREHB", shortDescription: "Transfer to rehab", longDescription: "Transfer to rehab", displayOrder: 8, isActive: true },
-        ]
-
-        return data;
+      case "wildlife-outcomes": {
+        const { data } = await get(token, { 
+          query : "{getAllHWCROutcomeCodes{hwcr_outcome_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllHWCROutcomeCodes.map(
+          ({
+            hwcr_outcome_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: WildlifeComplaintOutcome = {
+              outcome: hwcr_outcome_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
+      }
+      case "equipment": {
+        const { data } = await get(token, { 
+          query : "{getAllEquipmentCodes{equipment_code short_description long_description display_order active_ind}}"
+        });
+        const results = data.getAllEquipmentCodes.map(
+          ({
+            equipment_code,
+            short_description,
+            long_description,
+            display_order
+          }) => {
+            const table: Equipment = {
+              equipment: equipment_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order
+            };
+            return table;
+          }
+        );
+        return results;
       }
     }
   };
