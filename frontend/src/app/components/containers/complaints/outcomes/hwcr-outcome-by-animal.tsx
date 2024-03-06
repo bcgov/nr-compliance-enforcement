@@ -46,7 +46,7 @@ export const HWCROutcomeByAnimal: FC = () => {
     updatedList.forEach(animal => {
       if(animal.id > id)
       {
-        animal.id = id;
+        animal.id = animal.id - 1;
       }
     });
     setAnimals(updatedList);
