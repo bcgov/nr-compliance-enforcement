@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { FC } from "react";
+import { useState, FC } from 'react';
 import DatePicker from 'react-datepicker';
 
 interface ValidationDatePickerProps {
@@ -21,11 +20,9 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   classNamePrefix,
   errMsg,
 }) => {
-  const [isDateValid, setIsDateValid] = useState<boolean>(true);
 
   const handleDateChange = (date: Date | null) => {
     onChange(date);
-    setIsDateValid(!!date); // Example: Date is considered valid if it's not null
   };
 
   const calculatedClass = errMsg === '' ? '' : 'error-message';
