@@ -1,9 +1,7 @@
-import { AssessmentType } from "../app/code-tables/assesment-type";
-import { Justification } from "../app/code-tables/justification";
 import Option from "../app/option";
 
 export interface Assessment {
-    assessment_type: AssessmentType[];
+    assessment_type: string[];
     action_required?: Option;
     justification?: Option;
     officer?: Option;

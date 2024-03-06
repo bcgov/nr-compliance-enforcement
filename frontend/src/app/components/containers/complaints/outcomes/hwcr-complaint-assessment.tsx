@@ -108,6 +108,7 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedOfficer(assessmentState.officer);
     setSelectedActionRequired(assessmentState.action_required);
     setSelectedJustification(assessmentState.justification);
+    setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
   };
 
@@ -125,17 +126,18 @@ export const HWCRComplaintAssessment: FC = () => {
     );
   };
 
+
+  // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = () => {
     const updatedAssessmentData = {
       date: selectedDate,
       officer: selectedOfficer,
       action_required: selectedActionRequired,
       justification: selectedJustification,
+      assessment_type: selectedAssessmentTypes
     } as Assessment;
 
     if (!hasErrors()) {
-
-      // Dispatch the setAssessment action with the updated assessment data
       dispatch(setAssessment({ assessment: updatedAssessmentData }));
       ToggleSuccess(`Assessment has been saved`);
     } else {
@@ -148,6 +150,7 @@ export const HWCRComplaintAssessment: FC = () => {
     ToggleError("Errors in form");
   };
 
+  // Clear out existing validation errors
   const resetValidationErrors = () => {
     setOfficerErrorMessage("");
     setActionRequiredErrorMessage("");
@@ -156,6 +159,7 @@ export const HWCRComplaintAssessment: FC = () => {
     setAssessmentRequiredErrorMessage("");
   };
 
+  // Validates the assessment
   const hasErrors = (): boolean => {
     let hasErrors: boolean = false;
     resetValidationErrors();
@@ -198,7 +202,7 @@ export const HWCRComplaintAssessment: FC = () => {
               <label htmlFor="checkbox-div" className="comp-details-inner-content-label checkbox-label-padding">
                 Assessment
               </label>
-              <ValidationCheckboxGroup errMsg={assessmentRequiredErrorMessage} options={assessmentTypeList} onCheckboxChange={handleAssessmentTypesChange}></ValidationCheckboxGroup> 
+              <ValidationCheckboxGroup errMsg={assessmentRequiredErrorMessage} options={assessmentTypeList} onCheckboxChange={handleAssessmentTypesChange} checkedValues={selectedAssessmentTypes}></ValidationCheckboxGroup> 
             </div>
           </div>
         </div>
