@@ -358,50 +358,51 @@ export class CodeTableService {
         return results;
       }
       case "justification": {
-        const justificationCodes: Justification[] = [
-          { justification: "No public safety concern",
-            shortDescription: "No public safety concern",
-            longDescription: "No public safety concern",
-            displayOrder: 1,
-            isActive: true,
-          },
-          { justification: "Other operational priorities",
-            shortDescription: "Other operational priorities",
-            longDescription: "Other operational priorities",
-            displayOrder: 2,
-            isActive: true,
-          },
-        ];
+        const { data } = await get(token, { 
+          query : "{getInactionReasonCodes{inaction_reason_code agency_code short_description long_description display_order active_ind}}"
+        });
+        const justificationCodes = data.getInactionReasonCodes.map(
+          ({
+            inaction_reason_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind
+          }) => {
+            const table: Justification = {
+              justification: inaction_reason_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind
+            };
+            return table;
+          }
+        );        
         return justificationCodes;
       }
       case "assessment-type": {
-        console.log("in assessment type")
-        const assessmentTypeCodes: AssessmentType[] = [
-          { assessmentType: "Assessed public safety risk",
-            shortDescription: "Assessed public safety risk",
-            longDescription: "Assessed public safety risk",
-            displayOrder: 1,
-            isActive: true,
-          },
-          { assessmentType: "Assessed health as per animal welfare guidelines",
-            shortDescription: "Assessed health as per animal welfare guidelines",
-            longDescription: "Assessed health as per animal welfare guidelines",
-            displayOrder: 2,
-            isActive: true,
-          },
-          { assessmentType: "Assessed known conflict history",
-            shortDescription: "Assessed known conflict history",
-            longDescription: "Assessed known conflict history",
-            displayOrder: 3,
-            isActive: true,
-          },
-          { assessmentType: "Confirmed idenfication of offending animals",
-            shortDescription: "Confirmed idenfication of offending animals",
-            longDescription: "Confirmed idenfication of offending animals",
-            displayOrder: 4,
-            isActive: true,
-          },
-        ];
+        const { data } = await get(token, { 
+          query : "{getActionTypeActionXrefs{action_type_code action_code display_order active_ind short_description long_description}}"
+        });
+        const assessmentTypeCodes = data.getActionTypeActionXrefs.map(
+          ({
+            action_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind
+          }) => {
+            const table: AssessmentType = {
+              assessmentType: action_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind
+            };
+            return table;
+          }
+        );
         return assessmentTypeCodes;
       }
       case "prevent-education-action": {
