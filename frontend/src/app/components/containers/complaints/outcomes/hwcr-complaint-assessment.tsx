@@ -223,21 +223,20 @@ export const HWCRComplaintAssessment: FC = () => {
                   >
                     Assessment
                   </label>
-                  {editable ?
-                  <ValidationCheckboxGroup
-                    errMsg={assessmentRequiredErrorMessage}
-                    options={assessmentTypeList}
-                    onCheckboxChange={handleAssessmentTypesChange}
-                    checkedValues={selectedAssessmentTypes}
-                  ></ValidationCheckboxGroup>
-                  :
-                  <div>
-                    {selectedAssessmentTypes.map((assesmentValue, index) => (
-        <div>
-          {assesmentValue}
-        </div>
-      ))}
-                  </div>}
+                  {editable ? (
+                    <ValidationCheckboxGroup
+                      errMsg={assessmentRequiredErrorMessage}
+                      options={assessmentTypeList}
+                      onCheckboxChange={handleAssessmentTypesChange}
+                      checkedValues={selectedAssessmentTypes}
+                    ></ValidationCheckboxGroup>
+                  ) : (
+                    <div>
+                      {selectedAssessmentTypes.map((assesmentValue, index) => (
+                        <div className="checkbox-label-padding">{assesmentValue}</div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -245,20 +244,21 @@ export const HWCRComplaintAssessment: FC = () => {
               <div className="comp-details-edit-column">
                 <div className="comp-details-label-input-pair">
                   <label htmlFor="action-required">Action required?</label>
-                  {editable ?
-                  <CompSelect
-                    id="action-required"
-                    className="comp-details-input"
-                    classNamePrefix="comp-select"
-                    options={actionRequiredList}
-                    enableValidation={true}
-                    errorMessage={actionRequiredErrorMessage}
-                    value={selectedActionRequired}
-                    placeholder="Select"
-                    onChange={(e) => handleActionRequiredChange(e)}
-                  /> :
-                  selectedActionRequired?.value
-}
+                  {editable ? (
+                    <CompSelect
+                      id="action-required"
+                      className="comp-details-input"
+                      classNamePrefix="comp-select"
+                      options={actionRequiredList}
+                      enableValidation={true}
+                      errorMessage={actionRequiredErrorMessage}
+                      value={selectedActionRequired}
+                      placeholder="Select"
+                      onChange={(e) => handleActionRequiredChange(e)}
+                    />
+                  ) : (
+                    selectedActionRequired?.value
+                  )}
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
@@ -287,44 +287,49 @@ export const HWCRComplaintAssessment: FC = () => {
               <div className="comp-details-edit-column">
                 <div className="comp-details-label-input-pair">
                   <label htmlFor="outcome-officer">Officer</label>
-                  {editable ? 
-                  <CompSelect
-                    id="outcome-officer"
-                    className="comp-details-input"
-                    classNamePrefix="comp-select"
-                    options={assignableOfficers}
-                    enableValidation={true}
-                    errorMessage={officerErrorMessage}
-                    value={selectedOfficer}
-                    placeholder="Select "
-                    onChange={(officer: any) => setSelectedOfficer(officer)}
-                  /> :
-                  <div
-                  data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
-                  className="comp-orange-avatar-sm comp-details-inner-content"
-                >
-                  <span id="comp-review-required-officer" className="comp-padding-left-xs">
-                    {selectedOfficer?.label ?? ""}
-                  </span>
-                </div>
-}
+                  {editable ? (
+                    <CompSelect
+                      id="outcome-officer"
+                      className="comp-details-input"
+                      classNamePrefix="comp-select"
+                      options={assignableOfficers}
+                      enableValidation={true}
+                      errorMessage={officerErrorMessage}
+                      value={selectedOfficer}
+                      placeholder="Select "
+                      onChange={(officer: any) => setSelectedOfficer(officer)}
+                    />
+                  ) : (
+                    <div
+                      data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
+                      className="comp-orange-avatar-sm comp-details-inner-content"
+                    >
+                      <span
+                        id="comp-review-required-officer"
+                        className="comp-padding-left-xs"
+                      >
+                        {selectedOfficer?.label ?? ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
                 <div className="comp-details-label-input-pair">
                   <label htmlFor="justification">Date</label>
-                  { editable ?
-                  <ValidationDatePicker
-                    id="complaint-outcome-date"
-                    selectedDate={selectedDate}
-                    onChange={handleDateChange}
-                    placeholder="Select Date"
-                    className="comp-details-edit-calendar-input" // Adjust class as needed
-                    classNamePrefix="comp-select" // Adjust class as needed
-                    errMsg={assessmentDateErrorMessage} // Pass error message if any
-                  /> :
-                  formatDate(`${selectedDate}`)
-}
+                  {editable ? (
+                    <ValidationDatePicker
+                      id="complaint-outcome-date"
+                      selectedDate={selectedDate}
+                      onChange={handleDateChange}
+                      placeholder="Select Date"
+                      className="comp-details-edit-calendar-input" // Adjust class as needed
+                      classNamePrefix="comp-select" // Adjust class as needed
+                      errMsg={assessmentDateErrorMessage} // Pass error message if any
+                    />
+                  ) : (
+                    formatDate(`${selectedDate}`)
+                  )}
                 </div>
               </div>
             </div>
@@ -341,28 +346,27 @@ export const HWCRComplaintAssessment: FC = () => {
           )}
         </div>
         {editable && (
-            <div className="comp-outcome-report-container">
-              <div className="comp-outcome-report-actions">
-                <Button
-                  id="outcome-cancel-button"
-                  title="Cancel Outcome"
-                  className="comp-outcome-cancel"
-                  onClick={cancelButtonClick}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  id="outcome-save-button"
-                  title="Save Outcome"
-                  className="comp-outcome-save"
-                  onClick={saveButtonClick}
-                >
-                  Save
-                </Button>
-              </div>
+          <div className="comp-outcome-report-container">
+            <div className="comp-outcome-report-actions">
+              <Button
+                id="outcome-cancel-button"
+                title="Cancel Outcome"
+                className="comp-outcome-cancel"
+                onClick={cancelButtonClick}
+              >
+                Cancel
+              </Button>
+              <Button
+                id="outcome-save-button"
+                title="Save Outcome"
+                className="comp-outcome-save"
+                onClick={saveButtonClick}
+              >
+                Save
+              </Button>
             </div>
-          )}
-
+          </div>
+        )}
       </div>
     </div>
   );
