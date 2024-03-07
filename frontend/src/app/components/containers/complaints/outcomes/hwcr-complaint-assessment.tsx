@@ -51,7 +51,6 @@ export const HWCRComplaintAssessment: FC = () => {
   const [actionRequiredErrorMessage, setActionRequiredErrorMessage] = useState<string>("");
   const [justificationRequiredErrorMessage, setJustificationRequiredErrorMessage] = useState<string>("");
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
-  const [showContent, setShowContent] = useState<boolean>(false);
 
   const complaintData = useAppSelector(selectComplaint);
   const assessmentState = useAppSelector(selectAssessment);
@@ -126,7 +125,6 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
     setEditable(false);
-    setShowContent(false);
   };
 
   const cancelButtonClick = () => {
@@ -232,8 +230,8 @@ export const HWCRComplaintAssessment: FC = () => {
                     ></ValidationCheckboxGroup>
                   ) : (
                     <div>
-                      {selectedAssessmentTypes.map((assesmentValue, index) => (
-                        <div className="checkbox-label-padding">{assesmentValue}</div>
+                      {selectedAssessmentTypes.map((assesmentValue) => (
+                        <div className="checkbox-label-padding" key={assesmentValue}>{assesmentValue}</div>
                       ))}
                     </div>
                   )}
