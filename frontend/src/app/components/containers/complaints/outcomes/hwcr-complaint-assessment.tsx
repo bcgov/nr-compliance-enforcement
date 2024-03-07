@@ -269,6 +269,7 @@ export const HWCRComplaintAssessment: FC = () => {
                   >
                     Justification
                   </label>
+                  { editable ? 
                   <CompSelect
                     id="justification"
                     className={justificationEditClass}
@@ -279,7 +280,9 @@ export const HWCRComplaintAssessment: FC = () => {
                     value={selectedJustification}
                     placeholder="Select"
                     onChange={(e) => handleJustificationChange(e)}
-                  />
+                  /> : 
+                  `${selectedJustification?.label}`
+                  }
                 </div>
               </div>
             </div>
