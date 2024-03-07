@@ -124,7 +124,9 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedJustification(assessmentState.justification);
     setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
-    setEditable(false);
+    if (assessmentState.assessment_type.length > 0) { // This handles the case where the user clicks cancel before saving anything
+      setEditable(false);
+    }
   };
 
   const cancelButtonClick = () => {
@@ -278,9 +280,10 @@ export const HWCRComplaintAssessment: FC = () => {
                     value={selectedJustification}
                     placeholder="Select"
                     onChange={(e) => handleJustificationChange(e)}
-                  /> : 
-                  `${selectedJustification?.label}`
-                  }
+                  /> : <span className={justificationEditClass}>
+                    {selectedJustification?.label || ''}
+                  </span>
+                }
                 </div>
               </div>
             </div>
