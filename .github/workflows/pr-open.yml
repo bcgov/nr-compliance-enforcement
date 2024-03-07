@@ -92,8 +92,8 @@ jobs:
             parameters:
               -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
               -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:${{ github.event.number }}
-              -p CPU_REQUEST=20m 
-              -p CPU_LIMIT=40m 
+              -p CPU_REQUEST=40m 
+              -p CPU_LIMIT=80m 
               -p MEMORY_REQUEST=100Mi
               -p MEMORY_LIMIT=200Mi
           - name: webeoc
