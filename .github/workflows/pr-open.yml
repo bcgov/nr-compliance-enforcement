@@ -104,8 +104,8 @@ jobs:
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
-            parameters: -p CPU_REQUEST=25m 
-                        -p CPU_LIMIT=50m 
+            parameters: -p CPU_REQUEST=50m 
+                        -p CPU_LIMIT=100m 
                         -p MEMORY_REQUEST=125Mi
                         -p MEMORY_LIMIT=250Mi
           - name: frontend
