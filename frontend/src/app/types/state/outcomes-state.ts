@@ -1,5 +1,5 @@
 import { Assessment } from "../outcomes/assessment";
 
-export interface AssessmentState {
+export interface OutcomesState {
   assessment: Assessment;
 }

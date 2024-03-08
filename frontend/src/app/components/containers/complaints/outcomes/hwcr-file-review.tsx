@@ -134,7 +134,8 @@ export const HWCRFileReview: FC = () => {
                         </Button>
                     </div>
                 </div>)}
-                {componentState === DISPLAY_STATE && (<div className="comp-details-edit-container">
+                {componentState === DISPLAY_STATE && (
+                <div className="comp-details-edit-container">
                     <div className="comp-details-edit-column">
                         <div className="comp-details-edit-container">
                             <div className="comp-details-label-input-pair" id="review-required-file-review-notes-pair-id">

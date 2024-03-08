@@ -1,29 +1,30 @@
-import { Assessment } from "../../../types/outcomes/assessment";
-import { AssessmentState } from "../../../types/state/assessment-state";
-import { AppThunk, RootState } from "../../store";
+import { Assessment } from "../../types/outcomes/assessment";
+import { AppThunk, RootState } from "../store";
 import { createAction, createSlice } from "@reduxjs/toolkit";
-import config from "../../../../config";
-import { generateApiParameters, get } from "../../../common/api";
+import config from "../../../config";
+import { generateApiParameters, get } from "../../common/api";
+import { OutcomesState } from "../../types/state/outcomes-state";
 
-const initialState: AssessmentState = {
+const initialState: OutcomesState = {
   assessment: {
     action_required: undefined,
     date: undefined,
     justification: undefined,
     officer: undefined,
-    assessment_type: []
-  }
+    assessment_type: [],
+  },
 };
 
-export const assessmentSlice = createSlice({
-  name: "assessment",
+export const outcomesSlice = createSlice({
+  name: "outcomes",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     setAssessment: (state, action) => {
-      const { payload } = action;
-      const assessment: Assessment = payload.assessment;
-      return { ...state, assessment };
+      const {
+        payload: { assessment },
+      } = action;
+      state.assessment = { ...assessment }; // Update only the assessment property
     },
   },
 
@@ -33,35 +34,29 @@ export const assessmentSlice = createSlice({
     builder.addCase(resetAssessment, (state) => {
       return initialState;
     });
-  },  
+  },
 });
 
 // export the actions/reducers
-export const { setAssessment } = assessmentSlice.actions;
+export const { setAssessment } = outcomesSlice.actions;
 
 export const selectAssessment = (state: RootState): Assessment => {
-  return state.assessment.assessment;
+  const { outcomes } = state;
+  return outcomes.assessment;
 };
 
-export const resetAssessment = createAction('assessment/reset');
+export const resetAssessment = createAction("assessment/reset");
 
 // Given a compaint id, returns the assessment
 export const getAssessment =
   (complaint_identifier?: string): AppThunk =>
   async (dispatch) => {
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/case/${complaint_identifier}`
-    );
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaint_identifier}`);
     const response = await get<Assessment>(dispatch, parameters);
 
     if (response) {
-      dispatch(
-        setAssessment({
-          assessment: response,
-        })
-      );
+      dispatch(setAssessment(response));
     }
   };
 
-
-export default assessmentSlice.reducer;
+export default outcomesSlice.reducer;
