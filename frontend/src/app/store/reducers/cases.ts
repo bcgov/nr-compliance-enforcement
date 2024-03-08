@@ -3,9 +3,9 @@ import { AppThunk, RootState } from "../store";
 import { createAction, createSlice } from "@reduxjs/toolkit";
 import config from "../../../config";
 import { generateApiParameters, get } from "../../common/api";
-import { OutcomesState } from "../../types/state/outcomes-state";
+import { CasesState } from "../../types/state/cases-state";
 
-const initialState: OutcomesState = {
+const initialState: CasesState = {
   assessment: {
     action_required: undefined,
     date: undefined,
@@ -15,8 +15,8 @@ const initialState: OutcomesState = {
   },
 };
 
-export const outcomesSlice = createSlice({
-  name: "outcomes",
+export const casesSlice = createSlice({
+  name: "cases",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -38,11 +38,11 @@ export const outcomesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment } = outcomesSlice.actions;
+export const { setAssessment } = casesSlice.actions;
 
 export const selectAssessment = (state: RootState): Assessment => {
-  const { outcomes } = state;
-  return outcomes.assessment;
+  const { cases } = state;
+  return cases.assessment;
 };
 
 export const resetAssessment = createAction("assessment/reset");
@@ -59,4 +59,4 @@ export const getAssessment =
     }
   };
 
-export default outcomesSlice.reducer;
+export default casesSlice.reducer;

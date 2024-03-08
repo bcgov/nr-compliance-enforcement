@@ -3,7 +3,7 @@ export const Migration1 = {
 
     return {
       ...state,
-      outcomes: {
+      cases: {
         assessment: {
         }
       }, // Initializing outcomes reducer to an empty object

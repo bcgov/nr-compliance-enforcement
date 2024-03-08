@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, selectAssessment, setAssessment } from "../../../../store/reducers/outcomes";
+import { resetAssessment, selectAssessment, setAssessment } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError, ToggleSuccess } from "../../../../common/toast";
