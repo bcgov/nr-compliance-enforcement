@@ -58,6 +58,7 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedOfficer(officer);
     }
   }, [complaintData]);
+  
 
   const justificationLabelClass = actionRequired === "No" ? "" : "comp-outcome-hide";
   const justificationEditClass = actionRequired === "No" ? "comp-details-input" : "comp-details-input comp-outcome-hide";
