@@ -22,20 +22,10 @@ export const generateMapComplaintRequestPayload = (
   complaintType: string,
   filters: ComplaintFilters,
   sortKey: string,
-  sortDirection: string
+  sortDirection: string,
 ): ComplaintRequestPayload => {
-  const {
-    region,
-    zone,
-    community,
-    officer,
-    startDate,
-    endDate,
-    status,
-    species,
-    natureOfComplaint,
-    violationType,
-  } = filters;
+  const { region, zone, community, officer, startDate, endDate, status, species, natureOfComplaint, violationType } =
+    filters;
 
   const common = {
     sortColumn: sortKey,
@@ -80,12 +70,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
 
   useEffect(() => {
     //Update map when filters change
-    let payload = generateMapComplaintRequestPayload(
-      type,
-      filters,
-      sortKey,
-      sortDirection
-    );
+    let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
 
     if (searchQuery) {
       payload = { ...payload, query: searchQuery };
@@ -97,12 +82,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   useEffect(() => {
     //when the search Query is cleared refresh the map
     if (!searchQuery) {
-      let payload = generateMapComplaintRequestPayload(
-        type,
-        filters,
-        sortKey,
-        sortDirection
-      );
+      let payload = generateMapComplaintRequestPayload(type, filters, sortKey, sortDirection);
       payload = { ...payload, query: searchQuery };
 
       dispatch(getMappedComplaints(type, payload));
@@ -118,9 +98,9 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
 
   return (
     <LeafletMapWithMultiplePoints
-      complaint_type={type}
+      complaintType={type}
       markers={complaints}
-      unmapped_complaints={unmappedComplaints}
+      unmappedComplaints={unmappedComplaints}
     />
   );
 };

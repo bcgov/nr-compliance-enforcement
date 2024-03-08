@@ -9,41 +9,27 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
 import { ComplaintSummaryPopup } from "./complaint-summary-popup";
 import { useAppDispatch } from "../../hooks/hooks";
-import {
-  getComplaintById,
-  setComplaint,
-} from "../../store/reducers/complaints";
+import { getComplaintById, setComplaint } from "../../store/reducers/complaints";
 import { isEqual } from "lodash";
-import {
-  BsInfoCircleFill
-} from "react-icons/bs";
+import { BsInfoCircleFill } from "react-icons/bs";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
 
 interface MapProps {
-  complaint_type: string;
+  complaintType: string;
   markers: Array<ComplaintMapItem>;
-  unmapped_complaints: number;
+  unmappedComplaints: number;
 }
 
-const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
-  complaint_type,
-  markers,
-  unmapped_complaints,
-}) => {
-  const iconHTML = ReactDOMServer.renderToString(
-    <FontAwesomeIcon icon={faMapMarkerAlt} />,
-  );
+const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, markers, unmappedComplaints }) => {
+  const iconHTML = ReactDOMServer.renderToString(<FontAwesomeIcon icon={faMapMarkerAlt} />);
   const mapRef = useRef<Map | null>(null);
-  const [markersState, setMarkersState] =
-    useState<Array<ComplaintMapItem>>(markers);
+  const [markersState, setMarkersState] = useState<Array<ComplaintMapItem>>(markers);
 
   useEffect(() => {
     if (mapRef.current && markersState.length > 0) {
       // Calculate the bounds of all markers
       const bounds = Leaflet.latLngBounds(
-        markersState.map(
-          (marker) => [marker.latitude, marker.longitude] as LatLngExpression,
-        ),
+        markersState.map((marker) => [marker.latitude, marker.longitude] as LatLngExpression),
       );
 
       // Fit the map to the bounds
@@ -69,60 +55,74 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({
 
   const dispatch = useAppDispatch();
 
-  const handlePopupOpen =
-    (id: string) => (e: L.PopupEvent) => {
-      dispatch(getComplaintById(id, complaint_type))
-    };
+  const handlePopupOpen = (id: string) => (e: L.PopupEvent) => {
+    dispatch(getComplaintById(id, complaintType));
+  };
 
   // unmount complaint when popup closes
   const handlePopupClose = (e: L.LeafletEvent) => {
     dispatch(setComplaint(null));
   };
 
-  const computedClass = (unmapped_complaints === 0) ? "comp-map-unmapped-alert display-none" : "comp-map-unmapped-alert";
-  const pluralization = (unmapped_complaints === 1) ? "" : "s";
+  const renderInformationBanner = () => {
+    if (markers) {
+      const info =
+        markers.length !== 0 && unmappedComplaints !== 0
+          ? `The exact location of ${unmappedComplaints} complaint${
+              unmappedComplaints === 1 ? "" : "s"
+            } could not be determined.`
+          : `No complaints found.`;
 
-  return (<>
-    <div id="complaint-unmapped-notification" className={computedClass}>
-        <BsInfoCircleFill
-          className="filter-image-spacing"
+      return (
+        <div
+          id="complaint-unmapped-notification"
+          className="comp-map-unmapped-alert"
+        >
+          <BsInfoCircleFill className="filter-image-spacing" />
+          {info}
+        </div>
+      );
+    }
+
+    return <></>;
+  };
+
+  return (
+    <>
+      {renderInformationBanner()}
+      <MapContainer
+        id="multi-point-map"
+        style={{ height: "652px", width: "1330px", zIndex: 0 }}
+        className="map-container"
+        center={[53.7267, -127.6476]}
+        zoom={6}
+        ref={mapRef}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        {/*
-         */}
-        The exact location of {unmapped_complaints} complaint{pluralization} could not be determined.
-      </div>
-    <MapContainer
-      id="multi-point-map"
-      style={{ height: "652px", width: "1330px", zIndex: 0 }}
-      className="map-container"
-      center={[53.7267, -127.6476]}
-      zoom={6}
-      ref={mapRef}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      <MarkerClusterGroup>
-        {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            position={[marker.latitude, marker.longitude]}
-            icon={customMarkerIcon}
-            eventHandlers={{
-              popupopen: handlePopupOpen(marker.id),
-              popupclose: handlePopupClose,
-            }}
-          >
-            <ComplaintSummaryPopup
-              complaintType={complaint_type}
-              complaint_identifier={marker.id}
-            />
-          </Marker>
-        ))}
-      </MarkerClusterGroup>
-    </MapContainer>
-    </>);
+        <MarkerClusterGroup>
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              position={[marker.latitude, marker.longitude]}
+              icon={customMarkerIcon}
+              eventHandlers={{
+                popupopen: handlePopupOpen(marker.id),
+                popupclose: handlePopupClose,
+              }}
+            >
+              <ComplaintSummaryPopup
+                complaintType={complaintType}
+                complaint_identifier={marker.id}
+              />
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
+      </MapContainer>
+    </>
+  );
 };
 
 export default LeafletMapWithMultiplePoints;
