@@ -1257,7 +1257,7 @@ p {
 }
 
 .error-border {
-  border-color: $bc-gov-danger;
+  border-color: $bc-gov-danger !important;
 }
 
 .error-select-border {

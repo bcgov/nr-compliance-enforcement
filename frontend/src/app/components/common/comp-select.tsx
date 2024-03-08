@@ -61,7 +61,7 @@ export const CompSelect: FC<Props> = ({
   };
 
   return (
-    <>
+    <div className={className}>
       <Select
         id={id}
         className={
@@ -78,6 +78,6 @@ export const CompSelect: FC<Props> = ({
         isDisabled={isDisabled}
       />
       {enableValidation && <div className="error-message">{errorMessage}</div>}
-    </>
+    </div>
   );
 };
