@@ -106,8 +106,8 @@ jobs:
             overwrite: false
             parameters: -p CPU_REQUEST=50m 
                         -p CPU_LIMIT=100m 
-                        -p MEMORY_REQUEST=125Mi
-                        -p MEMORY_LIMIT=250Mi
+                        -p MEMORY_REQUEST=250Mi
+                        -p MEMORY_LIMIT=500Mi
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
