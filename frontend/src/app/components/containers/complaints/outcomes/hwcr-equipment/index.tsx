@@ -27,10 +27,15 @@ export const HWCREquipment: FC = memo(() => {
   const [isInEditMode, setIsInEditMode] = useState<boolean>(false);
   const [editEquipment, setEditEquipment] = useState<Equipment|null>(null);
 
+  const handleDelete = (indexItem: number) => {
+    equipmentData.splice(indexItem,1);
+    setEquipmentData([...equipmentData]);
+  }
+
   return (
     <div className="comp-outcome-report-block">
       <h6>Equipment</h6>
-      {equipmentData.map((equipment,indexItem)=>
+      {equipmentData && equipmentData.length > 0 ? equipmentData.map((equipment,indexItem)=>
         isInEditMode && equipment.isEdit? 
           <EquipmentForm
             key={equipment.id}
@@ -49,8 +54,10 @@ export const HWCREquipment: FC = memo(() => {
             equipment={equipment}
             setIsInEditMode={setIsInEditMode}
             setEditEquipment={setEditEquipment}
+            indexItem={indexItem}
+            handleDelete={handleDelete}
           />
-      )}
+      ): null}
       {/* Add Equipment Form */}
       {showEquipmentForm ?
         <EquipmentForm

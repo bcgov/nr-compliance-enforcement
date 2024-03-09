@@ -24,6 +24,14 @@ parameters:
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
+  - name: CPU_REQUEST
+    value: "50m"
+  - name: MEMORY_REQUEST
+    value: "250Mi"
+  - name: CPU_LIMIT
+    value: "250m"
+  - name: MEMORY_LIMIT
+    value: "1Gi"
   ### Backup-Container starts here ###
   - name: BACKUP_COMPONENT
     description: BACKUP_COMPONENT name
@@ -94,6 +102,9 @@ objects:
       resources:
         requests:
           storage: ${DB_PVC_SIZE}
+          cpu: "50m"
+        limits:
+          cpu: "100m"
       storageClassName: netapp-file-standard
   - kind: ImageStream
     apiVersion: v1
@@ -153,6 +164,13 @@ objects:
               ports:
                 - containerPort: 5432
                   protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
               readinessProbe:
                 exec:
                   command:
