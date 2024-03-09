@@ -28,7 +28,7 @@ describe("Complaints on map tests", () => {
       cy.get("#comp-status-filter").should("exist");
       cy.get("#comp-zone-filter").should("exist");
 
-      cy.get("#complaint-unmapped-notification").should("exist");
+      //cy.get("#complaint-unmapped-notification").should("exist");
 
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
 
@@ -155,6 +155,43 @@ describe("Complaints on map tests", () => {
       cy.get("#view-complaint-details-button-id").click({ force: true });
 
       cy.waitForSpinner();
+    });
+
+    it("Verify banner is displayed when no results", () => {
+      cy.visit("/");
+      cy.waitForSpinner();
+
+      cy.get(complaintTypes[index]).click({ force: true });
+
+      // switch to map view
+      cy.get("#map_toggle_id").should("exist").click({ force: true });
+
+      // wait for the map to load
+      cy.waitForSpinner();
+
+      // verify default filters
+      cy.get("#comp-status-filter").should("exist");
+      cy.get("#comp-zone-filter").should("exist");
+
+      cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so this complaint is in the list view
+
+      // verify no other filters exist
+      cy.get("#comp-officer-filter").should("not.exist");
+      cy.get("#comp-community-filter").should("not.exist");
+      cy.get("#comp-region-filter").should("not.exist");
+
+      if ("#hwcr-tab".includes(complaintTypes[index])) {
+        cy.get("#comp-species-filter").should("not.exist");
+        cy.get("#comp-nature-of-complaint-filter").should("not.exist");
+      } else {
+        cy.get("#comp-violation-filter").should("not.exist");
+      }
+
+      //-- search for sibling and verify there's one complaint
+      cy.get("#complaint-search").click({ force: true });
+      cy.get("#complaint-search").clear().type("123456789qawsedrftg{enter}"); //-- {enter} will perform an enter keypress
+
+      cy.get("#complaint-no-results-notification").should("exist");
     });
   });
 });

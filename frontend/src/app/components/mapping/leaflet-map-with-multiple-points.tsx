@@ -65,18 +65,20 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
   };
 
   const renderInformationBanner = () => {
+    const isPluralized = unmappedComplaints === 1 ? "" : "s";
+
+    const bannerType = markers.length !== 0 && unmappedComplaints !== 0 ? "unmapped" : "no-results";
+
     if (markers) {
       const info =
         markers.length !== 0 && unmappedComplaints !== 0
-          ? `The exact location of ${unmappedComplaints} complaint${
-              unmappedComplaints === 1 ? "" : "s"
-            } could not be determined.`
+          ? `The exact location of ${unmappedComplaints} complaint${isPluralized} could not be determined.`
           : `No complaints found.`;
 
       return (
         <div
-          id="complaint-unmapped-notification"
-          className="comp-map-unmapped-alert"
+          id={`complaint-${bannerType}-notification`}
+          className={`comp-map-${bannerType}-alert`}
         >
           <BsInfoCircleFill className="filter-image-spacing" />
           {info}
