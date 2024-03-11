@@ -11,6 +11,7 @@ import { useAppDispatch } from "../../../../hooks/hooks";
 import { ToggleError } from "../../../../common/toast";
 import { openModal } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 export const HWCRFileAttachments: FC = () => {
   type ComplaintParams = {
@@ -27,12 +28,14 @@ export const HWCRFileAttachments: FC = () => {
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
 
+  const [outcomeAttachmentCount, setOutcomeAttachmentCount] = useState<number>(0);
+
+  const handleSlideCountChange = (count: number) => {
+    setOutcomeAttachmentCount(count);
+  };
+
   const saveButtonClick = async () => {
     if (!hasValidationErrors()) {
-      const additionalHeader = {
-        "x-amz-meta-is-case": "Y",
-      };
-
       handlePersistAttachments(
         dispatch,
         attachmentsToAdd,
@@ -40,7 +43,6 @@ export const HWCRFileAttachments: FC = () => {
         id,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
-        additionalHeader,
       );
     } else {
       ToggleError("Errors in form");
@@ -81,13 +83,40 @@ export const HWCRFileAttachments: FC = () => {
   };
 
   return (
-    <AttachmentsCarousel
-      title={"Outcome attachments"}
-      complaintIdentifier={id}
-      allowUpload={true}
-      allowDelete={true}
-      onFilesSelected={onHandleAddAttachments}
-      onFileDeleted={onHandleDeleteAttachment}
-    />
+    <div className="comp-outcome-report-block">
+      <h6>Outcome attachments ({outcomeAttachmentCount})</h6>
+      <div className="comp-outcome-report-complaint-attachments">
+      <AttachmentsCarousel
+        complaintIdentifier={id}
+        allowUpload={true}
+        allowDelete={true}
+        onFilesSelected={onHandleAddAttachments}
+        onFileDeleted={onHandleDeleteAttachment}
+        onSlideCountChange={handleSlideCountChange}
+      />
+      <div className="comp-outcome-report-block">
+        <div className="comp-outcome-report-container carousel-save-buttons">
+          <div className="comp-outcome-report-actions">
+            <Button
+              id="outcome-cancel-button"
+              title="Cancel Outcome"
+              className="comp-outcome-cancel"
+              onClick={cancelButtonClick}
+            >
+              Cancel
+            </Button>
+            <Button
+              id="outcome-save-button"
+              title="Save Outcome"
+              className="comp-outcome-save"
+              onClick={saveButtonClick}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
   );
 };

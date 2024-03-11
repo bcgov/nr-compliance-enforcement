@@ -76,7 +76,7 @@ export class CodeTableService {
   private _reportedByRepository: Repository<ReportedByCode>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
-    console.log("in code table: " + JSON.stringify(table));
+    this.logger.debug("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find(
@@ -375,7 +375,7 @@ export class CodeTableService {
         return justificationCodes;
       }
       case "assessment-type": {
-        console.log("in assessment type")
+        this.logger.debug("in assessment type")
         const assessmentTypeCodes: AssessmentType[] = [
           { assessmentType: "Assessed public safety risk",
             shortDescription: "Assessed public safety risk",

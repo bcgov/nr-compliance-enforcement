@@ -51,6 +51,7 @@ import { Delegate } from "../../../../types/app/people/delegate";
 import { UUID } from "crypto";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 import { ComplaintAlias } from "../../../../types/app/aliases";
+import AttachmentEnum from "../../../../constants/attachment-enum";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();

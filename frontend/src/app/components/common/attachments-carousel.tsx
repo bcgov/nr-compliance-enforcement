@@ -20,24 +20,23 @@ import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
 import { getThumbnailDataURL, isImage } from "../../common/methods";
-import { Button } from "react-bootstrap";
 
 type Props = {
-  title?: string;
   complaintIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
   onFilesSelected?: (attachments: File[]) => void;
   onFileDeleted?: (attachments: COMSObject) => void;
+  onSlideCountChange?: (count: number) => void;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
-  title,
   complaintIdentifier,
   allowUpload,
   allowDelete,
   onFilesSelected,
   onFileDeleted,
+  onSlideCountChange,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -54,6 +53,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
   const [slides, setSlides] = useState<COMSObject[]>([]);
+  const [slideCount, setSlideCount] = useState<number>(0);
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
@@ -77,6 +77,16 @@ export const AttachmentsCarousel: FC<Props> = ({
       dispatch(setAttachments([]));
     };
   }, [dispatch]);
+
+  // Update the slide count when the slides state changes
+  useEffect(() => {
+    setSlideCount(slides.length);
+
+    // Call the onSlideCountChange prop with the updated count
+    if (onSlideCountChange) {
+      onSlideCountChange(slides.length);
+    }
+  }, [slides, onSlideCountChange]);
 
  function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
   // Create a copy of the array using slice() or spread syntax
@@ -186,8 +196,6 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
-      <h6>{title ? title : "Attachments"} ({slides?.length ? slides.length : 0})</h6>
-
       {(allowUpload || (slides && slides?.length > 0)) && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
@@ -220,28 +228,6 @@ export const AttachmentsCarousel: FC<Props> = ({
           </Slider>
         </CarouselProvider>
       )}
-      <div className="comp-outcome-report-block">
-        <div className="comp-outcome-report-container carousel-save-buttons">
-          <div className="comp-outcome-report-actions">
-            <Button
-              id="outcome-cancel-button"
-              title="Cancel Outcome"
-              className="comp-outcome-cancel"
-              onClick={(e) => (e)}
-            >
-              Cancel
-            </Button>
-            <Button
-              id="outcome-save-button"
-              title="Save Outcome"
-              className="comp-outcome-save"
-              onClick={(e) => (e)}
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

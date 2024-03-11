@@ -54,11 +54,7 @@ export async function handlePersistAttachments(
   }
 
   if (attachmentsToAdd) {
-    if (additionalHeader) {
-      await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, additionalHeader));
-    } else {
-      await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier));
-    }
+    await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier));
   }
 
   // refresh store
