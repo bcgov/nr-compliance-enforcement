@@ -13,6 +13,7 @@ import { getComplaintById, setComplaint } from "../../store/reducers/complaints"
 import { isEqual } from "lodash";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
+import { from } from "linq-to-typescript";
 
 interface MapProps {
   complaintType: string;
@@ -59,23 +60,19 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
     dispatch(getComplaintById(id, complaintType));
   };
 
-  // unmount complaint when popup closes
   const handlePopupClose = (e: L.LeafletEvent) => {
     dispatch(setComplaint(null));
   };
 
   const renderInformationBanner = () => {
     const isPluralized = unmappedComplaints === 1 ? "" : "s";
-    const bannerType = markers.length !== 0 && unmappedComplaints !== 0 ? "unmapped" : "no-results";
 
-    console.log("markers: ", markers)
-    console.log("unmapped: ", unmappedComplaints)
-
-    if (markers) {
+    if ((from(markers).any() && unmappedComplaints >= 1) || (!from(markers).any() && unmappedComplaints === 0)) {
+      const bannerType = from(markers).any() && unmappedComplaints >= 1 ? "unmapped" : "no-results";
       const info =
-        markers.length !== 0 && unmappedComplaints !== 0
+        from(markers).any() && unmappedComplaints >= 1
           ? `The exact location of ${unmappedComplaints} complaint${isPluralized} could not be determined.`
-          : `No complaints found.`;
+          : "No complaints found.";
 
       return (
         <div
