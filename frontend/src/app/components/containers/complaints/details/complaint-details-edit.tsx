@@ -1177,7 +1177,7 @@ export const ComplaintDetailsEdit: FC = () => {
           />
         </>
       )}
-      {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
+      {readOnly && <AttachmentsCarousel title="Complaint attachments" complaintIdentifier={id} />}
       {readOnly && (
         <ComplaintLocation
           parentCoordinates={{ lat: +latitude, lng: +longitude }}

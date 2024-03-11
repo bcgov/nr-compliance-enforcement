@@ -22,7 +22,7 @@ export const handleDeleteAttachments = (
   setAttachmentsToDelete: React.Dispatch<
     React.SetStateAction<COMSObject[] | null>
   >,
-  fileToDelete: COMSObject
+  fileToDelete: COMSObject,
 ) => {
   if (!fileToDelete.pendingUpload) {
     // a user is wanting to delete a previously uploaded attachment
@@ -46,14 +46,19 @@ export async function handlePersistAttachments(
   attachmentsToDelete: COMSObject[] | null,
   complaintIdentifier: string,
   setAttachmentsToAdd: any,
-  setAttachmentsToDelete: any
+  setAttachmentsToDelete: any,
+  additionalHeader?: Record<string, string>
 ) {
   if (attachmentsToDelete) {
     await dispatch(deleteAttachments(attachmentsToDelete));
   }
 
   if (attachmentsToAdd) {
-    await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier));
+    if (additionalHeader) {
+      await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, additionalHeader));
+    } else {
+      await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier));
+    }
   }
 
   // refresh store

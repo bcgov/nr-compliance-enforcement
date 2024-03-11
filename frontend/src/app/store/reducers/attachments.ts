@@ -66,27 +66,34 @@ export const { setAttachments, removeAttachment , addAttachment} = attachmentsSl
 
 // Get list of the attachments and update store
 export const getAttachments =
-  (complaint_identifier: string): AppThunk =>
+  (complaint_identifier: string, additionalHeader?: Record<string, string>): AppThunk =>
   async (dispatch) => {
     try {
+      const baseHeader = {
+        "x-amz-meta-complaint-id": complaint_identifier,
+        "x-amz-meta-is-thumb": "N",
+        ...(additionalHeader || {}),
+      };
+
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      const response = await get<Array<COMSObject>>(dispatch, parameters, {
-        "x-amz-meta-complaint-id": complaint_identifier,
-        "x-amz-meta-is-thumb": "N",
-      });
+      
+      const response = await get<Array<COMSObject>>(dispatch, parameters, baseHeader);
+
       if (response && from(response).any()) {
         for(let attachment of response)
         {
-          //try{
           if(isImage(attachment.name))
           {
-            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
+            const thumbHeader = {
               "x-amz-meta-complaint-id": complaint_identifier,
               "x-amz-meta-is-thumb": "Y",
               "x-amz-meta-thumb-for": attachment?.id,
-            });
+              ...(additionalHeader || {}),
+            };
+
+            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, thumbHeader);
             
             if(thumbArrayResponse[0]?.id)
             {
@@ -99,11 +106,6 @@ export const getAttachments =
               attachment.imageIconId = thumbArrayResponse[0]?.id;
               }
           }
-
-          /*}catch (error) {
-            console.log("getThumbError: " + error);
-            ToggleError(`Error retrieving thumbnail`);
-          }*/
         }
         
         dispatch(
@@ -151,7 +153,7 @@ export const deleteAttachments =
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: File[], complaint_identifier: string): AppThunk =>
+  (attachments: File[], complaint_identifier: string, additionalHeader?: Record<string, string>): AppThunk =>
   async (dispatch) => {
 
     if (!attachments) {
@@ -167,6 +169,7 @@ export const saveAttachments =
           complaint_identifier
         ))}"`,
         "Content-Type": attachment?.type,
+        ...(additionalHeader || {}), // Merge additionalHeader if provided
       };
 
       try {
@@ -191,6 +194,7 @@ export const saveAttachments =
               complaint_identifier
             ))}"`,
             "Content-Type": "image/jpeg",
+            ...(additionalHeader || {}), // Merge additionalHeader if provided
           };  
 
           const thumbnailFile = await getThumbnailFile(attachment).catch(error => {
