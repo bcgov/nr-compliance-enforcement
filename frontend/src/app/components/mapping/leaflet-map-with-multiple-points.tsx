@@ -65,12 +65,22 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
   };
 
   const renderInformationBanner = () => {
+    const showBar = () => {
+      if (unmappedComplaints >= 1) {
+        return true;
+      } else if (!from(markers).any()) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     const isPluralized = unmappedComplaints === 1 ? "" : "s";
 
-    if ((from(markers).any() && unmappedComplaints >= 1) || (!from(markers).any() && unmappedComplaints === 0)) {
-      const bannerType = from(markers).any() && unmappedComplaints >= 1 ? "unmapped" : "no-results";
+    if (showBar()) {
+      const bannerType = unmappedComplaints >= 1 ? "unmapped" : "no-results";
       const info =
-        from(markers).any() && unmappedComplaints >= 1
+        unmappedComplaints >= 1
           ? `The exact location of ${unmappedComplaints} complaint${isPluralized} could not be determined.`
           : "No complaints found.";
 
