@@ -66,7 +66,6 @@ import { AttractantXref } from "../../../../types/app/complaints/attractant-xref
 import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
-import AttachmentEnum from "../../../../constants/attachment-enum";
 
 type ComplaintParams = {
   id: string;
@@ -165,13 +164,6 @@ export const ComplaintDetailsEdit: FC = () => {
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
-
-  const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
-
-  const handleSlideCountChange = (count: number) => {
-    setComplaintAttachmentCount(count);
-  };
-
 
   //-- use effects
   useEffect(() => {
@@ -1168,19 +1160,13 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
-          <div className="comp-complaint-details-block">
-          <h6>Complaint attachments ({complaintAttachmentCount})</h6>
-            <div className="comp-attachments">
-              <AttachmentsCarousel
-                complaintIdentifier={id}
-                allowUpload={true}
-                allowDelete={true}
-                onFilesSelected={onHandleAddAttachments}
-                onFileDeleted={onHandleDeleteAttachment}
-                onSlideCountChange={handleSlideCountChange}
-              />
-            </div>
-          </div>
+          <AttachmentsCarousel
+            complaintIdentifier={id}
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={onHandleAddAttachments}
+            onFileDeleted={onHandleDeleteAttachment}
+          />
           <ComplaintLocation
             parentCoordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
@@ -1191,16 +1177,7 @@ export const ComplaintDetailsEdit: FC = () => {
           />
         </>
       )}
-      {readOnly && 
-      <div className="comp-complaint-details-block">
-        <h6>Complaint attachments ({complaintAttachmentCount})</h6>
-        { complaintAttachmentCount > 0 &&
-          <div className="comp-attachments">
-            <AttachmentsCarousel complaintIdentifier={id} />
-          </div>
-        }
-      </div>
-      }
+      {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
       {readOnly && (
         <ComplaintLocation
           parentCoordinates={{ lat: +latitude, lng: +longitude }}
