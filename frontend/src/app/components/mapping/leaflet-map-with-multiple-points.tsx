@@ -66,8 +66,10 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
 
   const renderInformationBanner = () => {
     const isPluralized = unmappedComplaints === 1 ? "" : "s";
-
     const bannerType = markers.length !== 0 && unmappedComplaints !== 0 ? "unmapped" : "no-results";
+
+    console.log("markers: ", markers)
+    console.log("unmapped: ", unmappedComplaints)
 
     if (markers) {
       const info =
