@@ -59,7 +59,7 @@ export const HWCROutcomeByAnimal: FC = () => {
 
   const handleEdit = (indexItem: number) => {
     const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
-      if(i === indexItem) return Object.assign({}, animalOutcome,{isInEditMode: true});
+      if(i === indexItem) return {...animalOutcome, isInEditMode: true}
       else return animalOutcome
     });
     if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);

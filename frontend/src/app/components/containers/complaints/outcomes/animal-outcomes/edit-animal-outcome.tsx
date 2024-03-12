@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
-import { selectAgeDropdown, selectConflictHistoryDropdown, selectEarDropdown, selectEquipmentDropdown, selectSexDropdown, selectSpeciesCodeDropdown, selectThreatLevelDropdown, selectWildlifeComplaintOutcome } from "../../../../../store/reducers/code-table";
+import { selectAgeDropdown, selectConflictHistoryDropdown, selectSexDropdown, selectSpeciesCodeDropdown, selectThreatLevelDropdown, selectWildlifeComplaintOutcome } from "../../../../../store/reducers/code-table";
 import { selectComplaint} from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { pad } from "../../../../../common/methods";
@@ -70,10 +70,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [officer, setOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
 
   const handleSaveAnimalOutcome = () => {
+    const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
     if(isValid())
     {
       const newAnimalOutcome: AnimalOutcome = {
-        id: editMode ? animalOutcomeItemData?.id?.toString() : uuidv4(),
+        id: id,
         isInEditMode: false,
         species,
         sex,
@@ -96,7 +97,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       }
       
       else{
-        const newAnimalOutcomeArr = animalOutcomeData ? animalOutcomeData : [];
+        const newAnimalOutcomeArr = animalOutcomeData ?? [];
         if(newAnimalOutcome) newAnimalOutcomeArr.push(newAnimalOutcome);
         if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
         if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
@@ -109,7 +110,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const handleCancelAnimalOutcome = () => {
     if(editMode) {
       const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
-        if(i === indexItem) return Object.assign({}, animalOutcome,{isInEditMode: false})
+        if(i === indexItem) return {...animalOutcome, isInEditMode: false}
         else return animalOutcome
       });
       if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
