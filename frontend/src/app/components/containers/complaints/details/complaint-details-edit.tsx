@@ -1148,6 +1148,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label
                       id="complaint-caller-info-secondary-phone-label-id"
                       className="col-auto"
+                      htmlFor="caller-info-secondary-phone-id"
                     >
                       Alternate 1 Phone
                     </label>
