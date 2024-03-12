@@ -1194,11 +1194,9 @@ export const ComplaintDetailsEdit: FC = () => {
       {readOnly && 
       <div className="comp-complaint-details-block">
         <h6>Complaint attachments ({complaintAttachmentCount})</h6>
-        { complaintAttachmentCount > 0 &&
           <div className="comp-attachments">
-            <AttachmentsCarousel complaintIdentifier={id} />
+            <AttachmentsCarousel complaintIdentifier={id} onSlideCountChange={handleSlideCountChange} />
           </div>
-        }
       </div>
       }
       {readOnly && (
