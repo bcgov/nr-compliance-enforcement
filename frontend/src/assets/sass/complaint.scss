@@ -1276,16 +1276,26 @@ p {
   padding: 24px;
   border: 1px solid #eea8ab;
   border-radius: 3px;
-  background-color: #fbeaea;
+  background-color: $bc-gov-danger-100;
   color: $bc-gov-danger;
 }
 
 .comp-map-unmapped-alert {
   margin: 7px 0px;
   padding: 16px;
-  border: 1px solid #C7C7C7;
+  border: 1px solid $gray-300;
   border-radius: 4px;
-  background-color: #F2F2F2;
+  background-color: $bc-gov-neutral-100;
+  color: $black;
+  width: 1330px;
+}
+
+.comp-map-no-results-alert {
+  margin: 7px 0px;
+  padding: 16px;
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+  background-color: $bc-gov-neutral-100;
   color: $black;
   width: 1330px;
 }
@@ -1304,7 +1314,7 @@ p {
   border: 1px solid #eea8ab;
   border-radius: 3px !important;
   background: #fae1e2 !important;
-  background-color: #fbeaea !important;
+  background-color: $bc-gov-danger-100 !important;
   color: $bc-gov-danger !important;
 }
 
