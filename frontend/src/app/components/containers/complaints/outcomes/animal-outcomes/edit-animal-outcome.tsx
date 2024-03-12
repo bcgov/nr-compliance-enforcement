@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import DatePicker from "react-datepicker";
 import { ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from 'uuid';
@@ -54,14 +54,9 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
 
-  const ears = useAppSelector(selectEarDropdown);
-  const leftEar = ears.find((ear) => ear.value === "L");
-  const rightEar = ears.find((ear) => ear.value === "R");
-
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown((complaintData?.ownedBy ? complaintData?.ownedBy : 'COS')));
 
-  const [isInEditMode, setIsInEditMode] = useState<boolean>(animalOutcomeItemData?.isInEditMode ?? false);
   const [species, setSpecies] = useState<Option | undefined>(animalOutcomeItemData?.species);
   const [sex, setSex] = useState<Option | undefined>(animalOutcomeItemData?.sex);
   const [age, setAge] = useState<Option | undefined>(animalOutcomeItemData?.age);
@@ -73,84 +68,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [outcome, setOutcome] = useState<Option | undefined>(animalOutcomeItemData?.outcome);
   const [date, setDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
   const [officer, setOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
-
-  /*
-  useEffect(() => {
-    if (species) {
-        setSpecies(species);
-    }
-  }, [species, speciesList]);
-
-  useEffect(() => {
-    if (sex) {
-        setSex(sex);
-    }
-  }, [sex, sexes]);
-
-  useEffect(() => {
-    if (age) {
-        setAge(age);
-    }
-  }, [age, ages]);
-
-  useEffect(() => {
-    if (threatLevel) {
-        setThreatLevel(threatLevel);
-    }
-  }, [threatLevel, threatLevels]);
-
-  useEffect(() => {
-    if (conflictHistory) {
-
-        setConflictHistory(conflictHistory);
-      }
-  }, [conflictHistory, conflictHistories]);
-
-  useEffect(() => {
-    if (conflictHistory) {
-
-        setConflictHistory(conflictHistory);
-      }
-  }, [conflictHistory, conflictHistories]);
-
-  useEffect(() => {
-    if (conflictHistory) {
-
-        setConflictHistory(conflictHistory);
-      }
-  }, [conflictHistory, conflictHistories]);
-
-  useEffect(() => {
-    if (tags) {
-        setTags(tags);
-        renderEarTags();
-      }
-  }, [tags]);
-
-  useEffect(() => {
-    if (drugs) {
-      setDrugs(drugs);
-      }
-  }, [drugs]);
-
-  useEffect(() => {
-    if (drugAuthorization) {
-      setDrugAuthorization(drugAuthorization);
-      }
-  }, [drugAuthorization]);
-
-
-  useEffect(() => {
-    if (outcome) {
-        setOutcome(outcome);
-    }
-  }, [outcome, outcomes]);
-
-  useEffect(() => {
-    if (officer) {
-        setOfficer(officer);
-    }
-  }, [officer, officers]);*/
 
   const handleSaveAnimalOutcome = () => {
     if(isValid())
@@ -175,7 +92,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           if(i === indexItem) return newAnimalOutcome
           else return animalOutcome
         });
-        setIsInEditMode(false);
         if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
       }
       
@@ -183,7 +99,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         const newAnimalOutcomeArr = animalOutcomeData ? animalOutcomeData : [];
         if(newAnimalOutcome) newAnimalOutcomeArr.push(newAnimalOutcome);
         if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
-        setIsInEditMode(false);
         if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
       }
     }
@@ -198,13 +113,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         else return animalOutcome
       });
       if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
-      setIsInEditMode(false);
     }
     
     else{
       const newAnimalOutcomeArr = animalOutcomeData ? animalOutcomeData.splice(animalOutcomeData.length - 1, 1) : [];
       if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
-      setIsInEditMode(false);
       if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
     }
   }
