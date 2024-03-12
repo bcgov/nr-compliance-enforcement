@@ -287,6 +287,11 @@ p {
   border-radius: 4px;
 }
 
+.comp-view-complaint-details-button span.comp-view-complaint-badge:hover {
+  color: $white;
+  background-color: $bc-gov-primary
+}
+
 .comp-status-badge-open {
   background-color: $green-100-80;
   color: $green-100;
