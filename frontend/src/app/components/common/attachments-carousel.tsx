@@ -54,7 +54,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
   const [slides, setSlides] = useState<COMSObject[]>([]);
-  const [slideCount, setSlideCount] = useState<number>(0);
+  const [, setSlideCount] = useState<number>(0);
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
