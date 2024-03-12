@@ -216,7 +216,7 @@ export const HWCRComplaintAssessment: FC = () => {
           <div className="comp-details-edit-column">
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div className="comp-details-label-checkbox-div-pair">
+                <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
                   <label
                     htmlFor="checkbox-div"
                     className="comp-details-inner-content-label checkbox-label-padding"
@@ -242,7 +242,7 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div className="comp-details-label-input-pair">
+                <div id="action-required-div" className="comp-details-label-input-pair">
                   <label htmlFor="action-required">Action required?</label>
                   {editable ? (
                     <CompSelect
@@ -262,7 +262,7 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div className="comp-details-label-input-pair">
+                <div id="justification-div" className="comp-details-label-input-pair">
                   <label
                     className={justificationLabelClass}
                     htmlFor="justification"
@@ -289,7 +289,7 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div className="comp-details-label-input-pair">
+                <div id="outcome-officer-div" className="comp-details-label-input-pair">
                   <label htmlFor="outcome-officer">Officer</label>
                   {editable ? (
                     <CompSelect
@@ -319,8 +319,8 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div className="comp-details-label-input-pair">
-                  <label htmlFor="justification">Date</label>
+                <div id="complaint-outcome-date-div"className="comp-details-label-input-pair">
+                  <label htmlFor="complaint-outcome-date">Date</label>
                   {editable ? (
                     <ValidationDatePicker
                       id="complaint-outcome-date"
@@ -341,6 +341,7 @@ export const HWCRComplaintAssessment: FC = () => {
           {!editable && (
             <div className="comp-details-right-column">
               <CompTextIconButton
+                id="assessment-edit-button"
                 buttonClasses="button-text"
                 text="Edit"
                 icon={BsPencil}
