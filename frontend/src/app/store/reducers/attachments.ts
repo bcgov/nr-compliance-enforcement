@@ -16,7 +16,8 @@ import axios from "axios";
 import AttachmentEnum from "../../constants/attachment-enum";
 
 const initialState: AttachmentsState = {
-  attachments: [],
+  complaintsAttachments: [],
+  outcomeAttachments: []
 };
 
 /**
@@ -33,14 +34,14 @@ export const attachmentsSlice = createSlice({
       const {
         payload: { attachments },
       } = action;
-      return { ...state, attachments: attachments ?? [] };
+      return { ...state, complaintsAttachments: attachments ?? [] };
     },
 
     // used when removing an attachment from a complaint
     removeAttachment: (state, action) => {
       return {
         ...state,
-        attachments: state.attachments.filter(attachment => attachment.id !== action.payload),
+        complaintsAttachments: state.complaintsAttachments.filter(attachment => attachment.id !== action.payload),
       };
     },
 
@@ -51,7 +52,34 @@ export const attachmentsSlice = createSlice({
 
       return {
         ...state,
-        attachments: [...state.attachments, serializedFile],
+        complaintsAttachments: [...state.complaintsAttachments, serializedFile],
+      };
+    },
+
+    // used when retrieving attachments from objectstore
+    setOutcomeAttachments: (state, action) => {
+      const {
+        payload: { attachments },
+      } = action;
+      return { ...state, outcomeAttachments: attachments ?? [] };
+    },
+
+    // used when removing an attachment from a complaint
+    removeOutcomeAttachment: (state, action) => {
+      return {
+        ...state,
+        outcomeAttachments: state.outcomeAttachments.filter(attachment => attachment.id !== action.payload),
+      };
+    },
+
+    // used when adding an attachment to a complaint
+    addOutcomeAttachment: (state, action) => {
+      const { name, type, size, id } = action.payload; // Extract relevant info
+      const serializedFile = { name, type, size, id }; 
+
+      return {
+        ...state,
+        outcomeAttachments: [...state.outcomeAttachments, serializedFile],
       };
     },
     
@@ -63,7 +91,7 @@ export const attachmentsSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAttachments, removeAttachment , addAttachment} = attachmentsSlice.actions;
+export const { setAttachments, removeAttachment , addAttachment, setOutcomeAttachments, removeOutcomeAttachment , addOutcomeAttachment } = attachmentsSlice.actions;
 
 // Get list of the attachments and update store
 export const getAttachments =
@@ -105,12 +133,21 @@ export const getAttachments =
               }
           }
         }
-        
-        dispatch(
-          setAttachments({
-            attachments: response ?? [],
-          })
-        );
+        switch (attachmentType) {
+          case AttachmentEnum.COMPLAINT_ATTACHMENT:
+            dispatch(
+              setAttachments({
+                attachments: response ?? [],
+              })
+            );    
+            break;
+          case AttachmentEnum.OUTCOME_ATTACHMENT:
+            dispatch(
+              setOutcomeAttachments({
+                attachments: response ?? [],
+              })
+            );
+        }
       }
     } catch (error) {
       ToggleError(`Error retrieving attachments`);
@@ -182,7 +219,14 @@ export const saveAttachments =
           header,
           attachment
         );
-        dispatch(addAttachment(response)); // dispatch with serializable payload
+        switch (attachmentType) {
+          case AttachmentEnum.COMPLAINT_ATTACHMENT:
+            dispatch(addAttachment(response)); // dispatch with serializable payload
+            break;
+          case AttachmentEnum.OUTCOME_ATTACHMENT:
+            dispatch(addOutcomeAttachment(response)); // dispatch with serializable payload
+        }
+
         if(isImage(attachment.name))
         {
           const thumbHeader = {
@@ -230,11 +274,28 @@ export const saveAttachments =
   };
 
 //-- selectors
-export const selectAttachments = () => (state: RootState): COMSObject[]  => {
+export const selectAttachments = (attachmentType: AttachmentEnum) => (state: RootState): COMSObject[]  => {
   const { attachments: attachmentsRoot } = state;
-  const { attachments } = attachmentsRoot;
 
-  return attachments ?? [];
+  switch (attachmentType) {
+    case AttachmentEnum.COMPLAINT_ATTACHMENT:
+      const { complaintsAttachments } = attachmentsRoot;
+
+      return complaintsAttachments ?? [];    
+    case AttachmentEnum.OUTCOME_ATTACHMENT:
+      const { outcomeAttachments } = attachmentsRoot;
+
+      return outcomeAttachments ?? [];
+    
+  }
+
+};
+
+export const selectOutcomeAttachments = () => (state: RootState): COMSObject[]  => {
+  const { attachments: attachmentsRoot } = state;
+  const { outcomeAttachments } = attachmentsRoot;
+
+  return outcomeAttachments ?? [];
 };
 
 export default attachmentsSlice.reducer;

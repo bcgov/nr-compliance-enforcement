@@ -45,7 +45,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize)
 
-  const carouselData = useAppSelector(selectAttachments());
+  const carouselData = useAppSelector(selectAttachments(attachmentType));
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
   const SLIDE_HEIGHT = 200;
