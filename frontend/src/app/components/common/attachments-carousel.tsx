@@ -11,6 +11,7 @@ import {
   getAttachments,
   selectAttachments,
   setAttachments,
+  setOutcomeAttachments,
 } from "../../store/reducers/attachments";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
@@ -75,6 +76,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   useEffect(() => {
     return () => {
       dispatch(setAttachments([]));
+      dispatch(setOutcomeAttachments([]));
     };
   }, [dispatch]);
 
