@@ -224,6 +224,8 @@ export const ComplaintDetailsEdit: FC = () => {
         setAttachmentsToAdd,
         setAttachmentsToDelete
       );
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       ToggleError("Errors in form");
       setErrorNotificationClass("comp-complaint-error");
