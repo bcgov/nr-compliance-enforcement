@@ -35,7 +35,7 @@ export const AnimalOutcomeItem: FC<AnimalOutcomeProps> = ({
   return (
     <><DeleteConfirmModal
       show={showModal}
-      title="Delete equipment?"
+      title="Delete animal outcome?"
       content="All the data in this section will be lost."
       onHide={() => setShowModal(false)}
       onDelete={() => {

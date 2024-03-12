@@ -32,14 +32,6 @@ export const HWCROutcomeByAnimal: FC = () => {
     }
   }, [complaintData, delegates]);
 
-  useEffect(() => {
-
-    if(animalOutcomeData)
-    {
-      setAnimalOutcomeData(animalOutcomeData);
-    }
-  }, [animalOutcomeData]);
-
   const newEditAnimalOutcome: AnimalOutcome = {
     id: undefined,
     isInEditMode: true,

@@ -5,7 +5,6 @@ import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../..
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
-import Option from "../../../../../types/app/option";
 import { selectComplaint } from "../../../../../store/reducers/complaints";
 
 type props = {
