@@ -874,6 +874,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label
                       id="complaint-description-edit-label-id"
                       className="col-auto"
+                      htmlFor="complaint-description-textarea-id"
                     >
                       Complaint Description
                       <span className="required-ind">*</span>
@@ -1102,6 +1103,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label
                       id="complaint-caller-info-name-label-id"
                       className="col-auto"
+                      htmlFor="caller-name-id"
                     >
                       Name
                     </label>
@@ -1123,6 +1125,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label
                       id="complaint-caller-info-primary-phone-label-id"
                       className="col-auto"
+                      htmlFor="caller-primary-phone-id"
                     >
                       Primary Phone
                     </label>
@@ -1167,6 +1170,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label
                       id="complaint-caller-info-alternate-phone-label-id"
                       className="col-auto"
+                      htmlFor="caller-info-alternate-phone-id"
                     >
                       Alternate 2 Phone
                     </label>
@@ -1251,6 +1255,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       <label
                         id="complaint-caller-info-name-label-id"
                         className="col-auto"
+                        htmlFor="complaint-witness-details-textarea-id"
                       >
                         Description
                       </label>
