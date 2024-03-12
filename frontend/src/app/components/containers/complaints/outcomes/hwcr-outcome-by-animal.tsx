@@ -16,7 +16,6 @@ export const HWCROutcomeByAnimal: FC = () => {
 
   const [animalOutcomeData, setAnimalOutcomeData] = useState<Array<AnimalOutcome>>([]);
   const [showAnimalOutcomeAddForm, setShowAnimalOutcomeAddForm] = useState<boolean>(false)
-  const [isInEditMode, setIsInEditMode] = useState<boolean>(false); 
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const complaintData = useAppSelector(selectComplaint);
 
@@ -35,11 +34,11 @@ export const HWCROutcomeByAnimal: FC = () => {
 
   useEffect(() => {
 
-    if(isInEditMode)
+    if(animalOutcomeData)
     {
-      setIsInEditMode(isInEditMode);
+      setAnimalOutcomeData(animalOutcomeData);
     }
-  }, [isInEditMode]);
+  }, [animalOutcomeData]);
 
   const newEditAnimalOutcome: AnimalOutcome = {
     id: undefined,
@@ -72,31 +71,27 @@ export const HWCROutcomeByAnimal: FC = () => {
       else return animalOutcome
     });
     if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
-    setIsInEditMode(true);
   }
 
   return (
     <div className="comp-outcome-report-block">
       <h6>Outcome by animal</h6>
       {animalOutcomeData && animalOutcomeData.length > 0 ? animalOutcomeData.map((animalOutcome,indexItem)=>
-        isInEditMode && animalOutcome.isInEditMode? 
+        animalOutcome.isInEditMode? 
           <EditAnimalOutcome
             key={animalOutcome?.id}
-            isInEditMode={true}
-            setIsInEditMode={setIsInEditMode}
             animalOutcomeItemData={animalOutcome}
             indexItem={indexItem}
             animalOutcomeData={animalOutcomeData}
             setAnimalOutcomeData={setAnimalOutcomeData}
+            editMode={true}
 
           />
           :
           <AnimalOutcomeItem
             key={animalOutcome?.id}
-            isInEditMode={isInEditMode} 
             animalOutcome={animalOutcome}
             handleEdit={handleEdit}
-            setIsInEditMode={setIsInEditMode}
             indexItem={indexItem}
             handleDelete={handleDelete}
           />
@@ -105,13 +100,12 @@ export const HWCROutcomeByAnimal: FC = () => {
       {showAnimalOutcomeAddForm ?
         <EditAnimalOutcome
           key={animalOutcomeData.length}
-          isInEditMode={false}
-          setIsInEditMode={setIsInEditMode}
           animalOutcomeItemData={newEditAnimalOutcome}
           animalOutcomeData={animalOutcomeData}
           setAnimalOutcomeData={setAnimalOutcomeData}
           setShowAnimalOutcomeAddForm={setShowAnimalOutcomeAddForm}
           indexItem={animalOutcomeData.length}
+          editMode={false}
         />
         : null
       }

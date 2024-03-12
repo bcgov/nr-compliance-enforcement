@@ -14,17 +14,13 @@ import { pad } from "../../../../../common/methods";
 
 
 interface AnimalOutcomeProps {
-  isInEditMode: boolean
   animalOutcome: AnimalOutcome
   indexItem: number
   handleDelete: (param: any) => void | null
   handleEdit: (param: any) => void | null
-  setIsInEditMode: (param: any) => void | null
 }
 export const AnimalOutcomeItem: FC<AnimalOutcomeProps> = ({
   animalOutcome,
-  isInEditMode,
-  setIsInEditMode,
   handleDelete,
   handleEdit,
   indexItem, 

@@ -29,24 +29,22 @@ import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/
 
 
 export interface EditAnimalOutcomeProps {
-  isInEditMode: boolean
-  setIsInEditMode: (param: any) => void | null
   animalOutcomeItemData?: AnimalOutcome | null
   animalOutcomeData?: Array<AnimalOutcome>
   setAnimalOutcomeData?: (param: any) => void | null
   indexItem: number
   setShowAnimalOutcomeEditForm?: (param: boolean) => void | null
   setShowAnimalOutcomeAddForm?: (param: boolean) => void | null
+  editMode: boolean
 }
 
 export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
-  isInEditMode,
   animalOutcomeData,
   animalOutcomeItemData,
   indexItem,
-  setIsInEditMode,
   setAnimalOutcomeData,
   setShowAnimalOutcomeAddForm,
+  editMode
 }) => {
 
   const complaintData = useAppSelector(selectComplaint);
@@ -63,7 +61,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown((complaintData?.ownedBy ? complaintData?.ownedBy : 'COS')));
 
-
+  const [isInEditMode, setIsInEditMode] = useState<boolean>(animalOutcomeItemData?.isInEditMode ?? false);
   const [species, setSpecies] = useState<Option | undefined>(animalOutcomeItemData?.species);
   const [sex, setSex] = useState<Option | undefined>(animalOutcomeItemData?.sex);
   const [age, setAge] = useState<Option | undefined>(animalOutcomeItemData?.age);
@@ -76,6 +74,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [date, setDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
   const [officer, setOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
 
+  /*
   useEffect(() => {
     if (species) {
         setSpecies(species);
@@ -151,14 +150,14 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     if (officer) {
         setOfficer(officer);
     }
-  }, [officer, officers]);
+  }, [officer, officers]);*/
 
   const handleSaveAnimalOutcome = () => {
     if(isValid())
     {
       const newAnimalOutcome: AnimalOutcome = {
-        id: isInEditMode ? animalOutcomeItemData?.id?.toString() : uuidv4(),
-        isInEditMode,
+        id: editMode ? animalOutcomeItemData?.id?.toString() : uuidv4(),
+        isInEditMode: false,
         species,
         sex,
         age,
@@ -171,13 +170,13 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         officer,
         date
       }
-      if(isInEditMode) {
+      if(editMode) {
         const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
           if(i === indexItem) return newAnimalOutcome
           else return animalOutcome
         });
-        if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
         setIsInEditMode(false);
+        if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
       }
       
       else{
@@ -193,30 +192,21 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
 
 
   const handleCancelAnimalOutcome = () => {
-    if(isInEditMode) {
-      if(animalOutcomeItemData){
-        animalOutcomeItemData.isInEditMode = false;
-      }
+    if(editMode) {
+      const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
+        if(i === indexItem) return Object.assign({}, animalOutcome,{isInEditMode: false})
+        else return animalOutcome
+      });
+      if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
       setIsInEditMode(false);
     }
-    else
-    {
-      resetData();
+    
+    else{
+      const newAnimalOutcomeArr = animalOutcomeData ? animalOutcomeData.splice(animalOutcomeData.length - 1, 1) : [];
+      if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
+      setIsInEditMode(false);
       if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
     }
-  }
-
-  const resetData = () => {
-      setSpecies(speciesList.find((item) => item.value === 'BLKBEAR'));
-      setSex(undefined);
-      setAge(undefined);
-      setThreatLevel(undefined);
-      setConflictHistory(undefined);
-      setTags([]);
-      setDrugs([]);
-      setDrugAuthorization(undefined);
-      setOfficer(officer);
-      setDate(undefined);
   }
 
   const renderEarTags = () => {
@@ -350,25 +340,14 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     let isValid = true;
 
     if (!species || !age || !sex || !threatLevel || !conflictHistory) {
-      console.log("species: " + species);
-      console.log("age: " + age);
-      console.log("sex: " + sex);
-      console.log("threatLevel: " + threatLevel);
-      console.log("conflictHistory: " + conflictHistory);
       isValid = false;
     }
 
     if (!outcome || !officer || !date) {
-      console.log("outcome: " + outcome);
-      console.log("officer: " + officer);
-      console.log("date: " + date);
       isValid = false;
     }
-
     return isValid;
   };
-
-  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="comp-outcome-report-complaint-assessment">
