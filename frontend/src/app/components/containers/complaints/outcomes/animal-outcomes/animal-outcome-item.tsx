@@ -4,13 +4,12 @@ import { BsPencil, BsTrash3 } from "react-icons/bs";
 import {
   selectEarDropdown,
 } from "../../../../../store/reducers/code-table";
-import { formatDate, getAvatarInitials } from "../../../../../common/methods";
+import { formatDate, getAvatarInitials, pad } from "../../../../../common/methods";
 import { from } from "linq-to-typescript";
 import { DrugItem } from "./drug-item";
 import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
-import { pad } from "../../../../../common/methods";
 
 
 interface AnimalOutcomeProps {
