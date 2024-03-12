@@ -349,7 +349,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
 
       {renderEarTags()}
       {
-      animalOutcomeItemData && animalOutcomeItemData.tags.length < 2 && (
+        tags.length < 2 && (
         <Button
           className="comp-animal-outcome-add-button"
           title="Add ear tag"

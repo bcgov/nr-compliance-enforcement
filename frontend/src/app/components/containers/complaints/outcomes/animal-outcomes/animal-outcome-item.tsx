@@ -41,7 +41,8 @@ export const AnimalOutcomeItem: FC<AnimalOutcomeProps> = ({
       onDelete={() => {
         handleDelete(indexItem);
         setShowModal(false);
-      } } />
+      } }
+      confirmText="Yes, delete animal outcome" />
         <div className="comp-animal-outcome">
         <div className="equipment-item">
         <div className="equipment-item-header">
