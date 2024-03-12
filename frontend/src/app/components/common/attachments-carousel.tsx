@@ -7,10 +7,9 @@ import {
 } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import {
   getAttachments,
+  selectAttachments,
   setAttachments,
 } from "../../store/reducers/attachments";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
@@ -20,8 +19,10 @@ import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
 import { getThumbnailDataURL, isImage } from "../../common/methods";
+import AttachmentEnum from "../../constants/attachment-enum";
 
 type Props = {
+  attachmentType: AttachmentEnum;
   complaintIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
@@ -31,6 +32,7 @@ type Props = {
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
+  attachmentType,
   complaintIdentifier,
   allowUpload,
   allowDelete,
@@ -43,9 +45,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize)
 
-  const carouselData = useSelector(
-    (state: RootState) => state.attachments.attachments
-  );
+  const carouselData = useAppSelector(selectAttachments());
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
   const SLIDE_HEIGHT = 200;
@@ -67,7 +67,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // get the attachments when the complaint loads
   useEffect(() => {
     if (complaintIdentifier) {
-      dispatch(getAttachments(complaintIdentifier));
+      dispatch(getAttachments(complaintIdentifier, attachmentType));
     }
   }, [complaintIdentifier, dispatch]);
 

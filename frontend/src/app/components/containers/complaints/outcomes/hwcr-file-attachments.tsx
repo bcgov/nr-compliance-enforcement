@@ -12,6 +12,7 @@ import { ToggleError } from "../../../../common/toast";
 import { openModal } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import AttachmentEnum from "../../../../constants/attachment-enum";
 
 export const HWCRFileAttachments: FC = () => {
   type ComplaintParams = {
@@ -43,6 +44,7 @@ export const HWCRFileAttachments: FC = () => {
         id,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
+        AttachmentEnum.OUTCOME_ATTACHMENT,
       );
     } else {
       ToggleError("Errors in form");
@@ -87,6 +89,7 @@ export const HWCRFileAttachments: FC = () => {
       <h6>Outcome attachments ({outcomeAttachmentCount})</h6>
       <div className="comp-outcome-report-complaint-attachments">
       <AttachmentsCarousel
+        attachmentType={AttachmentEnum.OUTCOME_ATTACHMENT}
         complaintIdentifier={id}
         allowUpload={true}
         allowDelete={true}

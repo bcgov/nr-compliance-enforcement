@@ -230,7 +230,8 @@ export const ComplaintDetailsEdit: FC = () => {
         attachmentsToDelete,
         id,
         setAttachmentsToAdd,
-        setAttachmentsToDelete
+        setAttachmentsToDelete,
+        AttachmentEnum.COMPLAINT_ATTACHMENT,
       );
 
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1172,6 +1173,7 @@ export const ComplaintDetailsEdit: FC = () => {
           <h6>Complaint attachments ({complaintAttachmentCount})</h6>
             <div className="comp-attachments">
               <AttachmentsCarousel
+                attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
                 complaintIdentifier={id}
                 allowUpload={true}
                 allowDelete={true}
@@ -1195,7 +1197,7 @@ export const ComplaintDetailsEdit: FC = () => {
       <div className="comp-complaint-details-block">
         <h6>Complaint attachments ({complaintAttachmentCount})</h6>
           <div className="comp-attachments">
-            <AttachmentsCarousel complaintIdentifier={id} onSlideCountChange={handleSlideCountChange} />
+            <AttachmentsCarousel attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT} complaintIdentifier={id} onSlideCountChange={handleSlideCountChange} />
           </div>
       </div>
       }

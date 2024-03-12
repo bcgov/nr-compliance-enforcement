@@ -13,6 +13,7 @@ import config from "../../../config";
 import { getThumbnailFile, injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename, isImage } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import axios from "axios";
+import AttachmentEnum from "../../constants/attachment-enum";
 
 const initialState: AttachmentsState = {
   attachments: [],
@@ -66,16 +67,20 @@ export const { setAttachments, removeAttachment , addAttachment} = attachmentsSl
 
 // Get list of the attachments and update store
 export const getAttachments =
-  (complaint_identifier: string): AppThunk =>
+  (complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      const response = await get<Array<COMSObject>>(dispatch, parameters, {
+      let response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
+        "x-amz-meta-attachment-type": attachmentType,
       });
+
+      debugger;
+
       if (response && from(response).any()) {
         for(let attachment of response)
         {
@@ -99,11 +104,6 @@ export const getAttachments =
               attachment.imageIconId = thumbArrayResponse[0]?.id;
               }
           }
-
-          /*}catch (error) {
-            console.log("getThumbError: " + error);
-            ToggleError(`Error retrieving thumbnail`);
-          }*/
         }
         
         dispatch(
@@ -151,7 +151,7 @@ export const deleteAttachments =
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: File[], complaint_identifier: string): AppThunk =>
+  (attachments: File[], complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
 
     if (!attachments) {
@@ -162,12 +162,15 @@ export const saveAttachments =
       const header = {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
+        "x-amz-meta-attachment-type": attachmentType,
         "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
           attachment.name,
           complaint_identifier
         ))}"`,
         "Content-Type": attachment?.type,
       };
+      
+      debugger;
 
       try {
         const parameters = generateApiParameters(
@@ -227,7 +230,7 @@ export const saveAttachments =
   };
 
 //-- selectors
-export const selectAttachments = (state: RootState): COMSObject[]  => {
+export const selectAttachments = () => (state: RootState): COMSObject[]  => {
   const { attachments: attachmentsRoot } = state;
   const { attachments } = attachmentsRoot;
 
