@@ -354,17 +354,19 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       <ToastContainer />
 
       <div className="comp-animal-outcome-report">
-      <div className="equipment-item-header">
+        <div className="equipment-item">
+        <div className="equipment-item-header">
           <div className="title">
             <h6>Animal {pad((indexItem + 1)?.toString(), 2)}</h6>
           </div>
         </div>
-      <div>Animal information</div>
+      </div>
+      <div id="comp-outcome-report-animal-information-heading">Animal information</div>
 
       <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col>
-            <label htmlFor="select-species">Species</label>
+            <label htmlFor="select-species" className="comp-margin-bottom-8">Species</label>
             <CompSelect
               id="select-species"
               classNamePrefix="comp-select"
@@ -451,7 +453,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         <span> Add drug</span>
       </Button>
 
-      <div id="comp-outcome-report-outcome-heading">Outcome</div>
+      <div id="comp-outcome-report-outcome-heading" className="comp-outcome-spacing">Outcome</div>
       <div className="comp-animal-outcome-report-inner-spacing comp-margin-top-sm">
         <Row>
           <Col className="mt-auto mb-3" md={4}>
