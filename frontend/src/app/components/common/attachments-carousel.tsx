@@ -81,12 +81,12 @@ export const AttachmentsCarousel: FC<Props> = ({
   // Update the slide count when the slides state changes
   useEffect(() => {
     setSlideCount(slides.length);
-
+  
     // Call the onSlideCountChange prop with the updated count
-    if (onSlideCountChange) {
+    if (typeof onSlideCountChange === 'function') {
       onSlideCountChange(slides.length);
     }
-  }, [slides, onSlideCountChange]);
+  }, [slides.length]);
 
  function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
   // Create a copy of the array using slice() or spread syntax

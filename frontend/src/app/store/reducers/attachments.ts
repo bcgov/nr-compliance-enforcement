@@ -82,6 +82,14 @@ export const attachmentsSlice = createSlice({
         outcomeAttachments: [...state.outcomeAttachments, serializedFile],
       };
     },
+
+    clearAttachments: (state) => {
+      return {
+        ...state,
+        complaintsAttachments: [],
+        outcomeAttachments: [],
+      };
+    },
     
   },
 
@@ -91,7 +99,7 @@ export const attachmentsSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAttachments, removeAttachment , addAttachment, setOutcomeAttachments, removeOutcomeAttachment , addOutcomeAttachment } = attachmentsSlice.actions;
+export const { setAttachments, removeAttachment , addAttachment, setOutcomeAttachments, removeOutcomeAttachment , addOutcomeAttachment, clearAttachments } = attachmentsSlice.actions;
 
 // Get list of the attachments and update store
 export const getAttachments =
@@ -106,8 +114,6 @@ export const getAttachments =
         "x-amz-meta-is-thumb": "N",
         "x-amz-meta-attachment-type": attachmentType,
       });
-
-      debugger;
 
       if (response && from(response).any()) {
         for(let attachment of response)
@@ -202,13 +208,12 @@ export const saveAttachments =
         "x-amz-meta-attachment-type": attachmentType,
         "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
           attachment.name,
-          complaint_identifier
+          complaint_identifier,
+          attachmentType
         ))}"`,
         "Content-Type": attachment?.type,
       };
       
-      debugger;
-
       try {
         const parameters = generateApiParameters(
           `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
@@ -235,7 +240,8 @@ export const saveAttachments =
             "x-amz-meta-thumb-for": response.id,
             "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
               attachment.name,
-              complaint_identifier
+              complaint_identifier,
+              attachmentType
             ))}"`,
             "Content-Type": "image/jpeg",
           };  

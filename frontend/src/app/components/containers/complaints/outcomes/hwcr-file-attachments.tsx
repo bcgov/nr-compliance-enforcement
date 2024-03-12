@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
 import {
@@ -13,6 +13,7 @@ import { openModal } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import AttachmentEnum from "../../../../constants/attachment-enum";
+import { clearAttachments, getAttachments, selectAttachments, selectOutcomeAttachments } from "../../../../store/reducers/attachments";
 
 export const HWCRFileAttachments: FC = () => {
   type ComplaintParams = {
@@ -51,9 +52,11 @@ export const HWCRFileAttachments: FC = () => {
     }
   };
 
-  const resetErrorMessages = () => {
-    setAttachmentsToAdd(null);
-    setAttachmentsToDelete(null);
+  const cancelConfirmed = () => {
+    setAttachmentsToAdd([]);
+    setAttachmentsToDelete([]);
+    dispatch(clearAttachments);
+    dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
   };
 
   const cancelButtonClick = () => {
@@ -64,11 +67,12 @@ export const HWCRFileAttachments: FC = () => {
         data: {
           title: "Cancel Changes?",
           description: "Your changes will be lost.",
-          cancelConfirmed: resetErrorMessages,
+          cancelConfirmed,
         },
       }),
     );
   };
+
 
   const onHandleAddAttachments = (selectedFiles: File[]) => {
     handleAddAttachments(setAttachmentsToAdd, selectedFiles);
