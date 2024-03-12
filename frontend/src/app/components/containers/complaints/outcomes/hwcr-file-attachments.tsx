@@ -13,7 +13,7 @@ import { openModal } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import AttachmentEnum from "../../../../constants/attachment-enum";
-import { clearAttachments, getAttachments, selectAttachments, selectOutcomeAttachments } from "../../../../store/reducers/attachments";
+import { clearAttachments, getAttachments, } from "../../../../store/reducers/attachments";
 
 export const HWCRFileAttachments: FC = () => {
   type ComplaintParams = {

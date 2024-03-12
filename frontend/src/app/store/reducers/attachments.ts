@@ -116,43 +116,39 @@ export const getAttachments =
       });
 
       if (response && from(response).any()) {
-        for(let attachment of response)
-        {
-          //try{
-          if(isImage(attachment.name))
-          {
-            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
-              "x-amz-meta-complaint-id": complaint_identifier,
-              "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": attachment?.id,
-            });
-            
-            if(thumbArrayResponse[0]?.id)
-            {
+        for (const attachment of response) {
+          if (isImage(attachment.name)) {
+            const thumbArrayResponse = await get<Array<COMSObject>>(
+              dispatch, parameters, {
+                "x-amz-meta-complaint-id": complaint_identifier,
+                "x-amz-meta-is-thumb": "Y",
+                "x-amz-meta-thumb-for": attachment?.id,
+              }
+            );
+      
+            const thumbId = thumbArrayResponse[0]?.id;
+      
+            if (thumbId) {
               const thumbParameters = generateApiParameters(
-                `${config.COMS_URL}/object/${thumbArrayResponse[0]?.id}?download=url`
+                `${config.COMS_URL}/object/${thumbId}?download=url`
               );
-          
+      
               const thumbResponse = await get<string>(dispatch, thumbParameters);
               attachment.imageIconString = thumbResponse;
-              attachment.imageIconId = thumbArrayResponse[0]?.id;
-              }
+              attachment.imageIconId = thumbId;
+            }
           }
         }
+      
+        const attachmentList: Array<COMSObject> = response ?? [];
+      
         switch (attachmentType) {
           case AttachmentEnum.COMPLAINT_ATTACHMENT:
-            dispatch(
-              setAttachments({
-                attachments: response ?? [],
-              })
-            );    
+            dispatch(setAttachments({ attachments: attachmentList }));
             break;
           case AttachmentEnum.OUTCOME_ATTACHMENT:
-            dispatch(
-              setOutcomeAttachments({
-                attachments: response ?? [],
-              })
-            );
+            dispatch(setOutcomeAttachments({ attachments: attachmentList }));
+            break;
         }
       }
     } catch (error) {
@@ -282,15 +278,12 @@ export const saveAttachments =
 //-- selectors
 export const selectAttachments = (attachmentType: AttachmentEnum) => (state: RootState): COMSObject[]  => {
   const { attachments: attachmentsRoot } = state;
-
+  const { complaintsAttachments, outcomeAttachments } = attachmentsRoot;
+  
   switch (attachmentType) {
     case AttachmentEnum.COMPLAINT_ATTACHMENT:
-      const { complaintsAttachments } = attachmentsRoot;
-
       return complaintsAttachments ?? [];    
     case AttachmentEnum.OUTCOME_ATTACHMENT:
-      const { outcomeAttachments } = attachmentsRoot;
-
       return outcomeAttachments ?? [];
     
   }
