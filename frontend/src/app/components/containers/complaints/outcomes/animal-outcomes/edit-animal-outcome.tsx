@@ -280,7 +280,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col>
-            <label htmlFor="select-species" className="comp-margin-bottom-8">Species</label>
+            <label htmlFor="select-species" className="label-margin-bottom">Species</label>
             <CompSelect
               id="select-species"
               classNamePrefix="comp-select"
@@ -293,7 +293,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-sex">Sex</label>
+            <label htmlFor="select-sex" className="label-margin-bottom">Sex</label>
             <CompSelect
               id="select-sex"
               classNamePrefix="comp-select"
@@ -306,7 +306,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-age">Age</label>
+            <label htmlFor="select-age" className="label-margin-bottom">Age</label>
             <CompSelect
               id="select-age"
               classNamePrefix="comp-select"
@@ -319,7 +319,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-category-level">Category level</label>
+            <label htmlFor="select-category-level" className="label-margin-bottom">Category level</label>
             <CompSelect
               id="select-category-level"
               classNamePrefix="comp-select"
@@ -332,7 +332,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             />
           </Col>
           <Col>
-            <label htmlFor="select-conflict-history">Conflict history</label>
+            <label htmlFor="select-conflict-history" className="label-margin-bottom">Conflict history</label>
             <CompSelect
               id="select-conflict-history"
               classNamePrefix="comp-select"
