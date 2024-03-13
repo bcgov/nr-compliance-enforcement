@@ -249,7 +249,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             colSpan={3}
             className="comp-cell-child-expanded comp-cell-child-actions"
           >
-            <div>
+            <div className="comp-view-complaint-details-button">
               <Link to={`/complaint/ERS/${id}`} id={id}>
                 <span className="badge comp-view-complaint-badge">
                   View Details

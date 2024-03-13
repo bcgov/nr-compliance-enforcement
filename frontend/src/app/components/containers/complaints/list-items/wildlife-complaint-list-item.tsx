@@ -249,7 +249,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
             colSpan={2}
             className="comp-cell-child-expanded comp-cell-child-actions"
           >
-            <div className="comp-cell-action-icon">
+            <div className="comp-cell-action-icon comp-view-complaint-details-button">
               <Link to={`/complaint/HWCR/${id}`} id={id}>
                 <span className="badge comp-view-complaint-badge">
                   View Details
