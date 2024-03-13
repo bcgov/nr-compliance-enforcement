@@ -9,9 +9,9 @@ axios.interceptors.response.use(undefined, (error: AxiosError) => {
 
 export const get = (token, params? : {}) => {
   let config: AxiosRequestConfig = { headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  } };
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    } };
 
   if (params) {
     config.params = params;
@@ -24,6 +24,24 @@ export const get = (token, params? : {}) => {
     })
     .catch((error: AxiosError) => {
       console.log(error)
+    })
+};
+
+export const post = (token, payload?: {}) => {
+  let config: AxiosRequestConfig = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  };
+  return axios
+    .post(caseManagementlURL, payload)
+    .then((response: AxiosResponse) => {
+      return {response: response, error: null};
+    })
+    .catch((error: AxiosError) => {
+      console.log("error", error);
+      return {response: null, error: error};
     })
 };
 

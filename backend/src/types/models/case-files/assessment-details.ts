@@ -1,9 +1,9 @@
 import { AssessmentActionDto } from "./assessment-action";
 export interface AssessmentDetailsDto { 
-    actionNotRequiredInd: boolean;
-    inactionReasonCode: string;
-    shortDescription: string;
-    longDescription: string;
-    activeId: boolean;
-    assessmentActions: Array<AssessmentActionDto>
+    actionNotRequired: boolean;
+    actionJustificationCode: string;
+    actionJustificationShortDescription: string;
+    actionJustificationLongDescription: string;
+    actionJustificationActiveIndicator: boolean;
+    actions: Array<AssessmentActionDto>
 }

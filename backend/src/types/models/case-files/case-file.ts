@@ -2,7 +2,10 @@ import { UUID } from "crypto";
 import { AssessmentDetailsDto } from "./assessment-details";
 
 export interface CaseFileDto { 
-    caseFileGuid: UUID;
+    caseIdentifier: UUID;
     leadIdentifier: string;
+    createUserId: string;
+    agencyCode: string;
+    caseCode: string;
     assessmentDetails: AssessmentDetailsDto
 }

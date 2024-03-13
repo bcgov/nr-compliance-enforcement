@@ -359,22 +359,22 @@ export class CodeTableService {
       }
       case "justification": {
         const { data } = await get(token, { 
-          query : "{getInactionReasonCodes{inaction_reason_code agency_code short_description long_description display_order active_ind}}"
+          query : "{inactionJustificationTypes{actionJustificationCode agencyCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const justificationCodes = data.getInactionReasonCodes.map(
+        const justificationCodes = data.inactionJustificationTypes.map(
           ({
-            inaction_reason_code,
-            short_description,
-            long_description,
-            display_order,
-            active_ind
+            actionJustificationCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: Justification = {
-              justification: inaction_reason_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind
+              justification: actionJustificationCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -383,22 +383,22 @@ export class CodeTableService {
       }
       case "assessment-type": {
         const { data } = await get(token, { 
-          query : "{getActionTypeActionXrefs{action_type_code action_code display_order active_ind short_description long_description}}"
+          query : "{HWCRAssessmentActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}"
         });
-        const assessmentTypeCodes = data.getActionTypeActionXrefs.map(
+        const assessmentTypeCodes = data.HWCRAssessmentActions.map(
           ({
-            action_code,
-            short_description,
-            long_description,
-            display_order,
-            active_ind
+            actionCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: AssessmentType = {
-              assessmentType: action_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind
+              assessmentType: actionCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }

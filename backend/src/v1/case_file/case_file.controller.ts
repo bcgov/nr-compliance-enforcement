@@ -17,20 +17,20 @@ import { Token } from "src/auth/decorators/token.decorator";
 export class CaseFileController {
     constructor(private readonly service: CaseFileService) { }
 
-    @Post("/create/:complaintId")
+    @Post("/create")
     @Roles(Role.COS_OFFICER)
     async create(
-        @Param("complaintId") complaintId: string,
+        @Token() token,
         @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.create(complaintId, model);
+        return await this.service.create(token, model);
     }
 
-    @Patch("/update/:complaint_id")
+    @Patch("/update")
     @Roles(Role.COS_OFFICER)
     async update(
-        @Param("complaint_id") complaint_id: string,
+        @Token() token,
         @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.update(complaint_id, model);
+        return await this.service.update(token, model);
     }
 
     @Get("/:complaint_id")

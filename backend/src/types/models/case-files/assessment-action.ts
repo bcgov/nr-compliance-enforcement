@@ -1,9 +1,9 @@
 import { UUID } from "crypto";
 export class AssessmentActionDto {
-    actorGuid: UUID;
-    actionDate: Date;
+    actor: UUID;
+    date: Date;
     actionCode: string;
     shortDescription: string;
     longDescription: string;
-    activeInd: boolean;
+    activeIndicator: boolean;
 }

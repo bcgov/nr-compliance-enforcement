@@ -2,11 +2,8 @@
 import { Inject, Injectable, Logger, Scope } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { get } from "../../external_api/case_management";
+import { get, post } from "../../external_api/case_management";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
-import { AssessmentDetailsDto } from "src/types/models/case-files/assessment-details";
-import { AssessmentActionDto } from "src/types/models/case-files/assessment-action";
-import { CodeTableService } from "../code-table/code-table.service";
 import { REQUEST } from "@nestjs/core";
 
 @Injectable({ scope: Scope.REQUEST })
@@ -16,7 +13,6 @@ export class CaseFileService {
   constructor(
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
-    private readonly _codeTableService: CodeTableService,
   ) {
     this.mapper = mapper;
   }
@@ -27,73 +23,125 @@ export class CaseFileService {
   ): Promise<CaseFileDto> => {
 
     const { data } = await get(token, {
-      query: `{getCaseFileByLeadId (lead_identifier: "${complaint_id}")
+      query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
       {
-        case_file_guid
-        lead_identifier
-        assessment_details {
-        action_not_required_ind
-          inaction_reason_code
-          short_description
-          long_description
-          active_ind
-          assessment_actions {
-            actor_guid
-            action_date
-            action_code
-            short_description
-            long_description
-            active_ind
+        caseIdentifier
+        leadIdentifier
+        assessmentDetails {
+          actionNotRequired
+          actionJustificationCode
+          actionJustificationShortDescription
+          actionJustificationLongDescription
+          actionJustificationActiveIndicator
+          actions {
+            actor
+            date
+            actionCode
+            shortDescription
+            longDescription
+            activeIndicator
           }
         }
       }}`
     });
-    const queryResult = data.getCaseFileByLeadId;
-    const caseFileDto: CaseFileDto = {
-      caseFileGuid: queryResult.case_file_guid,
-      leadIdentifier: queryResult.lead_identifier,
-      assessmentDetails: {
-        actionNotRequiredInd: queryResult.assessment_details.action_not_required_ind,
-        inactionReasonCode: queryResult.assessment_details.inaction_reason_code,
-        shortDescription: queryResult.assessment_details.short_description,
-        longDescription: queryResult.assessment_details.long_description,
-        activeId: queryResult.assessment_details.active_ind,
-        assessmentActions: queryResult.assessment_details.assessment_actions.map(
-          ({
-            actor_guid,
-            action_date,
-            action_code,
-            short_description,
-            long_description,
-            active_ind
-          }) => {
-            const assessmentActionsData: AssessmentActionDto = {
-              actorGuid: actor_guid,
-              actionDate: action_date,
-              actionCode: action_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              activeInd: active_ind
-            };
-            return assessmentActionsData;
-          }
-        )
-      } as AssessmentDetailsDto
-    };
-    return caseFileDto;
+    if (data && data.getCaseFileByLeadId && data.getCaseFileByLeadId.caseIdentifier) {
+      const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
+      return caseFileDto;
+    } else {
+      this.logger.error(`Case with complaint Id ${complaint_id} not found.`);
+      return null;
+    }
   }
 
   create = async (
-    complaint_id: string,
+    token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
-    return new Promise<CaseFileDto>(null);
+
+    const result = await post(token, {
+      query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
+        createAssessment(createAssessmentInput: $createAssessmentInput) {
+          caseIdentifier
+          leadIdentifier
+          assessmentDetails {
+            actionNotRequired
+            actionJustificationCode
+            actionJustificationShortDescription
+            actionJustificationLongDescription
+            actionJustificationActiveIndicator
+            actions {
+              actor
+              date
+              actionCode
+              shortDescription
+              longDescription
+              activeIndicator
+            }
+          }
+        }
+      }`,
+      variables: model
+    },
+    );
+    if (result?.response?.data?.data) {
+      const caseFileDto = result.response.data.data as CaseFileDto;
+      return caseFileDto;
+    } else {
+
+      if (result?.response?.data?.errors) {
+        this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
+        return null;
+      }
+      else {
+        this.logger.error(`Unknwown error occurred during web request`);
+        return null;
+      }
+    }
   }
 
   update = async (
-    complaint_id: string,
+    token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
-    return new Promise<CaseFileDto>(null);
+
+    const result = await post(token, {
+      query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
+        updateAssessment(updateAssessmentInput: $updateAssessmentInput) {
+         caseIdentifier
+         leadIdentifier
+         assessmentDetails {
+           actionNotRequired
+           actionJustificationCode
+           actionJustificationShortDescription
+           actionJustificationLongDescription
+           actionJustificationActiveIndicator
+           actions {
+             actor
+             date
+             actionCode
+             shortDescription
+             longDescription
+             activeIndicator
+            }
+          }
+        }
+      }`,
+      variables: model
+    },
+    );
+    if (result?.response?.data?.data) {
+      const caseFileDto = result.response.data.data as CaseFileDto;
+      return caseFileDto;
+    } else {
+
+      if (result?.response?.data?.errors) {
+        this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
+        return null;
+      }
+      else {
+        this.logger.error(`Unknwown error occurred during web request`);
+        return null;
+      }
+    }
   }
 }
