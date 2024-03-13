@@ -1285,7 +1285,7 @@ export const ComplaintDetailsEdit: FC = () => {
             </div>
           )}
           <div className="comp-complaint-details-block">
-          <h6>Complaint attachments ({complaintAttachmentCount})</h6>
+          <h6>Complainant attachments ({complaintAttachmentCount})</h6>
             <div className="comp-attachments">
               <AttachmentsCarousel
                 attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
@@ -1310,7 +1310,7 @@ export const ComplaintDetailsEdit: FC = () => {
       )}
       {readOnly && 
       <div className="comp-complaint-details-block" id="complaint_attachments_div_id">
-        <h6>Complaint attachments ({complaintAttachmentCount})</h6>
+        <h6>Complainant attachments ({complaintAttachmentCount})</h6>
           <div className={ complaintAttachmentCount > 0 ? "comp-attachments" : ""}>
             <AttachmentsCarousel attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT} complaintIdentifier={id} onSlideCountChange={handleSlideCountChange} />
           </div>
