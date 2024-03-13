@@ -5,6 +5,7 @@ import { Mapper } from "@automapper/core";
 import { get, post } from "../../external_api/case_management";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
+import { AxiosResponse, AxiosError } from "axios";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -96,6 +97,12 @@ export class CaseFileService {
       variables: model
     },
     );
+    return await this.handleAPIResponse(result);
+
+  }
+
+  private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
+    Promise<CaseFileDto> => {
     if (result?.response?.data?.data) {
       const caseFileDto = result.response.data.data as CaseFileDto;
       return caseFileDto;
@@ -103,7 +110,9 @@ export class CaseFileService {
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
       return null;
     }
-    else {
+    else if (result?.error) {
+      this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
+    } else {
       this.logger.error(`Unknwown error occurred during web request`);
       return null;
     }

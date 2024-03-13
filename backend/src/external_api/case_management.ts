@@ -37,11 +37,10 @@ export const post = (token, payload?: {}) => {
   return axios
     .post(caseManagementlURL, payload)
     .then((response: AxiosResponse) => {
-      return {response: response, error: null};
+      return {response: response as AxiosResponse, error: null as AxiosError};
     })
     .catch((error: AxiosError) => {
-      console.log("error", error);
-      return {response: null, error: error};
+      return {response: null as AxiosResponse, error: error as AxiosError};
     })
 };
 
