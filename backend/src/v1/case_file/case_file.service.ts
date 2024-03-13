@@ -10,6 +10,27 @@ import { REQUEST } from "@nestjs/core";
 export class CaseFileService {
   private readonly logger = new Logger(CaseFileService.name);
   private mapper: Mapper;
+  private caseFileQueryFields: string = `
+  {
+    caseIdentifier
+    leadIdentifier
+    assessmentDetails {
+      actionNotRequired
+      actionJustificationCode
+      actionJustificationShortDescription
+      actionJustificationLongDescription
+      actionJustificationActiveIndicator
+      actions {
+        actor
+        date
+        actionCode
+        shortDescription
+        longDescription
+        activeIndicator
+      }
+    }
+  }
+  `;
   constructor(
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
@@ -24,27 +45,10 @@ export class CaseFileService {
 
     const { data } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
-      {
-        caseIdentifier
-        leadIdentifier
-        assessmentDetails {
-          actionNotRequired
-          actionJustificationCode
-          actionJustificationShortDescription
-          actionJustificationLongDescription
-          actionJustificationActiveIndicator
-          actions {
-            actor
-            date
-            actionCode
-            shortDescription
-            longDescription
-            activeIndicator
-          }
-        }
-      }}`
+        ${this.caseFileQueryFields}
+      }`
     });
-    if (data && data.getCaseFileByLeadId && data.getCaseFileByLeadId.caseIdentifier) {
+    if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
       return caseFileDto;
     } else {
@@ -60,25 +64,8 @@ export class CaseFileService {
 
     const result = await post(token, {
       query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
-        createAssessment(createAssessmentInput: $createAssessmentInput) {
-          caseIdentifier
-          leadIdentifier
-          assessmentDetails {
-            actionNotRequired
-            actionJustificationCode
-            actionJustificationShortDescription
-            actionJustificationLongDescription
-            actionJustificationActiveIndicator
-            actions {
-              actor
-              date
-              actionCode
-              shortDescription
-              longDescription
-              activeIndicator
-            }
-          }
-        }
+        createAssessment(createAssessmentInput: $createAssessmentInput) 
+        ${this.caseFileQueryFields}
       }`,
       variables: model
     },
@@ -86,16 +73,13 @@ export class CaseFileService {
     if (result?.response?.data?.data) {
       const caseFileDto = result.response.data.data as CaseFileDto;
       return caseFileDto;
-    } else {
-
-      if (result?.response?.data?.errors) {
-        this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
-        return null;
-      }
-      else {
-        this.logger.error(`Unknwown error occurred during web request`);
-        return null;
-      }
+    } else if (result?.response?.data?.errors) {
+      this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
+      return null;
+    }
+    else {
+      this.logger.error(`Unknwown error occurred during web request`);
+      return null;
     }
   }
 
@@ -106,25 +90,8 @@ export class CaseFileService {
 
     const result = await post(token, {
       query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
-        updateAssessment(updateAssessmentInput: $updateAssessmentInput) {
-         caseIdentifier
-         leadIdentifier
-         assessmentDetails {
-           actionNotRequired
-           actionJustificationCode
-           actionJustificationShortDescription
-           actionJustificationLongDescription
-           actionJustificationActiveIndicator
-           actions {
-             actor
-             date
-             actionCode
-             shortDescription
-             longDescription
-             activeIndicator
-            }
-          }
-        }
+        updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
+        ${this.caseFileQueryFields}
       }`,
       variables: model
     },
@@ -132,16 +99,13 @@ export class CaseFileService {
     if (result?.response?.data?.data) {
       const caseFileDto = result.response.data.data as CaseFileDto;
       return caseFileDto;
-    } else {
-
-      if (result?.response?.data?.errors) {
-        this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
-        return null;
-      }
-      else {
-        this.logger.error(`Unknwown error occurred during web request`);
-        return null;
-      }
+    } else if (result?.response?.data?.errors) {
+      this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
+      return null;
+    }
+    else {
+      this.logger.error(`Unknwown error occurred during web request`);
+      return null;
     }
   }
 }
