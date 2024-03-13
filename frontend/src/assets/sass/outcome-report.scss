@@ -1,4 +1,5 @@
 @import "./hwcr-animal-outcome.scss";
+@import "./hwcr-equipment.scss";
 
 .comp-hwcr-outcome-report {
   .comp-sub-header {
@@ -14,11 +15,18 @@
   h6 {
     padding-top: 0px;
     font-weight: 700;
-    margin-bottom: 0px;
   }
 
-  label {
+  label{
     color: $gray-500;
+  }
+
+  .label-margin-bottom {
+    margin-bottom: 8px;
+  }
+
+  .comp-outcome-spacing {
+    margin-bottom: -22px;
   }
 
   .comp-outcome-checkbox-spacing {
@@ -184,5 +192,146 @@
     border-width: 0px;
     color: $bc-gov-primary;
     display: block;
+  }
+
+  .comp-animal-outcome-report-inner-spacing {
+    padding: 18px 0px 18px 0px;
+    margin-top: -8px;
+  }
+
+  .comp-animal-outcome-report-button {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .comp-animal-outcome-report-button span {
+    margin-right: 8px;
+  }
+
+  .comp-animal-outcome-report-button button svg {
+    font-size: 18px;
+    vertical-align: text-top;
+    margin-top: 3px;
+  }
+
+  .comp-animal-outcome-report-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 0 0;
+  }
+
+  .comp-animal-outcome-report-actions button {
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .comp-animal-outcome-report-actions button span {
+    padding-right: 8px;
+  }
+
+  .comp-animal-outcome-report-actions button svg {
+    font-size: 16px;
+    vertical-align: text-top;
+    margin-top: 1px;
+  }
+
+  .comp-animal-outcome-cancel {
+    color: $bc-gov-primary-400;
+    border-color: $bc-gov-primary-400;
+    background-color: $white;
+  }
+
+  .comp-animal-outcome-cancel:hover {
+    background-color: $bc-gov-primary-400;
+    color: $white;
+  }
+
+  .comp-animal-outcome-save {
+    color: $white;
+    background-color: $bc-gov-primary-400;
+  }
+
+  .comp-animal-outcome-save:hover {
+    background-color: $white;
+    color: $bc-gov-primary-400;
+  }
+
+  .comp-animal-outcome {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+
+    .animal-item-edit {
+      font-size: 14px;
+
+      :hover
+          {
+            text-decoration: underline;
+          }
+      span {
+        font-size: inherit;
+        padding-right: 0px;
+      }
+
+      svg {
+        font-size: inherit;
+      }
+    }
+
+    .animal-item-delete {
+      font-size: 14px;
+      padding-right: 10px;
+      :hover
+          {
+            text-decoration: underline;
+          }
+        span {
+          font-size: inherit;
+          margin-right: 4px;
+          padding-right: 0px;
+        }
+
+        svg {
+          font-size: 16px;
+        }
+    }
+
+    .comp-ear-tag-list {
+      list-style: none;
+      padding-inline-start: 0px;
+      padding-left: 0px;
+    }
+
+    .comp-animal-outcome-fill-space {
+      width: 100%;
+    }
+
+    .comp-drug-item {
+      margin-bottom: 24px;
+      border: 1px solid $gray-300;
+      border-radius: 3px;
+      padding: 24px;
+
+      .comp-orange-avatar-sm::before {
+        margin-left: 25px;
+      }
+
+      .row {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+
+      .animal-outcome-item-edit {
+        font-size: 14px;
+
+        span {
+          margin-right: 7px;
+        }
+      }
+    }
   }
 }

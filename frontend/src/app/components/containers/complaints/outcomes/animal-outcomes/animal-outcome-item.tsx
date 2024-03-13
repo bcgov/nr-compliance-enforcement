@@ -1,248 +1,171 @@
-import { FC, useEffect, useState } from "react";
-import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
-import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { FC, useState } from "react";
 import { useAppSelector } from "../../../../../hooks/hooks";
+import { BsPencil, BsTrash3 } from "react-icons/bs";
 import {
-  selectSpeciesCodeDropdown,
-  selectAgeDropdown,
-  selectSexDropdown,
-  selectThreatLevelDropdown,
-  selectConflictHistoryDropdown,
-  selectWildlifeComplaintOutcome,
   selectEarDropdown,
 } from "../../../../../store/reducers/code-table";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
-import { formatDate, getAvatarInitials } from "../../../../../common/methods";
+import { formatDate, getAvatarInitials, pad } from "../../../../../common/methods";
 import { from } from "linq-to-typescript";
 import { DrugItem } from "./drug-item";
-import { BsPencil } from "react-icons/bs";
+import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 
-type props = {
-  id: number;
-  agency: string;
-  species: string;
-  sex: string;
-  age: string;
-  threatLevel: string;
-  conflictHistory: string;
-  tags: Array<AnimalTag>;
-  drugs: Array<DrugUsed>;
-  drugAuthorization?: DrugAuthorization;
-  outcome: string;
-  officer: string;
-  date?: Date;
-  isEditable: boolean;
-  edit: Function;
-};
-export const AnimalOutcomeItem: FC<props> = ({
-  id,
-  agency,
-  species,
-  sex,
-  age,
-  threatLevel,
-  conflictHistory,
-  tags,
-  drugs,
-  drugAuthorization,
-  outcome,
-  officer,
-  edit,
+
+interface AnimalOutcomeProps {
+  animalOutcome: AnimalOutcome
+  indexItem: number
+  handleDelete: (param: any) => void | null
+  handleEdit: (param: any) => void | null
+}
+export const AnimalOutcomeItem: FC<AnimalOutcomeProps> = ({
+  animalOutcome,
+  handleDelete,
+  handleEdit,
+  indexItem, 
 }) => {
-  const speciesList = useAppSelector(selectSpeciesCodeDropdown);
-  const ages = useAppSelector(selectAgeDropdown);
-  const sexes = useAppSelector(selectSexDropdown);
-  const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
+
 
   const ears = useAppSelector(selectEarDropdown);
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
-  const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
-
-  const [animal, setAnimal] = useState("");
-  const [animalSex, setAnimalSex] = useState("");
-  const [animalAge, setAnimalAge] = useState("");
-  const [animalThreatLevel, setAnimalThreatLevel] = useState("");
-  const [animalHistory, setAnimalHistory] = useState("");
-  const [animalOutcome, setAnimalOutcome] = useState("");
-
-  useEffect(() => {
-    if (species) {
-      const selected = from(speciesList).firstOrDefault((item) => item.value === species);
-      if (selected?.label) {
-        setAnimal(selected.label);
-      }
-    }
-  }, [species, speciesList]);
-
-  useEffect(() => {
-    if (sex) {
-      const selected = from(sexes).firstOrDefault((item) => item.value === sex);
-      if (selected?.label) {
-        setAnimalSex(selected.label);
-      }
-    }
-  }, [sex, sexes]);
-
-  useEffect(() => {
-    if (age) {
-      const selected = from(ages).firstOrDefault((item) => item.value === age);
-      if (selected?.label) {
-        setAnimalAge(selected.label);
-      }
-    }
-  }, [age, ages]);
-
-  useEffect(() => {
-    if (threatLevel) {
-      const selected = from(threatLevels).firstOrDefault((item) => item.value === threatLevel);
-      if (selected?.label) {
-        setAnimalThreatLevel(selected.label);
-      }
-    }
-  }, [threatLevel, threatLevels]);
-
-  useEffect(() => {
-    if (conflictHistory) {
-      const selected = from(conflictHistories).firstOrDefault((item) => item.value === conflictHistory);
-      if (selected?.label) {
-        setAnimalHistory(selected.label);
-      }
-    }
-  }, [conflictHistory, conflictHistories]);
-
-  useEffect(() => {
-    if (outcome) {
-      const selected = from(outcomes).firstOrDefault((item) => item.value === outcome);
-      if (selected?.label) {
-        setAnimalOutcome(selected.label);
-      }
-    }
-  }, [outcome, outcomes]);
-
-  const assignedOfficer = () => {
-    if (officer) {
-      const selected = officers.find((item) => item.value === officer);
-      return selected?.label ?? "";
-    }
-
-    return "";
-  };
+  const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="comp-animal-outcome">
-      <div className="comp-details-edit-container">
-        <div className="comp-details-edit-column">
-          <div className="comp-details-edit-container comp-details-nmargin-right-xxl">
-            <div className="comp-details-edit-column">
-              <div className="comp-details-label-div-pair ">
-                <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
-                  Animal
-                </label>
-                <div className="flex-container">
-                  <div className="comp-margin-right-xs">
-                    <b>{animal}</b>,
-                  </div>
-                  {animalSex && <div className="comp-margin-right-xs">{animalSex},</div>}
-                  {animalAge && <div className="comp-margin-right-xs">{animalAge}</div>}
-                  {animalThreatLevel && (
-                    <div className="badge comp-status-badge-threat-level comp-margin-right-xs">
-                      Category level: {animalThreatLevel}
-                    </div>
-                  )}
-                  {animalHistory && (
-                    <div className="badge comp-status-badge-conflict-history comp-margin-right-xs">
-                      Conflict history: {animalHistory}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+    <><DeleteConfirmModal
+      show={showModal}
+      title="Delete animal outcome?"
+      content="All the data in this section will be lost."
+      onHide={() => setShowModal(false)}
+      onDelete={() => {
+        handleDelete(indexItem);
+        setShowModal(false);
+      } }
+      confirmText="Yes, delete animal outcome" />
+        <div className="comp-animal-outcome">
+        <div className="equipment-item">
+        <div className="equipment-item-header">
+          <div className="title">
+            <h6>Animal {pad((indexItem + 1)?.toString(), 2)}</h6>
           </div>
-
-          {from(tags).any() && (
-            <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
-                <label className="comp-details-inner-content-label top">Ear Tag{tags.length > 1 && "s"}</label>
-
-                <div className="comp-animal-outcome-fill-space">
-                <ul className="comp-ear-tag-list">
-                  {tags.map(({ id, number, ear }) => (
-                    <li key={id}>
-                      {number} {ear === "L" ? leftEar?.label : rightEar?.label} side
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              </div>
-            
-            </div>
-          )}
-
-          {from(drugs).any() && (
-            <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
-                <label className="comp-details-inner-content-label top">Drug{drugs.length > 1 && "s"}</label>
-                <div className="comp-animal-outcome-fill-space">
-                  {drugs.map((item) => {
-                    const { officer, date } = drugAuthorization || {};
-                    return <DrugItem {...item} officer={officer} date={date} agency={agency} key={item.id} />;
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
+          <div>
+            <CompTextIconButton
+              buttonClasses="button-text"
+              style={{ marginRight: '15px'}}
+              text="Delete"
+              icon={BsTrash3}
+              click={() => setShowModal(true)}
+            />
+            <CompTextIconButton
+              buttonClasses="button-text"
+              text="Edit"
+              icon={BsPencil}
+              click={() => handleEdit(indexItem)}
+            />
+          </div>
+        </div>
+        </div>
+        <div className="comp-details-edit-container">
+        
           <div className="comp-details-edit-column">
-            <div className="comp-details-label-input-pair">
-              <label className="comp-details-inner-content-label center">Outcome</label>
-              <div>{animalOutcome}</div>
+            <div className="comp-details-edit-container comp-details-nmargin-right-xxl">
+              <div className="comp-details-edit-column">
+                <div className="comp-details-label-div-pair ">
+                  <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">
+                    Animal
+                  </label>
+                  <div className="flex-container">
+                    <div className="comp-margin-right-xs">
+                      <b>{animalOutcome?.species?.label}</b>,
+                    </div>
+                    {animalOutcome?.sex && <div className="comp-margin-right-xs">{animalOutcome?.sex?.label},</div>}
+                    {animalOutcome?.age && <div className="comp-margin-right-xs">{animalOutcome?.age?.label}</div>}
+                    {animalOutcome?.threatLevel && (
+                      <div className="badge comp-status-badge-threat-level comp-margin-right-xs">
+                        Category level: {animalOutcome?.threatLevel?.label}
+                      </div>
+                    )}
+                    {animalOutcome?.conflictHistory && (
+                      <div className="badge comp-status-badge-conflict-history comp-margin-right-xs">
+                        Conflict history: {animalOutcome?.conflictHistory?.label}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="comp-details-edit-container">
+            {from(animalOutcome?.tags).any() && (
+              <div className="comp-details-edit-column">
+                <div className="comp-details-label-input-pair">
+                  <label className="comp-details-inner-content-label top">Ear Tag{animalOutcome?.tags.length > 1 && "s"}</label>
+
+                  <div className="comp-animal-outcome-fill-space">
+                    <ul className="comp-ear-tag-list">
+                      {animalOutcome?.tags.map(({ id, number, ear }) => (
+                        <li key={id}>
+                          {number} {ear === "L" ? leftEar?.label : rightEar?.label} side
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {from(animalOutcome?.drugs).any() && (
+              <div className="comp-details-edit-column">
+                <div className="comp-details-label-input-pair">
+                  <label className="comp-details-inner-content-label top">Drug{animalOutcome?.drugs.length > 1 && "s"}</label>
+                  <div className="comp-animal-outcome-fill-space">
+                    {animalOutcome.drugs.map((item) => {
+                      const { officer, date } = animalOutcome?.drugAuthorization || {};
+                      return <DrugItem {...item} officer={officer} date={date} key={item.id} />;
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-div-pair">
-                <label className="comp-details-inner-content-label center" htmlFor="comp-review-required-officer">
-                  Officer
-                </label>
-                <div
-                  data-initials-sm={getAvatarInitials(assignedOfficer())}
-                  className="comp-orange-avatar-sm comp-details-inner-content"
-                >
-                  <span id="comp-review-required-officer" className="comp-padding-left-xs">
-                    {assignedOfficer()}
-                  </span>
-                </div>
+              <div className="comp-details-label-input-pair">
+                <label className="comp-details-inner-content-label center">Outcome</label>
+                <div>{animalOutcome?.outcome?.label}</div>
               </div>
             </div>
-            <div className="comp-details-edit-column" id="complaint-supporting-date-div">
-              <div className="comp-details-label-div-pair">
-                <label className="comp-details-inner-content-label" htmlFor="file-review-supporting-date">
-                  Date
-                </label>
-                <div className="bi comp-margin-right-xxs comp-details-inner-content" id="file-review-supporting-date">
-                  {formatDate(new Date().toString())}
+
+            <div className="comp-details-edit-container">
+              <div className="comp-details-edit-column">
+                <div className="comp-details-label-div-pair">
+                  <label className="comp-details-inner-content-label center" htmlFor="comp-review-required-officer">
+                    Officer
+                  </label>
+                  <div
+                    data-initials-sm={(getAvatarInitials(animalOutcome?.officer?.label ?? 'Unknow User'))}
+                    className="comp-orange-avatar-sm comp-details-inner-content"
+                  >
+                    <span id="comp-review-required-officer" className="comp-padding-left-xs">
+                      {animalOutcome?.officer?.label}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <div className="comp-details-edit-column" id="complaint-supporting-date-div">
+                <div className="comp-details-label-div-pair">
+                  <label className="comp-details-inner-content-label" htmlFor="file-review-supporting-date">
+                    Date
+                  </label>
+                  <div className="bi comp-margin-right-xxs comp-details-inner-content" id="file-review-supporting-date">
+                    {formatDate(animalOutcome?.date?.toString())}
+                  </div>
+                </div>
+              </div>
+              <div className="supporting-width"></div>
             </div>
-            <div className="supporting-width"></div>
           </div>
         </div>
-        <div className="comp-details-right-column">
-          <CompTextIconButton
-            buttonClasses="button-text"
-            text="Edit"
-            icon={BsPencil}
-            click={(evt) => edit(id)}
-          />
-        </div>
-      </div>
-    </div>
+      </div></>
   );
 };

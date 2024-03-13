@@ -1,66 +1,53 @@
 import { FC, useState } from "react";
+import DatePicker from "react-datepicker";
+import { ToastContainer } from "react-toastify";
+import { v4 as uuidv4 } from 'uuid';
+
+import { useAppSelector } from "../../../../../hooks/hooks";
+import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { selectAgeDropdown, selectConflictHistoryDropdown, selectSexDropdown, selectSpeciesCodeDropdown, selectThreatLevelDropdown, selectWildlifeComplaintOutcome } from "../../../../../store/reducers/code-table";
+import { selectComplaint} from "../../../../../store/reducers/complaints";
+import { CompSelect } from "../../../../common/comp-select";
+import { pad } from "../../../../../common/methods";
+
+import Option from "../../../../../types/app/option";
+
+import "react-toastify/dist/ReactToastify.css";
+import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { Row, Col, Button } from "react-bootstrap";
 import { AnimalTag } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import {
-  selectSpeciesCodeDropdown,
-  selectAgeDropdown,
-  selectSexDropdown,
-  selectThreatLevelDropdown,
-  selectConflictHistoryDropdown,
-  selectWildlifeComplaintOutcome,
-} from "../../../../../store/reducers/code-table";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
-import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { pad } from "../../../../../common/methods";
-import { Row, Col, Button } from "react-bootstrap";
-import { CompSelect } from "../../../../common/comp-select";
-import Option from "../../../../../types/app/option";
-import { from } from "linq-to-typescript";
 import { AddEarTag } from "./add-ear-tag";
-import { BsPlusCircle } from "react-icons/bs";
+
 import { AddDrug } from "./add-drug";
-import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+
 import { DrugAuthorization as AddDrugAuthorization } from "./drug-authorization";
-import DatePicker from "react-datepicker";
 
-type props = {
-  id: number;
-  agency: string;
-  species: string;
-  sex: string;
-  age: string;
-  threatLevel: string;
-  conflictHistory: string;
-  tags: Array<AnimalTag>;
-  drugs: Array<DrugUsed>;
-  drugAuthorization?: DrugAuthorization;
-  outcome: string;
-  officer: string;
-  date?: Date;
-  isEditable: boolean;
-  update: Function;
-  cancel: Function;
-};
+import { from } from "linq-to-typescript";
+import { BsPlusCircle } from "react-icons/bs";
+import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
 
-export const EditAnimalOutcome: FC<props> = ({
-  id,
-  agency,
-  species,
-  sex,
-  age,
-  threatLevel,
-  conflictHistory,
-  tags,
-  drugs,
-  drugAuthorization,
-  outcome,
-  officer,
-  date,
-  isEditable,
-  update,
-  cancel,
+
+export interface EditAnimalOutcomeProps {
+  animalOutcomeItemData?: AnimalOutcome | null
+  animalOutcomeData?: Array<AnimalOutcome>
+  setAnimalOutcomeData?: (param: any) => void | null
+  indexItem: number
+  setShowAnimalOutcomeEditForm?: (param: boolean) => void | null
+  setShowAnimalOutcomeAddForm?: (param: boolean) => void | null
+  editMode: boolean
+}
+
+export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
+  animalOutcomeData,
+  animalOutcomeItemData,
+  indexItem,
+  setAnimalOutcomeData,
+  setShowAnimalOutcomeAddForm,
+  editMode
 }) => {
+
+  const complaintData = useAppSelector(selectComplaint);
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -68,69 +55,76 @@ export const EditAnimalOutcome: FC<props> = ({
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
 
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const officers = useAppSelector(selectOfficersByAgencyDropdown((complaintData?.ownedBy ? complaintData?.ownedBy : 'COS')));
 
-  const [data, applyData] = useState<AnimalOutcome>({
-    id,
-    species,
-    sex,
-    age,
-    threatLevel,
-    conflictHistory,
-    tags,
-    drugs,
-    outcome,
-    officer,
-    date,
-    isEditable,
-    drugAuthorization,
-  });
+  const [species, setSpecies] = useState<Option | undefined>(animalOutcomeItemData?.species);
+  const [sex, setSex] = useState<Option | undefined>(animalOutcomeItemData?.sex);
+  const [age, setAge] = useState<Option | undefined>(animalOutcomeItemData?.age);
+  const [threatLevel, setThreatLevel] = useState<Option | undefined>(animalOutcomeItemData?.threatLevel);
+  const [conflictHistory, setConflictHistory] = useState<Option | undefined>(animalOutcomeItemData?.conflictHistory);
+  const [tags, setTags] = useState<AnimalTag[]>(animalOutcomeItemData?.tags ?? []);
+  const [drugs, setDrugs] = useState<DrugUsed[]>(animalOutcomeItemData?.drugs ?? []);
+  const [drugAuthorization, setDrugAuthorization] = useState<DrugAuthorization | undefined>(animalOutcomeItemData?.drugAuthorization);
+  const [outcome, setOutcome] = useState<Option | undefined>(animalOutcomeItemData?.outcome);
+  const [date, setDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
+  const [officer, setOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
 
-  const updateModel = (property: string, value: string | Date | Array<AnimalTag | DrugUsed> | null | undefined) => {
-    const model = { ...data, [property]: value };
-    applyData(model);
-  };
-
-  const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "species": {
-        const { species } = data;
-        return speciesList.find((item) => item.value === species);
+  const handleSaveAnimalOutcome = () => {
+    const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
+    if(isValid())
+    {
+      const newAnimalOutcome: AnimalOutcome = {
+        id: id,
+        isInEditMode: false,
+        species,
+        sex,
+        age,
+        threatLevel,
+        conflictHistory,
+        tags,
+        drugs,
+        drugAuthorization,
+        outcome,
+        officer,
+        date
       }
-      case "sex": {
-        const { sex } = data;
-        return sexes.find((item) => item.value === sex);
+      if(editMode) {
+        const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
+          if(i === indexItem) return newAnimalOutcome
+          else return animalOutcome
+        });
+        if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
       }
-
-      case "age": {
-        const { age } = data;
-        return ages.find((item) => item.value === age);
-      }
-
-      case "threatLevel": {
-        const { threatLevel } = data;
-        return threatLevels.find((item) => item.value === threatLevel);
-      }
-
-      case "conflictHistory": {
-        const { conflictHistory } = data;
-        return conflictHistories.find((item) => item.value === conflictHistory);
-      }
-
-      case "assigned": {
-        const { officer } = data;
-        return officers.find((item) => item.value === officer);
-      }
-
-      case "outcome": {
-        const { outcome } = data;
-        return outcomes.find((item) => item.value === outcome);
+      
+      else{
+        const newAnimalOutcomeArr = animalOutcomeData ?? [];
+        if(newAnimalOutcome) newAnimalOutcomeArr.push(newAnimalOutcome);
+        if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
+        if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
       }
     }
-  };
+    else return
+  }
+
+
+  const handleCancelAnimalOutcome = () => {
+    if(editMode) {
+      const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
+        if(i === indexItem) return {...animalOutcome, isInEditMode: false}
+        else return animalOutcome
+      });
+      if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
+    }
+    
+    else{
+      const newAnimalOutcomeArr = animalOutcomeData ? animalOutcomeData.splice(animalOutcomeData.length - 1, 1) : [];
+      if(setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
+      if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
+    }
+  }
 
   const renderEarTags = () => {
-    const { tags } = data;
+    
 
     if (tags && from(tags).any()) {
       let isLeftEarUsed = false;
@@ -149,32 +143,36 @@ export const EditAnimalOutcome: FC<props> = ({
             <AddEarTag {...item} isLeftEarUsed={isLeftEarUsed} update={updateEarTag} remove={removeEarTag} key={id} />
           );
         });
-    }
+  }
   };
 
   const addEarTag = () => {
-    const { tags } = data;
-
     if (tags.length < 2) {
       let id = tags.length + 1;
 
-      const update = [...tags, { id, ear: "", number: "" }];
-      updateModel("tags", update);
+      if(tags.length == 1){
+      
+        const update = [...tags, { id, ear: "", number: "" }];
+        setTags(update);
+      }
+      else
+      {
+        const newTags = [{ id: 1, ear: "", number: ""}];
+        setTags(newTags);
+      }
     }
   };
 
   const updateEarTag = (tag: AnimalTag) => {
-    const { tags: source } = data;
 
-    const items = source.filter(({ id }) => id !== tag.id);
+    const items = tags.filter(({ id }) => id !== tag.id);
     const update = [...items, tag];
 
-    updateModel("tags", update);
+    setTags(update);
   };
 
   const removeEarTag = (id: number) => {
-    const { tags: source } = data;
-    const items = source.filter((tag) => id !== tag.id);
+    const items = tags.filter((tag) => id !== tag.id);
     let updatedId = 0;
 
     const update = from(items)
@@ -185,12 +183,10 @@ export const EditAnimalOutcome: FC<props> = ({
         return { ...item, id: updatedId };
       });
 
-    updateModel("tags", update);
+      setTags(update);
   };
 
   const addDrug = () => {
-    const { drugs } = data;
-
     let id = drugs.length + 1;
 
     const update = [
@@ -208,12 +204,11 @@ export const EditAnimalOutcome: FC<props> = ({
         officer: "",
       },
     ];
-    updateModel("drugs", update);
+    setDrugs(update);
   };
 
   const removeDrug = (id: number) => {
-    const { drugs: source } = data;
-    const items = source.filter((drug) => id !== drug.id);
+    const items = drugs.filter((drug) => id !== drug.id);
     let updatedId = 0;
 
     const update = from(items)
@@ -224,20 +219,18 @@ export const EditAnimalOutcome: FC<props> = ({
         return { ...item, id: updatedId };
       });
 
-    updateModel("drugs", update);
+      setDrugs(update);
   };
 
   const updateDrug = (drug: DrugUsed) => {
-    const { drugs: source } = data;
 
-    const items = source.filter(({ id }) => id !== drug.id);
+    const items = drugs.filter(({ id }) => id !== drug.id);
     const update = [...items, drug];
 
-    updateModel("drugs", update);
+    setDrugs(update);
   };
 
   const renderDrugs = () => {
-    const { drugs } = data;
 
     if (drugs && from(drugs).any()) {
       return (
@@ -250,41 +243,57 @@ export const EditAnimalOutcome: FC<props> = ({
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <AddDrugAuthorization {...drugAuthorization} agency={agency} update={updateModel} />
+          <AddDrugAuthorization {...drugAuthorization} agency={complaintData?.ownedBy ?? 'COS'} update={setDrugAuthorization} />
         </>
       );
     }
   };
 
-  //update({ ...data, isEditable: false })
-  const handleEditAnimalOutcomeUpdate = () => {
-    update({ ...data, isEditable: false });
+  const isValid = (): boolean => {
+
+    let isValid = true;
+
+    if (!species || !age || !sex || !threatLevel || !conflictHistory) {
+      isValid = false;
+    }
+
+    if (!outcome || !officer || !date) {
+      isValid = false;
+    }
+    return isValid;
   };
 
   return (
-    <div className="comp-animal-outcome-report">
-      <h5>Animal {pad(id.toString(), 2)}</h5>
-      <div>Animal information</div>
+    <div className="comp-outcome-report-complaint-assessment">
+      <ToastContainer />
+
+      <div className="comp-animal-outcome-report">
+        <div className="equipment-item">
+        <div className="equipment-item-header">
+          <div className="title">
+            <h6>Animal {pad((indexItem + 1)?.toString(), 2)}</h6>
+          </div>
+        </div>
+      </div>
+      <div id="comp-outcome-report-animal-information-heading">Animal information</div>
 
       <div className="comp-animal-outcome-report-inner-spacing">
         <Row>
           <Col>
-            <label htmlFor="select-species">Species</label>
+            <label htmlFor="select-species" className="label-margin-bottom">Species</label>
             <CompSelect
               id="select-species"
               classNamePrefix="comp-select"
               className="comp-details-input"
               options={speciesList}
               enableValidation={false}
-              placeholder={"Select"}
-              onChange={(evt) => {
-                updateModel("species", evt?.value);
-              }}
-              value={getValue("species")}
+              placeholder="Select"
+              onChange={(species: any) => setSpecies(species)}
+              defaultOption={animalOutcomeItemData?.species}
             />
           </Col>
           <Col>
-            <label htmlFor="select-sex">Sex</label>
+            <label htmlFor="select-sex" className="label-margin-bottom">Sex</label>
             <CompSelect
               id="select-sex"
               classNamePrefix="comp-select"
@@ -292,14 +301,12 @@ export const EditAnimalOutcome: FC<props> = ({
               options={sexes}
               enableValidation={false}
               placeholder={"Select"}
-              onChange={(evt) => {
-                updateModel("sex", evt?.value);
-              }}
-              value={getValue("sex")}
+              onChange={(sex: any) => setSex(sex)}
+              defaultOption={animalOutcomeItemData?.sex}
             />
           </Col>
           <Col>
-            <label htmlFor="select-age">Age</label>
+            <label htmlFor="select-age" className="label-margin-bottom">Age</label>
             <CompSelect
               id="select-age"
               classNamePrefix="comp-select"
@@ -307,14 +314,12 @@ export const EditAnimalOutcome: FC<props> = ({
               options={ages}
               enableValidation={false}
               placeholder={"Select"}
-              onChange={(evt) => {
-                updateModel("age", evt?.value);
-              }}
-              value={getValue("age")}
+              onChange={(age: any) => setAge(age)}
+              defaultOption={animalOutcomeItemData?.age}
             />
           </Col>
           <Col>
-            <label htmlFor="select-category-level">Category level</label>
+            <label htmlFor="select-category-level" className="label-margin-bottom">Category level</label>
             <CompSelect
               id="select-category-level"
               classNamePrefix="comp-select"
@@ -322,14 +327,12 @@ export const EditAnimalOutcome: FC<props> = ({
               options={threatLevels}
               enableValidation={false}
               placeholder={"Select"}
-              onChange={(evt) => {
-                updateModel("threatLevel", evt?.value);
-              }}
-              value={getValue("threatLevel")}
+              onChange={(threatLevel: any) => setThreatLevel(threatLevel)}
+              defaultOption={animalOutcomeItemData?.threatLevel}
             />
           </Col>
           <Col>
-            <label htmlFor="select-conflict-history">Conflict history</label>
+            <label htmlFor="select-conflict-history" className="label-margin-bottom">Conflict history</label>
             <CompSelect
               id="select-conflict-history"
               classNamePrefix="comp-select"
@@ -337,17 +340,16 @@ export const EditAnimalOutcome: FC<props> = ({
               options={conflictHistories}
               enableValidation={false}
               placeholder={"Select"}
-              onChange={(evt) => {
-                updateModel("conflictHistory", evt?.value);
-              }}
-              value={getValue("conflictHistory")}
+              onChange={(conflictHistory: any) => setConflictHistory(conflictHistory)}
+              defaultOption={animalOutcomeItemData?.conflictHistory}
             />
           </Col>
         </Row>
       </div>
 
       {renderEarTags()}
-      {data.tags.length < 2 && (
+      {
+        tags.length < 2 && (
         <Button
           className="comp-animal-outcome-add-button"
           title="Add ear tag"
@@ -365,7 +367,7 @@ export const EditAnimalOutcome: FC<props> = ({
         <span> Add drug</span>
       </Button>
 
-      <div id="comp-outcome-report-outcome-heading">Outcome</div>
+      <div id="comp-outcome-report-outcome-heading" className="comp-outcome-spacing">Outcome</div>
       <div className="comp-animal-outcome-report-inner-spacing comp-margin-top-sm">
         <Row>
           <Col className="mt-auto mb-3" md={4}>
@@ -376,10 +378,8 @@ export const EditAnimalOutcome: FC<props> = ({
               options={outcomes}
               enableValidation={false}
               placeholder={"Select"}
-              onChange={(evt) => {
-                updateModel("outcome", evt?.value);
-              }}
-              value={getValue("outcome")}
+              onChange={(outcome: any) => setOutcome(outcome)}
+              defaultOption={animalOutcomeItemData?.outcome}
             />
           </Col>
           <Col md={4}>
@@ -391,13 +391,11 @@ export const EditAnimalOutcome: FC<props> = ({
                 id="officer-assigned-select-id"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
-                onChange={(evt) => {
-                  updateModel("officer", evt?.value);
-                }}
                 options={officers}
                 placeholder="Select"
                 enableValidation={false}
-                value={getValue("assigned")}
+                onChange={(officer: any) => setOfficer(officer)}
+                defaultOption={animalOutcomeItemData?.officer}
               />
             </div>
           </Col>
@@ -408,39 +406,38 @@ export const EditAnimalOutcome: FC<props> = ({
                 Date
               </label>
               <DatePicker
-                id="complaint-incident-time"
+                id="equipment-day-set"
                 showIcon
+                maxDate={new Date()}
+                onChange={(date: Date) => setDate(date)}
+                selected={date}
                 dateFormat="yyyy-MM-dd"
                 wrapperClassName="comp-details-edit-calendar-input"
-                maxDate={new Date()}
-                onChange={(evt) => {
-                  updateModel("date", evt);
-                }}
-                selected={data.date}
               />
             </div>
           </Col>
         </Row>
       </div>
-      <div className="comp-animal-outcome-report-actions">
+      <div className="comp-outcome-report-actions">
         <Button
-          id="outcome-cancel-button"
+          id="equipment-cancel-button"
           title="Cancel Outcome"
-          placeholder="Enter number"
-          className="comp-animal-outcome-cancel"
-          onClick={() => cancel(id)}
+          className="comp-outcome-cancel"
+          onClick={handleCancelAnimalOutcome}
         >
           Cancel
         </Button>
         <Button
-          id="outcome-save-button"
+          id="equipment-save-button"
           title="Save Outcome"
-          className="comp-animal-outcome-save"
-          onClick={() => handleEditAnimalOutcomeUpdate()}
+          className="comp-outcome-save"
+          onClick={handleSaveAnimalOutcome}
         >
           Save
         </Button>
       </div>
+      </div>
     </div>
   );
 };
+  
