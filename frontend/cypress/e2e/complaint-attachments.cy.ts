@@ -19,7 +19,7 @@ describe("Complaint Attachments", () => {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
       }
 
-      cy.verifyAttachmentsCarousel(true);
+      cy.verifyAttachmentsCarousel(false,"complaint_attachments_div_id");
     });
   });
 
