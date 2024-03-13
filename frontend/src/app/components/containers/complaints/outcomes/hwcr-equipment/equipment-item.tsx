@@ -46,6 +46,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
           handleDelete(indexItem);
           setShowModal(false);
         }}
+        confirmText="Yes, delete equipment"
       />
       <div className="comp-outcome-report-complaint-assessment equipment-item">
         {isActive && <div className="status-bar"></div>}
