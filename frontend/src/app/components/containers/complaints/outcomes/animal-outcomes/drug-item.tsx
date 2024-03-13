@@ -5,6 +5,7 @@ import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../..
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
+import { selectComplaint } from "../../../../../store/reducers/complaints";
 
 type props = {
   vial: string;
@@ -21,7 +22,6 @@ type props = {
   officer?: string;
   date?: Date;
 
-  agency: string;
 };
 
 export const DrugItem: FC<props> = ({
@@ -35,12 +35,12 @@ export const DrugItem: FC<props> = ({
   remainingUse,
   officer,
   date,
-  agency,
 }) => {
+  const complaintData = useAppSelector(selectComplaint);
   const drugs = useAppSelector(selectDrugs);
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const officers = useAppSelector(selectOfficersByAgencyDropdown(complaintData?.ownedBy ?? 'COS'));
 
   const [injectedMethod, setInjectedMethod] = useState("");
   const [remaining, setRemaining] = useState("");
