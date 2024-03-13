@@ -1,6 +1,6 @@
 export enum AttachmentEnum {
-  COMPLAINT_ATTACHMENT = "COMPLAINT_ATTACHMENT",
-  OUTCOME_ATTACHMENT = "OUTCOME_ATTACHMENT",
+  COMPLAINT_ATTACHMENT = 1,
+  OUTCOME_ATTACHMENT = 2,
 };
 
 export default AttachmentEnum;
