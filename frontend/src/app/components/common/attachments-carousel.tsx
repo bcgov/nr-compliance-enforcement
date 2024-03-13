@@ -55,9 +55,7 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   const [slides, setSlides] = useState<COMSObject[]>([]);
 
-  // sonarcloud doesn't like this, and it doesn't like it when we don't include slideCount.  So ignore it
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [ slideCount, setSlideCount] = useState<number>(0);
+  const [, setSlideCount] = useState<number>(0);
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
