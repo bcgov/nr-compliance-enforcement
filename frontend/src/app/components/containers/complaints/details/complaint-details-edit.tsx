@@ -842,7 +842,7 @@ export const ComplaintDetailsEdit: FC = () => {
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
                   <div className="comp-details-label-input-pair" id="complaint-description-pair-id">
-                    <label id="complaint-description-edit-label-id" className="col-auto">
+                    <label id="complaint-description-edit-label-id" htmlFor="complaint-description-textarea-id" className="col-auto">
                       Complaint Description
                       <span className="required-ind">*</span>
                     </label>
@@ -1034,7 +1034,7 @@ export const ComplaintDetailsEdit: FC = () => {
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
                   <div className="comp-details-label-input-pair" id="name-pair-id">
-                    <label id="complaint-caller-info-name-label-id" className="col-auto">
+                    <label id="complaint-caller-info-name-label-id" htmlFor="caller-name-id" className="col-auto">
                       Name
                     </label>
                     <div className="comp-details-edit-input">
@@ -1049,7 +1049,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </div>
                   </div>
                   <div className="comp-details-label-input-pair" id="primary-phone-pair-id">
-                    <label id="complaint-caller-info-primary-phone-label-id" className="col-auto">
+                    <label id="complaint-caller-info-primary-phone-label-id" htmlFor="caller-primary-phone-id" className="col-auto">
                       Primary Phone
                     </label>
                     <div className="comp-details-edit-input">
@@ -1065,7 +1065,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </div>
                   </div>
                   <div className="comp-details-label-input-pair" id="secondary-phone-pair-id">
-                    <label id="complaint-caller-info-secondary-phone-label-id" className="col-auto">
+                    <label id="complaint-caller-info-secondary-phone-label-id" htmlFor="caller-info-secondary-phone-id" className="col-auto">
                       Alternate 1 Phone
                     </label>
                     <div className="comp-details-edit-input">
@@ -1081,7 +1081,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </div>
                   </div>
                   <div className="comp-details-label-input-pair" id="alternate-phone-pair-id">
-                    <label id="complaint-caller-info-alternate-phone-label-id" className="col-auto">
+                    <label id="complaint-caller-info-alternate-phone-label-id" htmlFor="caller-info-alternate-phone-id" className="col-auto">
                       Alternate 2 Phone
                     </label>
                     <div className="comp-details-edit-input">
@@ -1151,7 +1151,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-suspect-witness-edit-container">
                   <div className="comp-details-edit-column comp-details-right-column">
                     <div className="comp-details-label-input-pair" id="subject-of-complaint-pair-id">
-                      <label id="complaint-caller-info-name-label-id" className="col-auto">
+                      <label id="complaint-caller-info-name-label-id" htmlFor="complaint-witness-details-textarea-id" className="col-auto">
                         Description
                       </label>
                       <textarea
