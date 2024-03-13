@@ -27,6 +27,10 @@ import { UserManagement } from "./components/containers/admin/user-management";
 const App: FC = () => {
   const dispatch = useAppDispatch();
 
+  const preload = () => { 
+    
+  }
+
   useEffect(() => {
     dispatch(getOfficerDefaultZone());
     dispatch(fetchCodeTables());
