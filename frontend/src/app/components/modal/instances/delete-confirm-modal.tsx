@@ -6,7 +6,8 @@ type DeleteConfirmModalProps = {
   title: string,
   content: string,
   onDelete: () => void | null,
-  onHide: () => void | null
+  onHide: () => void | null,
+  confirmText: string,
 }
 
 export const DeleteConfirmModal: FC<DeleteConfirmModalProps> = (props) => {  
@@ -29,7 +30,7 @@ export const DeleteConfirmModal: FC<DeleteConfirmModalProps> = (props) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={props.onHide}>No, go back</Button>
-        <Button onClick={props.onDelete}>Yes, delete equipment</Button>
+        <Button onClick={props.onDelete}>{props.confirmText}</Button>
       </Modal.Footer>
     </Modal>
     );
