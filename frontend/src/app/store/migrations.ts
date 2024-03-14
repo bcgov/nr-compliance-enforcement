@@ -9,7 +9,7 @@ const BaseMigration = {
 };
 
 let migration = {...BaseMigration}
-// Uncomment the line below when Migration1 has been filled out
-//migration = {...migration, ...Migration1 }
+// Uncomment the line below when Migration has been filled out
+migration = {...migration, ...Migration1 }
 
 export default migration;

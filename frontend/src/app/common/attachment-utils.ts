@@ -1,3 +1,4 @@
+import AttachmentEnum from "../constants/attachment-enum";
 import {
   deleteAttachments,
   getAttachments,
@@ -46,18 +47,19 @@ export async function handlePersistAttachments(
   attachmentsToDelete: COMSObject[] | null,
   complaintIdentifier: string,
   setAttachmentsToAdd: any,
-  setAttachmentsToDelete: any
+  setAttachmentsToDelete: any,
+  attachmentType: AttachmentEnum,
 ) {
   if (attachmentsToDelete) {
     await dispatch(deleteAttachments(attachmentsToDelete));
   }
 
   if (attachmentsToAdd) {
-    await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier));
+    await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, attachmentType));
   }
 
   // refresh store
-  await dispatch(getAttachments(complaintIdentifier));
+  await dispatch(getAttachments(complaintIdentifier, attachmentType));
 
   // Clear the attachments since they've been added or saved.
   setAttachmentsToAdd(null);
