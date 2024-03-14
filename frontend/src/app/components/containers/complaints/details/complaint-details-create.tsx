@@ -51,6 +51,7 @@ import { Delegate } from "../../../../types/app/people/delegate";
 import { UUID } from "crypto";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 import { ComplaintAlias } from "../../../../types/app/aliases";
+import AttachmentEnum from "../../../../constants/attachment-enum";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -585,7 +586,8 @@ export const CreateComplaint: FC = () => {
         attachmentsToDelete,
         complaintId,
         setAttachmentsToAdd,
-        setAttachmentsToDelete
+        setAttachmentsToDelete,
+        AttachmentEnum.COMPLAINT_ATTACHMENT,
       );
     }
 
@@ -1054,6 +1056,7 @@ export const CreateComplaint: FC = () => {
         </div>
       )}
       <AttachmentsCarousel
+        attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
         allowUpload={true}
         allowDelete={true}
         onFilesSelected={onHandleAddAttachments}
