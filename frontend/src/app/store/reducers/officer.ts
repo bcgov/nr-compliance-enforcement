@@ -164,7 +164,7 @@ export const searchOfficers =
     let results: Array<Officer> = [];
 
     //-- look for any officers that match firstname, lastname, or office
-    if(input.length >= 3){ 
+    if(input.length >= 2){ 
       results = items.filter((officer) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
