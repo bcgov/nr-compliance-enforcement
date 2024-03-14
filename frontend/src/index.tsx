@@ -10,18 +10,36 @@ import "./assets/sass/app.scss";
 
 import reportWebVitals from "./reportWebVitals";
 import { PersistGate } from "redux-persist/integration/react";
+import TopLevelErrorBoundary from "./app/components/common/error-handlers/top-level";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 
+function MyComponent() {
+  // Simulate an error for demonstration purposes
+  if (Math.random() > 0.5) {
+    throw new Error('An error occurred in MyComponent');
+  }
+
+  // Component logic here
+  return <div>This is MyComponent</div>;
+}
+
 const onAuthenticatedCallback = () =>
   root.render(
     <StrictMode>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
+      <TopLevelErrorBoundary>
+        <Provider store={store}>
+          <PersistGate
+            loading={null}
+            persistor={persistor}
+          >
+            <App />
+          </PersistGate>
+        </Provider>
+        {/* <MyComponent /> */}
+        {/* this component will throw an exception, and this exception will be caught by the boundary */}
+      </TopLevelErrorBoundary>
     </StrictMode>,
   );
 
