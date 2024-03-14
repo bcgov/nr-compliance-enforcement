@@ -76,7 +76,7 @@ export class CodeTableService {
   private _reportedByRepository: Repository<ReportedByCode>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
-    console.log("in code table: " + JSON.stringify(table));
+    this.logger.debug("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find(

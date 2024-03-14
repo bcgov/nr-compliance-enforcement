@@ -16,6 +16,8 @@ declare namespace Cypress {
       complaintIdentifier: string,
       navigateByURL: boolean
     ): Chainable<any>;
+    verifyAttachmentsCarousel(uploadable: boolean, divId: string,
+    ): Chainable<any>;
     navigateToCreateScreen(): Chainable<any>;
     isInViewport(): Chainable<any>;
     waitForSpinner(): Chainable<any>;

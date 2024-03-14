@@ -632,7 +632,7 @@ export class ComplaintService {
 
       return builder.getCount();
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   };
 
@@ -759,7 +759,7 @@ export class ComplaintService {
         }
       }
     } catch (error) { 
-      console.log(error);
+      this.logger.error(error);
     }
   };
 
@@ -833,7 +833,7 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      this.logger.log(error);
+      this.logger.log(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -927,7 +927,7 @@ export class ComplaintService {
       }
       return results;
     } catch (error) {
-      this.logger.log(error);
+      this.logger.log(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -957,8 +957,7 @@ export class ComplaintService {
       }
     } catch (error) {
       this.logger.log(`An Error occured trying to update complaint: ${id}, update status: ${status}`);
-      this.logger.log(error);
-      console.log("ERROR: ", error)
+      this.logger.log(error.response);
 
       throw new HttpException(
         `Unable to update complaint: ${id} complaint status to ${status}`,
@@ -1127,7 +1126,7 @@ export class ComplaintService {
       this.logger.log(
         `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`
       );
-      this.logger.log(error);
+      this.logger.log(error.response);
 
       throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.BAD_REQUEST);
     } finally {
@@ -1278,7 +1277,7 @@ export class ComplaintService {
           model
         )}`
       );
-      this.logger.log(error);
+      this.logger.log(error.response);
       throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);
     } finally {
       await queryRunner.release();
