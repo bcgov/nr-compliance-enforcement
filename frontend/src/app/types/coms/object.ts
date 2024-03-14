@@ -1,3 +1,5 @@
+import AttachmentEnum from "../../constants/attachment-enum";
+
 export interface COMSObject {
   id?: string;
   path?: string;
@@ -13,4 +15,5 @@ export interface COMSObject {
   imageIconString?: string;
   imageIconId?: string;
   errorMesage?: string;
+  attachmentType?: AttachmentEnum
 }

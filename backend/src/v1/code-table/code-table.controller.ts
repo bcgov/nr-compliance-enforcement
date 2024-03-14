@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Logger,
   NotFoundException,
   Param,
   UseGuards,
@@ -94,6 +95,7 @@ export class CodeTableController {
 @Controller({ path: "code-table/case-management", version: "1" })
 export class CaseManagementCodeTableController {
   constructor(private readonly service: CodeTableService) {}
+  private readonly logger = new Logger(CaseManagementCodeTableController.name);
 
   @Get(":table")
   @Roles(Role.COS_OFFICER)
@@ -101,7 +103,7 @@ export class CaseManagementCodeTableController {
     @Param("table") table: string,
     @Token() token
   ): Promise<BaseCodeTable[]> {
-    console.log("in case management: " + JSON.stringify(table));
+    this.logger.debug("in case management: " + JSON.stringify(table));
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }

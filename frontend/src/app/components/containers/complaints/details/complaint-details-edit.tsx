@@ -66,6 +66,7 @@ import { AttractantXref } from "../../../../types/app/complaints/attractant-xref
 import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
+import AttachmentEnum from "../../../../constants/attachment-enum";
 
 type ComplaintParams = {
   id: string;
@@ -165,6 +166,13 @@ export const ComplaintDetailsEdit: FC = () => {
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
 
+  const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+
+  const handleSlideCountChange = (count: number) => {
+    setComplaintAttachmentCount(count);
+  };
+
+
   //-- use effects
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
@@ -223,6 +231,7 @@ export const ComplaintDetailsEdit: FC = () => {
         id,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
+        AttachmentEnum.COMPLAINT_ATTACHMENT,
       );
 
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1275,13 +1284,20 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </div>
           )}
-          <AttachmentsCarousel
-            complaintIdentifier={id}
-            allowUpload={true}
-            allowDelete={true}
-            onFilesSelected={onHandleAddAttachments}
-            onFileDeleted={onHandleDeleteAttachment}
-          />
+          <div className="comp-complaint-details-block">
+          <h6>Complainant attachments ({complaintAttachmentCount})</h6>
+            <div className="comp-attachments">
+              <AttachmentsCarousel
+                attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+                complaintIdentifier={id}
+                allowUpload={true}
+                allowDelete={true}
+                onFilesSelected={onHandleAddAttachments}
+                onFileDeleted={onHandleDeleteAttachment}
+                onSlideCountChange={handleSlideCountChange}
+              />
+            </div>
+          </div>
           <ComplaintLocation
             parentCoordinates={{ lat: +latitude, lng: +longitude }}
             complaintType={complaintType}
@@ -1292,7 +1308,14 @@ export const ComplaintDetailsEdit: FC = () => {
           />
         </>
       )}
-      {readOnly && <AttachmentsCarousel complaintIdentifier={id} />}
+      {readOnly && 
+      <div className="comp-complaint-details-block" id="complaint_attachments_div_id">
+        <h6>Complainant attachments ({complaintAttachmentCount})</h6>
+          <div className={ complaintAttachmentCount > 0 ? "comp-attachments" : ""}>
+            <AttachmentsCarousel attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT} complaintIdentifier={id} onSlideCountChange={handleSlideCountChange} />
+          </div>
+      </div>
+      }
       {readOnly && (
         <ComplaintLocation
           parentCoordinates={{ lat: +latitude, lng: +longitude }}

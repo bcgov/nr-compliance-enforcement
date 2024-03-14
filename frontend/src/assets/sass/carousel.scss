@@ -1,10 +1,6 @@
 .coms-carousel {
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-  padding: 14px;
   min-height: 230px;
   max-height: 230px;
-  margin-top: 24px;
 }
 
 .coms-carousel-slide {
@@ -55,6 +51,11 @@
 
 .coms-slider {
   margin-right: 10px;
+}
+
+.carousel-save-buttons {
+  clear: both;
+  float: right;
 }
 
 .delete-icon, .download-icon {
