@@ -14,16 +14,20 @@ import { PersistGate } from "redux-persist/integration/react";
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 
-const onAuthenticatedCallback = () =>
+const onAuthenticatedCallback = () => {
   root.render(
     <StrictMode>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
+        <PersistGate
+          loading={null}
+          persistor={persistor}
+        >
           <App />
         </PersistGate>
       </Provider>
     </StrictMode>,
   );
+};
 
 UserService.initKeycloak(onAuthenticatedCallback);
 
