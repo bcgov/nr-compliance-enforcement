@@ -71,17 +71,8 @@ export class CaseFileService {
       variables: model
     },
     );
-    if (result?.response?.data?.data) {
-      const caseFileDto = result.response.data.data as CaseFileDto;
-      return caseFileDto;
-    } else if (result?.response?.data?.errors) {
-      this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
-      return null;
-    }
-    else {
-      this.logger.error(`Unknwown error occurred during web request`);
-      return null;
-    }
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createAssessment;
   }
 
   update = async (
@@ -97,14 +88,15 @@ export class CaseFileService {
       variables: model
     },
     );
-    return await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateAssessment;
 
   }
 
   private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
-    Promise<CaseFileDto> => {
+    Promise<any> => {
     if (result?.response?.data?.data) {
-      const caseFileDto = result.response.data.data as CaseFileDto;
+      const caseFileDto = result.response.data.data;
       return caseFileDto;
     } else if (result?.response?.data?.errors) {
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);

@@ -4,8 +4,8 @@ import Option from '../types/app/option';
 interface ValidationCheckboxGroupProps {
   options: Option[];
   errMsg: string;
-  onCheckboxChange: (checkedItems: string[]) => void;
-  checkedValues?: string[];
+  onCheckboxChange: (checkedItems: Option[]) => void;
+  checkedValues?: Option[];
 }
 
 export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
@@ -14,14 +14,14 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   onCheckboxChange,
   checkedValues = [],
 }) => {
-  const [checkedItems, setCheckedItems] = useState<string[]>(checkedValues);
+  const [checkedItems, setCheckedItems] = useState<Option[]>(checkedValues);
 
   const inputClassName = "form-check-input";
   const labelClassName = "form-check-label checkbox-label";
 
-  const handleCheckboxChange = (value: string) => {
-    const updatedCheckedItems = checkedItems.includes(value)
-      ? checkedItems.filter((item) => item !== value)
+  const handleCheckboxChange = (value: Option) => {
+    const updatedCheckedItems = checkedItems.map((item) => { return (item.value) }).includes(value.value)
+      ? checkedItems.filter((item) => item.value !== value.value)
       : [...checkedItems, value];
 
     setCheckedItems(updatedCheckedItems);
@@ -40,8 +40,8 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
             type="checkbox"
             id={option.value!}
             className={inputClassName}
-            checked={checkedItems.includes(option.value!)}
-            onChange={() => handleCheckboxChange(option.value!)}
+            checked={checkedItems.map((item) => { return item.value }).includes(option.value!)}
+            onChange={() => handleCheckboxChange(option!)}
           />
           <label className={labelClassName} htmlFor={option.value!}>
             {option.label}

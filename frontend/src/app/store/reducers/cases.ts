@@ -1,9 +1,15 @@
 import { Assessment } from "../../types/outcomes/assessment";
 import { AppThunk, RootState } from "../store";
-import { createAction, createSlice } from "@reduxjs/toolkit";
+import { createAction, createSlice, Action, ThunkAction } from "@reduxjs/toolkit";
 import config from "../../../config";
-import { generateApiParameters, get } from "../../common/api";
+import { generateApiParameters, get, patch, post } from "../../common/api";
 import { CasesState } from "../../types/state/cases-state";
+import { UUID } from "crypto";
+import { CreateAssessmentInput } from "../../types/app/case-files/create-assessment-input";
+import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessment-input";
+import { CaseFileDto } from "../../types/app/case-files/case-file";
+import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
+import { Officer } from "../../types/person/person";
 
 const initialState: CasesState = {
   assessment: {
@@ -49,14 +55,180 @@ export const resetAssessment = createAction("assessment/reset");
 
 // Given a compaint id, returns the assessment
 export const getAssessment =
-  (complaint_identifier?: string): AppThunk =>
-  async (dispatch) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaint_identifier}`);
-    const response = await get<Assessment>(dispatch, parameters);
+  (complaintIdentifier?: string): AppThunk =>
+    async (dispatch, getState) => {
+      const {
+        officers: { officers },
+      } = getState();
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
 
-    if (response) {
-      dispatch(setAssessment(response));
+        const updatedAssessmentData = await parseResponse(res, officers);
+        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+
+      });
+    };
+
+export const findAssessment =
+  (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+    async (dispatch) => {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      const response = await get<CaseFileDto>(dispatch, parameters);
+      return response?.caseIdentifier;
+    };
+
+export const upsertAssessment =
+  (
+    complaintIdentifier: string,
+    assessment: Assessment
+  ): AppThunk =>
+    async (dispatch, getState) => {
+      if (!assessment) {
+        return;
+      }
+
+      const {
+        codeTables: { "assessment-type": assessmentType },
+        officers: { officers },
+        app: { profile }
+      } = getState();
+
+      let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      const caseIdentifier = await dispatch(findAssessment(complaintIdentifier));
+
+      if (!caseIdentifier) {
+        let createAssessmentInput = {
+          createAssessmentInput: {
+            leadIdentifier: complaintIdentifier,
+            createUserId: `${profile.givenName} ${profile.surName}`,
+            agencyCode: "COS",
+            caseCode: "HWCR",
+            assessmentDetails: {
+              actionNotRequired: (assessment.action_required?.value === "No"),
+              actions: assessment.assessment_type.map((item) => {
+                return {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value
+                }
+              }),
+              actionJustificationCode: assessment.justification?.value
+            }
+          }
+        } as CreateAssessmentInput;
+
+        for (let item of assessmentType) {
+          if (item.isActive == true) {
+            if (!createAssessmentInput.createAssessmentInput.assessmentDetails.actions.map((action) => {
+              return action.actionCode
+            }).includes(item.assessmentType)) {
+              createAssessmentInput.createAssessmentInput.assessmentDetails.actions.push(
+                {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: false,
+                  actionCode: item.assessmentType
+                } as AssessmentActionDto
+              )
+            }
+          }
+        }
+
+        parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/create`, createAssessmentInput);
+        await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+
+          const updatedAssessmentData = await parseResponse(res, officers);
+          dispatch(setAssessment({ assessment: updatedAssessmentData }));
+
+        });
+      } else {
+        let updateAssessmentInput = {
+          updateAssessmentInput: {
+            leadIdentifier: complaintIdentifier,
+            caseIdentifier: caseIdentifier,
+            updateUserId: `${profile.givenName} ${profile.surName}`,
+            agencyCode: "COS",
+            caseCode: "HWCR",
+            assessmentDetails: {
+              actionNotRequired: (assessment.action_required?.value === "No"),
+              actionJustificationCode: assessment.justification?.value,
+              actions: assessment.assessment_type.map((item) => {
+                return {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.value,
+                  activeIndicator: true
+                }
+              })
+            }
+          }
+        } as UpdateAssessmentInput;
+
+        for (let item of assessmentType) {
+          if (item.isActive == true) {
+            if (!updateAssessmentInput.updateAssessmentInput.assessmentDetails.actions.map((action) => {
+              return action.actionCode
+            }).includes(item.assessmentType)) {
+              updateAssessmentInput.updateAssessmentInput.assessmentDetails.actions.push(
+                {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.assessmentType,
+                  activeIndicator: false
+                } as AssessmentActionDto
+              )
+            }
+          }
+        }
+        parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/update`, updateAssessmentInput);
+        await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+          const updatedAssessmentData = await parseResponse(res, officers);
+          dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        });
+      }
+      return;
     }
-  };
+
+const parseResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Assessment | undefined | null> => {
+
+  if (res?.assessmentDetails?.actions?.length) {
+
+    const { actor, actionDate } = res.assessmentDetails.actions.map((action) => {
+      return { actor: action.actor, actionDate: action.date }
+    })[0];
+
+    let officerFullName = null;
+    let officerNames = officers.filter((person) => person.person_guid.person_guid === actor).map((officer) => {
+      return `${officer.person_guid.first_name} ${officer.person_guid.last_name}`
+    })
+
+    if (officerNames?.length) {
+      officerFullName = officerNames[0];
+    } else {
+      officerFullName = actor;
+    }
+
+    const updatedAssessmentData = {
+      date: actionDate,
+      officer: { label: officerFullName, value: actor },
+      action_required: {
+        label: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
+        value: res.assessmentDetails.actionNotRequired ? "No" : "Yes"
+      },
+      justification: {
+        value: res.assessmentDetails.actionJustificationCode,
+        label: res.assessmentDetails.actionJustificationLongDescription
+      },
+      assessment_type: res.assessmentDetails.actions.filter((action) => { return action.activeIndicator }).map((action) => {
+        return { label: action.longDescription, value: action.actionCode }
+      }),
+    } as Assessment;
+    return updatedAssessmentData;
+  }
+  else {
+    return null;
+  }
+}
 
 export default casesSlice.reducer;
