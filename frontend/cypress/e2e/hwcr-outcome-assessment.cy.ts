@@ -8,18 +8,26 @@ describe("HWCR Outcome Assessments", () => {
     cy.get(".comp-box-complaint-id").contains(complaintIdentifier);
     cy.get(".comp-box-species-type").contains(species);
 
-    //validate that all the checkboxes are there
-    cy.get("#Assessed\\ public\\ safety\\ risk").should("exist");
-    cy.get("#Assessed\\ health\\ as\\ per\\ animal\\ welfare\\ guidelines").should("exist");
-    cy.get("#Assessed\\ known\\ conflict\\ history").should("exist");
-    cy.get("#Confirmed\\ idenfication\\ of\\ offending\\ animals").should("exist");
 
-    //validate that dropdowns exist
-    cy.get("#action-required").should("exist");
-    cy.get("#outcome-officer").should("exist");
+    //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
+    //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
+    //and to add a test at the end to delete the assessment.
+    cy.get('.comp-outcome-report-complaint-assessment')
+    .then(function($assessment) {
+      if ($assessment.find('#outcome-save-button').length) {
+        cy.get("#ASSESSRISK").should("exist");
+        cy.get("#ASSESSHLTH").should("exist");
+        cy.get("#ASSESSHIST").should("exist");
+        cy.get("#CNFRMIDENT").should("exist");
 
-    //validate the date picker exists
-    cy.get("#complaint-outcome-date").should("exist");
+        //validate that dropdowns exist
+        cy.get("#action-required").should("exist");
+        cy.get("#outcome-officer").should("exist");
+
+        //validate the date picker exists
+        cy.get("#complaint-outcome-date").should("exist");
+      }
+    });
   };
 
   function fillInAssessment (assessment: string[], actionRequired: string, officer: string, date: string, justification?: string) {
@@ -84,23 +92,7 @@ describe("HWCR Outcome Assessments", () => {
   });
 
   it("it requires at least one assessment action on create", () => {
-      cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066" , true);
-
-      validateComplaint("23-033066", "Coyote");
-
-      //click Save Button
-      cy.get("#outcome-save-button").click();
-
-      //validate error message
-      cy.get(".error-message").should(($error) => {
-          expect($error).to.contain.text("One or more assessment is required");
-      });
-  });
-
-  it("it can save assessment where action is required", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066", true);
-
-    validateComplaint("23-033066", "Coyote");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066" , true);
 
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
@@ -108,7 +100,33 @@ describe("HWCR Outcome Assessments", () => {
     cy.get('.comp-outcome-report-complaint-assessment')
     .then(function($assessment) {
       if ($assessment.find('#outcome-save-button').length) {
-        fillInAssessment (["#Assessed\\ public\\ safety\\ risk"], "Yes", "Olivia Benson", "01")
+        validateComplaint("23-033066", "Coyote");
+
+        //click Save Button
+        cy.get("#outcome-save-button").click();
+  
+        //validate error message
+        cy.get(".error-message").should(($error) => {
+            expect($error).to.contain.text("One or more assessment is required");
+        });
+      } else {
+        cy.log('Test was previously run. Skip the Test')
+        this.skip()
+      }
+    })
+  });
+
+  it("it can save assessment where action is required", () => {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066", true);
+
+    //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
+    //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
+    //and to add a test at the end to delete the assessment.
+    cy.get('.comp-outcome-report-complaint-assessment')
+    .then(function($assessment) {
+      if ($assessment.find('#outcome-save-button').length) {
+        validateComplaint("23-033066", "Coyote");
+        fillInAssessment (["#ASSESSRISK"], "Yes", "Olivia Benson", "01")
         validateAssessment (["Assessed public safety risk"], "Yes", "Olivia Benson", "01");
       } else {
         cy.log('Test was previously run. Skip the Test')
@@ -122,25 +140,30 @@ describe("HWCR Outcome Assessments", () => {
 
     validateComplaint("23-033066", "Coyote");
 
-    //Remove this once the backend persistence is working.
-    fillInAssessment (["#Assessed\\ public\\ safety\\ risk"], "Yes", "Olivia Benson", "01");
+    cy.get('.comp-outcome-report-complaint-assessment')
+    .then(function($assessment) {
+      if ($assessment.find('#assessment-edit-button').length) {
+        cy.get("#assessment-edit-button").click();
 
-    cy.get("#assessment-edit-button").click();
+        const newCheckboxForEdit = "#ASSESSHLTH"
+        cy.get(newCheckboxForEdit).should("exist");
+        cy.get(newCheckboxForEdit).check();
 
-    const newCheckboxForEdit = "#Assessed\\ health\\ as\\ per\\ animal\\ welfare\\ guidelines"
-    cy.get(newCheckboxForEdit).should("exist");
-    cy.get(newCheckboxForEdit).check();
+        cy.get("#outcome-cancel-button").click();
 
-    cy.get("#outcome-cancel-button").click();
+        cy.get('.modal-footer > .btn-primary').click();
 
-    cy.get('.modal-footer > .btn-primary').click();
+        cy.get("#assessment-checkbox-div").should(($div) => {
+            expect($div).to.contain.text("Assessed public safety risk");
+        });
 
-    cy.get("#assessment-checkbox-div").should(($div) => {
-        expect($div).to.contain.text("Assessed public safety risk");
-    });
-
-    cy.get("#assessment-checkbox-div").should(($div) => {
-        expect($div).to.not.contain.text("Assessed health as per animal welfare guidelines");
+        cy.get("#assessment-checkbox-div").should(($div) => {
+            expect($div).to.not.contain.text("Assessed health as per animal welfare guidelines");
+        });
+      } else {
+        cy.log('Assessment Not Found, did a previous test fail? Skip the Test')
+        this.skip()
+      }
     });
   });
 
@@ -149,14 +172,19 @@ describe("HWCR Outcome Assessments", () => {
 
     validateComplaint("23-033066", "Coyote");
 
-    //Remove this once the backend persistence is working.
-    fillInAssessment (["#Assessed\\ public\\ safety\\ risk"], "Yes", "Olivia Benson", "01");
+    cy.get('.comp-outcome-report-complaint-assessment')
+    .then(function($assessment) {
+      if ($assessment.find('#assessment-edit-button').length) {
+        cy.get("#assessment-edit-button").click();
 
-    cy.get("#assessment-edit-button").click();
+        fillInAssessment (["#ASSESSHLTH"], "No", "Jake Peralta", "01", "No public safety concern");
 
-    fillInAssessment (["#Assessed\\ health\\ as\\ per\\ animal\\ welfare\\ guidelines"], "No", "Jake Peralta", "01", "No public safety concern");
-
-    validateAssessment (["Assessed public safety risk", "Assessed health as per animal welfare guidelines"], "No", "Jake Peralta", "01", "No public safety concern");
+        validateAssessment (["Assessed public safety risk", "Assessed health as per animal welfare guidelines"], "No", "Jake Peralta", "01", "No public safety concern");
+      } else {
+        cy.log('Assessment Not Found, did a previous test fail? Skip the Test')
+        this.skip()
+      }
+    }); 
   });
 });
 
