@@ -85,9 +85,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
 
   const renderOfficers = () => {
     const getOfficerList = () => {
-      if (searchInput && from(searchResults).any()) {
+      if (searchInput.length >= 2 && from(searchResults).any()) {
         return searchResults;
-      } else if (searchInput && !from(searchResults).any()) {
+      } else if (searchInput.length >=2 && !from(searchResults).any()) {
         return [];
       } else {
         return officersJson;
