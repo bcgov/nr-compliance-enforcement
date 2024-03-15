@@ -100,7 +100,7 @@ export const upsertAssessment =
         let createAssessmentInput = {
           createAssessmentInput: {
             leadIdentifier: complaintIdentifier,
-            createUserId: `${profile.givenName} ${profile.surName}`,
+            createUserId: profile.idir_username,
             agencyCode: "COS",
             caseCode: "HWCR",
             assessmentDetails: {
@@ -147,7 +147,7 @@ export const upsertAssessment =
           updateAssessmentInput: {
             leadIdentifier: complaintIdentifier,
             caseIdentifier: caseIdentifier,
-            updateUserId: `${profile.givenName} ${profile.surName}`,
+            updateUserId: profile.idir_username,
             agencyCode: "COS",
             caseCode: "HWCR",
             assessmentDetails: {
