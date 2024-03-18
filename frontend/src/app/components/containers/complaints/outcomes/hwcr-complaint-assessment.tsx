@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, selectAssessment, setAssessment, upsertAssessment, getAssessment } from "../../../../store/reducers/cases";
+import { resetAssessment, selectAssessment, upsertAssessment, getAssessment } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError, ToggleSuccess } from "../../../../common/toast";
@@ -137,16 +137,9 @@ export const HWCRComplaintAssessment: FC = () => {
     selectedActionRequired?.value === "No" ? "comp-details-input" : "comp-details-input comp-outcome-hide";
 
   const cancelConfirmed = () => {
-    setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
-    setSelectedOfficer(assessmentState.officer);
-    setSelectedActionRequired(assessmentState.action_required);
-    setSelectedJustification(assessmentState.justification);
-    setSelectedAssessmentTypes(assessmentState.assessment_type);
-    resetValidationErrors();
-    if (assessmentState.assessment_type.length > 0) { // This handles the case where the user clicks cancel before saving anything
-      setEditable(false);
-    }
+    populateAssessment();
   };
+
 
   const cancelButtonClick = () => {
     dispatch(

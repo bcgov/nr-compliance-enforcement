@@ -41,7 +41,7 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
             id={option.value!}
             className={inputClassName}
             checked={checkedItems.map((item) => { return item.value }).includes(option.value!)}
-            onChange={() => handleCheckboxChange(option!)}
+            onChange={() => handleCheckboxChange(option)}
           />
           <label className={labelClassName} htmlFor={option.value!}>
             {option.label}
