@@ -102,6 +102,9 @@ objects:
       resources:
         requests:
           storage: ${DB_PVC_SIZE}
+          cpu: "50m"
+        limits:
+          cpu: "100m"
       storageClassName: netapp-file-standard
   - kind: ImageStream
     apiVersion: v1
