@@ -2,22 +2,24 @@ import { AnimalTag } from "./animal-tag";
 import { DrugAuthorization } from "./drug-authorization";
 import { DrugUsed } from "./drug-used";
 
+import Option from "../../../../../types/app/option";
+
 export interface AnimalOutcome {
-  id: number; 
+  id: string | undefined; 
   
-  species: string;
-  sex: string;
-  age: string;
-  threatLevel: string;
-  conflictHistory: string;
+  species: Option | undefined;
+  sex: Option | undefined;
+  age: Option | undefined;
+  threatLevel: Option | undefined;
+  conflictHistory: Option | undefined;
 
   tags: Array<AnimalTag>;
   drugs: Array<DrugUsed>;
-  drugAuthorization?: DrugAuthorization
+  drugAuthorization?: DrugAuthorization;
   
-  outcome: string;
-  officer: string;
+  outcome: Option | undefined;
+  officer: Option | undefined;
   date?: Date;
 
-  isEditable: boolean
+  isInEditMode: boolean
 }

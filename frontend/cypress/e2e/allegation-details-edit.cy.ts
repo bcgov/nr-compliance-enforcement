@@ -213,7 +213,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       editCallDetails.locationDescription,
     );
 
-    //Commented out until COMPENF-843 is Fixed
     cy.get('div[id="complaint-incident-date-time"]').contains(
       editCallDetails.incidentDateDay
     );

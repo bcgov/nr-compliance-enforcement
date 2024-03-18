@@ -13,9 +13,11 @@ import config from "../../../config";
 import { getThumbnailFile, injectComplaintIdentifierToFilename, injectComplaintIdentifierToThumbFilename, isImage } from "../../common/methods";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import axios from "axios";
+import AttachmentEnum from "../../constants/attachment-enum";
 
 const initialState: AttachmentsState = {
-  attachments: [],
+  complaintsAttachments: [],
+  outcomeAttachments: []
 };
 
 /**
@@ -32,14 +34,14 @@ export const attachmentsSlice = createSlice({
       const {
         payload: { attachments },
       } = action;
-      return { ...state, attachments: attachments ?? [] };
+      return { ...state, complaintsAttachments: attachments ?? [] };
     },
 
     // used when removing an attachment from a complaint
     removeAttachment: (state, action) => {
       return {
         ...state,
-        attachments: state.attachments.filter(attachment => attachment.id !== action.payload),
+        complaintsAttachments: state.complaintsAttachments.filter(attachment => attachment.id !== action.payload),
       };
     },
 
@@ -50,7 +52,42 @@ export const attachmentsSlice = createSlice({
 
       return {
         ...state,
-        attachments: [...state.attachments, serializedFile],
+        complaintsAttachments: [...state.complaintsAttachments, serializedFile],
+      };
+    },
+
+    // used when retrieving attachments from objectstore
+    setOutcomeAttachments: (state, action) => {
+      const {
+        payload: { attachments },
+      } = action;
+      return { ...state, outcomeAttachments: attachments ?? [] };
+    },
+
+    // used when removing an attachment from a complaint
+    removeOutcomeAttachment: (state, action) => {
+      return {
+        ...state,
+        outcomeAttachments: state.outcomeAttachments.filter(attachment => attachment.id !== action.payload),
+      };
+    },
+
+    // used when adding an attachment to a complaint
+    addOutcomeAttachment: (state, action) => {
+      const { name, type, size, id } = action.payload; // Extract relevant info
+      const serializedFile = { name, type, size, id }; 
+
+      return {
+        ...state,
+        outcomeAttachments: [...state.outcomeAttachments, serializedFile],
+      };
+    },
+
+    clearAttachments: (state) => {
+      return {
+        ...state,
+        complaintsAttachments: [],
+        outcomeAttachments: [],
       };
     },
     
@@ -62,55 +99,57 @@ export const attachmentsSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAttachments, removeAttachment , addAttachment} = attachmentsSlice.actions;
+export const { setAttachments, removeAttachment , addAttachment, setOutcomeAttachments, removeOutcomeAttachment , addOutcomeAttachment, clearAttachments } = attachmentsSlice.actions;
 
 // Get list of the attachments and update store
 export const getAttachments =
-  (complaint_identifier: string): AppThunk =>
+  (complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
         `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
       );
-      const response = await get<Array<COMSObject>>(dispatch, parameters, {
+      let response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
+        "x-amz-meta-attachment-type": attachmentType,
       });
+
       if (response && from(response).any()) {
-        for(let attachment of response)
-        {
-          //try{
-          if(isImage(attachment.name))
-          {
-            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
-              "x-amz-meta-complaint-id": complaint_identifier,
-              "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": attachment?.id,
-            });
-            
-            if(thumbArrayResponse[0]?.id)
-            {
+        for (const attachment of response) {
+          if (isImage(attachment.name)) {
+            const thumbArrayResponse = await get<Array<COMSObject>>(
+              dispatch, parameters, {
+                "x-amz-meta-complaint-id": complaint_identifier,
+                "x-amz-meta-is-thumb": "Y",
+                "x-amz-meta-thumb-for": attachment?.id,
+              }
+            );
+      
+            const thumbId = thumbArrayResponse[0]?.id;
+      
+            if (thumbId) {
               const thumbParameters = generateApiParameters(
-                `${config.COMS_URL}/object/${thumbArrayResponse[0]?.id}?download=url`
+                `${config.COMS_URL}/object/${thumbId}?download=url`
               );
-          
+      
               const thumbResponse = await get<string>(dispatch, thumbParameters);
               attachment.imageIconString = thumbResponse;
-              attachment.imageIconId = thumbArrayResponse[0]?.id;
-              }
+              attachment.imageIconId = thumbId;
+            }
           }
-
-          /*}catch (error) {
-            console.log("getThumbError: " + error);
-            ToggleError(`Error retrieving thumbnail`);
-          }*/
         }
-        
-        dispatch(
-          setAttachments({
-            attachments: response ?? [],
-          })
-        );
+      
+        const attachmentList: Array<COMSObject> = response ?? [];
+      
+        switch (attachmentType) {
+          case AttachmentEnum.COMPLAINT_ATTACHMENT:
+            dispatch(setAttachments({ attachments: attachmentList }));
+            break;
+          case AttachmentEnum.OUTCOME_ATTACHMENT:
+            dispatch(setOutcomeAttachments({ attachments: attachmentList }));
+            break;
+        }
       }
     } catch (error) {
       ToggleError(`Error retrieving attachments`);
@@ -151,7 +190,7 @@ export const deleteAttachments =
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: File[], complaint_identifier: string): AppThunk =>
+  (attachments: File[], complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
 
     if (!attachments) {
@@ -162,13 +201,15 @@ export const saveAttachments =
       const header = {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
+        "x-amz-meta-attachment-type": attachmentType,
         "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToFilename(
           attachment.name,
-          complaint_identifier
+          complaint_identifier,
+          attachmentType
         ))}"`,
         "Content-Type": attachment?.type,
       };
-
+      
       try {
         const parameters = generateApiParameters(
           `${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`
@@ -179,7 +220,14 @@ export const saveAttachments =
           header,
           attachment
         );
-        dispatch(addAttachment(response)); // dispatch with serializable payload
+        switch (attachmentType) {
+          case AttachmentEnum.COMPLAINT_ATTACHMENT:
+            dispatch(addAttachment(response)); // dispatch with serializable payload
+            break;
+          case AttachmentEnum.OUTCOME_ATTACHMENT:
+            dispatch(addOutcomeAttachment(response)); // dispatch with serializable payload
+        }
+
         if(isImage(attachment.name))
         {
           const thumbHeader = {
@@ -188,7 +236,8 @@ export const saveAttachments =
             "x-amz-meta-thumb-for": response.id,
             "Content-Disposition": `attachment; filename="${encodeURIComponent(injectComplaintIdentifierToThumbFilename(
               attachment.name,
-              complaint_identifier
+              complaint_identifier,
+              attachmentType
             ))}"`,
             "Content-Type": "image/jpeg",
           };  
@@ -227,11 +276,25 @@ export const saveAttachments =
   };
 
 //-- selectors
-export const selectAttachments = (state: RootState): COMSObject[]  => {
+export const selectAttachments = (attachmentType: AttachmentEnum) => (state: RootState): COMSObject[]  => {
   const { attachments: attachmentsRoot } = state;
-  const { attachments } = attachmentsRoot;
+  const { complaintsAttachments, outcomeAttachments } = attachmentsRoot;
+  
+  switch (attachmentType) {
+    case AttachmentEnum.COMPLAINT_ATTACHMENT:
+      return complaintsAttachments ?? [];    
+    case AttachmentEnum.OUTCOME_ATTACHMENT:
+      return outcomeAttachments ?? [];
+    
+  }
 
-  return attachments ?? [];
+};
+
+export const selectOutcomeAttachments = () => (state: RootState): COMSObject[]  => {
+  const { attachments: attachmentsRoot } = state;
+  const { outcomeAttachments } = attachmentsRoot;
+
+  return outcomeAttachments ?? [];
 };
 
 export default attachmentsSlice.reducer;

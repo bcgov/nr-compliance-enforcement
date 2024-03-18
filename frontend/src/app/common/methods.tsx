@@ -11,6 +11,7 @@ import { UUID } from "crypto";
 import { Complaint as ComplaintDto } from "../types/app/complaints/complaint";
 import { GifReader } from 'omggif';
 import { fromImage } from "imtool";
+import AttachmentEnum from "../constants/attachment-enum";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -127,8 +128,20 @@ export const formatDate = (input: string | undefined): string => {
     return "";
   }
 
-  return format(Date.parse(input), "yyyy-MM-dd");
+  try {
+    const parsedDate = Date.parse(input);
+
+    if (isNaN(parsedDate)) {
+      throw new Error("Invalid date format");
+    }
+
+    return format(parsedDate, "yyyy-MM-dd");
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
 };
+
 
 export const formatTime = (input: string | undefined): string => {
   if (!input) {
@@ -147,20 +160,20 @@ export const formatDateTime = (input: string | undefined): string => {
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
-export const injectComplaintIdentifierToFilename = (filename: string, complaintIdentifier: string): string => {
+export const injectComplaintIdentifierToFilename = (filename: string, complaintIdentifier: string, attachmentType: AttachmentEnum): string => {
   // Find the last dot in the filename to separate the extension
   const lastDotIndex = filename.lastIndexOf(".");
 
   // If there's no dot, just append the complaintId at the end
   if (lastDotIndex === -1) {
-    return `${filename} ${complaintIdentifier}`;
+    return `${filename} ${complaintIdentifier} ${attachmentType}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex);
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return `${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`;
+  return `${fileNameWithoutExtension} ${complaintIdentifier} ${attachmentType}${fileExtension}`;
 };
 
 export const isImage = (filename: string) : boolean => {
@@ -168,20 +181,20 @@ export const isImage = (filename: string) : boolean => {
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
-export const injectComplaintIdentifierToThumbFilename = (filename: string, complaintIdentifier: string): string => {
+export const injectComplaintIdentifierToThumbFilename = (filename: string, complaintIdentifier: string, attachmentType: AttachmentEnum): string => {
   // Find the last dot in the filename to separate the extension
   const lastDotIndex = filename.lastIndexOf('.');
 
   // If there's no dot, just append the complaintId at the end
   if (lastDotIndex === -1) {
-      return (`${filename} ${complaintIdentifier}`);
+      return (`${filename} ${complaintIdentifier} ${attachmentType}`);
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex) + "-thumb";
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return (`${fileNameWithoutExtension} ${complaintIdentifier}${fileExtension}`);
+  return (`${fileNameWithoutExtension} ${complaintIdentifier}${attachmentType}${fileExtension}`);
 }
 
 // Used to retrieve the coordinates in the decimal format

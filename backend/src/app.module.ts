@@ -38,6 +38,7 @@ import { StagingMetaDataMappingModule } from './v1/staging_meta_data_mapping/sta
 import { StagingStatusCodeModule } from './v1/staging_status_code/staging_status_code.module';
 import { StagingActivityCodeModule } from './v1/staging_activity_code/staging_activity_code.module';
 import { RequestTokenMiddleware } from "./middleware/req.token";
+import { CaseFileModule } from "./v1/case_file/case_file.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -99,6 +100,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     StagingStatusCodeModule,
     StagingMetaDataMappingModule,
     EntityCodeModule,
+    CaseFileModule
   ],
   controllers: [AppController],
   providers: [AppService],

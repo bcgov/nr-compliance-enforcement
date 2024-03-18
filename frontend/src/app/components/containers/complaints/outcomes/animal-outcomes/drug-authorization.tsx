@@ -6,22 +6,22 @@ import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectComplaintAssignedBy } from "../../../../../store/reducers/complaints";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import Option from "../../../../../types/app/option";
+import { DrugAuthorization as DrugAuthorizationType } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
 
 type Props = {
-  officer?: string;
-  date?: Date;
   agency: string;
+  drugAuthtorization?: DrugAuthorizationType;
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   const [assignedOfficer] = useState(assigned)
 
-  const [authorizedBy, setAuthorizedBy] = useState(officer);
-  const [authorizedOn, setAuthorizedOn] = useState(date);
+  const [authorizedBy, setAuthorizedBy] = useState(drugAuthtorization?.officer);
+  const [authorizedOn, setAuthorizedOn] = useState(drugAuthtorization?.date);
 
   useEffect(() => {
     if ((assigned && !authorizedBy)) {
@@ -37,23 +37,18 @@ export const DrugAuthorization: FC<Props> = ({ agency, officer, date, update }) 
     }
   };
 
-  const updateModel = (property: string, value: string | Date | null | undefined) => {
-    const source = { officer: authorizedBy, date: authorizedOn };
-    const authorization = { ...source, [property]: value };
-
-    update("drugAuthorization", authorization);
-  };
 
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
-    updateModel("officer", input);
+    const newDrugAuth: DrugAuthorizationType = {officer: input ?? "", date: authorizedOn ?? undefined};
+    update(newDrugAuth);
+
   };
 
   const handleAuthorizedOnChange = (input: Date | undefined | null) => {
-    if (input) {
-      setAuthorizedOn(input);
-      updateModel("date", input);
-    }
+    setAuthorizedOn(input ?? undefined);
+    
+    update({officer: authorizedBy, date: input ?? undefined});
   };
 
   return (

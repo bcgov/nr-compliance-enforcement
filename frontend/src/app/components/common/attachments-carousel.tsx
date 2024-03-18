@@ -7,11 +7,11 @@ import {
 } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import {
   getAttachments,
+  selectAttachments,
   setAttachments,
+  setOutcomeAttachments,
 } from "../../store/reducers/attachments";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
@@ -20,36 +20,42 @@ import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
 import { v4 as uuidv4 } from 'uuid';
 import { getThumbnailDataURL, isImage } from "../../common/methods";
+import AttachmentEnum from "../../constants/attachment-enum";
 
 type Props = {
+  attachmentType: AttachmentEnum;
   complaintIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
   onFilesSelected?: (attachments: File[]) => void;
   onFileDeleted?: (attachments: COMSObject) => void;
+  onSlideCountChange?: (count: number) => void;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
+  attachmentType,
   complaintIdentifier,
   allowUpload,
   allowDelete,
   onFilesSelected,
   onFileDeleted,
+  onSlideCountChange,
 }) => {
   const dispatch = useAppDispatch();
 
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize)
 
-  const carouselData = useSelector(
-    (state: RootState) => state.attachments.attachments
-  );
+  const carouselData = useAppSelector(selectAttachments(attachmentType));
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
+  const SLIDE_HEIGHT = 200;
   const [visibleSlides, setVisibleSlides] = useState<number>(4); // Adjust the initial number of visible slides as needed
   const carouselContainerRef = useRef<HTMLDivElement | null>(null); // ref to the carousel's container, used to determine how many slides can fit in the container
 
   const [slides, setSlides] = useState<COMSObject[]>([]);
+
+  const [, setSlideCount] = useState<number>(0);
 
   // when the carousel data updates (from the selector, on load), populate the carousel slides
   useEffect(() => {
@@ -63,7 +69,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // get the attachments when the complaint loads
   useEffect(() => {
     if (complaintIdentifier) {
-      dispatch(getAttachments(complaintIdentifier));
+      dispatch(getAttachments(complaintIdentifier, attachmentType));
     }
   }, [complaintIdentifier, dispatch]);
 
@@ -71,8 +77,19 @@ export const AttachmentsCarousel: FC<Props> = ({
   useEffect(() => {
     return () => {
       dispatch(setAttachments([]));
+      dispatch(setOutcomeAttachments([]));
     };
   }, [dispatch]);
+
+  // Update the slide count when the slides state changes
+  useEffect(() => {
+    setSlideCount(slides.length);
+  
+    // Call the onSlideCountChange prop with the updated count
+    if (typeof onSlideCountChange === 'function') {
+      onSlideCountChange(slides.length);
+    }
+  }, [slides.length]);
 
  function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
   // Create a copy of the array using slice() or spread syntax
@@ -182,12 +199,10 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
-      <h6>Attachments ({slides?.length ? slides.length : 0})</h6>
-
       {(allowUpload || (slides && slides?.length > 0)) && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
-          naturalSlideHeight={200}
+          naturalSlideHeight={SLIDE_HEIGHT}
           totalSlides={slides ? slides.length : 0}
           visibleSlides={visibleSlides}
           className="coms-carousel"
