@@ -1,3 +1,4 @@
+import { CodeTableVersionState } from "../state/code-table-version-state";
 import { ConfigurationState } from "../state/configuration-state";
 import { LoadingState } from "../state/loading-state";
 import { NotificationState } from "../state/notification-state";
@@ -24,4 +25,5 @@ export interface AppState {
   hideCallback: (() => void) | null;
 
   configurations: ConfigurationState;
+  codeTableVersion: CodeTableVersionState;
 }

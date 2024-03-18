@@ -107,6 +107,6 @@ export class AppModule {
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HTTPLoggerMiddleware).forRoutes("*");
-    consumer.apply(RequestTokenMiddleware).forRoutes("v1/code-table", "v1/case");
+    consumer.apply(RequestTokenMiddleware).forRoutes("v1/code-table", "v1/case", "v1/configuration");
   }
 }

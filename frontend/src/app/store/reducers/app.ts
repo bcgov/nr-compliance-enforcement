@@ -17,6 +17,7 @@ import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
 import { NotificationState } from "../../types/state/notification-state";
 import { ToggleError } from "../../common/toast";
+import { CodeTableVersionState } from "../../types/state/code-table-version-state";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -29,6 +30,7 @@ enum ActionTypes {
   SET_DEFAULT_ZONE = "app/SET_DEFAULT_ZONE",
   SET_CONFIGURATIONS = "app/CONFIGURATIONS",
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
+  SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
 }
 //-- action creators
 
@@ -40,6 +42,11 @@ export const setTokenProfile = (profile: Profile) => ({
 export const setConfigurations = (configurations: ConfigurationState) => ({
   type: ActionTypes.SET_CONFIGURATIONS,
   payload: configurations,
+});
+
+export const setCodeTableVersion = (version: CodeTableVersionState) => ({
+  type: ActionTypes.SET_CODE_TABLE_VERSION,
+  payload: version,
 });
 
 export const toggleSidebar = () => ({
@@ -355,6 +362,24 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
+  try {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/configuration/CDTABLEVER`
+    );
+    const response = await get<CodeTableVersionState>(dispatch, parameters);
+
+    if (response) {
+      dispatch(
+        setCodeTableVersion(response)
+      );
+      return response;
+    }
+  } catch (error) {
+    ToggleError("Unable to get configurations");
+  }
+};
+
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
@@ -389,6 +414,10 @@ const initialState: AppState = {
   configurations: {
     configurations: undefined,
   },
+  codeTableVersion: (localStorage.getItem("codeTableVersion")!== null) ?
+    //@ts-ignore 
+    JSON.parse(localStorage.getItem("codeTableVersion")) : 
+    { complaintManagement: "1", caseManagement: "1" } 
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -491,6 +520,13 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { ...profile, agency };
 
       return { ...state, profile: update };
+    }
+    case ActionTypes.SET_CODE_TABLE_VERSION: {
+      const {
+        payload: { complaintManagement, caseManagement },
+      } = action;
+      const update = { complaintManagement, caseManagement };
+      return { ...state, codeTableVersion: update };
     }
     default:
       return state;
