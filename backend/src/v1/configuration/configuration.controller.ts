@@ -4,7 +4,7 @@ import { UpdateConfigurationDto } from './dto/update-configuration.dto';
 import { JwtRoleGuard } from './../../auth/jwtrole.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from './../../auth/decorators/roles.decorator';
-import { Token } from 'src/auth/decorators/token.decorator';
+import { Token } from './../../auth/decorators/token.decorator';
 import { Role } from './../../enum/role.enum';
 import { get } from 'src/external_api/case_management';
 
