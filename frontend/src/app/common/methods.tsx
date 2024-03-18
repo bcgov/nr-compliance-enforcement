@@ -128,8 +128,20 @@ export const formatDate = (input: string | undefined): string => {
     return "";
   }
 
-  return format(Date.parse(input), "yyyy-MM-dd");
+  try {
+    const parsedDate = Date.parse(input);
+
+    if (isNaN(parsedDate)) {
+      throw new Error("Invalid date format");
+    }
+
+    return format(parsedDate, "yyyy-MM-dd");
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
 };
+
 
 export const formatTime = (input: string | undefined): string => {
   if (!input) {

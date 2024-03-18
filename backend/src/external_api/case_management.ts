@@ -9,9 +9,9 @@ axios.interceptors.response.use(undefined, (error: AxiosError) => {
 
 export const get = (token, params? : {}) => {
   let config: AxiosRequestConfig = { headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  } };
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    } };
 
   if (params) {
     config.params = params;
@@ -31,6 +31,23 @@ export const get = (token, params? : {}) => {
         throw new Error(`Request setup error to Case Management: ${error.message}`);
       }
     });
+};
+
+export const post = (token, payload?: {}) => {
+  let config: AxiosRequestConfig = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  };
+  return axios
+    .post(caseManagementlURL, payload, config)
+    .then((response: AxiosResponse) => {
+      return {response: response, error: null as AxiosError};
+    })
+    .catch((error: AxiosError) => {
+      return {response: null as AxiosResponse, error: error};
+    })
 };
 
 

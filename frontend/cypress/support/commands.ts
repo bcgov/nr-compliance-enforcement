@@ -251,7 +251,7 @@ Cypress.Commands.add(
   },
 );
 
-Cypress.Commands.add("enterDateTimeInDatePicker", (datePickerId: string, day: string, hour: string, minute: string) => {
+Cypress.Commands.add("enterDateTimeInDatePicker", (datePickerId: string, day: string, hour?: string, minute?: string) => {
 
   cy.get(`#${datePickerId}`)
   .click({ force: true })
@@ -262,12 +262,15 @@ Cypress.Commands.add("enterDateTimeInDatePicker", (datePickerId: string, day: st
 
 
   // Locate the time input field and click it to open the time picker
-  cy.get(`#${datePickerId}`)
-  .click({ force: true })
-  .get('.react-datepicker-time__input')
-  .filter('input') 
-  .click({force: true})
-  .type(`${hour}:${minute}`);
+  if(hour && minute)
+  {
+    cy.get(`#${datePickerId}`)
+    .click({ force: true })
+    .get('.react-datepicker-time__input')
+    .filter('input') 
+    .click({force: true})
+    .type(`${hour}:${minute}`);
+  }
 })
 
 Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
