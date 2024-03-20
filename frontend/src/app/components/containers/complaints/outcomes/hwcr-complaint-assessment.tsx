@@ -227,7 +227,7 @@ export const HWCRComplaintAssessment: FC = () => {
       <h6>Complaint assessment</h6>
       <div className="comp-outcome-report-complaint-assessment">
         <div className="comp-details-edit-container">
-          <div className="comp-details-edit-column">
+          <div className="assessment-details-edit-column">
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
                 <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
@@ -340,7 +340,7 @@ export const HWCRComplaintAssessment: FC = () => {
                       id="complaint-outcome-date"
                       selectedDate={selectedDate}
                       onChange={handleDateChange}
-                      placeholder="Select Date"
+                      placeholder="Select date"
                       className="comp-details-edit-calendar-input" // Adjust class as needed
                       classNamePrefix="comp-select" // Adjust class as needed
                       errMsg={assessmentDateErrorMessage} // Pass error message if any
