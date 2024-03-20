@@ -21,7 +21,6 @@ import { OrganizationCodeTable } from "../../types/app/code-tables/organization-
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { Justification } from "../../types/app/code-tables/justification";
 import { AssessmentType } from "../../types/app/code-tables/assesment-type";
-import { PreventEducationAction } from "../../types/app/code-tables/prevent-education-action";
 import { Sex } from "../../types/app/code-tables/sex";
 import { Age } from "../../types/app/code-tables/age";
 import { ThreatLevel } from "../../types/app/code-tables/threat-level";
@@ -32,6 +31,7 @@ import { Drug } from "../../types/app/code-tables/drug";
 import { DrugMethod } from "../../types/app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining-outcome";
 import { Equipment } from "../../types/app/code-tables/equipment";
+import { PreventionEducationType } from "../../types/app/code-tables/prevention-education-type";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -48,7 +48,7 @@ const initialState: CodeTableState = {
   "reported-by": [],
   justification: [],
   "assessment-type": [],
-  "prevent-education-action": [],
+  "prevention-education-type": [],
   sex: [],
   age: [],
   "threat-level": [],
@@ -99,7 +99,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       "reported-by": reportedBy,
       justification,
       "assessment-type": assessmentType,
-      "prevent-education-action": preventEducationAction,
+      "prevention-education-type": preventionEducationType,
       sex,
       age,
       "threat-level": threatLevels,
@@ -166,8 +166,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(assessmentType).any()) {
       dispatch(fetchAssessmentTypeCodes());
     }
-    if (!from(preventEducationAction).any()) {
-      dispatch(fetchPreventEducationAction());
+    if (!from(preventionEducationType).any()) {
+      dispatch(fetchPreventionEducationTypeCodes());
     }
     if (!from(sex).any()) {
       dispatch(fetchSexes());
@@ -379,14 +379,14 @@ export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
+export const fetchPreventionEducationTypeCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENTION_EDUCATION_TYPE}`
   );
 
-  const response = await get<Array<PreventEducationAction>>(dispatch, parameters);
+  const response = await get<Array<PreventionEducationType>>(dispatch, parameters);
   if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION, data: response };
+    const payload = { key: CODE_TABLE_TYPES.PREVENTION_EDUCATION_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -617,11 +617,11 @@ export const selectYesNoCodeDropdown = (): Array<Option> => {
 
 export const selectPreventEducationDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "prevent-education-action": action },
+    codeTables: { "prevention-education-type": preventionEducationType },
   } = state;
 
-  const data = action.map(({ action, longDescription }) => {
-    const item: Option = { label: longDescription, value: action };
+  const data = preventionEducationType.map(({ preventionEducationType, longDescription }) => {
+    const item: Option = { label: longDescription, value: preventionEducationType };
     return item;
   });
   return data;

@@ -9,6 +9,9 @@ import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessm
 import { CaseFileDto } from "../../types/app/case-files/case-file";
 import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
 import { Officer } from "../../types/person/person";
+import { PreventionEducation } from "../../types/outcomes/hwcr-prevention";
+import { CreatePreventionEducationInput } from "../../types/app/case-files/create-prevention-education-input";
+import { UpdatePreventionEducationInput } from "../../types/app/case-files/update-prevention-education-input";
 
 const initialState: CasesState = {
   assessment: {
@@ -17,6 +20,11 @@ const initialState: CasesState = {
     justification: undefined,
     officer: undefined,
     assessment_type: [],
+  },
+  preventionEducation: {
+    date: undefined,
+    officer: undefined,
+    prevention_education_type: [],
   },
 };
 
@@ -31,6 +39,12 @@ export const casesSlice = createSlice({
       } = action;
       state.assessment = { ...assessment }; // Update only the assessment property
     },
+    setPreventionEducation: (state, action) => {
+      const {
+        payload: { preventionEducation },
+      } = action;
+      state.preventionEducation = { ...preventionEducation }; // Update only the assessment property
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -43,14 +57,27 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment } = casesSlice.actions;
+export const { setAssessment, setPreventionEducation } = casesSlice.actions;
 
 export const selectAssessment = (state: RootState): Assessment => {
   const { cases } = state;
   return cases.assessment;
 };
+export const selectPreventionEducation = (state: RootState): PreventionEducation => {
+  const { cases } = state;
+  return cases.preventionEducation;
+};
 
 export const resetAssessment = createAction("assessment/reset");
+export const resetPreventionEducation = createAction("prevention-education/reset");
+
+export const findCaseFile =
+  (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+    async (dispatch) => {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      const response = await get<CaseFileDto>(dispatch, parameters);
+      return response?.caseIdentifier;
+    };
 
 // Given a compaint id, returns the assessment
 export const getAssessment =
@@ -67,13 +94,20 @@ export const getAssessment =
 
       });
     };
-
-export const findAssessment =
-  (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-    async (dispatch) => {
+// Given a compaint id, returns the prevention education
+export const getPreventionEducation =
+  (complaintIdentifier?: string): AppThunk =>
+    async (dispatch, getState) => {
+      const {
+        officers: { officers },
+      } = getState();
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-      const response = await get<CaseFileDto>(dispatch, parameters);
-      return response?.caseIdentifier;
+      await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
+
+        const updatedPreventionEducationData = await parsePreventionEducationResponse(res, officers);
+        dispatch(setPreventionEducation({ preventionEducation: updatedPreventionEducationData }));
+
+      });
     };
 
 export const upsertAssessment =
@@ -85,13 +119,29 @@ export const upsertAssessment =
       if (!assessment) {
         return;
       }
-      const caseIdentifier = await dispatch(findAssessment(complaintIdentifier));
+      const caseIdentifier = await dispatch(findCaseFile(complaintIdentifier));
       if (!caseIdentifier) {
         dispatch(addAssessment(complaintIdentifier, assessment));
       } else {
         dispatch(updateAssessment(complaintIdentifier, caseIdentifier, assessment));
       }
     }
+  export const upsertPreventionEducation =
+    (
+      complaintIdentifier: string,
+      preventionEducation: PreventionEducation
+    ): AppThunk =>
+      async (dispatch) => {
+        if (!preventionEducation) {
+          return;
+        }
+        const caseIdentifier = await dispatch(findCaseFile(complaintIdentifier));
+        if (!caseIdentifier) {
+          dispatch(addPreventionEducation(complaintIdentifier, preventionEducation));
+        } else {
+          dispatch(updatePreventionEducation(complaintIdentifier, caseIdentifier, preventionEducation));
+        }
+      }
 
 const addAssessment =
   (
@@ -149,6 +199,60 @@ const addAssessment =
 
       });
     }
+    const addPreventionEducation =
+    (
+      complaintIdentifier: string,
+      preventionEducation: PreventionEducation
+    ): AppThunk =>
+      async (dispatch, getState) => {
+        const {
+          codeTables: { "assessment-type": assessmentType },
+          officers: { officers },
+          app: { profile },
+        } = getState();
+        let createPreventionEducationInput = {
+          createPreventionEducationInput: {
+            leadIdentifier: complaintIdentifier,
+            createUserId: profile.idir_username,
+            agencyCode: "COS",
+            caseCode: "HWCR",
+            preventionEducationDetails: {
+              actions: preventionEducation.prevention_education_type.map((item) => {
+                return {
+                  date: preventionEducation.date,
+                  actor: preventionEducation.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value
+                }
+              }),
+            }
+          }
+        } as CreatePreventionEducationInput;
+  
+        let { createPreventionEducationInput: { preventionEducationDetails: { actions } } } = createPreventionEducationInput;
+        for (let item of assessmentType.filter((record) => record.isActive)) {
+          if (!actions.map((action) => {
+            return action.actionCode
+          }).includes(item.assessmentType)) {
+            actions.push(
+              {
+                date: preventionEducation.date,
+                actor: preventionEducation.officer?.value,
+                activeIndicator: false,
+                actionCode: item.assessmentType
+              } as AssessmentActionDto
+            )
+          }
+        }
+  
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/create`, createPreventionEducationInput);
+        await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+  
+          const updatedPreventionEducationData = await parsePreventionEducationResponse(res, officers);
+          dispatch(setPreventionEducation({ assessment: updatedPreventionEducationData }));
+  
+        });
+      }
 
 const updateAssessment =
   (
@@ -207,6 +311,61 @@ const updateAssessment =
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
       });
     }
+    const updatePreventionEducation =
+    (
+      complaintIdentifier: string,
+      caseIdentifier: string,
+      preventionEducation: PreventionEducation
+    ): AppThunk =>
+      async (dispatch, getState) => {
+  
+        const {
+          codeTables: { "assessment-type": preventionEducationType },
+          officers: { officers },
+          app: { profile },
+        } = getState();
+  
+        let updatePreventionEducationInput = {
+          updatePreventionEducationInput: {
+            leadIdentifier: complaintIdentifier,
+            caseIdentifier: caseIdentifier,
+            updateUserId: profile.idir_username,
+            agencyCode: "COS",
+            caseCode: "HWCR",
+            preventionEducationDetails: {
+              actions: preventionEducation.prevention_education_type.map((item) => {
+                return {
+                  actor: preventionEducation.officer?.value,
+                  date: preventionEducation.date,
+                  actionCode: item.value,
+                  activeIndicator: true
+                }
+              })
+            }
+          }
+        } as UpdatePreventionEducationInput;
+        let { updatePreventionEducationInput: { preventionEducationDetails: { actions } } } = updatePreventionEducationInput;
+  
+        for (let item of preventionEducationType.filter((record) => record.isActive)) {
+          if (!actions.map((action) => {
+            return action.actionCode
+          }).includes(item.assessmentType)) {
+            actions.push(
+              {
+                actor: preventionEducation.officer?.value,
+                date: preventionEducation.date,
+                actionCode: item.assessmentType,
+                activeIndicator: false
+              } as AssessmentActionDto
+            )
+          }
+        }
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/update`, updatePreventionEducationInput);
+        await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+          const updatedPreventionEducationData = await parsePreventionEducationResponse(res, officers);
+          dispatch(setPreventionEducation({ preventionEducation: updatedPreventionEducationData }));
+        });
+      }
 
 const parseResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Assessment | undefined | null> => {
 
@@ -243,6 +402,38 @@ const parseResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Ass
       }),
     } as Assessment;
     return updatedAssessmentData;
+  }
+  else {
+    return null;
+  }
+}
+const parsePreventionEducationResponse = async (res: CaseFileDto, officers: Officer[]): Promise<PreventionEducation | undefined | null> => {
+
+  if (res?.preventionEducationDetails?.actions?.length) {
+
+    const { actor, actionDate } = res.preventionEducationDetails.actions.map((action) => {
+      return { actor: action.actor, actionDate: action.date }
+    })[0];
+
+    let officerFullName = null;
+    let officerNames = officers.filter((person) => person.person_guid.person_guid === actor).map((officer) => {
+      return `${officer.person_guid.first_name} ${officer.person_guid.last_name}`
+    })
+
+    if (officerNames?.length) {
+      officerFullName = officerNames[0];
+    } else {
+      officerFullName = actor;
+    }
+
+    const updatedPreventionEducationData = {
+      date: actionDate,
+      officer: { label: officerFullName, value: actor },
+      prevention_education_type: res.assessmentDetails.actions.filter((action) => { return action.activeIndicator }).map((action) => {
+        return { label: action.longDescription, value: action.actionCode }
+      }),
+    } as PreventionEducation;
+    return updatedPreventionEducationData;
   }
   else {
     return null;
