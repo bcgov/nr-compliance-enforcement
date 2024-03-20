@@ -5,15 +5,26 @@ import { CompSelect } from "../../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import Option from "../../../../../types/app/option";
 import { OfficerDto } from "../../../../../types/app/people/officer";
+import { useAppDispatch } from "../../../../../hooks/hooks";
+import { openModal } from "../../../../../store/reducers/app";
+import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 
 type props = {
   notes: string;
   currentOfficer: OfficerDto | null;
+
+  setShowInput: Function;
 };
 
-export const SupplementalNotesInput: FC<props> = ({ notes, currentOfficer }) => {
+export const SupplementalNotesInput: FC<props> = ({ notes, currentOfficer, setShowInput }) => {
   const maxCharacters = 4000;
+
+  const dispatch = useAppDispatch();
+
   const [defaultOfficer, setDefaultOfficer] = useState<Option>();
+
+  const [currentNotes, setCurrentNotes] = useState(notes);
+  const [notesError, setNotesError] = useState("");
 
   useEffect(() => {
     if (currentOfficer) {
@@ -27,22 +38,58 @@ export const SupplementalNotesInput: FC<props> = ({ notes, currentOfficer }) => 
     }
   }, [currentOfficer]);
 
+  const handleNotesChange = (input: string) => {
+    if (input?.trim().length <= maxCharacters) {
+      setNotesError("");
+      setCurrentNotes(input.trim());
+    }
+  };
+
+  const handleCancelChanges = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: () => {
+            setCurrentNotes(notes);
+            setShowInput(false);
+          },
+        },
+      }),
+    );
+  };
+
+  const handleSaveNotes = () => {
+    if (validateInput()) {
+      //-- save notes
+    } else {
+      setNotesError("Supporting notes required");
+    }
+  };
+
+  const validateInput = (): boolean => {
+    return !!currentNotes;
+  };
+
   return (
     <div className="comp-outcome-supporting-notes">
       <div>
         <ValidationTextArea
           className="comp-form-control"
           id="supporting-notes-textarea-id"
-          defaultValue={notes}
+          defaultValue={currentNotes}
           placeholderText="Add supporting notes"
           rows={4}
-          errMsg=""
-          onChange={() => {}}
+          errMsg={notesError}
+          onChange={handleNotesChange}
           maxLength={maxCharacters}
         />
       </div>
       <div className="right-float">
-        {notes.length} / {maxCharacters}
+        {currentNotes.length} / {maxCharacters}
       </div>
       <div className="clear-right-float" />
       <div className="comp-details-edit-container">
@@ -92,7 +139,7 @@ export const SupplementalNotesInput: FC<props> = ({ notes, currentOfficer }) => 
             id="supporting-notes-cancel-button"
             title="Cancel Supporting Notes"
             className="comp-outcome-cancel"
-            // onClick={handleSupportingNotesCancel}
+            onClick={handleCancelChanges}
           >
             Cancel
           </Button>
@@ -100,7 +147,7 @@ export const SupplementalNotesInput: FC<props> = ({ notes, currentOfficer }) => 
             id="supporting-notes-save-button"
             title="Save Supporting Notes"
             className="comp-outcome-save"
-            // onClick={handleSupportingNotesSave}
+            onClick={handleSaveNotes}
           >
             Add
           </Button>

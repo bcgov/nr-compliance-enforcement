@@ -4,16 +4,23 @@ import { BsPlusCircle } from "react-icons/bs";
 import { SupplementalNotesInput } from "./supplemental-notes/supplemental-notes-input";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectCurrentOfficer } from "../../../../store/reducers/officer";
+import { SupplementalNotesItem } from "./supplemental-notes/supplementa-notes-item";
 
 export const HWCRSupplementalNotes: FC = () => {
-  const officer = useAppSelector(selectCurrentOfficer())
+  const officer = useAppSelector(selectCurrentOfficer());
+  const notes = "derp";
 
   const [showInput, setShowInput] = useState(false);
 
   return (
     <div className="comp-outcome-report-block">
       <h6>Supporting notes</h6>
-      {!showInput ? (
+      {notes && !showInput ? (
+        <SupplementalNotesItem
+          notes={notes}
+          enableEditMode={setShowInput}
+        />
+      ) : !showInput ? (
         <div className="comp-outcome-report-button">
           <Button
             id="outcome-report-add-outcome"
@@ -27,8 +34,9 @@ export const HWCRSupplementalNotes: FC = () => {
         </div>
       ) : (
         <SupplementalNotesInput
-          notes={""}
+          notes={notes}
           currentOfficer={officer}
+          setShowInput={setShowInput}
         />
       )}
     </div>
