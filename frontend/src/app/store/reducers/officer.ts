@@ -3,7 +3,7 @@ import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import { OfficerState } from "../../types/complaints/officers-state";
 import { Officer } from "../../types/person/person";
-import { UUID } from "crypto";
+import { UUID, randomUUID } from "crypto";
 import { PersonComplaintXref } from "../../types/complaints/person-complaint-xref";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { updateWildlifeComplaintByRow, updateAllegationComplaintByRow, getComplaintById } from "./complaints";
@@ -14,6 +14,7 @@ import Option from "../../types/app/option";
 import { toggleNotification } from "./app";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
+import { OfficerDto } from "../../types/app/people/officer";
 
 const initialState: OfficerState = {
   officers: [],
@@ -52,7 +53,7 @@ export const getOfficers =
         dispatch(
           setOfficers({
             officers: response,
-          })
+          }),
         );
       }
     } catch (error) {
@@ -86,12 +87,12 @@ export const assignCurrentUserToComplaint =
           userId,
           complaint_identifier,
           complaint_type,
-          officerResponse.person_guid.person_guid as UUID
-        )
+          officerResponse.person_guid.person_guid as UUID,
+        ),
       );
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
       );
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
@@ -124,12 +125,12 @@ export const updateComplaintAssignee =
       // assign a complaint to a person
       let personComplaintXrefGuidParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/person-complaint-xref/${complaint_identifier}`,
-        payload
+        payload,
       );
       await post<Array<PersonComplaintXref>>(dispatch, personComplaintXrefGuidParams);
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
       );
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
@@ -164,16 +165,16 @@ export const searchOfficers =
     let results: Array<Officer> = [];
 
     //-- look for any officers that match firstname, lastname, or office
-    if(input.length >= 2){ 
+    if (input.length >= 2) {
       results = items.filter((officer) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
         } = officer;
-  
+
         if (firstName.toLocaleLowerCase().includes(input)) {
           return true;
         }
-  
+
         if (lastName.toLocaleLowerCase().includes(input)) {
           return true;
         }
@@ -326,6 +327,37 @@ export const selectOfficerByIdir =
 
     if (selected?.person_guid) {
       return selected;
+    }
+
+    return null;
+  };
+
+export const selectCurrentOfficer =
+  () =>
+  (state: RootState): OfficerDto | null => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      officers: { officers: data },
+    } = state;
+    const selected = data.find(({ user_id }) => user_id === idir);
+
+    if (selected?.person_guid) {
+      const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
+      const { person_guid, first_name: firstName, last_name: lastName } = person;
+      const { office_guid, cos_geo_org_unit: location } = office;
+      const officerId = officer_guid as UUID;
+      const personId = person_guid as UUID;
+      const officeId = office_guid as UUID;
+
+      return  {
+        id: officerId,
+        userId: user_id,
+        authorizedUserId: auth_user_guid,
+        person: { id: personId, firstName, lastName },
+        office: { ...location, id: officeId }
+      };
     }
 
     return null;
