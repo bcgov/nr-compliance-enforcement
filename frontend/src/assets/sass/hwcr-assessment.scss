@@ -1,0 +1,10 @@
+@import "./colours.scss";
+@import "./complaint.scss";
+
+.assessment-details-label-input-pair {
+    @extend .comp-details-label-input-pair;
+    align-items: baseline;
+    margin: 16px 0px;
+    min-height: 0;
+  }
+  
