@@ -1,5 +1,5 @@
 import { AppState } from "../../types/app/app-state";
-import { AppThunk, RootState } from "../store";
+import { AppThunk, RootState, store } from "../store";
 import { SsoToken } from "../../types/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "../../types/app/profile";
@@ -18,6 +18,7 @@ import { ConfigurationState } from "../../types/state/configuration-state";
 import { NotificationState } from "../../types/state/notification-state";
 import { ToggleError } from "../../common/toast";
 import { CodeTableVersionState } from "../../types/state/code-table-version-state";
+import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -364,19 +365,34 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
 
 export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
   try {
+    const state = store.getState();
+    //Get previous codeTableVersion from store
+    const { app: { codeTableVersion: {
+      complaintManagement: prevComplaint,
+      caseManagement: prevCase
+    } } } = state;
+
+    //Call new codeTableVersion from api
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/configuration/CDTABLEVER`
     );
     const response = await get<CodeTableVersionState>(dispatch, parameters);
 
     if (response) {
-      dispatch(
-        setCodeTableVersion(response)
-      );
-      return response;
+      const { complaintManagement: newComplaint, caseManagement: newCase } = response;
+
+      //Compare previous version with new version
+      if (Number(newComplaint.configurationValue) > Number(prevComplaint.configurationValue)) {
+        dispatch(fetchComplaintCodeTables());
+      }
+      if (Number(newCase.configurationValue) > Number(prevCase.configurationValue)) {
+        dispatch(fetchCaseCodeTables());
+      }
+      //set new version to redux store
+      dispatch(setCodeTableVersion(response));
     }
   } catch (error) {
-    ToggleError("Unable to get configurations");
+    ToggleError("Unable to get codeTableVersion");
   }
 };
 
@@ -414,10 +430,18 @@ const initialState: AppState = {
   configurations: {
     configurations: undefined,
   },
-  codeTableVersion: (localStorage.getItem("codeTableVersion")!== null) ?
-    //@ts-ignore 
-    JSON.parse(localStorage.getItem("codeTableVersion")) : 
-    { complaintManagement: "1", caseManagement: "1" } 
+  codeTableVersion: {
+    complaintManagement: {
+      configurationCode: "",
+      configurationValue: "",
+      activeInd: true
+    },
+    caseManagement: {
+      configurationCode: "",
+      configurationValue: "",
+      activeInd: true
+    }
+  }
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
