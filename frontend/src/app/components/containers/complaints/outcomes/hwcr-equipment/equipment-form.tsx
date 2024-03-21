@@ -3,35 +3,41 @@ import { useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
 import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
-import { getComplaintById, selectComplaint, selectComplaintCallerInformation, selectComplaintHeader } from "../../../../../store/reducers/complaints";
+import {
+  getComplaintById,
+  selectComplaint,
+  selectComplaintCallerInformation,
+  selectComplaintHeader,
+} from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { ToggleError } from "../../../../../common/toast";
 import { getSelectedOfficer, bcBoundaries } from "../../../../../common/methods";
 
-import { Equipment } from "./index";
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
 
 import "react-toastify/dist/ReactToastify.css";
 import { Coordinates } from "../../../../../types/app/coordinate-type";
+import { Equipment } from "../../../../../types/outcomes/Equipment";
+import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 
-export interface EquipmentForm {
-  isInEditMode: boolean
-  setIsInEditMode: (param: any) => void | null
-  equipmentItemData?: Equipment | null
-  setEquipmentItemData?: (param: any) => void | null
-  equipmentData?: Array<Equipment>
-  setEquipmentData?: (param: any) => void | null
-  indexItem?: number
-  setShowEquipmentForm?: (param: boolean) => void | null
+export interface EquipmentFormProps {
+  isInEditMode: boolean;
+  setIsInEditMode: (param: any) => void | null;
+  equipmentItemData?: Equipment | null;
+  setEquipmentItemData?: (param: any) => void | null;
+  equipmentData?: Array<Equipment>;
+  setEquipmentData?: (param: any) => void | null;
+  indexItem?: number;
+  setShowEquipmentForm?: (param: boolean) => void | null;
 }
 
-export const EquipmentForm: FC<EquipmentForm> = ({
+export const EquipmentForm: FC<EquipmentFormProps> = ({
   isInEditMode,
   equipmentData,
   indexItem,
@@ -39,38 +45,38 @@ export const EquipmentForm: FC<EquipmentForm> = ({
   equipmentItemData,
   setEquipmentItemData,
   setShowEquipmentForm,
-  setEquipmentData
+  setEquipmentData,
 }) => {
-  const [type, setType] = useState<Option|undefined>()
+  const [type, setType] = useState<Option | undefined>();
   const [dateSet, setDateSet] = useState<Date>();
   const [dateRemoved, setDateRemoved] = useState<Date>();
   const [officerSet, setOfficerSet] = useState<Option>();
   const [officerRemoved, setOfficerRemoved] = useState<Option>();
-  const [address, setAddress] = useState<string|undefined>("");
-  const [xCoordinate, setXCoordinate] = useState<string>('');
-  const [yCoordinate, setYCoordinate] = useState<string>('');
-  const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>('');
-  const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>('');
-  
+  const [address, setAddress] = useState<string | undefined>("");
+  const [xCoordinate, setXCoordinate] = useState<string>("");
+  const [yCoordinate, setYCoordinate] = useState<string>("");
+  const [equipmentTypeErrorMsg, setEquipmentTypeErrorMsg] = useState<string>("");
+  const [officerSetErrorMsg, setOfficerSetErrorMsg] = useState<string>("");
+  const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
+  const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
+  const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
+
   const dispatch = useAppDispatch();
-  const { id = "", complaintType = "" } = useParams<{id: string, complaintType: string}>();
+  const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
   const complaintData = useAppSelector(selectComplaint);
-  const {
-    ownedByAgencyCode,
-  } = useAppSelector(selectComplaintCallerInformation);
-  const {
-    personGuid,
-  } = useAppSelector(selectComplaintHeader(complaintType));
+  const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
+  const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentList = useAppSelector(selectEquipmentDropdown);
 
-  const assignableOfficers: Option[] = officersInAgencyList !== null
+  const assignableOfficers: Option[] =
+    officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
         }))
-        : [];
-  
+      : [];
+
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
       dispatch(getComplaintById(id, complaintType));
@@ -78,15 +84,16 @@ export const EquipmentForm: FC<EquipmentForm> = ({
   }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
-    if(complaintData) {
+    if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setOfficerSet(officer);
     }
   }, [complaintData]);
 
   useEffect(() => {
-    if(equipmentItemData){
-      const {type, address, dateSet, dateRemoved, officerSet, officerRemoved, xCoordinate, yCoordinate} = equipmentItemData
+    if (equipmentItemData) {
+      const { type, address, dateSet, dateRemoved, officerSet, officerRemoved, xCoordinate, yCoordinate } =
+        equipmentItemData;
       setType(type);
       setAddress(address);
       setXCoordinate(xCoordinate);
@@ -96,7 +103,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
       setOfficerSet(officerSet);
       setOfficerRemoved(officerRemoved);
     }
-  }, [equipmentItemData])
+  }, [equipmentItemData]);
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
@@ -111,38 +118,83 @@ export const EquipmentForm: FC<EquipmentForm> = ({
   const handleGeoPointChange = async (latitude: string, longitude: string) => {
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
-    const regex=/^[a-zA-Z]+$/;
+    const regex = /^[a-zA-Z]+$/;
 
     if (regex.exec(latitude)) {
-      setYCoordinateErrorMsg("Value must be a number")
+      setYCoordinateErrorMsg("Value must be a number");
     }
-    if(regex.exec(longitude)) {
-      setXCoordinateErrorMsg("Value must be a number")
+    if (regex.exec(longitude)) {
+      setXCoordinateErrorMsg("Value must be a number");
     }
     if (latitude && !Number.isNaN(latitude)) {
       const item = parseFloat(latitude);
       if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
-        setYCoordinateErrorMsg(`Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`);
+        setYCoordinateErrorMsg(
+          `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
+        );
       }
     }
 
     if (longitude && !Number.isNaN(longitude)) {
       const item = parseFloat(longitude);
       if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
-        setXCoordinateErrorMsg(`Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`);
+        setXCoordinateErrorMsg(
+          `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
+        );
       }
     }
   };
+  // Clear out existing validation errors
+  const resetValidationErrors = () => {
+    setEquipmentTypeErrorMsg("");
+    setOfficerSetErrorMsg("");
+    setDateSetErrorMsg("");
+    setXCoordinateErrorMsg("");
+    setYCoordinateErrorMsg("");
+  };
+
+  // Validates the assessment
+  const hasErrors = (): boolean => {
+    let hasErrors: boolean = false;
+    resetValidationErrors();
+
+    if (!officerSet) {
+      setOfficerSetErrorMsg("Required");
+      hasErrors = true;
+    }
+
+    if (!type) {
+      setEquipmentTypeErrorMsg("Required");
+      hasErrors = true;
+    }
+
+    if (!dateSet) {
+      setDateSetErrorMsg("Required");
+      hasErrors = true;
+    }
+
+    if (!xCoordinate) {
+      setXCoordinateErrorMsg("Required");
+      hasErrors = true;
+    }
+
+    if (!yCoordinate) {
+      setYCoordinateErrorMsg("Required");
+      hasErrors = true;
+    }
+
+    return hasErrors;
+  };
 
   const handleSaveEquipment = () => {
-    if(xCoordinateErrorMsg || yCoordinateErrorMsg) {
+    if (hasErrors()) {
       handleFormErrors();
       return;
     }
 
     //No errors then create/save new equipment info
     const newEquipment = {
-      id: isInEditMode? equipmentItemData?.id : uuidv4(),
+      id: isInEditMode ? equipmentItemData?.id : uuidv4(),
       type,
       address,
       xCoordinate,
@@ -151,54 +203,55 @@ export const EquipmentForm: FC<EquipmentForm> = ({
       dateSet,
       officerRemoved,
       dateRemoved,
-    }
-    if(isInEditMode) {
-      const newEquipmentArr = equipmentData?.map((equipment,i) => {
-        if(i === indexItem) return newEquipment
-        else return equipment
-      })
-      if(setEquipmentData) setEquipmentData(newEquipmentArr)
+    };
+    if (isInEditMode) {
+      const newEquipmentArr = equipmentData?.map((equipment, i) => {
+        if (i === indexItem) return newEquipment;
+        else return equipment;
+      });
+      if (setEquipmentData) setEquipmentData(newEquipmentArr);
       setIsInEditMode(false);
     }
-    if(!isInEditMode && setEquipmentData && setShowEquipmentForm) {
+    if (!isInEditMode && setEquipmentData && setShowEquipmentForm) {
       setEquipmentData((prevState: Array<Equipment>) => [...prevState, newEquipment]);
       setShowEquipmentForm(false);
-    }
-    else return
-  }
+    } else return;
+  };
 
   const handleFormErrors = () => {
-    const errorMsg = isInEditMode? 'Errors editing equipment' : 'Errors creating equipment'
+    const errorMsg = isInEditMode ? "Errors editing equipment" : "Errors creating equipment";
     ToggleError(errorMsg);
   };
 
   const handleCancelEquipment = () => {
     resetData();
-    if(isInEditMode) {
-      if(equipmentItemData){
+    if (isInEditMode) {
+      if (equipmentItemData) {
         equipmentItemData.isEdit = false;
       }
       setIsInEditMode(false);
-      if(setEquipmentItemData) setEquipmentItemData(null)
+      if (setEquipmentItemData) setEquipmentItemData(null);
     }
-    if(setShowEquipmentForm) setShowEquipmentForm(false);
-  }
+    if (setShowEquipmentForm) setShowEquipmentForm(false);
+  };
 
   const resetData = () => {
-    setAddress('')
-    setXCoordinate('')
-    setYCoordinate('')
-    setXCoordinateErrorMsg('')
-    setYCoordinateErrorMsg('')
-  }
+    setAddress("");
+    setXCoordinate("");
+    setYCoordinate("");
+    setXCoordinateErrorMsg("");
+    setYCoordinateErrorMsg("");
+  };
 
-  const hasCoordinates = (complaintData?.location?.coordinates[0] !== 0 || 
-    complaintData?.location?.coordinates[1] !== 0)
+  const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
 
   return (
     <div className="comp-outcome-report-complaint-assessment">
       <ToastContainer />
-      <div className="equipment-form-edit-container" style={{ marginTop: '10px'}}>
+      <div
+        className="equipment-form-edit-container"
+        style={{ marginTop: "10px" }}
+      >
         <div className="comp-details-edit-column">
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-type-select">Equipment type</label>
@@ -208,7 +261,8 @@ export const EquipmentForm: FC<EquipmentForm> = ({
               className="comp-details-input"
               placeholder="Select"
               options={equipmentList}
-              enableValidation={false}
+              enableValidation={true}
+              errorMessage={equipmentTypeErrorMsg}
               onChange={(type: any) => setType(type)}
               defaultOption={equipmentItemData?.type}
             />
@@ -231,12 +285,14 @@ export const EquipmentForm: FC<EquipmentForm> = ({
               />
             </div>
           </div>
-          {complaintData?.locationSummary && 
+          {complaintData?.locationSummary && (
             <button
-              className="button-text copy-text" 
-              onClick={() => complaintData? setAddress(complaintData.locationSummary) : ''}
-            >Copy location from complaint details</button>
-          }
+              className="button-text copy-text"
+              onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
+            >
+              Copy location from complaint details
+            </button>
+          )}
         </div>
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
@@ -248,20 +304,20 @@ export const EquipmentForm: FC<EquipmentForm> = ({
               <input
                 type="text"
                 id="equipment-x-coordinate"
-                className={xCoordinateErrorMsg? "comp-form-control error-border" : "comp-form-control"}
+                className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
                 onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-                value={xCoordinate?? ''}
+                value={xCoordinate ?? ""}
                 maxLength={120}
               />
             </div>
           </div>
           <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
-          {hasCoordinates &&
+          {hasCoordinates && (
             <button
               className="button-text copy-text"
               onClick={() => {
-                const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? ''
-                const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? ''
+                const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? "";
+                const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? "";
                 setXCoordinate(xCoordinate);
                 setYCoordinate(yCoordinate);
                 handleGeoPointChange(yCoordinate, xCoordinate);
@@ -269,7 +325,7 @@ export const EquipmentForm: FC<EquipmentForm> = ({
             >
               Copy location from complaint details
             </button>
-          }
+          )}
         </div>
         <div className="comp-details-edit-column comp-details-right-column">
           <div className="equipment-form-label-input-pair">
@@ -278,9 +334,9 @@ export const EquipmentForm: FC<EquipmentForm> = ({
               <input
                 type="text"
                 id="equipment-y-coordinate"
-                className={yCoordinateErrorMsg? "comp-form-control error-border" : "comp-form-control"}
+                className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
                 onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-                value={yCoordinate ?? ''}
+                value={yCoordinate ?? ""}
                 maxLength={120}
               />
             </div>
@@ -290,7 +346,10 @@ export const EquipmentForm: FC<EquipmentForm> = ({
       </div>
       <div className="equipment-form-edit-container">
         <div className="comp-details-edit-column">
-          <div className="equipment-form-label-input-pair" id="reported-pair-id">
+          <div
+            className="equipment-form-label-input-pair"
+            id="reported-pair-id"
+          >
             <label htmlFor="equipment-officer-set-select">Set by</label>
             <CompSelect
               id="equipment-officer-set-select"
@@ -299,60 +358,71 @@ export const EquipmentForm: FC<EquipmentForm> = ({
               placeholder="Select"
               options={assignableOfficers}
               value={officerSet}
-              enableValidation={false}
+              enableValidation={true}
+              errorMessage={officerSetErrorMsg}
               onChange={(officer: any) => setOfficerSet(officer)}
             />
           </div>
         </div>
         <div className="comp-details-edit-column comp-details-right-column">
-          <div className="equipment-form-label-input-pair" id="reported-pair-id">
+          <div
+            className="equipment-form-label-input-pair"
+            id="reported-pair-id"
+          >
             <label htmlFor="equipment-day-set">Set date</label>
-            <DatePicker
+            <ValidationDatePicker
               id="equipment-day-set"
-              showIcon
               maxDate={dateRemoved ?? new Date()}
-              onChange={(date: Date) => setDateSet(date)}
-              selected={dateSet}
-              dateFormat="yyyy-MM-dd"
-              wrapperClassName="comp-details-edit-calendar-input"
+              onChange={(date: Date | null) => date && setDateSet(date)}
+              errMsg={dateSetErrorMsg}
+              selectedDate={dateSet}
+              placeholder="Select Date"
+              className="comp-details-edit-calendar-input" // Adjust class as needed
+              classNamePrefix="comp-select" // Adjust class as needed
             />
           </div>
         </div>
       </div>
-      {officerSet && dateSet && 
+      {officerSet && dateSet && (
         <div className="equipment-form-edit-container">
           <div className="comp-details-edit-column">
-            <div className="equipment-form-label-input-pair" id="reported-pair-id">
+            <div
+              className="equipment-form-label-input-pair"
+              id="reported-pair-id"
+            >
               <label htmlFor="equipment-officer-removed-select">Removed by</label>
-                <CompSelect
-                  id="equipment-officer-removed-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  placeholder="Select"
-                  options={assignableOfficers}
-                  value={officerRemoved}
-                  enableValidation={false}
-                  onChange={(officer: any) => setOfficerRemoved(officer)}
-                />
+              <CompSelect
+                id="equipment-officer-removed-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                placeholder="Select"
+                options={assignableOfficers}
+                value={officerRemoved}
+                enableValidation={false}
+                onChange={(officer: any) => setOfficerRemoved(officer)}
+              />
             </div>
           </div>
           <div className="comp-details-edit-column comp-details-right-column">
-            <div className="equipment-form-label-input-pair" id="reported-pair-id">
+            <div
+              className="equipment-form-label-input-pair"
+              id="reported-pair-id"
+            >
               <label htmlFor="equipment-date-removed">Removed date</label>
-                <DatePicker
-                  id="equipment-date-removed"
-                  showIcon
-                  maxDate={new Date()}
-                  minDate={dateSet ?? null}
-                  onChange={(date: Date) => setDateRemoved(date)}
-                  selected={dateRemoved}
-                  dateFormat="yyyy-MM-dd"
-                  wrapperClassName="comp-details-edit-calendar-input"
+              <DatePicker
+                id="equipment-date-removed"
+                showIcon
+                maxDate={new Date()}
+                minDate={dateSet ?? null}
+                onChange={(date: Date) => setDateRemoved(date)}
+                selected={dateRemoved}
+                dateFormat="yyyy-MM-dd"
+                wrapperClassName="comp-details-edit-calendar-input"
               />
             </div>
           </div>
         </div>
-      }
+      )}
       <div className="comp-outcome-report-actions">
         <Button
           id="equipment-cancel-button"
@@ -374,4 +444,3 @@ export const EquipmentForm: FC<EquipmentForm> = ({
     </div>
   );
 };
-  

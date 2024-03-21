@@ -3,9 +3,9 @@ import { Row, Col } from "react-bootstrap";
 import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
-import { Equipment } from "./index";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
+import { Equipment } from "../../../../../types/outcomes/Equipment";
 
 interface EquipmentItemProps {
   isInEditMode: boolean

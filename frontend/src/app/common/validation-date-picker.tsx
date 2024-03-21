@@ -9,6 +9,7 @@ interface ValidationDatePickerProps {
   id: string;
   classNamePrefix: string;
   errMsg: string;
+  maxDate?: Date;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -19,6 +20,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   id,
   classNamePrefix,
   errMsg,
+  maxDate,
 }) => {
 
   const handleDateChange = (date: Date | null) => {
@@ -40,7 +42,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           showIcon
           dateFormat="yyyy-MM-dd"
           wrapperClassName="comp-details-edit-calendar-input"
-          maxDate={new Date()}
+          maxDate={maxDate}
           autoComplete='false'
         />
       </div>

@@ -4,22 +4,8 @@ import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 
-import Option from "../../../../../types/app/option";
-
 import "../../../../../../assets/sass/hwcr-equipment.scss"
-
-export interface Equipment {
-  id: string | undefined;
-  type: Option | undefined;
-  address: string | undefined;
-  xCoordinate: string;
-  yCoordinate: string;
-  officerSet: Option | undefined;
-  dateSet: Date | undefined;
-  officerRemoved?: Option;
-  dateRemoved?: Date;
-  isEdit?: boolean;
-}
+import { Equipment } from "../../../../../types/outcomes/Equipment";
 
 export const HWCREquipment: FC = memo(() => {
   const [equipmentData, setEquipmentData] = useState<Array<Equipment>>([]);
