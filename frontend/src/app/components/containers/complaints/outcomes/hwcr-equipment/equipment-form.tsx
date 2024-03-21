@@ -60,6 +60,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
   const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
   const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
+  const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
@@ -119,12 +120,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
     const regex = /^[a-zA-Z]+$/;
-
+    let hasErrors = false;
     if (regex.exec(latitude)) {
       setYCoordinateErrorMsg("Value must be a number");
+      hasErrors = true;
     }
     if (regex.exec(longitude)) {
       setXCoordinateErrorMsg("Value must be a number");
+      hasErrors = true;
     }
     if (latitude && !Number.isNaN(latitude)) {
       const item = parseFloat(latitude);
@@ -132,6 +135,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
         setYCoordinateErrorMsg(
           `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
         );
+        hasErrors = true;
       }
     }
 
@@ -141,8 +145,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
         setXCoordinateErrorMsg(
           `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
         );
+        hasErrors = true;
       }
     }
+    setCoordinateErrorsInd(hasErrors);
   };
   // Clear out existing validation errors
   const resetValidationErrors = () => {
@@ -157,6 +163,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const hasErrors = (): boolean => {
     let hasErrors: boolean = false;
     resetValidationErrors();
+    
+    if (xCoordinate) {
+      handleCoordinateChange(xCoordinate, Coordinates.Longitude);
+    }
+
+    if (yCoordinate) {
+      handleCoordinateChange(yCoordinate, Coordinates.Latitude);
+    }
 
     if (!officerSet) {
       setOfficerSetErrorMsg("Required");
@@ -180,6 +194,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
 
     if (!yCoordinate) {
       setYCoordinateErrorMsg("Required");
+      hasErrors = true;
+    }
+
+    if (coordinateErrorsInd) {
       hasErrors = true;
     }
 
