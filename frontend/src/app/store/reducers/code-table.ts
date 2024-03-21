@@ -81,7 +81,7 @@ export const codeTableSlice = createSlice({
 
 export const { setCodeTable } = codeTableSlice.actions;
 
-export const fetchCodeTables = (): AppThunk => async (dispatch) => {
+export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
   const state = store.getState();
   const {
     codeTables: {
@@ -201,6 +201,44 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchEquipment());
     }
   } catch (error) {}
+};
+
+export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
+  try {
+    dispatch(fetchAgencies());
+    dispatch(fetchComplaintStatus());
+    dispatch(fetchViolations());
+    dispatch(fetchSpecies());
+    dispatch(fetchNatureOfComplaints());
+    dispatch(fetchAttractants());
+    dispatch(fetchRegions());
+    dispatch(fetchZones());
+    dispatch(fetchAreaCodes());
+    dispatch(fetchComplaintTypeCodes());
+    dispatch(fetchReportedByCodes());
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
+  try {
+    dispatch(fetchJustificationCodes());
+    dispatch(fetchAssessmentTypeCodes());
+    dispatch(fetchPreventEducationAction());
+    dispatch(fetchSexes());
+    dispatch(fetchAges());
+    dispatch(fetchThreatLevels());
+    dispatch(fetchConfictHistories());
+    dispatch(fetchEars());
+    dispatch(fetchWildlifeComplaintOutcomes());
+    dispatch(fetchDrugs());
+    dispatch(fetchDrugUseMethods());
+    dispatch(fetchRemainingDrugUse());
+    dispatch(fetchEquipment());
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const fetchAgencies = (): AppThunk => async (dispatch) => {

@@ -13,7 +13,7 @@ import cases from "./reducers/cases"
 const appPersistConfig = {
   key: "app",
   storage: storage,
-  whitelist: ["profile", "alerts", "notifications", "configurations"],
+  whitelist: ["profile", "alerts", "notifications", "configurations", "codeTableVersion"],
 };
 
 export const rootReducer = combineReducers({
