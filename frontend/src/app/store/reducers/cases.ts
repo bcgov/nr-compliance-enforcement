@@ -9,6 +9,7 @@ import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessm
 import { CaseFileDto } from "../../types/app/case-files/case-file";
 import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
 import { Officer } from "../../types/person/person";
+import { CreateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/create-supplemental-notes-input";
 
 const initialState: CasesState = {
   assessment: {
@@ -249,6 +250,28 @@ const parseResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Ass
   }
 };
 
-export const addNote = async () => {};
+export const addNote = async (complaintIdentifier: string, notes: string): AppThunk => async (dispatch, getState) => {
+  const {
+    officers: { officers },
+    app: { profile: { idir_username: idir} },
+  } = getState();
+
+  let input = {
+    leadIdentifier: complaintIdentifier,
+    createUserId: idir,
+    agencyCode: "COS",
+    caseCode: "HWCR",
+    notes
+  } as CreateSupplementalNotesInput
+
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
+  post<CaseFileDto>(dispatch, parameters).then(async (response) => {
+    console.log(response)
+    // const updatedAssessmentData = await parseResponse(response, officers);
+    // dispatch(setAssessment({ assessment: updatedAssessmentData }));
+  });
+
+};
+export const updateNote = async () => {}
 
 export default casesSlice.reducer;
