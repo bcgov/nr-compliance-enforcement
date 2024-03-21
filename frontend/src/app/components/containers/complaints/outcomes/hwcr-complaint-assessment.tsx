@@ -29,6 +29,8 @@ import { ValidationDatePicker } from "../../../../common/validation-date-picker"
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
+import "../../../../../assets/sass/hwcr-assessment.scss"
+
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
   type ComplaintParams = {
@@ -126,7 +128,7 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedJustification(assessmentState.justification);
     setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
-    if (assessmentState.assessment_type.length > 0) { // This handles the case where the user clicks cancel before saving anything
+    if (assessmentState.assessment_type?.length > 0) { // This handles the case where the user clicks cancel before saving anything
       setEditable(false);
     }
   };
@@ -225,7 +227,7 @@ export const HWCRComplaintAssessment: FC = () => {
       <h6>Complaint assessment</h6>
       <div className="comp-outcome-report-complaint-assessment">
         <div className="comp-details-edit-container">
-          <div className="comp-details-edit-column">
+          <div className="assessment-details-edit-column">
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
                 <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
@@ -254,7 +256,7 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="action-required-div" className="comp-details-label-input-pair">
+                <div id="action-required-div" className="assessment-details-label-input-pair">
                   <label htmlFor="action-required">Action required?</label>
                   {editable ? (
                     <CompSelect
@@ -274,7 +276,7 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div id="justification-div" className="comp-details-label-input-pair">
+                <div id="justification-div" className="assessment-details-label-input-pair">
                   <label
                     className={justificationLabelClass}
                     htmlFor="justification"
@@ -301,7 +303,7 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="outcome-officer-div" className="comp-details-label-input-pair">
+                <div id="outcome-officer-div" className="assessment-details-label-input-pair">
                   <label htmlFor="outcome-officer">Officer</label>
                   {editable ? (
                     <CompSelect
@@ -331,14 +333,14 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div id="complaint-outcome-date-div" className="comp-details-label-input-pair">
+                <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
                   <label htmlFor="complaint-outcome-date">Date</label>
                   {editable ? (
                     <ValidationDatePicker
                       id="complaint-outcome-date"
                       selectedDate={selectedDate}
                       onChange={handleDateChange}
-                      placeholder="Select Date"
+                      placeholder="Select date"
                       className="comp-details-edit-calendar-input" // Adjust class as needed
                       classNamePrefix="comp-select" // Adjust class as needed
                       errMsg={assessmentDateErrorMessage} // Pass error message if any
