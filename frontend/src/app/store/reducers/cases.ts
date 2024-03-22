@@ -9,6 +9,7 @@ import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessm
 import { CaseFileDto } from "../../types/app/case-files/case-file";
 import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
 import { Officer } from "../../types/person/person";
+import { ToggleSuccess, ToggleError } from "../../common/toast";
 
 const initialState: CasesState = {
   assessment: {
@@ -41,6 +42,8 @@ export const casesSlice = createSlice({
         payload: { prevention },
       } = action;
       state.prevention = { ...prevention }; // Update only the assessment property
+    clearAssessment: (state) => {
+      state.assessment = {...initialState.assessment};
     },
   },
 
@@ -54,7 +57,7 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, setPrevention } = casesSlice.actions;
+export const { setAssessment, setPrevention, clearAssessment } = casesSlice.actions;
 
 export const selectAssessment = (state: RootState): Assessment => {
   const { cases } = state;
@@ -65,14 +68,14 @@ export const resetAssessment = createAction("assessment/reset");
 
 // Given a compaint id, returns the assessment
 export const getAssessment =
-  (complaintIdentifier?: string): AppThunk =>
+  (complaintIdentifier: string): AppThunk =>
     async (dispatch, getState) => {
       const {
         officers: { officers },
       } = getState();
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-
+        
         const updatedAssessmentData = await parseResponse(res, officers);
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
 
@@ -154,10 +157,14 @@ const addAssessment =
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-
-        const updatedAssessmentData = await parseAssessmentResponse(res, officers);
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
-
+        const updatedAssessmentData = await parseResponse(res, officers);
+        if (res) {
+          dispatch(setAssessment({ assessment: updatedAssessmentData }));
+          ToggleSuccess(`Assessment has been saved`);
+        } else {
+          await dispatch(clearAssessment());
+          ToggleError(`Unable to create assessment`);
+        }
       });
     }
 
@@ -214,8 +221,14 @@ const updateAssessment =
       }
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
-        const updatedAssessmentData = await parseAssessmentResponse(res, officers);
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        const updatedAssessmentData = await parseResponse(res, officers);
+        if (res) {
+          dispatch(setAssessment({ assessment: updatedAssessmentData }));
+          ToggleSuccess(`Assessment has been updated`);
+        } else {
+          await dispatch(getAssessment(complaintIdentifier));
+          ToggleError(`Unable to update assessment`);
+        }
       });
     }
 

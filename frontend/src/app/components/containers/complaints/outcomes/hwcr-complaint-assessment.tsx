@@ -22,7 +22,7 @@ import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-
 import { resetAssessment, selectAssessment, upsertAssessment, getAssessment } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { ToggleError, ToggleSuccess } from "../../../../common/toast";
+import { ToggleError } from "../../../../common/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { Assessment } from "../../../../types/outcomes/assessment";
 import { ValidationDatePicker } from "../../../../common/validation-date-picker";
@@ -106,12 +106,12 @@ export const HWCRComplaintAssessment: FC = () => {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
       dispatch(getAssessment(complaintData.id));
-      if (assessmentState.date) {
-        populateAssessment();
-      }
-
     }
   }, [complaintData]);
+
+  useEffect(() => {
+      populateAssessmentUI();
+  }, [assessmentState]);
 
   // clear the redux state
   useEffect(() => {
@@ -120,17 +120,15 @@ export const HWCRComplaintAssessment: FC = () => {
     };
   }, [dispatch]);
 
-
-  const populateAssessment = () => {
+  
+  const populateAssessmentUI = () => {
     setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
     setSelectedOfficer(assessmentState.officer);
     setSelectedActionRequired(assessmentState.action_required);
     setSelectedJustification(assessmentState.justification);
     setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
-    if (assessmentState.assessment_type?.length > 0) { // This handles the case where the user clicks cancel before saving anything
-      setEditable(false);
-    }
+    setEditable(!assessmentState.date);
   };
 
 
@@ -139,7 +137,7 @@ export const HWCRComplaintAssessment: FC = () => {
     selectedActionRequired?.value === "No" ? "comp-details-input" : "comp-details-input comp-outcome-hide";
 
   const cancelConfirmed = () => {
-    populateAssessment();
+    populateAssessmentUI();
   };
 
 
@@ -169,7 +167,6 @@ export const HWCRComplaintAssessment: FC = () => {
 
     if (!hasErrors()) {
       dispatch(upsertAssessment(id, updatedAssessmentData));
-      ToggleSuccess(`Assessment has been saved`);
       setEditable(false);
     } else {
       handleFormErrors();
@@ -209,7 +206,7 @@ export const HWCRComplaintAssessment: FC = () => {
       hasErrors = true;
     }
 
-    if (selectedAssessmentTypes?.length <= 0) {
+    if (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
       hasErrors = true;
     }
