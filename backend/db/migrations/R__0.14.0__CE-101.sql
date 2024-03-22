@@ -439,6 +439,11 @@ BEGIN
             EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, $5)', target_code_table, column_name)
             USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order;
 
+            -- Update configuration_value by 1 to nofity front-end to update
+            UPDATE configuration
+            SET    configuration_value = configuration_value::int + 1
+            WHERE  configuration_code = 'CDTABLEVER';
+
             -- Insert into staging_metadata_mapping
             INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
             VALUES (code_table_type, webeoc_value, new_code, 'webeoc', current_utc_timestamp, 'webeoc', current_utc_timestamp);

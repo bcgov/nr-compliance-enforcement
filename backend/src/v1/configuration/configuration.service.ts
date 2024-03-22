@@ -16,8 +16,8 @@ export class ConfigurationService {
     return this.configurationRepository.find();
   }
 
-  findOne(configurationCode: string) {
-    return `This action returns a #${configurationCode} configuration`;
+  findOne(configurationCode: string): Promise<Configuration[]> {
+    return this.configurationRepository.findBy({configurationCode});
   }
 
   update(id: number, updateConfigurationDto: UpdateConfigurationDto) {
