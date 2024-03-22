@@ -58,7 +58,7 @@ export class CaseFileService {
     }
   }
 
-  create = async (
+  createAssessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -75,7 +75,7 @@ export class CaseFileService {
     return returnValue?.createAssessment;
   }
 
-  update = async (
+  updateAsseessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -83,6 +83,41 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
         updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateAssessment;
+
+  }
+
+  createPrevention = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
+    const result = await post(token, {
+      query: `mutation createPrevention($createPreventionInput: CreatePreventionInput!) {
+        createPrevention(createPreventionInput: $createPreventionInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createAssessment;
+  }
+
+  updatePrevention = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
+    const result = await post(token, {
+      query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
+        updatePrevention(updatePreventionInput: $updatPreventionInput) 
         ${this.caseFileQueryFields}
       }`,
       variables: model
