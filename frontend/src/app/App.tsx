@@ -15,12 +15,12 @@ import ColorReference, { MiscReference, SpaceReference } from "./components/refe
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
-import { fetchCodeTables } from "./store/reducers/code-table";
+import { fetchAllCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
-import { getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
+import { getCodeTableVersion, getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "./components/containers/admin/user-management";
 
@@ -29,9 +29,10 @@ const App: FC = () => {
 
   useEffect(() => {
     dispatch(getOfficerDefaultZone());
-    dispatch(fetchCodeTables());
+    dispatch(fetchAllCodeTables());
     dispatch(getOfficers());
     dispatch(getConfigurations());
+    dispatch(getCodeTableVersion());
   }, [dispatch]);
 
   return (

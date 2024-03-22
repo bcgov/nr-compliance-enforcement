@@ -1,5 +1,5 @@
 import { AppState } from "../../types/app/app-state";
-import { AppThunk, RootState } from "../store";
+import { AppThunk, RootState, store } from "../store";
 import { SsoToken } from "../../types/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "../../types/app/profile";
@@ -17,6 +17,8 @@ import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
 import { NotificationState } from "../../types/state/notification-state";
 import { ToggleError } from "../../common/toast";
+import { CodeTableVersionState } from "../../types/state/code-table-version-state";
+import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -29,6 +31,7 @@ enum ActionTypes {
   SET_DEFAULT_ZONE = "app/SET_DEFAULT_ZONE",
   SET_CONFIGURATIONS = "app/CONFIGURATIONS",
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
+  SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
 }
 //-- action creators
 
@@ -40,6 +43,11 @@ export const setTokenProfile = (profile: Profile) => ({
 export const setConfigurations = (configurations: ConfigurationState) => ({
   type: ActionTypes.SET_CONFIGURATIONS,
   payload: configurations,
+});
+
+export const setCodeTableVersion = (version: CodeTableVersionState) => ({
+  type: ActionTypes.SET_CODE_TABLE_VERSION,
+  payload: version,
 });
 
 export const toggleSidebar = () => ({
@@ -355,6 +363,39 @@ export const getConfigurations = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
+  try {
+    const state = store.getState();
+    //Get previous codeTableVersion from store
+    const { app: { codeTableVersion: {
+      complaintManagement: prevComplaint,
+      caseManagement: prevCase
+    } } } = state;
+
+    //Call new codeTableVersion from api
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/configuration/CDTABLEVER`
+    );
+    const response = await get<CodeTableVersionState>(dispatch, parameters);
+
+    if (response) {
+      const { complaintManagement: newComplaint, caseManagement: newCase } = response;
+
+      //Compare previous version with new version
+      if (Number(newComplaint.configurationValue) > Number(prevComplaint.configurationValue)) {
+        dispatch(fetchComplaintCodeTables());
+      }
+      if (Number(newCase.configurationValue) > Number(prevCase.configurationValue)) {
+        dispatch(fetchCaseCodeTables());
+      }
+      //set new version to redux store
+      dispatch(setCodeTableVersion(response));
+    }
+  } catch (error) {
+    ToggleError("Unable to get codeTableVersion");
+  }
+};
+
 //-- reducer
 const initialState: AppState = {
   alerts: 1,
@@ -389,6 +430,18 @@ const initialState: AppState = {
   configurations: {
     configurations: undefined,
   },
+  codeTableVersion: {
+    complaintManagement: {
+      configurationCode: "",
+      configurationValue: "",
+      activeInd: true
+    },
+    caseManagement: {
+      configurationCode: "",
+      configurationValue: "",
+      activeInd: true
+    }
+  }
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -491,6 +544,13 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const update = { ...profile, agency };
 
       return { ...state, profile: update };
+    }
+    case ActionTypes.SET_CODE_TABLE_VERSION: {
+      const {
+        payload: { complaintManagement, caseManagement },
+      } = action;
+      const update = { complaintManagement, caseManagement };
+      return { ...state, codeTableVersion: update };
     }
     default:
       return state;
