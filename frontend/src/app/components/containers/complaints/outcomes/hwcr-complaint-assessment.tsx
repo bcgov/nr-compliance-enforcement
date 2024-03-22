@@ -106,12 +106,12 @@ export const HWCRComplaintAssessment: FC = () => {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
       dispatch(getAssessment(complaintData.id));
-      if (assessmentState.date) {
-        populateAssessment();
-      }
-
     }
   }, [complaintData]);
+
+  useEffect(() => {
+      populateAssessmentUI();
+  }, [assessmentState]);
 
   // clear the redux state
   useEffect(() => {
@@ -120,17 +120,15 @@ export const HWCRComplaintAssessment: FC = () => {
     };
   }, [dispatch]);
 
-
-  const populateAssessment = () => {
+  
+  const populateAssessmentUI = () => {
     setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
     setSelectedOfficer(assessmentState.officer);
     setSelectedActionRequired(assessmentState.action_required);
     setSelectedJustification(assessmentState.justification);
     setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
-    if (assessmentState.assessment_type?.length > 0) { // This handles the case where the user clicks cancel before saving anything
-      setEditable(false);
-    }
+    setEditable(!assessmentState.date);
   };
 
 
@@ -139,7 +137,7 @@ export const HWCRComplaintAssessment: FC = () => {
     selectedActionRequired?.value === "No" ? "comp-details-input" : "comp-details-input comp-outcome-hide";
 
   const cancelConfirmed = () => {
-    populateAssessment();
+    populateAssessmentUI();
   };
 
 
@@ -169,7 +167,6 @@ export const HWCRComplaintAssessment: FC = () => {
 
     if (!hasErrors()) {
       dispatch(upsertAssessment(id, updatedAssessmentData));
-      ToggleSuccess(`Assessment has been saved`);
       setEditable(false);
     } else {
       handleFormErrors();

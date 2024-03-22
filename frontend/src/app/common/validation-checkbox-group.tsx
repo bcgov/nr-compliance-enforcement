@@ -30,7 +30,7 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
 
   useEffect(() => {
     setCheckedItems(checkedValues);
-  }, [checkedValues]);
+  }, [checkedValues.length]);
 
   return (
     <div id="checkbox-div" className="checkbox-left-padding">
