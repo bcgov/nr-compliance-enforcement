@@ -206,7 +206,7 @@ export const HWCRComplaintAssessment: FC = () => {
       hasErrors = true;
     }
 
-    if (selectedAssessmentTypes?.length <= 0) {
+    if (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
       hasErrors = true;
     }
