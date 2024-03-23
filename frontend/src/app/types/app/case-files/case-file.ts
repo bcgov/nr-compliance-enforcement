@@ -7,6 +7,7 @@ export interface CaseFileDto {
   createUserId: string;
   agencyCode: string;
   caseCode: string;
-  assessmentDetails: AssessmentDetailsDto
-  updateUserId: string
+  assessmentDetails: AssessmentDetailsDto;
+  notes: string;
+  updateUserId: string;
 }

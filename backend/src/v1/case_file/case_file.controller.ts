@@ -9,36 +9,34 @@ import { Token } from "src/auth/decorators/token.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
-@Controller(
-    {
-        path: "case",
-        version: "1",
-    })
+@Controller({
+  path: "case",
+  version: "1",
+})
 export class CaseFileController {
-    constructor(private readonly service: CaseFileService) { }
+  constructor(private readonly service: CaseFileService) {}
 
-    @Post("/create")
-    @Roles(Role.COS_OFFICER)
-    async create(
-        @Token() token,
-        @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.create(token, model);
-    }
+  @Post("/create")
+  @Roles(Role.COS_OFFICER)
+  async create(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.create(token, model);
+  }
 
-    @Patch("/update")
-    @Roles(Role.COS_OFFICER)
-    async update(
-        @Token() token,
-        @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.update(token, model);
-    }
+  @Patch("/update")
+  @Roles(Role.COS_OFFICER)
+  async update(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.update(token, model);
+  }
 
-    @Get("/:complaint_id")
-    @Roles(Role.COS_OFFICER)
-    find(
-        @Param("complaint_id") complaint_id: string,
-        @Token() token
-    ) {
-        return this.service.find(complaint_id, token);
-    }
+  @Get("/:complaint_id")
+  @Roles(Role.COS_OFFICER)
+  find(@Param("complaint_id") complaint_id: string, @Token() token) {
+    return this.service.find(complaint_id, token);
+  }
+
+  @Post("/note")
+  @Roles(Role.COS_OFFICER)
+  async crreateNote(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.createNote(token, model);
+  }
 }
