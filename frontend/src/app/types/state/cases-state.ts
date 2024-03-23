@@ -1,4 +1,4 @@
-import { Equipment } from "../outcomes/Equipment";
+import { Equipment } from "../outcomes/equipment";
 import { Assessment } from "../outcomes/assessment";
 
 export interface CasesState {

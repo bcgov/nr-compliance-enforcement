@@ -15,7 +15,7 @@ import {
   selectComplaintHeader,
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { ToggleError } from "../../../../../common/toast";
+import { ToggleError, ToggleSuccess } from "../../../../../common/toast";
 import { getSelectedOfficer, bcBoundaries } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
@@ -23,8 +23,11 @@ import { Officer } from "../../../../../types/person/person";
 
 import "react-toastify/dist/ReactToastify.css";
 import { Coordinates } from "../../../../../types/app/coordinate-type";
-import { Equipment } from "../../../../../types/outcomes/Equipment";
+import { Equipment } from "../../../../../types/outcomes/equipment";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
+import { openModal } from "../../../../../store/reducers/app";
+import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
+import { selectEquipment, upsertEquipment } from "../../../../../store/reducers/cases";
 
 export interface EquipmentFormProps {
   isInEditMode: boolean;
@@ -68,7 +71,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const equipmentList = useAppSelector(selectEquipmentDropdown);
+  const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
+  const equipmentList = useAppSelector(selectEquipment);
 
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
@@ -163,7 +167,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const hasErrors = (): boolean => {
     let hasErrors: boolean = false;
     resetValidationErrors();
-    
+
     if (xCoordinate) {
       handleCoordinateChange(xCoordinate, Coordinates.Longitude);
     }
@@ -221,19 +225,31 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       dateSet,
       officerRemoved,
       dateRemoved,
-    };
+    } as Equipment;
     if (isInEditMode) {
+      //editing existing equipment
       const newEquipmentArr = equipmentData?.map((equipment, i) => {
-        if (i === indexItem) return newEquipment;
-        else return equipment;
+        if (i === indexItem) {
+          return newEquipment;
+        } else {
+          return equipment;
+        }
       });
-      if (setEquipmentData) setEquipmentData(newEquipmentArr);
+      if (setEquipmentData) {
+        setEquipmentData(newEquipmentArr);
+      }
       setIsInEditMode(false);
     }
+    // adding new equipment
     if (!isInEditMode && setEquipmentData && setShowEquipmentForm) {
+      
       setEquipmentData((prevState: Array<Equipment>) => [...prevState, newEquipment]);
+      dispatch(upsertEquipment(id, newEquipment));
+      ToggleSuccess(`Equipment has been saved`);
       setShowEquipmentForm(false);
-    } else return;
+    } else {
+      return;
+    }
   };
 
   const handleFormErrors = () => {
@@ -241,7 +257,21 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
     ToggleError(errorMsg);
   };
 
-  const handleCancelEquipment = () => {
+  const cancelButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed,
+        },
+      }),
+    );
+  };
+
+  const cancelConfirmed = () => {
     resetData();
     if (isInEditMode) {
       if (equipmentItemData) {
@@ -278,7 +308,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
               classNamePrefix="comp-select"
               className="comp-details-input"
               placeholder="Select"
-              options={equipmentList}
+              options={equipmentDropdownOptions}
               enableValidation={true}
               errorMessage={equipmentTypeErrorMsg}
               onChange={(type: any) => setType(type)}
@@ -446,7 +476,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
           id="equipment-cancel-button"
           title="Cancel Outcome"
           className="comp-outcome-cancel"
-          onClick={handleCancelEquipment}
+          onClick={cancelButtonClick}
         >
           Cancel
         </Button>

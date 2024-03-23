@@ -1,13 +1,13 @@
 import Option from "../app/option";
 
 export interface Equipment {
-  id: string | undefined;
-  type: Option | undefined;
-  address: string | undefined;
+  id: string;
+  type: Option;
+  address?: string;
   xCoordinate: string;
   yCoordinate: string;
-  officerSet: Option | undefined;
-  dateSet: Date | undefined;
+  officerSet: Option;
+  dateSet: Date;
   officerRemoved?: Option;
   dateRemoved?: Date;
   isEdit?: boolean;

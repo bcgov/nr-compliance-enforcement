@@ -58,7 +58,7 @@ export class CaseFileService {
     }
   }
 
-  create = async (
+  createAssessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -75,7 +75,7 @@ export class CaseFileService {
     return returnValue?.createAssessment;
   }
 
-  update = async (
+  updateAssessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -108,5 +108,40 @@ export class CaseFileService {
       this.logger.error(`Unknwown error occurred during web request`);
       return null;
     }
+  }
+
+  createEquipment = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
+    const result = await post(token, {
+      query: `mutation CreateEquipment($createEquipmentInput: CreateEquipmentInput!) {
+        createAssessment(createEquipmentInput: $createEquipmentInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createEquipment;
+  }
+
+  updateEquipment = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
+    const result = await post(token, {
+      query: `mutation UpdateEquipment($updateEquipmentInput: UpdateEquipmentInput!) {
+        updateEquipment(updateEquipmentInput: $updateEquipmentInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateAssessment;
+
   }
 }

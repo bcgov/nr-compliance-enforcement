@@ -9,7 +9,10 @@ import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessm
 import { CaseFileDto } from "../../types/app/case-files/case-file";
 import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
 import { Officer } from "../../types/person/person";
-import { Equipment } from "../../types/outcomes/Equipment";
+import { Equipment } from "../../types/outcomes/equipment";
+import { CreateEquipmentInput } from "../../types/app/case-files/create-equipment-input";
+import { EquipmentActionDto } from "../../types/app/case-files/equipment-action";
+import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 
 const initialState: CasesState = {
   assessment: {
@@ -56,6 +59,7 @@ export const casesSlice = createSlice({
 
 // export the actions/reducers
 export const { setAssessment } = casesSlice.actions;
+export const { setEquipment } = casesSlice.actions;
 
 export const selectAssessment = (state: RootState): Assessment => {
   const { cases } = state;
@@ -161,7 +165,7 @@ const addAssessment =
         }
       }
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/create`, createAssessmentInput);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/assessment`, createAssessmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
 
         const updatedAssessmentData = await parseResponse(res, officers);
@@ -221,10 +225,110 @@ const updateAssessment =
           )
         }
       }
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/update`, updateAssessmentInput);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/assessment`, updateAssessmentInput);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
         const updatedAssessmentData = await parseResponse(res, officers);
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
+      });
+    }
+
+
+// Given a compaint id, returns the assessment
+export const getEquipment =
+  (complaintIdentifier?: string): AppThunk =>
+    async (dispatch, getState) => {
+      const {
+        officers: { officers },
+      } = getState();
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
+
+        const updatedEquipmentData = await parseResponse(res, officers);
+        //dispatch(setEquipment({ equipment: updatedEquipmentData }));
+
+      });
+    };
+
+export const findEquipment =
+  (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+    async (dispatch) => {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      const response = await get<CaseFileDto>(dispatch, parameters);
+      return response?.caseIdentifier;
+    };
+
+export const upsertEquipment =
+  (
+    complaintIdentifier: string,
+    equipment: Equipment
+  ): AppThunk =>
+    async (dispatch) => {
+      if (!equipment) {
+        return;
+      }
+      const caseIdentifier = await dispatch(findEquipment(complaintIdentifier));
+      //if (!caseIdentifier) {
+        dispatch(addEquipment(complaintIdentifier, equipment));
+      //} else {
+        //dispatch(updateEquipment(complaintIdentifier, caseIdentifier, equipment));
+      //}
+    }
+
+const addEquipment =
+  (
+    complaintIdentifier: string,
+    equipment: Equipment
+  ): AppThunk =>
+    async (dispatch, getState) => {
+      const {
+        codeTables: { "assessment-type": assessmentType },
+        officers: { officers },
+        app: { profile },
+      } = getState();
+
+      let actions = [{
+        date: equipment.dateSet,
+        actor: equipment.officerSet.value,
+        activeIndicator: true,
+        actionCode: "SETEQUIPMT",
+      }];
+
+      if (equipment.dateRemoved) {
+        actions.push({
+            date: equipment.dateRemoved,
+            actor: equipment.officerRemoved?.value,
+            activeIndicator: true,
+            actionCode: "REMEQUIPMT",
+        });
+    }
+    
+
+      // Transform the equipment array into the structure expected by EquipmentDetailsDto
+      const equipmentDetails = {
+        actionEquipmentTypeCode: equipment.type.value, // These fields should be adapted based on the actual structure of Equipment
+        actionEquipmentTypeActiveIndicator: true,
+        address: equipment.address,
+        xCoordinate: equipment.xCoordinate,
+        yCoordinate: equipment.yCoordinate,
+        actions: actions
+      } as EquipmentDetailsDto;
+
+      let createEquipmentInput = {
+        createEquipmentInput: {
+          leadIdentifier: complaintIdentifier,
+          createUserId: profile.idir_username,
+          agencyCode: "COS",
+          caseCode: "HWCR",
+          equipmentDetails: [equipmentDetails],
+        },
+      } as CreateEquipmentInput;
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
+      await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+
+        const updatedEquipmentData = await parseResponse(res, officers);
+        dispatch(setEquipment({ equipment: updatedEquipmentData }));
+
       });
     }
 

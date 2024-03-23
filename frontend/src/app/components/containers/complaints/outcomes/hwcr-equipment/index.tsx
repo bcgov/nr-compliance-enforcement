@@ -5,7 +5,7 @@ import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 
 import "../../../../../../assets/sass/hwcr-equipment.scss"
-import { Equipment } from "../../../../../types/outcomes/Equipment";
+import { Equipment } from "../../../../../types/outcomes/equipment";
 
 export const HWCREquipment: FC = memo(() => {
   const [equipmentData, setEquipmentData] = useState<Array<Equipment>>([]);

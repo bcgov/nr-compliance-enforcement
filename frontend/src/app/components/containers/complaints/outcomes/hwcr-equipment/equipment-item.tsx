@@ -5,7 +5,7 @@ import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
-import { Equipment } from "../../../../../types/outcomes/Equipment";
+import { Equipment } from "../../../../../types/outcomes/equipment";
 
 interface EquipmentItemProps {
   isInEditMode: boolean
