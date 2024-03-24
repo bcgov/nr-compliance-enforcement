@@ -34,7 +34,7 @@ import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_typ
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { Justification } from "src/types/models/code-tables/justification";
 import { AssessmentType } from "src/types/models/code-tables/assessment-type";
-import { PreventEducationAction } from "src/types/models/code-tables/prevent-education-action";
+import { PreventionType } from "src/types/models/code-tables/prevention-type";
 import { Sex } from "src/types/models/code-tables/sex";
 import { Age } from "src/types/models/code-tables/age";
 import { ThreatLevel } from "src/types/models/code-tables/threat-level";
@@ -385,6 +385,7 @@ export class CodeTableService {
         const { data } = await get(token, { 
           query : "{HWCRAssessmentActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}"
         });
+        console.log("fffffffffffffffffffffffffffff: " + JSON.stringify(data));
         const assessmentTypeCodes = data.HWCRAssessmentActions.map(
           ({
             actionCode,
@@ -405,10 +406,11 @@ export class CodeTableService {
         );
         return assessmentTypeCodes;
       }
-      case "prevention-education-type": {
+      case "prevention-type": {
         const { data } = await get(token, { 
           query : "{HWCRPreventionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}"
         });
+        console.log("fskfljasodfdsaofsa: " + JSON.stringify(data));
         const preventionTypeCodes = data.HWCRPreventionActions.map(
           ({
             actionCode,
@@ -417,8 +419,8 @@ export class CodeTableService {
             displayOrder,
             activeIndicator
           }) => {
-            const table: AssessmentType = {
-              assessmentType: actionCode,
+            const table: PreventionType = {
+              preventionType: actionCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,

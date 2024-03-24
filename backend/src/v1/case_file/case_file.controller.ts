@@ -30,7 +30,7 @@ export class CaseFileController {
     async updateAssessment(
         @Token() token,
         @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.updateAsseessment(token, model);
+        return await this.service.updateAssessment(token, model);
     }
 
     @Post("/createPrevention")

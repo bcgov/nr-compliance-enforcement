@@ -30,6 +30,16 @@ export class CaseFileService {
         activeIndicator
       }
     }
+    preventionDetails {
+      actions {
+        actor
+        date
+        actionCode
+        shortDescription
+        longDescription
+        activeIndicator
+      }
+    }
   }
   `;
   constructor(
@@ -44,11 +54,13 @@ export class CaseFileService {
     token: string
   ): Promise<CaseFileDto> => {
 
+    console.log("I hate everything");
     const { data } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
         ${this.caseFileQueryFields}
       }`
     });
+    console.log("I hate everything22222222: " + JSON.stringify(data) + "\n");
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
       return caseFileDto;
@@ -75,7 +87,7 @@ export class CaseFileService {
     return returnValue?.createAssessment;
   }
 
-  updateAsseessment = async (
+  updateAssessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -99,7 +111,7 @@ export class CaseFileService {
   ): Promise<CaseFileDto> => {
 
     const result = await post(token, {
-      query: `mutation createPrevention($createPreventionInput: CreatePreventionInput!) {
+      query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
         createPrevention(createPreventionInput: $createPreventionInput) 
         ${this.caseFileQueryFields}
       }`,
@@ -114,10 +126,11 @@ export class CaseFileService {
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
-
+    
+    console.log("posting UpdatePrevention\n");
     const result = await post(token, {
       query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
-        updatePrevention(updatePreventionInput: $updatPreventionInput) 
+        updatePrevention(updatePreventionInput: $updatePreventionInput) 
         ${this.caseFileQueryFields}
       }`,
       variables: model

@@ -9,7 +9,10 @@ import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessm
 import { CaseFileDto } from "../../types/app/case-files/case-file";
 import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
 import { Officer } from "../../types/person/person";
-import { ToggleSuccess, ToggleError } from "../../common/toast";
+import { Prevention } from "../../types/outcomes/prevention";
+import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
+import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
+import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
 
 const initialState: CasesState = {
   assessment: {
@@ -22,7 +25,7 @@ const initialState: CasesState = {
   prevention: {
     date: undefined,
     officer: undefined,
-    assessment_type: [],
+    prevention_type: [],
   },
 };
 
@@ -42,8 +45,6 @@ export const casesSlice = createSlice({
         payload: { prevention },
       } = action;
       state.prevention = { ...prevention }; // Update only the assessment property
-    clearAssessment: (state) => {
-      state.assessment = {...initialState.assessment};
     },
   },
 
@@ -57,32 +58,32 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, setPrevention, clearAssessment } = casesSlice.actions;
+export const { setAssessment, setPrevention } = casesSlice.actions;
 
-export const selectAssessment = (state: RootState): Assessment => {
+export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
-  return cases.assessment;
+  return cases.prevention;
 };
 
-export const resetAssessment = createAction("assessment/reset");
+export const resetPrevention = createAction("Prevention/reset");
 
 // Given a compaint id, returns the assessment
-export const getAssessment =
-  (complaintIdentifier: string): AppThunk =>
+export const getPrevention =
+  (complaintIdentifier?: string): AppThunk =>
     async (dispatch, getState) => {
       const {
         officers: { officers },
       } = getState();
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-        
-        const updatedAssessmentData = await parseResponse(res, officers);
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+
+        const updatedPreventionData = await parsePreventionResponse(res, officers);
+        dispatch(setAssessment({ prevention: updatedPreventionData }));
 
       });
     };
 
-export const findAssessment =
+export const findPrevention =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
     async (dispatch) => {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
@@ -90,149 +91,135 @@ export const findAssessment =
       return response?.caseIdentifier;
     };
 
-export const upsertAssessment =
+export const upsertPrevention =
   (
     complaintIdentifier: string,
-    assessment: Assessment
+    prevention: Prevention
   ): AppThunk =>
     async (dispatch) => {
-      if (!assessment) {
+      if (!prevention) {
         return;
       }
-      const caseIdentifier = await dispatch(findAssessment(complaintIdentifier));
+      const caseIdentifier = await dispatch(findPrevention(complaintIdentifier));
       if (!caseIdentifier) {
-        dispatch(addAssessment(complaintIdentifier, assessment));
+        dispatch(addPrevention(complaintIdentifier, prevention));
       } else {
-        dispatch(updateAssessment(complaintIdentifier, caseIdentifier, assessment));
+        dispatch(updatePrevention(complaintIdentifier, caseIdentifier, prevention));
       }
     }
 
-const addAssessment =
+const addPrevention =
   (
     complaintIdentifier: string,
-    assessment: Assessment
+    prevention: Prevention
   ): AppThunk =>
     async (dispatch, getState) => {
       const {
-        codeTables: { "assessment-type": assessmentType },
+        codeTables: { "prevention-type": preventionType },
         officers: { officers },
         app: { profile },
       } = getState();
-      let createAssessmentInput = {
-        createAssessmentInput: {
+      let createPreventionInput = {
+        createPreventionInput: {
           leadIdentifier: complaintIdentifier,
           createUserId: profile.idir_username,
           agencyCode: "COS",
           caseCode: "HWCR",
-          assessmentDetails: {
-            actionNotRequired: (assessment.action_required?.value === "No"),
-            actions: assessment.assessment_type.map((item) => {
+          preventionDetails: {
+            actions: prevention.prevention_type.map((item) => {
               return {
-                date: assessment.date,
-                actor: assessment.officer?.value,
+                date: prevention.date,
+                actor: prevention.officer?.value,
                 activeIndicator: true,
                 actionCode: item.value
               }
             }),
-            actionJustificationCode: assessment.justification?.value
           }
         }
-      } as CreateAssessmentInput;
+      } as CreatePreventionInput;
 
-      let { createAssessmentInput: { assessmentDetails: { actions } } } = createAssessmentInput;
-      for (let item of assessmentType.filter((record) => record.isActive)) {
+      let { createPreventionInput: { preventionDetails: { actions } } } = createPreventionInput;
+      for (let item of preventionType.filter((record) => record.isActive)) {
         if (!actions.map((action) => {
           return action.actionCode
-        }).includes(item.assessmentType)) {
+        }).includes(item.preventionType)) {
           actions.push(
             {
-              date: assessment.date,
-              actor: assessment.officer?.value,
+              date: prevention.date,
+              actor: prevention.officer?.value,
               activeIndicator: false,
-              actionCode: item.assessmentType
-            } as AssessmentActionDto
+              actionCode: item.preventionType
+            } as PreventionActionDto
           )
         }
       }
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createPrevention`, createPreventionInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-        const updatedAssessmentData = await parseResponse(res, officers);
-        if (res) {
-          dispatch(setAssessment({ assessment: updatedAssessmentData }));
-          ToggleSuccess(`Assessment has been saved`);
-        } else {
-          await dispatch(clearAssessment());
-          ToggleError(`Unable to create assessment`);
-        }
+
+        const updatedPreventionData = await parsePreventionResponse(res, officers);
+        dispatch(setPrevention({ assessment: updatedPreventionData }));
+
       });
     }
 
-const updateAssessment =
+const updatePrevention =
   (
     complaintIdentifier: string,
     caseIdentifier: string,
-    assessment: Assessment
+    prevention: Prevention
   ): AppThunk =>
     async (dispatch, getState) => {
 
       const {
-        codeTables: { "assessment-type": assessmentType },
+        codeTables: { "prevention-type": preventionType },
         officers: { officers },
         app: { profile },
       } = getState();
 
-      let updateAssessmentInput = {
-        updateAssessmentInput: {
+      let updatePreventionInput = {
+        updatePreventionInput: {
           leadIdentifier: complaintIdentifier,
           caseIdentifier: caseIdentifier,
           updateUserId: profile.idir_username,
           agencyCode: "COS",
           caseCode: "HWCR",
-          assessmentDetails: {
-            actionNotRequired: (assessment.action_required?.value === "No"),
-            actionJustificationCode: assessment.justification?.value,
-            actions: assessment.assessment_type.map((item) => {
+          preventionDetails: {
+            actions: prevention.prevention_type.map((item) => {
               return {
-                actor: assessment.officer?.value,
-                date: assessment.date,
+                actor: prevention.officer?.value,
+                date: prevention.date,
                 actionCode: item.value,
                 activeIndicator: true
               }
             })
           }
         }
-      } as UpdateAssessmentInput;
-      let { updateAssessmentInput: { assessmentDetails: { actions } } } = updateAssessmentInput;
+      } as UpdatePreventionInput;
+      let { updatePreventionInput: { preventionDetails: { actions } } } = updatePreventionInput;
 
-      for (let item of assessmentType.filter((record) => record.isActive)) {
+      for (let item of preventionType.filter((record) => record.isActive)) {
         if (!actions.map((action) => {
           return action.actionCode
-        }).includes(item.assessmentType)) {
+        }).includes(item.preventionType)) {
           actions.push(
             {
-              actor: assessment.officer?.value,
-              date: assessment.date,
-              actionCode: item.assessmentType,
+              actor: prevention.officer?.value,
+              date: prevention.date,
+              actionCode: item.preventionType,
               activeIndicator: false
-            } as AssessmentActionDto
+            } as PreventionActionDto
           )
         }
       }
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updatePrevention`, updatePreventionInput);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
-        const updatedAssessmentData = await parseResponse(res, officers);
-        if (res) {
-          dispatch(setAssessment({ assessment: updatedAssessmentData }));
-          ToggleSuccess(`Assessment has been updated`);
-        } else {
-          await dispatch(getAssessment(complaintIdentifier));
-          ToggleError(`Unable to update assessment`);
-        }
+        const updatedPreventionData = await parsePreventionResponse(res, officers);
+        dispatch(setPrevention({ prevention: updatedPreventionData }));
       });
     }
 
-const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Assessment | undefined | null> => {
+const parsePreventionResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Prevention | undefined | null> => {
 
   if (res?.assessmentDetails?.actions?.length) {
 
@@ -251,22 +238,14 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
       officerFullName = actor;
     }
 
-    const updatedAssessmentData = {
+    const updatedPreventionData = {
       date: actionDate,
       officer: { label: officerFullName, value: actor },
-      action_required: {
-        label: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
-        value: res.assessmentDetails.actionNotRequired ? "No" : "Yes"
-      },
-      justification: {
-        value: res.assessmentDetails.actionJustificationCode,
-        label: res.assessmentDetails.actionJustificationLongDescription
-      },
-      assessment_type: res.assessmentDetails.actions.filter((action) => { return action.activeIndicator }).map((action) => {
+      prevention_type: res.preventionDetails.actions.filter((action) => { return action.activeIndicator }).map((action) => {
         return { label: action.longDescription, value: action.actionCode }
       }),
-    } as Assessment;
-    return updatedAssessmentData;
+    } as Prevention;
+    return updatedPreventionData;
   }
   else {
     return null;
@@ -290,7 +269,7 @@ export const getAssessment =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
 
-        const updatedAssessmentData = await parseResponse(res, officers);
+        const updatedAssessmentData = await parseAssessmentResponse(res, officers);
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
 
       });

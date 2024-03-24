@@ -1,7 +1,7 @@
 import Option from "../app/option";
 
 export interface Prevention {
-  assessment_type: Option[];
+  prevention_type: Option[];
   officer?: Option;
   date?: Date;
   createdBy?: string;
