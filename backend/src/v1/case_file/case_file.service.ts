@@ -54,13 +54,11 @@ export class CaseFileService {
     token: string
   ): Promise<CaseFileDto> => {
 
-    console.log("I hate everything");
     const { data } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
         ${this.caseFileQueryFields}
       }`
     });
-    console.log("I hate everything22222222: " + JSON.stringify(data) + "\n");
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
       return caseFileDto;
@@ -119,7 +117,7 @@ export class CaseFileService {
     },
     );
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createAssessment;
+    return returnValue?.createPrevention;
   }
 
   updatePrevention = async (
@@ -127,7 +125,6 @@ export class CaseFileService {
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
     
-    console.log("posting UpdatePrevention\n");
     const result = await post(token, {
       query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
         updatePrevention(updatePreventionInput: $updatePreventionInput) 
@@ -137,7 +134,7 @@ export class CaseFileService {
     },
     );
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.updateAssessment;
+    return returnValue?.updatePrevention;
 
   }
 

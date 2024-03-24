@@ -24,7 +24,7 @@ import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { ValidationDatePicker } from "../../../../common/validation-date-picker";
-import { BsPencil } from "react-icons/bs";
+import { BsPencil, BsPlusCircle } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 import "../../../../../assets/sass/hwcr-assessment.scss"
@@ -48,6 +48,7 @@ export const HWCRComplaintPrevention: FC = () => {
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [preventionDateErrorMessage, setPreventionDateErrorMessage] = useState<string>("");
   const [preventionRequiredErrorMessage, setPreventionRequiredErrorMessage] = useState<string>("");
+  const [showContent, setShowContent] = useState<boolean>(true);
 
   const complaintData = useAppSelector(selectComplaint);
   const preventionState = useAppSelector(selectPrevention);
@@ -102,6 +103,7 @@ export const HWCRComplaintPrevention: FC = () => {
     setSelectedDate((preventionState.date) ? new Date(preventionState.date) : null);
     setSelectedOfficer(preventionState.officer);
     setSelectedPreventionTypes(preventionState.prevention_type);
+    setShowContent(preventionState.prevention_type?.length > 0);
     resetValidationErrors();
     setEditable(!preventionState.date);
   };
@@ -178,6 +180,19 @@ export const HWCRComplaintPrevention: FC = () => {
   return (
     <div className="comp-outcome-report-block">
       <h6>Prevention and education</h6>
+      {!showContent? 
+                <div className="comp-outcome-report-button">
+                <Button
+                  id="outcome-report-add-prevention-outcome"
+                  title="Add Prevention and education"
+                  variant="primary"
+                  onClick={() => setShowContent(true)}
+                >
+                    <span>Add actions</span>
+                  <BsPlusCircle />
+                </Button>
+              </div>
+                :
       <div className="comp-outcome-report-complaint-assessment">
         <div className="comp-details-edit-container">
           <div className="assessment-details-edit-column">
@@ -293,6 +308,7 @@ export const HWCRComplaintPrevention: FC = () => {
           </div>
         )}
       </div>
+      }
     </div>
   );
 };

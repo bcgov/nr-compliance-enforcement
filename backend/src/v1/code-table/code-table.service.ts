@@ -385,7 +385,6 @@ export class CodeTableService {
         const { data } = await get(token, { 
           query : "{HWCRAssessmentActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}"
         });
-        console.log("fffffffffffffffffffffffffffff: " + JSON.stringify(data));
         const assessmentTypeCodes = data.HWCRAssessmentActions.map(
           ({
             actionCode,
@@ -410,7 +409,6 @@ export class CodeTableService {
         const { data } = await get(token, { 
           query : "{HWCRPreventionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}"
         });
-        console.log("fskfljasodfdsaofsa: " + JSON.stringify(data));
         const preventionTypeCodes = data.HWCRPreventionActions.map(
           ({
             actionCode,

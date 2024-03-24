@@ -657,7 +657,6 @@ export const selectPreventionTypeCodeDropdown = (state: RootState): Array<Option
   const {
     codeTables: { "prevention-type": preventionType },
   } = state;
-  console.log("preventionType: " + JSON.stringify(preventionType));
   const data = preventionType.map(({ preventionType, longDescription }) => {
     const item: Option = { label: longDescription, value: preventionType };
     return item;

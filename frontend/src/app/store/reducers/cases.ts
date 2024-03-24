@@ -65,7 +65,7 @@ export const selectPrevention = (state: RootState): Prevention => {
   return cases.prevention;
 };
 
-export const resetPrevention = createAction("Prevention/reset");
+export const resetPrevention = createAction("prevention/reset");
 
 // Given a compaint id, returns the assessment
 export const getPrevention =
@@ -78,7 +78,7 @@ export const getPrevention =
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
 
         const updatedPreventionData = await parsePreventionResponse(res, officers);
-        dispatch(setAssessment({ prevention: updatedPreventionData }));
+        dispatch(setPrevention({ prevention: updatedPreventionData }));
 
       });
     };
@@ -156,9 +156,8 @@ const addPrevention =
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createPrevention`, createPreventionInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-
         const updatedPreventionData = await parsePreventionResponse(res, officers);
-        dispatch(setPrevention({ assessment: updatedPreventionData }));
+        dispatch(setPrevention({ prevention: updatedPreventionData }));
 
       });
     }
@@ -221,9 +220,8 @@ const updatePrevention =
 
 const parsePreventionResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Prevention | undefined | null> => {
 
-  if (res?.assessmentDetails?.actions?.length) {
-
-    const { actor, actionDate } = res.assessmentDetails.actions.map((action) => {
+  if (res?.preventionDetails?.actions?.length) {
+    const { actor, actionDate } = res.preventionDetails.actions.map((action) => {
       return { actor: action.actor, actionDate: action.date }
     })[0];
 
@@ -237,7 +235,6 @@ const parsePreventionResponse = async (res: CaseFileDto, officers: Officer[]): P
     } else {
       officerFullName = actor;
     }
-
     const updatedPreventionData = {
       date: actionDate,
       officer: { label: officerFullName, value: actor },
@@ -350,7 +347,6 @@ const addAssessment =
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-
         const updatedAssessmentData = await parseAssessmentResponse(res, officers);
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
 
