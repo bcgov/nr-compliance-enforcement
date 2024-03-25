@@ -83,7 +83,7 @@ export const getPrevention =
       });
     };
 
-export const findPrevention =
+export const findCase =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
     async (dispatch) => {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
@@ -100,7 +100,7 @@ export const upsertPrevention =
       if (!prevention) {
         return;
       }
-      const caseIdentifier = await dispatch(findPrevention(complaintIdentifier));
+      const caseIdentifier = await dispatch(findCase(complaintIdentifier));
       if (!caseIdentifier) {
         dispatch(addPrevention(complaintIdentifier, prevention));
       } else {
@@ -272,13 +272,6 @@ export const getAssessment =
       });
     };
 
-export const findAssessment =
-  (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-    async (dispatch) => {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-      const response = await get<CaseFileDto>(dispatch, parameters);
-      return response?.caseIdentifier;
-    };
 
 export const upsertAssessment =
   (
@@ -289,7 +282,7 @@ export const upsertAssessment =
       if (!assessment) {
         return;
       }
-      const caseIdentifier = await dispatch(findAssessment(complaintIdentifier));
+      const caseIdentifier = await dispatch(findCase(complaintIdentifier));
       if (!caseIdentifier) {
         dispatch(addAssessment(complaintIdentifier, assessment));
       } else {

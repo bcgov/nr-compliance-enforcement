@@ -12,7 +12,6 @@ import {
 } from "../../../../store/reducers/complaints";
 import {
   selectPreventionTypeCodeDropdown,
-  selectYesNoCodeDropdown,
 } from "../../../../store/reducers/code-table";
 import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
