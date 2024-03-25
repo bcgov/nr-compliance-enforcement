@@ -305,7 +305,7 @@ const addEquipment =
 
       // Transform the equipment array into the structure expected by EquipmentDetailsDto
       const equipmentDetails = {
-        actionEquipmentTypeCode: equipment.type.value, // These fields should be adapted based on the actual structure of Equipment
+        actionEquipmentTypeCode: equipment.type.value,
         actionEquipmentTypeActiveIndicator: true,
         address: equipment.address,
         xCoordinate: equipment.xCoordinate,

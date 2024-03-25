@@ -29,7 +29,28 @@ export class CaseFileService {
         longDescription
         activeIndicator
       }
-    }
+    },
+  }
+  `;
+
+  private caseFileEquipmentQueryFields: string = `
+  {
+    caseIdentifier
+    leadIdentifier
+    equipmentDetails {
+      equipmentCode
+      equipmentLocationDesc
+      equipmentGeometryPoint
+      activeInd
+      actions {
+        actor
+        date
+        actionCode
+        shortDescription
+        longDescription
+        activeIndicator
+      }
+    },
   }
   `;
   constructor(
@@ -115,17 +136,22 @@ export class CaseFileService {
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
 
-    const result = await post(token, {
+    const mutationQuery = {
       query: `mutation CreateEquipment($createEquipmentInput: CreateEquipmentInput!) {
-        createAssessment(createEquipmentInput: $createEquipmentInput) 
-        ${this.caseFileQueryFields}
+        createEquipment(createEquipmentInput: $createEquipmentInput)
+          ${this.caseFileEquipmentQueryFields}
       }`,
       variables: model
-    },
-    );
+    };
+
+    this.logger.debug(mutationQuery);
+  
+    const result = await post(token, mutationQuery);
+  
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createEquipment;
   }
+  
 
   updateEquipment = async (
     token: string,
@@ -141,7 +167,7 @@ export class CaseFileService {
     },
     );
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.updateAssessment;
+    return returnValue?.updateEquipment;
 
   }
 }
