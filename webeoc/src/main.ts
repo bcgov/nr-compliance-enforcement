@@ -1,17 +1,17 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import * as dotenv from 'dotenv';
-import * as express from 'express';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import * as dotenv from "dotenv";
+import * as express from "express";
+import { ExpressAdapter } from "@nestjs/platform-express";
 
 async function bootstrap() {
   dotenv.config();
 
   // Create an Express instance
   const server = express();
-  server.disable('x-powered-by');
-  server.get('/health', (req, res) => res.status(200).send('ok'));
+  server.disable("x-powered-by");
+  server.get("/health", (req, res) => res.status(200).send("ok"));
 
   // Create a Nest application with the Express instance
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
