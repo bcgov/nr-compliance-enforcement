@@ -34,7 +34,7 @@ import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_typ
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { Justification } from "src/types/models/code-tables/justification";
 import { AssessmentType } from "src/types/models/code-tables/assessment-type";
-import { PreventEducationAction } from "src/types/models/code-tables/prevent-education-action";
+import { PreventionType } from "src/types/models/code-tables/prevention-type";
 import { Sex } from "src/types/models/code-tables/sex";
 import { Age } from "src/types/models/code-tables/age";
 import { ThreatLevel } from "src/types/models/code-tables/threat-level";
@@ -405,40 +405,29 @@ export class CodeTableService {
         );
         return assessmentTypeCodes;
       }
-      case "prevent-education-action": {
-        const data: PreventEducationAction[] = [
-          { action: "Provided safety information to the public",
-            shortDescription: "Provided safety information to the public",
-            longDescription: "Provided safety information to the public",
-            displayOrder: 1,
-            isActive: true,
-          },
-          { action: "Provided attractant management and husbandry information to the public",
-            shortDescription: "Provided attractant management and husbandry information to the public",
-            longDescription: "Provided attractant management and husbandry information to the public",
-            displayOrder: 2,
-            isActive: true,
-          },
-          { action: "Conducted media release to educate the community",
-            shortDescription: "Conducted media release to educate the community",
-            longDescription: "Conducted media release to educate the community",
-            displayOrder: 3,
-            isActive: true,
-          },
-          { action: "Contacted WildSafeBC or local interest group to deliver education to the public",
-            shortDescription: "Contacted WildSafeBC or local interest group to deliver education to the public",
-            longDescription: "Contacted WildSafeBC or local interest group to deliver education to the public",
-            displayOrder: 4,
-            isActive: true,
-          },
-          { action: "Contacted bylaw to assist with managing attractants",
-            shortDescription: "Contacted bylaw to assist with managing attractants",
-            longDescription: "Contacted bylaw to assist with managing attractants",
-            displayOrder: 5,
-            isActive: true,
-          },
-        ];
-        return data;
+      case "prevention-type": {
+        const { data } = await get(token, { 
+          query : "{HWCRPreventionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}"
+        });
+        const preventionTypeCodes = data.HWCRPreventionActions.map(
+          ({
+            actionCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
+          }) => {
+            const table: PreventionType = {
+              preventionType: actionCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
+            };
+            return table;
+          }
+        );
+        return preventionTypeCodes;
       }
       case "sex": {
         const { data } = await get(token, { 

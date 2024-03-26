@@ -12,7 +12,7 @@ import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supple
 export class CaseFileService {
   private readonly logger = new Logger(CaseFileService.name);
   private mapper: Mapper;
-  private caseFileQueryFields: string = `
+ private caseFileQueryFields: string = `
   {
     caseIdentifier
     leadIdentifier
@@ -31,25 +31,32 @@ export class CaseFileService {
         activeIndicator
       }
     }
-    note { 
-      note
-      action { 
-        actor 
-        date 
-        action
+    preventionDetails {
+      actions {
+        actor
+        date
+        actionCode
+        shortDescription
+        longDescription
+        activeIndicator
       }
     }
   }
   `;
+  
   constructor(@Inject(REQUEST) private request: Request, @InjectMapper() mapper) {
     this.mapper = mapper;
   }
 
-  find = async (complaint_id: string, token: string): Promise<CaseFileDto> => {
+  find = async (
+    complaint_id: string,
+    token: string
+  ): Promise<CaseFileDto> => {
+
     const { data } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
         ${this.caseFileQueryFields}
-      }`,
+      }`
     });
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
@@ -58,46 +65,95 @@ export class CaseFileService {
       this.logger.error(`Case with complaint Id ${complaint_id} not found.`);
       return null;
     }
-  };
+  }
 
-  create = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  createAssessment = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
     const result = await post(token, {
       query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
         createAssessment(createAssessmentInput: $createAssessmentInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model,
-    });
+      variables: model
+    },
+    );
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createAssessment;
-  };
+  }
 
-  update = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+ updateAssessment = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
     const result = await post(token, {
       query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
         updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model,
-    });
+      variables: model
+    },
+    );
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateAssessment;
-  };
 
-  private handleAPIResponse = async (result: { response: AxiosResponse; error: AxiosError }): Promise<any> => {
+  }
+
+
+  createPrevention = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
+    const result = await post(token, {
+      query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
+        createPrevention(createPreventionInput: $createPreventionInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createPrevention;
+  }
+
+  updatePrevention = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+    
+    const result = await post(token, {
+      query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
+        updatePrevention(updatePreventionInput: $updatePreventionInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updatePrevention;
+
+  }
+
+ private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
+    Promise<any> => {
     if (result?.response?.data?.data) {
       const caseFileDto = result.response.data.data;
       return caseFileDto;
     } else if (result?.response?.data?.errors) {
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
       return null;
-    } else if (result?.error) {
+    }
+    else if (result?.error) {
       this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
     } else {
       this.logger.error(`Unknwown error occurred during web request`);
       return null;
     }
-  };
+  }
 
   createNote = async (token: any, model: CreateSupplementalNotesInput): Promise<CaseFileDto> => {
     const result = await post(token, {
