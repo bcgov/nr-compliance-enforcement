@@ -28,6 +28,7 @@ export const HWCRSupplementalNotes: FC = () => {
       {action && !showInput ? (
         <SupplementalNotesItem
           notes={note}
+          action={action}
           enableEditMode={setShowInput}
         />
       ) : !showInput ? (
@@ -48,6 +49,7 @@ export const HWCRSupplementalNotes: FC = () => {
           notes={note}
           currentOfficer={officer}
           setShowInput={setShowInput}
+          mode={!action ? "create" : "update"}
         />
       )}
     </div>

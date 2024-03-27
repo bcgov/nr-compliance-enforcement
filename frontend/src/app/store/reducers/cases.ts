@@ -17,6 +17,7 @@ import { SupplementalNote } from "../../types/outcomes/supplemental-note";
 import { CreateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
 import { UUID } from "crypto";
+import { ToggleError, ToggleSuccess } from "../../common/toast";
 
 const initialState: CasesState = {
   assessment: {
@@ -483,11 +484,45 @@ export const selectSupplementalNote = (state: RootState): SupplementalNote => {
   const {
     cases: { note },
   } = state;
+
   return note;
 };
 
+export const selectNotesOfficer = (state: RootState) => {
+  const {
+    app: { profile },
+    cases: {
+      note: { action },
+    },
+    officers: { officers: data },
+  } = state;
+
+  let currentOfficer: { initials: string; displayName: string } = { initials: "UN", displayName: "Unknown" };
+
+  if (!action) {
+    currentOfficer = {
+      initials: `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(0, 1)}`,
+      displayName: `${profile.givenName} ${profile.surName}`,
+    };
+  } else {
+    const { actor } = action;
+    const officer = data.find((item) => item.officer_guid === actor);
+    if (officer) {
+      const {
+        person_guid: { first_name: givenName, last_name: surName },
+      } = officer;
+      currentOfficer = {
+        initials: `${givenName?.substring(0, 1)}${surName?.substring(0, 1)}`,
+        displayName: `${givenName} ${surName}`,
+      };
+    }
+  }
+
+  return currentOfficer;
+};
+
 export const upsertNote =
-  (id: string, note: string): AppThunk =>
+  (id: string, note: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -515,8 +550,6 @@ export const upsertNote =
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
-        console.log("post: ", parameters);
-
         return await post<CaseFileDto>(dispatch, parameters);
       };
 
@@ -538,8 +571,6 @@ export const upsertNote =
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
-        console.log("patch: ", parameters);
-
         return await patch<CaseFileDto>(dispatch, parameters);
       };
 
@@ -548,11 +579,26 @@ export const upsertNote =
     let result;
     if (!currentNote || !currentNote.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
+      if (result !== null) {
+        ToggleSuccess("Supplemental note created");
+      } else {
+        ToggleError("Error, unable to create supplemental note");
+      }
     } else {
       result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir));
+
+      if (result !== null) {
+        ToggleSuccess("Supplemental note updated");
+      } else {
+        ToggleError("Error, unable to update supplemental note");
+      }
     }
 
-    dispatch(setCaseFile(result));
+    if (result !== null) {
+      return "success";
+    } else {
+      return "error";
+    }
   };
 
 export default casesSlice.reducer;

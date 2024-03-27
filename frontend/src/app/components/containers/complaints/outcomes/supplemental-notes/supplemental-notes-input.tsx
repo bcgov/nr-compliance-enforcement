@@ -9,17 +9,18 @@ import { useAppDispatch } from "../../../../../hooks/hooks";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import { MAX_CHARACTERS } from "../../../../../constants/general";
-import { upsertNote } from "../../../../../store/reducers/cases";
+import { getCaseFile, upsertNote } from "../../../../../store/reducers/cases";
+import { ToggleSuccess } from "../../../../../common/toast";
 
 type props = {
   id: string;
   notes: string;
   currentOfficer: OfficerDto | null;
-
+  mode: "create" | "update";
   setShowInput: Function;
 };
 
-export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, setShowInput }) => {
+export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, mode, setShowInput }) => {
   const currentDate = new Date();
 
   const dispatch = useAppDispatch();
@@ -67,7 +68,12 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, s
 
   const handleSaveNotes = () => {
     if (validateInput()) {
-      dispatch(upsertNote(id, currentNotes));
+      dispatch(upsertNote(id, currentNotes)).then((result) => {
+        if (result === "success") {
+          dispatch(getCaseFile(id))
+          setShowInput(false);
+        }
+      });
     } else {
       setNotesError("Supporting notes required");
     }
@@ -152,7 +158,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, s
             className="comp-outcome-save"
             onClick={handleSaveNotes}
           >
-            Add
+            {mode === "create" ? "Add" : "Update"}
           </Button>
         </div>
       </div>

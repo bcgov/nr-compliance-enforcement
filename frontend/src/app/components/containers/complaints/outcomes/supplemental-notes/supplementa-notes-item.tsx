@@ -2,19 +2,19 @@ import { FC } from "react";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { BsPencil } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
-import { profileDisplayName, profileInitials } from "../../../../../store/reducers/app";
 import { formatDate } from "../../../../../common/methods";
+
+import { CaseAction } from "../../../../../types/outcomes/case-action";
+import { selectNotesOfficer } from "../../../../../store/reducers/cases";
 
 type props = {
   notes: string;
-
+  action: CaseAction;
   enableEditMode: Function;
 };
 
-export const SupplementalNotesItem: FC<props> = ({ notes, enableEditMode }) => {
-  const initials = useAppSelector(profileInitials);
-  const displayName = useAppSelector(profileDisplayName);
-
+export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode }) => {
+  const { initials, displayName } = useAppSelector(selectNotesOfficer);
   return (
     <div className="comp-outcome-supporting-notes">
       <div className="comp-details-edit-container">
@@ -57,7 +57,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, enableEditMode }) => {
                   className="bi comp-margin-right-xxs comp-details-inner-content"
                   id="file-review-supporting-date"
                 >
-                  {formatDate(new Date().toString())}
+                  {formatDate(new Date(action.date).toString())}
                 </div>
               </div>
             </div>
