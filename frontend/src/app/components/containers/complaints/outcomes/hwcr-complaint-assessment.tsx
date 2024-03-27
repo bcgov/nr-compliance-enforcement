@@ -37,10 +37,10 @@ export const HWCRComplaintAssessment: FC = () => {
     id: string;
     complaintType: string;
   };
-  const [selectedActionRequired, setSelectedActionRequired] = useState<Option>();
-  const [selectedJustification, setSelectedJustification] = useState<Option>();
+  const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
+  const [selectedJustification, setSelectedJustification] = useState<Option| null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
-  const [selectedOfficer, setSelectedOfficer] = useState<Option>();
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
 
@@ -123,9 +123,9 @@ export const HWCRComplaintAssessment: FC = () => {
   
   const populateAssessmentUI = () => {
     setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
-    setSelectedOfficer(assessmentState.officer);
-    setSelectedActionRequired(assessmentState.action_required);
-    setSelectedJustification(assessmentState.justification);
+    setSelectedOfficer(assessmentState.officer ?? null);
+    setSelectedActionRequired(assessmentState.action_required ?? null);
+    setSelectedJustification(assessmentState.justification ?? null);
     setSelectedAssessmentTypes(assessmentState.assessment_type);
     resetValidationErrors();
     setEditable(!assessmentState.date);
