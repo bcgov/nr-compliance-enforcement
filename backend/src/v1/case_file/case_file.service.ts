@@ -41,6 +41,14 @@ export class CaseFileService {
         activeIndicator
       }
     }
+    note {
+      note 
+      action { 
+        actor
+        action
+        date
+      }
+    }
   }
   `;
   

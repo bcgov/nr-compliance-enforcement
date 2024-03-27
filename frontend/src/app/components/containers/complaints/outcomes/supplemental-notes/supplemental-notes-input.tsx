@@ -8,6 +8,8 @@ import { OfficerDto } from "../../../../../types/app/people/officer";
 import { useAppDispatch } from "../../../../../hooks/hooks";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
+import { MAX_CHARACTERS } from "../../../../../constants/general";
+import { upsertNote } from "../../../../../store/reducers/cases";
 
 type props = {
   id: string;
@@ -18,7 +20,7 @@ type props = {
 };
 
 export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, setShowInput }) => {
-  const maxCharacters = 4000;
+  const currentDate = new Date();
 
   const dispatch = useAppDispatch();
 
@@ -40,7 +42,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, s
   }, [currentOfficer]);
 
   const handleNotesChange = (input: string) => {
-    if (input?.trim().length <= maxCharacters) {
+    if (input?.trim().length <= MAX_CHARACTERS) {
       setNotesError("");
       setCurrentNotes(input.trim());
     }
@@ -65,7 +67,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, s
 
   const handleSaveNotes = () => {
     if (validateInput()) {
-      // dispatch(upsertNote(id, currentNotes))
+      dispatch(upsertNote(id, currentNotes));
     } else {
       setNotesError("Supporting notes required");
     }
@@ -86,11 +88,11 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, s
           rows={4}
           errMsg={notesError}
           onChange={handleNotesChange}
-          maxLength={maxCharacters}
+          maxLength={MAX_CHARACTERS}
         />
       </div>
       <div className="right-float">
-        {currentNotes.length} / {maxCharacters}
+        {currentNotes.length} / {MAX_CHARACTERS}
       </div>
       <div className="clear-right-float" />
       <div className="comp-details-edit-container">
@@ -123,7 +125,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, s
             <label htmlFor="supporting-notes-time-pair-id">Date</label>
             <DatePicker
               id="supporting-notes-time-pair-id"
-              selected={new Date()}
+              selected={currentDate}
               onChange={(e) => e}
               dateFormat="yyyy-MM-dd"
               wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"

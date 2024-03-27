@@ -6,6 +6,7 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import { selectCurrentOfficer } from "../../../../store/reducers/officer";
 import { SupplementalNotesItem } from "./supplemental-notes/supplementa-notes-item";
 import { useParams } from "react-router-dom";
+import { selectSupplementalNote } from "../../../../store/reducers/cases";
 
 type ComplaintParams = {
   id: string;
@@ -15,16 +16,18 @@ export const HWCRSupplementalNotes: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
 
   const officer = useAppSelector(selectCurrentOfficer());
-  const notes = "derp";
+  const supplementalNote = useAppSelector(selectSupplementalNote);
+
+  const { note, action } = !supplementalNote ? { note: "", action: undefined } : supplementalNote;
 
   const [showInput, setShowInput] = useState(false);
 
   return (
     <div className="comp-outcome-report-block">
       <h6>Supporting notes</h6>
-      {notes && !showInput ? (
+      {action && !showInput ? (
         <SupplementalNotesItem
-          notes={notes}
+          notes={note}
           enableEditMode={setShowInput}
         />
       ) : !showInput ? (
@@ -42,7 +45,7 @@ export const HWCRSupplementalNotes: FC = () => {
       ) : (
         <SupplementalNotesInput
           id={id}
-          notes={notes}
+          notes={note}
           currentOfficer={officer}
           setShowInput={setShowInput}
         />

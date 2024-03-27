@@ -58,7 +58,7 @@ export class CaseFileController {
 
   @Post("/note")
   @Roles(Role.COS_OFFICER)
-  async crreateNote(@Token() token, @Body() model: CreateSupplementalNotesInput): Promise<CaseFileDto> {
+  async createNote(@Token() token, @Body() model: CreateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.createNote(token, model);
   }
 
