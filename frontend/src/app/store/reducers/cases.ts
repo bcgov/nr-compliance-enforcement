@@ -1,4 +1,4 @@
-import { Assessment } from "../../types/outcomes/assessment";
+import { Assessment } from "../../types/outcomes/assessment"; 
 import { AppThunk, RootState } from "../store";
 import { createAction, createSlice, Action, ThunkAction } from "@reduxjs/toolkit";
 import config from "../../../config";
@@ -13,6 +13,7 @@ import { Prevention } from "../../types/outcomes/prevention";
 import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
 import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
+import { ToggleError, ToggleSuccess } from "../../common/toast";
 
 const initialState: CasesState = {
   assessment: {
@@ -46,6 +47,10 @@ export const casesSlice = createSlice({
       } = action;
       state.prevention = { ...prevention }; // Update only the assessment property
     },
+    clearAssessment: (state) => {
+      state.assessment = {...initialState.assessment};
+    },
+    
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -58,7 +63,7 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, setPrevention } = casesSlice.actions;
+export const { setAssessment, setPrevention, clearAssessment } = casesSlice.actions;
 
 export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
@@ -258,7 +263,7 @@ export const resetAssessment = createAction("assessment/reset");
 
 // Given a compaint id, returns the assessment
 export const getAssessment =
-  (complaintIdentifier?: string): AppThunk =>
+  (complaintIdentifier: string): AppThunk =>
     async (dispatch, getState) => {
       const {
         officers: { officers },
@@ -341,8 +346,13 @@ const addAssessment =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         const updatedAssessmentData = await parseAssessmentResponse(res, officers);
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
-
+        if (res) {
+          dispatch(setAssessment({ assessment: updatedAssessmentData }));
+          ToggleSuccess(`Assessment has been saved`);
+        } else {
+          await dispatch(clearAssessment());
+          ToggleError(`Unable to create assessment`);
+        }
       });
     }
 
@@ -400,7 +410,13 @@ const updateAssessment =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
         const updatedAssessmentData = await parseAssessmentResponse(res, officers);
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        if (res) {
+          dispatch(setAssessment({ assessment: updatedAssessmentData }));
+          ToggleSuccess(`Assessment has been updated`);
+        } else {
+          await dispatch(getAssessment(complaintIdentifier));
+          ToggleError(`Unable to update assessment`);
+        }        
       });
     }
 
