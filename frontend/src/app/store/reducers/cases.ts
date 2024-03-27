@@ -429,6 +429,13 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
     })[0];
 
     let officerFullName = null;
+
+    console.log('actor',actor);
+    console.log("officers");
+    officers.map((officer) => {
+      console.log({...officer});
+    });
+
     let officerNames = officers.filter((person) => person.person_guid.person_guid === actor).map((officer) => {
       return `${officer.person_guid.first_name} ${officer.person_guid.last_name}`
     })
