@@ -17,20 +17,36 @@ import { Token } from "src/auth/decorators/token.decorator";
 export class CaseFileController {
     constructor(private readonly service: CaseFileService) { }
 
-    @Post("/create")
+    @Post("/createAssessment")
     @Roles(Role.COS_OFFICER)
-    async create(
+    async createAssessment(
         @Token() token,
         @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.create(token, model);
+        return await this.service.createAssessment(token, model);
     }
 
-    @Patch("/update")
+    @Patch("/updateAssessment")
     @Roles(Role.COS_OFFICER)
-    async update(
+    async updateAssessment(
         @Token() token,
         @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.update(token, model);
+        return await this.service.updateAssessment(token, model);
+    }
+
+    @Post("/createPrevention")
+    @Roles(Role.COS_OFFICER)
+    async createPrevention(
+        @Token() token,
+        @Body() model: CaseFileDto): Promise<CaseFileDto> {
+        return await this.service.createPrevention(token, model);
+    }
+
+    @Patch("/updatePrevention")
+    @Roles(Role.COS_OFFICER)
+    async updatePrevention(
+        @Token() token,
+        @Body() model: CaseFileDto): Promise<CaseFileDto> {
+        return await this.service.updatePrevention(token, model);
     }
 
     @Get("/:complaint_id")

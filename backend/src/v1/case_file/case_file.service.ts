@@ -36,6 +36,16 @@ export class CaseFileService {
       date
       actionCode
     }
+    preventionDetails {
+      actions {
+        actor
+        date
+        actionCode
+        shortDescription
+        longDescription
+        activeIndicator
+      }
+    }
   }
   `;
   constructor(
@@ -64,7 +74,7 @@ export class CaseFileService {
     }
   }
 
-  create = async (
+  createAssessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -81,7 +91,7 @@ export class CaseFileService {
     return returnValue?.createAssessment;
   }
 
-  update = async (
+  updateAssessment = async (
     token: string,
     model: CaseFileDto
   ): Promise<CaseFileDto> => {
@@ -127,6 +137,41 @@ export class CaseFileService {
     });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateReview;
+  }
+
+  createPrevention = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+
+    const result = await post(token, {
+      query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
+        createPrevention(createPreventionInput: $createPreventionInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createPrevention;
+  }
+
+  updatePrevention = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+    
+    const result = await post(token, {
+      query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
+        updatePrevention(updatePreventionInput: $updatePreventionInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updatePrevention;
+
   }
 
   private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):

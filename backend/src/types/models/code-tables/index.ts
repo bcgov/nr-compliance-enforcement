@@ -16,7 +16,7 @@ import { Zone } from "./zone";
 import { ReportedBy } from "./reported-by";
 import { Justification } from "./justification";
 import { AssessmentType } from "./assessment-type";
-import { PreventEducationAction } from "./prevent-education-action";
+import { PreventionType } from "./prevention-type";
 import { Equipment } from "./equipment";
 
 export const AvailableCodeTables = [
@@ -35,7 +35,7 @@ export const AvailableCodeTables = [
   "reported-by",
   "justification",
   "assessment-type",
-  "prevent-education-action",
+  "prevention-type",
   "sex",
   "age",
   "threat-level",
@@ -69,6 +69,6 @@ export {
   ReportedBy,
   Justification,
   AssessmentType,
-  PreventEducationAction,
+  PreventionType,
   Equipment
 };

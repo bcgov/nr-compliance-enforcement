@@ -1,5 +1,6 @@
 import { UUID } from "crypto";
 import { AssessmentDetailsDto } from "./assessment-details";
+import { PreventionDetailsDto } from "./prevention-details";
 
 export interface CaseFileDto {
     caseIdentifier: UUID;
@@ -7,7 +8,8 @@ export interface CaseFileDto {
     createUserId: string;
     agencyCode: string;
     caseCode: string;
-    assessmentDetails: AssessmentDetailsDto
-    updateUserId: string;
+    assessmentDetails?: AssessmentDetailsDto
+    preventionDetails?: PreventionDetailsDto
+    updateUserId: string
     isReviewRequired: boolean;
 }
