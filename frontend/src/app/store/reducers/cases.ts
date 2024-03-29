@@ -12,6 +12,7 @@ import { Officer } from "../../types/person/person";
 import { ToggleSuccess, ToggleError } from "../../common/toast";
 
 const initialState: CasesState = {
+  caseId: undefined,
   assessment: {
     action_required: undefined,
     date: undefined,
@@ -19,6 +20,8 @@ const initialState: CasesState = {
     officer: undefined,
     assessment_type: [],
   },
+  isReviewRequired: false,
+  reviewComplete: undefined
 };
 
 export const casesSlice = createSlice({
@@ -26,6 +29,10 @@ export const casesSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    setCaseId: (state, action) => {
+      const { payload } = action;
+      return {...state, caseId: payload}
+    },
     setAssessment: (state, action) => {
       const {
         payload: { assessment },
@@ -34,6 +41,14 @@ export const casesSlice = createSlice({
     },
     clearAssessment: (state) => {
       state.assessment = {...initialState.assessment};
+    },
+    setIsReviewedRequired: (state, action) => {
+      const { payload } = action;
+      return {...state, isReviewRequired: payload}
+    },
+    setReviewComplete: (state, action) => {
+      const { payload } = action;
+      return {...state, reviewComplete: payload}
     },
   },
 
@@ -47,7 +62,13 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, clearAssessment } = casesSlice.actions;
+export const { 
+  setAssessment, 
+  clearAssessment, 
+  setCaseId, 
+  setIsReviewedRequired, 
+  setReviewComplete 
+} = casesSlice.actions;
 
 export const selectAssessment = (state: RootState): Assessment => {
   const { cases } = state;
@@ -65,10 +86,11 @@ export const getAssessment =
       } = getState();
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-        
         const updatedAssessmentData = await parseResponse(res, officers);
+        dispatch(setCaseId(res.caseIdentifier));
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
-
+        dispatch(setIsReviewedRequired(res.isReviewRequired))
+        dispatch(setReviewComplete(res.reviewComplete));
       });
     };
 
@@ -262,6 +284,44 @@ const parseResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Ass
   else {
     return null;
   }
+}
+
+export const createReview = (complaintId: string, isReviewRequired: boolean, reviewComplete: any ): AppThunk => async (dispatch, getState) => {
+  const {
+    app: { profile },
+    cases: { caseId }
+  } = getState();
+  let reviewInput = {
+    reviewInput: {
+      leadIdentifier: complaintId,
+      caseIdentifier: caseId, 
+      userId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      isReviewRequired
+    } as any
+  };
+
+  if(reviewComplete) {
+    reviewInput.reviewInput.reviewComplete = reviewComplete;
+  };
+
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
+  await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    if (res) {
+      if(!caseId){
+        dispatch(setCaseId(res.caseIdentifier));
+      }
+      dispatch(setIsReviewedRequired(res.isReviewRequired));
+      if(res.reviewComplete){
+        dispatch(setReviewComplete(res.reviewComplete));
+      }
+      ToggleSuccess("File review has been updated");
+    } else {
+      await dispatch(clearAssessment());
+      ToggleError(`Unable to set file review`);
+    }
+  });
 }
 
 export default casesSlice.reducer;

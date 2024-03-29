@@ -8,5 +8,6 @@ export interface CaseFileDto {
     agencyCode: string;
     caseCode: string;
     assessmentDetails: AssessmentDetailsDto
-    updateUserId: string
+    updateUserId: string;
+    isReviewRequired: boolean;
 }

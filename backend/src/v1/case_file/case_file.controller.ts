@@ -41,4 +41,20 @@ export class CaseFileController {
     ) {
         return this.service.find(complaint_id, token);
     }
+
+    @Post("/review")
+    @Roles(Role.COS_OFFICER)
+    async createReview(
+        @Token() token,
+        @Body() model: CaseFileDto): Promise<CaseFileDto> {
+        return await this.service.createReview(token, model);
+    }
+
+    @Patch("/review")
+    @Roles(Role.COS_OFFICER)
+    async updateReview(
+        @Token() token,
+        @Body() model: CaseFileDto): Promise<CaseFileDto> {
+        return await this.service.updateReview(token, model);
+    }
 }
