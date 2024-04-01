@@ -248,6 +248,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     setDrugs(update);
   };
 
+  const updateDrugAuthorization = (drugAuthorization: DrugAuthorization) => {
+
+
+    setDrugAuthorization(drugAuthorization);
+  };
+
   const renderDrugs = () => {
 
     if (drugs && from(drugs).any()) {
@@ -261,7 +267,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
             })}
 
-          <AddDrugAuthorization {...drugAuthorization} agency={complaintData?.ownedBy ?? 'COS'} update={setDrugAuthorization} />
+          <AddDrugAuthorization drugAuthorization={drugAuthorization} agency={complaintData?.ownedBy ?? 'COS'} update={updateDrugAuthorization} />
         </>
       );
     }
@@ -312,7 +318,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               isValid = false;
             }
       });
-      
+
       if(!drugAuthorization?.officer)
       {
         isValid = false;

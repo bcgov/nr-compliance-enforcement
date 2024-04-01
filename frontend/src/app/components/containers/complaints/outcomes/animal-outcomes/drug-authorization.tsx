@@ -10,31 +10,23 @@ import { ValidationDatePicker } from "../../../../../common/validation-date-pick
 
 type Props = {
   agency: string;
-  drugAuthtorization?: DrugAuthorizationType;
+  drugAuthorization?: DrugAuthorizationType;
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
-  const [assignedOfficer] = useState(assigned)
-
-  const [authorizedBy, setAuthorizedBy] = useState(drugAuthtorization?.officer);
-  const [authorizedOn, setAuthorizedOn] = useState(drugAuthtorization?.date);
+  const [authorizedBy, setAuthorizedBy] = useState(drugAuthorization?.officer ?? assigned ?? undefined);
+  const [authorizedOn, setAuthorizedOn] = useState(drugAuthorization?.date);
 
   const [authorizedByErrorMessage, setAuthorizedByErrorMessage] = useState(!authorizedBy ? "Required" : "");
   const [authorizedOnErrorMessage, setAuthorizedOnErrorMessage] = useState(!authorizedOn ? "Required" : "");
 
-  useEffect(() => {
-    if ((assigned && !authorizedBy)) {
-      setAuthorizedBy(assigned);
-    } else if(assigned !== assignedOfficer && authorizedBy){
-      setAuthorizedBy(assigned || "");
-    }
-  }, [assigned, authorizedBy, assignedOfficer]);
 
   const getValue = (property: string): Option | undefined => {
+
     if (property === "officer") {
       return officers.find((item) => item.value === authorizedBy);
     }
@@ -95,7 +87,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
                   classNamePrefix="comp-details-edit-calendar-input" 
                   className={"comp-details-input"} 
                   placeholder={"Select"} 
-                  errMsg={authorizedOnErrorMessage}            
+                  errMsg={authorizedOnErrorMessage}         
                   />
           </div>
         </Col>

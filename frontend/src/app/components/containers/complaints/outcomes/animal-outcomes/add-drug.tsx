@@ -69,49 +69,23 @@ export const AddDrug: FC<props> = ({
     };
     const updatedTag = { ...source, [property]: value };
 
+    const errorMessage = !value ? "Required" : "";
+
     if(property === "vial")
     {
-      if(!value)
-      {
-        setVialNumberErrorMessage("Required")
-      }
-      else
-      {
-        setVialNumberErrorMessage("");
-      }
+      setVialNumberErrorMessage(errorMessage)
     }
     if(property === "drug")
     {
-      if(!value)
-      {
-        setDrugNameErrorMessage("Required")
-      }
-      else
-      {
-        setDrugNameErrorMessage("");
-      }
+      setDrugNameErrorMessage(errorMessage)
     }
     if(property === "amountUsed")
     {
-      if(!value)
-      {
-        setAmountUsedErrorMessage("Required")
-      }
-      else
-      {
-        setAmountUsedErrorMessage("");
-      }
+      setAmountUsedErrorMessage(errorMessage);
     }
     if(property === "injectionMethod")
     {
-      if(!value)
-      {
-        setInjectionMethodErrorMessage("Required")
-      }
-      else
-      {
-        setInjectionMethodErrorMessage("");
-      }
+      setInjectionMethodErrorMessage(errorMessage)
     }
 
     update(updatedTag);
