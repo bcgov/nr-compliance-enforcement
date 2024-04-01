@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
@@ -29,9 +29,23 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
     }
   }, [ear, isLeftEarUsed]);
 
+  const [tagNumberErrorMessage, setTagNumberErrorMessage] = useState(number ? "" : "Required");
+
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, number };
     const updatedTag = { ...source, [property]: value };
+
+    if(property === "number")
+    {
+      if(!value)
+      {
+        setTagNumberErrorMessage("Required")
+      }
+      else
+      {
+        setTagNumberErrorMessage("");
+      }
+    }
 
     update(updatedTag);
   };
@@ -48,6 +62,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
             placeholder="Enter number"
             inputClass="comp-form-control"
             value={number}
+            error={tagNumberErrorMessage}
             maxLength={7}
             onChange={(evt: any) => {
               const {

@@ -7,6 +7,7 @@ import { selectComplaintAssignedBy } from "../../../../../store/reducers/complai
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import Option from "../../../../../types/app/option";
 import { DrugAuthorization as DrugAuthorizationType } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 
 type Props = {
   agency: string;
@@ -22,6 +23,9 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
 
   const [authorizedBy, setAuthorizedBy] = useState(drugAuthtorization?.officer);
   const [authorizedOn, setAuthorizedOn] = useState(drugAuthtorization?.date);
+
+  const [authorizedByErrorMessage, setAuthorizedByErrorMessage] = useState(!authorizedBy ? "Required" : "");
+  const [authorizedOnErrorMessage, setAuthorizedOnErrorMessage] = useState(!authorizedOn ? "Required" : "");
 
   useEffect(() => {
     if ((assigned && !authorizedBy)) {
@@ -40,6 +44,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
 
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
+    setAuthorizedByErrorMessage(!input ? "Required" : "");
     const newDrugAuth: DrugAuthorizationType = {officer: input ?? "", date: authorizedOn ?? undefined};
     update(newDrugAuth);
 
@@ -47,7 +52,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
 
   const handleAuthorizedOnChange = (input: Date | undefined | null) => {
     setAuthorizedOn(input ?? undefined);
-    
+    setAuthorizedOnErrorMessage(!input ? "Required" : "");
     update({officer: authorizedBy, date: input ?? undefined});
   };
 
@@ -65,13 +70,14 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
             <CompSelect
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
+              className="comp-details-input"
+              options={officers}
+              enableValidation={true}
+              placeholder="Select"
+              errorMessage={authorizedByErrorMessage}
               onChange={(evt) => {
                 handleAuthorizedByChange(evt?.value);
               }}
-              className="comp-details-input"
-              options={officers}
-              placeholder="Select"
-              enableValidation={false}
               value={getValue("officer")}
             />
           </div>
@@ -82,17 +88,16 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
             <label id="drug-authorization-incident-time-label-id" htmlFor="drug-authorization-incident-time">
               Date
             </label>
-            <DatePicker
-              id="drug-authorization-incident-time"
-              showIcon
-              dateFormat="yyyy-MM-dd"
-              wrapperClassName="comp-details-edit-calendar-input"
-              maxDate={new Date()}
-              onChange={(evt) => {
-                handleAuthorizedOnChange(evt);
-              }}
-              selected={authorizedOn}
-            />
+            <ValidationDatePicker
+                  id="drug-authorization-incident-time"
+                  maxDate={new Date()}
+                  onChange={(date: Date) => handleAuthorizedOnChange(date)}
+                  selectedDate={authorizedOn}
+                  classNamePrefix="comp-details-edit-calendar-input" 
+                  className={"comp-details-input"} 
+                  placeholder={"Select"} 
+                  errMsg={authorizedOnErrorMessage}            
+                  />
           </div>
         </Col>
         <Col></Col>

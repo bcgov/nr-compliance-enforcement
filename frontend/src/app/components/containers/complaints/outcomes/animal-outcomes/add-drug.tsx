@@ -45,6 +45,16 @@ export const AddDrug: FC<props> = ({
 
   const [showDiscarded, setShowDiscarded] = useState(remainingUse === "DISC");
 
+  const [vialNumberErrorMessage, setVialNumberErrorMessage] = useState(!vial ? "Required" : "");
+  const [drugNameErrorMessage, setDrugNameErrorMessage] = useState(!drug ? "Required" : "");
+  const [amountUsedErrorMessage, setAmountUsedErrorMessage] = useState(amountUsed <= -1 ? "Required" : "");
+  const [injectionMethodErrorMessage, setInjectionMethodErrorMessage] = useState(!injectionMethod ? "Required" : "");
+
+  function isPositiveInt(str: string) {
+    var n = Math.floor(Number(str));
+    return (str !== "") ? n !== Infinity && String(n) === str && n >= 0 : true;
+}
+
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {
       id,
@@ -58,6 +68,51 @@ export const AddDrug: FC<props> = ({
       discardMethod,
     };
     const updatedTag = { ...source, [property]: value };
+
+    if(property === "vial")
+    {
+      if(!value)
+      {
+        setVialNumberErrorMessage("Required")
+      }
+      else
+      {
+        setVialNumberErrorMessage("");
+      }
+    }
+    if(property === "drug")
+    {
+      if(!value)
+      {
+        setDrugNameErrorMessage("Required")
+      }
+      else
+      {
+        setDrugNameErrorMessage("");
+      }
+    }
+    if(property === "amountUsed")
+    {
+      if(!value)
+      {
+        setAmountUsedErrorMessage("Required")
+      }
+      else
+      {
+        setAmountUsedErrorMessage("");
+      }
+    }
+    if(property === "injectionMethod")
+    {
+      if(!value)
+      {
+        setInjectionMethodErrorMessage("Required")
+      }
+      else
+      {
+        setInjectionMethodErrorMessage("");
+      }
+    }
 
     update(updatedTag);
   };
@@ -79,10 +134,12 @@ export const AddDrug: FC<props> = ({
   };
 
   const handleAmountUsed = (input: string) => {
+    if(isPositiveInt(input))
     updateModel("amountUsed", input);
   };
 
   const handleAmountDiscarded = (input: string) => {
+    if(isPositiveInt(input))
     updateModel("amountDiscarded", input);
   };
 
@@ -105,6 +162,7 @@ export const AddDrug: FC<props> = ({
             placeholder="Example"
             inputClass="comp-form-control"
             value={vial}
+            error={vialNumberErrorMessage}
             onChange={(evt: any) => {
               const {
                 target: { value },
@@ -122,8 +180,9 @@ export const AddDrug: FC<props> = ({
             classNamePrefix="comp-select"
             className="comp-details-input"
             options={drugs}
-            enableValidation={false}
+            enableValidation={true}
             placeholder={"Select"}
+            errorMessage={drugNameErrorMessage}
             onChange={(evt) => {
               updateModel("drug", evt?.value);
             }}
@@ -140,7 +199,8 @@ export const AddDrug: FC<props> = ({
             type="input"
             placeholder="Example"
             inputClass="comp-form-control"
-            value={amountUsed === -1 ? "" : amountUsed}
+            value={amountUsed <= -1 ? "" : amountUsed}
+            error={amountUsedErrorMessage}
             onChange={(evt: any) => {
               const {
                 target: { value },
@@ -158,8 +218,9 @@ export const AddDrug: FC<props> = ({
             classNamePrefix="comp-select"
             className="comp-details-input"
             options={drugUseMethods}
-            enableValidation={false}
+            enableValidation={true}
             placeholder={"Select"}
+            errorMessage={injectionMethodErrorMessage}
             onChange={(evt) => {
               updateModel("injectionMethod", evt?.value);
             }}

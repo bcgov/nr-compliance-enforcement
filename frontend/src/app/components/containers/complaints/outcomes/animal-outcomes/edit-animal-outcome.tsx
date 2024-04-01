@@ -26,6 +26,8 @@ import { DrugAuthorization as AddDrugAuthorization } from "./drug-authorization"
 import { from } from "linq-to-typescript";
 import { BsPlusCircle } from "react-icons/bs";
 import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { takeCoverage } from "v8";
+import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 
 
 export interface EditAnimalOutcomeProps {
@@ -66,8 +68,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [drugs, setDrugs] = useState<DrugUsed[]>(animalOutcomeItemData?.drugs ?? []);
   const [drugAuthorization, setDrugAuthorization] = useState<DrugAuthorization | undefined>(animalOutcomeItemData?.drugAuthorization);
   const [outcome, setOutcome] = useState<Option | undefined>(animalOutcomeItemData?.outcome);
-  const [date, setDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
-  const [officer, setOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
+  const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
+  const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
+
+  const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>((outcome && !outcomeOfficer) ? "Required" : "");
+  const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>((outcome && !outcomeDate) ? "Required" : "");
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
@@ -85,8 +90,8 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         drugs,
         drugAuthorization,
         outcome,
-        officer,
-        date
+        officer: outcomeOfficer,
+        date: outcomeDate
       }
       if(editMode) {
         const newAnimalOutcomeArr = animalOutcomeData?.map((animalOutcome,i) => {
@@ -122,6 +127,21 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
     }
   }
+
+  const handleOutcomeChange = (input: Option | null) => {
+    setOutcome(input ?? undefined);
+    setOutcomeOfficerErrorMessage(((input ?? undefined) && !outcomeOfficer) ? "Required" : "");
+    setOutcomeDateErrorMessage(((input ?? undefined) && !outcomeOfficer) ? "Required" : "");
+  };
+
+  const handleOutcomeOfficerChange = (input: Option | null) => {
+    setOutcomeOfficer(input ?? undefined);
+    setOutcomeOfficerErrorMessage((outcome && !(input ?? undefined)) ? "Required" : "");
+  };
+  const handleOutcomeDateChange = (input: Date) => {
+    setOutcomeDate(input ?? undefined);
+    setOutcomeDateErrorMessage((outcome && !(input ?? undefined)) ? "Required" : "");
+  };
 
   const renderEarTags = () => {
     
@@ -253,12 +273,73 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
 
     let isValid = true;
 
-    if (!species || !age || !sex || !threatLevel || !conflictHistory) {
+    if (!species) {
       isValid = false;
+      
     }
 
-    if (!outcome || !officer || !date) {
-      isValid = false;
+    if(tags.length > 0)
+    {
+      from(tags)
+            .orderBy((item) => item.id)
+            .toArray()
+            .map((item) => {
+            if(!item.number)
+            {
+              isValid = false;
+            }
+          })
+    }
+
+    if (drugs.length > 0)
+    {
+      from(drugs)
+            .orderBy((item) => item.id)
+            .toArray()
+            .map((item) => {
+            if(!item.vial)
+            {
+              isValid = false;
+            }
+            if(!item.drug)
+            {
+              isValid = false;
+            }
+            if(!item.amountUsed)
+            {
+              isValid = false;
+            }
+            if(!item.injectionMethod)
+            {
+              isValid = false;
+            }
+      });
+      if(!drugAuthorization)
+      {
+        isValid = false;
+      }
+      else
+      {
+        if(!drugAuthorization.officer)
+        {
+          isValid = false;
+        }
+        else if(!drugAuthorization.date)
+        {
+          isValid = false;
+        }
+      }
+    }
+
+    if (outcome) {
+      if(!outcomeOfficer)
+      {
+        isValid = false;
+      }
+      if(!outcomeDate)
+      {
+        isValid = false;
+      }
     }
     return isValid;
   };
@@ -378,7 +459,9 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               options={outcomes}
               enableValidation={false}
               placeholder={"Select"}
-              onChange={(outcome: any) => setOutcome(outcome)}
+              onChange={(evt) => {
+                handleOutcomeChange(evt);
+              }}
               defaultOption={animalOutcomeItemData?.outcome}
             />
           </Col>
@@ -393,9 +476,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
                 className="comp-details-input"
                 options={officers}
                 placeholder="Select"
-                enableValidation={false}
-                onChange={(officer: any) => setOfficer(officer)}
-                defaultOption={animalOutcomeItemData?.officer}
+                enableValidation={true}
+                errorMessage={outcomeOfficerErrorMessage}
+                onChange={(evt) => {handleOutcomeOfficerChange(evt)}}
+                value={outcomeOfficer}
               />
             </div>
           </Col>
@@ -405,15 +489,16 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
                 Date
               </label>
-              <DatePicker
-                id="equipment-day-set"
-                showIcon
-                maxDate={new Date()}
-                onChange={(date: Date) => setDate(date)}
-                selected={date}
-                dateFormat="yyyy-MM-dd"
-                wrapperClassName="comp-details-edit-calendar-input"
-              />
+              <ValidationDatePicker
+                  id="equipment-day-set"
+                  maxDate={new Date()}
+                  onChange={(date: Date) => handleOutcomeDateChange(date)}
+                  selectedDate={outcomeDate}
+                  classNamePrefix="comp-details-edit-calendar-input" 
+                  className={"comp-details-input"} 
+                  placeholder={"Select"} 
+                  errMsg={outcomeDateErrorMessage}            
+                  />
             </div>
           </Col>
         </Row>

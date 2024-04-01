@@ -341,6 +341,7 @@ export const HWCRComplaintAssessment: FC = () => {
                       className="comp-details-edit-calendar-input" // Adjust class as needed
                       classNamePrefix="comp-select" // Adjust class as needed
                       errMsg={assessmentDateErrorMessage} // Pass error message if any
+                      maxDate={new Date()}
                     />
                   ) : (
                     formatDate(`${selectedDate}`)
