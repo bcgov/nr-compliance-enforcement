@@ -51,7 +51,7 @@ export const AddDrug: FC<props> = ({
   const [injectionMethodErrorMessage, setInjectionMethodErrorMessage] = useState(!injectionMethod ? "Required" : "");
 
   function isPositiveInt(str: string) {
-    var n = Math.floor(Number(str));
+    const n = Math.floor(Number(str));
     return (str !== "") ? n !== Infinity && String(n) === str && n >= 0 : true;
 }
 

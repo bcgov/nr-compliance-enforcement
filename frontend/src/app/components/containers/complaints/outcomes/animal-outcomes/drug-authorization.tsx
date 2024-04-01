@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
-import DatePicker from "react-datepicker";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectComplaintAssignedBy } from "../../../../../store/reducers/complaints";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";

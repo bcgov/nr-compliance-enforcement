@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import DatePicker from "react-datepicker";
 import { ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -26,7 +25,6 @@ import { DrugAuthorization as AddDrugAuthorization } from "./drug-authorization"
 import { from } from "linq-to-typescript";
 import { BsPlusCircle } from "react-icons/bs";
 import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
-import { takeCoverage } from "v8";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 
 
@@ -314,20 +312,14 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               isValid = false;
             }
       });
-      if(!drugAuthorization)
+      
+      if(!drugAuthorization?.officer)
       {
         isValid = false;
       }
-      else
+      if(!drugAuthorization?.date)
       {
-        if(!drugAuthorization.officer)
-        {
-          isValid = false;
-        }
-        else if(!drugAuthorization.date)
-        {
-          isValid = false;
-        }
+        isValid = false;
       }
     }
 
