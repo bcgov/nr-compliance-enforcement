@@ -69,8 +69,9 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
   const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
 
-  const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>((outcome && !outcomeOfficer) ? "Required" : "");
-  const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>((outcome && !outcomeDate) ? "Required" : "");
+  const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>((outcome && !(outcomeOfficer ?? undefined)) ? "Required" : "");
+  const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>((outcome && !(outcomeDate ?? undefined)) ? "Required" : "");
+
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
@@ -129,7 +130,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const handleOutcomeChange = (input: Option | null) => {
     setOutcome(input ?? undefined);
     setOutcomeOfficerErrorMessage(((input ?? undefined) && !outcomeOfficer) ? "Required" : "");
-    setOutcomeDateErrorMessage(((input ?? undefined) && !outcomeOfficer) ? "Required" : "");
+    setOutcomeDateErrorMessage(((input ?? undefined) && !outcomeDate) ? "Required" : "");
   };
 
   const handleOutcomeOfficerChange = (input: Option | null) => {
@@ -137,7 +138,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     setOutcomeOfficerErrorMessage((outcome && !(input ?? undefined)) ? "Required" : "");
   };
   const handleOutcomeDateChange = (input: Date) => {
-    setOutcomeDate(input ?? undefined);
+    setOutcomeDate(input);
     setOutcomeDateErrorMessage((outcome && !(input ?? undefined)) ? "Required" : "");
   };
 
