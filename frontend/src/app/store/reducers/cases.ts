@@ -244,7 +244,7 @@ export const getEquipment =
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
 
         const updatedEquipmentData = await parseResponse(res, officers);
-        //dispatch(setEquipment({ equipment: updatedEquipmentData }));
+        dispatch(setEquipment({ equipment: updatedEquipmentData }));
 
       });
     };

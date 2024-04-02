@@ -30,18 +30,12 @@ export class CaseFileService {
         activeIndicator
       }
     },
-  }
-  `;
-
-  private caseFileEquipmentQueryFields: string = `
-  {
-    caseIdentifier
-    leadIdentifier
     equipmentDetails {
-      equipmentCode
-      equipmentLocationDesc
-      equipmentGeometryPoint
-      activeInd
+      actionEquipmentTypeCode
+      actionEquipmentTypeActiveIndicator
+      address
+      xCoordinate
+      yCoordinate
       actions {
         actor
         date
@@ -53,6 +47,7 @@ export class CaseFileService {
     },
   }
   `;
+
   constructor(
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
@@ -139,7 +134,7 @@ export class CaseFileService {
     const mutationQuery = {
       query: `mutation CreateEquipment($createEquipmentInput: CreateEquipmentInput!) {
         createEquipment(createEquipmentInput: $createEquipmentInput)
-          ${this.caseFileEquipmentQueryFields}
+          ${this.caseFileQueryFields}
       }`,
       variables: model
     };

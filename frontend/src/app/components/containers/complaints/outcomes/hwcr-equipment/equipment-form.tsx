@@ -27,7 +27,7 @@ import { Equipment } from "../../../../../types/outcomes/equipment";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { selectEquipment, upsertEquipment } from "../../../../../store/reducers/cases";
+import { getEquipment, selectEquipment, upsertEquipment } from "../../../../../store/reducers/cases";
 
 export interface EquipmentFormProps {
   isInEditMode: boolean;
