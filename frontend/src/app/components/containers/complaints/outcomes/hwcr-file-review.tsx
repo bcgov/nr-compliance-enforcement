@@ -3,18 +3,18 @@ import { Button } from "react-bootstrap";
 import { CompSelect } from "../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
-import { profileDisplayName, profileInitials } from "../../../../store/reducers/app";
-import { createReview } from "../../../../store/reducers/cases";
+import { openModal, profileDisplayName, profileInitials } from "../../../../store/reducers/app";
+import { createReview, updateReview } from "../../../../store/reducers/cases";
 import { formatDate } from "../../../../common/methods";
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 import { selectComplaint } from "../../../../store/reducers/complaints";
+import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 
 export const HWCRFileReview: FC = () => {
   const REQUEST_REVIEW_STATE = 0;
-  const COMPLETE_REVIEW_STATE = 0;
-  const EDIT_STATE = 2;
-  const DISPLAY_STATE = 3;
+  const EDIT_STATE = 1;
+  const DISPLAY_STATE = 2;
   const dispatch = useAppDispatch();
   const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
   const [reviewRequired, setReviewRequired] = useState<boolean>(false);
@@ -34,6 +34,10 @@ export const HWCRFileReview: FC = () => {
     if(reviewCompleteAction) setReviewCompleted(true);
   },[reviewCompleteAction]);
 
+  useEffect(() => {
+    if(!reviewRequired) setReviewCompleted(false)
+  }, [reviewRequired])
+
   const handleStateChange = (value: number) => {
     setComponentState(value);
   };
@@ -41,7 +45,12 @@ export const HWCRFileReview: FC = () => {
   const handleFileReviewSave = () => {
     if(complaintData) {
       if(!reviewCompleted) {
-        dispatch(createReview(complaintData.id, reviewRequired, null))
+        if(componentState === REQUEST_REVIEW_STATE) {
+          dispatch(createReview(complaintData.id, reviewRequired, null))
+        }
+        else {
+          dispatch(updateReview(complaintData.id, reviewRequired));
+        }
       }
       else {
         const completeAction = {
@@ -52,26 +61,31 @@ export const HWCRFileReview: FC = () => {
         dispatch(createReview(complaintData.id, reviewRequired, completeAction))
       }
     }
-    if(componentState === EDIT_STATE) setComponentState(DISPLAY_STATE);
-    if(componentState === REQUEST_REVIEW_STATE) setComponentState(DISPLAY_STATE);
+    if(componentState === EDIT_STATE && (reviewRequired || reviewCompleted)) 
+      setComponentState(DISPLAY_STATE);
   };
-
+  
   const handleFileReviewCancel = () => {
-    if(componentState === EDIT_STATE) {
-      setReviewCompleted(false);
-    }
-    setReviewRequired(isReviewRequired);
-    setComponentState(DISPLAY_STATE);
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: () => {
+            setReviewRequired(isReviewRequired);
+            if(componentState === EDIT_STATE) {
+              reviewCompleteAction? setReviewCompleted(true): setReviewCompleted(false);
+              if(isReviewRequired) setComponentState(DISPLAY_STATE);
+            }
+          },
+        },
+      })
+    );
   };
 
   const handleReviewRequiredClick = () => {
-    if(!reviewRequired) {
-      setComponentState(COMPLETE_REVIEW_STATE);
-    }
-    else {
-      setComponentState(REQUEST_REVIEW_STATE);
-      setReviewCompleted(false);
-    }
     setReviewRequired(!reviewRequired);
   };
 
@@ -86,7 +100,7 @@ export const HWCRFileReview: FC = () => {
     <div className="comp-outcome-report-block">
       <h6>File review</h6>
       <div className="comp-outcome-report-file-review">
-        {(componentState === REQUEST_REVIEW_STATE || componentState === COMPLETE_REVIEW_STATE || componentState === EDIT_STATE) && (
+        {(componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE) && (
           <div className="comp-details-edit-container">
             <div className="comp-details-label-input-pair" id="review-required-file-review-pair-id">
               <label className="form-check-label" htmlFor="review-required">Review required</label>
@@ -99,15 +113,15 @@ export const HWCRFileReview: FC = () => {
             </div>
           </div>
         )}
-        {(reviewRequired && (componentState === COMPLETE_REVIEW_STATE || componentState === EDIT_STATE)) && (
+        {(reviewRequired && (componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE)) && (
           <div className="comp-details-edit-container">
             <div className="comp-details-label-input-pair" id="review-complete-file-review-id">
               <label className="form-check-label" htmlFor="review-complete">Review complete</label>
-              <input className="form-check-input" id="review-complete" type="checkbox" checked={reviewCompleted} onClick={handleReviewCompleteClick} />
+              <input className="form-check-input" id="review-complete" type="checkbox" checked={reviewCompleted} onChange={handleReviewCompleteClick} />
             </div>
           </div>
         )}
-        {componentState === EDIT_STATE && reviewCompleted && (
+        {(componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE) && reviewRequired && reviewCompleted && (
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair" id="file-review-pair-id">

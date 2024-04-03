@@ -13,6 +13,7 @@ import { Prevention } from "../../types/outcomes/prevention";
 import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
 import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
+import { ToggleError, ToggleSuccess } from "../../common/toast";
 
 const initialState: CasesState = {
   caseId: undefined,
@@ -497,6 +498,37 @@ export const createReview = (complaintId: string, isReviewRequired: boolean, rev
       if(res.reviewComplete){
         dispatch(setReviewComplete(res.reviewComplete));
       }
+      ToggleSuccess('File review has been updated')
+    }
+    else {
+      ToggleError('Unable to update file review')
+    }
+  });
+}
+
+export const updateReview = (complaintId: string, isReviewRequired: boolean): AppThunk => async (dispatch, getState) => {
+  const {
+    app: { profile },
+    cases: { caseId }
+  } = getState();
+  let reviewInput = {
+    reviewInput: {
+      leadIdentifier: complaintId,
+      caseIdentifier: caseId, 
+      userId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      isReviewRequired
+    } as any
+  };
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
+  await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    if (res) {
+      dispatch(setIsReviewedRequired(res.isReviewRequired));
+      ToggleSuccess('File review has been updated')
+    }
+    else {
+      ToggleError('Unable to update file review')
     }
   });
 }
