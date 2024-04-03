@@ -20,8 +20,7 @@ import { Community } from "../../types/app/code-tables/community";
 import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { Justification } from "../../types/app/code-tables/justification";
-import { AssessmentType } from "../../types/app/code-tables/assesment-type";
-import { PreventEducationAction } from "../../types/app/code-tables/prevent-education-action";
+import { AssessmentType } from "../../types/app/code-tables/assessment-type";
 import { Sex } from "../../types/app/code-tables/sex";
 import { Age } from "../../types/app/code-tables/age";
 import { ThreatLevel } from "../../types/app/code-tables/threat-level";
@@ -32,6 +31,7 @@ import { Drug } from "../../types/app/code-tables/drug";
 import { DrugMethod } from "../../types/app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining-outcome";
 import { Equipment } from "../../types/app/code-tables/equipment";
+import { PreventionType } from "../../types/app/code-tables/prevention-type";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -48,7 +48,7 @@ const initialState: CodeTableState = {
   "reported-by": [],
   justification: [],
   "assessment-type": [],
-  "prevent-education-action": [],
+  "prevention-type": [],
   sex: [],
   age: [],
   "threat-level": [],
@@ -81,7 +81,7 @@ export const codeTableSlice = createSlice({
 
 export const { setCodeTable } = codeTableSlice.actions;
 
-export const fetchCodeTables = (): AppThunk => async (dispatch) => {
+export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
   const state = store.getState();
   const {
     codeTables: {
@@ -99,7 +99,7 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       "reported-by": reportedBy,
       justification,
       "assessment-type": assessmentType,
-      "prevent-education-action": preventEducationAction,
+      "prevention-type": preventionAction,
       sex,
       age,
       "threat-level": threatLevels,
@@ -166,8 +166,8 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(assessmentType).any()) {
       dispatch(fetchAssessmentTypeCodes());
     }
-    if (!from(preventEducationAction).any()) {
-      dispatch(fetchPreventEducationAction());
+    if (!from(preventionAction).any()) {
+      dispatch(fetchPreventionAction());
     }
     if (!from(sex).any()) {
       dispatch(fetchSexes());
@@ -201,6 +201,44 @@ export const fetchCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchEquipment());
     }
   } catch (error) {}
+};
+
+export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
+  try {
+    dispatch(fetchAgencies());
+    dispatch(fetchComplaintStatus());
+    dispatch(fetchViolations());
+    dispatch(fetchSpecies());
+    dispatch(fetchNatureOfComplaints());
+    dispatch(fetchAttractants());
+    dispatch(fetchRegions());
+    dispatch(fetchZones());
+    dispatch(fetchAreaCodes());
+    dispatch(fetchComplaintTypeCodes());
+    dispatch(fetchReportedByCodes());
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
+  try {
+    dispatch(fetchJustificationCodes());
+    dispatch(fetchAssessmentTypeCodes());
+    dispatch(fetchPreventionAction());
+    dispatch(fetchSexes());
+    dispatch(fetchAges());
+    dispatch(fetchThreatLevels());
+    dispatch(fetchConfictHistories());
+    dispatch(fetchEars());
+    dispatch(fetchWildlifeComplaintOutcomes());
+    dispatch(fetchDrugs());
+    dispatch(fetchDrugUseMethods());
+    dispatch(fetchRemainingDrugUse());
+    dispatch(fetchEquipment());
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const fetchAgencies = (): AppThunk => async (dispatch) => {
@@ -379,14 +417,14 @@ export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchPreventEducationAction = (): AppThunk => async (dispatch) => {
+export const fetchPreventionAction = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENTION_TYPE}`
   );
 
-  const response = await get<Array<PreventEducationAction>>(dispatch, parameters);
+  const response = await get<Array<PreventionType>>(dispatch, parameters);
   if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.PREVENT_EDUCATION_ACTION, data: response };
+    const payload = { key: CODE_TABLE_TYPES.PREVENTION_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -615,13 +653,12 @@ export const selectYesNoCodeDropdown = (): Array<Option> => {
   return data;
 };
 
-export const selectPreventEducationDropdown = (state: RootState): Array<Option> => {
+export const selectPreventionTypeCodeDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "prevent-education-action": action },
+    codeTables: { "prevention-type": preventionType },
   } = state;
-
-  const data = action.map(({ action, longDescription }) => {
-    const item: Option = { label: longDescription, value: action };
+  const data = preventionType.map(({ preventionType, longDescription }) => {
+    const item: Option = { label: longDescription, value: preventionType };
     return item;
   });
   return data;

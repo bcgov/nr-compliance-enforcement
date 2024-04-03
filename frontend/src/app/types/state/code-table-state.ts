@@ -14,8 +14,8 @@ import { Zone } from "../app/code-tables/zone";
 import { Community } from "../app/code-tables/community";
 import { ReportedBy } from "../app/code-tables/reported-by";
 import { Justification } from "../app/code-tables/justification";
-import { AssessmentType } from "../app/code-tables/assesment-type";
-import { PreventEducationAction } from "../app/code-tables/prevent-education-action";
+import { AssessmentType } from "../app/code-tables/assessment-type";
+import { PreventionType } from "../app/code-tables/prevention-type";
 import { Sex } from "../app/code-tables/sex";
 import { Age } from "../app/code-tables/age";
 import { ThreatLevel } from "../app/code-tables/threat-level";
@@ -46,7 +46,7 @@ export interface CodeTableState {
     | Array<ReportedBy>
     | Array<Justification>
     | Array<AssessmentType>
-    | Array<PreventEducationAction>
+    | Array<PreventionType>
     | Array<Sex>
     | Array<Age>
     | Array<ThreatLevel>
@@ -72,7 +72,7 @@ export interface CodeTableState {
   "reported-by": Array<ReportedBy>;
   justification: Array<Justification>;
   "assessment-type": Array<AssessmentType>;
-  "prevent-education-action": Array<PreventEducationAction>;
+  "prevention-type": Array<PreventionType>;
   sex: Array<Sex>
   age: Array<Age>,
   "threat-level": Array<ThreatLevel>,

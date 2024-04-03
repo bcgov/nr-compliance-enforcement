@@ -47,6 +47,21 @@ export class CaseFileController {
         @Token() token,
         @Body() model: CaseFileDto): Promise<CaseFileDto> {
         return await this.service.updateEquipment(token, model);
+
+          @Post("/createPrevention")
+    @Roles(Role.COS_OFFICER)
+    async createPrevention(
+        @Token() token,
+        @Body() model: CaseFileDto): Promise<CaseFileDto> {
+        return await this.service.createPrevention(token, model);
+    }
+
+    @Patch("/updatePrevention")
+    @Roles(Role.COS_OFFICER)
+    async updatePrevention(
+        @Token() token,
+        @Body() model: CaseFileDto): Promise<CaseFileDto> {
+        return await this.service.updatePrevention(token, model);
     }
 
     @Get("/:complaint_id")

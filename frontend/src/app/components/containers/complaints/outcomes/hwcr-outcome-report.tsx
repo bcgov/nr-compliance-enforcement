@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
-import { HWCRPreventionEducation } from "./hwcr-prevention-education";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCROutcomeByAnimal } from "./hwcr-outcome-by-animal";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { HWCRSupplementalNotes } from "./hwcr-supplemental-notes";
 import { HWCRFileAttachments } from "./hwcr-file-attachments";
+import { HWCRComplaintPrevention } from "./hwcr-prevention-education";
 
 export const HWCROutcomeReport: FC = () => {  
     return (
@@ -15,7 +15,7 @@ export const HWCROutcomeReport: FC = () => {
             Outcome report
         </div>
         <HWCRComplaintAssessment/>
-        <HWCRPreventionEducation/>
+        <HWCRComplaintPrevention/>
         <HWCREquipment/>
         <HWCROutcomeByAnimal/>
         <HWCRSupplementalNotes/>
