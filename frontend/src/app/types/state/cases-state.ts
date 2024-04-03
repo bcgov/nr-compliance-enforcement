@@ -11,5 +11,5 @@ export interface CasesState {
     date: Date
     actionCode: string
     actionId?: string
-  } | undefined | null
+  } | null
 }
