@@ -16,14 +16,20 @@ export const HWCRFileReview: FC = () => {
   const EDIT_STATE = 1;
   const DISPLAY_STATE = 2;
   const dispatch = useAppDispatch();
-  const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
-  const [reviewRequired, setReviewRequired] = useState<boolean>(false);
-  const [reviewCompleted, setReviewCompleted] = useState<boolean>(false);
-
   const complaintData = useAppSelector(selectComplaint);
   const personGuid = useAppSelector(state => state.app.profile.personGuid);
   const isReviewRequired = useAppSelector(state => state.cases.isReviewRequired);
   const reviewCompleteAction = useAppSelector(state => state.cases.reviewComplete);
+  const { officers } = useAppSelector(state => state.officers);
+  const initials = useAppSelector(profileInitials);
+  const displayName = useAppSelector(profileDisplayName);
+
+  const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
+  const [reviewRequired, setReviewRequired] = useState<boolean>(false);
+  const [reviewCompleted, setReviewCompleted] = useState<boolean>(false);
+  const [officerInitials, setOfficerInitials] = useState<string>(initials);
+  const [officerName, setOfficerName] = useState<string>(displayName);
+  const [reviewCompleteDate, setReviewCompleteDate] = useState<Date>(new Date());
 
   useEffect(() => {
     setReviewRequired(isReviewRequired);
@@ -31,7 +37,22 @@ export const HWCRFileReview: FC = () => {
   },[isReviewRequired]);
 
   useEffect(() => {
-    if(reviewCompleteAction) setReviewCompleted(true);
+    if(reviewCompleteAction) {
+      let initials = "UN";
+      let displayName = "Unknown";
+      if(officers) {
+        const officer = officers.filter((person) => person.person_guid.person_guid === reviewCompleteAction.actor);
+        if(officer.length > 0) {
+          const { person_guid: { first_name: givenName, last_name: surName }} = officer[0];
+          initials = `${givenName?.substring(0, 1)}${surName?.substring(0, 1)}`
+          displayName = `${givenName} ${surName}`
+          setOfficerInitials(initials);
+          setOfficerName(displayName);
+          setReviewCompleteDate(reviewCompleteAction.date);
+        }
+      }
+      setReviewCompleted(true)
+    };
   },[reviewCompleteAction]);
 
   useEffect(() => {
@@ -92,9 +113,6 @@ export const HWCRFileReview: FC = () => {
   const handleReviewCompleteClick = () => {
     setReviewCompleted(!reviewCompleted);
   };
-
-  const initials = useAppSelector(profileInitials);
-  const displayName = useAppSelector(profileDisplayName);
 
   return (
     <div className="comp-outcome-report-block">
@@ -207,27 +225,26 @@ export const HWCRFileReview: FC = () => {
               {reviewCompleted && 
                 <div className="comp-details-edit-container">
                     <div className="comp-details-edit-column">
-                        <div className="comp-details-label-div-pair">
-                            <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">Officer</label>
-                            <div
-                                data-initials-sm={initials}
-                                className="comp-orange-avatar-sm comp-details-inner-content"
-                            >
-                                <span id="comp-review-required-officer" className="comp-padding-left-xs">{displayName}</span>
-                            </div>
+                      <div className="comp-details-label-div-pair">
+                        <label className="comp-details-inner-content-label" htmlFor="comp-review-required-officer">Officer</label>
+                        <div
+                          data-initials-sm={officerInitials}
+                          className="comp-orange-avatar-sm comp-details-inner-content"
+                        >
+                          <span id="comp-review-required-officer" className="comp-padding-left-xs">{officerName}</span>
                         </div>
+                      </div>
                     </div>
-                    <div className="comp-details-edit-column" id="complaint-file-review-date-div">
-                        <div className="comp-details-label-div-pair">
-                            <label className="comp-details-inner-content-label" htmlFor="file-review-date">Date</label>
-                            <div
-                                className="bi comp-margin-right-xxs comp-details-inner-content"
-                                id="file-review-date"
-                            >{formatDate(new Date().toString())}
-                            </div>
+                    <div className="comp-details-edit-column comp-details-right-column" id="complaint-file-review-date-div">
+                      <div className="comp-details-label-div-pair">
+                        <label className="comp-details-inner-content-label" htmlFor="file-review-date">Date</label>
+                        <div
+                          className="bi comp-margin-right-xxs comp-details-inner-content"
+                          id="file-review-date"
+                        >{formatDate(new Date(reviewCompleteDate).toString())}
                         </div>
+                      </div>
                     </div>
-                    <div className="supporting-width"></div>
                 </div>
               }
             </div>

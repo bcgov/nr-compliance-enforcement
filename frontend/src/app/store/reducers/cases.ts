@@ -14,6 +14,8 @@ import { CreatePreventionInput } from "../../types/app/case-files/prevention/cre
 import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
+import { ReviewInput } from "../../types/app/case-files/review-input";
+import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
 
 const initialState: CasesState = {
   caseId: undefined,
@@ -468,7 +470,7 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
   }
 }
 
-export const createReview = (complaintId: string, isReviewRequired: boolean, reviewComplete: any ): AppThunk => async (dispatch, getState) => {
+export const createReview = (complaintId: string, isReviewRequired: boolean, reviewComplete: ReviewCompleteAction | null ): AppThunk => async (dispatch, getState) => {
   const {
     app: { profile },
     cases: { caseId }
@@ -476,12 +478,12 @@ export const createReview = (complaintId: string, isReviewRequired: boolean, rev
   let reviewInput = {
     reviewInput: {
       leadIdentifier: complaintId,
-      caseIdentifier: caseId, 
+      caseIdentifier: caseId,
       userId: profile.idir_username,
       agencyCode: "COS",
       caseCode: "HWCR",
       isReviewRequired
-    } as any
+    } as ReviewInput
   };
 
   if(reviewComplete) {
@@ -514,12 +516,12 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
   let reviewInput = {
     reviewInput: {
       leadIdentifier: complaintId,
-      caseIdentifier: caseId, 
+      caseIdentifier: caseId,
       userId: profile.idir_username,
       agencyCode: "COS",
       caseCode: "HWCR",
       isReviewRequired
-    } as any
+    } as ReviewInput
   };
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
   await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
