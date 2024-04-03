@@ -45,7 +45,7 @@ export class CaseFileService {
       note 
       action { 
         actor
-        action
+        actionCode
         date
       }
     }
@@ -149,15 +149,19 @@ export class CaseFileService {
  private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
     Promise<any> => {
     if (result?.response?.data?.data) {
+      console.log("error1")
       const caseFileDto = result.response.data.data;
       return caseFileDto;
     } else if (result?.response?.data?.errors) {
+      console.log("error2")
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
       return null;
     }
     else if (result?.error) {
+      console.log("error3")
       this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
     } else {
+      console.log("error4")
       this.logger.error(`Unknwown error occurred during web request`);
       return null;
     }
@@ -167,7 +171,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
         createNote(input: $input) {
-          note { note, action { actor,date,action } }
+          note { note, action { actor,date,actionCode } }
         }
       }`,
       variables: { input: model },
@@ -181,7 +185,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
         updateNote(input: $input) {
-          note { note, action { actor,date,action } }
+          note { note, action { actor,date,actionCode } }
         }
       }`,
       variables: { input: model },
