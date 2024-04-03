@@ -5,15 +5,62 @@ import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
-import { Equipment } from "../../../../../types/outcomes/equipment";
+import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
+
+interface EquipmentDetailsWithVariables {
+  actionEquipmentTypeCode: string;
+  actionEquipmentTypeShortDescription?: string;
+  actionEquipmentTypeLongDescription?: string;
+  actionEquipmentTypeActiveIndicator: boolean;
+  address?: string;
+  xCoordinate: string;
+  yCoordinate: string;
+  setBy?: string;
+  setDate?: Date; 
+  removedBy?: string;
+  removedDate?: Date;
+}
 
 interface EquipmentItemProps {
   isInEditMode: boolean
-  equipment: Equipment
+  equipment: EquipmentDetailsDto
   indexItem: number
   handleDelete: (param: any) => void | null
   setIsInEditMode: (param: any) => void | null
   setEditEquipment: (param: any) => void | null
+}
+
+function processEquipmentDetails(details: EquipmentDetailsDto): EquipmentDetailsWithVariables {
+  const result: EquipmentDetailsWithVariables = { ...details }; // Copy original details
+  
+  // Initialize variables
+  let setBy: string | undefined;
+  let setDate: Date | undefined;
+  let removedBy: string | undefined;
+  let removedDate: Date | undefined;
+
+  // Iterate through actions
+  details.actions?.forEach(action => {
+    if (action.actionCode === "SETEQUIPMT") {
+      setBy = action.actor;
+      setDate = new Date(action.date);
+    } else if (action.actionCode === "REMEQUIPMT") {
+      removedBy = action.actor;
+      removedDate = new Date(action.date);
+    }
+  });
+
+  // Assign variables to result
+  if (setBy !== undefined && setDate !== undefined) {
+    result.setBy = setBy;
+    result.setDate = setDate;
+  }
+  if (removedBy !== undefined && removedDate !== undefined) {
+    result.removedBy = removedBy;
+    result.removedDate = removedDate;
+  }
+
+  return result;
 }
 
 export const EquipmentItem: FC<EquipmentItemProps> = ({ 
@@ -24,16 +71,18 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
   handleDelete,
   indexItem
 }) => {
-  const isActive = !equipment.dateRemoved
+  const isActive = !equipment.actionEquipmentTypeActiveIndicator
   const [showModal, setShowModal] = useState(false);
 
-  const handleEdit = (equipment: Equipment) => {
+  const handleEdit = (equipment: EquipmentDetailsDto) => {
     if(!isInEditMode) {
-      equipment.isEdit = true;
+      //equipment.isEdit = true;
       setIsInEditMode(true);
       setEditEquipment(equipment);
     }
   }
+
+  const processedEquipment = processEquipmentDetails(equipment);
   
   return (
     <>
@@ -52,7 +101,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
         {isActive && <div className="status-bar"></div>}
         <div className="equipment-item-header">
           <div className="title">
-            <h6>{equipment.type?.label}</h6>
+            <h6>{equipment.actionEquipmentTypeShortDescription}</h6>
             {isActive && <div className="badge">Active</div>}
           </div>
           <div>
@@ -101,14 +150,14 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
               <div className="label">Set by</div>
               <div className="comp-details-content">
                 <div
-                  data-initials-sm={getAvatarInitials(equipment.officerSet?.label ?? '')}
+                  data-initials-sm={getAvatarInitials(processedEquipment.setBy ?? '')}
                   className="comp-pink-avatar-sm"
                 >
                   <span
                     id="comp-details-assigned-officer-name-text-id"
                     className="comp-padding-left-xs"
                   >
-                    {equipment.officerSet?.label}
+                    {equipment?.actions? equipment?.actions[0].actor : null}
                   </span>
                 </div>
               </div>
@@ -118,7 +167,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
             <div className="equipment-item-content">
               <div className="label">Set date</div>
               <div className="value" id="">
-                {formatDate(equipment.dateSet?.toString())}
+                {formatDate(processedEquipment.setDate?.toString())}
               </div>
             </div>
           </Col>
@@ -130,14 +179,14 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
                 <div className="label">Removed by</div>
                 <div className="comp-details-content">
                   <div
-                    data-initials-sm={getAvatarInitials(equipment.officerRemoved?.label ?? '')}
+                    data-initials-sm={getAvatarInitials(processedEquipment.removedBy ?? '')}
                     className="comp-pink-avatar-sm"
                   >
                     <span
                       id="comp-details-assigned-officer-name-text-id"
                       className="comp-padding-left-xs"
                     >
-                      {equipment.officerRemoved?.label}
+                      {processedEquipment.removedBy}
                     </span>
                   </div>
                 </div>
@@ -147,7 +196,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
               <div className="equipment-item-content">
                 <div className="label">Removed date</div>
                 <div className="value" id="">
-                  {formatDate(equipment.dateRemoved?.toString())}
+                  {formatDate(processedEquipment.removedDate?.toString())}
                 </div>
               </div>
             </Col>

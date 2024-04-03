@@ -27,7 +27,7 @@ import { Equipment } from "../../../../../types/outcomes/equipment";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { getEquipment, selectEquipment, upsertEquipment } from "../../../../../store/reducers/cases";
+import { upsertEquipment } from "../../../../../store/reducers/cases";
 
 export interface EquipmentFormProps {
   isInEditMode: boolean;
@@ -72,7 +72,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
-  const equipmentList = useAppSelector(selectEquipment);
 
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
@@ -235,15 +234,11 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
           return equipment;
         }
       });
-      if (setEquipmentData) {
-        setEquipmentData(newEquipmentArr);
-      }
+
       setIsInEditMode(false);
     }
     // adding new equipment
-    if (!isInEditMode && setEquipmentData && setShowEquipmentForm) {
-      
-      setEquipmentData((prevState: Array<Equipment>) => [...prevState, newEquipment]);
+    if (!isInEditMode && setShowEquipmentForm) {
       dispatch(upsertEquipment(id, newEquipment));
       ToggleSuccess(`Equipment has been saved`);
       setShowEquipmentForm(false);

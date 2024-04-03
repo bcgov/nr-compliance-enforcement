@@ -1,4 +1,4 @@
-import { FC, useState, memo } from "react";
+import { FC, useState, memo, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
@@ -6,36 +6,44 @@ import { EquipmentItem } from "./equipment-item";
 
 import "../../../../../../assets/sass/hwcr-equipment.scss"
 import { Equipment } from "../../../../../types/outcomes/equipment";
+import { useParams } from "react-router-dom";
+import { getEquipment, selectEquipment } from "../../../../../store/reducers/cases";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 
 export const HWCREquipment: FC = memo(() => {
-  const [equipmentData, setEquipmentData] = useState<Array<Equipment>>([]);
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
   const [isInEditMode, setIsInEditMode] = useState<boolean>(false);
   const [editEquipment, setEditEquipment] = useState<Equipment|null>(null);
+  const { id = "" } = useParams<{ id: string; complaintType: string }>();
+  const dispatch = useAppDispatch();
+  const equipmentList = useAppSelector(selectEquipment);
+  
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getEquipment(id));
+    }
+  }, [id, dispatch]);
 
   const handleDelete = (indexItem: number) => {
-    equipmentData.splice(indexItem,1);
-    setEquipmentData([...equipmentData]);
-  }
+
+  }  
 
   return (
     <div className="comp-outcome-report-block">
       <h6>Equipment</h6>
-      {equipmentData && equipmentData.length > 0 ? equipmentData.map((equipment,indexItem)=>
-        isInEditMode && equipment.isEdit? 
+      {equipmentList && equipmentList.length > 0 ? equipmentList.map((equipment,indexItem)=>
+          isInEditMode ?
           <EquipmentForm
-            key={equipment.id}
+            key={indexItem}
             isInEditMode={isInEditMode}
             setIsInEditMode={setIsInEditMode}
             equipmentItemData={editEquipment}
             indexItem={indexItem}
             setEquipmentItemData={setEditEquipment}
-            equipmentData={equipmentData}
-            setEquipmentData={setEquipmentData}
           />
           :
           <EquipmentItem
-            key={equipment.id}
             isInEditMode={isInEditMode} 
             equipment={equipment}
             setIsInEditMode={setIsInEditMode}
@@ -49,8 +57,6 @@ export const HWCREquipment: FC = memo(() => {
         <EquipmentForm
           isInEditMode={false}
           setIsInEditMode={setIsInEditMode}
-          equipmentData={equipmentData}
-          setEquipmentData={setEquipmentData}
           setShowEquipmentForm={setShowEquipmentForm}
         />
         :
