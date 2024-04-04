@@ -67,6 +67,11 @@ export const CreateComplaint: FC = () => {
   const attractantCodes = useAppSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown) as Option[];
+  const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+
+  const handleSlideCountChange = (count: number) => {
+    setComplaintAttachmentCount(count);
+  };
 
   let assignableOfficers: Option[] = officerList
     ? officerList.map((officer: Officer) => ({
@@ -1055,13 +1060,19 @@ export const CreateComplaint: FC = () => {
           </div>
         </div>
       )}
-      <AttachmentsCarousel
-        attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-        allowUpload={true}
-        allowDelete={true}
-        onFilesSelected={onHandleAddAttachments}
-        onFileDeleted={onHandleDeleteAttachment}
-      />
+      <div className="comp-complaint-details-block">
+        <h6>Complainant attachments ({complaintAttachmentCount})</h6>
+          <div className="comp-attachments">
+            <AttachmentsCarousel
+              attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+              allowUpload={true}
+              allowDelete={true}
+              onFilesSelected={onHandleAddAttachments}
+              onFileDeleted={onHandleDeleteAttachment}
+              onSlideCountChange={handleSlideCountChange}
+            />
+        </div>
+      </div>
     </div>
   );
 };
