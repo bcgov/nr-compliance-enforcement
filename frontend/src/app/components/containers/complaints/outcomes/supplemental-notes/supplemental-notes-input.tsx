@@ -10,7 +10,6 @@ import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import { MAX_CHARACTERS } from "../../../../../constants/general";
 import { getCaseFile, upsertNote } from "../../../../../store/reducers/cases";
-import { ToggleSuccess } from "../../../../../common/toast";
 
 type props = {
   id: string;

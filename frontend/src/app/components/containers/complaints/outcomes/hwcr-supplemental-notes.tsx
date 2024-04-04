@@ -63,33 +63,6 @@ export const HWCRSupplementalNotes: FC = () => {
     <div className="comp-outcome-report-block">
       <h6>Supporting notes</h6>
       {renderNote}
-      {/* {action && !showInput ? (
-        <SupplementalNotesItem
-          notes={note}
-          action={action}
-          enableEditMode={setShowInput}
-        />
-      ) : !showInput ? (
-        <div className="comp-outcome-report-button">
-          <Button
-            id="outcome-report-add-outcome"
-            title="Add outcome"
-            variant="primary"
-            onClick={(e) => setShowInput(true)}
-          >
-            <span>Add supporting notes</span>
-            <BsPlusCircle />
-          </Button>
-        </div>
-      ) : (
-        <SupplementalNotesInput
-          id={id}
-          notes={note}
-          currentOfficer={officer}
-          setShowInput={setShowInput}
-          mode={!action ? "create" : "update"}
-        />
-      )} */}
     </div>
   );
 };
