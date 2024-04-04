@@ -69,12 +69,24 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
   const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
 
-  const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>((outcome && !(outcomeOfficer ?? undefined)) ? "Required" : "");
-  const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>((outcome && !(outcomeDate ?? undefined)) ? "Required" : "");
+  const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
+  const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
 
+  const [saveAttemptedTags, setSaveAttemptedTags] = useState<boolean>(false);
+  const [saveAttemptedDrugs, setSaveAttemptedDrugs] = useState<boolean>(false);
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
+    if(tags.length > 0)
+    {
+      console.log("test1");
+      setSaveAttemptedTags(true);
+    }
+    if(drugs.length > 0)
+    {
+      console.log("test2");
+      setSaveAttemptedDrugs(true);
+    }
     if(isValid())
     {
       const newAnimalOutcome: AnimalOutcome = {
@@ -159,7 +171,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         .map((item) => {
           const { id } = item;
           return (
-            <AddEarTag {...item} isLeftEarUsed={isLeftEarUsed} update={updateEarTag} remove={removeEarTag} key={id} />
+            <AddEarTag {...item} isLeftEarUsed={isLeftEarUsed} update={updateEarTag} remove={removeEarTag} saveAttempted={saveAttemptedTags} key={id} />
           );
         });
   }
@@ -169,7 +181,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     if (tags.length < 2) {
       let id = tags.length + 1;
 
-      if(tags.length == 1){
+      if(tags.length === 1){
       
         const update = [...tags, { id, ear: "", number: "" }];
         setTags(update);
@@ -202,6 +214,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         return { ...item, id: updatedId };
       });
 
+      if(update.length === 0)
+    {
+      setSaveAttemptedTags(false);
+    }
       setTags(update);
   };
 
@@ -237,7 +253,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         updatedId = updatedId + 1;
         return { ...item, id: updatedId };
       });
-
+      if(update.length === 0)
+    {
+      setSaveAttemptedDrugs(false);
+    }
       setDrugs(update);
   };
 
@@ -265,10 +284,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             .toArray()
             .map((item) => {
               const { id } = item;
-              return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
+              return <AddDrug {...item} update={updateDrug} remove={removeDrug} saveAttempted={saveAttemptedDrugs} key={id} />;
             })}
 
-          <AddDrugAuthorization drugAuthorization={drugAuthorization} agency={complaintData?.ownedBy ?? 'COS'} update={updateDrugAuthorization} />
+          <AddDrugAuthorization drugAuthorization={drugAuthorization} agency={complaintData?.ownedBy ?? 'COS'} saveAttempted={saveAttemptedDrugs} update={updateDrugAuthorization} />
         </>
       );
     }

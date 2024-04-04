@@ -12,16 +12,20 @@ type props = {
   ear: string;
   number: string;
   isLeftEarUsed: boolean;
+  saveAttempted: boolean;
   update: Function;
   remove: Function;
 };
 
-export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, remove }) => {
+export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, saveAttempted, update, remove }) => {
   const ears = useAppSelector(selectEarDropdown);
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
   let selectedEar = ear === "R" ? rightEar : leftEar;
+
+  const currentTagNumberMessage = saveAttempted ? !number ? "Required" : "" : "";
+  const [tagNumberErrorMessage, setTagNumberErrorMessage] = useState(currentTagNumberMessage);
 
   useEffect(() => {
     if (!ear) {
@@ -29,7 +33,15 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
     }
   }, [ear, isLeftEarUsed]);
 
-  const [tagNumberErrorMessage, setTagNumberErrorMessage] = useState(number ? "" : "Required");
+  useEffect(() => {
+    if (saveAttempted) {
+      setTagNumberErrorMessage(currentTagNumberMessage);
+    }
+    else
+    {
+      setTagNumberErrorMessage("");
+    }
+  }, [saveAttempted]);
 
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, number };

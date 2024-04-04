@@ -11,18 +11,22 @@ import { ValidationDatePicker } from "../../../../../common/validation-date-pick
 type Props = {
   agency: string;
   drugAuthorization?: DrugAuthorizationType;
+  saveAttempted: boolean;
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAttempted, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   const [authorizedBy, setAuthorizedBy] = useState(drugAuthorization?.officer ?? assigned ?? undefined);
   const [authorizedOn, setAuthorizedOn] = useState(drugAuthorization?.date);
 
-  const [authorizedByErrorMessage, setAuthorizedByErrorMessage] = useState(!authorizedBy ? "Required" : "");
-  const [authorizedOnErrorMessage, setAuthorizedOnErrorMessage] = useState(!authorizedOn ? "Required" : "");
+  const initialAuthorizedByErrorMessage = saveAttempted ? !authorizedBy ? "Required" : "" : "";
+  const initialAuthorizedOnErrorMessage = saveAttempted ? !authorizedOn ? "Required" : "" : "";
+
+  const [authorizedByErrorMessage, setAuthorizedByErrorMessage] = useState(initialAuthorizedByErrorMessage);
+  const [authorizedOnErrorMessage, setAuthorizedOnErrorMessage] = useState(initialAuthorizedOnErrorMessage);
 
 
   const getValue = (property: string): Option | undefined => {

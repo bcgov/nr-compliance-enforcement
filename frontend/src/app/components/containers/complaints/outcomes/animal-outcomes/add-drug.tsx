@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
@@ -22,6 +22,8 @@ type props = {
   injectionMethod: string;
   discardMethod: string;
 
+  saveAttempted: Boolean;
+
   remove: Function;
   update: Function;
 };
@@ -36,6 +38,7 @@ export const AddDrug: FC<props> = ({
   amountDiscarded,
   reactions,
   remainingUse,
+  saveAttempted,
   remove,
   update,
 }) => {
@@ -45,15 +48,35 @@ export const AddDrug: FC<props> = ({
 
   const [showDiscarded, setShowDiscarded] = useState(remainingUse === "DISC");
 
-  const [vialNumberErrorMessage, setVialNumberErrorMessage] = useState(!vial ? "Required" : "");
-  const [drugNameErrorMessage, setDrugNameErrorMessage] = useState(!drug ? "Required" : "");
-  const [amountUsedErrorMessage, setAmountUsedErrorMessage] = useState(amountUsed <= -1 ? "Required" : "");
-  const [injectionMethodErrorMessage, setInjectionMethodErrorMessage] = useState(!injectionMethod ? "Required" : "");
+  const currentVialErrorMessage = saveAttempted ? !vial ? "Required" : "" : "";
+  const currentDrugErrorMessage = saveAttempted ? !drug ? "Required" : "" : "";
+  const currentAmountUsedErrorMessage = saveAttempted ? !amountUsed ? "Required" : "" : "";
+  const currentInjectionMethodErrorMessage = saveAttempted ? !injectionMethod ? "Required" : "" : "";
+
+  const [vialNumberErrorMessage, setVialNumberErrorMessage] = useState(currentVialErrorMessage);
+  const [drugNameErrorMessage, setDrugNameErrorMessage] = useState(currentDrugErrorMessage);
+  const [amountUsedErrorMessage, setAmountUsedErrorMessage] = useState(currentAmountUsedErrorMessage);
+  const [injectionMethodErrorMessage, setInjectionMethodErrorMessage] = useState(currentInjectionMethodErrorMessage);
 
   function isPositiveInt(str: string) {
     const n = Math.floor(Number(str));
     return (str !== "") ? n !== Infinity && String(n) === str && n >= 0 : true;
-}
+  }
+  useEffect(() => {
+    if (saveAttempted) {
+      setVialNumberErrorMessage(currentVialErrorMessage);
+      setDrugNameErrorMessage(currentDrugErrorMessage);
+      setAmountUsedErrorMessage(currentAmountUsedErrorMessage);
+      setInjectionMethodErrorMessage(currentInjectionMethodErrorMessage);
+    }
+    else
+    {
+      setVialNumberErrorMessage("");
+      setDrugNameErrorMessage("");
+      setAmountUsedErrorMessage("");
+      setInjectionMethodErrorMessage("");
+    }
+  }, [saveAttempted]);
 
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {
