@@ -485,7 +485,11 @@ export const selectSupplementalNote = (state: RootState): SupplementalNote => {
     cases: { note },
   } = state;
 
-  return note;
+  if (note.note) {
+    return note;
+  } else {
+    return { ...note, note: "" };
+  }
 };
 
 export const selectNotesOfficer = (state: RootState) => {
