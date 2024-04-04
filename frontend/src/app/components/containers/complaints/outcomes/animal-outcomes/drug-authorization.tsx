@@ -11,23 +11,15 @@ import { ValidationDatePicker } from "../../../../../common/validation-date-pick
 type Props = {
   agency: string;
   drugAuthorization?: DrugAuthorizationType;
-  saveAttempted: boolean;
   update: Function;
 };
 
-export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAttempted, update }) => {
+export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update }) => {
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   const [authorizedBy, setAuthorizedBy] = useState(drugAuthorization?.officer ?? assigned ?? undefined);
   const [authorizedOn, setAuthorizedOn] = useState(drugAuthorization?.date);
-
-  const initialAuthorizedByErrorMessage = saveAttempted ? !authorizedBy ? "Required" : "" : "";
-  const initialAuthorizedOnErrorMessage = saveAttempted ? !authorizedOn ? "Required" : "" : "";
-
-  const [authorizedByErrorMessage, setAuthorizedByErrorMessage] = useState(initialAuthorizedByErrorMessage);
-  const [authorizedOnErrorMessage, setAuthorizedOnErrorMessage] = useState(initialAuthorizedOnErrorMessage);
-
 
   const getValue = (property: string): Option | undefined => {
 
@@ -39,7 +31,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAt
 
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
-    setAuthorizedByErrorMessage(!input ? "Required" : "");
     const newDrugAuth: DrugAuthorizationType = {officer: input ?? "", date: authorizedOn ?? undefined};
     update(newDrugAuth);
 
@@ -47,7 +38,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAt
 
   const handleAuthorizedOnChange = (input: Date | undefined | null) => {
     setAuthorizedOn(input ?? undefined);
-    setAuthorizedOnErrorMessage(!input ? "Required" : "");
     update({officer: authorizedBy, date: input ?? undefined});
   };
 
@@ -55,7 +45,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAt
     <div className="comp-animal-outcome-report-inner-spacing">
       <Row>
         <Col md={5}>
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+          <div className="animal-drug-auth-label-input-pair" id="officer-assigned-pair-id">
             <label
               id="officer-assigned-authorization-select-label-id"
               htmlFor="officer-assigned-authorization-select-id"
@@ -65,11 +55,11 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAt
             <CompSelect
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
-              className="comp-details-input"
+              className="animal-drug-auth-details-input"
               options={officers}
               enableValidation={true}
               placeholder="Select"
-              errorMessage={authorizedByErrorMessage}
+              errorMessage={drugAuthorization?.officerErrorMessage}
               onChange={(evt) => {
                 handleAuthorizedByChange(evt?.value);
               }}
@@ -79,7 +69,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAt
         </Col>
 
         <Col md="4">
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+          <div className="animal-drug-auth-label-input-pair" id="officer-assigned-pair-id">
             <label id="drug-authorization-incident-time-label-id" htmlFor="drug-authorization-incident-time">
               Date
             </label>
@@ -89,9 +79,9 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, saveAt
                   onChange={(date: Date) => handleAuthorizedOnChange(date)}
                   selectedDate={authorizedOn}
                   classNamePrefix="comp-details-edit-calendar-input" 
-                  className={"comp-details-input"} 
+                  className={"animal-drug-auth-details-input"} 
                   placeholder={"Select"} 
-                  errMsg={authorizedOnErrorMessage}         
+                  errMsg={drugAuthorization?.dateErrorMessage ?? ""}         
                   />
           </div>
         </Col>

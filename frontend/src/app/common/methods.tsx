@@ -353,3 +353,8 @@ export const getThumbnailDataURL = async (file: File): Promise<string> => {
     return "";
   }
 };
+
+export function isPositiveInt(str: string) {
+  const n = Math.floor(Number(str));
+  return (str !== "") ? n !== Infinity && String(n) === str && n >= 0 : true;
+}

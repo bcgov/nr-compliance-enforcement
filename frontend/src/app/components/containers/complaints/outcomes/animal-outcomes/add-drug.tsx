@@ -7,22 +7,25 @@ import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { CompIconButton } from "../../../../common/comp-icon-button";
 import Option from "../../../../../types/app/option";
+import { isPositiveInt } from "../../../../../common/methods";
 
 type props = {
   id: number;
 
   vial: string;
+  vialErrorMessage: string;
   drug: string;
+  drugErrorMessage: string;
   amountUsed: number;
+  amountUsedErrorMessage: string;
   amountDiscarded: number;
 
   reactions: string;
   remainingUse: string;
 
   injectionMethod: string;
+  injectionMethodErrorMessage: string;
   discardMethod: string;
-
-  saveAttempted: Boolean;
 
   remove: Function;
   update: Function;
@@ -31,14 +34,17 @@ type props = {
 export const AddDrug: FC<props> = ({
   id,
   vial,
+  vialErrorMessage,
   drug,
+  drugErrorMessage,
   amountUsed,
+  amountUsedErrorMessage,
   injectionMethod,
+  injectionMethodErrorMessage,
   discardMethod,
   amountDiscarded,
   reactions,
   remainingUse,
-  saveAttempted,
   remove,
   update,
 }) => {
@@ -47,36 +53,6 @@ export const AddDrug: FC<props> = ({
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
   const [showDiscarded, setShowDiscarded] = useState(remainingUse === "DISC");
-
-  const currentVialErrorMessage = saveAttempted ? !vial ? "Required" : "" : "";
-  const currentDrugErrorMessage = saveAttempted ? !drug ? "Required" : "" : "";
-  const currentAmountUsedErrorMessage = saveAttempted ? !amountUsed ? "Required" : "" : "";
-  const currentInjectionMethodErrorMessage = saveAttempted ? !injectionMethod ? "Required" : "" : "";
-
-  const [vialNumberErrorMessage, setVialNumberErrorMessage] = useState(currentVialErrorMessage);
-  const [drugNameErrorMessage, setDrugNameErrorMessage] = useState(currentDrugErrorMessage);
-  const [amountUsedErrorMessage, setAmountUsedErrorMessage] = useState(currentAmountUsedErrorMessage);
-  const [injectionMethodErrorMessage, setInjectionMethodErrorMessage] = useState(currentInjectionMethodErrorMessage);
-
-  function isPositiveInt(str: string) {
-    const n = Math.floor(Number(str));
-    return (str !== "") ? n !== Infinity && String(n) === str && n >= 0 : true;
-  }
-  useEffect(() => {
-    if (saveAttempted) {
-      setVialNumberErrorMessage(currentVialErrorMessage);
-      setDrugNameErrorMessage(currentDrugErrorMessage);
-      setAmountUsedErrorMessage(currentAmountUsedErrorMessage);
-      setInjectionMethodErrorMessage(currentInjectionMethodErrorMessage);
-    }
-    else
-    {
-      setVialNumberErrorMessage("");
-      setDrugNameErrorMessage("");
-      setAmountUsedErrorMessage("");
-      setInjectionMethodErrorMessage("");
-    }
-  }, [saveAttempted]);
 
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {
@@ -91,25 +67,6 @@ export const AddDrug: FC<props> = ({
       discardMethod,
     };
     const updatedTag = { ...source, [property]: value };
-
-    const errorMessage = !value ? "Required" : "";
-
-    if(property === "vial")
-    {
-      setVialNumberErrorMessage(errorMessage)
-    }
-    if(property === "drug")
-    {
-      setDrugNameErrorMessage(errorMessage)
-    }
-    if(property === "amountUsed")
-    {
-      setAmountUsedErrorMessage(errorMessage);
-    }
-    if(property === "injectionMethod")
-    {
-      setInjectionMethodErrorMessage(errorMessage)
-    }
 
     update(updatedTag);
   };
@@ -159,7 +116,7 @@ export const AddDrug: FC<props> = ({
             placeholder="Example"
             inputClass="comp-form-control"
             value={vial}
-            error={vialNumberErrorMessage}
+            error={vialErrorMessage}
             onChange={(evt: any) => {
               const {
                 target: { value },
@@ -179,7 +136,7 @@ export const AddDrug: FC<props> = ({
             options={drugs}
             enableValidation={true}
             placeholder={"Select"}
-            errorMessage={drugNameErrorMessage}
+            errorMessage={drugErrorMessage}
             onChange={(evt) => {
               updateModel("drug", evt?.value);
             }}
@@ -243,7 +200,7 @@ export const AddDrug: FC<props> = ({
             }}
           />
         </Col>
-        <Col className="mt-auto mb-2">
+        <Col className="mt-delete-button mb-2">
           <CompIconButton onClick={() => remove(id)}>
             <BsXCircle size={24} className="comp-outcome-remove-botton" />
             <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />

@@ -11,53 +11,22 @@ type props = {
   id: number;
   ear: string;
   number: string;
-  isLeftEarUsed: boolean;
-  saveAttempted: boolean;
+  numberErrorMessage: string;
   update: Function;
   remove: Function;
 };
 
-export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, saveAttempted, update, remove }) => {
+export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, update, remove }) => {
   const ears = useAppSelector(selectEarDropdown);
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
-  let selectedEar = ear === "R" ? rightEar : leftEar;
+  let selectedEar = ear === "L" ? leftEar : rightEar;
 
-  const currentTagNumberMessage = saveAttempted ? !number ? "Required" : "" : "";
-  const [tagNumberErrorMessage, setTagNumberErrorMessage] = useState(currentTagNumberMessage);
-
-  useEffect(() => {
-    if (!ear) {
-      updateModel("ear", isLeftEarUsed ? "R" : "L");
-    }
-  }, [ear, isLeftEarUsed]);
-
-  useEffect(() => {
-    if (saveAttempted) {
-      setTagNumberErrorMessage(currentTagNumberMessage);
-    }
-    else
-    {
-      setTagNumberErrorMessage("");
-    }
-  }, [saveAttempted]);
 
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, number };
     const updatedTag = { ...source, [property]: value };
-
-    if(property === "number")
-    {
-      if(!value)
-      {
-        setTagNumberErrorMessage("Required")
-      }
-      else
-      {
-        setTagNumberErrorMessage("");
-      }
-    }
 
     update(updatedTag);
   };
@@ -74,7 +43,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, saveAttem
             placeholder="Enter number"
             inputClass="comp-form-control"
             value={number}
-            error={tagNumberErrorMessage}
+            error={numberErrorMessage}
             maxLength={7}
             onChange={(evt: any) => {
               const {
@@ -102,7 +71,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, saveAttem
             value={selectedEar}
           />
         </Col>
-        <Col className="mt-auto mb-2">
+        <Col className="mt-delete-button mb-2">
           <CompIconButton onClick={() => remove(id)}>
             <BsXCircle size={24} className="comp-outcome-remove-botton" />
             <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
