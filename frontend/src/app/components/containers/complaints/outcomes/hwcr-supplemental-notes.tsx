@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { SupplementalNotesInput } from "./supplemental-notes/supplemental-notes-input";
@@ -18,14 +18,52 @@ export const HWCRSupplementalNotes: FC = () => {
   const officer = useAppSelector(selectCurrentOfficer());
   const supplementalNote = useAppSelector(selectSupplementalNote);
 
-  const { note, action } = !supplementalNote ? { note: "", action: undefined } : supplementalNote;
-
   const [showInput, setShowInput] = useState(false);
+
+  const renderNote = useMemo(() => {
+    const { action, note } = !supplementalNote ? { action: undefined, note: "" } : supplementalNote;
+
+    if (action && !showInput) {
+      return (
+        <SupplementalNotesItem
+          notes={note}
+          action={action}
+          enableEditMode={setShowInput}
+        />
+      );
+    } else if (!showInput) {
+      return (
+        <div className="comp-outcome-report-button">
+          <Button
+            id="outcome-report-add-outcome"
+            title="Add outcome"
+            variant="primary"
+            onClick={(e) => setShowInput(true)}
+          >
+            <span>Add supporting notes</span>
+            <BsPlusCircle />
+          </Button>
+        </div>
+      );
+    } else {
+      const { note } = supplementalNote;
+      return (
+        <SupplementalNotesInput
+          id={id}
+          notes={note}
+          currentOfficer={officer}
+          setShowInput={setShowInput}
+          mode={!action ? "create" : "update"}
+        />
+      );
+    }
+  }, [showInput, id, officer, supplementalNote]);
 
   return (
     <div className="comp-outcome-report-block">
       <h6>Supporting notes</h6>
-      {action && !showInput ? (
+      {renderNote}
+      {/* {action && !showInput ? (
         <SupplementalNotesItem
           notes={note}
           action={action}
@@ -51,7 +89,7 @@ export const HWCRSupplementalNotes: FC = () => {
           setShowInput={setShowInput}
           mode={!action ? "create" : "update"}
         />
-      )}
+      )} */}
     </div>
   );
 };

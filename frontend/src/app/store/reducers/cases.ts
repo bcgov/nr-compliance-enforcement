@@ -577,7 +577,7 @@ export const upsertNote =
     const officer = officers.find((item) => item.user_id === idir);
 
     let result;
-    if (!currentNote || !currentNote.action) {
+    if (!currentNote?.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
       if (result !== null) {
         ToggleSuccess("Supplemental note created");

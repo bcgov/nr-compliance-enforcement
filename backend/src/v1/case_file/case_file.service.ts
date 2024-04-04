@@ -149,19 +149,15 @@ export class CaseFileService {
  private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
     Promise<any> => {
     if (result?.response?.data?.data) {
-      console.log("error1")
       const caseFileDto = result.response.data.data;
       return caseFileDto;
     } else if (result?.response?.data?.errors) {
-      console.log("error2")
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
       return null;
     }
     else if (result?.error) {
-      console.log("error3", result.error?.response)
-      // this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
+      this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
     } else {
-      console.log("error4")
       this.logger.error(`Unknwown error occurred during web request`);
       return null;
     }
@@ -176,7 +172,6 @@ export class CaseFileService {
       }`,
       variables: { input: model },
     });
-    console.log("test")
     const returnValue = await this.handleAPIResponse(result);
 
     return returnValue?.createNotes;
