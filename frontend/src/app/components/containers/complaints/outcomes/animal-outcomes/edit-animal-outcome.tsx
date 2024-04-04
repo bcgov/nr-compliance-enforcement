@@ -144,13 +144,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     
 
     if (tags && from(tags).any()) {
-      let isLeftEarUsed = false;
-      console.log("tags: " + JSON.stringify(tags));
-      const selected = tags.find((item) => item.ear === "L");
-      if (selected) {
-        isLeftEarUsed = true;
-      }
-
       return from(tags)
         .orderBy((item) => item.id)
         .toArray()
@@ -181,7 +174,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   };
 
   const updateEarTag = (tag: AnimalTag) => {
-    console.log("in updateEarTag");
     if(!tag.number)
     {
       tag.numberErrorMessage = "Required";
@@ -250,7 +242,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   };
 
   const updateDrug = (drug: DrugUsed) => {
-    console.log("in updateDrug");
     if(!drug.vial)
             {
               drug.vialErrorMessage = "Required";
@@ -290,7 +281,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   };
 
   const updateDrugAuthorization = (drugAuthorization: DrugAuthorization) => {
-    console.log("in updateDrugAuthorization");
     if(drugAuthorization)
       {
         if(!drugAuthorization?.officer)
@@ -361,19 +351,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             .orderBy((item) => item.id)
             .toArray()
             .map((item) => {
-            if(!item.vial)
-            {
-              isValid = false;
-            }
-            if(!item.drug)
-            {
-              isValid = false;
-            }
-            if(item.amountUsed <= 0)
-            {
-              isValid = false;
-            }
-            if(!item.injectionMethod)
+            if(!item.vial || !item.drug || item.amountUsed <= 0 || !item.injectionMethod)
             {
               isValid = false;
             }
@@ -381,14 +359,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       });
       if(drugAuthorization)
       {
-        if(!drugAuthorization?.officer)
-        {
-          isValid = false;
-        }
-        if(!drugAuthorization?.date)
-        {
-          isValid = false;
-        }
         updateDrugAuthorization(drugAuthorization);
       }
     }

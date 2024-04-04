@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
