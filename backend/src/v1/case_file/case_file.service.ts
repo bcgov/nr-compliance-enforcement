@@ -158,8 +158,8 @@ export class CaseFileService {
       return null;
     }
     else if (result?.error) {
-      console.log("error3")
-      this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
+      console.log("error3", result.error?.response)
+      // this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
     } else {
       console.log("error4")
       this.logger.error(`Unknwown error occurred during web request`);
@@ -176,6 +176,7 @@ export class CaseFileService {
       }`,
       variables: { input: model },
     });
+    console.log("test")
     const returnValue = await this.handleAPIResponse(result);
 
     return returnValue?.createNotes;
