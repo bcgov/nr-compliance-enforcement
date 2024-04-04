@@ -485,7 +485,7 @@ export const selectSupplementalNote = (state: RootState): SupplementalNote => {
     cases: { note },
   } = state;
 
-  if (note.note) {
+  if (note?.note) {
     return note;
   } else {
     return { ...note, note: "" };
