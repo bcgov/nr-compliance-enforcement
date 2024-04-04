@@ -162,6 +162,7 @@ export const searchOfficers =
       officers: { officers: items },
     } = state;
     let results: Array<Officer> = [];
+    const searchInput = input.toLowerCase();
 
     //-- look for any officers that match firstname, lastname, or office
     if(input.length >= 2){ 
@@ -170,11 +171,11 @@ export const searchOfficers =
           person_guid: { first_name: firstName, last_name: lastName },
         } = officer;
   
-        if (firstName.toLocaleLowerCase().includes(input)) {
+        if (firstName.toLocaleLowerCase().includes(searchInput)) {
           return true;
         }
   
-        if (lastName.toLocaleLowerCase().includes(input)) {
+        if (lastName.toLocaleLowerCase().includes(searchInput)) {
           return true;
         }
 
