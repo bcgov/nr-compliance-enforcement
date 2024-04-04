@@ -35,15 +35,15 @@ export class ConfigurationController {
       //If configuration is code table version, call another case managment api
       if(configurationCode === 'CDTABLEVER') {
         const { data } = await get(token, { 
-          query : '{getConfigurationCode(configuration_code: "CDTABLEVER"){configuration_code configuration_value  active_ind}}'
+          query : '{configurationCodes (configurationCode: "CDTABLEVER") {configurationCode configurationValue  activeIndicator}}'
         });
         let caseData = {}
         let complaintData = {}
         if(data) {
           caseData = {
-            configurationCode: data.getConfigurationCode.configuration_code,
-            configurationValue: data.getConfigurationCode.configuration_value,
-            activeInd: data.getConfigurationCode.active_ind
+            configurationCode: data.configurationCodes[0].configurationCode,
+            configurationValue: data.configurationCodes[0].configurationValue,
+            activeInd: data.configurationCodes[0].activeIndicator
           }
         }
         if(result.length > 0) {
