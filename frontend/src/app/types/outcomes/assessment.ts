@@ -1,4 +1,3 @@
-import Option from "../app/option";
 import KeyValuePair from "../app/key-value-pair";
 
 export interface Assessment {
