@@ -11,4 +11,5 @@ export default interface Profile {
   zone: string;
   zoneDescription: string;
   agency: string;
+  personGuid: string;
 }
