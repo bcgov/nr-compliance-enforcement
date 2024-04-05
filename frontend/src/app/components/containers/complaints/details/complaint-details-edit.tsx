@@ -68,7 +68,7 @@ import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 
-type ComplaintParams = {
+export type ComplaintParams = {
   id: string;
   complaintType: string;
 };
