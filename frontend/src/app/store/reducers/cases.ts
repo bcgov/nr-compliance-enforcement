@@ -57,6 +57,9 @@ export const casesSlice = createSlice({
     clearAssessment: (state) => {
       state.assessment = {...initialState.assessment};
     },
+    clearPrevention: (state) => {
+      state.prevention = {...initialState.prevention};
+    },
     setCaseFile: (state, action) => {
       const {
         payload: { note },
@@ -79,7 +82,7 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, setPrevention, clearAssessment, setCaseFile } = casesSlice.actions;
+export const { setAssessment, setPrevention, clearAssessment, clearPrevention, setCaseFile } = casesSlice.actions;
 
 export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
@@ -152,6 +155,7 @@ const addPrevention =
             return {
               date: prevention.date,
               actor: prevention.officer?.value,
+
               activeIndicator: true,
               actionCode: item.value,
             };
@@ -180,13 +184,19 @@ const addPrevention =
           actionCode: item.preventionType,
         } as PreventionActionDto);
       }
-    }
-
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createPrevention`, createPreventionInput);
-    await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedPreventionData = await parsePreventionResponse(res, officers);
-      dispatch(setPrevention({ prevention: updatedPreventionData }));
-    });
+    } 
+    
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createPrevention`, createPreventionInput);
+      await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        const updatedPreventionData = await parsePreventionResponse(res, officers);
+        if (res) {
+          dispatch(setPrevention({ prevention: updatedPreventionData }));
+          ToggleSuccess(`Prevention and education has been saved`);
+        } else {
+          await dispatch(clearPrevention());
+          ToggleError(`Unable to create prevention and education`);
+        }
+      });
   };
 
 const updatePrevention =
@@ -239,11 +249,17 @@ const updatePrevention =
         } as PreventionActionDto);
       }
     }
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updatePrevention`, updatePreventionInput);
-    await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedPreventionData = await parsePreventionResponse(res, officers);
-      dispatch(setPrevention({ prevention: updatedPreventionData }));
-    });
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updatePrevention`, updatePreventionInput);
+      await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        const updatedPreventionData = await parsePreventionResponse(res, officers);
+        if (res) {
+          dispatch(setPrevention({ prevention: updatedPreventionData }));
+          ToggleSuccess(`Prevention and education has been updated`);
+        } else {
+          await dispatch(getPrevention(complaintIdentifier));
+          ToggleError(`Unable to update prevention and education`);
+        }        
+      });
   };
 
 const parsePreventionResponse = async (
