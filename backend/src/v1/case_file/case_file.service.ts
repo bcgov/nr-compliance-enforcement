@@ -31,6 +31,12 @@ export class CaseFileService {
         activeIndicator
       }
     }
+    isReviewRequired
+    reviewComplete {
+      actor
+      date
+      actionCode
+    }
     preventionDetails {
       actions {
         actor
@@ -110,6 +116,35 @@ export class CaseFileService {
 
   }
 
+  createReview = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation CreateReview($reviewInput: ReviewInput!) {
+        createReview(reviewInput: $reviewInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    });
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createReview;
+  }
+
+  updateReview = async (
+    token: string,
+    model: CaseFileDto
+  ): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation UpdateReview($reviewInput: ReviewInput!) {
+        updateReview(reviewInput: $reviewInput) 
+        ${this.caseFileQueryFields}
+      }`,
+      variables: model
+    });
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateReview;
+  }
 
   createPrevention = async (
     token: string,
@@ -146,7 +181,7 @@ export class CaseFileService {
 
   }
 
- private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
+  private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
     Promise<any> => {
     if (result?.response?.data?.data) {
       const caseFileDto = result.response.data.data;

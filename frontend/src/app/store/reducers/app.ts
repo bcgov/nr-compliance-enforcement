@@ -274,10 +274,12 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let zone = "";
       let zoneDescription = "";
       let agency = "";
+      let personGuid = "";
 
       if (response.office_guid !== null) {
         const {
           office_guid: { cos_geo_org_unit: unit, agency_code: agencyCode },
+          person_guid: { person_guid }
         } = response;
 
         office = unit.office_location_code;
@@ -285,6 +287,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         zone = unit.zone_code;
         zoneDescription = unit.zone_name;
         agency = agencyCode.agency_code;
+        personGuid = person_guid
       }
 
       const profile: Profile = {
@@ -297,7 +300,8 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         region: region,
         zone: zone,
         zoneDescription: zoneDescription,
-        agency
+        agency,
+        personGuid
       };
 
       dispatch(setTokenProfile(profile));
@@ -410,6 +414,7 @@ const initialState: AppState = {
     zone: "",
     zoneDescription: "",
     agency: "",
+    personGuid: "",
   },
   isSidebarOpen: true,
 
@@ -459,7 +464,8 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         region: payload.region,
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
-        agency: payload.agency
+        agency: payload.agency,
+        personGuid: payload.personGuid
       };
 
       return { ...state, profile };

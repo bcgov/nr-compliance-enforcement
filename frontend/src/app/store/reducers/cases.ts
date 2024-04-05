@@ -13,6 +13,8 @@ import { Prevention } from "../../types/outcomes/prevention";
 import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
 import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
+import { ReviewInput } from "../../types/app/case-files/review-input";
+import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
 import { SupplementalNote } from "../../types/outcomes/supplemental-note";
 import { CreateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
@@ -20,6 +22,7 @@ import { UUID } from "crypto";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 
 const initialState: CasesState = {
+  caseId: undefined,
   assessment: {
     action_required: undefined,
     date: undefined,
@@ -32,6 +35,8 @@ const initialState: CasesState = {
     officer: undefined,
     prevention_type: [],
   },
+  isReviewRequired: false,
+  reviewComplete: undefined,
   note: {
     note: "",
   },
@@ -42,6 +47,10 @@ export const casesSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    setCaseId: (state, action) => {
+      const { payload } = action;
+      return {...state, caseId: payload}
+    },
     setAssessment: (state, action) => {
       const {
         payload: { assessment },
@@ -53,6 +62,14 @@ export const casesSlice = createSlice({
         payload: { prevention },
       } = action;
       state.prevention = { ...prevention }; // Update only the assessment property
+    },
+    setIsReviewedRequired: (state, action) => {
+      const { payload } = action;
+      return {...state, isReviewRequired: payload}
+    },
+    setReviewComplete: (state, action) => {
+      const { payload } = action;
+      return {...state, reviewComplete: payload}
     },
     clearAssessment: (state) => {
       state.assessment = {...initialState.assessment};
@@ -82,7 +99,16 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, setPrevention, clearAssessment, clearPrevention, setCaseFile } = casesSlice.actions;
+export const { 
+  setAssessment,
+  setPrevention,
+  setCaseId, 
+  setIsReviewedRequired, 
+  setReviewComplete,
+  setCaseFile,
+  clearAssessment,
+  clearPrevention,
+} = casesSlice.actions;
 
 export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
@@ -310,16 +336,20 @@ export const resetAssessment = createAction("assessment/reset");
 // Given a compaint id, returns the assessment
 export const getAssessment =
   (complaintIdentifier?: string): AppThunk =>
-  async (dispatch, getState) => {
-    const {
-      officers: { officers },
-    } = getState();
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
-      dispatch(setAssessment({ assessment: updatedAssessmentData }));
-    });
-  };
+    async (dispatch, getState) => {
+      const {
+        officers: { officers },
+      } = getState();
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
+      await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+        dispatch(setCaseId(res.caseIdentifier));
+        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(setIsReviewedRequired(res.isReviewRequired))
+        dispatch(setReviewComplete(res.reviewComplete));
+      });
+    };
+
 
 
 export const upsertAssessment =
@@ -634,5 +664,70 @@ export const upsertNote =
       return "error";
     }
   };
+
+export const createReview = (complaintId: string, isReviewRequired: boolean, reviewComplete: ReviewCompleteAction | null ): AppThunk => async (dispatch, getState) => {
+  const {
+    app: { profile },
+    cases: { caseId }
+  } = getState();
+  let reviewInput = {
+    reviewInput: {
+      leadIdentifier: complaintId,
+      caseIdentifier: caseId,
+      userId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      isReviewRequired
+    } as ReviewInput
+  };
+
+  if(reviewComplete) {
+    reviewInput.reviewInput.reviewComplete = reviewComplete;
+  };
+
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
+  await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    if (res) {
+      if(!caseId){
+        dispatch(setCaseId(res.caseIdentifier));
+      }
+      dispatch(setIsReviewedRequired(res.isReviewRequired));
+      if(res.reviewComplete){
+        dispatch(setReviewComplete(res.reviewComplete));
+      }
+      ToggleSuccess('File review has been updated')
+    }
+    else {
+      ToggleError('Unable to update file review')
+    }
+  });
+}
+
+export const updateReview = (complaintId: string, isReviewRequired: boolean): AppThunk => async (dispatch, getState) => {
+  const {
+    app: { profile },
+    cases: { caseId }
+  } = getState();
+  let reviewInput = {
+    reviewInput: {
+      leadIdentifier: complaintId,
+      caseIdentifier: caseId,
+      userId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      isReviewRequired
+    } as ReviewInput
+  };
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
+  await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    if (res) {
+      dispatch(setIsReviewedRequired(res.isReviewRequired));
+      ToggleSuccess('File review has been updated')
+    }
+    else {
+      ToggleError('Unable to update file review')
+    }
+  });
+}
 
 export default casesSlice.reducer;

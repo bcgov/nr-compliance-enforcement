@@ -18,37 +18,53 @@ import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supple
 export class CaseFileController {
   constructor(private readonly service: CaseFileService) {}
 
-    @Post("/createAssessment")
-    @Roles(Role.COS_OFFICER)
-    async createAssessment(
-        @Token() token,
-        @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.createAssessment(token, model);
-    }
+  @Post("/createAssessment")
+  @Roles(Role.COS_OFFICER)
+  async createAssessment(
+      @Token() token,
+      @Body() model: CaseFileDto): Promise<CaseFileDto> {
+      return await this.service.createAssessment(token, model);
+  }
 
-    @Patch("/updateAssessment")
-    @Roles(Role.COS_OFFICER)
-    async updateAssessment(
-        @Token() token,
-        @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.updateAssessment(token, model);
-    }
+  @Patch("/updateAssessment")
+  @Roles(Role.COS_OFFICER)
+  async updateAssessment(
+      @Token() token,
+      @Body() model: CaseFileDto): Promise<CaseFileDto> {
+      return await this.service.updateAssessment(token, model);
+  }
 
-    @Post("/createPrevention")
-    @Roles(Role.COS_OFFICER)
-    async createPrevention(
-        @Token() token,
-        @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.createPrevention(token, model);
-    }
+  @Post("/createPrevention")
+  @Roles(Role.COS_OFFICER)
+  async createPrevention(
+      @Token() token,
+      @Body() model: CaseFileDto): Promise<CaseFileDto> {
+      return await this.service.createPrevention(token, model);
+  }
 
-    @Patch("/updatePrevention")
-    @Roles(Role.COS_OFFICER)
-    async updatePrevention(
-        @Token() token,
-        @Body() model: CaseFileDto): Promise<CaseFileDto> {
-        return await this.service.updatePrevention(token, model);
-    }
+  @Patch("/updatePrevention")
+  @Roles(Role.COS_OFFICER)
+  async updatePrevention(
+      @Token() token,
+      @Body() model: CaseFileDto): Promise<CaseFileDto> {
+      return await this.service.updatePrevention(token, model);
+  }
+
+  @Post("/review")
+  @Roles(Role.COS_OFFICER)
+  async createReview(
+      @Token() token,
+      @Body() model: CaseFileDto): Promise<CaseFileDto> {
+      return await this.service.createReview(token, model);
+  }
+
+  @Patch("/review")
+  @Roles(Role.COS_OFFICER)
+  async updateReview(
+      @Token() token,
+      @Body() model: CaseFileDto): Promise<CaseFileDto> {
+      return await this.service.updateReview(token, model);
+  }
 
   @Get("/:complaint_id")
   @Roles(Role.COS_OFFICER)
