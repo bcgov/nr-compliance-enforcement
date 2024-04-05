@@ -9,7 +9,7 @@ import { HWCRComplaintPrevention } from "./hwcr-prevention-education";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
 import { useAppDispatch } from "../../../../hooks/hooks";
-import { getCaseFile } from "../../../../store/reducers/cases";
+import { getCaseFile } from "../../../../store/reducers/case-thunks";
 
 export const HWCROutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -17,6 +17,7 @@ export const HWCROutcomeReport: FC = () => {
 
   useEffect(() => {
     dispatch(getCaseFile(id))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   return (
