@@ -77,6 +77,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const handleActionRequiredChange = (selected: Option | null) => {
     if (selected) {
       setSelectedActionRequired(selected);
+      setSelectedJustification(null as unknown as Option);  
     } else {
       setSelectedActionRequired(undefined);
     }
@@ -110,7 +111,7 @@ export const HWCRComplaintAssessment: FC = () => {
   }, [complaintData]);
 
   useEffect(() => {
-      populateAssessmentUI();
+    populateAssessmentUI();
   }, [assessmentState]);
 
   // clear the redux state
@@ -120,13 +121,39 @@ export const HWCRComplaintAssessment: FC = () => {
     };
   }, [dispatch]);
 
-  
+
   const populateAssessmentUI = () => {
+
+    const selectedOfficer = (assessmentState.officer ? {
+      label: assessmentState.officer?.key,
+      value: assessmentState.officer?.value
+    } :
+      null) as Option;
+
+    const selectedActionRequired = (assessmentState.action_required ? {
+      label: assessmentState.action_required,
+      value: assessmentState.action_required
+    } :
+      null) as Option;
+
+    const selectedJustification = (assessmentState.justification ? {
+      label: assessmentState.justification?.key,
+      value: assessmentState.justification?.value
+    } :
+      null) as Option;
+
+    const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
+      return {
+        label: item.key,
+        value: item.value
+      }
+    }) as Option[];
+
     setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
-    setSelectedOfficer(assessmentState.officer ?? null);
-    setSelectedActionRequired(assessmentState.action_required ?? null);
-    setSelectedJustification(assessmentState.justification ?? null);
-    setSelectedAssessmentTypes(assessmentState.assessment_type);
+    setSelectedOfficer(selectedOfficer);
+    setSelectedActionRequired(selectedActionRequired);
+    setSelectedJustification(selectedJustification);
+    setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
   };
@@ -159,10 +186,21 @@ export const HWCRComplaintAssessment: FC = () => {
   const saveButtonClick = async () => {
     const updatedAssessmentData = {
       date: selectedDate,
-      officer: selectedOfficer,
-      action_required: selectedActionRequired,
-      justification: selectedJustification,
-      assessment_type: selectedAssessmentTypes,
+      officer: {
+        key: selectedOfficer?.label,
+        value: selectedOfficer?.value
+      },
+      action_required: selectedActionRequired?.label,
+      justification: {
+        key: selectedJustification?.label,
+        value: selectedJustification?.value
+      },
+      assessment_type: selectedAssessmentTypes.map((item) => {
+        return {
+          key: item.label,
+          value: item.value
+        }
+      }),
     } as Assessment;
 
     if (!hasErrors()) {

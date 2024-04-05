@@ -14,5 +14,6 @@ export interface CaseFileDto {
     preventionDetails?: PreventionDetailsDto
     equipmentDetails: Array<EquipmentDetailsDto>;
     updateUserId: string
+    isReviewRequired: boolean;
     note?: Note
 }

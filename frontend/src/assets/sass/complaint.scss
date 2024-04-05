@@ -1410,3 +1410,18 @@ p {
     text-decoration-line: underline;
   }
 }
+
+.button-text:disabled {
+  color: $gray-500;
+  cursor: not-allowed;
+  pointer-events: all;
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+.form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: all;
+}
+

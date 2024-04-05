@@ -1,6 +1,7 @@
 import { UUID } from "crypto";
 import { AssessmentDetailsDto } from "./assessment-details";
 import { EquipmentDetailsDto } from "./equipment-details";
+import { ReviewCompleteAction } from "./review-complete-action";
 import { PreventionDetailsDto } from "./prevention/prevention-details";
 
 export interface CaseFileDto {
@@ -13,4 +14,6 @@ export interface CaseFileDto {
   equipmentDetails: EquipmentDetailsDto[];
   preventionDetails: PreventionDetailsDto
   updateUserId: string
+  isReviewRequired: boolean;
+  reviewComplete?: ReviewCompleteAction
 }

@@ -17,6 +17,8 @@ import { Prevention } from "../../types/outcomes/prevention";
 import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
 import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
+import { ReviewInput } from "../../types/app/case-files/review-input";
+import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
 import { SupplementalNote } from "../../types/outcomes/supplemental-note";
 import { CreateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
@@ -24,6 +26,7 @@ import { UUID } from "crypto";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 
 const initialState: CasesState = {
+  caseId: undefined,
   assessment: {
     action_required: undefined,
     date: undefined,
@@ -37,6 +40,8 @@ const initialState: CasesState = {
     officer: undefined,
     prevention_type: [],
   },
+  isReviewRequired: false,
+  reviewComplete: undefined,
   note: {
     note: "",
   },
@@ -52,6 +57,10 @@ export const casesSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    setCaseId: (state, action) => {
+      const { payload } = action;
+      return {...state, caseId: payload}
+    },
     setAssessment: (state, action) => {
       const {
         payload: { assessment },
@@ -70,6 +79,14 @@ export const casesSlice = createSlice({
         payload: { prevention },
       } = action;
       state.prevention = { ...prevention }; // Update only the assessment property
+    },
+    setIsReviewedRequired: (state, action) => {
+      const { payload } = action;
+      return {...state, isReviewRequired: payload}
+    },
+    setReviewComplete: (state, action) => {
+      const { payload } = action;
+      return {...state, reviewComplete: payload}
     },
     clearAssessment: (state) => {
       state.assessment = {...initialState.assessment};
@@ -102,7 +119,17 @@ export const casesSlice = createSlice({
 });
 
 // export the actions/reducers
-export const { setAssessment, setEquipment, setPrevention, clearAssessment, clearPrevention, setCaseFile} = casesSlice.actions;
+export const { 
+  setAssessment,
+  setPrevention,
+  setCaseId, 
+  setIsReviewedRequired, 
+  setReviewComplete,
+  setCaseFile,
+  clearAssessment,
+  clearPrevention,
+  setEquipment,
+} = casesSlice.actions;
 
 export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
@@ -314,13 +341,13 @@ const parsePreventionResponse = async (
     }
     const updatedPreventionData = {
       date: actionDate,
-      officer: { label: officerFullName, value: actor },
+      officer: { key: officerFullName, value: actor },
       prevention_type: res.preventionDetails.actions
         .filter((action) => {
           return action.activeIndicator;
         })
         .map((action) => {
-          return { label: action.longDescription, value: action.actionCode };
+          return { key: action.longDescription, value: action.actionCode };
         }),
     } as Prevention;
     return updatedPreventionData;
@@ -345,10 +372,11 @@ export const getAssessment =
       } = getState();
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
       await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-
         const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+        dispatch(setCaseId(res.caseIdentifier));
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
-
+        dispatch(setIsReviewedRequired(res.isReviewRequired))
+        dispatch(setReviewComplete(res.reviewComplete));
       });
     };
 
@@ -386,7 +414,7 @@ const addAssessment =
         agencyCode: "COS",
         caseCode: "HWCR",
         assessmentDetails: {
-          actionNotRequired: assessment.action_required?.value === "No",
+          actionNotRequired: assessment.action_required === "No",
           actions: assessment.assessment_type.map((item) => {
             return {
               date: assessment.date,
@@ -452,7 +480,7 @@ const updateAssessment =
         agencyCode: "COS",
         caseCode: "HWCR",
         assessmentDetails: {
-          actionNotRequired: assessment.action_required?.value === "No",
+          actionNotRequired: assessment.action_required === "No",
           actionJustificationCode: assessment.justification?.value,
           actions: assessment.assessment_type.map((item) => {
             return {
@@ -653,7 +681,27 @@ const addEquipment =
       return { assessment: updatedAssessmentData, equipment: equipmentDetails };
     };
     
-
+    const updatedAssessmentData = {
+      date: actionDate,
+      officer: { key: officerFullName, value: actor },
+      action_required: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
+      justification: {
+        value: res.assessmentDetails.actionJustificationCode,
+        key: res.assessmentDetails.actionJustificationLongDescription,
+      },
+      assessment_type: res.assessmentDetails.actions
+        .filter((action) => {
+          return action.activeIndicator;
+        })
+        .map((action) => {
+          return { key: action.longDescription, value: action.actionCode };
+        }),
+    } as Assessment;
+    return updatedAssessmentData;
+  } else {
+    return null;
+  }
+};
 export const selectSupplementalNote = (state: RootState): SupplementalNote => {
   const {
     cases: { note },
@@ -778,5 +826,70 @@ export const upsertNote =
       return "error";
     }
   };
+
+export const createReview = (complaintId: string, isReviewRequired: boolean, reviewComplete: ReviewCompleteAction | null ): AppThunk => async (dispatch, getState) => {
+  const {
+    app: { profile },
+    cases: { caseId }
+  } = getState();
+  let reviewInput = {
+    reviewInput: {
+      leadIdentifier: complaintId,
+      caseIdentifier: caseId,
+      userId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      isReviewRequired
+    } as ReviewInput
+  };
+
+  if(reviewComplete) {
+    reviewInput.reviewInput.reviewComplete = reviewComplete;
+  };
+
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
+  await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    if (res) {
+      if(!caseId){
+        dispatch(setCaseId(res.caseIdentifier));
+      }
+      dispatch(setIsReviewedRequired(res.isReviewRequired));
+      if(res.reviewComplete){
+        dispatch(setReviewComplete(res.reviewComplete));
+      }
+      ToggleSuccess('File review has been updated')
+    }
+    else {
+      ToggleError('Unable to update file review')
+    }
+  });
+}
+
+export const updateReview = (complaintId: string, isReviewRequired: boolean): AppThunk => async (dispatch, getState) => {
+  const {
+    app: { profile },
+    cases: { caseId }
+  } = getState();
+  let reviewInput = {
+    reviewInput: {
+      leadIdentifier: complaintId,
+      caseIdentifier: caseId,
+      userId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      isReviewRequired
+    } as ReviewInput
+  };
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
+  await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    if (res) {
+      dispatch(setIsReviewedRequired(res.isReviewRequired));
+      ToggleSuccess('File review has been updated')
+    }
+    else {
+      ToggleError('Unable to update file review')
+    }
+  });
+}
 
 export default casesSlice.reducer;
