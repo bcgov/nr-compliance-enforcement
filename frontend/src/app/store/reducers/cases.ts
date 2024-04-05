@@ -311,13 +311,13 @@ const parsePreventionResponse = async (
     }
     const updatedPreventionData = {
       date: actionDate,
-      officer: { label: officerFullName, value: actor },
+      officer: { key: officerFullName, value: actor },
       prevention_type: res.preventionDetails.actions
         .filter((action) => {
           return action.activeIndicator;
         })
         .map((action) => {
-          return { label: action.longDescription, value: action.actionCode };
+          return { key: action.longDescription, value: action.actionCode };
         }),
     } as Prevention;
     return updatedPreventionData;
@@ -351,6 +351,7 @@ export const getAssessment =
     };
 
 
+
 export const upsertAssessment =
   (complaintIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch) => {
@@ -380,7 +381,7 @@ const addAssessment =
         agencyCode: "COS",
         caseCode: "HWCR",
         assessmentDetails: {
-          actionNotRequired: assessment.action_required?.value === "No",
+          actionNotRequired: assessment.action_required === "No",
           actions: assessment.assessment_type.map((item) => {
             return {
               date: assessment.date,
@@ -446,7 +447,7 @@ const updateAssessment =
         agencyCode: "COS",
         caseCode: "HWCR",
         assessmentDetails: {
-          actionNotRequired: assessment.action_required?.value === "No",
+          actionNotRequired: assessment.action_required === "No",
           actionJustificationCode: assessment.justification?.value,
           actions: assessment.assessment_type.map((item) => {
             return {
@@ -519,21 +520,18 @@ const parseAssessmentResponse = async (
 
     const updatedAssessmentData = {
       date: actionDate,
-      officer: { label: officerFullName, value: actor },
-      action_required: {
-        label: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
-        value: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
-      },
+      officer: { key: officerFullName, value: actor },
+      action_required: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
       justification: {
         value: res.assessmentDetails.actionJustificationCode,
-        label: res.assessmentDetails.actionJustificationLongDescription,
+        key: res.assessmentDetails.actionJustificationLongDescription,
       },
       assessment_type: res.assessmentDetails.actions
         .filter((action) => {
           return action.activeIndicator;
         })
         .map((action) => {
-          return { label: action.longDescription, value: action.actionCode };
+          return { key: action.longDescription, value: action.actionCode };
         }),
     } as Assessment;
     return updatedAssessmentData;
