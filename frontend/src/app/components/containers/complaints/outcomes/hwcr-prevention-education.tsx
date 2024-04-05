@@ -274,24 +274,24 @@ export const HWCRComplaintPrevention: FC = () => {
                     )}
                   </div>
                 </div>
-              </div>
-              <div className="comp-details-edit-column comp-details-right-column">
-                <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
-                  <label htmlFor="complaint-outcome-date">Date</label>
-                  {editable ? (
-                    <ValidationDatePicker
-                      id="complaint-outcome-date"
-                      selectedDate={selectedDate}
-                      onChange={handleDateChange}
-                      placeholder="Select date"
-                      className="comp-details-edit-calendar-input" // Adjust class as needed
-                      classNamePrefix="comp-select" // Adjust class as needed
-                      errMsg={preventionDateErrorMessage} // Pass error message if any
-                      maxDate={new Date()}
-                    />
-                  ) : (
-                    formatDate(`${selectedDate}`)
-                  )}
+                <div className="comp-details-edit-column comp-details-right-column">
+                  <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
+                    <label htmlFor="complaint-outcome-date">Date</label>
+                    {editable ? (
+                      <ValidationDatePicker
+                        id="complaint-outcome-date"
+                        selectedDate={selectedDate}
+                        onChange={handleDateChange}
+                        placeholder="Select date"
+                        className="comp-details-edit-calendar-input" // Adjust class as needed
+                        classNamePrefix="comp-select" // Adjust class as needed
+                        errMsg={preventionDateErrorMessage} // Pass error message if any
+                        maxDate={new Date()}
+                      />
+                    ) : (
+                      formatDate(`${selectedDate}`)
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
