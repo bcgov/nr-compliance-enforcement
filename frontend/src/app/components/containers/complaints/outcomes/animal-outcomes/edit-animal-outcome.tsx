@@ -127,8 +127,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
 
   const handleOutcomeChange = (input: Option | null) => {
     setOutcome(input ?? undefined);
-    setOutcomeOfficerErrorMessage(((input ?? undefined) && !outcomeOfficer) ? "Required" : "");
-    setOutcomeDateErrorMessage(((input ?? undefined) && !outcomeDate) ? "Required" : "");
   };
 
   const handleOutcomeOfficerChange = (input: Option | null) => {
@@ -367,10 +365,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       if(!outcomeOfficer)
       {
         isValid = false;
+        setOutcomeOfficerErrorMessage("Required");
       }
       if(!outcomeDate)
       {
         isValid = false;
+        setOutcomeDateErrorMessage("Required");
       }
     }
     return isValid;
