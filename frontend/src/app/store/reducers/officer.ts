@@ -14,6 +14,7 @@ import Option from "../../types/app/option";
 import { toggleNotification } from "./app";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
+import { OfficerDto } from "../../types/app/people/officer";
 
 const initialState: OfficerState = {
   officers: [],
@@ -327,6 +328,37 @@ export const selectOfficerByIdir =
 
     if (selected?.person_guid) {
       return selected;
+    }
+
+    return null;
+  };
+
+  export const selectCurrentOfficer =
+  () =>
+  (state: RootState): OfficerDto | null => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      officers: { officers: data },
+    } = state;
+    const selected = data.find(({ user_id }) => user_id === idir);
+
+    if (selected?.person_guid) {
+      const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
+      const { person_guid, first_name: firstName, last_name: lastName } = person;
+      const { office_guid, cos_geo_org_unit: location } = office;
+      const officerId = officer_guid as UUID;
+      const personId = person_guid as UUID;
+      const officeId = office_guid as UUID;
+
+      return  {
+        id: officerId,
+        userId: user_id,
+        authorizedUserId: auth_user_guid,
+        person: { id: personId, firstName, lastName },
+        office: { ...location, id: officeId }
+      };
     }
 
     return null;
