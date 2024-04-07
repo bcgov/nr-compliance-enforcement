@@ -1,4 +1,4 @@
-import { EquipmentActionDto } from "./equipment-action";
+import { CaseActionDto } from "./case-action";
 
 export interface EquipmentDetailsDto {
   actionEquipmentTypeCode: string;
@@ -8,5 +8,5 @@ export interface EquipmentDetailsDto {
   address?: string;
   xCoordinate: string;
   yCoordinate: string;
-  actions?: Array<EquipmentActionDto>
+  actions?: Array<CaseActionDto>
 }

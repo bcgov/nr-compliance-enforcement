@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-export interface EquipmentActionDto {
+export interface CaseActionDto {
   actor: UUID;
   date: Date;
   actionCode: string;

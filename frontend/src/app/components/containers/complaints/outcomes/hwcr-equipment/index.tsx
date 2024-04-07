@@ -7,7 +7,7 @@ import { EquipmentItem } from "./equipment-item";
 import "../../../../../../assets/sass/hwcr-equipment.scss"
 import { Equipment } from "../../../../../types/outcomes/equipment";
 import { useParams } from "react-router-dom";
-import { getEquipment, selectEquipment } from "../../../../../store/reducers/cases";
+import { getCaseFile, selectEquipment } from "../../../../../store/reducers/cases";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 
 export const HWCREquipment: FC = memo(() => {
@@ -21,7 +21,7 @@ export const HWCREquipment: FC = memo(() => {
 
   useEffect(() => {
     if (id) {
-      dispatch(getEquipment(id));
+      dispatch(getCaseFile(id));
     }
   }, [id, dispatch]);
 

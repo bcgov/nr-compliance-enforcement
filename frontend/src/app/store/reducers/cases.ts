@@ -82,21 +82,15 @@ export const casesSlice = createSlice({
       state.prevention = {...initialState.prevention};
     },
     setCaseFile: (state, action) => {
+      debugger;
       const {
-        payload: { note },
+        payload: { note, equipmentDetails },
       } = action;
 
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
-      return { ...state, note };
-    },
-
-    setEquipment: (state, action) => {
-      const {
-        payload: { equipment },
-      } = action;
-      state.equipment = [...equipment];
+      return { ...state, note, equipmentDetails };
     },
   },
 
@@ -119,7 +113,6 @@ export const {
   setCaseFile,
   clearAssessment,
   clearPrevention,
-  setEquipment,
 } = casesSlice.actions;
 
 export const selectPrevention = (state: RootState): Prevention => {
@@ -742,20 +735,6 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
   });
 }
 
-// Given a complaint id, returns the equipment
-export const getEquipment =
-  (complaintIdentifier?: string): AppThunk =>
-  async (dispatch, getState) => {
-    const {
-      officers: { officers },
-    } = getState();
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      //const equipmentDetails = await parseEquipmentResponse(res, officers);
-      //dispatch(setEquipment(equipmentDetails));
-    });
-  };
-
 export const findEquipment =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
@@ -832,10 +811,33 @@ export const findEquipment =
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      //const equipmentDetails = await parseEquipmentResponse(res, officers);
-      dispatch(setEquipment(equipmentDetails));
+      dispatch(setCaseFile(res));
     });
   };
+
+  const parseEquipmentResponse = async (
+    res: CaseFileDto,
+    officers: Officer[],
+  ): Promise<EquipmentDetailsDto[] | undefined> => {
+    const equipmentDetails = Object.values(res.equipmentDetails).map((equipment: any) => ({
+      actionEquipmentTypeCode: equipment.actionEquipmentTypeCode,
+      actionEquipmentTypeActiveIndicator: equipment.actionEquipmentTypeActiveIndicator,
+      address: equipment.address || "",
+      xCoordinate: equipment.xCoordinate || "",
+      yCoordinate: equipment.yCoordinate || "",
+      actions: equipment.actions.map((action: any) => ({
+        actor: action.actor,
+        date: action.date,
+        actionCode: action.actionCode,
+        shortDescription: action.shortDescription || "",
+        longDescription: action.longDescription || "",
+        activeIndicator: action.activeIndicator,
+      })),
+    }));
+  
+    return equipmentDetails;
+  };
+  
   
 
 

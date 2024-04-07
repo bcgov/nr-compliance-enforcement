@@ -50,6 +50,13 @@ export class CaseFileService {
         date
       }
     }
+    equipmentDetails {
+      actionEquipmentTypeCode
+      actionEquipmentTypeActiveIndicator
+      address
+      xCoordinate
+      yCoordinate
+    }
   }
   `;
 
