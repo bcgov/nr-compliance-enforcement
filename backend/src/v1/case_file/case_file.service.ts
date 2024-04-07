@@ -12,7 +12,8 @@ import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supple
 export class CaseFileService {
   private readonly logger = new Logger(CaseFileService.name);
   private mapper: Mapper;
- private caseFileQueryFields: string = `
+
+  private caseFileQueryFields: string = `
   {
     caseIdentifier
     leadIdentifier
@@ -30,19 +31,6 @@ export class CaseFileService {
         longDescription
         activeIndicator
       }
-    },
-    equipmentDetails {
-      actionEquipmentTypeCode
-      actionEquipmentTypeActiveIndicator
-      address
-      xCoordinate
-      yCoordinate
-    }
-    isReviewRequired
-    reviewComplete {
-      actor
-      date
-      actionCode
     }
     preventionDetails {
       actions {
@@ -64,7 +52,7 @@ export class CaseFileService {
     }
   }
   `;
-  
+
   constructor(@Inject(REQUEST) private request: Request, @InjectMapper() mapper) {
     this.mapper = mapper;
   }

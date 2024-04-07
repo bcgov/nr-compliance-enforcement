@@ -6,7 +6,6 @@ import { SupplementalNote } from "../outcomes/supplemental-note";
 export interface CasesState {
   caseId: string | undefined;
   assessment: Assessment;
-  equipment: EquipmentDetailsDto[]
   prevention: Prevention;
   note: SupplementalNote;
   isReviewRequired: boolean;
@@ -15,5 +14,6 @@ export interface CasesState {
     date: Date
     actionCode: string
     actionId?: string
-  } | null
+  } | null;
+  equipment: EquipmentDetailsDto[];
 }
