@@ -6,6 +6,8 @@ import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
+import { selectOfficerByPersonGuid } from "../../../../../store/reducers/officer";
+import { useAppSelector } from "../../../../../hooks/hooks";
 
 interface EquipmentDetailsWithVariables {
   actionEquipmentTypeCode: string;
@@ -40,12 +42,17 @@ function processEquipmentDetails(details: EquipmentDetailsDto): EquipmentDetails
   let removedDate: Date | undefined;
 
   // Iterate through actions
+
+  
   details.actions?.forEach(action => {
     if (action.actionCode === "SETEQUIPMT") {
-      setBy = action.actor;
+      const setOfficer = useAppSelector(selectOfficerByPersonGuid(action.actor));
+      
+      setBy =`${setOfficer?.person_guid.first_name} ${setOfficer?.person_guid.last_name}`;
       setDate = new Date(action.date);
     } else if (action.actionCode === "REMEQUIPMT") {
-      removedBy = action.actor;
+      const removedOfficer = useAppSelector(selectOfficerByPersonGuid(action.actor));
+      setBy =`${removedOfficer?.person_guid.first_name} ${removedOfficer?.person_guid.last_name}`;
       removedDate = new Date(action.date);
     }
   });
@@ -158,7 +165,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
                     className="comp-padding-left-xs"
                   >
                     
-                    {equipment?.actions? equipment?.actions[0].actor : null}
+                    {processedEquipment.setBy}
                   </span>
                 </div>
               </div>
