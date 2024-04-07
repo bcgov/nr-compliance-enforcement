@@ -12,7 +12,7 @@ export interface CaseFileDto {
     caseCode: string;
     assessmentDetails?: AssessmentDetailsDto
     preventionDetails?: PreventionDetailsDto
-    equipmentDetails: Array<EquipmentDetailsDto>;
+    equipment: Array<EquipmentDetailsDto>;
     updateUserId: string
     isReviewRequired: boolean;
     note?: Note

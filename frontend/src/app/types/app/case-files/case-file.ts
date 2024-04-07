@@ -15,5 +15,5 @@ export interface CaseFileDto {
   updateUserId: string
   isReviewRequired: boolean;
   reviewComplete?: ReviewCompleteAction
-  equipmentDetails: EquipmentDetailsDto[];
+  equipment: EquipmentDetailsDto[];
 }

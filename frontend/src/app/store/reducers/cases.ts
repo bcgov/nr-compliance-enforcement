@@ -82,15 +82,14 @@ export const casesSlice = createSlice({
       state.prevention = {...initialState.prevention};
     },
     setCaseFile: (state, action) => {
-      debugger;
       const {
-        payload: { note, equipmentDetails },
+        payload: { note, equipment },
       } = action;
 
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
-      return { ...state, note, equipmentDetails };
+      return { ...state, note, equipment };
     },
   },
 
@@ -756,7 +755,7 @@ export const findEquipment =
     }
     const caseIdentifier = await dispatch(findEquipment(complaintIdentifier));
     //if (!caseIdentifier) {
-    dispatch(addEquipment(complaintIdentifier, equipment));
+      dispatch(addEquipment(complaintIdentifier, equipment));
     //} else {
     //dispatch(updateEquipment(complaintIdentifier, caseIdentifier, equipment));
     //}
@@ -805,40 +804,14 @@ export const findEquipment =
         createUserId: profile.idir_username,
         agencyCode: "COS",
         caseCode: "HWCR",
-        equipmentDetails: [equipmentDetails],
+        equipment: [equipmentDetails],
       },
     } as CreateEquipmentInput;
-
+debugger;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
       dispatch(setCaseFile(res));
     });
   };
-
-  const parseEquipmentResponse = async (
-    res: CaseFileDto,
-    officers: Officer[],
-  ): Promise<EquipmentDetailsDto[] | undefined> => {
-    const equipmentDetails = Object.values(res.equipmentDetails).map((equipment: any) => ({
-      actionEquipmentTypeCode: equipment.actionEquipmentTypeCode,
-      actionEquipmentTypeActiveIndicator: equipment.actionEquipmentTypeActiveIndicator,
-      address: equipment.address || "",
-      xCoordinate: equipment.xCoordinate || "",
-      yCoordinate: equipment.yCoordinate || "",
-      actions: equipment.actions.map((action: any) => ({
-        actor: action.actor,
-        date: action.date,
-        actionCode: action.actionCode,
-        shortDescription: action.shortDescription || "",
-        longDescription: action.longDescription || "",
-        activeIndicator: action.activeIndicator,
-      })),
-    }));
-  
-    return equipmentDetails;
-  };
-  
-  
-
 
 export default casesSlice.reducer;

@@ -157,6 +157,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
                     id="comp-details-assigned-officer-name-text-id"
                     className="comp-padding-left-xs"
                   >
+                    
                     {equipment?.actions? equipment?.actions[0].actor : null}
                   </span>
                 </div>

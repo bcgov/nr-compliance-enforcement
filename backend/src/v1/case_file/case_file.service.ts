@@ -50,12 +50,17 @@ export class CaseFileService {
         date
       }
     }
-    equipmentDetails {
+    equipment {
       actionEquipmentTypeCode
       actionEquipmentTypeActiveIndicator
       address
       xCoordinate
       yCoordinate
+      actions { 
+        actor
+        actionCode
+        date
+      }
     }
   }
   `;
