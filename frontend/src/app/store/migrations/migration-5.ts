@@ -1,5 +1,5 @@
 //Add personGuid in app and isReviewRequired,reviewComplete in cases
-export const Migration5 = {
+export const AddPersonGuidAndOutcomeReview = {
   5: (state: any) => {
     return {
       ...state,
