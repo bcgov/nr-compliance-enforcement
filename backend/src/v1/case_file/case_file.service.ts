@@ -202,6 +202,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
         createNote(input: $input) {
+          caseIdentifier
           note { note, action { actor,date,actionCode } }
         }
       }`,
@@ -209,7 +210,7 @@ export class CaseFileService {
     });
     const returnValue = await this.handleAPIResponse(result);
 
-    return returnValue?.createNotes;
+    return returnValue?.createNote;
   };
 
   updateNote = async (token: any, model: UpdateSupplementalNotesInput): Promise<CaseFileDto> => {
@@ -223,6 +224,6 @@ export class CaseFileService {
     });
     const returnValue = await this.handleAPIResponse(result);
 
-    return returnValue?.updateNotes;
+    return returnValue?.updateNote;
   };
 }
