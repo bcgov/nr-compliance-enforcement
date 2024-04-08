@@ -52,7 +52,7 @@ function processEquipmentDetails(details: EquipmentDetailsDto): EquipmentDetails
       setDate = new Date(action.date);
     } else if (action.actionCode === "REMEQUIPMT") {
       const removedOfficer = useAppSelector(selectOfficerByPersonGuid(action.actor));
-      setBy =`${removedOfficer?.person_guid.first_name} ${removedOfficer?.person_guid.last_name}`;
+      removedBy =`${removedOfficer?.person_guid.first_name} ${removedOfficer?.person_guid.last_name}`;
       removedDate = new Date(action.date);
     }
   });
@@ -180,7 +180,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
             </div>
           </Col>
         </Row>
-        {!isActive && 
+        {!isActive && processedEquipment.removedBy &&
           <Row>
             <Col xs={12} md={4}>
               <div className="equipment-item-content">

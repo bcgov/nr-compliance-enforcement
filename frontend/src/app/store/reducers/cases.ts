@@ -734,14 +734,6 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
   });
 }
 
-export const findEquipment =
-  (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-  async (dispatch) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    const response = await get<CaseFileDto>(dispatch, parameters);
-    return response?.caseIdentifier;
-  };
-
   export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
     const { cases } = state;
     return cases.equipment;
@@ -753,7 +745,7 @@ export const findEquipment =
     if (!equipment) {
       return;
     }
-    const caseIdentifier = await dispatch(findEquipment(complaintIdentifier));
+    const caseIdentifier = await dispatch(findCase(complaintIdentifier));
     //if (!caseIdentifier) {
       dispatch(addEquipment(complaintIdentifier, equipment));
     //} else {

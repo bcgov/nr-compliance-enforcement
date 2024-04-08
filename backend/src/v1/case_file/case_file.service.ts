@@ -51,6 +51,7 @@ export class CaseFileService {
       }
     }
     equipment {
+      equipmentGuid
       actionEquipmentTypeCode
       actionEquipmentTypeActiveIndicator
       address
