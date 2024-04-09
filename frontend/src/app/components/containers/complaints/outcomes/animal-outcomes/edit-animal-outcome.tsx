@@ -69,6 +69,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
   const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
 
+  const [speciesErrorMessage, setSpeciesErrorMessage] = useState<string>("");
   const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
   const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
 
@@ -124,6 +125,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       if(setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
     }
   }
+
+  const handleSpeciesChange = (input: Option | null) => {
+    setSpecies(input ?? undefined);
+    setSpeciesErrorMessage(!(input ?? undefined) ? "Required" : "");
+  };
 
   const handleOutcomeChange = (input: Option | null) => {
     setOutcome(input ?? undefined);
@@ -402,9 +408,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               classNamePrefix="comp-select"
               className="comp-details-input"
               options={speciesList}
-              enableValidation={false}
+              enableValidation={true}
               placeholder="Select"
-              onChange={(species: any) => setSpecies(species)}
+              onChange={handleSpeciesChange}
+              errorMessage={speciesErrorMessage}
               defaultOption={animalOutcomeItemData?.species}
             />
           </Col>
