@@ -3,7 +3,7 @@ import KeyValuePair from "../app/key-value-pair";
 export interface Prevention {
   prevention_type: KeyValuePair[];
   officer?: KeyValuePair;
-  date?: Date;
+  date?: Date | null;
   createdBy?: string;
   createdAt?: Date;
   updatedBy?: string;

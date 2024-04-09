@@ -84,12 +84,14 @@ export const HWCRComplaintPrevention: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getPrevention(complaintData.id));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
     populatePreventionUI();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preventionState]);
 
   // clear the redux state
@@ -144,21 +146,21 @@ export const HWCRComplaintPrevention: FC = () => {
 
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
-    const updatedPreventionData = {
-      date: selectedDate,
-      officer: {
-        key: selectedOfficer?.label,
-        value: selectedOfficer?.value,
-      },
-      prevention_type: selectedPreventionTypes.map((item) => {
-        return {
-          key: item.label,
-          value: item.value,
-        };
-      }),
-    } as Prevention;
-
     if (!hasErrors()) {
+      const updatedPreventionData: Prevention = {
+        date: selectedDate,
+        officer: {
+          key: selectedOfficer?.label,
+          value: selectedOfficer?.value
+        },
+        prevention_type: selectedPreventionTypes?.map((item) => {
+          return {
+            key: item.label,
+            value: item.value
+          }
+        }),
+      };
+
       dispatch(upsertPrevention(id, updatedPreventionData));
       setEditable(false);
     } else {
