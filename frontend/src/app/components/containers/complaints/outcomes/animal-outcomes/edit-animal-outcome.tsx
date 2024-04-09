@@ -7,7 +7,7 @@ import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/of
 import { selectAgeDropdown, selectConflictHistoryDropdown, selectSexDropdown, selectSpeciesCodeDropdown, selectThreatLevelDropdown, selectWildlifeComplaintOutcome } from "../../../../../store/reducers/code-table";
 import { selectComplaint} from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { pad } from "../../../../../common/methods";
+import { isPositiveNum, pad } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 
@@ -211,9 +211,9 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         vialErrorMessage: "",
         drug: "",
         drugErrorMessage: "",
-        amountUsed: -1,
+        amountUsed: "",
         amountUsedErrorMessage: "",
-        amountDiscarded: -1,
+        amountDiscarded: "",
         reactions: "",
         remainingUse: "",
         injectionMethod: "",
@@ -256,9 +256,13 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             {
               drug.drugErrorMessage = "";
             }
-            if(drug.amountUsed <= 0)
+            if(!drug.amountUsed)
             {
               drug.amountUsedErrorMessage = "Required";
+            }
+            else if(!isPositiveNum(drug.amountUsed))
+            {
+              drug.amountUsedErrorMessage = "Must be a positive number";
             }
             else
             {
@@ -302,7 +306,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   };
 
   const renderDrugs = () => {
-
     if (drugs && from(drugs).any()) {
       return (
         <>
@@ -349,7 +352,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             .orderBy((item) => item.id)
             .toArray()
             .map((item) => {
-            if(!item.vial || !item.drug || item.amountUsed <= 0 || !item.injectionMethod)
+            if(!item.vial || !item.drug || !item.amountUsed || !item.injectionMethod)
             {
               isValid = false;
             }

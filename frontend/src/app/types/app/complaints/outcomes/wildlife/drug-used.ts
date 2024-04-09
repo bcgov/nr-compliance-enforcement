@@ -5,9 +5,9 @@ export interface DrugUsed {
   vialErrorMessage: string;
   drug: string;
   drugErrorMessage: string;
-  amountUsed: number;
+  amountUsed: string;
   amountUsedErrorMessage: string;
-  amountDiscarded: number;
+  amountDiscarded: string;
 
   injectionMethod: string;
   injectionMethodErrorMessage: string;

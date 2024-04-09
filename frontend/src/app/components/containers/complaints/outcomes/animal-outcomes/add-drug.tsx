@@ -7,7 +7,7 @@ import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { CompIconButton } from "../../../../common/comp-icon-button";
 import Option from "../../../../../types/app/option";
-import { isPositiveInt } from "../../../../../common/methods";
+import { isPositiveNum } from "../../../../../common/methods";
 
 type props = {
   id: number;
@@ -16,9 +16,9 @@ type props = {
   vialErrorMessage: string;
   drug: string;
   drugErrorMessage: string;
-  amountUsed: number;
+  amountUsed: string;
   amountUsedErrorMessage: string;
-  amountDiscarded: number;
+  amountDiscarded: string;
 
   reactions: string;
   remainingUse: string;
@@ -67,7 +67,6 @@ export const AddDrug: FC<props> = ({
       discardMethod,
     };
     const updatedTag = { ...source, [property]: value };
-
     update(updatedTag);
   };
 
@@ -88,13 +87,11 @@ export const AddDrug: FC<props> = ({
   };
 
   const handleAmountUsed = (input: string) => {
-    if(isPositiveInt(input))
     updateModel("amountUsed", input);
   };
 
   const handleAmountDiscarded = (input: string) => {
-    if(isPositiveInt(input))
-    updateModel("amountDiscarded", input);
+      updateModel("amountDiscarded", input);
   };
 
   const handleRemainingUsed = (input: string) => {
@@ -153,7 +150,7 @@ export const AddDrug: FC<props> = ({
             type="input"
             placeholder="Example"
             inputClass="comp-form-control"
-            value={amountUsed <= -1 ? "" : amountUsed}
+            value={amountUsed}
             error={amountUsedErrorMessage}
             onChange={(evt: any) => {
               const {
@@ -238,7 +235,7 @@ export const AddDrug: FC<props> = ({
                 type="input"
                 placeholder="Example"
                 inputClass="comp-form-control"
-                value={amountDiscarded === -1 ? "" : amountDiscarded}
+                value={amountDiscarded}
                 onChange={(evt: any) => {
                   const {
                     target: { value },

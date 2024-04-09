@@ -49,6 +49,8 @@ export const HWCRComplaintPrevention: FC = () => {
   const [preventionRequiredErrorMessage, setPreventionRequiredErrorMessage] = useState<string>("");
   const [showContent, setShowContent] = useState<boolean>(true);
 
+  const currentDate = new Date();
+
   const complaintData = useAppSelector(selectComplaint);
   const preventionState = useAppSelector(selectPrevention);
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
@@ -288,7 +290,7 @@ export const HWCRComplaintPrevention: FC = () => {
                         className="comp-details-edit-calendar-input" // Adjust class as needed
                         classNamePrefix="comp-select" // Adjust class as needed
                         errMsg={preventionDateErrorMessage} // Pass error message if any
-                        maxDate={new Date()}
+                        maxDate={currentDate}
                       />
                     ) : (
                       formatDate(`${selectedDate}`)
