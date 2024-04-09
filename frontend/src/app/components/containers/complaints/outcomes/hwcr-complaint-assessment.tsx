@@ -29,7 +29,7 @@ import { ValidationDatePicker } from "../../../../common/validation-date-picker"
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
-import "../../../../../assets/sass/hwcr-assessment.scss"
+import "../../../../../assets/sass/hwcr-assessment.scss";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
@@ -37,10 +37,10 @@ export const HWCRComplaintAssessment: FC = () => {
     id: string;
     complaintType: string;
   };
-  const [selectedActionRequired, setSelectedActionRequired] = useState<Option>();
-  const [selectedJustification, setSelectedJustification] = useState<Option>();
+  const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
+  const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
-  const [selectedOfficer, setSelectedOfficer] = useState<Option>();
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
 
@@ -62,9 +62,9 @@ export const HWCRComplaintAssessment: FC = () => {
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-      }))
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+        }))
       : [];
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -77,6 +77,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const handleActionRequiredChange = (selected: Option | null) => {
     if (selected) {
       setSelectedActionRequired(selected);
+      setSelectedJustification(null as unknown as Option);
     } else {
       setSelectedActionRequired(undefined);
     }
@@ -107,10 +108,12 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getAssessment(complaintData.id));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
-      populateAssessmentUI();
+    populateAssessmentUI();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState]);
 
   // clear the redux state
@@ -120,17 +123,49 @@ export const HWCRComplaintAssessment: FC = () => {
     };
   }, [dispatch]);
 
-  
   const populateAssessmentUI = () => {
-    setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
-    setSelectedOfficer(assessmentState.officer);
-    setSelectedActionRequired(assessmentState.action_required);
-    setSelectedJustification(assessmentState.justification);
-    setSelectedAssessmentTypes(assessmentState.assessment_type);
+    const selectedOfficer = (
+      assessmentState.officer
+        ? {
+            label: assessmentState.officer?.key,
+            value: assessmentState.officer?.value,
+          }
+        : null
+    ) as Option;
+
+    const selectedActionRequired = (
+      assessmentState.action_required
+        ? {
+            label: assessmentState.action_required,
+            value: assessmentState.action_required,
+          }
+        : null
+    ) as Option;
+
+    const selectedJustification = (
+      assessmentState.justification
+        ? {
+            label: assessmentState.justification?.key,
+            value: assessmentState.justification?.value,
+          }
+        : null
+    ) as Option;
+
+    const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
+      return {
+        label: item.key,
+        value: item.value,
+      };
+    }) as Option[];
+
+    setSelectedDate(assessmentState.date ? new Date(assessmentState.date) : null);
+    setSelectedOfficer(selectedOfficer);
+    setSelectedActionRequired(selectedActionRequired);
+    setSelectedJustification(selectedJustification);
+    setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
   };
-
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "" : "comp-outcome-hide";
   const justificationEditClass =
@@ -139,7 +174,6 @@ export const HWCRComplaintAssessment: FC = () => {
   const cancelConfirmed = () => {
     populateAssessmentUI();
   };
-
 
   const cancelButtonClick = () => {
     dispatch(
@@ -157,15 +191,26 @@ export const HWCRComplaintAssessment: FC = () => {
 
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
-    const updatedAssessmentData = {
-      date: selectedDate,
-      officer: selectedOfficer,
-      action_required: selectedActionRequired,
-      justification: selectedJustification,
-      assessment_type: selectedAssessmentTypes,
-    } as Assessment;
-
     if (!hasErrors()) {
+      const updatedAssessmentData: Assessment = {
+        date: selectedDate,
+        officer: {
+          key: selectedOfficer?.label,
+          value: selectedOfficer?.value,
+        },
+        action_required: selectedActionRequired?.label,
+        justification: {
+          key: selectedJustification?.label,
+          value: selectedJustification?.value,
+        },
+        assessment_type: selectedAssessmentTypes?.map((item) => {
+          return {
+            key: item.label,
+            value: item.value,
+          };
+        }),
+      };
+
       dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
     } else {
@@ -227,7 +272,10 @@ export const HWCRComplaintAssessment: FC = () => {
           <div className="assessment-details-edit-column">
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
+                <div
+                  id="assessment-checkbox-div"
+                  className="comp-details-label-checkbox-div-pair"
+                >
                   <label
                     htmlFor="checkbox-div"
                     className="comp-details-inner-content-label checkbox-label-padding"
@@ -244,7 +292,12 @@ export const HWCRComplaintAssessment: FC = () => {
                   ) : (
                     <div>
                       {selectedAssessmentTypes.map((assesmentValue) => (
-                        <div className="checkbox-label-padding" key={assesmentValue.label}>{assesmentValue.label}</div>
+                        <div
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -253,7 +306,10 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="action-required-div" className="assessment-details-label-input-pair">
+                <div
+                  id="action-required-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label htmlFor="action-required">Action required?</label>
                   {editable ? (
                     <CompSelect
@@ -273,14 +329,17 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div id="justification-div" className="assessment-details-label-input-pair">
+                <div
+                  id="justification-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label
                     className={justificationLabelClass}
                     htmlFor="justification"
                   >
                     Justification
                   </label>
-                  {editable ?
+                  {editable ? (
                     <CompSelect
                       id="justification"
                       className={justificationEditClass}
@@ -291,16 +350,19 @@ export const HWCRComplaintAssessment: FC = () => {
                       value={selectedJustification}
                       placeholder="Select"
                       onChange={(e) => handleJustificationChange(e)}
-                    /> : <span className={justificationEditClass}>
-                      {selectedJustification?.label || ''}
-                    </span>
-                  }
+                    />
+                  ) : (
+                    <span className={justificationEditClass}>{selectedJustification?.label || ""}</span>
+                  )}
                 </div>
               </div>
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="outcome-officer-div" className="assessment-details-label-input-pair">
+                <div
+                  id="outcome-officer-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label htmlFor="outcome-officer">Officer</label>
                   {editable ? (
                     <CompSelect
@@ -330,7 +392,10 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
+                <div
+                  id="complaint-outcome-date-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label htmlFor="complaint-outcome-date">Date</label>
                   {editable ? (
                     <ValidationDatePicker

@@ -177,9 +177,9 @@ describe("HWCR Outcome Assessments", () => {
       if ($assessment.find('#assessment-edit-button').length) {
         cy.get("#assessment-edit-button").click();
 
-        fillInAssessment (["#ASSESSHLTH"], "No", "Jake Peralta", "01", "No public safety concern");
+        fillInAssessment (["#ASSESSHIST"], "No", "Jake Peralta", "01", "No public safety concern");
 
-        validateAssessment (["Assessed public safety risk", "Assessed health as per animal welfare guidelines"], "No", "Jake Peralta", "01", "No public safety concern");
+        validateAssessment (["Assessed public safety risk", "Assessed known conflict history"], "No", "Jake Peralta", "01", "No public safety concern");
       } else {
         cy.log('Assessment Not Found, did a previous test fail? Skip the Test')
         this.skip()

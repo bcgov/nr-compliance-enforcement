@@ -68,8 +68,9 @@
         font-weight: 700;
         line-height: 120%;
         margin-right: 16px;
+        margin-bottom: 0px;
       }
-      div {
+      .badge {
         color: $bc-standard-06;
         background-color: $bc-gov-info;
         font-size: 12px;
