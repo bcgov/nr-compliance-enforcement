@@ -17,7 +17,7 @@ export const HWCROutcomeByAnimal: FC = () => {
   const [animalOutcomeData, setAnimalOutcomeData] = useState<Array<AnimalOutcome>>([]);
   const [showAnimalOutcomeAddForm, setShowAnimalOutcomeAddForm] = useState<boolean>(false)
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
-  const complaintData = useAppSelector(selectComplaint) as WildlifeComplaint;
+  const complaintData = useAppSelector(selectComplaint);
 
   const {delegates} = complaintData as WildlifeComplaint || {};
 
@@ -35,7 +35,7 @@ export const HWCROutcomeByAnimal: FC = () => {
   const newEditAnimalOutcome: AnimalOutcome = {
     id: undefined,
     isInEditMode: true,
-    species: speciesList.find((item) => item.value === complaintData?.species),
+    species: speciesList.find((item) => item.value === (complaintData as WildlifeComplaint)?.species),
     age: undefined,
     sex: undefined,
     threatLevel: undefined,
