@@ -7,7 +7,6 @@ import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { CompIconButton } from "../../../../common/comp-icon-button";
 import Option from "../../../../../types/app/option";
-import { isPositiveNum } from "../../../../../common/methods";
 
 type props = {
   id: number;

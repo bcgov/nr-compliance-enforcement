@@ -352,7 +352,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             .orderBy((item) => item.id)
             .toArray()
             .map((item) => {
-            if(!item.vial || !item.drug || !item.amountUsed || !item.injectionMethod)
+            if(!item.vial || !item.drug || !item.amountUsed || !isPositiveNum(item.amountUsed) || !item.injectionMethod)
             {
               isValid = false;
             }
