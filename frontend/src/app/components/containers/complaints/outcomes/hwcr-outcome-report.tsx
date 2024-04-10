@@ -16,7 +16,8 @@ export const HWCROutcomeReport: FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getCaseFile(id))
+    dispatch(getCaseFile(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   return (
