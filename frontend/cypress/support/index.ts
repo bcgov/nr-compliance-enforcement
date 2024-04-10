@@ -27,5 +27,6 @@ declare namespace Cypress {
     navigateToTab(
       complaintTab: string,
       removeFilters: boolean): Chainable<void>;
+    validateComplaint(complaintIdentifier: string, species: string): Chainable<void>;
   }
 }

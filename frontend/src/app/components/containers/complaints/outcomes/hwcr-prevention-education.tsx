@@ -216,12 +216,12 @@ export const HWCRComplaintPrevention: FC = () => {
           </Button>
         </div>
         :
-        <div className="comp-outcome-report-complaint-assessment">
+        <div className="comp-outcome-report-complaint-prev-and-educ">
           <div className="comp-details-edit-container">
             <div className="assessment-details-edit-column">
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
-                  <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
+                  <div id="prev-educ-checkbox-div" className="comp-details-label-checkbox-div-pair">
                     <label
                       htmlFor="checkbox-div"
                       className="comp-details-inner-content-label checkbox-label-padding"
@@ -247,11 +247,11 @@ export const HWCRComplaintPrevention: FC = () => {
               </div>
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
-                  <div id="outcome-officer-div" className="assessment-details-label-input-pair">
-                    <label htmlFor="outcome-officer">Officer</label>
+                  <div id="prev-educ-outcome-officer-div" className="assessment-details-label-input-pair">
+                    <label htmlFor="prev-educ-outcome-officer">Officer</label>
                     {editable ? (
                       <CompSelect
-                        id="outcome-officer"
+                        id="prev-educ-outcome-officer"
                         className="comp-details-input"
                         classNamePrefix="comp-select"
                         options={assignableOfficers}
@@ -277,11 +277,11 @@ export const HWCRComplaintPrevention: FC = () => {
                   </div>
                 </div>
                 <div className="comp-details-edit-column comp-details-right-column">
-                  <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
-                    <label htmlFor="complaint-outcome-date">Date</label>
+                  <div id="prev-educ-outcome-date-div" className="assessment-details-label-input-pair">
+                    <label htmlFor="prev-educ-outcome-date">Date</label>
                     {editable ? (
                       <ValidationDatePicker
-                        id="complaint-outcome-date"
+                        id="prev-educ-outcome-date"
                         selectedDate={selectedDate}
                         onChange={handleDateChange}
                         placeholder="Select date"
@@ -312,7 +312,7 @@ export const HWCRComplaintPrevention: FC = () => {
             <div className="comp-outcome-report-container">
               <div className="comp-outcome-report-actions">
                 <Button
-                  id="outcome-cancel-button"
+                  id="prev-educ-outcome-cancel-button"
                   title="Cancel Outcome"
                   className="comp-outcome-cancel"
                   onClick={cancelButtonClick}
@@ -320,7 +320,7 @@ export const HWCRComplaintPrevention: FC = () => {
                   Cancel
                 </Button>
                 <Button
-                  id="outcome-save-button"
+                  id="outcome-save-prev-and-educ-button"
                   title="Save Outcome"
                   className="comp-outcome-save"
                   onClick={saveButtonClick}
