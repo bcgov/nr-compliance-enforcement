@@ -18,18 +18,23 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
-  const [assignedOfficer] = useState(assigned)
+  const [assignedOfficer] = useState(assigned);
 
   const [authorizedBy, setAuthorizedBy] = useState(drugAuthtorization?.officer);
-  const [authorizedOn, setAuthorizedOn] = useState(drugAuthtorization?.date);
+  const [authorizedOn, setAuthorizedOn] = useState<Date | undefined>();
 
   useEffect(() => {
-    if ((assigned && !authorizedBy)) {
+    if (assigned && !authorizedBy) {
       setAuthorizedBy(assigned);
-    } else if(assigned !== assignedOfficer && authorizedBy){
+    } else if (assigned !== assignedOfficer && authorizedBy) {
       setAuthorizedBy(assigned || "");
     }
   }, [assigned, authorizedBy, assignedOfficer]);
+
+  useEffect(() => {
+    const date = drugAuthtorization?.date ? new Date(drugAuthtorization?.date) : new Date();
+    setAuthorizedOn(date);
+  }, [drugAuthtorization]);
 
   const getValue = (property: string): Option | undefined => {
     if (property === "officer") {
@@ -37,25 +42,26 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
     }
   };
 
-
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
-    const newDrugAuth: DrugAuthorizationType = {officer: input ?? "", date: authorizedOn ?? undefined};
+    const newDrugAuth: DrugAuthorizationType = { officer: input ?? "", date: authorizedOn ?? undefined };
     update(newDrugAuth);
-
   };
 
   const handleAuthorizedOnChange = (input: Date | undefined | null) => {
     setAuthorizedOn(input ?? undefined);
-    
-    update({officer: authorizedBy, date: input ?? undefined});
+
+    update({ officer: authorizedBy, date: input ?? undefined });
   };
 
   return (
     <div className="comp-animal-outcome-report-inner-spacing">
       <Row>
         <Col md={5}>
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
+          <div
+            className="comp-details-label-input-pair"
+            id="officer-assigned-pair-id"
+          >
             <label
               id="officer-assigned-authorization-select-label-id"
               htmlFor="officer-assigned-authorization-select-id"
@@ -78,8 +84,14 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthtorization, updat
         </Col>
 
         <Col md="4">
-          <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-            <label id="drug-authorization-incident-time-label-id" htmlFor="drug-authorization-incident-time">
+          <div
+            className="comp-details-label-input-pair"
+            id="officer-assigned-pair-id"
+          >
+            <label
+              id="drug-authorization-incident-time-label-id"
+              htmlFor="drug-authorization-incident-time"
+            >
               Date
             </label>
             <DatePicker
