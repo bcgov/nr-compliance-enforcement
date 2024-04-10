@@ -273,45 +273,48 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const updateDrugFromInput = (drug: DrugUsed, type: string) => {
     const currentDrug = drugs.find(({ id }) => id === drug.id) ?? drug;
     const otherDrugs = drugs.filter(({ id }) => id !== drug.id);
-    if (type === "vial") {
-      currentDrug.vial = drug.vial;
-      if (!drug.vial) {
-        currentDrug.vialErrorMessage = "Required";
-      }
-      else {
-        currentDrug.vialErrorMessage = "";
-      }
-    }
-    else if (type === "drug") {
-      currentDrug.drug = drug.drug;
-      if (!drug.drug) {
-        currentDrug.drugErrorMessage = "Required";
-      }
-      else {
-        currentDrug.drugErrorMessage = "";
-      }
-    }
-    else if (type === "amountUsed") {
-      currentDrug.amountUsed = drug.amountUsed;
-      if (!drug.amountUsed) {
-        currentDrug.amountUsedErrorMessage = "Required";
-      }
-      else if (!isPositiveNum(drug.amountUsed)) {
-        currentDrug.amountUsedErrorMessage = "Must be a positive number";
-      }
-      else {
-        currentDrug.amountUsedErrorMessage = "";
-      }
+    switch (type) {
+      case "vial":
+        currentDrug.vial = drug.vial;
+        if (!drug.vial) {
+          currentDrug.vialErrorMessage = "Required";
+        }
+        else {
+          currentDrug.vialErrorMessage = "";
+        }
+        break;
+      case "drug":
+        currentDrug.drug = drug.drug;
+        if (!drug.drug) {
+          currentDrug.drugErrorMessage = "Required";
+        }
+        else {
+          currentDrug.drugErrorMessage = "";
+        }
+        break;
 
-    }
-    else if (type === "injectionMethod") {
-      currentDrug.injectionMethod = drug.injectionMethod;
-      if (!drug.injectionMethod) {
-        currentDrug.injectionMethodErrorMessage = "Required";
-      }
-      else {
-        currentDrug.injectionMethodErrorMessage = "";
-      }
+      case "amountUsed":
+        currentDrug.amountUsed = drug.amountUsed;
+        if (!drug.amountUsed) {
+          currentDrug.amountUsedErrorMessage = "Required";
+        }
+        else if (!isPositiveNum(drug.amountUsed)) {
+          currentDrug.amountUsedErrorMessage = "Must be a positive number";
+        }
+        else {
+          currentDrug.amountUsedErrorMessage = "";
+        }
+        break;
+      case "injectionMethod":
+        currentDrug.injectionMethod = drug.injectionMethod;
+        if (!drug.injectionMethod) {
+          currentDrug.injectionMethodErrorMessage = "Required";
+        }
+        else {
+          currentDrug.injectionMethodErrorMessage = "";
+        }
+        break;
+      default:
     }
     const update = [...otherDrugs, currentDrug];
 
