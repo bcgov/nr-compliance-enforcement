@@ -275,7 +275,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           drugAuthorization.officerErrorMessage = "";
           drugAuthorization.dateErrorMessage = "";
         }
-        setDrugAuthorization(drugAuthorization);
       }
       setDrugs(update);
   };
