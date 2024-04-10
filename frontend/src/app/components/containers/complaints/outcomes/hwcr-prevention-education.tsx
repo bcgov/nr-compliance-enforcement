@@ -10,9 +10,7 @@ import {
   selectComplaintCallerInformation,
   selectComplaintHeader,
 } from "../../../../store/reducers/complaints";
-import {
-  selectPreventionTypeCodeDropdown,
-} from "../../../../store/reducers/code-table";
+import { selectPreventionTypeCodeDropdown } from "../../../../store/reducers/code-table";
 import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
@@ -26,7 +24,7 @@ import { ValidationDatePicker } from "../../../../common/validation-date-picker"
 import { BsPencil, BsPlusCircle } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
-import "../../../../../assets/sass/hwcr-assessment.scss"
+import "../../../../../assets/sass/hwcr-assessment.scss";
 import { Prevention } from "../../../../types/outcomes/prevention";
 
 export const HWCRComplaintPrevention: FC = () => {
@@ -57,9 +55,9 @@ export const HWCRComplaintPrevention: FC = () => {
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-      }))
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+        }))
       : [];
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -84,12 +82,12 @@ export const HWCRComplaintPrevention: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getPrevention(complaintData.id));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
     populatePreventionUI();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preventionState]);
 
   // clear the redux state
@@ -99,23 +97,26 @@ export const HWCRComplaintPrevention: FC = () => {
     };
   }, [dispatch]);
 
-
   const populatePreventionUI = () => {
-
-    const selectedOfficer = (preventionState.officer ? {
-      label: preventionState.officer?.key,
-      value: preventionState.officer?.value
-    } :
-      null) as Option;
+    const selectedOfficer = (
+      preventionState.officer
+        ? {
+            label: preventionState.officer?.key,
+            value: preventionState.officer?.value,
+          }
+        : null
+    ) as Option;
 
     const selectedPreventionTypes = preventionState.prevention_type?.map((item) => {
       return {
         label: item.key,
-        value: item.value
-      }
+        value: item.value,
+      };
     }) as Option[];
 
-    setSelectedDate((preventionState.date) ? new Date(preventionState.date) : null);
+    const preventionDate = preventionState?.date ? new Date(preventionState.date) : new Date();
+
+    setSelectedDate(preventionDate);
     setSelectedOfficer(selectedOfficer);
     setSelectedPreventionTypes(selectedPreventionTypes);
     setShowContent(preventionState.prevention_type?.length > 0);
@@ -126,7 +127,6 @@ export const HWCRComplaintPrevention: FC = () => {
   const cancelConfirmed = () => {
     populatePreventionUI();
   };
-
 
   const cancelButtonClick = () => {
     dispatch(
@@ -149,13 +149,13 @@ export const HWCRComplaintPrevention: FC = () => {
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
-          value: selectedOfficer?.value
+          value: selectedOfficer?.value,
         },
         prevention_type: selectedPreventionTypes?.map((item) => {
           return {
             key: item.label,
-            value: item.value
-          }
+            value: item.value,
+          };
         }),
       };
 
@@ -203,7 +203,7 @@ export const HWCRComplaintPrevention: FC = () => {
   return (
     <div className="comp-outcome-report-block">
       <h6>Prevention and education</h6>
-      {!showContent ?
+      {!showContent ? (
         <div className="comp-outcome-report-button">
           <Button
             id="outcome-report-add-prevention-outcome"
@@ -215,13 +215,16 @@ export const HWCRComplaintPrevention: FC = () => {
             <BsPlusCircle />
           </Button>
         </div>
-        :
+      ) : (
         <div className="comp-outcome-report-complaint-assessment">
           <div className="comp-details-edit-container">
             <div className="assessment-details-edit-column">
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
-                  <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
+                  <div
+                    id="assessment-checkbox-div"
+                    className="comp-details-label-checkbox-div-pair"
+                  >
                     <label
                       htmlFor="checkbox-div"
                       className="comp-details-inner-content-label checkbox-label-padding"
@@ -238,7 +241,12 @@ export const HWCRComplaintPrevention: FC = () => {
                     ) : (
                       <div>
                         {selectedPreventionTypes.map((preventionValue) => (
-                          <div className="checkbox-label-padding" key={preventionValue.label}>{preventionValue.label}</div>
+                          <div
+                            className="checkbox-label-padding"
+                            key={preventionValue.label}
+                          >
+                            {preventionValue.label}
+                          </div>
                         ))}
                       </div>
                     )}
@@ -247,7 +255,10 @@ export const HWCRComplaintPrevention: FC = () => {
               </div>
               <div className="comp-details-edit-container">
                 <div className="comp-details-edit-column">
-                  <div id="outcome-officer-div" className="assessment-details-label-input-pair">
+                  <div
+                    id="outcome-officer-div"
+                    className="assessment-details-label-input-pair"
+                  >
                     <label htmlFor="outcome-officer">Officer</label>
                     {editable ? (
                       <CompSelect
@@ -277,7 +288,10 @@ export const HWCRComplaintPrevention: FC = () => {
                   </div>
                 </div>
                 <div className="comp-details-edit-column comp-details-right-column">
-                  <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
+                  <div
+                    id="complaint-outcome-date-div"
+                    className="assessment-details-label-input-pair"
+                  >
                     <label htmlFor="complaint-outcome-date">Date</label>
                     {editable ? (
                       <ValidationDatePicker
@@ -331,7 +345,7 @@ export const HWCRComplaintPrevention: FC = () => {
             </div>
           )}
         </div>
-      }
+      )}
     </div>
   );
 };
