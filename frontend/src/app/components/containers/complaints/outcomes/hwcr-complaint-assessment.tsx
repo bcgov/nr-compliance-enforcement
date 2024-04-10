@@ -31,7 +31,6 @@ import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 import "../../../../../assets/sass/hwcr-assessment.scss";
-import KeyValuePair from "../../../../types/app/key-value-pair";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
