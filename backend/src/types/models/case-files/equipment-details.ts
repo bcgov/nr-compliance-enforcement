@@ -1,7 +1,9 @@
 import { AssessmentActionDto } from "./assessment-action";
 export interface EquipmentDetailsDto { 
-    actionEquipmentTypeCode: string;
-    actionEquipmentTypeActiveIndicator: boolean;
+    equipmentTypeCode: string;
+    equipmentTypeShortDescription;
+    equipmentTypeLongDescription;
+    equipmentTypeActiveIndicator: boolean;
     address: string;
     xCoordinate: string;
     yCoordinate: string;

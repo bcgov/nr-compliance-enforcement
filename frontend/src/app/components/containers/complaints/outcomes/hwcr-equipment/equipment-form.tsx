@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
@@ -16,48 +15,41 @@ import {
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { ToggleError, ToggleSuccess } from "../../../../../common/toast";
-import { getSelectedOfficer, bcBoundaries } from "../../../../../common/methods";
+import { bcBoundaries } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
 
 import "react-toastify/dist/ReactToastify.css";
 import { Coordinates } from "../../../../../types/app/coordinate-type";
-import { Equipment } from "../../../../../types/outcomes/equipment";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
+import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
 import { upsertEquipment } from "../../../../../store/reducers/cases";
+import { CaseActionDto } from "../../../../../types/app/case-files/case-action";
+import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 
 export interface EquipmentFormProps {
-  isInEditMode: boolean;
-  setIsInEditMode: (param: any) => void | null;
-  equipmentItemData?: Equipment | null;
-  setEquipmentItemData?: (param: any) => void | null;
-  equipmentData?: Array<Equipment>;
-  setEquipmentData?: (param: any) => void | null;
-  indexItem?: number;
-  setShowEquipmentForm?: (param: boolean) => void | null;
+  equipment?: EquipmentDetailsDto;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export const EquipmentForm: FC<EquipmentFormProps> = ({
-  isInEditMode,
-  equipmentData,
-  indexItem,
-  setIsInEditMode,
-  equipmentItemData,
-  setEquipmentItemData,
-  setShowEquipmentForm,
-  setEquipmentData,
+  equipment,
+  onSave,
+  onCancel
+
 }) => {
-  const [type, setType] = useState<Option | undefined>();
+  const [type, setType] = useState<Option>();
   const [dateSet, setDateSet] = useState<Date>();
   const [dateRemoved, setDateRemoved] = useState<Date>();
   const [officerSet, setOfficerSet] = useState<Option>();
   const [officerRemoved, setOfficerRemoved] = useState<Option>();
   const [address, setAddress] = useState<string | undefined>("");
-  const [xCoordinate, setXCoordinate] = useState<string>("");
-  const [yCoordinate, setYCoordinate] = useState<string>("");
+  const [xCoordinate, setXCoordinate] = useState<string | undefined>("");
+  const [yCoordinate, setYCoordinate] = useState<string | undefined>("");
   const [equipmentTypeErrorMsg, setEquipmentTypeErrorMsg] = useState<string>("");
   const [officerSetErrorMsg, setOfficerSetErrorMsg] = useState<string>("");
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
@@ -69,7 +61,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
 
@@ -88,34 +79,37 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
-    if (complaintData) {
-      const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
-      setOfficerSet(officer);
-    }
-  }, [complaintData]);
 
-  useEffect(() => {
-    if (equipmentItemData) {
-      const { type, address, dateSet, dateRemoved, officerSet, officerRemoved, xCoordinate, yCoordinate } =
-        equipmentItemData;
-      setType(type);
-      setAddress(address);
-      setXCoordinate(xCoordinate);
-      setYCoordinate(yCoordinate);
-      setDateRemoved(dateRemoved);
-      setDateSet(dateSet);
-      setOfficerSet(officerSet);
-      setOfficerRemoved(officerRemoved);
-    }
-  }, [equipmentItemData]);
+      // set the equipment type code in the form
+      setType(getValue("equipment"));
+      
+      setAddress(equipment?.address);
+      setXCoordinate(equipment?.xCoordinate);
+      setYCoordinate(equipment?.yCoordinate);
+
+      equipment?.actions?.forEach(action => {
+        if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT && equipment.actions) {
+          //setOfficerSet(officerSet);
+          setDateSet(new Date(action.date));
+        } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT) {
+          //setOfficerRemoved(officerRemoved);
+          setDateRemoved(new Date(action.date));
+        }
+      });
+
+    }, [equipment]);
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
       setYCoordinate(input);
-      handleGeoPointChange(input, xCoordinate);
+      if (xCoordinate) {
+        handleGeoPointChange(input, xCoordinate);
+      }
     } else {
       setXCoordinate(input);
-      handleGeoPointChange(yCoordinate, input);
+      if (yCoordinate) {
+        handleGeoPointChange(yCoordinate, input);
+      }
     }
   };
 
@@ -213,42 +207,45 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       return;
     }
 
-    //No errors then create/save new equipment info
-    const newEquipment = {
-      id: isInEditMode ? equipmentItemData?.id : uuidv4(),
-      type,
-      address,
-      xCoordinate,
-      yCoordinate,
-      officerSet,
-      dateSet,
-      officerRemoved,
-      dateRemoved,
-    } as Equipment;
-    if (isInEditMode) {
-      //editing existing equipment
-      const newEquipmentArr = equipmentData?.map((equipment, i) => {
-        if (i === indexItem) {
-          return newEquipment;
-        } else {
-          return equipment;
-        }
-      });
+    let actions = [
+      {
+        actor: officerSet?.value,
+        date: dateSet,
+        activeIndicator: true,
+        actionCode: CASE_ACTION_CODE.SETEQUIPMT,
+      },
+    ] as CaseActionDto[];
 
-      setIsInEditMode(false);
+    // if this equipment has also been removed by an officer, set that action as well
+    if (dateRemoved && officerRemoved?.value) {
+      actions.push({
+        actor: officerRemoved.value,
+        date: dateRemoved,
+        activeIndicator: true,
+        actionCode: CASE_ACTION_CODE.REMEQUIPMT,
+      } as CaseActionDto);
     }
-    // adding new equipment
-    if (!isInEditMode && setShowEquipmentForm) {
-      dispatch(upsertEquipment(id, newEquipment));
-      ToggleSuccess(`Equipment has been saved`);
-      setShowEquipmentForm(false);
-    } else {
-      return;
+
+    // Create an equipment object to persist
+    if (type) {
+      const equipmentDetails = {
+        equipmentGuid: equipment?.equipmentGuid,
+        equipmentTypeCode: type.value,
+        equipmentTypeActiveIndicator: true,
+        address: address,
+        xCoordinate: xCoordinate,
+        yCoordinate: yCoordinate,
+        actions: actions,
+      } as EquipmentDetailsDto;
+
+      dispatch(upsertEquipment(id, equipmentDetails));
+      onSave();
     }
   };
+  
 
   const handleFormErrors = () => {
-    const errorMsg = isInEditMode ? "Errors editing equipment" : "Errors creating equipment";
+    const errorMsg = equipment?.equipmentGuid ? "Errors editing equipment" : "Errors creating equipment";
     ToggleError(errorMsg);
   };
 
@@ -268,14 +265,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
 
   const cancelConfirmed = () => {
     resetData();
-    if (isInEditMode) {
-      if (equipmentItemData) {
-        equipmentItemData.isEdit = false;
-      }
-      setIsInEditMode(false);
-      if (setEquipmentItemData) setEquipmentItemData(null);
-    }
-    if (setShowEquipmentForm) setShowEquipmentForm(false);
+    onCancel();
+
   };
 
   const resetData = () => {
@@ -285,6 +276,24 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
     setXCoordinateErrorMsg("");
     setYCoordinateErrorMsg("");
   };
+
+  // needed to turn equipment type codes into descriptions
+  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
+
+    // for turning codes into values
+    const getValue = (property: string): Option | undefined => {
+      switch (property) {
+        case "equipment": {
+          return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
+        }
+        case "officer": {
+
+        }
+      }
+    };
+    
+  
+  
 
   const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
 
@@ -307,7 +316,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
               enableValidation={true}
               errorMessage={equipmentTypeErrorMsg}
               onChange={(type: any) => setType(type)}
-              defaultOption={equipmentItemData?.type}
+              defaultOption={type}
+              value={type}
             />
           </div>
         </div>

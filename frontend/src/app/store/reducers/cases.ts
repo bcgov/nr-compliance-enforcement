@@ -21,7 +21,6 @@ import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplem
 import { UUID } from "crypto";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { Equipment } from "../../types/outcomes/equipment";
 import { CreateEquipmentInput } from "../../types/app/case-files/create-equipment-input";
 
 const initialState: CasesState = {
@@ -740,70 +739,63 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
   };
 
   export const upsertEquipment =
-  (complaintIdentifier: string, equipment: Equipment): AppThunk =>
-  async (dispatch) => {
+  (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
+  async (dispatch, getState) => {
     if (!equipment) {
       return;
     }
     const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    //if (!caseIdentifier) {
-      dispatch(addEquipment(complaintIdentifier, equipment));
-    //} else {
-    //dispatch(updateEquipment(complaintIdentifier, caseIdentifier, equipment));
-    //}
-  };
 
-  const addEquipment =
-  (complaintIdentifier: string, equipment: Equipment): AppThunk =>
-  async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType },
       officers: { officers },
       app: { profile },
     } = getState();
 
-    let actions = [
-      {
-        date: equipment.dateSet,
-        actor: equipment.officerSet.value,
-        activeIndicator: true,
-        actionCode: "SETEQUIPMT",
-      },
-    ];
-
-    if (equipment.dateRemoved) {
-      actions.push({
-        date: equipment.dateRemoved,
-        actor: equipment.officerRemoved?.value,
-        activeIndicator: true,
-        actionCode: "REMEQUIPMT",
+    debugger;
+    
+    // equipment does not exist, let's create it
+    if (caseIdentifier && !equipment.equipmentGuid) {
+      let createEquipmentInput = {
+        createEquipmentInput: {
+          leadIdentifier: complaintIdentifier,
+          createUserId: profile.idir_username,
+          agencyCode: "COS",
+          caseCode: "HWCR",
+          equipment: [equipment],
+        },
+      } as CreateEquipmentInput;
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
+      await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        if (res) {
+          dispatch(setCaseFile(res));
+          ToggleSuccess(`Equipment has been updated`);
+        } else {
+          ToggleError(`Unable to update equipment`);
+        }
       });
-    }
+    } else { // equipment exists, we're updating it here
+      let updateEquipmentInput = {
+        createEquipmentInput: {
+          leadIdentifier: complaintIdentifier,
+          createUserId: profile.idir_username,
+          agencyCode: "COS",
+          caseCode: "HWCR",
+          equipment: [equipment],
+        },
+      } as CreateEquipmentInput;
 
-    // Transform the equipment array into the structure expected by EquipmentDetailsDto
-    const equipmentDetails = {
-      actionEquipmentTypeCode: equipment.type.value,
-      actionEquipmentTypeActiveIndicator: true,
-      address: equipment.address,
-      xCoordinate: equipment.xCoordinate,
-      yCoordinate: equipment.yCoordinate,
-      actions: actions,
-    } as EquipmentDetailsDto;
-
-    let createEquipmentInput = {
-      createEquipmentInput: {
-        leadIdentifier: complaintIdentifier,
-        createUserId: profile.idir_username,
-        agencyCode: "COS",
-        caseCode: "HWCR",
-        equipment: [equipmentDetails],
-      },
-    } as CreateEquipmentInput;
-debugger;
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
-    await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      dispatch(setCaseFile(res));
-    });
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, updateEquipmentInput);
+      await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        if (res) {
+          dispatch(setCaseFile(res));
+          ToggleSuccess(`Equipment has been created`);
+        } else {
+          ToggleError(`Unable to create equipment`);
+        }
+      });
+     }
+    
   };
 
 export default casesSlice.reducer;

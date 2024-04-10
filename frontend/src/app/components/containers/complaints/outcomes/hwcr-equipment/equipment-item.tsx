@@ -8,12 +8,17 @@ import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-m
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
 import { selectOfficerByPersonGuid } from "../../../../../store/reducers/officer";
 import { useAppSelector } from "../../../../../hooks/hooks";
+import { Equipment } from "../../../../../types/outcomes/equipment";
+import Option from "../../../../../types/app/option";
+import { selectEquipment } from "../../../../../store/reducers/cases";
+import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
+import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 
 interface EquipmentDetailsWithVariables {
-  actionEquipmentTypeCode: string;
-  actionEquipmentTypeShortDescription?: string;
-  actionEquipmentTypeLongDescription?: string;
-  actionEquipmentTypeActiveIndicator: boolean;
+  equipmentTypeCode: string;
+  equipmentTypeShortDescription?: string;
+  equipmentTypeLongDescription?: string;
+  equipmentTypeActiveIndicator: boolean;
   address?: string;
   xCoordinate: string;
   yCoordinate: string;
@@ -24,12 +29,9 @@ interface EquipmentDetailsWithVariables {
 }
 
 interface EquipmentItemProps {
-  isInEditMode: boolean
-  equipment: EquipmentDetailsDto
-  indexItem: number
-  handleDelete: (param: any) => void | null
-  setIsInEditMode: (param: any) => void | null
-  setEditEquipment: (param: any) => void | null
+  equipment: EquipmentDetailsDto; 
+  onEdit: (guid: string) => void
+
 }
 
 function processEquipmentDetails(details: EquipmentDetailsDto): EquipmentDetailsWithVariables {
@@ -41,16 +43,12 @@ function processEquipmentDetails(details: EquipmentDetailsDto): EquipmentDetails
   let removedBy: string | undefined;
   let removedDate: Date | undefined;
 
-  // Iterate through actions
-
-  
   details.actions?.forEach(action => {
-    if (action.actionCode === "SETEQUIPMT") {
+    if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT) {
       const setOfficer = useAppSelector(selectOfficerByPersonGuid(action.actor));
-      
       setBy =`${setOfficer?.person_guid.first_name} ${setOfficer?.person_guid.last_name}`;
       setDate = new Date(action.date);
-    } else if (action.actionCode === "REMEQUIPMT") {
+    } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT) {
       const removedOfficer = useAppSelector(selectOfficerByPersonGuid(action.actor));
       removedBy =`${removedOfficer?.person_guid.first_name} ${removedOfficer?.person_guid.last_name}`;
       removedDate = new Date(action.date);
@@ -72,22 +70,28 @@ function processEquipmentDetails(details: EquipmentDetailsDto): EquipmentDetails
 
 export const EquipmentItem: FC<EquipmentItemProps> = ({ 
   equipment,
-  isInEditMode,
-  setIsInEditMode,
-  setEditEquipment,
-  handleDelete,
-  indexItem
+  onEdit,
 }) => {
-  const isActive = !equipment.actionEquipmentTypeActiveIndicator
+
   const [showModal, setShowModal] = useState(false);
 
   const handleEdit = (equipment: EquipmentDetailsDto) => {
-    if(!isInEditMode) {
-      //equipment.isEdit = true;
-      setIsInEditMode(true);
-      setEditEquipment(equipment);
+    if (equipment.equipmentGuid) {
+      onEdit(equipment.equipmentGuid);
     }
   }
+
+  // for turning codes into values
+  const getValue = (property: string): Option | undefined => {
+    switch (property) {
+      case "equipment": {
+        return equipmentTypeCodes.find((item) => item.value === equipment.equipmentTypeCode);
+      }
+    }
+  };
+  
+
+  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
 
   const processedEquipment = processEquipmentDetails(equipment);
   
@@ -99,17 +103,17 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
         content="All the data in this section will be lost."
         onHide={() => setShowModal(false)}
         onDelete={() => {
-          handleDelete(indexItem);
+          //handleDelete(indexItem);
           setShowModal(false);
         }}
         confirmText="Yes, delete equipment"
       />
       <div className="comp-outcome-report-complaint-assessment equipment-item">
-        {isActive && <div className="status-bar"></div>}
+        {equipment.equipmentGuid && <div className="status-bar"></div>}
         <div className="equipment-item-header">
           <div className="title">
-            <h6>{equipment.actionEquipmentTypeShortDescription}</h6>
-            {isActive && <div className="badge">Active</div>}
+            <h6>{getValue("equipment")?.label}</h6>
+            {equipment.equipmentGuid && <div className="badge">Active</div>}
           </div>
           <div>
             <CompTextIconButton
@@ -157,7 +161,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
               <div className="label">Set by</div>
               <div className="comp-details-content">
                 <div
-                  data-initials-sm={getAvatarInitials(processedEquipment.setBy ?? '')}
+                  data-initials-sm={getAvatarInitials(`${processedEquipment.setBy}`)}
                   className="comp-pink-avatar-sm"
                 >
                   <span
@@ -180,7 +184,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
             </div>
           </Col>
         </Row>
-        {!isActive && processedEquipment.removedBy &&
+        {equipment.equipmentGuid && processedEquipment.removedBy &&
           <Row>
             <Col xs={12} md={4}>
               <div className="equipment-item-content">

@@ -52,8 +52,8 @@ export class CaseFileService {
     }
     equipment {
       equipmentGuid
-      actionEquipmentTypeCode
-      actionEquipmentTypeActiveIndicator
+      equipmentTypeCode
+      equipmentTypeActiveIndicator
       address
       xCoordinate
       yCoordinate
