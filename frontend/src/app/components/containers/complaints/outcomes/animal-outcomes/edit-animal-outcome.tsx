@@ -161,7 +161,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     if (tags.length < 2) {
       let id = tags.length + 1;
 
-      if (tags.length == 1) {
+      if (tags.length === 1) {
         const update = [...tags, { id, ear: "", number: "" }];
         setTags(update);
       } else {
