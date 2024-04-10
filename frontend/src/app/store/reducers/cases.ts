@@ -2,7 +2,7 @@ import { Assessment } from "../../types/outcomes/assessment";
 import { AppThunk, RootState } from "../store";
 import { createAction, createSlice, Action, ThunkAction } from "@reduxjs/toolkit";
 import config from "../../../config";
-import { generateApiParameters, get, patch, post } from "../../common/api";
+import { deleteMethod, generateApiParameters, get, patch, post } from "../../common/api";
 import { CasesState } from "../../types/state/cases-state";
 import { CreateAssessmentInput } from "../../types/app/case-files/create-assessment-input";
 import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessment-input";
@@ -21,7 +21,8 @@ import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplem
 import { UUID } from "crypto";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { CreateEquipmentInput } from "../../types/app/case-files/create-equipment-input";
+import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
+import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 
 const initialState: CasesState = {
   caseId: undefined,
@@ -741,6 +742,36 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
     return cases.equipment;
   };
 
+  export const deleteEquipment =
+  (equipmentGuid: string): AppThunk =>
+  async (dispatch, getState) => {
+    if (!equipmentGuid) {
+      return;
+    }
+
+    const {
+      app: { profile },
+    } = getState();
+
+
+    const deleteEquipmentInput = {
+      equipmentGuid: equipmentGuid,
+      updateUserId: profile.idir_username,
+    };
+    
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
+      await deleteMethod<Boolean>(dispatch, parameters).then(async (res) => {
+        if (res) {
+          // remove equipment from state
+          const updatedEquipment = getState().cases.equipment.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
+          dispatch(setCaseFile({ equipment: updatedEquipment }));
+          ToggleSuccess(`Equipment has been deleted`);
+        } else {
+          ToggleError(`Unable to update equipment`);
+        }
+      });
+     }
+
   export const upsertEquipment =
   (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
   async (dispatch, getState) => {
@@ -755,8 +786,6 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
       app: { profile },
     } = getState();
 
-    debugger;
-    
     // equipment does not exist, let's create it
     if (caseIdentifier && !equipment.equipmentGuid) {
       let createEquipmentInput = {
@@ -771,6 +800,7 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
+          debugger;
           dispatch(setCaseFile(res));
           ToggleSuccess(`Equipment has been updated`);
         } else {
@@ -779,22 +809,22 @@ export const updateReview = (complaintId: string, isReviewRequired: boolean): Ap
       });
     } else { // equipment exists, we're updating it here
       let updateEquipmentInput = {
-        createEquipmentInput: {
+        updateEquipmentInput: {
           leadIdentifier: complaintIdentifier,
           createUserId: profile.idir_username,
           agencyCode: "COS",
           caseCode: "HWCR",
           equipment: [equipment],
         },
-      } as CreateEquipmentInput;
+      } as UpdateEquipmentInput;
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, updateEquipmentInput);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
-          ToggleSuccess(`Equipment has been created`);
+          ToggleSuccess(`Equipment has been updated`);
         } else {
-          ToggleError(`Unable to create equipment`);
+          ToggleError(`Unable to update equipment`);
         }
       });
      }

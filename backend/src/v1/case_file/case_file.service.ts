@@ -7,6 +7,8 @@ import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { EquipmentDetailsDto } from "src/types/models/case-files/supplemental-notes/equipment/equipment-details";
+import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -243,8 +245,27 @@ export class CaseFileService {
     );
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateEquipment;
+  }
+
+  deleteEquipment = async (
+    token: string,
+    model: DeleteEquipmentDto
+  ): Promise<Boolean> => {
+
+    const result = await post(token, {
+      query: `mutation DeleteEquipment($deleteEquipmentInput: DeleteEquipmentInput!) {
+        deleteEquipment(deleteEquipmentInput: $deleteEquipmentInput) 
+      }`,
+      variables: {
+        deleteEquipmentInput: model // Ensure that the key matches the name of the variable in your mutation
+      }
+    },
+    );
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue;
 
   }
+
   createNote = async (token: any, model: CreateSupplementalNotesInput): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {

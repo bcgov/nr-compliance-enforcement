@@ -7,10 +7,10 @@ import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
 import { selectOfficerByPersonGuid } from "../../../../../store/reducers/officer";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { Equipment } from "../../../../../types/outcomes/equipment";
 import Option from "../../../../../types/app/option";
-import { selectEquipment } from "../../../../../store/reducers/cases";
+import { deleteEquipment, selectEquipment } from "../../../../../store/reducers/cases";
 import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 
@@ -73,6 +73,8 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
   onEdit,
 }) => {
 
+  const dispatch = useAppDispatch();
+
   const [showModal, setShowModal] = useState(false);
 
   const handleEdit = (equipment: EquipmentDetailsDto) => {
@@ -89,8 +91,13 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
       }
     }
   };
-  
 
+  const handleDeleteEquipment = (equipmentGuid: string | undefined) => {
+    if (equipmentGuid) {
+      dispatch(deleteEquipment(equipmentGuid));
+    }
+  };
+  
   const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
 
   const processedEquipment = processEquipmentDetails(equipment);
@@ -103,7 +110,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
         content="All the data in this section will be lost."
         onHide={() => setShowModal(false)}
         onDelete={() => {
-          //handleDelete(indexItem);
+          handleDeleteEquipment(equipment.equipmentGuid);
           setShowModal(false);
         }}
         confirmText="Yes, delete equipment"

@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -8,6 +8,7 @@ import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -28,6 +29,18 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async updateEquipment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.updateEquipment(token, model);
+  }
+
+  @Delete("/equipment")
+  @Roles(Role.COS_OFFICER)
+  async deleteEquipment(@Token() token,
+                        @Query('equipmentGuid') equipmentGuid: string,
+                        @Query('updateUserId') updateUserId: string,): Promise<Boolean> {
+      const deleteEquipment = {
+        equipmentGuid: equipmentGuid,
+        updateUserId: updateUserId,
+      }
+    return await this.service.deleteEquipment(token, deleteEquipment);
   }
 
   @Post("/createAssessment")
