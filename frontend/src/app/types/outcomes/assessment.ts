@@ -5,7 +5,7 @@ export interface Assessment {
   action_required?: string | null
   justification?: KeyValuePair,
   officer?: KeyValuePair;
-  date?: Date;
+  date?: Date | null;
   createdBy?: string;
   createdAt?: Date;
   updatedBy?: string;
