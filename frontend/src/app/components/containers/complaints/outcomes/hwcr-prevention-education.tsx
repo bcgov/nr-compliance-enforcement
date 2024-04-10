@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { selectPrevention, getPrevention, resetPrevention, upsertPrevention } from "../../../../store/reducers/cases";
+import { resetPrevention } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -26,6 +26,8 @@ import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 import "../../../../../assets/sass/hwcr-assessment.scss";
 import { Prevention } from "../../../../types/outcomes/prevention";
+import { selectPrevention } from "../../../../store/reducers/case-selectors";
+import { getPrevention, upsertPrevention } from "../../../../store/reducers/case-thunks";
 
 export const HWCRComplaintPrevention: FC = () => {
   const dispatch = useAppDispatch();
