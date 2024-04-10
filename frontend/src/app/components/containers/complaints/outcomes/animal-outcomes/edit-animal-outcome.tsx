@@ -154,7 +154,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         .map((item) => {
           const { id } = item;
           return (
-            <AddEarTag {...item} update={updateEarTag} remove={removeEarTag} key={id} />
+            <AddEarTag {...item} update={updateEarTagFromInput} remove={removeEarTag} key={id} />
           );
         });
   }
@@ -175,6 +175,32 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         setTags(newTags);
       }
     }
+  };
+
+  const updateEarTagFromInput = (tag: AnimalTag, type: string) => {
+    const currentTag = tags.find(({ id }) => id === tag.id) ?? tag;
+    const otherTags = tags.filter(({ id }) => id !== tag.id);
+    if(type === "number")
+    {
+      currentTag.number = tag.number;
+      if(!tag.number)
+            {
+              currentTag.numberErrorMessage = "Required";
+            }
+            else
+            {
+              currentTag.numberErrorMessage = "";
+            }
+          }
+      else if(type === "ear")
+      {
+        currentTag.ear = tag.ear;
+      }
+
+
+            const update = [...otherTags, currentTag];
+
+            setTags(update);
   };
 
   const updateEarTag = (tag: AnimalTag) => {
@@ -242,9 +268,81 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         updatedId = updatedId + 1;
         return { ...item, id: updatedId };
       });
+      if(update.length === 0)
+      {
+        if(drugAuthorization)
+        {
+          drugAuthorization.officerErrorMessage = "";
+          drugAuthorization.dateErrorMessage = "";
+        }
+        setDrugAuthorization(drugAuthorization);
+      }
       setDrugs(update);
   };
 
+  //this feels awful and hacky -- when updating individual inputs within the child component, only update one error message in the input
+  const updateDrugFromInput = (drug: DrugUsed, type: string) => {
+    const currentDrug = drugs.find(({ id }) => id === drug.id) ?? drug;
+    const otherDrugs = drugs.filter(({ id }) => id !== drug.id);
+    if(type === "vial")
+    {
+      currentDrug.vial = drug.vial;
+      if(!drug.vial)
+            {
+              currentDrug.vialErrorMessage = "Required";
+            }
+            else
+            {
+              currentDrug.vialErrorMessage = "";
+            }
+          }
+          if(type === "drug")
+    {
+      currentDrug.drug = drug.drug;
+            if(!drug.drug)
+            {
+              currentDrug.drugErrorMessage = "Required";
+            }
+            else
+            {
+              currentDrug.drugErrorMessage = "";
+            }
+          }
+          if(type === "amountUsed")
+    {
+      currentDrug.amountUsed = drug.amountUsed;
+            if(!drug.amountUsed)
+            {
+              currentDrug.amountUsedErrorMessage = "Required";
+            }
+            else if(!isPositiveNum(drug.amountUsed))
+            {
+              currentDrug.amountUsedErrorMessage = "Must be a positive number";
+            }
+            else
+            {
+              currentDrug.amountUsedErrorMessage = "";
+            }
+
+          }
+          if(type === "injectionMethod")
+    {
+      currentDrug.injectionMethod = drug.injectionMethod;
+            if(!drug.injectionMethod)
+            {
+              currentDrug.injectionMethodErrorMessage = "Required";
+            }
+            else
+            {
+              currentDrug.injectionMethodErrorMessage = "";
+            }
+          }
+    const update = [...otherDrugs, currentDrug];
+
+    setDrugs(update);
+  };
+
+  //update all input validation
   const updateDrug = (drug: DrugUsed) => {
     if(!drug.vial)
             {
@@ -320,7 +418,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             .toArray()
             .map((item) => {
               const { id } = item;
-              return <AddDrug {...item} update={updateDrug} remove={removeDrug} key={id} />;
+              return <AddDrug {...item} update={updateDrugFromInput} remove={removeDrug} key={id} />;
             })}
 
           <AddDrugAuthorization drugAuthorization={drugAuthorization} agency={complaintData?.ownedBy ?? 'COS'} update={updateDrugAuthorization} />

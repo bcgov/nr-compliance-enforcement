@@ -27,8 +27,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, number };
     const updatedTag = { ...source, [property]: value };
-
-    update(updatedTag);
+    update(updatedTag, property);
   };
 
   return (

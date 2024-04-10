@@ -65,8 +65,8 @@ export const AddDrug: FC<props> = ({
       injectionMethod,
       discardMethod,
     };
-    const updatedTag = { ...source, [property]: value };
-    update(updatedTag);
+    const updatedDrug = { ...source, [property]: value };
+    update(updatedDrug, property);
   };
 
   const getValue = (property: string): Option | undefined => {
