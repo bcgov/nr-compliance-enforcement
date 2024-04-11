@@ -25,7 +25,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
               <div className="comp-details-label-div-pair">
                 <label
                   className="comp-details-inner-content-label"
-                  htmlFor="comp-review-required-officer"
+                  htmlFor="comp-notes-officer"
                 >
                   Officer
                 </label>
@@ -34,7 +34,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
                   className="comp-orange-avatar-sm comp-details-inner-content"
                 >
                   <span
-                    id="comp-review-required-officer"
+                    id="comp-notes-officer"
                     className="comp-padding-left-xs"
                   >
                     {displayName}
@@ -66,6 +66,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
         </div>
         <div className="comp-details-right-column">
           <CompTextIconButton
+            id="notes-edit-button"
             buttonClasses="button-text"
             text="Edit"
             icon={BsPencil}

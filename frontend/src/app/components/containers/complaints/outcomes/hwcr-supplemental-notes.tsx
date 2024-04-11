@@ -35,7 +35,7 @@ export const HWCRSupplementalNotes: FC = () => {
       return (
         <div className="comp-outcome-report-button">
           <Button
-            id="outcome-report-add-outcome"
+            id="outcome-report-add-note"
             title="Add outcome"
             variant="primary"
             onClick={(e) => setShowInput(true)}
