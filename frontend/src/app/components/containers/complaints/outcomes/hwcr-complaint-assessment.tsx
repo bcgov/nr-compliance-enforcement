@@ -110,12 +110,12 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getAssessment(complaintData.id));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
     populateAssessmentUI();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState]);
 
   // clear the redux state
@@ -160,7 +160,9 @@ export const HWCRComplaintAssessment: FC = () => {
       };
     }) as Option[];
 
-    setSelectedDate(assessmentState.date ? new Date(assessmentState.date) : null);
+    const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+
+    setSelectedDate(assesmentDate);
     setSelectedOfficer(selectedOfficer);
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
