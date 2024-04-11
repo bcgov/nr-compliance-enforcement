@@ -35,6 +35,11 @@ describe("HWCR Outcome Prevention and Education", () => {
     cy.get("#prev-educ-outcome-date-div").should(($div) => {
         expect($div).to.contain.text(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
     });
+
+    //validate the toast
+    cy.get(".Toastify__toast-body").then(($toast) => {
+      expect($toast).to.contain.text("Prevention and education has been updated");
+    });
   };
 
   beforeEach(function () {
@@ -96,11 +101,6 @@ describe("HWCR Outcome Prevention and Education", () => {
         cy.validateComplaint("23-030330", "Black Bear");
         fillInPreventionAndEducation (["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01")
         validatePreventionAndEducation (["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"], "Olivia Benson", "01");
-
-        //validate the toast
-        cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Prevention and education has been updated");
-        });
       } else {
         cy.log('Test was previously run. Skip the Test');
         this.skip();
@@ -142,7 +142,7 @@ describe("HWCR Outcome Prevention and Education", () => {
     });
   });
 
-  it("it can edit an existing assessment", () => {
+  it("it can edit an existing prevention and education", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
 
     cy.validateComplaint("23-030330", "Black Bear");
@@ -157,12 +157,6 @@ describe("HWCR Outcome Prevention and Education", () => {
         validatePreventionAndEducation (["Provided safety information to the public", 
           "Contacted bylaw to assist with managing attractants", 
           "Contacted biologist and/or veterinarian"], "Jake Peralta", "01");
-
-        //validate the toast
-        cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Prevention and education has been updated");
-        });
-
       } else {
         cy.log('Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test')
         this.skip()

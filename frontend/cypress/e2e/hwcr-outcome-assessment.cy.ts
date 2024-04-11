@@ -84,6 +84,11 @@ describe("HWCR Outcome Assessments", () => {
     cy.get("#complaint-outcome-date-div").should(($div) => {
         expect($div).to.contain.text(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
     });
+
+    //validate the toast
+    cy.get(".Toastify__toast-body").then(($toast) => {
+      expect($toast).to.contain.text("Assessment has been updated");
+    });
   };
 
   beforeEach(function () {
@@ -108,6 +113,20 @@ describe("HWCR Outcome Assessments", () => {
         //validate error message
         cy.get(".error-message").should(($error) => {
             expect($error).to.contain.text("One or more assessment is required");
+        });
+
+        //validate Action Required is required
+        cy.get("#action-required-div").find(".error-message").should("exist");
+
+        //validate officer is required
+        cy.get("#outcome-officer-div").find(".error-message").should("exist");
+
+        //validate the date is required
+        cy.get("#complaint-outcome-date-div").find(".error-message").should("exist");
+
+        //validate the toast
+        cy.get(".Toastify__toast-body").then(($toast) => {
+          expect($toast).to.contain.text("Errors in form");
         });
       } else {
         cy.log('Test was previously run. Skip the Test')
