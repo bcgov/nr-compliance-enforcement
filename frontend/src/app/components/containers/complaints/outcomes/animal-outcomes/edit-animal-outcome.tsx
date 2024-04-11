@@ -15,7 +15,7 @@ import {
 } from "../../../../../store/reducers/code-table";
 import { selectComplaint } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { pad } from "../../../../../common/methods";
+import { isPositiveNum, pad } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 
@@ -33,6 +33,7 @@ import { DrugAuthorization as AddDrugAuthorization } from "./drug-authorization"
 import { from } from "linq-to-typescript";
 import { BsPlusCircle } from "react-icons/bs";
 import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 
 export interface EditAnimalOutcomeProps {
   animalOutcomeItemData?: AnimalOutcome | null;
@@ -77,6 +78,14 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [outcome, setOutcome] = useState<Option | undefined>(animalOutcomeItemData?.outcome);
   const [date, setDate] = useState<Date | undefined>();
   const [officer, setOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
+  
+  const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
+  const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
+
+  const [speciesErrorMessage, setSpeciesErrorMessage] = useState<string>("");
+  const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
+  const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
+
 
   useEffect(() => {
     const date = animalOutcomeItemData?.date ? new Date(animalOutcomeItemData?.date) : new Date();
@@ -85,6 +94,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
+
     if (isValid()) {
       const newAnimalOutcome: AnimalOutcome = {
         id: id,
@@ -108,6 +118,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         });
         if (setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
       } else {
+
         const newAnimalOutcomeArr = animalOutcomeData ?? [];
         if (newAnimalOutcome) newAnimalOutcomeArr.push(newAnimalOutcome);
         if (setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
@@ -115,6 +126,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       }
     } else return;
   };
+
 
   const handleCancelAnimalOutcome = () => {
     if (editMode) {
@@ -124,27 +136,40 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       });
       if (setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
     } else {
+
       const newAnimalOutcomeArr = animalOutcomeData ? animalOutcomeData.splice(animalOutcomeData.length - 1, 1) : [];
       if (setAnimalOutcomeData) setAnimalOutcomeData(newAnimalOutcomeArr);
       if (setShowAnimalOutcomeAddForm) setShowAnimalOutcomeAddForm(false);
     }
   };
 
+  const handleSpeciesChange = (input: Option | null) => {
+    setSpecies(input ?? undefined);
+    setSpeciesErrorMessage(!(input ?? undefined) ? "Required" : "");
+  };
+
+  const handleOutcomeChange = (input: Option | null) => {
+    setOutcome(input ?? undefined);
+  };
+
+  const handleOutcomeOfficerChange = (input: Option | null) => {
+    setOutcomeOfficer(input ?? undefined);
+    setOutcomeOfficerErrorMessage((outcome && !(input ?? undefined)) ? "Required" : "");
+  };
+  const handleOutcomeDateChange = (input: Date) => {
+    setOutcomeDate(input);
+    setOutcomeDateErrorMessage((outcome && !(input ?? undefined)) ? "Required" : "");
+  };
+
   const renderEarTags = () => {
     if (tags && from(tags).any()) {
-      let isLeftEarUsed = false;
-
-      const selected = tags.find((item) => item.ear === "L");
-      if (selected) {
-        isLeftEarUsed = true;
-      }
-
       return from(tags)
         .orderBy((item) => item.id)
         .toArray()
         .map((item) => {
           const { id } = item;
           return (
+
             <AddEarTag
               {...item}
               isLeftEarUsed={isLeftEarUsed}
@@ -152,6 +177,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               remove={removeEarTag}
               key={id}
             />
+
           );
         });
     }
@@ -166,12 +192,41 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         setTags(update);
       } else {
         const newTags = [{ id: 1, ear: "", number: "" }];
+
         setTags(newTags);
       }
     }
   };
 
+  const updateEarTagFromInput = (tag: AnimalTag, type: string) => {
+    const currentTag = tags.find(({ id }) => id === tag.id) ?? tag;
+    const otherTags = tags.filter(({ id }) => id !== tag.id);
+    if (type === "number") {
+      currentTag.number = tag.number;
+      if (!tag.number) {
+        currentTag.numberErrorMessage = "Required";
+      }
+      else {
+        currentTag.numberErrorMessage = "";
+      }
+    }
+    else if (type === "ear") {
+      currentTag.ear = tag.ear;
+    }
+
+
+    const update = [...otherTags, currentTag];
+
+    setTags(update);
+  };
+
   const updateEarTag = (tag: AnimalTag) => {
+    if (!tag.number) {
+      tag.numberErrorMessage = "Required";
+    }
+    else {
+      tag.numberErrorMessage = "";
+    }
     const items = tags.filter(({ id }) => id !== tag.id);
     const update = [...items, tag];
 
@@ -189,7 +244,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         updatedId = updatedId + 1;
         return { ...item, id: updatedId };
       });
-
     setTags(update);
   };
 
@@ -201,12 +255,16 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       {
         id,
         vial: "",
+        vialErrorMessage: "",
         drug: "",
-        amountUsed: -1,
-        amountDiscarded: -1,
+        drugErrorMessage: "",
+        amountUsed: "",
+        amountUsedErrorMessage: "",
+        amountDiscarded: "",
         reactions: "",
         remainingUse: "",
         injectionMethod: "",
+        injectionMethodErrorMessage: "",
         discardMethod: "",
         officer: "",
       },
@@ -225,15 +283,128 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         updatedId = updatedId + 1;
         return { ...item, id: updatedId };
       });
+    if (update.length === 0) {
+      if (drugAuthorization) {
+        drugAuthorization.officerErrorMessage = "";
+        drugAuthorization.dateErrorMessage = "";
+      }
+    }
+    setDrugs(update);
+  };
+
+  //this feels awful and hacky -- when updating individual inputs within the child component, only update one error message in the input
+  const updateDrugFromInput = (drug: DrugUsed, type: string) => {
+    const currentDrug = drugs.find(({ id }) => id === drug.id) ?? drug;
+    const otherDrugs = drugs.filter(({ id }) => id !== drug.id);
+    switch (type) {
+      case "vial":
+        currentDrug.vial = drug.vial;
+        if (!drug.vial) {
+          currentDrug.vialErrorMessage = "Required";
+        }
+        else {
+          currentDrug.vialErrorMessage = "";
+        }
+        break;
+      case "drug":
+        currentDrug.drug = drug.drug;
+        if (!drug.drug) {
+          currentDrug.drugErrorMessage = "Required";
+        }
+        else {
+          currentDrug.drugErrorMessage = "";
+        }
+        break;
+
+      case "amountUsed":
+        currentDrug.amountUsed = drug.amountUsed;
+        if (!drug.amountUsed) {
+          currentDrug.amountUsedErrorMessage = "Required";
+        }
+        else if (!isPositiveNum(drug.amountUsed)) {
+          currentDrug.amountUsedErrorMessage = "Must be a positive number";
+        }
+        else {
+          currentDrug.amountUsedErrorMessage = "";
+        }
+        break;
+      case "injectionMethod":
+        currentDrug.injectionMethod = drug.injectionMethod;
+        if (!drug.injectionMethod) {
+          currentDrug.injectionMethodErrorMessage = "Required";
+        }
+        else {
+          currentDrug.injectionMethodErrorMessage = "";
+        }
+        break;
+      default:
+    }
+    const update = [...otherDrugs, currentDrug];
 
     setDrugs(update);
   };
 
+  //update all input validation
   const updateDrug = (drug: DrugUsed) => {
+    if (!drug.vial) {
+      drug.vialErrorMessage = "Required";
+    }
+    else {
+      drug.vialErrorMessage = "";
+    }
+    if (!drug.drug) {
+      drug.drugErrorMessage = "Required";
+    }
+    else {
+      drug.drugErrorMessage = "";
+    }
+    if (!drug.amountUsed) {
+      drug.amountUsedErrorMessage = "Required";
+    }
+    else if (!isPositiveNum(drug.amountUsed)) {
+      drug.amountUsedErrorMessage = "Must be a positive number";
+    }
+    else {
+      drug.amountUsedErrorMessage = "";
+    }
+    if (!drug.injectionMethod) {
+      drug.injectionMethodErrorMessage = "Required";
+    }
+    else {
+      drug.injectionMethodErrorMessage = "";
+    }
+
     const items = drugs.filter(({ id }) => id !== drug.id);
     const update = [...items, drug];
 
     setDrugs(update);
+  };
+
+
+  const updateDrugAuthorization = (drugAuthorization: DrugAuthorization | undefined) => {
+    let isValid = true;
+    if (drugAuthorization) {
+      if (!drugAuthorization?.officer) {
+        drugAuthorization.officerErrorMessage = "Required";
+        isValid = false;
+      }
+      else {
+        drugAuthorization.officerErrorMessage = "";
+      }
+      if (!drugAuthorization?.date) {
+        drugAuthorization.dateErrorMessage = "Required";
+        isValid = false;
+      }
+      else {
+        drugAuthorization.dateErrorMessage = "";
+      }
+    }
+    else
+    {
+      isValid = false;
+    }
+    setDrugAuthorization(drugAuthorization);
+    return isValid;
   };
 
   const renderDrugs = () => {
@@ -245,6 +416,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             .toArray()
             .map((item) => {
               const { id } = item;
+
               return (
                 <AddDrug
                   {...item}
@@ -260,6 +432,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             agency={complaintData?.ownedBy ?? "COS"}
             update={setDrugAuthorization}
           />
+
         </>
       );
     }
@@ -268,12 +441,45 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const isValid = (): boolean => {
     let isValid = true;
 
-    if (!species || !age || !sex || !threatLevel || !conflictHistory) {
+    if (!species) {
       isValid = false;
+
     }
 
-    if (!outcome || !officer || !date) {
-      isValid = false;
+    if (tags.length > 0) {
+      from(tags)
+        .orderBy((item) => item.id)
+        .toArray()
+        .map((item) => {
+          if (!item.number) {
+            isValid = false;
+          }
+          updateEarTag(item);
+        })
+    }
+
+    if (drugs.length > 0) {
+      from(drugs)
+        .orderBy((item) => item.id)
+        .toArray()
+        .map((item) => {
+          if (!item.vial || !item.drug || !item.amountUsed || !isPositiveNum(item.amountUsed) || !item.injectionMethod) {
+            isValid = false;
+          }
+          updateDrug(item);
+        });
+        isValid = updateDrugAuthorization(drugAuthorization);
+    }
+
+    if (outcome) {
+      if (!outcomeOfficer) {
+        isValid = false;
+        setOutcomeOfficerErrorMessage("Required");
+      }
+      if (!outcomeDate) {
+        isValid = false;
+        setOutcomeDateErrorMessage("Required");
+      }
     }
     return isValid;
   };
@@ -301,14 +507,16 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               >
                 Species
               </label>
+
               <CompSelect
                 id="select-species"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 options={speciesList}
-                enableValidation={false}
+                enableValidation={true}
                 placeholder="Select"
-                onChange={(species: any) => setSpecies(species)}
+                onChange={handleSpeciesChange}
+                errorMessage={speciesErrorMessage}
                 defaultOption={animalOutcomeItemData?.species}
               />
             </Col>
@@ -319,6 +527,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               >
                 Sex
               </label>
+
               <CompSelect
                 id="select-sex"
                 classNamePrefix="comp-select"
@@ -337,6 +546,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               >
                 Age
               </label>
+
               <CompSelect
                 id="select-age"
                 classNamePrefix="comp-select"
@@ -355,6 +565,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               >
                 Category level
               </label>
+
               <CompSelect
                 id="select-category-level"
                 classNamePrefix="comp-select"
@@ -373,6 +584,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
               >
                 Conflict history
               </label>
+
               <CompSelect
                 id="select-conflict-history"
                 classNamePrefix="comp-select"
@@ -388,6 +600,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         </div>
 
         {renderEarTags()}
+
         {tags.length < 2 && (
           <Button
             className="comp-animal-outcome-add-button"
@@ -407,6 +620,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           variant="link"
           onClick={() => addDrug()}
         >
+
           <BsPlusCircle size={16} />
           <span> Add drug</span>
         </Button>
@@ -430,11 +644,16 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
                 options={outcomes}
                 enableValidation={false}
                 placeholder={"Select"}
-                onChange={(outcome: any) => setOutcome(outcome)}
+
+                onChange={(evt) => {
+                  handleOutcomeChange(evt);
+                }}
+
                 defaultOption={animalOutcomeItemData?.outcome}
               />
             </Col>
             <Col md={4}>
+
               <div
                 className="comp-details-label-input-pair"
                 id="officer-assigned-pair-id"
@@ -443,40 +662,39 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
                   id="officer-assigned-select-label-id"
                   htmlFor="officer-assigned-select-id"
                 >
+
                   Officer
                 </label>
                 <CompSelect
                   id="officer-assigned-select-id"
                   classNamePrefix="comp-select"
-                  className="comp-details-input"
+
+                  className="animal-outcome-details-input"
                   options={officers}
                   placeholder="Select"
-                  enableValidation={false}
-                  onChange={(officer: any) => setOfficer(officer)}
-                  defaultOption={animalOutcomeItemData?.officer}
+                  enableValidation={true}
+                  errorMessage={outcomeOfficerErrorMessage}
+                  onChange={(evt) => { handleOutcomeOfficerChange(evt) }}
+                  value={outcomeOfficer}
                 />
               </div>
             </Col>
 
             <Col>
-              <div
-                className="comp-details-label-input-pair"
-                id="officer-assigned-pair-id"
-              >
-                <label
-                  id="complaint-incident-time-label-id"
-                  htmlFor="complaint-incident-time"
-                >
+
+              <div className="animal-outcome-label-input-pair" id="officer-assigned-pair-id">
+                <label id="complaint-incident-time-label-id" htmlFor="complaint-incident-time">
                   Date
                 </label>
-                <DatePicker
+                <ValidationDatePicker
                   id="equipment-day-set"
-                  showIcon
                   maxDate={new Date()}
-                  onChange={(date: Date) => setDate(date)}
-                  selected={date}
-                  dateFormat="yyyy-MM-dd"
-                  wrapperClassName="comp-details-edit-calendar-input"
+                  onChange={(date: Date) => handleOutcomeDateChange(date)}
+                  selectedDate={outcomeDate}
+                  classNamePrefix="comp-details-edit-calendar-input"
+                  className={"animal-outcome-details-input"}
+                  placeholder={"Select"}
+                  errMsg={outcomeDateErrorMessage}
                 />
               </div>
             </Col>

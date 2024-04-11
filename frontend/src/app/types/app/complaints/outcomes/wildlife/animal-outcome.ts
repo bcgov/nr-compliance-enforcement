@@ -21,5 +21,5 @@ export interface AnimalOutcome {
   officer: Option | undefined;
   date?: Date;
 
-  isInEditMode: boolean
+  isInEditMode: boolean;
 }

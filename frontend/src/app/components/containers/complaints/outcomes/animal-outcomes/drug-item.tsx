@@ -10,8 +10,8 @@ import { selectComplaint } from "../../../../../store/reducers/complaints";
 type props = {
   vial: string;
   drug: string;
-  amountUsed: number;
-  amountDiscarded: number;
+  amountUsed: string;
+  amountDiscarded: string;
 
   injectionMethod: string;
   discardMethod: string;
