@@ -86,14 +86,12 @@ export const HWCRComplaintPrevention: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getPrevention(complaintData.id));
     }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
     populatePreventionUI();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preventionState]);
 
   // clear the redux state
@@ -120,7 +118,9 @@ export const HWCRComplaintPrevention: FC = () => {
       };
     }) as Option[];
 
-    setSelectedDate(preventionState.date ? new Date(preventionState.date) : null);
+    const preventionDate = preventionState?.date ? new Date(preventionState.date) : new Date();
+
+    setSelectedDate(preventionDate);
     setSelectedOfficer(selectedOfficer);
     setSelectedPreventionTypes(selectedPreventionTypes);
     setShowContent(preventionState.prevention_type?.length > 0);
@@ -153,13 +153,13 @@ export const HWCRComplaintPrevention: FC = () => {
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
-          value: selectedOfficer?.value
+          value: selectedOfficer?.value,
         },
         prevention_type: selectedPreventionTypes?.map((item) => {
           return {
             key: item.label,
-            value: item.value
-          }
+            value: item.value,
+          };
         }),
       };
 
