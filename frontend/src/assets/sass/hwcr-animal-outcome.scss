@@ -222,3 +222,51 @@
     margin-top: 16px;
   }
 }
+
+.animal-outcome-label-input-pair {
+  display: flex;
+  min-height: 70px;
+  margin-top: 24px;
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+    margin-top: 6px;
+  }
+
+  .animal-outcome-details-input {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
+.animal-drug-auth-label-input-pair {
+  display: flex;
+  min-height: 70px;
+
+  label {
+    color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+    margin-top: 6px;
+  }
+
+  .animal-drug-auth-details-input {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
+.mt-delete-button
+{
+  margin-top: 36px;
+}
