@@ -49,6 +49,8 @@ export const HWCRComplaintPrevention: FC = () => {
   const [preventionRequiredErrorMessage, setPreventionRequiredErrorMessage] = useState<string>("");
   const [showContent, setShowContent] = useState<boolean>(true);
 
+  const currentDate = new Date();
+
   const complaintData = useAppSelector(selectComplaint);
   const preventionState = useAppSelector(selectPrevention);
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
@@ -84,14 +86,12 @@ export const HWCRComplaintPrevention: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getPrevention(complaintData.id));
     }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
     populatePreventionUI();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preventionState]);
 
   // clear the redux state
@@ -118,7 +118,9 @@ export const HWCRComplaintPrevention: FC = () => {
       };
     }) as Option[];
 
-    setSelectedDate(preventionState.date ? new Date(preventionState.date) : null);
+    const preventionDate = preventionState?.date ? new Date(preventionState.date) : new Date();
+
+    setSelectedDate(preventionDate);
     setSelectedOfficer(selectedOfficer);
     setSelectedPreventionTypes(selectedPreventionTypes);
     setShowContent(preventionState.prevention_type?.length > 0);
@@ -151,13 +153,13 @@ export const HWCRComplaintPrevention: FC = () => {
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
-          value: selectedOfficer?.value
+          value: selectedOfficer?.value,
         },
         prevention_type: selectedPreventionTypes?.map((item) => {
           return {
             key: item.label,
-            value: item.value
-          }
+            value: item.value,
+          };
         }),
       };
 
@@ -304,6 +306,7 @@ export const HWCRComplaintPrevention: FC = () => {
                         className="comp-details-edit-calendar-input" // Adjust class as needed
                         classNamePrefix="comp-select" // Adjust class as needed
                         errMsg={preventionDateErrorMessage} // Pass error message if any
+                        maxDate={currentDate}
                       />
                     ) : (
                       formatDate(`${selectedDate}`)

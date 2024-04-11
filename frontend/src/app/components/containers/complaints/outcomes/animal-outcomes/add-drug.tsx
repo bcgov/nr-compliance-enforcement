@@ -12,14 +12,18 @@ type props = {
   id: number;
 
   vial: string;
+  vialErrorMessage: string;
   drug: string;
-  amountUsed: number;
-  amountDiscarded: number;
+  drugErrorMessage: string;
+  amountUsed: string;
+  amountUsedErrorMessage: string;
+  amountDiscarded: string;
 
   reactions: string;
   remainingUse: string;
 
   injectionMethod: string;
+  injectionMethodErrorMessage: string;
   discardMethod: string;
 
   remove: Function;
@@ -29,9 +33,13 @@ type props = {
 export const AddDrug: FC<props> = ({
   id,
   vial,
+  vialErrorMessage,
   drug,
+  drugErrorMessage,
   amountUsed,
+  amountUsedErrorMessage,
   injectionMethod,
+  injectionMethodErrorMessage,
   discardMethod,
   amountDiscarded,
   reactions,
@@ -57,9 +65,8 @@ export const AddDrug: FC<props> = ({
       injectionMethod,
       discardMethod,
     };
-    const updatedTag = { ...source, [property]: value };
-
-    update(updatedTag);
+    const updatedDrug = { ...source, [property]: value };
+    update(updatedDrug, property);
   };
 
   const getValue = (property: string): Option | undefined => {
@@ -83,7 +90,7 @@ export const AddDrug: FC<props> = ({
   };
 
   const handleAmountDiscarded = (input: string) => {
-    updateModel("amountDiscarded", input);
+      updateModel("amountDiscarded", input);
   };
 
   const handleRemainingUsed = (input: string) => {
@@ -105,6 +112,7 @@ export const AddDrug: FC<props> = ({
             placeholder="Example"
             inputClass="comp-form-control"
             value={vial}
+            error={vialErrorMessage}
             onChange={(evt: any) => {
               const {
                 target: { value },
@@ -122,8 +130,9 @@ export const AddDrug: FC<props> = ({
             classNamePrefix="comp-select"
             className="comp-details-input"
             options={drugs}
-            enableValidation={false}
+            enableValidation={true}
             placeholder={"Select"}
+            errorMessage={drugErrorMessage}
             onChange={(evt) => {
               updateModel("drug", evt?.value);
             }}
@@ -140,7 +149,8 @@ export const AddDrug: FC<props> = ({
             type="input"
             placeholder="Example"
             inputClass="comp-form-control"
-            value={amountUsed === -1 ? "" : amountUsed}
+            value={amountUsed}
+            error={amountUsedErrorMessage}
             onChange={(evt: any) => {
               const {
                 target: { value },
@@ -158,8 +168,9 @@ export const AddDrug: FC<props> = ({
             classNamePrefix="comp-select"
             className="comp-details-input"
             options={drugUseMethods}
-            enableValidation={false}
+            enableValidation={true}
             placeholder={"Select"}
+            errorMessage={injectionMethodErrorMessage}
             onChange={(evt) => {
               updateModel("injectionMethod", evt?.value);
             }}
@@ -185,7 +196,7 @@ export const AddDrug: FC<props> = ({
             }}
           />
         </Col>
-        <Col className="mt-auto mb-2">
+        <Col className="mt-delete-button mb-2">
           <CompIconButton onClick={() => remove(id)}>
             <BsXCircle size={24} className="comp-outcome-remove-botton" />
             <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
@@ -223,7 +234,7 @@ export const AddDrug: FC<props> = ({
                 type="input"
                 placeholder="Example"
                 inputClass="comp-form-control"
-                value={amountDiscarded === -1 ? "" : amountDiscarded}
+                value={amountDiscarded}
                 onChange={(evt: any) => {
                   const {
                     target: { value },

@@ -57,7 +57,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
                   className="bi comp-margin-right-xxs comp-details-inner-content"
                   id="file-review-supporting-date"
                 >
-                  {formatDate(new Date(action.date).toString())}
+                  {formatDate(new Date(action?.date).toString())}
                 </div>
               </div>
             </div>
