@@ -24,21 +24,16 @@ interface EquipmentDetailsWithVariables {
   xCoordinate: string;
   yCoordinate: string;
   setBy?: string;
-  setDate?: Date; 
+  setDate?: Date;
   removedBy?: string;
   removedDate?: Date;
 }
 
 interface EquipmentItemProps {
-  equipment: EquipmentDetailsDto; 
-  onEdit: (guid: string) => void
-
+  equipment: EquipmentDetailsDto;
+  onEdit: (guid: string) => void;
 }
-export const EquipmentItem: FC<EquipmentItemProps> = ({ 
-  equipment,
-  onEdit,
-}) => {
-
+export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, onEdit }) => {
   const dispatch = useAppDispatch();
 
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +42,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
     if (equipment.equipmentGuid) {
       onEdit(equipment.equipmentGuid);
     }
-  }
+  };
 
   // for turning codes into values
   const getValue = (property: string): Option | undefined => {
@@ -63,22 +58,31 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
       dispatch(deleteEquipment(equipmentGuid));
     }
   };
-  
+
   const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
 
-  const setEquipmentActor = equipment.actions?.find(action => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)?.actor;
-  const removedEquipmentActor = equipment.actions?.find(action => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT)?.actor;
-  
-  const setEquipmentDateString = equipment.actions?.find(action => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)?.date;
+  const setEquipmentActor = equipment.actions?.find((action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)
+    ?.actor;
+  const removedEquipmentActor = equipment.actions?.find((action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT)
+    ?.actor;
+
+  const setEquipmentDateString = equipment.actions?.find((action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)
+    ?.date;
   const setEquipmentDate = setEquipmentDateString ? new Date(new Date(setEquipmentDateString)) : null;
-  const removedEquipmentDateString = equipment.actions?.find(action => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT)?.date;
+  const removedEquipmentDateString = equipment.actions?.find(
+    (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
+  )?.date;
   const removedEquipmentDate = removedEquipmentDateString ? new Date(new Date(removedEquipmentDateString)) : null;
 
   const setEquipmentOfficer = useAppSelector(selectOfficerByPersonGuid(`${setEquipmentActor}`));
   const removedEquipmentOfficer = useAppSelector(selectOfficerByPersonGuid(`${removedEquipmentActor}`));
 
-  const setEquipmentFullName = setEquipmentOfficer ? `${setEquipmentOfficer.person_guid.first_name} ${setEquipmentOfficer.person_guid.last_name}` : null
-  const removedEquipmentFullName = removedEquipmentOfficer ? `${removedEquipmentOfficer.person_guid.first_name} ${removedEquipmentOfficer.person_guid.last_name}` : null;
+  const setEquipmentFullName = setEquipmentOfficer
+    ? `${setEquipmentOfficer.person_guid.first_name} ${setEquipmentOfficer.person_guid.last_name}`
+    : null;
+  const removedEquipmentFullName = removedEquipmentOfficer
+    ? `${removedEquipmentOfficer.person_guid.first_name} ${removedEquipmentOfficer.person_guid.last_name}`
+    : null;
 
   return (
     <>
@@ -103,7 +107,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
           <div>
             <CompTextIconButton
               buttonClasses="button-text"
-              style={{ marginRight: '15px'}}
+              style={{ marginRight: "15px" }}
               text="Delete"
               icon={BsTrash3}
               click={() => setShowModal(true)}
@@ -118,30 +122,48 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
         </div>
         <div className="equipment-item-content">
           <div className="label">Address</div>
-          <div className="value" id="">
+          <div
+            className="value"
+            id=""
+          >
             {equipment.address}
           </div>
         </div>
         <Row>
-          <Col xs={12} md={4}>
+          <Col
+            xs={12}
+            md={4}
+          >
             <div className="equipment-item-content">
               <div className="label">X Coordinate</div>
-              <div className="value" id="">
+              <div
+                className="value"
+                id=""
+              >
                 {equipment.xCoordinate}
               </div>
             </div>
           </Col>
-          <Col xs={12} md={4}>
+          <Col
+            xs={12}
+            md={4}
+          >
             <div className="equipment-item-content">
               <div className="label">Y Coordinate</div>
-              <div className="value" id="">
+              <div
+                className="value"
+                id=""
+              >
                 {equipment.yCoordinate}
               </div>
             </div>
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={4}>
+          <Col
+            xs={12}
+            md={4}
+          >
             <div className="equipment-item-content">
               <div className="label">Set by</div>
               <div className="comp-details-content">
@@ -159,23 +181,32 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
               </div>
             </div>
           </Col>
-          <Col xs={12} md={4}>
+          <Col
+            xs={12}
+            md={4}
+          >
             <div className="equipment-item-content">
               <div className="label">Set date</div>
-              <div className="value" id="">
+              <div
+                className="value"
+                id=""
+              >
                 {formatDate(setEquipmentDate?.toString())}
               </div>
             </div>
           </Col>
         </Row>
-        {equipment.equipmentGuid && removedEquipmentActor &&
+        {equipment.equipmentGuid && removedEquipmentActor && (
           <Row>
-            <Col xs={12} md={4}>
+            <Col
+              xs={12}
+              md={4}
+            >
               <div className="equipment-item-content">
                 <div className="label">Removed by</div>
                 <div className="comp-details-content">
                   <div
-                    data-initials-sm={getAvatarInitials(removedEquipmentFullName ?? '')}
+                    data-initials-sm={getAvatarInitials(removedEquipmentFullName ?? "")}
                     className="comp-pink-avatar-sm"
                   >
                     <span
@@ -188,18 +219,23 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({
                 </div>
               </div>
             </Col>
-            <Col xs={12} md={4}>
+            <Col
+              xs={12}
+              md={4}
+            >
               <div className="equipment-item-content">
                 <div className="label">Removed date</div>
-                <div className="value" id="">
+                <div
+                  className="value"
+                  id=""
+                >
                   {formatDate(removedEquipmentDate?.toString())}
                 </div>
               </div>
             </Col>
           </Row>
-        }
+        )}
       </div>
     </>
   );
-}
-  
+};
