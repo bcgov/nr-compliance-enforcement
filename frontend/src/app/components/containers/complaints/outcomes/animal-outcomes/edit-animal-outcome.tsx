@@ -444,8 +444,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         setOutcomeDateErrorMessage("Required");
       }
     }
-    else
-    {}
     return isValid;
   };
 
