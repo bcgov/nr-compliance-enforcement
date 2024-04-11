@@ -35,7 +35,7 @@ export const HWCROutcomeByAnimal: FC = () => {
   const newEditAnimalOutcome: AnimalOutcome = {
     id: undefined,
     isInEditMode: true,
-    species: speciesList.find((item) => item.value === 'BLKBEAR'),
+    species: speciesList.find((item) => item.value === (complaintData as WildlifeComplaint)?.species),
     age: undefined,
     sex: undefined,
     threatLevel: undefined,

@@ -76,11 +76,11 @@ export const AnimalOutcomeItem: FC<AnimalOutcomeProps> = ({
                     Animal
                   </label>
                   <div className="flex-container">
-                    <div className="comp-margin-right-xs">
-                      <b>{animalOutcome?.species?.label}</b>,
+                    <div>
+                      <b>{animalOutcome?.species?.label}</b>
                     </div>
-                    {animalOutcome?.sex && <div className="comp-margin-right-xs">{animalOutcome?.sex?.label},</div>}
-                    {animalOutcome?.age && <div className="comp-margin-right-xs">{animalOutcome?.age?.label}</div>}
+                    {animalOutcome?.sex && <><div className="comp-margin-right-xs">,</div><div>{animalOutcome?.sex?.label}</div></>}
+                    {animalOutcome?.age && <><div className="comp-margin-right-xs">,</div><div className="comp-margin-right-xs">{animalOutcome?.age?.label}</div></>}
                     {animalOutcome?.threatLevel && (
                       <div className="badge comp-status-badge-threat-level comp-margin-right-xs">
                         Category level: {animalOutcome?.threatLevel?.label}
@@ -142,14 +142,16 @@ export const AnimalOutcomeItem: FC<AnimalOutcomeProps> = ({
                   <label className="comp-details-inner-content-label center" htmlFor="comp-review-required-officer">
                     Officer
                   </label>
+                  {animalOutcome?.officer?.label  && (
                   <div
-                    data-initials-sm={(getAvatarInitials(animalOutcome?.officer?.label ?? 'Unknow User'))}
+                    data-initials-sm={(getAvatarInitials(animalOutcome?.officer?.label))}
                     className="comp-orange-avatar-sm comp-details-inner-content"
                   >
                     <span id="comp-review-required-officer" className="comp-padding-left-xs">
                       {animalOutcome?.officer?.label}
                     </span>
                   </div>
+                  )} 
                 </div>
               </div>
               <div className="comp-details-edit-column" id="complaint-supporting-date-div">

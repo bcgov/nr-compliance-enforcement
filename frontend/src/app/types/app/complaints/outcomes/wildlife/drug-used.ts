@@ -2,11 +2,15 @@ export interface DrugUsed {
   id: number;
   
   vial: string;
+  vialErrorMessage: string;
   drug: string;
-  amountUsed: number;
-  amountDiscarded: number;
+  drugErrorMessage: string;
+  amountUsed: string;
+  amountUsedErrorMessage: string;
+  amountDiscarded: string;
 
   injectionMethod: string;
+  injectionMethodErrorMessage: string;
   discardMethod: string;
 
   reactions: string;
