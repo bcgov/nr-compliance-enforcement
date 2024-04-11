@@ -195,7 +195,7 @@ export const AttachmentsCarousel: FC<Props> = ({
       window.removeEventListener("resize", updateVisibleSlides);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [allowUpload]);
 
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
