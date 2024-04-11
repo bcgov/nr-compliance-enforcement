@@ -6,10 +6,10 @@ import { EquipmentItem } from "./equipment-item";
 
 import "../../../../../../assets/sass/hwcr-equipment.scss"
 import { useParams } from "react-router-dom";
-import { getCaseFile, selectEquipment } from "../../../../../store/reducers/cases";
+
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { Equipment } from "../../../../../types/outcomes/equipment";
-import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
+import { selectEquipment } from "../../../../../store/reducers/case-selectors";
+import { findCase, getCaseFile } from "../../../../../store/reducers/case-thunks";
 
 export const HWCREquipment: FC = memo(() => {
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
@@ -35,6 +35,7 @@ export const HWCREquipment: FC = memo(() => {
   const handleSave = () => {
     setShowEquipmentForm(false);
     setEditingGuid("");
+    dispatch(findCase())
   };
 
   const handleCancel = () => {

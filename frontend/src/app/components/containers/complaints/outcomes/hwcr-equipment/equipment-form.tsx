@@ -26,9 +26,9 @@ import { ValidationDatePicker } from "../../../../../common/validation-date-pick
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
-import { upsertEquipment } from "../../../../../store/reducers/cases";
 import { CaseActionDto } from "../../../../../types/app/case-files/case-action";
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
+import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;

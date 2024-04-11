@@ -8,11 +8,12 @@ import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-m
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
 import { selectOfficerByPersonGuid } from "../../../../../store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { Equipment } from "../../../../../types/outcomes/equipment";
+
 import Option from "../../../../../types/app/option";
-import { deleteEquipment, selectEquipment } from "../../../../../store/reducers/cases";
+
 import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
+import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
 
 interface EquipmentDetailsWithVariables {
   equipmentTypeCode: string;

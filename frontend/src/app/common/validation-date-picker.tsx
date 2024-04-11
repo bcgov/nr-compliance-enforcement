@@ -10,7 +10,6 @@ interface ValidationDatePickerProps {
   id: string;
   classNamePrefix: string;
   errMsg: string;
-  maxDate?: Date;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -22,7 +21,6 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   id,
   classNamePrefix,
   errMsg,
-  maxDate,
 }) => {
 
   const handleDateChange = (date: Date) => {
