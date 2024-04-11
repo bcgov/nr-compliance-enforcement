@@ -4,12 +4,12 @@ import { CompSelect } from "../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
 import { openModal, profileDisplayName, profileInitials } from "../../../../store/reducers/app";
-import { createReview, updateReview } from "../../../../store/reducers/cases";
 import { formatDate } from "../../../../common/methods";
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 import { selectComplaint } from "../../../../store/reducers/complaints";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
+import { createReview, updateReview } from "../../../../store/reducers/case-thunks";
 
 export const HWCRFileReview: FC = () => {
   const REQUEST_REVIEW_STATE = 0;
@@ -53,6 +53,7 @@ export const HWCRFileReview: FC = () => {
       }
       setReviewCompleted(true)
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[reviewCompleteAction]);
 
   useEffect(() => {

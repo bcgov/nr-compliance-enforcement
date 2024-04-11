@@ -5,7 +5,7 @@ import { useAppSelector } from "../../../../../hooks/hooks";
 import { formatDate } from "../../../../../common/methods";
 
 import { CaseAction } from "../../../../../types/outcomes/case-action";
-import { selectNotesOfficer } from "../../../../../store/reducers/cases";
+import { selectNotesOfficer } from "../../../../../store/reducers/case-selectors";
 
 type props = {
   notes: string;
@@ -57,7 +57,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
                   className="bi comp-margin-right-xxs comp-details-inner-content"
                   id="file-review-supporting-date"
                 >
-                  {formatDate(new Date(action.date).toString())}
+                  {formatDate(new Date(action?.date).toString())}
                 </div>
               </div>
             </div>

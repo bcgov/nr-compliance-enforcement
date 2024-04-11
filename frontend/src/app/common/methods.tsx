@@ -353,3 +353,7 @@ export const getThumbnailDataURL = async (file: File): Promise<string> => {
     return "";
   }
 };
+
+export function isPositiveNum(number: string) {
+  return !isNaN(Number(number)) && Number(number) >= 0;
+}
