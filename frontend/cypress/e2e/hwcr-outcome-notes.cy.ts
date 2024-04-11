@@ -2,6 +2,15 @@ import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 
 describe("HWCR Outcome Notes", () => {
 
+  //A function to try and reduce code duplication warnings
+
+  function enterNote(note: string) {
+    cy.get("#supporting-notes-textarea-id").click({ force: true });
+    cy.get("#supporting-notes-textarea-id")
+      .clear()
+      .type(note, { delay: 0 });
+  }
+
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
@@ -49,13 +58,8 @@ describe("HWCR Outcome Notes", () => {
         cy.get('#outcome-report-add-note').click();
         
         cy.validateComplaint("23-032454", "Black Bear");
-        
-        cy.get("#supporting-notes-textarea-id").click({ force: true });
-        cy.get("#supporting-notes-textarea-id")
-          .clear()
-          .type("This is test supporting note from Cypress", { delay: 0 });
-        
-        cy.get('#supporting-notes-save-button').click();
+
+        enterNote("This is test supporting note from Cypress");
         
         //validate the note
         cy.get(".comp-outcome-supporting-notes").should(($div) => {
@@ -89,10 +93,7 @@ describe("HWCR Outcome Notes", () => {
       if ($notes.find('#notes-edit-button').length) {
         cy.get("#notes-edit-button").click();
 
-        cy.get("#supporting-notes-textarea-id").click({ force: true });
-        cy.get("#supporting-notes-textarea-id")
-          .clear()
-          .type("This text will be cancelled by Cypress", { delay: 0 });
+        enterNote("This text will be cancelled by Cypress");
 
         cy.get("#supporting-notes-cancel-button").click();
 
@@ -118,10 +119,7 @@ describe("HWCR Outcome Notes", () => {
       if ($notes.find('#notes-edit-button').length) {
         cy.get("#notes-edit-button").click();
 
-        cy.get("#supporting-notes-textarea-id").click({ force: true });
-        cy.get("#supporting-notes-textarea-id")
-          .clear()
-          .type("This note is edited by Cypress", { delay: 0 });
+        enterNote("This note is edited by Cypress");
 
         cy.get('#supporting-notes-save-button').click();
         
