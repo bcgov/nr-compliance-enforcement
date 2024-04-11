@@ -13,7 +13,7 @@ import {
   selectComplaintCallerInformation,
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { ToggleError, } from "../../../../../common/toast";
+import { ToggleError } from "../../../../../common/toast";
 import { bcBoundaries, getSelectedItem, getSelectedOfficer } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
@@ -35,12 +35,7 @@ export interface EquipmentFormProps {
   onCancel: () => void;
 }
 
-export const EquipmentForm: FC<EquipmentFormProps> = ({
-  equipment,
-  onSave,
-  onCancel
-
-}) => {
+export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCancel }) => {
   const [type, setType] = useState<Option>();
   const [dateSet, setDateSet] = useState<Date>();
   const [dateRemoved, setDateRemoved] = useState<Date>();
@@ -80,28 +75,26 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
+    // set the equipment type code in the form
+    setType(getValue("equipment"));
 
-      // set the equipment type code in the form
-      setType(getValue("equipment"));
-      
-      setAddress(equipment?.address);
-      setXCoordinate(equipment?.xCoordinate);
-      setYCoordinate(equipment?.yCoordinate);
-      equipment?.actions?.forEach(action => {
-        if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT && equipment.actions && complaintData) {
-          const setOfficer = getSelectedItem(action.actor, assignableOfficers);
-          setOfficerSet(setOfficer);
-          setDateSet(new Date(action.date));
-          setActionSetGuid(action.actionGuid);
-        } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT && complaintData) {
-          const removedOfficer = getSelectedItem(action.actor, assignableOfficers);
-          setOfficerRemoved(removedOfficer);
-          setDateRemoved(new Date(action.date));
-          setActionRemovedGuid(action.actionGuid);
-        }
-      });
-
-    }, [equipment]);
+    setAddress(equipment?.address);
+    setXCoordinate(equipment?.xCoordinate);
+    setYCoordinate(equipment?.yCoordinate);
+    equipment?.actions?.forEach((action) => {
+      if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT && equipment.actions && complaintData) {
+        const setOfficer = getSelectedItem(action.actor, assignableOfficers);
+        setOfficerSet(setOfficer);
+        setDateSet(new Date(action.date));
+        setActionSetGuid(action.actionGuid);
+      } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT && complaintData) {
+        const removedOfficer = getSelectedItem(action.actor, assignableOfficers);
+        setOfficerRemoved(removedOfficer);
+        setDateRemoved(new Date(action.date));
+        setActionRemovedGuid(action.actionGuid);
+      }
+    });
+  }, [equipment]);
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
     if (type === Coordinates.Latitude) {
@@ -248,7 +241,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       onSave();
     }
   };
-  
 
   const handleFormErrors = () => {
     const errorMsg = equipment?.equipmentGuid ? "Errors editing equipment" : "Errors creating equipment";
@@ -272,7 +264,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const cancelConfirmed = () => {
     resetData();
     onCancel();
-
   };
 
   const resetData = () => {
@@ -286,17 +277,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   // needed to turn equipment type codes into descriptions
   const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
 
-    // for turning codes into values
-    const getValue = (property: string): Option | undefined => {
-      switch (property) {
-        case "equipment": {
-          return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
-        }
+  // for turning codes into values
+  const getValue = (property: string): Option | undefined => {
+    switch (property) {
+      case "equipment": {
+        return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
       }
-    };
-    
-  
-  
+    }
+  };
 
   const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
 
