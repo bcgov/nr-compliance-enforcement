@@ -66,7 +66,6 @@ export const getAvatarInitials = (input: string): string => {
 export const getSelectedItem = (value: string, options: Option[]): Option => {
 
   const selectedOption = options.find((option) => option.value === value);
-debugger;
   if (selectedOption) {
     return selectedOption;
   } else {
@@ -139,7 +138,7 @@ export const getFileExtension = (filename: string) => {
 };
 
 export const formatDate = (input: string | undefined): string => {
-  debugger;
+
   if (!input) {
     return "";
   }

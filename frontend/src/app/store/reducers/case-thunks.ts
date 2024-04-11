@@ -640,7 +640,8 @@ export const updateReview =
     } = getState();
 
     // equipment does not exist, let's create it
-    if (caseIdentifier && !equipment.equipmentGuid) {
+    if (complaintIdentifier
+       && !equipment.equipmentGuid) {
       let createEquipmentInput = {
         createEquipmentInput: {
           leadIdentifier: complaintIdentifier,
