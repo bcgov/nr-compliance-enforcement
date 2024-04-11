@@ -356,22 +356,30 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     setDrugs(update);
   };
 
-  const updateDrugAuthorization = (drugAuthorization: DrugAuthorization) => {
+  const updateDrugAuthorization = (drugAuthorization: DrugAuthorization | undefined) => {
+    let isValid = true;
     if (drugAuthorization) {
       if (!drugAuthorization?.officer) {
         drugAuthorization.officerErrorMessage = "Required";
+        isValid = false;
       }
       else {
         drugAuthorization.officerErrorMessage = "";
       }
       if (!drugAuthorization?.date) {
         drugAuthorization.dateErrorMessage = "Required";
+        isValid = false;
       }
       else {
         drugAuthorization.dateErrorMessage = "";
       }
     }
+    else
+    {
+      isValid = false;
+    }
     setDrugAuthorization(drugAuthorization);
+    return isValid;
   };
 
   const renderDrugs = () => {
@@ -423,9 +431,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           }
           updateDrug(item);
         });
-      if (drugAuthorization) {
-        updateDrugAuthorization(drugAuthorization);
-      }
+        isValid = updateDrugAuthorization(drugAuthorization);
     }
 
     if (outcome) {
@@ -438,6 +444,8 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         setOutcomeDateErrorMessage("Required");
       }
     }
+    else
+    {}
     return isValid;
   };
 
