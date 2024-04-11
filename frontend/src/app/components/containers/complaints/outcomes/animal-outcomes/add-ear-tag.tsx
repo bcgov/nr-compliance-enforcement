@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
@@ -11,29 +11,23 @@ type props = {
   id: number;
   ear: string;
   number: string;
-  isLeftEarUsed: boolean;
+  numberErrorMessage: string;
   update: Function;
   remove: Function;
 };
 
-export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, remove }) => {
+export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, update, remove }) => {
   const ears = useAppSelector(selectEarDropdown);
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
-  let selectedEar = ear === "R" ? rightEar : leftEar;
+  let selectedEar = ear === "L" ? leftEar : rightEar;
 
-  useEffect(() => {
-    if (!ear) {
-      updateModel("ear", isLeftEarUsed ? "R" : "L");
-    }
-  }, [ear, isLeftEarUsed]);
 
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, number };
     const updatedTag = { ...source, [property]: value };
-
-    update(updatedTag);
+    update(updatedTag, property);
   };
 
   return (
@@ -48,6 +42,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
             placeholder="Enter number"
             inputClass="comp-form-control"
             value={number}
+            error={numberErrorMessage}
             maxLength={7}
             onChange={(evt: any) => {
               const {
@@ -75,7 +70,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, isLeftEarUsed, update, r
             value={selectedEar}
           />
         </Col>
-        <Col className="mt-auto mb-2">
+        <Col className="mt-delete-button mb-2">
           <CompIconButton onClick={() => remove(id)}>
             <BsXCircle size={24} className="comp-outcome-remove-botton" />
             <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
