@@ -142,7 +142,7 @@ export const HWCRFileReview: FC = () => {
         {(componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE) && reviewRequired && reviewCompleted && (
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair" id="file-review-pair-id">
+              <div className="comp-details-label-input-pair" id="file-review-officer-id">
                 <label id="officer-file-review-pair-id" htmlFor="officer-file-review-select-id">Officer</label>
                 <CompSelect
                     id="officer-file-review-select-id"
@@ -250,6 +250,7 @@ export const HWCRFileReview: FC = () => {
             </div>
             <div className="comp-details-right-column">
               <CompTextIconButton
+                id="review-edit-button"
                 buttonClasses="button-text"
                 text="Edit"
                 icon={BsPencil}
