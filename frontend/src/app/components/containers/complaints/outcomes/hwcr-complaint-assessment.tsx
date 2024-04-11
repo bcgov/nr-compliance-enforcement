@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, selectAssessment, upsertAssessment, getAssessment } from "../../../../store/reducers/cases";
+import { resetAssessment } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -29,7 +29,9 @@ import { ValidationDatePicker } from "../../../../common/validation-date-picker"
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
-import "../../../../../assets/sass/hwcr-assessment.scss";
+import "../../../../../assets/sass/hwcr-assessment.scss"
+import { selectAssessment } from "../../../../store/reducers/case-selectors";
+import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
@@ -406,6 +408,7 @@ export const HWCRComplaintAssessment: FC = () => {
                       className="comp-details-edit-calendar-input" // Adjust class as needed
                       classNamePrefix="comp-select" // Adjust class as needed
                       errMsg={assessmentDateErrorMessage} // Pass error message if any
+                      maxDate={new Date()}
                     />
                   ) : (
                     formatDate(`${selectedDate}`)

@@ -4,9 +4,9 @@ import { BsPlusCircle } from "react-icons/bs";
 import { SupplementalNotesInput } from "./supplemental-notes/supplemental-notes-input";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectCurrentOfficer } from "../../../../store/reducers/officer";
-import { SupplementalNotesItem } from "./supplemental-notes/supplementa-notes-item";
+import { SupplementalNotesItem } from "./supplemental-notes/supplemental-notes-item";
 import { useParams } from "react-router-dom";
-import { selectSupplementalNote } from "../../../../store/reducers/cases";
+import { selectSupplementalNote } from "../../../../store/reducers/case-selectors";
 
 type ComplaintParams = {
   id: string;

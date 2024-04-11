@@ -4,7 +4,8 @@ import DatePicker from 'react-datepicker';
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
-  onChange: (date: Date | null) => void;
+  maxDate: Date;
+  onChange: (date: Date) => void;
   placeholder: string;
   id: string;
   classNamePrefix: string;
@@ -15,6 +16,7 @@ interface ValidationDatePickerProps {
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   className,
   selectedDate,
+  maxDate,
   onChange,
   placeholder,
   id,
@@ -23,7 +25,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   maxDate,
 }) => {
 
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (date: Date) => {
     onChange(date);
   };
 
