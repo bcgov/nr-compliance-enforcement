@@ -2,46 +2,6 @@ import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 
 describe("HWCR Outcome Prevention and Education", () => {
 
-//A couple of functions that are probably only ever going to be used here used here.  Could be promoted to commands.
-  function fillInPreventionAndEducation (preventionAndEducation: string[], officer: string, date: string) {
-
-    Cypress._.times(preventionAndEducation.length, (index) => {
-        cy.get(preventionAndEducation[index]).check(); 
-    });
-
-    cy.selectItemById(
-          "prev-educ-outcome-officer",
-          officer,
-    );
-
-    cy.enterDateTimeInDatePicker("prev-educ-outcome-date", date);
-      
-    //click Save Button
-    cy.get("#outcome-save-prev-and-educ-button").click();
-  };
-
-  function validatePreventionAndEducation (preventionAndEducation: string[], officer: string, date: string) {
-    //Verify Fields exist
-    Cypress._.times(preventionAndEducation.length, (index) => {
-      cy.get("#prev-educ-checkbox-div").should(($div) => {
-        expect($div).to.contain.text(preventionAndEducation[index]);
-      });
-    });
-
-    cy.get("#prev-educ-outcome-officer-div").should(($div) => {
-        expect($div).to.contain.text(officer);
-    });
-
-    cy.get("#prev-educ-outcome-date-div").should(($div) => {
-        expect($div).to.contain.text(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
-    });
-
-    //validate the toast
-    cy.get(".Toastify__toast-body").then(($toast) => {
-      expect($toast).to.contain.text("Prevention and education has been updated");
-    });
-  };
-
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
@@ -99,8 +59,8 @@ describe("HWCR Outcome Prevention and Education", () => {
       if ($outcome.find('#outcome-report-add-prevention-outcome').length > 0) {
         cy.get('#outcome-report-add-prevention-outcome').click();
         cy.validateComplaint("23-030330", "Black Bear");
-        fillInPreventionAndEducation (["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01")
-        validatePreventionAndEducation (["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"], "Olivia Benson", "01");
+        cy.fillInHWCSection ("PREV&EDUC", ["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01")
+        cy.validateHWCSection ("PREV&EDUC", ["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"], "Olivia Benson", "01");
       } else {
         cy.log('Test was previously run. Skip the Test');
         this.skip();
@@ -152,9 +112,9 @@ describe("HWCR Outcome Prevention and Education", () => {
       if ($preventionAndEducation.find('#prevention-edit-button').length) {
         cy.get("#prevention-edit-button").click();
 
-        fillInPreventionAndEducation (["#CNTCTBIOVT"], "Jake Peralta", "01");
+        cy.fillInHWCSection ("PREV&EDUC", ["#CNTCTBIOVT"], "Jake Peralta", "01");
 
-        validatePreventionAndEducation (["Provided safety information to the public", 
+        cy.validateHWCSection ("PREV&EDUC", ["Provided safety information to the public", 
           "Contacted bylaw to assist with managing attractants", 
           "Contacted biologist and/or veterinarian"], "Jake Peralta", "01");
       } else {

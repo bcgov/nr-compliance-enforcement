@@ -28,5 +28,19 @@ declare namespace Cypress {
       complaintTab: string,
       removeFilters: boolean): Chainable<void>;
     validateComplaint(complaintIdentifier: string, species: string): Chainable<void>;
+    fillInHWCSection (
+      section: string, 
+      checkboxes: string[], 
+      officer: string, 
+      date: string, 
+      actionRequired?: string, 
+      justification?: string): Chainable<void>;
+    validateHWCSection (
+      section: string, 
+      checkboxes: string[], 
+      officer: string, 
+      date: string, 
+      actionRequired?: string, 
+      justification?: string): Chainable<void>;
   }
 }
