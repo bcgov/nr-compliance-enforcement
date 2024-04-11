@@ -90,6 +90,7 @@ describe("HWCR Outcome Prevention and Education", () => {
     cy.get('.comp-hwcr-outcome-report').then(function($outcome) {
       if ($outcome.find('#outcome-report-add-prevention-outcome').length > 0) {
           cy.get('#outcome-report-add-prevention-outcome').click();
+          cy.validateComplaint("23-030330", "Black Bear");
       } else {
         cy.log('Test was previously run. Skip the Test');
         this.skip();
@@ -98,21 +99,20 @@ describe("HWCR Outcome Prevention and Education", () => {
 
     cy.get('.comp-outcome-report-complaint-prev-and-educ')
     .then(function() {
-      cy.validateComplaint("23-030330", "Black Bear");
-
+      
       //click Save Button
       cy.get("#outcome-save-prev-and-educ-button").click();
-
-      //validate error message
-      cy.get(".error-message").then(($error) => {
-          expect($error).to.contain.text("One or more prevention and education is required");
-      });
 
       //validate officer is required
       cy.get("#prev-educ-outcome-officer-div").find(".error-message").should("exist");
 
       //validate the date is required
       cy.get("#prev-educ-outcome-date-div").find(".error-message").should("exist");
+
+      //validate error message
+        cy.get(".error-message").then(($error) => {
+          expect($error).to.contain.text("One or more prevention and education is required");
+      });
 
       //validate the toast
       cy.get(".Toastify__toast-body").then(($toast) => {
