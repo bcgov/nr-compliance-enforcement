@@ -7,7 +7,6 @@ import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
-import { EquipmentDetailsDto } from "src/types/models/case-files/supplemental-notes/equipment/equipment-details";
 import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
 
 @Injectable({ scope: Scope.REQUEST })
@@ -26,6 +25,7 @@ export class CaseFileService {
       actionJustificationLongDescription
       actionJustificationActiveIndicator
       actions {
+        actionGuid
         actor
         date
         actionCode
@@ -36,6 +36,7 @@ export class CaseFileService {
     }
     preventionDetails {
       actions {
+        actionGuid
         actor
         date
         actionCode
@@ -60,6 +61,7 @@ export class CaseFileService {
       xCoordinate
       yCoordinate
       actions { 
+        actionGuid
         actor
         actionCode
         date

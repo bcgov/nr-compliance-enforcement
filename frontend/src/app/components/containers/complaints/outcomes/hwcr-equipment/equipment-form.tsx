@@ -11,11 +11,10 @@ import {
   getComplaintById,
   selectComplaint,
   selectComplaintCallerInformation,
-  selectComplaintHeader,
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
-import { ToggleError, ToggleSuccess } from "../../../../../common/toast";
-import { bcBoundaries } from "../../../../../common/methods";
+import { ToggleError, } from "../../../../../common/toast";
+import { bcBoundaries, getSelectedItem, getSelectedOfficer } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
@@ -56,6 +55,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
   const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
+  const [actionSetGuid, setActionSetGuid] = useState<string>();
+  const [actionRemovedGuid, setActionRemovedGuid] = useState<string>();
 
   const dispatch = useAppDispatch();
   const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
@@ -86,14 +87,17 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       setAddress(equipment?.address);
       setXCoordinate(equipment?.xCoordinate);
       setYCoordinate(equipment?.yCoordinate);
-
       equipment?.actions?.forEach(action => {
-        if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT && equipment.actions) {
-          //setOfficerSet(officerSet);
+        if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT && equipment.actions && complaintData) {
+          const setOfficer = getSelectedItem(action.actor, assignableOfficers);
+          setOfficerSet(setOfficer);
           setDateSet(new Date(action.date));
-        } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT) {
-          //setOfficerRemoved(officerRemoved);
+          setActionSetGuid(action.actionGuid);
+        } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT && complaintData) {
+          const removedOfficer = getSelectedItem(action.actor, assignableOfficers);
+          setOfficerRemoved(removedOfficer);
           setDateRemoved(new Date(action.date));
+          setActionRemovedGuid(action.actionGuid);
         }
       });
 
@@ -209,6 +213,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
 
     let actions = [
       {
+        actionGuid: actionSetGuid ? actionSetGuid : null,
         actor: officerSet?.value,
         date: dateSet,
         activeIndicator: true,
@@ -219,6 +224,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
     // if this equipment has also been removed by an officer, set that action as well
     if (dateRemoved && officerRemoved?.value) {
       actions.push({
+        actionGuid: actionRemovedGuid,
         actor: officerRemoved.value,
         date: dateRemoved,
         activeIndicator: true,
@@ -285,9 +291,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       switch (property) {
         case "equipment": {
           return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
-        }
-        case "officer": {
-
         }
       }
     };

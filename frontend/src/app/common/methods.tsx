@@ -6,12 +6,12 @@ import { from } from "linq-to-typescript";
 import { Violation } from "../types/app/code-tables/violation";
 import { Species } from "../types/app/code-tables/species";
 import { NatureOfComplaint } from "../types/app/code-tables/nature-of-complaint";
-import Option from "../types/app/option";
 import { UUID } from "crypto";
 import { Complaint as ComplaintDto } from "../types/app/complaints/complaint";
 import { GifReader } from 'omggif';
 import { fromImage } from "imtool";
 import AttachmentEnum from "../constants/attachment-enum";
+import Option from "../types/app/option";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -60,11 +60,26 @@ export const getAvatarInitials = (input: string): string => {
   }
 };
 
+// handy for those times where we want to set a selected option, but we only have the value. 
+// Useful for Compselect, which requires an Option.  In the future, best to refactor CompSelect to accept a value
+// instead of an Option
+export const getSelectedItem = (value: string, options: Option[]): Option => {
+
+  const selectedOption = options.find((option) => option.value === value);
+debugger;
+  if (selectedOption) {
+    return selectedOption;
+  } else {
+    return {value: '', label: ''};
+  }
+}
+
 export const getSelectedOfficer = (
   officers: Option[],
   personGuid: UUID | string,
   update: ComplaintDto | undefined
 ): any => {
+
   if (update && personGuid) {
     const { delegates } = update;
 
@@ -124,6 +139,7 @@ export const getFileExtension = (filename: string) => {
 };
 
 export const formatDate = (input: string | undefined): string => {
+  debugger;
   if (!input) {
     return "";
   }

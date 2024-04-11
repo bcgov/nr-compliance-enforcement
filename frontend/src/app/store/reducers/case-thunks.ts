@@ -46,7 +46,6 @@ export const getCaseFile =
   async (dispatch) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
-
     dispatch(setCaseFile(response));
   };
 
@@ -654,7 +653,6 @@ export const updateReview =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
-          debugger;
           dispatch(setCaseFile(res));
           ToggleSuccess(`Equipment has been updated`);
         } else {
