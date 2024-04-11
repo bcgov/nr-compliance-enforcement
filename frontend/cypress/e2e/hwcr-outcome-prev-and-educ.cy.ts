@@ -74,7 +74,13 @@ describe("HWCR Outcome Prevention and Education", () => {
 
       //validate the date is required
       cy.get("#prev-educ-outcome-date-div").find(".error-message").should("exist");
-    })
+
+      //validate the toast
+      cy.get(".Toastify__toast-body").then(($toast) => {
+        expect($toast).to.contain.text("Errors in form");
+      });
+
+    });
   });
 
   
@@ -86,10 +92,15 @@ describe("HWCR Outcome Prevention and Education", () => {
     //and to add a test at the end to delete the assessment.
     cy.get('.comp-hwcr-outcome-report').then(function($outcome)  {
       if ($outcome.find('#outcome-report-add-prevention-outcome').length > 0) {
-          cy.get('#outcome-report-add-prevention-outcome').click();
-          cy.validateComplaint("23-030330", "Black Bear");
-          fillInPreventionAndEducation (["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01")
-          validatePreventionAndEducation (["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"], "Olivia Benson", "01");
+        cy.get('#outcome-report-add-prevention-outcome').click();
+        cy.validateComplaint("23-030330", "Black Bear");
+        fillInPreventionAndEducation (["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01")
+        validatePreventionAndEducation (["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"], "Olivia Benson", "01");
+
+        //validate the toast
+        cy.get(".Toastify__toast-body").then(($toast) => {
+          expect($toast).to.contain.text("Prevention and education has been updated");
+        });
       } else {
         cy.log('Test was previously run. Skip the Test');
         this.skip();
@@ -146,6 +157,12 @@ describe("HWCR Outcome Prevention and Education", () => {
         validatePreventionAndEducation (["Provided safety information to the public", 
           "Contacted bylaw to assist with managing attractants", 
           "Contacted biologist and/or veterinarian"], "Jake Peralta", "01");
+
+        //validate the toast
+        cy.get(".Toastify__toast-body").then(($toast) => {
+          expect($toast).to.contain.text("Prevention and education has been updated");
+        });
+
       } else {
         cy.log('Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test')
         this.skip()
