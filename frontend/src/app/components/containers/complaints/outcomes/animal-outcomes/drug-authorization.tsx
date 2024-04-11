@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
@@ -22,12 +22,11 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
   const [authorizedOn, setAuthorizedOn] = useState<Date | undefined>();
 
   useEffect(() => {
-    const date = drugAuthtorization?.date ? new Date(drugAuthtorization?.date) : new Date();
+    const date = drugAuthorization?.date ? new Date(drugAuthorization?.date) : new Date();
     setAuthorizedOn(date);
-  }, [drugAuthtorization]);
+  }, [drugAuthorization]);
 
   const getValue = (property: string): Option | undefined => {
-
     if (property === "officer") {
       return officers.find((item) => item.value === authorizedBy);
     }
@@ -42,7 +41,6 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
   const handleAuthorizedOnChange = (input: Date | undefined | null) => {
     setAuthorizedOn(input ?? undefined);
     update({ officer: authorizedBy, date: input ?? undefined });
-
   };
 
   return (
@@ -62,15 +60,15 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
             <CompSelect
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
-              className="animal-drug-auth-details-input"
-              options={officers}
-              enableValidation={true}
-              placeholder="Select"
-              errorMessage={drugAuthorization?.officerErrorMessage}
               onChange={(evt) => {
                 handleAuthorizedByChange(evt?.value);
               }}
+              className="comp-details-input"
+              options={officers}
+              placeholder="Select"
+              enableValidation={true}
               value={getValue("officer")}
+              errorMessage={drugAuthorization?.officerErrorMessage}
             />
           </div>
         </Col>
@@ -84,19 +82,18 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
               id="drug-authorization-incident-time-label-id"
               htmlFor="drug-authorization-incident-time"
             >
-
               Date
             </label>
             <ValidationDatePicker
-                  id="drug-authorization-incident-time"
-                  maxDate={new Date()}
-                  onChange={(date: Date) => handleAuthorizedOnChange(date)}
-                  selectedDate={authorizedOn}
-                  classNamePrefix="comp-details-edit-calendar-input" 
-                  className={"animal-drug-auth-details-input"} 
-                  placeholder={"Select"} 
-                  errMsg={drugAuthorization?.dateErrorMessage ?? ""}         
-                  />
+              id="drug-authorization-incident-time"
+              maxDate={new Date()}
+              onChange={(date: Date) => handleAuthorizedOnChange(date)}
+              selectedDate={authorizedOn}
+              classNamePrefix="comp-details-edit-calendar-input"
+              className={"animal-drug-auth-details-input"}
+              placeholder={"Select"}
+              errMsg={drugAuthorization?.dateErrorMessage ?? ""}
+            />
           </div>
         </Col>
         <Col></Col>
