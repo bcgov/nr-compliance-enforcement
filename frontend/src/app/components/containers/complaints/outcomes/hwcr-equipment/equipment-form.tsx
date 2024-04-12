@@ -37,7 +37,7 @@ export interface EquipmentFormProps {
 
 export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCancel }) => {
   const [type, setType] = useState<Option>();
-  const [dateSet, setDateSet] = useState<Date>();
+  const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
   const [officerSet, setOfficerSet] = useState<Option>();
   const [officerRemoved, setOfficerRemoved] = useState<Option>();
