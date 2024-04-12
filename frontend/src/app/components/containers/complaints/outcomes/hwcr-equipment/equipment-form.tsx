@@ -44,6 +44,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
   const [address, setAddress] = useState<string | undefined>("");
   const [xCoordinate, setXCoordinate] = useState<string | undefined>("");
   const [yCoordinate, setYCoordinate] = useState<string | undefined>("");
+  const [equipmentAddressrrorMsg, setEquipmentAddressErrorMsg] = useState<string>("");
   const [equipmentTypeErrorMsg, setEquipmentTypeErrorMsg] = useState<string>("");
   const [officerSetErrorMsg, setOfficerSetErrorMsg] = useState<string>("");
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
@@ -153,10 +154,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     setYCoordinateErrorMsg("");
   };
 
-  // Validates the assessment
+  // Validates the equipment
   const hasErrors = (): boolean => {
     let hasErrors: boolean = false;
     resetValidationErrors();
+
+    const isAddressEmpty = !address;
+    const isXCoordinateEmpty = !xCoordinate;
+    const isYCoordinateEmpty = !yCoordinate;
 
     if (xCoordinate) {
       handleCoordinateChange(xCoordinate, Coordinates.Longitude);
@@ -181,16 +186,18 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
       hasErrors = true;
     }
 
-    if (!xCoordinate) {
-      setXCoordinateErrorMsg("Required");
+    // Checking if neither address n
+    if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
+      if (isAddressEmpty) setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
+      if (isXCoordinateEmpty) setXCoordinateErrorMsg("X Coordinate is required if address is not provided.");
+      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Y Coordinate is required if address is not provided.");
       hasErrors = true;
     }
 
-    if (!yCoordinate) {
-      setYCoordinateErrorMsg("Required");
+    if (!type) {
+      setEquipmentTypeErrorMsg("Equipment type is required.");
       hasErrors = true;
     }
-
     if (coordinateErrorsInd) {
       hasErrors = true;
     }
@@ -236,7 +243,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
         yCoordinate: yCoordinate,
         actions: actions,
       } as EquipmentDetailsDto;
-
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
     }

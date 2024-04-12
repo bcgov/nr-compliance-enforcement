@@ -635,7 +635,6 @@ export const updateReview =
     const {
       app: { profile },
     } = getState();
-
     // equipment does not exist, let's create it
     if (complaintIdentifier
        && !equipment.equipmentGuid) {
