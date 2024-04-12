@@ -1,4 +1,4 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION "uuid-ossp" SCHEMA case_management;
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
 
