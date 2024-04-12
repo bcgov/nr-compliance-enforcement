@@ -44,7 +44,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
   const [address, setAddress] = useState<string | undefined>("");
   const [xCoordinate, setXCoordinate] = useState<string | undefined>("");
   const [yCoordinate, setYCoordinate] = useState<string | undefined>("");
-  const [equipmentAddressrrorMsg, setEquipmentAddressErrorMsg] = useState<string>("");
+  const [equipmentAddressErrorMsg, setEquipmentAddressErrorMsg] = useState<string>("");
   const [equipmentTypeErrorMsg, setEquipmentTypeErrorMsg] = useState<string>("");
   const [officerSetErrorMsg, setOfficerSetErrorMsg] = useState<string>("");
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
@@ -322,14 +322,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
               <input
                 type="text"
                 id="equipment-address"
-                className={equipmentAddressrrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                className={equipmentAddressErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
                 onChange={(e) => setAddress(e.target.value)}
                 maxLength={120}
                 value={address}
               />
             </div>
           </div>
-          <div className="equipment-form-error-msg">{equipmentAddressrrorMsg}</div>
+          <div className="equipment-form-error-msg">{equipmentAddressErrorMsg}</div>
           {complaintData?.locationSummary && (
             <button
               className="button-text copy-text"
