@@ -145,31 +145,41 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     }
     setCoordinateErrorsInd(hasErrors);
   };
-  // Clear out existing validation errors
+
+  // Reset error messages
   const resetValidationErrors = () => {
-    setEquipmentTypeErrorMsg("");
     setOfficerSetErrorMsg("");
     setDateSetErrorMsg("");
     setXCoordinateErrorMsg("");
     setYCoordinateErrorMsg("");
+    setEquipmentTypeErrorMsg("");
+    setEquipmentAddressErrorMsg("");
   };
 
-  // Validates the equipment
-  const hasErrors = (): boolean => {
-    let hasErrors: boolean = false;
-    resetValidationErrors();
-
+  // Helper function to check if coordinates or address are provided
+  const validateLocation = (): boolean => {
     const isAddressEmpty = !address;
     const isXCoordinateEmpty = !xCoordinate;
     const isYCoordinateEmpty = !yCoordinate;
 
-    if (xCoordinate) {
-      handleCoordinateChange(xCoordinate, Coordinates.Longitude);
+    if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
+      if (isAddressEmpty) setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
+      if (isXCoordinateEmpty) setXCoordinateErrorMsg("X Coordinate is required if address is not provided.");
+      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Y Coordinate is required if address is not provided.");
+      return true; // Errors found
     }
+    return false; // No errors
+  };
 
-    if (yCoordinate) {
-      handleCoordinateChange(yCoordinate, Coordinates.Latitude);
-    }
+  // Validates the equipment
+  const hasErrors = (): boolean => {
+    resetValidationErrors();
+
+    let hasErrors = false;
+
+    if (validateLocation()) {
+      hasErrors = true;
+    };
 
     if (!officerSet) {
       setOfficerSetErrorMsg("Required");
@@ -177,7 +187,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     }
 
     if (!type) {
-      setEquipmentTypeErrorMsg("Required");
+      setEquipmentTypeErrorMsg("Equipment type is required.");
       hasErrors = true;
     }
 
@@ -186,18 +196,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
       hasErrors = true;
     }
 
-    // Checking if neither address n
-    if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
-      if (isAddressEmpty) setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
-      if (isXCoordinateEmpty) setXCoordinateErrorMsg("X Coordinate is required if address is not provided.");
-      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Y Coordinate is required if address is not provided.");
-      hasErrors = true;
-    }
-
-    if (!type) {
-      setEquipmentTypeErrorMsg("Equipment type is required.");
-      hasErrors = true;
-    }
     if (coordinateErrorsInd) {
       hasErrors = true;
     }
