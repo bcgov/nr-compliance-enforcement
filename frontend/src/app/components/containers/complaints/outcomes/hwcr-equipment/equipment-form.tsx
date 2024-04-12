@@ -163,7 +163,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     const isYCoordinateEmpty = !yCoordinate;
 
     if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
-      if (isAddressEmpty) setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
+      setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
       if (isXCoordinateEmpty) setXCoordinateErrorMsg("X Coordinate is required if address is not provided.");
       if (isYCoordinateEmpty) setYCoordinateErrorMsg("Y Coordinate is required if address is not provided.");
       return true; // Errors found
@@ -179,7 +179,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
 
     if (validateLocation()) {
       hasErrors = true;
-    };
+    }
 
     if (!officerSet) {
       setOfficerSetErrorMsg("Required");
