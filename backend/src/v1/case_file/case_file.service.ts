@@ -34,6 +34,12 @@ export class CaseFileService {
         activeIndicator
       }
     }
+    isReviewRequired
+    reviewComplete {
+      actor
+      date
+      actionCode
+    }
     preventionDetails {
       actions {
         actionGuid
