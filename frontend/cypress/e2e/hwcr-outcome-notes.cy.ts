@@ -60,6 +60,8 @@ describe("HWCR Outcome Notes", () => {
         cy.validateComplaint("23-032454", "Black Bear");
 
         enterNote("This is test supporting note from Cypress");
+
+        cy.get("#supporting-notes-save-button").click();
         
         //validate the note
         cy.get(".comp-outcome-supporting-notes").should(($div) => {
