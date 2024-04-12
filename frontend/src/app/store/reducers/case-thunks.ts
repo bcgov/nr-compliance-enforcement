@@ -616,7 +616,9 @@ export const updateReview =
       await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
         if (res) {
           // remove equipment from state
-          const updatedEquipment = getState().cases.equipment.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
+          const { cases: { equipment } } =  getState();
+          const updatedEquipment = equipment?.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
+          
           dispatch(setCaseFile({ equipment: updatedEquipment }));
           ToggleSuccess(`Equipment has been deleted`);
         } else {

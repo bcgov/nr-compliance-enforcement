@@ -81,11 +81,11 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         confirmText="Yes, delete equipment"
       />
       <div className="comp-outcome-report-complaint-assessment equipment-item">
-        {equipment.equipmentGuid && <div className="status-bar"></div>}
+        {!removedEquipmentFullName && <div className="status-bar"></div>}
         <div className="equipment-item-header">
           <div className="title">
             <h6>{getValue("equipment")?.label}</h6>
-            {equipment.equipmentGuid && <div className="badge">Active</div>}
+            {!removedEquipmentFullName && <div className="badge">Active</div>}
           </div>
           <div>
             <CompTextIconButton
@@ -108,7 +108,6 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
           <div className="label">Address</div>
           <div
             className="value"
-            id=""
           >
             {equipment.address}
           </div>
@@ -122,7 +121,6 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               <div className="label">X Coordinate</div>
               <div
                 className="value"
-                id=""
               >
                 {equipment.xCoordinate}
               </div>
