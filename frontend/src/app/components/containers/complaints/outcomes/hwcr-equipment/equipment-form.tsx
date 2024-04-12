@@ -324,13 +324,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
               <input
                 type="text"
                 id="equipment-address"
-                className="comp-form-control"
+                className={equipmentAddressrrorMsg ? "comp-form-control error-border" : "comp-form-control"}
                 onChange={(e) => setAddress(e.target.value)}
                 maxLength={120}
                 value={address}
               />
             </div>
           </div>
+          <div className="equipment-form-error-msg">{equipmentAddressrrorMsg}</div>
           {complaintData?.locationSummary && (
             <button
               className="button-text copy-text"
