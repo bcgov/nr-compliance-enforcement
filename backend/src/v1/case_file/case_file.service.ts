@@ -252,7 +252,7 @@ export class CaseFileService {
   deleteEquipment = async (
     token: string,
     model: DeleteEquipmentDto
-  ): Promise<Boolean> => {
+  ): Promise<boolean> => {
 
     const result = await post(token, {
       query: `mutation DeleteEquipment($deleteEquipmentInput: DeleteEquipmentInput!) {

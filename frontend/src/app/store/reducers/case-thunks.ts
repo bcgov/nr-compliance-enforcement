@@ -613,7 +613,7 @@ export const updateReview =
     };
     
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
-      await deleteMethod<Boolean>(dispatch, parameters).then(async (res) => {
+      await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
         if (res) {
           // remove equipment from state
           const updatedEquipment = getState().cases.equipment.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
@@ -631,11 +631,8 @@ export const updateReview =
     if (!equipment) {
       return;
     }
-    const caseIdentifier = await dispatch(findCase(complaintIdentifier));
 
     const {
-      codeTables: { "assessment-type": assessmentType },
-      officers: { officers },
       app: { profile },
     } = getState();
 

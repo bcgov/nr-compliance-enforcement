@@ -14,7 +14,7 @@ import {
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { ToggleError } from "../../../../../common/toast";
-import { bcBoundaries, getSelectedItem, getSelectedOfficer } from "../../../../../common/methods";
+import { bcBoundaries, getSelectedItem } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
@@ -206,7 +206,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
 
     let actions = [
       {
-        actionGuid: actionSetGuid ? actionSetGuid : null,
+        actionGuid: actionSetGuid,
         actor: officerSet?.value,
         date: dateSet,
         activeIndicator: true,
@@ -279,11 +279,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
 
   // for turning codes into values
   const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "equipment": {
-        return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
-      }
-    }
+    return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
   };
 
   const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;

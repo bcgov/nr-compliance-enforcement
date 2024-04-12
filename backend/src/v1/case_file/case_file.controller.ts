@@ -8,7 +8,6 @@ import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
-import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
