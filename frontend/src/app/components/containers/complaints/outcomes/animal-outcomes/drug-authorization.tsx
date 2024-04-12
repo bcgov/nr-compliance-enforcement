@@ -35,12 +35,12 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
     const newDrugAuth: DrugAuthorizationType = { officer: input ?? "", date: authorizedOn ?? undefined };
-    update(newDrugAuth);
+    update(newDrugAuth, "officer");
   };
 
   const handleAuthorizedOnChange = (input: Date | undefined | null) => {
     setAuthorizedOn(input ?? undefined);
-    update({ officer: authorizedBy, date: input ?? undefined });
+    update({ officer: authorizedBy, date: input ?? undefined }, "date");
   };
 
   return (

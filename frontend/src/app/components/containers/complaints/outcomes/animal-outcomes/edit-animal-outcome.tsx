@@ -374,6 +374,23 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     return isValid;
   };
 
+  const updateDrugAuthorizationFromInput = (drugAuthorization: DrugAuthorization | undefined, type: string) => {
+    if (drugAuthorization) {
+      if (!drugAuthorization?.officer && type === "officer") {
+        drugAuthorization.officerErrorMessage = "Required";
+      } else {
+        drugAuthorization.officerErrorMessage = "";
+      }
+      if (!drugAuthorization?.date && type === "date") {
+        drugAuthorization.dateErrorMessage = "Required";
+      } else {
+        drugAuthorization.dateErrorMessage = "";
+      }
+    }
+    setDrugAuthorization(drugAuthorization);
+    return isValid;
+  };
+
   const renderDrugs = () => {
     if (drugs && from(drugs).any()) {
       return (
@@ -396,7 +413,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           <AddDrugAuthorization
             drugAuthorization={drugAuthorization}
             agency={complaintData?.ownedBy ?? "COS"}
-            update={updateDrugAuthorization}
+            update={updateDrugAuthorizationFromInput}
           />
         </>
       );
