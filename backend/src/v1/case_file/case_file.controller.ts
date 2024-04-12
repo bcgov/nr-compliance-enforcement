@@ -34,7 +34,7 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async deleteEquipment(@Token() token,
                         @Query('equipmentGuid') equipmentGuid: string,
-                        @Query('updateUserId') updateUserId: string,): Promise<Boolean> {
+                        @Query('updateUserId') updateUserId: string,): Promise<boolean> {
       const deleteEquipment = {
         equipmentGuid: equipmentGuid,
         updateUserId: updateUserId,

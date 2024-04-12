@@ -32,11 +32,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, onEdit }) => 
 
   // for turning codes into values
   const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "equipment": {
-        return equipmentTypeCodes.find((item) => item.value === equipment.equipmentTypeCode);
-      }
-    }
+    return equipmentTypeCodes.find((item) => item.value === equipment.equipmentTypeCode);
   };
 
   const handleDeleteEquipment = (equipmentGuid: string | undefined) => {
