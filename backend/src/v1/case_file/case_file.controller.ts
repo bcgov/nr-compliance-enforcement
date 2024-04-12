@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Req } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -8,6 +8,7 @@ import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -20,50 +21,38 @@ export class CaseFileController {
 
   @Post("/createAssessment")
   @Roles(Role.COS_OFFICER)
-  async createAssessment(
-      @Token() token,
-      @Body() model: CaseFileDto): Promise<CaseFileDto> {
-      return await this.service.createAssessment(token, model);
+  async createAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.createAssessment(token, model);
   }
 
   @Patch("/updateAssessment")
   @Roles(Role.COS_OFFICER)
-  async updateAssessment(
-      @Token() token,
-      @Body() model: CaseFileDto): Promise<CaseFileDto> {
-      return await this.service.updateAssessment(token, model);
+  async updateAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.updateAssessment(token, model);
   }
 
   @Post("/createPrevention")
   @Roles(Role.COS_OFFICER)
-  async createPrevention(
-      @Token() token,
-      @Body() model: CaseFileDto): Promise<CaseFileDto> {
-      return await this.service.createPrevention(token, model);
+  async createPrevention(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.createPrevention(token, model);
   }
 
   @Patch("/updatePrevention")
   @Roles(Role.COS_OFFICER)
-  async updatePrevention(
-      @Token() token,
-      @Body() model: CaseFileDto): Promise<CaseFileDto> {
-      return await this.service.updatePrevention(token, model);
+  async updatePrevention(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.updatePrevention(token, model);
   }
 
   @Post("/review")
   @Roles(Role.COS_OFFICER)
-  async createReview(
-      @Token() token,
-      @Body() model: CaseFileDto): Promise<CaseFileDto> {
-      return await this.service.createReview(token, model);
+  async createReview(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.createReview(token, model);
   }
 
   @Patch("/review")
   @Roles(Role.COS_OFFICER)
-  async updateReview(
-      @Token() token,
-      @Body() model: CaseFileDto): Promise<CaseFileDto> {
-      return await this.service.updateReview(token, model);
+  async updateReview(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.updateReview(token, model);
   }
 
   @Get("/:complaint_id")
@@ -82,5 +71,17 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async UpdateNote(@Token() token, @Body() model: UpdateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.updateNote(token, model);
+  }
+
+  @Delete("/note/:caseIdentifier")
+  @Roles(Role.COS_OFFICER)
+  async DeleteNote(
+    @Token() token,
+    @Param("caseIdentifier") caseIdentifier: string,
+    @Req() request: Request,
+  ): Promise<CaseFileDto> {
+    console.log(request);
+    debugger;
+    return await this.service.deleteNote(token, {} as DeleteSupplementalNotesInput);
   }
 }

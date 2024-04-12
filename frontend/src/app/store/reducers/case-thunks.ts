@@ -1,6 +1,6 @@
 import { Action, ThunkAction } from "@reduxjs/toolkit";
 import config from "../../../config";
-import { generateApiParameters, get, patch, post } from "../../common/api";
+import { deleteMethod, generateApiParameters, get, patch, post } from "../../common/api";
 import { AppThunk, RootState } from "../store";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import { CaseFileDto } from "../../types/app/case-files/case-file";
@@ -28,6 +28,7 @@ import { UUID } from "crypto";
 import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
 import { ReviewInput } from "../../types/app/case-files/review-input";
 import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
+import { DeleteSupplementalNoteInput } from "../../types/app/case-files/supplemental-notes/delete-supplemental-notes-input";
 
 //-- general thunks
 export const findCase =
@@ -525,8 +526,45 @@ export const upsertNote =
     }
   };
 
-  //-- file review thunks
-  export const createReview =
+export const deleteNote =
+  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+    const {
+      officers: { officers },
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { caseId },
+    } = getState();
+
+    const _deleteNote =
+      (
+        id: UUID,
+        actor: string,
+        userId: string,
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: DeleteSupplementalNoteInput = {
+          caseIdentifier: caseId as UUID,
+          actor,
+          updateUserId: userId,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
+        return await deleteMethod<CaseFileDto>(dispatch, parameters);
+      };
+
+    const officer = officers.find((item) => item.user_id === idir);
+    const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir));
+
+    if (result !== null) {
+      return "success";
+    } else {
+      return "error";
+    }
+  };
+
+//-- file review thunks
+export const createReview =
   (complaintId: string, isReviewRequired: boolean, reviewComplete: ReviewCompleteAction | null): AppThunk =>
   async (dispatch, getState) => {
     const {

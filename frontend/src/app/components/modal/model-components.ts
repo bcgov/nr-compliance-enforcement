@@ -1,15 +1,6 @@
-import {
-  Sample,
-  ASSIGN_OFFICER,
-  CHANGE_STATUS,
-  CANCEL_CONFIRM,
-} from "../../types/modal/modal-types";
+import { Sample, ASSIGN_OFFICER, CHANGE_STATUS, CANCEL_CONFIRM, DELETE_NOTE } from "../../types/modal/modal-types";
 
-import {
-  SampleModal,
-  AssignOfficerModal,
-  ChangeStatusModal,
-} from "./instances";
+import { SampleModal, AssignOfficerModal, ChangeStatusModal, DeleteNoteModal } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
@@ -17,4 +8,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [ASSIGN_OFFICER]: AssignOfficerModal,
   [CHANGE_STATUS]: ChangeStatusModal,
   [CANCEL_CONFIRM]: CancelConfirmModal,
+  [DELETE_NOTE]: DeleteNoteModal,
 };
