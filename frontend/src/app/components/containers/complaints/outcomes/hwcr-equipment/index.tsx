@@ -60,6 +60,7 @@ export const HWCREquipment: FC = memo(() => {
             key={equipment.equipmentGuid}
             equipment={equipment}
             onEdit={handleEdit}
+            isEditDisabled={!!editingGuid && editingGuid !== equipment.equipmentGuid}
           />
       ): null}
 

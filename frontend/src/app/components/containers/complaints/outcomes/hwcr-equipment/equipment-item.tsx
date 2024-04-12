@@ -17,9 +17,10 @@ import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
+  isEditDisabled: boolean; 
   onEdit: (guid: string) => void;
 }
-export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, onEdit }) => {
+export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisabled, onEdit }) => {
   const dispatch = useAppDispatch();
 
   const [showModal, setShowModal] = useState(false);
@@ -98,6 +99,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, onEdit }) => 
               buttonClasses="button-text"
               text="Edit"
               icon={BsPencil}
+              isDisabled={isEditDisabled}
               click={() => handleEdit(equipment)}
             />
           </div>
