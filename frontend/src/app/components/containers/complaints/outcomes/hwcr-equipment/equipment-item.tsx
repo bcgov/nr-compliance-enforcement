@@ -15,20 +15,6 @@ import { selectEquipmentDropdown } from "../../../../../store/reducers/code-tabl
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
 
-interface EquipmentDetailsWithVariables {
-  equipmentTypeCode: string;
-  equipmentTypeShortDescription?: string;
-  equipmentTypeLongDescription?: string;
-  equipmentTypeActiveIndicator: boolean;
-  address?: string;
-  xCoordinate: string;
-  yCoordinate: string;
-  setBy?: string;
-  setDate?: Date;
-  removedBy?: string;
-  removedDate?: Date;
-}
-
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
   onEdit: (guid: string) => void;
