@@ -9,6 +9,7 @@ import {
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
+  selectComplaintAssignedBy
 } from "../../../../store/reducers/complaints";
 import {
   selectAssessmentTypeCodeDropdown,
@@ -19,7 +20,7 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, selectAssessment, upsertAssessment, getAssessment } from "../../../../store/reducers/cases";
+import { resetAssessment } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -29,7 +30,9 @@ import { ValidationDatePicker } from "../../../../common/validation-date-picker"
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
-import "../../../../../assets/sass/hwcr-assessment.scss";
+import "../../../../../assets/sass/hwcr-assessment.scss"
+import { selectAssessment } from "../../../../store/reducers/case-selectors";
+import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
@@ -62,9 +65,9 @@ export const HWCRComplaintAssessment: FC = () => {
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-        }))
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+      }))
       : [];
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -95,6 +98,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
+  const assigned = useAppSelector(selectComplaintAssignedBy);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -108,12 +112,12 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getAssessment(complaintData.id));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
     populateAssessmentUI();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState]);
 
   // clear the redux state
@@ -127,27 +131,27 @@ export const HWCRComplaintAssessment: FC = () => {
     const selectedOfficer = (
       assessmentState.officer
         ? {
-            label: assessmentState.officer?.key,
-            value: assessmentState.officer?.value,
-          }
+          label: assessmentState.officer?.key,
+          value: assessmentState.officer?.value,
+        }
         : null
     ) as Option;
 
     const selectedActionRequired = (
       assessmentState.action_required
         ? {
-            label: assessmentState.action_required,
-            value: assessmentState.action_required,
-          }
+          label: assessmentState.action_required,
+          value: assessmentState.action_required,
+        }
         : null
     ) as Option;
 
     const selectedJustification = (
       assessmentState.justification
         ? {
-            label: assessmentState.justification?.key,
-            value: assessmentState.justification?.value,
-          }
+          label: assessmentState.justification?.key,
+          value: assessmentState.justification?.value,
+        }
         : null
     ) as Option;
 
@@ -158,13 +162,30 @@ export const HWCRComplaintAssessment: FC = () => {
       };
     }) as Option[];
 
-    setSelectedDate(assessmentState.date ? new Date(assessmentState.date) : null);
+    const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+
+    setSelectedDate(assesmentDate);
     setSelectedOfficer(selectedOfficer);
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
+
+    if (!selectedOfficer && assigned && officersInAgencyList) {
+        const officerAssigned: Option[] = officersInAgencyList.filter((officer) => officer.person_guid.person_guid === assigned)
+          .map((item) => {
+            return {
+              label: `${item.person_guid?.first_name} ${item.person_guid?.last_name}`,
+              value: assigned
+            } as Option;
+          });
+        if (officerAssigned && Array.isArray(officerAssigned) && officerAssigned.length > 0 &&
+          typeof (officerAssigned[0].label) !== 'undefined') {
+          setSelectedOfficer(officerAssigned[0]);
+        } 
+    }
+    
   };
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "" : "comp-outcome-hide";
@@ -406,6 +427,7 @@ export const HWCRComplaintAssessment: FC = () => {
                       className="comp-details-edit-calendar-input" // Adjust class as needed
                       classNamePrefix="comp-select" // Adjust class as needed
                       errMsg={assessmentDateErrorMessage} // Pass error message if any
+                      maxDate={new Date()}
                     />
                   ) : (
                     formatDate(`${selectedDate}`)
