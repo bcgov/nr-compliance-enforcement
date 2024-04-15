@@ -9,6 +9,7 @@ import {
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
+  selectComplaintAssignedBy,
 } from "../../../../store/reducers/complaints";
 import { selectPreventionTypeCodeDropdown } from "../../../../store/reducers/code-table";
 import { useParams } from "react-router-dom";
@@ -73,6 +74,7 @@ export const HWCRComplaintPrevention: FC = () => {
 
   const preventionTypeList = useAppSelector(selectPreventionTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
+  const assigned = useAppSelector(selectComplaintAssignedBy);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -126,6 +128,22 @@ export const HWCRComplaintPrevention: FC = () => {
     setShowContent(preventionState.prevention_type?.length > 0);
     resetValidationErrors();
     setEditable(!preventionState.date);
+
+    if (!selectedOfficer && officersInAgencyList && assigned) {
+      const officerAssigned: Option[] = officersInAgencyList.filter((officer : Officer) =>
+        officer.person_guid.person_guid === assigned)
+        .map((element : Officer) => {
+          return {
+            label: `${element.person_guid?.first_name} ${element.person_guid?.last_name}`, value: assigned
+          } as Option;
+        });
+      if (officerAssigned && Array.isArray(officerAssigned) &&
+        officerAssigned.length > 0 && 
+        typeof (officerAssigned[0].label) !== 'undefined') {
+        setSelectedOfficer(officerAssigned[0]);
+      }
+    }
+
   };
 
   const cancelConfirmed = () => {

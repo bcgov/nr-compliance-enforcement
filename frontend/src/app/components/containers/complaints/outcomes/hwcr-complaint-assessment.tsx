@@ -9,6 +9,7 @@ import {
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
+  selectComplaintAssignedBy
 } from "../../../../store/reducers/complaints";
 import {
   selectAssessmentTypeCodeDropdown,
@@ -64,9 +65,9 @@ export const HWCRComplaintAssessment: FC = () => {
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
-        }))
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+      }))
       : [];
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -97,6 +98,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
+  const assigned = useAppSelector(selectComplaintAssignedBy);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -129,27 +131,27 @@ export const HWCRComplaintAssessment: FC = () => {
     const selectedOfficer = (
       assessmentState.officer
         ? {
-            label: assessmentState.officer?.key,
-            value: assessmentState.officer?.value,
-          }
+          label: assessmentState.officer?.key,
+          value: assessmentState.officer?.value,
+        }
         : null
     ) as Option;
 
     const selectedActionRequired = (
       assessmentState.action_required
         ? {
-            label: assessmentState.action_required,
-            value: assessmentState.action_required,
-          }
+          label: assessmentState.action_required,
+          value: assessmentState.action_required,
+        }
         : null
     ) as Option;
 
     const selectedJustification = (
       assessmentState.justification
         ? {
-            label: assessmentState.justification?.key,
-            value: assessmentState.justification?.value,
-          }
+          label: assessmentState.justification?.key,
+          value: assessmentState.justification?.value,
+        }
         : null
     ) as Option;
 
@@ -169,6 +171,21 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
+
+    if (!selectedOfficer && assigned && officersInAgencyList) {
+        const officerAssigned: Option[] = officersInAgencyList.filter((officer) => officer.person_guid.person_guid === assigned)
+          .map((item) => {
+            return {
+              label: `${item.person_guid?.first_name} ${item.person_guid?.last_name}`,
+              value: assigned
+            } as Option;
+          });
+        if (officerAssigned && Array.isArray(officerAssigned) && officerAssigned.length > 0 &&
+          typeof (officerAssigned[0].label) !== 'undefined') {
+          setSelectedOfficer(officerAssigned[0]);
+        } 
+    }
+    
   };
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "" : "comp-outcome-hide";
