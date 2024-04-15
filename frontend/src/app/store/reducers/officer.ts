@@ -333,6 +333,21 @@ export const selectOfficerByIdir =
     return null;
   };
 
+  export const selectOfficerByPersonGuid =
+  (personGuid: string) =>
+  (state: RootState): Officer | null => {
+    const {
+      officers: { officers: data },
+    } = state;
+    const selected = data.find(({ person_guid }) => person_guid.person_guid === personGuid);
+
+    if (selected?.person_guid) {
+      return selected;
+    }
+
+    return null;
+  };
+
   export const selectCurrentOfficer =
   () =>
   (state: RootState): OfficerDto | null => {
