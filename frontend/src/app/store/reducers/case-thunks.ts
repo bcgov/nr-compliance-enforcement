@@ -596,9 +596,9 @@ export const updateReview =
   };
 
   export const deleteEquipment =
-  (equipmentGuid: string): AppThunk =>
+  (id: string): AppThunk =>
   async (dispatch, getState) => {
-    if (!equipmentGuid) {
+    if (!id) {
       return;
     }
 
@@ -608,8 +608,8 @@ export const updateReview =
 
 
     const deleteEquipmentInput = {
-      equipmentGuid: equipmentGuid,
-      updateUserId: profile.idir_username,
+      id: id,
+      userId: profile.idir_username,
     };
     
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
@@ -617,7 +617,7 @@ export const updateReview =
         if (res) {
           // remove equipment from state
           const { cases: { equipment } } =  getState();
-          const updatedEquipment = equipment?.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
+          const updatedEquipment = equipment?.filter(equipment => equipment.id !== id);
           
           dispatch(setCaseFile({ equipment: updatedEquipment }));
           ToggleSuccess(`Equipment has been deleted`);
@@ -639,7 +639,7 @@ export const updateReview =
     } = getState();
     // equipment does not exist, let's create it
     if (complaintIdentifier
-       && !equipment.equipmentGuid) {
+       && !equipment.id) {
       let createEquipmentInput = {
         createEquipmentInput: {
           leadIdentifier: complaintIdentifier,

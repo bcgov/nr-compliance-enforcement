@@ -233,9 +233,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     // Create an equipment object to persist
     if (type) {
       const equipmentDetails = {
-        equipmentGuid: equipment?.equipmentGuid,
-        equipmentTypeCode: type.value,
-        equipmentTypeActiveIndicator: true,
+        id: equipment?.id,
+        typeCode: type.value,
+        activeIndicator: true,
         address: address,
         xCoordinate: xCoordinate,
         yCoordinate: yCoordinate,
@@ -247,7 +247,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
   };
 
   const handleFormErrors = () => {
-    const errorMsg = equipment?.equipmentGuid ? "Errors editing equipment" : "Errors creating equipment";
+    const errorMsg = equipment?.id ? "Errors editing equipment" : "Errors creating equipment";
     ToggleError(errorMsg);
   };
 
@@ -283,7 +283,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
 
   // for turning codes into values
   const getValue = (property: string): Option | undefined => {
-    return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
+    return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
   };
 
   const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;

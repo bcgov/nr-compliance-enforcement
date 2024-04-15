@@ -48,19 +48,19 @@ export const HWCREquipment: FC = memo(() => {
     <div className="comp-outcome-report-block">
       <h6>Equipment</h6>
       {equipmentList && equipmentList.length > 0 ? equipmentList.map((equipment)=>
-          editingGuid === equipment.equipmentGuid ?
+          editingGuid === equipment.id ?
           <EquipmentForm
-            key={equipment.equipmentGuid}
+            key={equipment.id}
             equipment={equipment}
             onSave={handleSave}
             onCancel={handleCancel}
           />
           :
           <EquipmentItem
-            key={equipment.equipmentGuid}
+            key={equipment.id}
             equipment={equipment}
             onEdit={handleEdit}
-            isEditDisabled={!!editingGuid && editingGuid !== equipment.equipmentGuid}
+            isEditDisabled={!!editingGuid && editingGuid !== equipment.id}
           />
       ): null}
 

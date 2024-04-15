@@ -1,4 +1,4 @@
 export interface DeleteEquipmentInput {
-  equipmentGuid: string;
-  updateUserId: string;
+  id: string;
+  userId: string;
 }

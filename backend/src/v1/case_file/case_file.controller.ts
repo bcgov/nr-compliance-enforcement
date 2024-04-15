@@ -34,12 +34,12 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async deleteEquipment(
     @Token() token,
-    @Query("equipmentGuid") equipmentGuid: string,
-    @Query("updateUserId") updateUserId: string,
+    @Query("id") id: string,
+    @Query("userId") userId: string,
   ): Promise<boolean> {
     const deleteEquipment = {
-      equipmentGuid: equipmentGuid,
-      updateUserId: updateUserId,
+      id: id,
+      userId: userId,
     };
     return await this.service.deleteEquipment(token, deleteEquipment);
   }
