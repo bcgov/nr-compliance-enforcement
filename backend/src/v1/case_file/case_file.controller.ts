@@ -99,15 +99,44 @@ export class CaseFileController {
     return await this.service.updateNote(token, model);
   }
 
-  @Delete("/note/:caseIdentifier")
+  // @Delete("/note")
+  // @Roles(Role.COS_OFFICER)
+  // async deleteNote(
+  //   @Token() token,
+  //   @Param("caseIdentifier") caseIdentifier: string,
+  //   @Param("actor") actor: string,
+  //   @Param("updateUserId") updateUserId: string,
+  //   // @Req() request: Request,
+  // ): Promise<CaseFileDto> {
+  //   console.log(caseIdentifier);
+  //   debugger;
+
+  //   return Promise.resolve({} as CaseFileDto);
+  //   //return await this.service.deleteNote(token, {} as DeleteSupplementalNotesInput);
+  // }
+
+  @Delete("/note")
   @Roles(Role.COS_OFFICER)
-  async DeleteNote(
+  async deleteNote(
     @Token() token,
-    @Param("caseIdentifier") caseIdentifier: string,
-    @Req() request: Request,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("actor") actor: string,
+    @Query("updateUserId") updateUserId: string,
   ): Promise<CaseFileDto> {
-    console.log(request);
-    debugger;
-    return await this.service.deleteNote(token, {} as DeleteSupplementalNotesInput);
+    const input = {
+      caseIdentifier,
+      actor,
+      updateUserId,
+    };
+
+    return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);
   }
 }
+
+/*
+{
+  caseIdentifier: "7e8edeef-2366-426b-a410-03585be9158d",
+  actor: "65dbad8b-790a-43cb-b394-c8019f4c86e2",
+  updateUserId: "M2SEARS",
+}
+*/

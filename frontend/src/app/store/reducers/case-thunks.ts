@@ -33,7 +33,6 @@ import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-detail
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 
-
 //-- general thunks
 export const findCase =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
@@ -634,7 +633,7 @@ export const updateReview =
     });
   };
 
-  export const deleteEquipment =
+export const deleteEquipment =
   (equipmentGuid: string): AppThunk =>
   async (dispatch, getState) => {
     if (!equipmentGuid) {
@@ -645,28 +644,29 @@ export const updateReview =
       app: { profile },
     } = getState();
 
-
     const deleteEquipmentInput = {
       equipmentGuid: equipmentGuid,
       updateUserId: profile.idir_username,
     };
-    
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
-      await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
-        if (res) {
-          // remove equipment from state
-          const { cases: { equipment } } =  getState();
-          const updatedEquipment = equipment?.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
-          
-          dispatch(setCaseFile({ equipment: updatedEquipment }));
-          ToggleSuccess(`Equipment has been deleted`);
-        } else {
-          ToggleError(`Unable to update equipment`);
-        }
-      });
-     }
 
-  export const upsertEquipment =
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
+    await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
+      if (res) {
+        // remove equipment from state
+        const {
+          cases: { equipment },
+        } = getState();
+        const updatedEquipment = equipment?.filter((equipment) => equipment.equipmentGuid !== equipmentGuid);
+
+        dispatch(setCaseFile({ equipment: updatedEquipment }));
+        ToggleSuccess(`Equipment has been deleted`);
+      } else {
+        ToggleError(`Unable to update equipment`);
+      }
+    });
+  };
+
+export const upsertEquipment =
   (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
   async (dispatch, getState) => {
     if (!equipment) {
@@ -677,8 +677,7 @@ export const updateReview =
       app: { profile },
     } = getState();
     // equipment does not exist, let's create it
-    if (complaintIdentifier
-       && !equipment.equipmentGuid) {
+    if (complaintIdentifier && !equipment.equipmentGuid) {
       let createEquipmentInput = {
         createEquipmentInput: {
           leadIdentifier: complaintIdentifier,
@@ -697,7 +696,8 @@ export const updateReview =
           ToggleError(`Unable to update equipment`);
         }
       });
-    } else { // equipment exists, we're updating it here
+    } else {
+      // equipment exists, we're updating it here
       let updateEquipmentInput = {
         updateEquipmentInput: {
           leadIdentifier: complaintIdentifier,
@@ -717,6 +717,5 @@ export const updateReview =
           ToggleError(`Unable to update equipment`);
         }
       });
-     }
     }
-    
+  };
