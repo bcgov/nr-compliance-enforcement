@@ -20,6 +20,7 @@ const initialState: CasesState = {
   note: {
     note: "",
   },
+  equipment: [],
 };
 
 export const casesSlice = createSlice({
@@ -59,13 +60,13 @@ export const casesSlice = createSlice({
     },
     setCaseFile: (state, action) => {
       const {
-        payload: { note },
+        payload: { note, equipment },
       } = action;
 
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
-      return { ...state, note };
+      return { ...state, note, equipment };
     },
   },
 
@@ -92,5 +93,4 @@ export const {
 
 export const resetPrevention = createAction("prevention/reset");
 export const resetAssessment = createAction("assessment/reset");
-
 export default casesSlice.reducer;

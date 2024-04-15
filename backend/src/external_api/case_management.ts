@@ -26,7 +26,7 @@ export const get = (token, params? : {}) => {
       if (error.response) {
         throw new Error(`Case Management Request Failed: ${error.response.data}`);
       } else if (error.request) {
-        throw new Error('No response received from the Case Management server');
+        throw new Error(`No response received from the Case Management server: ${caseManagementlURL}`);
       } else {
         throw new Error(`Request setup error to Case Management: ${error.message}`);
       }

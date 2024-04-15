@@ -1,71 +1,74 @@
-import { FC, useState, memo } from "react";
+import { FC, useState, memo, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 
-import Option from "../../../../../types/app/option";
-
 import "../../../../../../assets/sass/hwcr-equipment.scss"
+import { useParams } from "react-router-dom";
 
-export interface Equipment {
-  id: string | undefined;
-  type: Option | undefined;
-  address: string | undefined;
-  xCoordinate: string;
-  yCoordinate: string;
-  officerSet: Option | undefined;
-  dateSet: Date | undefined;
-  officerRemoved?: Option;
-  dateRemoved?: Date;
-  isEdit?: boolean;
-}
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
+import { selectEquipment } from "../../../../../store/reducers/case-selectors";
+import { findCase, getCaseFile } from "../../../../../store/reducers/case-thunks";
 
 export const HWCREquipment: FC = memo(() => {
-  const [equipmentData, setEquipmentData] = useState<Array<Equipment>>([]);
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
-  const [isInEditMode, setIsInEditMode] = useState<boolean>(false);
-  const [editEquipment, setEditEquipment] = useState<Equipment|null>(null);
+  
+  // used to indicate which equipment's guid is in edit mode (only one can be edited at a time
+  const { id = "" } = useParams<{ id: string; complaintType: string }>();
+  const dispatch = useAppDispatch();
+  const equipmentList = useAppSelector(selectEquipment);
+  
 
-  const handleDelete = (indexItem: number) => {
-    equipmentData.splice(indexItem,1);
-    setEquipmentData([...equipmentData]);
-  }
+  useEffect(() => {
+    if (id) {
+      dispatch(getCaseFile(id));
+    }
+  }, [id, dispatch]);
+
+  const [editingGuid, setEditingGuid] = useState<string>("");
+
+  const handleEdit = (guid: string) => {
+    setEditingGuid(guid);
+  };
+
+  const handleSave = () => {
+    setShowEquipmentForm(false);
+    setEditingGuid("");
+    dispatch(findCase())
+  };
+
+  const handleCancel = () => {
+    setShowEquipmentForm(false);
+    setEditingGuid("");
+  };
+  
 
   return (
     <div className="comp-outcome-report-block">
       <h6>Equipment</h6>
-      {equipmentData && equipmentData.length > 0 ? equipmentData.map((equipment,indexItem)=>
-        isInEditMode && equipment.isEdit? 
+      {equipmentList && equipmentList.length > 0 ? equipmentList.map((equipment)=>
+          editingGuid === equipment.equipmentGuid ?
           <EquipmentForm
-            key={equipment.id}
-            isInEditMode={isInEditMode}
-            setIsInEditMode={setIsInEditMode}
-            equipmentItemData={editEquipment}
-            indexItem={indexItem}
-            setEquipmentItemData={setEditEquipment}
-            equipmentData={equipmentData}
-            setEquipmentData={setEquipmentData}
+            key={equipment.equipmentGuid}
+            equipment={equipment}
+            onSave={handleSave}
+            onCancel={handleCancel}
           />
           :
           <EquipmentItem
-            key={equipment.id}
-            isInEditMode={isInEditMode} 
+            key={equipment.equipmentGuid}
             equipment={equipment}
-            setIsInEditMode={setIsInEditMode}
-            setEditEquipment={setEditEquipment}
-            indexItem={indexItem}
-            handleDelete={handleDelete}
+            onEdit={handleEdit}
+            isEditDisabled={!!editingGuid && editingGuid !== equipment.equipmentGuid}
           />
       ): null}
+
       {/* Add Equipment Form */}
       {showEquipmentForm ?
         <EquipmentForm
-          isInEditMode={false}
-          setIsInEditMode={setIsInEditMode}
-          equipmentData={equipmentData}
-          setEquipmentData={setEquipmentData}
-          setShowEquipmentForm={setShowEquipmentForm}
+        onSave={handleSave}
+        onCancel={handleCancel}
         />
         :
         <div className="comp-outcome-report-button">
