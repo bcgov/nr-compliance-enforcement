@@ -42,6 +42,7 @@ export const attachmentsSlice = createSlice({
       return {
         ...state,
         complaintsAttachments: state.complaintsAttachments.filter(attachment => attachment.id !== action.payload),
+        outcomeAttachments: state.outcomeAttachments.filter(attachment => attachment.id !== action.payload),
       };
     },
 

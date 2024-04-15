@@ -37,6 +37,7 @@ export const HWCRFileAttachments: FC = () => {
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [outcomeAttachmentCount, setOutcomeAttachmentCount] = useState<number>(0);
   const [componentState, setComponentState] = useState<number>(DISPLAY_STATE);
+  const [cancelPendingUpload, setCancelPendingUpload] = useState<boolean>(false);
 
   useEffect(() => {
     if(carouselData.length > 0) {
@@ -50,6 +51,12 @@ export const HWCRFileAttachments: FC = () => {
   };
 
   const saveButtonClick = async () => {
+    //initial state when there is no attachments
+    if(outcomeAttachmentCount === 0 && carouselData.length === 0) {
+      setComponentState(EDIT_STATE);
+      return;
+    }
+
     if (!hasValidationErrors()) {
       handlePersistAttachments(
         dispatch,
@@ -70,21 +77,24 @@ export const HWCRFileAttachments: FC = () => {
   };
 
   const cancelConfirmed = () => {
-    if(outcomeAttachmentCount > 0){ 
+    //initial state when there is no attachments
+    if(outcomeAttachmentCount === 0 && carouselData.length === 0) {
+      setComponentState(EDIT_STATE);
+      return;
+    }
+
+    if(outcomeAttachmentCount > 0){
       setAttachmentsToAdd([]);
-      setAttachmentsToDelete([]);
       dispatch(clearAttachments);
+      setCancelPendingUpload(true);
     }
     if(carouselData.length > 0) {
       setComponentState(DISPLAY_STATE);
     } 
-    else setComponentState(EDIT_STATE);
-
-    //initial state when there is no attachments
-    if(outcomeAttachmentCount === 0 && carouselData.length === 0) {
+    else {
       setComponentState(EDIT_STATE);
     }
-
+    setAttachmentsToDelete([]);
     dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
   };
 
@@ -127,6 +137,8 @@ export const HWCRFileAttachments: FC = () => {
               complaintIdentifier={id}
               allowUpload={componentState === EDIT_STATE}
               allowDelete={componentState === EDIT_STATE}
+              cancelPendingUpload={cancelPendingUpload}
+              setCancelPendingUpload={setCancelPendingUpload}
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
