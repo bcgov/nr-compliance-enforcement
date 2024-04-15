@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Req } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Req, Query } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -18,6 +18,32 @@ import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supple
 })
 export class CaseFileController {
   constructor(private readonly service: CaseFileService) {}
+
+  @Post("/equipment")
+  @Roles(Role.COS_OFFICER)
+  async createEquipment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.createEquipment(token, model);
+  }
+
+  @Patch("/equipment")
+  @Roles(Role.COS_OFFICER)
+  async updateEquipment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+    return await this.service.updateEquipment(token, model);
+  }
+
+  @Delete("/equipment")
+  @Roles(Role.COS_OFFICER)
+  async deleteEquipment(
+    @Token() token,
+    @Query("equipmentGuid") equipmentGuid: string,
+    @Query("updateUserId") updateUserId: string,
+  ): Promise<boolean> {
+    const deleteEquipment = {
+      equipmentGuid: equipmentGuid,
+      updateUserId: updateUserId,
+    };
+    return await this.service.deleteEquipment(token, deleteEquipment);
+  }
 
   @Post("/createAssessment")
   @Roles(Role.COS_OFFICER)

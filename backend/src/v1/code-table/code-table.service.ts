@@ -359,18 +359,18 @@ export class CodeTableService {
       }
       case "justification": {
         const { data } = await get(token, { 
-          query : "{inactionJustificationTypes{actionJustificationCode agencyCode shortDescription longDescription displayOrder activeIndicator}}"
+          query : "{inactionJustificationCodes{inactionJustificationCode agencyCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const justificationCodes = data.inactionJustificationTypes.map(
+        const justificationCodes = data.inactionJustificationCodes.map(
           ({
-            actionJustificationCode,
+            inactionJustificationCode,
             shortDescription,
             longDescription,
             displayOrder,
             activeIndicator
           }) => {
             const table: Justification = {
-              justification: actionJustificationCode,
+              justification: inactionJustificationCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,
@@ -431,20 +431,22 @@ export class CodeTableService {
       }
       case "sex": {
         const { data } = await get(token, { 
-          query : "{getAllSexCodes{sex_code short_description long_description display_order active_ind}}"
+          query : "{sexCodes{sexCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllSexCodes.map(
+        const results = data.sexCodes.map(
           ({
-            sex_code,
-            short_description,
-            long_description,
-            display_order
+            sexCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator,
           }) => {
             const table: Sex = {
-              sex: sex_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              sex: sexCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -453,20 +455,22 @@ export class CodeTableService {
       }
       case "age": {
         const { data } = await get(token, { 
-          query : "{getAllAgeCodes{age_code short_description long_description display_order active_ind}}"
+          query : "{ageCodes{ageCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllAgeCodes.map(
+        const results = data.ageCodes.map(
           ({
-            age_code,
-            short_description,
-            long_description,
-            display_order
+            ageCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator,
           }) => {
             const table: Age = {
-              age: age_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              age: ageCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
             };
             return table;
           }
@@ -475,20 +479,22 @@ export class CodeTableService {
       }
       case "threat-level": { 
         const { data } = await get(token, { 
-          query : "{getAllThreatLevelCodes{threat_level_code short_description long_description display_order active_ind}}"
+          query : "{threatLevelCodes{threatLevelCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllThreatLevelCodes.map(
+        const results = data.threatLevelCodes.map(
           ({
-            threat_level_code,
-            short_description,
-            long_description,
-            display_order
+            threatLevelCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: ThreatLevel = {
-              threatLevel: threat_level_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              threatLevel: threatLevelCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -497,20 +503,22 @@ export class CodeTableService {
       }
       case "conflict-history": {
         const { data } = await get(token, { 
-          query : "{getAllConflictHistoryCodes{conflict_history_code short_description long_description display_order active_ind}}"
+          query : "{conflictHistoryCodes{conflictHistoryCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllConflictHistoryCodes.map(
+        const results = data.conflictHistoryCodes.map(
           ({
-            conflict_history_code,
-            short_description,
-            long_description,
-            display_order
+            conflictHistoryCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: ConflictHistory = {
-              conflictHistory: conflict_history_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              conflictHistory: conflictHistoryCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -519,20 +527,22 @@ export class CodeTableService {
       }
       case "ear-tag": {
         const { data } = await get(token, { 
-          query : "{getAllEarCodes{ear_code short_description long_description display_order active_ind}}"
+          query : "{earCodes{earCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllEarCodes.map(
+        const results = data.earCodes.map(
           ({
-            ear_code,
-            short_description,
-            long_description,
-            display_order
+            earCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: EarTag = {
-              earTag: ear_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              earTag: earCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -541,20 +551,22 @@ export class CodeTableService {
       }
       case "drugs": {
         const { data } = await get(token, { 
-          query : "{getAllDrugCodes{drug_code short_description long_description display_order active_ind}}"
+          query : "{drugCodes{drugCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllDrugCodes.map(
+        const results = data.drugCodes.map(
           ({
-            drug_code,
-            short_description,
-            long_description,
-            display_order
+            drugCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: Drug = {
-              drug: drug_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              drug: drugCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -563,20 +575,22 @@ export class CodeTableService {
       }
       case "drug-methods": {
         const { data } = await get(token, { 
-          query : "{getAllDrugMethodCodes{drug_method_code short_description long_description display_order active_ind}}"
+          query : "{drugMethodCodes{drugMethodCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllDrugMethodCodes.map(
+        const results = data.drugMethodCodes.map(
           ({
-            drug_method_code,
-            short_description,
-            long_description,
-            display_order
+            drugMethodCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: DrugMethod = {
-              method: drug_method_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              method: drugMethodCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -585,20 +599,22 @@ export class CodeTableService {
       }
       case "drug-remaining-outcomes": {
         const { data } = await get(token, { 
-          query : "{getAllDrugRemainingOutcomeCodes{drug_remaining_outcome_code short_description long_description display_order active_ind}}"
+          query : "{drugRemainingOutcomeCodes{drugRemainingOutcomeCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllDrugRemainingOutcomeCodes.map(
+        const results = data.drugRemainingOutcomeCodes.map(
           ({
-            drug_remaining_outcome_code,
-            short_description,
-            long_description,
-            display_order
+            drugRemainingOutcomeCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: DrugRemainingOutcome = {
-              outcome: drug_remaining_outcome_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              outcome: drugRemainingOutcomeCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -607,20 +623,22 @@ export class CodeTableService {
       }
       case "wildlife-outcomes": {
         const { data } = await get(token, { 
-          query : "{getAllHWCROutcomeCodes{hwcr_outcome_code short_description long_description display_order active_ind}}"
+          query : "{hwcrOutcomeCodes{hwcrOutcomeCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllHWCROutcomeCodes.map(
+        const results = data.hwcrOutcomeCodes.map(
           ({
-            hwcr_outcome_code,
-            short_description,
-            long_description,
-            display_order
+            hwcrOutcomeCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: WildlifeComplaintOutcome = {
-              outcome: hwcr_outcome_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              outcome: hwcrOutcomeCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }
@@ -629,20 +647,22 @@ export class CodeTableService {
       }
       case "equipment": {
         const { data } = await get(token, { 
-          query : "{getAllEquipmentCodes{equipment_code short_description long_description display_order active_ind}}"
+          query : "{equipmentCodes{equipmentCode shortDescription longDescription displayOrder activeIndicator}}"
         });
-        const results = data.getAllEquipmentCodes.map(
+        const results = data.equipmentCodes.map(
           ({
-            equipment_code,
-            short_description,
-            long_description,
-            display_order
+            equipmentCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator
           }) => {
             const table: Equipment = {
-              equipment: equipment_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order
+              equipment: equipmentCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator
             };
             return table;
           }

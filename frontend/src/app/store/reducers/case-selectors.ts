@@ -1,3 +1,4 @@
+import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { Assessment } from "../../types/outcomes/assessment";
 import { Prevention } from "../../types/outcomes/prevention";
 import { SupplementalNote } from "../../types/outcomes/supplemental-note";
@@ -53,4 +54,9 @@ export const selectNotesOfficer = (state: RootState) => {
   }
 
   return currentOfficer;
+};
+
+export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
+  const { cases } = state;
+  return cases.equipment;
 };
