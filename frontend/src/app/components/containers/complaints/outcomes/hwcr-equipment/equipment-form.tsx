@@ -48,6 +48,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
   const [equipmentTypeErrorMsg, setEquipmentTypeErrorMsg] = useState<string>("");
   const [officerSetErrorMsg, setOfficerSetErrorMsg] = useState<string>("");
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
+  const [officerRemovedErrorMsg, setOfficerRemovedErrorMsg] = useState<string>("");
+  const [dateRemovedErrorMsg, setDateRemovedErrorMsg] = useState<string>("");
   const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
   const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
@@ -154,6 +156,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     setYCoordinateErrorMsg("");
     setEquipmentTypeErrorMsg("");
     setEquipmentAddressErrorMsg("");
+    setOfficerRemovedErrorMsg("");
+    setDateRemovedErrorMsg("");
   };
 
   // Helper function to check if coordinates or address are provided
@@ -197,6 +201,16 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     }
 
     if (coordinateErrorsInd) {
+      hasErrors = true;
+    }
+
+    if (officerRemoved && !dateRemoved) {
+      setDateRemovedErrorMsg("Required if Removed By is set");
+      hasErrors = true;
+    }
+
+    if (!officerRemoved && dateRemoved) {
+      setOfficerRemovedErrorMsg("Required if Removed Date is set");
       hasErrors = true;
     }
 
@@ -422,8 +436,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
               errMsg={dateSetErrorMsg}
               selectedDate={dateSet}
               placeholder="Select Date"
-              className="comp-details-edit-calendar-input" // Adjust class as needed
-              classNamePrefix="comp-select" // Adjust class as needed
+              className="comp-details-edit-calendar-input"
+              classNamePrefix="comp-select"
             />
           </div>
         </div>
@@ -443,7 +457,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
                 placeholder="Select"
                 options={assignableOfficers}
                 value={officerRemoved}
-                enableValidation={false}
+                enableValidation={true}
+                errorMessage={officerRemovedErrorMsg}
                 onChange={(officer: any) => setOfficerRemoved(officer)}
               />
             </div>
@@ -454,15 +469,16 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
               id="reported-pair-id"
             >
               <label htmlFor="equipment-date-removed">Removed date</label>
-              <DatePicker
+              <ValidationDatePicker
                 id="equipment-date-removed"
-                showIcon
                 maxDate={new Date()}
                 minDate={dateSet ?? null}
                 onChange={(date: Date) => setDateRemoved(date)}
-                selected={dateRemoved}
-                dateFormat="yyyy-MM-dd"
-                wrapperClassName="comp-details-edit-calendar-input"
+                errMsg={dateRemovedErrorMsg}
+                selectedDate={dateRemoved}
+                placeholder="Select Date"
+                className="comp-details-edit-calendar-input"
+                classNamePrefix="comp-select"
               />
             </div>
           </div>
