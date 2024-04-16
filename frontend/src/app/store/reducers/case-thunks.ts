@@ -219,7 +219,16 @@ const parseAssessmentResponse = async (
     })[0];
 
     let officerFullName = null;
-
+    
+    console.trace();
+    console.log("actor:", actor);
+    console.log("officers:");
+    officers.map((officer) => {
+      const {person_guid, first_name, last_name} = officer.person_guid;
+      console.log(`  guid='${person_guid}' name='${first_name} ${last_name}'`);
+      return null;
+    });
+    
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
