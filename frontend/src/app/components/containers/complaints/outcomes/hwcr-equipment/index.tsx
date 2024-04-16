@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectEquipment } from "../../../../../store/reducers/case-selectors";
-import { findCase, getCaseFile } from "../../../../../store/reducers/case-thunks";
+import { getCaseFile } from "../../../../../store/reducers/case-thunks";
 
 export const HWCREquipment: FC = memo(() => {
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
