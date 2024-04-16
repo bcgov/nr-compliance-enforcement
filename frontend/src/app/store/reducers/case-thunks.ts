@@ -559,8 +559,10 @@ export const deleteNote =
     const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir));
 
     if (result !== null) {
+      ToggleSuccess("Supplemental note deleted");
       return "success";
     } else {
+      ToggleError("Error, unable to delete supplemental note");
       return "error";
     }
   };

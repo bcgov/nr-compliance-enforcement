@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Req, Query } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -99,22 +99,6 @@ export class CaseFileController {
     return await this.service.updateNote(token, model);
   }
 
-  // @Delete("/note")
-  // @Roles(Role.COS_OFFICER)
-  // async deleteNote(
-  //   @Token() token,
-  //   @Param("caseIdentifier") caseIdentifier: string,
-  //   @Param("actor") actor: string,
-  //   @Param("updateUserId") updateUserId: string,
-  //   // @Req() request: Request,
-  // ): Promise<CaseFileDto> {
-  //   console.log(caseIdentifier);
-  //   debugger;
-
-  //   return Promise.resolve({} as CaseFileDto);
-  //   //return await this.service.deleteNote(token, {} as DeleteSupplementalNotesInput);
-  // }
-
   @Delete("/note")
   @Roles(Role.COS_OFFICER)
   async deleteNote(
@@ -132,11 +116,3 @@ export class CaseFileController {
     return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);
   }
 }
-
-/*
-{
-  caseIdentifier: "7e8edeef-2366-426b-a410-03585be9158d",
-  actor: "65dbad8b-790a-43cb-b394-c8019f4c86e2",
-  updateUserId: "M2SEARS",
-}
-*/
