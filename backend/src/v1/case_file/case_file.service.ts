@@ -62,10 +62,11 @@ export class CaseFileService {
     equipment {
       id
       typeCode
-      actionInd
+      activeIndicator
       address
       xCoordinate
       yCoordinate
+      createDate
       actions { 
         actionGuid
         actor

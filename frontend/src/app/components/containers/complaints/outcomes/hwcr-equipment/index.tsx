@@ -35,7 +35,6 @@ export const HWCREquipment: FC = memo(() => {
   const handleSave = () => {
     setShowEquipmentForm(false);
     setEditingGuid("");
-    dispatch(findCase())
   };
 
   const handleCancel = () => {

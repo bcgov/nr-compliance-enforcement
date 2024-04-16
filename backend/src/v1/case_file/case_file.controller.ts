@@ -35,11 +35,11 @@ export class CaseFileController {
   async deleteEquipment(
     @Token() token,
     @Query("id") id: string,
-    @Query("userId") userId: string,
+    @Query("updateUserId") userId: string,
   ): Promise<boolean> {
     const deleteEquipment = {
       id: id,
-      userId: userId,
+      updateUserId: userId,
     };
     return await this.service.deleteEquipment(token, deleteEquipment);
   }

@@ -609,9 +609,8 @@ export const updateReview =
 
     const deleteEquipmentInput = {
       id: id,
-      userId: profile.idir_username,
+      updateUserId: profile.idir_username,
     };
-    
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
       await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
         if (res) {
@@ -662,7 +661,7 @@ export const updateReview =
       let updateEquipmentInput = {
         updateEquipmentInput: {
           leadIdentifier: complaintIdentifier,
-          createUserId: profile.idir_username,
+          updateUserId: profile.idir_username,
           agencyCode: "COS",
           caseCode: "HWCR",
           equipment: [equipment],
