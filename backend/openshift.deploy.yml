@@ -50,7 +50,7 @@ objects:
   - apiVersion: v1
     kind: Secret
     metadata:
-      name: ${NAME}-${ZONE}-CASE_MANAGEMENT
+      name: ${NAME}-${ZONE}-case-management
       labels:
         app: ${NAME}-${ZONE}
     stringData:
