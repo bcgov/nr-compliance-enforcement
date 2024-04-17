@@ -20,6 +20,14 @@ objects:
   - apiVersion: v1
     kind: Secret
     metadata:
+      name: ${NAME}-${ZONE}-case-management
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      case-management-api-url: "fill in"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
       name: ${NAME}-${ZONE}-${PG_DATABASE}
       labels:
         app: ${NAME}-${ZONE}

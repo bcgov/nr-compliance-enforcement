@@ -46,14 +46,6 @@ parameters:
     value: database-migrations
 objects:
   - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-case-management
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      case-management-api-url: ""
-  - apiVersion: v1
     kind: ImageStream
     metadata:
       labels:
