@@ -16,9 +16,6 @@ parameters:
     description: Password for the PostgreSQL connection user.
     from: "[a-zA-Z0-9]{16}"
     generate: expression
-  - name: CASE_MANAGEMENT_API_URL
-    description: URL To Case Management API
-    value: test
 objects:
   - apiVersion: v1
     kind: Secret
@@ -30,14 +27,6 @@ objects:
       database-name: ${NAME}
       database-password: ${DB_PASSWORD}
       database-user: ${NAME}
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-CASE_MANAGEMENT
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      case-management-api-url: ${CASE_MANAGEMENT_API_URL}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
