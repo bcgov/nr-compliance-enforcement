@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import DatePicker from "react-datepicker";
 import { Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
@@ -31,11 +30,12 @@ import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
+  assignedOfficer?: string | null;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCancel }) => {
+export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOfficer, onSave, onCancel }) => {
   const [type, setType] = useState<Option>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
@@ -70,6 +70,13 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
         }))
       : [];
+
+  useEffect(() => {
+    if (assignedOfficer) {
+      const setOfficer = getSelectedItem(assignedOfficer, assignableOfficers);
+      setOfficerSet(setOfficer);
+    }
+  }, [complaintData]);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {

@@ -10,10 +10,11 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectEquipment } from "../../../../../store/reducers/case-selectors";
 import { getCaseFile } from "../../../../../store/reducers/case-thunks";
+import { selectComplaintAssignedBy } from "../../../../../store/reducers/complaints";
 
 export const HWCREquipment: FC = memo(() => {
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
-  
+  const assigned = useAppSelector(selectComplaintAssignedBy);  
   // used to indicate which equipment's guid is in edit mode (only one can be edited at a time
   const { id = "" } = useParams<{ id: string; complaintType: string }>();
   const dispatch = useAppDispatch();
@@ -68,6 +69,7 @@ export const HWCREquipment: FC = memo(() => {
         <EquipmentForm
         onSave={handleSave}
         onCancel={handleCancel}
+        assignedOfficer={assigned}
         />
         :
         <div className="comp-outcome-report-button">
