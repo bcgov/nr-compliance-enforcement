@@ -506,7 +506,9 @@ export const upsertNote =
     let result;
     if (!currentNote?.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
+
       if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
@@ -515,6 +517,7 @@ export const upsertNote =
       result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir));
 
       if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Supplemental note updated");
       } else {
         ToggleError("Error, unable to update supplemental note");
