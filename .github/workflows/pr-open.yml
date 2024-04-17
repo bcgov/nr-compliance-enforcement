@@ -123,6 +123,20 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
+      - uses: actions/github-script@v4
+        id: pr-labels
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.request('GET /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            const matchingLabel = response.data.find(label => label.name.startsWith('case_management_'));
+            const description = matchingLabel ? matchingLabel.description : "No description available";
+            console.log(description);
+            return description;
       - uses: bcgov-nr/action-deployer-openshift@v1.1.0
         with:
           file: ${{ matrix.file }}
@@ -133,6 +147,7 @@ jobs:
           penetration_test: false
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p CASE_MANAGEMENT_API_URL=${{ steps.pr-labels.outputs.result }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             ${{ matrix.parameters }}
   cypress-tests:
