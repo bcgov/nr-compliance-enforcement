@@ -44,8 +44,6 @@ parameters:
   - name: COMPONENT_DB_MIGRATION
     description: Component name for database migrations
     value: database-migrations
-  - name: CASE_MANAGEMENT_API_URL
-    description: URL To Case Management API
 objects:
   - apiVersion: v1
     kind: Secret
@@ -54,7 +52,7 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
     stringData:
-      case-management-api-url: ${CASE_MANAGEMENT_API_URL}
+      case-management-api-url: ""
   - apiVersion: v1
     kind: ImageStream
     metadata:

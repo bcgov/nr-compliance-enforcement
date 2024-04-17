@@ -74,33 +74,10 @@ jobs:
           triggers: ${{ matrix.triggers }}
           build_file: ${{ matrix.build_file }}
           build_context: ${{ matrix.build_context }}
-
-  pr-labels:
-    needs: pr-greeting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v4
-        id: pr-labels
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.request('GET /repos/{owner}/{repo}/issues/{issue_number}/labels', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number
-            });
-            const matchingLabel = response.data.find(label => label.name.startsWith('case_management_'));
-            const description = matchingLabel ? matchingLabel.description : "No description available";
-            console.log(description);
-            return description
-      - name: Set backend label description
-        run: echo "BACKEND_LABEL_DESCRIPTION=${{ steps.pr-labels.outputs.result }}" >> $GITHUB_ENV
-
   deploys:
     name: Deploys
     needs:
       - builds
-      - pr-labels
     environment: dev
     runs-on: ubuntu-22.04
     strategy:
@@ -117,7 +94,6 @@ jobs:
               -p CPU_LIMIT=80m 
               -p MEMORY_REQUEST=100Mi
               -p MEMORY_LIMIT=200Mi
-              -p CASE_MANAGEMENT_API_URL=${{ needs.pr-labels.outputs.result }}
           - name: webeoc
             file: webeoc/openshift.deploy.yml
             overwrite: true
