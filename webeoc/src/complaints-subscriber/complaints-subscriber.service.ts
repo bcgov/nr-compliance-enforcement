@@ -59,13 +59,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
    * @returns
    */
   private subscribeToNewStagingComplaints(): Subscription {
-    const subscription: Subscription = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME);
+    const subscription: Subscription = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME, {
+      queue: "stagingQueueGroup",
+    });
 
     (async () => {
       for await (const msg of subscription) {
         try {
           const messageData = msg.data instanceof Uint8Array ? this.decodeMessage(msg.data) : msg.data;
-
           const messageJson = JSON.parse(messageData);
 
           this.logger.debug(`New complaint in staging: ${messageJson.data}`);
