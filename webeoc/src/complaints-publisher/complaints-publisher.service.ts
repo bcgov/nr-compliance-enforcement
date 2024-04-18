@@ -1,30 +1,34 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
+import { connect, JetStreamClient, JSONCodec } from "nats";
 import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
 import { Complaint } from "src/types/Complaints";
 
 @Injectable()
 export class ComplaintsPublisherService {
-  private client: ClientProxy;
-
+  private jsClient: JetStreamClient;
   private readonly logger = new Logger(ComplaintsPublisherService.name);
 
   constructor() {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.NATS,
-      options: {
-        servers: [process.env.NATS_HOST],
-      },
-    });
+    this.initializeNATS();
   }
 
+  private async initializeNATS() {
+    const nc = await connect({
+      servers: [process.env.NATS_HOST],
+    });
+    this.jsClient = nc.jetstream();
+  }
+
+  private codec = JSONCodec<Complaint>();
+
   /**
-   * Publish meessage to topic to indicate that a new complaint is available from webeoc
+   * Publish message to JetStream to indicate that a new complaint is available from webeoc
    * @param complaint
    */
   async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
     try {
-      this.client.emit(NATS_NEW_COMPLAINTS_TOPIC_NAME, complaint);
+      const msg = this.codec.encode(complaint);
+      await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg);
       this.logger.log(`Complaint published: ${complaint.incident_number}`);
     } catch (error) {
       this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
@@ -33,13 +37,13 @@ export class ComplaintsPublisherService {
   }
 
   /**
-   *
-   * @param incident_number Publish message to topic to indicate that a new complaint was added to the staging table and is ready to be moved to the operation complaints tables
+   * Publish message to JetStream to indicate that a new complaint was added to the staging table
+   * @param incident_number
    */
-  async publishStagingComplaintInserted(complaint_identifier: string): Promise<void> {
+  async publishStagingComplaintInserted(incident_number: string): Promise<void> {
     try {
-      this.client.emit(NEW_STAGING_COMPLAINTS_TOPIC_NAME, complaint_identifier);
-      this.logger.log(`Complaint ready to be moved to operational tables: ${complaint_identifier}`);
+      await this.jsClient.publish(NEW_STAGING_COMPLAINTS_TOPIC_NAME, incident_number);
+      this.logger.log(`Complaint ready to be moved to operational tables: ${incident_number}`);
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
       throw error;

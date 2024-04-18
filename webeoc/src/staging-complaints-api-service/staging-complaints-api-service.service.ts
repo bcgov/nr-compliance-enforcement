@@ -1,15 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
-import { STAGING_API_ENDPOINT } from '../common/constants';
-import { ComplaintsPublisherService } from '../complaints-publisher/complaints-publisher.service';
-import { Complaint } from '../types/Complaints';
+import { Injectable, Logger } from "@nestjs/common";
+import axios from "axios";
+import { STAGING_API_ENDPOINT } from "../common/constants";
+import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
+import { Complaint } from "../types/Complaints";
 
 @Injectable()
 export class StagingComplaintsApiService {
   private readonly logger = new Logger(StagingComplaintsApiService.name);
-  constructor(
-    private readonly complaintsPublisherService: ComplaintsPublisherService,
-  ) {}
+  constructor(private readonly complaintsPublisherService: ComplaintsPublisherService) {}
 
   async postComplaintToStaging(complaintData: Complaint): Promise<void> {
     try {
@@ -19,39 +17,35 @@ export class StagingComplaintsApiService {
       // Include the API key in the request headers
       const config = {
         headers: {
-          'x-api-key': process.env.COMPLAINTS_API_KEY, // Ensure this environment variable is set
+          "x-api-key": process.env.COMPLAINTS_API_KEY, // Ensure this environment variable is set
         },
       };
 
       const response = await axios.post(apiUrl, complaintData, config);
       this.logger.debug(`Staging Complaint API Response: ${response.data}`);
-      this.complaintsPublisherService.publishStagingComplaintInserted(
-        complaintData.incident_number,
-      );
+      this.complaintsPublisherService.publishStagingComplaintInserted(complaintData.incident_number);
     } catch (error) {
-      this.logger.error('Error calling Staging Complaint API:', error);
+      this.logger.error("Error calling Staging Complaint API:", error);
     }
   }
 
   async postComplaint(complaint_identifier: string): Promise<void> {
     try {
-      this.logger.debug(
-        'Creating new complaint based on new complaint from webeoc.',
-      );
+      this.logger.debug("Creating new complaint based on new complaint from webeoc.");
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/staging-complaint/process/${complaint_identifier}`;
       this.logger.debug(`Posting new complaint. API URL: ${apiUrl}`);
 
       // Include the API key in the request headers
       const config = {
         headers: {
-          'x-api-key': process.env.COMPLAINTS_API_KEY, // Ensure this environment variable is set
+          "x-api-key": process.env.COMPLAINTS_API_KEY, // Ensure this environment variable is set
         },
       };
 
       const response = await axios.post(apiUrl, {}, config);
-      this.logger.debug(`Staging Complaint API Response: ${response.data}`);
+      this.logger.debug(`Post Complaint from NATS Topic - API Response: ${response.data}`);
     } catch (error) {
-      this.logger.error('Error calling Complaint API:', error);
+      this.logger.error("Error calling Complaint API:", error);
     }
   }
 }

@@ -1,87 +1,94 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { connect, NatsConnection, Subscription } from "nats";
+import { connect, NatsConnection, StringCodec, createInbox, AckPolicy } from "nats";
 import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { ComplaintMessage } from "../types/Complaints";
 
 @Injectable()
-/**
- * Used to subscribe to topics.
- */
 export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection;
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
+
   constructor(private readonly service: StagingComplaintsApiService) {}
+
   async onModuleInit() {
     try {
       this.natsConnection = await connect({
         servers: process.env.NATS_HOST,
       });
       this.logger.debug(`Connected to NATS ${process.env.NATS_HOST}`);
+      this.subscribeToNewComplaintsFromWebEOC();
+      this.subscribeToNewStagingComplaints();
     } catch (error) {
       this.logger.error("Failed to connect to NATS:", error);
     }
-    this.subscribeToNewComplaintsFromWebEOC();
-    this.subscribeToNewStagingComplaints();
   }
 
-  /**
-   * Listen for new messages on topics indicating that a new complaint was added in WebEOC.
-   * Use a queue group to ensure that each message is delivered to only one subscriber
-   * @returns
-   */
-  private subscribeToNewComplaintsFromWebEOC(): Subscription {
-    const subscription: Subscription = this.natsConnection.subscribe(NATS_NEW_COMPLAINTS_TOPIC_NAME, {
-      queue: "complaintsQueueGroup",
-    });
+  private async subscribeToNewComplaintsFromWebEOC() {
+    const sc = StringCodec();
+    const stream = NATS_NEW_COMPLAINTS_TOPIC_NAME;
+    const durableName = "complaints-service-durable";
+    const opts = {
+      stream,
+      consumer: durableName,
+      config: {
+        durable_name: durableName,
+        ack_policy: AckPolicy.Explicit,
+        deliver_subject: createInbox(),
+        deliver_group: "complaintsQueueGroup",
+      },
+    };
+
+    const sub = await this.natsConnection.jetstream().pullSubscribe(stream, opts);
 
     (async () => {
-      for await (const msg of subscription) {
+      for await (const msg of sub) {
         try {
-          const messageData = msg.data instanceof Uint8Array ? this.decodeMessage(msg.data) : msg.data;
-          const messageJson = JSON.parse(messageData);
-
-          const complaintMessage = messageJson as ComplaintMessage;
+          const complaintMessage: ComplaintMessage = JSON.parse(sc.decode(msg.data));
           this.logger.debug(`Received complaint: ${complaintMessage.data.incident_number}`);
-          this.service.postComplaintToStaging(complaintMessage.data);
+          await this.service.postComplaintToStaging(complaintMessage.data);
+          msg.ack();
         } catch (error) {
           this.logger.error("Error processing received complaint:", error);
+          msg.term(); // Terminate message if there's a processing error
         }
       }
     })().catch((error) => {
       this.logger.error("Error in NATS subscription:", error);
     });
-    return subscription;
   }
 
-  /**
-   * Listen for new messages to indicate that a new complaint has been added to the staging tables
-   * @returns
-   */
-  private subscribeToNewStagingComplaints(): Subscription {
-    const subscription: Subscription = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME, {
-      queue: "stagingQueueGroup",
-    });
+  private async subscribeToNewStagingComplaints() {
+    const sc = StringCodec();
+    const stream = NEW_STAGING_COMPLAINTS_TOPIC_NAME;
+    const durableName = "staging-complaints-service-durable";
+    const opts = {
+      stream,
+      consumer: durableName,
+      config: {
+        durable_name: durableName,
+        ack_policy: AckPolicy.Explicit,
+        deliver_subject: createInbox(),
+        deliver_group: "stagingQueueGroup",
+      },
+    };
+
+    const sub = await this.natsConnection.jetstream().pullSubscribe(stream, opts);
 
     (async () => {
-      for await (const msg of subscription) {
+      for await (const msg of sub) {
         try {
-          const messageData = msg.data instanceof Uint8Array ? this.decodeMessage(msg.data) : msg.data;
-          const messageJson = JSON.parse(messageData);
-
-          this.logger.debug(`New complaint in staging: ${messageJson.data}`);
-          this.service.postComplaint(messageJson.data);
+          const stagingData = sc.decode(msg.data);
+          this.logger.debug(`New complaint in staging: ${stagingData}`);
+          await this.service.postComplaint(stagingData);
+          msg.ack();
         } catch (error) {
           this.logger.error("Error processing complaint in staging:", error);
+          msg.term();
         }
       }
     })().catch((error) => {
       this.logger.error("Error in NATS subscription:", error);
     });
-    return subscription;
-  }
-
-  private decodeMessage(data: Uint8Array): string {
-    return new TextDecoder().decode(data);
   }
 }
