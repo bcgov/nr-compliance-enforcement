@@ -9,6 +9,7 @@ import {
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
+  selectComplaintAssignedBy
 } from "../../../../store/reducers/complaints";
 import {
   selectAssessmentTypeCodeDropdown,
@@ -19,7 +20,7 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, selectAssessment, upsertAssessment, getAssessment } from "../../../../store/reducers/cases";
+import { resetAssessment } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -30,6 +31,8 @@ import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 import "../../../../../assets/sass/hwcr-assessment.scss"
+import { selectAssessment } from "../../../../store/reducers/case-selectors";
+import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
@@ -37,10 +40,10 @@ export const HWCRComplaintAssessment: FC = () => {
     id: string;
     complaintType: string;
   };
-  const [selectedActionRequired, setSelectedActionRequired] = useState<Option>();
-  const [selectedJustification, setSelectedJustification] = useState<Option>();
+  const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
+  const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
-  const [selectedOfficer, setSelectedOfficer] = useState<Option>();
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
 
@@ -77,6 +80,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const handleActionRequiredChange = (selected: Option | null) => {
     if (selected) {
       setSelectedActionRequired(selected);
+      setSelectedJustification(null as unknown as Option);
     } else {
       setSelectedActionRequired(undefined);
     }
@@ -94,6 +98,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
+  const assigned = useAppSelector(selectComplaintAssignedBy);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -107,10 +112,12 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedOfficer(officer);
       dispatch(getAssessment(complaintData.id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
 
   useEffect(() => {
-      populateAssessmentUI();
+    populateAssessmentUI();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState]);
 
   // clear the redux state
@@ -120,17 +127,66 @@ export const HWCRComplaintAssessment: FC = () => {
     };
   }, [dispatch]);
 
-  
   const populateAssessmentUI = () => {
-    setSelectedDate((assessmentState.date) ? new Date(assessmentState.date) : null);
-    setSelectedOfficer(assessmentState.officer);
-    setSelectedActionRequired(assessmentState.action_required);
-    setSelectedJustification(assessmentState.justification);
-    setSelectedAssessmentTypes(assessmentState.assessment_type);
+    const selectedOfficer = (
+      assessmentState.officer
+        ? {
+          label: assessmentState.officer?.key,
+          value: assessmentState.officer?.value,
+        }
+        : null
+    ) as Option;
+
+    const selectedActionRequired = (
+      assessmentState.action_required
+        ? {
+          label: assessmentState.action_required,
+          value: assessmentState.action_required,
+        }
+        : null
+    ) as Option;
+
+    const selectedJustification = (
+      assessmentState.justification
+        ? {
+          label: assessmentState.justification?.key,
+          value: assessmentState.justification?.value,
+        }
+        : null
+    ) as Option;
+
+    const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
+      return {
+        label: item.key,
+        value: item.value,
+      };
+    }) as Option[];
+
+    const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+
+    setSelectedDate(assesmentDate);
+    setSelectedOfficer(selectedOfficer);
+    setSelectedActionRequired(selectedActionRequired);
+    setSelectedJustification(selectedJustification);
+    setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
-  };
 
+    if (!selectedOfficer && assigned && officersInAgencyList) {
+        const officerAssigned: Option[] = officersInAgencyList.filter((officer) => officer.person_guid.person_guid === assigned)
+          .map((item) => {
+            return {
+              label: `${item.person_guid?.first_name} ${item.person_guid?.last_name}`,
+              value: assigned
+            } as Option;
+          });
+        if (officerAssigned && Array.isArray(officerAssigned) && officerAssigned.length > 0 &&
+          typeof (officerAssigned[0].label) !== 'undefined') {
+          setSelectedOfficer(officerAssigned[0]);
+        } 
+    }
+    
+  };
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "" : "comp-outcome-hide";
   const justificationEditClass =
@@ -139,7 +195,6 @@ export const HWCRComplaintAssessment: FC = () => {
   const cancelConfirmed = () => {
     populateAssessmentUI();
   };
-
 
   const cancelButtonClick = () => {
     dispatch(
@@ -157,15 +212,26 @@ export const HWCRComplaintAssessment: FC = () => {
 
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
-    const updatedAssessmentData = {
-      date: selectedDate,
-      officer: selectedOfficer,
-      action_required: selectedActionRequired,
-      justification: selectedJustification,
-      assessment_type: selectedAssessmentTypes,
-    } as Assessment;
-
     if (!hasErrors()) {
+      const updatedAssessmentData: Assessment = {
+        date: selectedDate,
+        officer: {
+          key: selectedOfficer?.label,
+          value: selectedOfficer?.value,
+        },
+        action_required: selectedActionRequired?.label,
+        justification: {
+          key: selectedJustification?.label,
+          value: selectedJustification?.value,
+        },
+        assessment_type: selectedAssessmentTypes?.map((item) => {
+          return {
+            key: item.label,
+            value: item.value,
+          };
+        }),
+      };
+
       dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
     } else {
@@ -227,7 +293,10 @@ export const HWCRComplaintAssessment: FC = () => {
           <div className="assessment-details-edit-column">
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="assessment-checkbox-div" className="comp-details-label-checkbox-div-pair">
+                <div
+                  id="assessment-checkbox-div"
+                  className="comp-details-label-checkbox-div-pair"
+                >
                   <label
                     htmlFor="checkbox-div"
                     className="comp-details-inner-content-label checkbox-label-padding"
@@ -244,7 +313,12 @@ export const HWCRComplaintAssessment: FC = () => {
                   ) : (
                     <div>
                       {selectedAssessmentTypes.map((assesmentValue) => (
-                        <div className="checkbox-label-padding" key={assesmentValue.label}>{assesmentValue.label}</div>
+                        <div
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -253,7 +327,10 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="action-required-div" className="assessment-details-label-input-pair">
+                <div
+                  id="action-required-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label htmlFor="action-required">Action required?</label>
                   {editable ? (
                     <CompSelect
@@ -273,14 +350,17 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div id="justification-div" className="assessment-details-label-input-pair">
+                <div
+                  id="justification-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label
                     className={justificationLabelClass}
                     htmlFor="justification"
                   >
                     Justification
                   </label>
-                  {editable ?
+                  {editable ? (
                     <CompSelect
                       id="justification"
                       className={justificationEditClass}
@@ -291,16 +371,19 @@ export const HWCRComplaintAssessment: FC = () => {
                       value={selectedJustification}
                       placeholder="Select"
                       onChange={(e) => handleJustificationChange(e)}
-                    /> : <span className={justificationEditClass}>
-                      {selectedJustification?.label || ''}
-                    </span>
-                  }
+                    />
+                  ) : (
+                    <span className={justificationEditClass}>{selectedJustification?.label || ""}</span>
+                  )}
                 </div>
               </div>
             </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
-                <div id="outcome-officer-div" className="assessment-details-label-input-pair">
+                <div
+                  id="outcome-officer-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label htmlFor="outcome-officer">Officer</label>
                   {editable ? (
                     <CompSelect
@@ -330,7 +413,10 @@ export const HWCRComplaintAssessment: FC = () => {
                 </div>
               </div>
               <div className="comp-details-edit-column comp-details-right-column">
-                <div id="complaint-outcome-date-div" className="assessment-details-label-input-pair">
+                <div
+                  id="complaint-outcome-date-div"
+                  className="assessment-details-label-input-pair"
+                >
                   <label htmlFor="complaint-outcome-date">Date</label>
                   {editable ? (
                     <ValidationDatePicker
@@ -341,6 +427,7 @@ export const HWCRComplaintAssessment: FC = () => {
                       className="comp-details-edit-calendar-input" // Adjust class as needed
                       classNamePrefix="comp-select" // Adjust class as needed
                       errMsg={assessmentDateErrorMessage} // Pass error message if any
+                      maxDate={new Date()}
                     />
                   ) : (
                     formatDate(`${selectedDate}`)

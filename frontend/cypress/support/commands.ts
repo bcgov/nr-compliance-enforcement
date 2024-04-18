@@ -344,6 +344,125 @@ Cypress.Commands.add("navigateToTab", (complaintTab: string, removeFilters: bool
   }
 });
 
+Cypress.Commands.add("validateComplaint", (complaintIdentifier: string, species: string) => {
+  //-- verify the right complaint identifier is selected and the animal type
+  cy.get(".comp-box-complaint-id").contains(complaintIdentifier);
+  cy.get(".comp-box-species-type").contains(species);
 
+  cy.get('.comp-outcome-report-complaint-assessment')
+  .then(function($assessment) {
+    if ($assessment.find('#outcome-save-button').length) {
+      cy.get("#ASSESSRISK").should("exist");
+      cy.get("#ASSESSHLTH").should("exist");
+      cy.get("#ASSESSHIST").should("exist");
+      cy.get("#CNFRMIDENT").should("exist");
+
+      //validate that dropdowns exist
+      cy.get("#action-required").should("exist");
+      cy.get("#outcome-officer").should("exist");
+
+      //validate the date picker exists
+      cy.get("#complaint-outcome-date").should("exist");
+    }
+  });
+});
+
+Cypress.Commands.add ("fillInHWCSection", (section: string, checkboxes: string[], officer: string, date: string, actionRequired?: string, justification?: string) => {
+
+  let officerId = "";
+  let datePickerId = ""; 
+  let saveButtonId = "";
+
+  if(section === "ASSESSMENT") {
+    officerId = "outcome-officer";
+    datePickerId = "complaint-outcome-date";
+    saveButtonId = "#outcome-save-button";
+  } else {
+    officerId = "prev-educ-outcome-officer";
+    datePickerId = "prev-educ-outcome-date";
+    saveButtonId = "#outcome-save-prev-and-educ-button"; 
+  }
+
+  Cypress._.times(checkboxes.length, (index) => {
+      cy.get(checkboxes[index]).check(); 
+  });
+
+  if(actionRequired) {
+    cy.selectItemById(
+      "action-required",
+      actionRequired
+    );
+  }
+
+  if(justification) {
+    cy.selectItemById(
+          "justification",
+          justification,
+    );
+  }
+
+  cy.selectItemById(
+        officerId,
+        officer,
+  );
+
+  cy.enterDateTimeInDatePicker(datePickerId, date);
+    
+  //click Save Button
+  cy.get(saveButtonId).click();
+
+});
+
+Cypress.Commands.add ("validateHWCSection", (section: string, checkboxes: string[], officer: string, date: string, actionRequired?: string, justification?: string) => {
+  
+  let checkboxDiv = "";
+  let officerDiv = "";
+  let dateDiv = ""; 
+  let toastText = "";
+
+  if(section === "ASSESSMENT") {
+    checkboxDiv = "#assessment-checkbox-div";
+    officerDiv = "#outcome-officer-div";
+    dateDiv = "#complaint-outcome-date-div";
+    toastText = "Assessment has been updated";
+  } else {
+    checkboxDiv = "#prev-educ-checkbox-div"
+    officerDiv = "#prev-educ-outcome-officer-div";
+    dateDiv = "#prev-educ-outcome-date-div";
+    toastText = "Prevention and education has been updated"; 
+  }
+
+  //Verify Fields exist
+  Cypress._.times(checkboxes.length, (index) => {
+    cy.get(checkboxDiv).should(($div) => {
+      expect($div).to.contain.text(checkboxes[index]);
+    });
+  });
+
+  if(actionRequired) {
+    cy.get("#action-required-div").should(($div) => {
+      expect($div).to.contain.text(actionRequired);
+    });
+  }
+
+  if(justification) {
+    cy.get("#justification-div").should(($div) => {
+      expect($div).to.contain.text(justification);
+    });
+  }
+
+  cy.get(officerDiv).should(($div) => {
+      expect($div).to.contain.text(officer);
+  });
+
+  cy.get(dateDiv).should(($div) => {
+      expect($div).to.contain.text(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
+  });
+
+  //validate the toast
+  cy.get(".Toastify__toast-body").then(($toast) => {
+    expect($toast).to.contain.text(toastText);
+  });
+});
 
 module.exports = {};

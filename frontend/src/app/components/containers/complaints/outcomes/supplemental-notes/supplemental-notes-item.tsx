@@ -5,7 +5,7 @@ import { useAppSelector } from "../../../../../hooks/hooks";
 import { formatDate } from "../../../../../common/methods";
 
 import { CaseAction } from "../../../../../types/outcomes/case-action";
-import { selectNotesOfficer } from "../../../../../store/reducers/cases";
+import { selectNotesOfficer } from "../../../../../store/reducers/case-selectors";
 
 type props = {
   notes: string;
@@ -25,7 +25,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
               <div className="comp-details-label-div-pair">
                 <label
                   className="comp-details-inner-content-label"
-                  htmlFor="comp-review-required-officer"
+                  htmlFor="comp-notes-officer"
                 >
                   Officer
                 </label>
@@ -34,7 +34,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
                   className="comp-orange-avatar-sm comp-details-inner-content"
                 >
                   <span
-                    id="comp-review-required-officer"
+                    id="comp-notes-officer"
                     className="comp-padding-left-xs"
                   >
                     {displayName}
@@ -57,7 +57,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
                   className="bi comp-margin-right-xxs comp-details-inner-content"
                   id="file-review-supporting-date"
                 >
-                  {formatDate(new Date(action.date).toString())}
+                  {formatDate(new Date(action?.date).toString())}
                 </div>
               </div>
             </div>
@@ -66,6 +66,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
         </div>
         <div className="comp-details-right-column">
           <CompTextIconButton
+            id="notes-edit-button"
             buttonClasses="button-text"
             text="Edit"
             icon={BsPencil}

@@ -8,13 +8,18 @@ type Props = {
   icon: IconType;
   click: MouseEventHandler;
   [index: string]: any;
+  isDisabled?: boolean
 };
 
-export const CompTextIconButton: FC<Props> = ({ id, buttonClasses, text, icon, click, ...rest }) => {
+export const CompTextIconButton: FC<Props> = ({ id, buttonClasses, text, icon, click, isDisabled, ...rest }) => {
   const Icon = icon;
 
   return (
-    <button id={id} className={buttonClasses} onClick={click} {...rest}>
+    <button id={id} 
+      className={buttonClasses} 
+      onClick={click} {...rest} 
+      disabled={isDisabled ?? false}
+    >
       <span>{text}</span>
       <Icon />
     </button>
