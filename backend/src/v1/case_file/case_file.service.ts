@@ -57,7 +57,8 @@ export class CaseFileService {
       action { 
         actor
         actionCode
-        date
+        date,
+        actionGuid
       }
     }
     equipment {
@@ -231,7 +232,7 @@ export class CaseFileService {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
         createNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode } }
+          note { note, action { actor,date,actionCode, actionGuid } }
         }
       }`,
       variables: { input: model },
@@ -245,7 +246,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
         updateNote(input: $input) {
-          note { note, action { actor,date,actionCode } }
+          note { note, action { actor,date,actionCode,actionGuid } }
         }
       }`,
       variables: { input: model },
@@ -259,7 +260,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
         deleteNote(input: $input) {
-          note { note, action { actor,date,actionCode } }
+          note { note, action { actor,date,actionCode,actionGuid } }
         }
       }`,
       variables: { input: model },

@@ -106,11 +106,13 @@ export class CaseFileController {
     @Query("caseIdentifier") caseIdentifier: string,
     @Query("actor") actor: string,
     @Query("updateUserId") updateUserId: string,
+    @Query("actionId") actionId: string,
   ): Promise<CaseFileDto> {
     const input = {
       caseIdentifier,
       actor,
       updateUserId,
+      actionId,
     };
 
     return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);

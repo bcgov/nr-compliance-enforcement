@@ -66,6 +66,7 @@ export const casesSlice = createSlice({
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
+      console.log(note);
       return { ...state, note, equipment };
     },
   },

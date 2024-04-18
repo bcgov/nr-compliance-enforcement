@@ -486,6 +486,7 @@ export const upsertNote =
         note: string,
         actor: string,
         userId: string,
+        actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const caseId = await dispatch(findCase(id));
@@ -495,6 +496,7 @@ export const upsertNote =
           caseIdentifier: caseId as UUID,
           actor,
           updateUserId: userId,
+          actionId,
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
@@ -514,7 +516,10 @@ export const upsertNote =
         ToggleError("Error, unable to create supplemental note");
       }
     } else {
-      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir));
+      const {
+        action: { actionGuid },
+      } = currentNote;
+      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir, actionGuid));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier));
@@ -538,7 +543,7 @@ export const deleteNote =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId },
+      cases: { caseId, note: currentNote },
     } = getState();
 
     const _deleteNote =
@@ -546,24 +551,37 @@ export const deleteNote =
         id: UUID,
         actor: string,
         userId: string,
+        actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: DeleteSupplementalNoteInput = {
           caseIdentifier: caseId as UUID,
           actor,
           updateUserId: userId,
+          actionId,
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
         return await deleteMethod<CaseFileDto>(dispatch, parameters);
       };
 
-    const officer = officers.find((item) => item.user_id === idir);
-    const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir));
+    if (currentNote?.action) {
+      const {
+        action: { actionGuid },
+      } = currentNote;
 
-    if (result !== null) {
-      ToggleSuccess("Supplemental note deleted");
-      return "success";
+      const officer = officers.find((item) => item.user_id === idir);
+      console.log("CASE_ID: ", caseId);
+      debugger;
+      const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionGuid));
+
+      if (result !== null) {
+        ToggleSuccess("Supplemental note deleted");
+        return "success";
+      } else {
+        ToggleError("Error, unable to delete supplemental note");
+        return "error";
+      }
     } else {
       ToggleError("Error, unable to delete supplemental note");
       return "error";
