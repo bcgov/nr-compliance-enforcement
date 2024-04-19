@@ -35,8 +35,7 @@ jobs:
       if: env.release_exists == 'false'
       run: |
         helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
-          --set nats.jetstream.enabled=true \
-          --set nats.jetstream.memStorage.enabled=true \
+          --set config.jetstream.enabled=true \
           --set cluster.enabled=true \
           --set natsBox.enabled=false \
           --set container.merge.resources.requests.cpu=25m \

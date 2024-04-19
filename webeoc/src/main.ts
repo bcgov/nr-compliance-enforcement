@@ -4,7 +4,7 @@ import { Transport, MicroserviceOptions } from "@nestjs/microservices";
 import * as dotenv from "dotenv";
 import * as express from "express";
 import { ExpressAdapter } from "@nestjs/platform-express";
-import { connect, JSONCodec, RetentionPolicy, StorageType } from "nats";
+import { connect, RetentionPolicy, StorageType } from "nats";
 
 async function bootstrap() {
   dotenv.config();
