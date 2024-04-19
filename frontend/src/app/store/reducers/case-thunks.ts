@@ -136,6 +136,7 @@ const addAssessment =
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Assessment has been saved`);
       } else {
         await dispatch(clearAssessment());
@@ -346,6 +347,7 @@ const addPrevention =
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPrevention({ prevention: updatedPreventionData }));
+        dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Prevention and education has been saved`);
       } else {
         await dispatch(clearPrevention());
@@ -515,6 +517,7 @@ export const upsertNote =
     if (!currentNote?.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
       if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
@@ -662,6 +665,7 @@ export const updateReview =
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
+          dispatch(setCaseId(res.caseIdentifier));
           ToggleSuccess(`Equipment has been updated`);
         } else {
           ToggleError(`Unable to update equipment`);

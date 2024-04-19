@@ -84,7 +84,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
 
   useEffect(() => {
     const date = animalOutcomeItemData?.date ? new Date(animalOutcomeItemData?.date) : new Date();
+    const defaultDateDrug = animalOutcomeItemData?.drugAuthorization?.date ? new Date(animalOutcomeItemData?.drugAuthorization?.date) : new Date();
     setOutcomeDate(date);
+    setDrugAuthorization({
+      officer: '',
+      date: defaultDateDrug
+    });
   }, [animalOutcomeItemData]);
 
   const handleSaveAnimalOutcome = () => {

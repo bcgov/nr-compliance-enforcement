@@ -19,12 +19,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   const [authorizedBy, setAuthorizedBy] = useState(drugAuthorization?.officer ?? assigned ?? undefined);
-  const [authorizedOn, setAuthorizedOn] = useState<Date | undefined>();
-
-  useEffect(() => {
-    const date = drugAuthorization?.date ? new Date(drugAuthorization?.date) : new Date();
-    setAuthorizedOn(date);
-  }, [drugAuthorization]);
+  const [authorizedOn, setAuthorizedOn] = useState<Date | undefined>(drugAuthorization?.date ?? undefined);
 
   const getValue = (property: string): Option | undefined => {
     if (property === "officer") {
@@ -38,9 +33,9 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
     update(newDrugAuth);
   };
 
-  const handleAuthorizedOnChange = (input: Date | undefined | null) => {
-    setAuthorizedOn(input ?? undefined);
-    update({ officer: authorizedBy, date: input ?? undefined });
+  const handleAuthorizedOnChange = (input: Date) => {
+    setAuthorizedOn(input);
+    update({ officer: authorizedBy, date: input });
   };
 
   return (
