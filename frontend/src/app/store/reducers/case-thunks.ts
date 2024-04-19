@@ -571,8 +571,6 @@ export const deleteNote =
       } = currentNote;
 
       const officer = officers.find((item) => item.user_id === idir);
-      console.log("CASE_ID: ", caseId);
-      debugger;
       const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionGuid));
 
       if (result !== null) {
