@@ -468,7 +468,7 @@ export const upsertNote =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId, note: currentNote },
+      cases: { note: currentNote },
     } = getState();
 
     const _createNote =
