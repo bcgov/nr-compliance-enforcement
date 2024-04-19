@@ -87,6 +87,7 @@ const addAssessment =
       codeTables: { "assessment-type": assessmentType },
       officers: { officers },
       app: { profile },
+      cases: { caseId },
     } = getState();
     let createAssessmentInput = {
       createAssessmentInput: {
@@ -136,7 +137,7 @@ const addAssessment =
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
-        dispatch(setCaseId(res.caseIdentifier));
+        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Assessment has been saved`);
       } else {
         await dispatch(clearAssessment());
@@ -220,16 +221,16 @@ const parseAssessmentResponse = async (
     })[0];
 
     let officerFullName = null;
-    
+
     console.trace();
     console.log("actor:", actor);
     console.log("officers:");
     officers.map((officer) => {
-      const {person_guid, first_name, last_name} = officer.person_guid;
+      const { person_guid, first_name, last_name } = officer.person_guid;
       console.log(`  guid='${person_guid}' name='${first_name} ${last_name}'`);
       return null;
     });
-    
+
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
@@ -299,6 +300,7 @@ const addPrevention =
       codeTables: { "prevention-type": preventionType },
       officers: { officers },
       app: { profile },
+      cases: { caseId },
     } = getState();
     let createPreventionInput = {
       createPreventionInput: {
@@ -347,7 +349,7 @@ const addPrevention =
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPrevention({ prevention: updatedPreventionData }));
-        dispatch(setCaseId(res.caseIdentifier));
+        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Prevention and education has been saved`);
       } else {
         await dispatch(clearPrevention());
@@ -466,7 +468,7 @@ export const upsertNote =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { note: currentNote },
+      cases: { caseId, note: currentNote },
     } = getState();
 
     const _createNote =
@@ -517,7 +519,7 @@ export const upsertNote =
     if (!currentNote?.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
       if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier));
+        if (!caseId) dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
@@ -539,8 +541,8 @@ export const upsertNote =
     }
   };
 
-  //-- file review thunks
-  export const createReview =
+//-- file review thunks
+export const createReview =
   (complaintId: string, isReviewRequired: boolean, reviewComplete: ReviewCompleteAction | null): AppThunk =>
   async (dispatch, getState) => {
     const {
@@ -565,9 +567,7 @@ export const upsertNote =
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
       if (res) {
-        if (!caseId) {
-          dispatch(setCaseId(res.caseIdentifier));
-        }
+        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         dispatch(setIsReviewedRequired(res.isReviewRequired));
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
@@ -607,7 +607,7 @@ export const updateReview =
     });
   };
 
-  export const deleteEquipment =
+export const deleteEquipment =
   (equipmentGuid: string): AppThunk =>
   async (dispatch, getState) => {
     if (!equipmentGuid) {
@@ -618,28 +618,29 @@ export const updateReview =
       app: { profile },
     } = getState();
 
-
     const deleteEquipmentInput = {
       equipmentGuid: equipmentGuid,
       updateUserId: profile.idir_username,
     };
-    
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
-      await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
-        if (res) {
-          // remove equipment from state
-          const { cases: { equipment } } =  getState();
-          const updatedEquipment = equipment?.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
-          
-          dispatch(setCaseFile({ equipment: updatedEquipment }));
-          ToggleSuccess(`Equipment has been deleted`);
-        } else {
-          ToggleError(`Unable to update equipment`);
-        }
-      });
-     }
 
-  export const upsertEquipment =
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
+    await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
+      if (res) {
+        // remove equipment from state
+        const {
+          cases: { equipment },
+        } = getState();
+        const updatedEquipment = equipment?.filter((equipment) => equipment.equipmentGuid !== equipmentGuid);
+
+        dispatch(setCaseFile({ equipment: updatedEquipment }));
+        ToggleSuccess(`Equipment has been deleted`);
+      } else {
+        ToggleError(`Unable to update equipment`);
+      }
+    });
+  };
+
+export const upsertEquipment =
   (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
   async (dispatch, getState) => {
     if (!equipment) {
@@ -648,10 +649,10 @@ export const updateReview =
 
     const {
       app: { profile },
+      cases: { caseId },
     } = getState();
     // equipment does not exist, let's create it
-    if (complaintIdentifier
-       && !equipment.equipmentGuid) {
+    if (complaintIdentifier && !equipment.equipmentGuid) {
       let createEquipmentInput = {
         createEquipmentInput: {
           leadIdentifier: complaintIdentifier,
@@ -665,13 +666,14 @@ export const updateReview =
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
-          dispatch(setCaseId(res.caseIdentifier));
+          if (!caseId) dispatch(setCaseId(res.caseIdentifier));
           ToggleSuccess(`Equipment has been updated`);
         } else {
           ToggleError(`Unable to update equipment`);
         }
       });
-    } else { // equipment exists, we're updating it here
+    } else {
+      // equipment exists, we're updating it here
       let updateEquipmentInput = {
         updateEquipmentInput: {
           leadIdentifier: complaintIdentifier,
@@ -691,6 +693,5 @@ export const updateReview =
           ToggleError(`Unable to update equipment`);
         }
       });
-     }
     }
-    
+  };
