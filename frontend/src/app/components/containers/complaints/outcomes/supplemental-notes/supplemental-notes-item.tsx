@@ -68,7 +68,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
         </div>
         <div className="comp-details-right-column">
           <CompTextIconButton
-            id="notes-edit-button"
+            id="notes-delete-button"
             buttonClasses="button-text"
             style={{ marginRight: "15px" }}
             text="Delete"
