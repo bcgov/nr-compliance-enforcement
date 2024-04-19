@@ -27,9 +27,11 @@ type Props = {
   complaintIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
+  cancelPendingUpload?: boolean;
   onFilesSelected?: (attachments: File[]) => void;
   onFileDeleted?: (attachments: COMSObject) => void;
   onSlideCountChange?: (count: number) => void;
+  setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
@@ -37,9 +39,11 @@ export const AttachmentsCarousel: FC<Props> = ({
   complaintIdentifier,
   allowUpload,
   allowDelete,
+  cancelPendingUpload,
   onFilesSelected,
   onFileDeleted,
   onSlideCountChange,
+  setCancelPendingUpload,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -90,6 +94,14 @@ export const AttachmentsCarousel: FC<Props> = ({
       onSlideCountChange(slides.length);
     }
   }, [slides.length]);
+
+  // Clear all pending upload attachments
+  useEffect(() => {
+    if(cancelPendingUpload){
+      setSlides([]);
+      if(setCancelPendingUpload) setCancelPendingUpload(false); //reset cancelPendingUpload
+    }
+  },[cancelPendingUpload])
 
  function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
   // Create a copy of the array using slice() or spread syntax
@@ -195,7 +207,7 @@ export const AttachmentsCarousel: FC<Props> = ({
       window.removeEventListener("resize", updateVisibleSlides);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [allowUpload]);
 
   return (
     <div className="comp-complaint-details-block" ref={carouselContainerRef}>
