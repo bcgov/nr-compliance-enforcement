@@ -519,7 +519,7 @@ export const upsertNote =
     if (!currentNote?.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
       if (result !== null) {
-        if (!caseId) dispatch(setCaseId(result.caseIdentifier));
+        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
