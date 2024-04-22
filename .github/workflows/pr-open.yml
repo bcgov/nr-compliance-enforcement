@@ -74,8 +74,6 @@ jobs:
           triggers: ${{ matrix.triggers }}
           build_file: ${{ matrix.build_file }}
           build_context: ${{ matrix.build_context }}
-
-
   deploys:
     name: Deploys
     needs:

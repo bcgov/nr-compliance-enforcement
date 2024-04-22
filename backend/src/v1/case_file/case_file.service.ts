@@ -62,12 +62,13 @@ export class CaseFileService {
       }
     }
     equipment {
-      equipmentGuid
-      equipmentTypeCode
-      equipmentTypeActiveIndicator
+      id
+      typeCode
+      activeIndicator
       address
       xCoordinate
       yCoordinate
+      createDate
       actions { 
         actionGuid
         actor

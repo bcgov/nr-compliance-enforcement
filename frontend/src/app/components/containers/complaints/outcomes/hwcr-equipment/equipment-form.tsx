@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import DatePicker from "react-datepicker";
 import { Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
@@ -31,11 +30,12 @@ import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
+  assignedOfficer?: string | null;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCancel }) => {
+export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOfficer, onSave, onCancel }) => {
   const [type, setType] = useState<Option>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
@@ -48,6 +48,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
   const [equipmentTypeErrorMsg, setEquipmentTypeErrorMsg] = useState<string>("");
   const [officerSetErrorMsg, setOfficerSetErrorMsg] = useState<string>("");
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
+  const [officerRemovedErrorMsg, setOfficerRemovedErrorMsg] = useState<string>("");
+  const [dateRemovedErrorMsg, setDateRemovedErrorMsg] = useState<string>("");
   const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
   const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
@@ -68,6 +70,13 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
           label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
         }))
       : [];
+
+  useEffect(() => {
+    if (assignedOfficer) {
+      const setOfficer = getSelectedItem(assignedOfficer, assignableOfficers);
+      setOfficerSet(setOfficer);
+    }
+  }, [complaintData]);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -154,6 +163,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     setYCoordinateErrorMsg("");
     setEquipmentTypeErrorMsg("");
     setEquipmentAddressErrorMsg("");
+    setOfficerRemovedErrorMsg("");
+    setDateRemovedErrorMsg("");
   };
 
   // Helper function to check if coordinates or address are provided
@@ -200,6 +211,16 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
       hasErrors = true;
     }
 
+    if (officerRemoved && !dateRemoved) {
+      setDateRemovedErrorMsg("Required if Removed By is set");
+      hasErrors = true;
+    }
+
+    if (!officerRemoved && dateRemoved) {
+      setOfficerRemovedErrorMsg("Required if Removed Date is set");
+      hasErrors = true;
+    }
+
     return hasErrors;
   };
 
@@ -233,9 +254,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
     // Create an equipment object to persist
     if (type) {
       const equipmentDetails = {
-        equipmentGuid: equipment?.equipmentGuid,
-        equipmentTypeCode: type.value,
-        equipmentTypeActiveIndicator: true,
+        id: equipment?.id,
+        typeCode: type.value,
+        activeIndicator: true,
         address: address,
         xCoordinate: xCoordinate,
         yCoordinate: yCoordinate,
@@ -247,7 +268,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
   };
 
   const handleFormErrors = () => {
-    const errorMsg = equipment?.equipmentGuid ? "Errors editing equipment" : "Errors creating equipment";
+    const errorMsg = equipment?.id ? "Errors editing equipment" : "Errors creating equipment";
     ToggleError(errorMsg);
   };
 
@@ -283,7 +304,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
 
   // for turning codes into values
   const getValue = (property: string): Option | undefined => {
-    return equipmentTypeCodes.find((item) => item.value === equipment?.equipmentTypeCode);
+    return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
   };
 
   const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
@@ -422,8 +443,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
               errMsg={dateSetErrorMsg}
               selectedDate={dateSet}
               placeholder="Select Date"
-              className="comp-details-edit-calendar-input" // Adjust class as needed
-              classNamePrefix="comp-select" // Adjust class as needed
+              className="comp-details-edit-calendar-input"
+              classNamePrefix="comp-select"
             />
           </div>
         </div>
@@ -443,7 +464,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
                 placeholder="Select"
                 options={assignableOfficers}
                 value={officerRemoved}
-                enableValidation={false}
+                enableValidation={true}
+                errorMessage={officerRemovedErrorMsg}
                 onChange={(officer: any) => setOfficerRemoved(officer)}
               />
             </div>
@@ -454,15 +476,16 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, onSave, onCan
               id="reported-pair-id"
             >
               <label htmlFor="equipment-date-removed">Removed date</label>
-              <DatePicker
+              <ValidationDatePicker
                 id="equipment-date-removed"
-                showIcon
                 maxDate={new Date()}
                 minDate={dateSet ?? null}
                 onChange={(date: Date) => setDateRemoved(date)}
-                selected={dateRemoved}
-                dateFormat="yyyy-MM-dd"
-                wrapperClassName="comp-details-edit-calendar-input"
+                errMsg={dateRemovedErrorMsg}
+                selectedDate={dateRemoved}
+                placeholder="Select Date"
+                className="comp-details-edit-calendar-input"
+                classNamePrefix="comp-select"
               />
             </div>
           </div>
