@@ -674,6 +674,7 @@ export const updateReview =
       app: { profile },
     } = getState();
 
+
     const deleteEquipmentInput = {
       id: id,
       updateUserId: profile.idir_username,
@@ -692,23 +693,6 @@ export const updateReview =
         }
       });
      }
-
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
-    await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
-      if (res) {
-        // remove equipment from state
-        const {
-          cases: { equipment },
-        } = getState();
-        const updatedEquipment = equipment?.filter((equipment) => equipment.equipmentGuid !== equipmentGuid);
-
-        dispatch(setCaseFile({ equipment: updatedEquipment }));
-        ToggleSuccess(`Equipment has been deleted`);
-      } else {
-        ToggleError(`Unable to update equipment`);
-      }
-    });
-  };
 
 export const upsertEquipment =
   (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
