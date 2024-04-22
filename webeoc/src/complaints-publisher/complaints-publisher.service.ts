@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { connect, JetStreamClient, JSONCodec } from "nats";
+import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
 import { Complaint } from "src/types/Complaints";
 
@@ -28,8 +28,14 @@ export class ComplaintsPublisherService {
   async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
     try {
       const msg = this.codec.encode(complaint);
-      await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg);
-      this.logger.log(`Complaint published: ${complaint.incident_number}`);
+      const natsHeaders = headers(); // used to look for complaints that have already been submitted
+      natsHeaders.set("Nats-Msg-Id", complaint.incident_number);
+      const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
+      if (ack.duplicate) {
+        this.logger.log(`Complaint ${complaint.incident_number} has already been published`);
+      } else {
+        this.logger.log(`Complaint published: ${complaint.incident_number}`);
+      }
     } catch (error) {
       this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
       throw error;
@@ -42,8 +48,17 @@ export class ComplaintsPublisherService {
    */
   async publishStagingComplaintInserted(incident_number: string): Promise<void> {
     try {
-      await this.jsClient.publish(NEW_STAGING_COMPLAINTS_TOPIC_NAME, incident_number);
-      this.logger.log(`Complaint ready to be moved to operational tables: ${incident_number}`);
+      const natsHeaders = headers(); // used to look for complaints that have already been submitted
+      natsHeaders.set("Nats-Msg-Id", incident_number);
+      const ack = await this.jsClient.publish(NEW_STAGING_COMPLAINTS_TOPIC_NAME, incident_number, {
+        headers: natsHeaders,
+      });
+
+      if (ack.duplicate) {
+        this.logger.log(`Complaint ${incident_number} has already been moved to operational table`);
+      } else {
+        this.logger.log(`Complaint ready to be moved to operational tables: ${incident_number}`);
+      }
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
       throw error;

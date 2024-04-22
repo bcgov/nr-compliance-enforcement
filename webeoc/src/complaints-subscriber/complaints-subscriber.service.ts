@@ -1,6 +1,11 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { connect, NatsConnection, StringCodec, createInbox, AckPolicy } from "nats";
-import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
+import { connect, NatsConnection, StringCodec, createInbox, AckPolicy, RetentionPolicy, StorageType } from "nats";
+import {
+  NATS_NEW_COMPLAINTS_TOPIC_NAME,
+  NATS_STREAM_NAME,
+  NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
+  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+} from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { ComplaintMessage } from "../types/Complaints";
 
@@ -16,6 +21,25 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       this.natsConnection = await connect({
         servers: process.env.NATS_HOST,
       });
+
+      console.log("Connected to NATS at:", process.env.NATS_HOST);
+      console.log("Connecting to jetstream");
+      const jsm = await this.natsConnection.jetstreamManager();
+
+      // Create or update a stream with deduplication window
+
+      console.log(jsm.streams.info);
+      const streamInfo = await jsm.streams.add({
+        name: NATS_STREAM_NAME,
+        subjects: [
+          NATS_NEW_COMPLAINTS_TOPIC_NAME,
+          NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
+          NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+        ],
+        retention: RetentionPolicy.Workqueue,
+        storage: StorageType.Memory,
+      });
+      console.log("Stream configured successfully:", streamInfo);
       this.logger.debug(`Connected to NATS ${process.env.NATS_HOST}`);
       this.subscribeToNewComplaintsFromWebEOC();
       this.subscribeToNewStagingComplaints();
@@ -26,10 +50,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
-    const stream = NATS_NEW_COMPLAINTS_TOPIC_NAME;
+    const subject = NATS_NEW_COMPLAINTS_TOPIC_NAME;
     const durableName = "complaints-service-durable";
     const opts = {
-      stream,
+      stream: NATS_STREAM_NAME,
       consumer: durableName,
       config: {
         durable_name: durableName,
@@ -39,7 +63,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       },
     };
 
-    const sub = await this.natsConnection.jetstream().subscribe(stream, opts);
+    const sub = await this.natsConnection.jetstream().subscribe(subject, opts);
 
     (async () => {
       for await (const msg of sub) {
@@ -60,10 +84,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   private async subscribeToNewStagingComplaints() {
     const sc = StringCodec();
-    const stream = NEW_STAGING_COMPLAINTS_TOPIC_NAME;
+    const subject = NEW_STAGING_COMPLAINTS_TOPIC_NAME;
     const durableName = "staging-complaints-service-durable";
     const opts = {
-      stream,
+      stream: NATS_STREAM_NAME,
       consumer: durableName,
       config: {
         durable_name: durableName,
@@ -73,7 +97,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       },
     };
 
-    const sub = await this.natsConnection.jetstream().subscribe(stream, opts);
+    const sub = await this.natsConnection.jetstream().subscribe(subject, opts);
 
     (async () => {
       for await (const msg of sub) {
