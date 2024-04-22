@@ -76,16 +76,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   );
   const [outcome, setOutcome] = useState<Option | undefined>(animalOutcomeItemData?.outcome);
   const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
-  const [outcomeDate, setOutcomeDate] = useState<Date | undefined>();
+  const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
 
   const [speciesErrorMessage, setSpeciesErrorMessage] = useState<string>("");
   const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
   const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
-
-  useEffect(() => {
-    const date = animalOutcomeItemData?.date ? new Date(animalOutcomeItemData?.date) : new Date();
-    setOutcomeDate(date);
-  }, [animalOutcomeItemData]);
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
@@ -388,7 +383,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       }
     }
     setDrugAuthorization(drugAuthorization);
-    return isValid;
   };
 
   const renderDrugs = () => {
@@ -455,7 +449,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           }
           updateDrug(item);
         });
-      isValid = updateDrugAuthorization(drugAuthorization);
+      isValid = updateDrugAuthorization(drugAuthorization) && isValid;
     }
 
     if (outcome) {

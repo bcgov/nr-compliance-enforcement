@@ -45,7 +45,7 @@ export const HWCROutcomeByAnimal: FC = () => {
     drugAuthorization: 
     {
       officer: assigned?.value ?? "",
-      date: undefined,
+      date: new Date(),
     },
     outcome: undefined,
     officer: assigned,
