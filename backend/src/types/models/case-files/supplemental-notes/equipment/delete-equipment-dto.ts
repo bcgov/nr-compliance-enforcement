@@ -1,4 +1,4 @@
 export interface DeleteEquipmentDto { 
-    equipmentGuid: string;
+    id: string;
     updateUserId: string;
 }
