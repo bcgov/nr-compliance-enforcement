@@ -28,6 +28,7 @@ import { UUID } from "crypto";
 import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
 import { ReviewInput } from "../../types/app/case-files/review-input";
 import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
+import { DeleteSupplementalNoteInput } from "../../types/app/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
@@ -494,6 +495,7 @@ export const upsertNote =
         note: string,
         actor: string,
         userId: string,
+        actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const caseId = await dispatch(findCase(id));
@@ -503,6 +505,7 @@ export const upsertNote =
           caseIdentifier: caseId as UUID,
           actor,
           updateUserId: userId,
+          actionId,
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
@@ -514,15 +517,21 @@ export const upsertNote =
     let result;
     if (!currentNote?.action) {
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
+
       if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
       }
     } else {
-      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir));
+      const {
+        action: { actionGuid },
+      } = currentNote;
+      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir, actionGuid));
 
       if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Supplemental note updated");
       } else {
         ToggleError("Error, unable to update supplemental note");
@@ -536,8 +545,58 @@ export const upsertNote =
     }
   };
 
-  //-- file review thunks
-  export const createReview =
+export const deleteNote =
+  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+    const {
+      officers: { officers },
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { caseId, note: currentNote },
+    } = getState();
+
+    const _deleteNote =
+      (
+        id: UUID,
+        actor: string,
+        userId: string,
+        actionId: string,
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: DeleteSupplementalNoteInput = {
+          caseIdentifier: caseId as UUID,
+          actor,
+          updateUserId: userId,
+          actionId,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
+        return await deleteMethod<CaseFileDto>(dispatch, parameters);
+      };
+
+    if (currentNote?.action) {
+      const {
+        action: { actionGuid },
+      } = currentNote;
+
+      const officer = officers.find((item) => item.user_id === idir);
+      const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionGuid));
+
+      if (result !== null) {
+        ToggleSuccess("Supplemental note deleted");
+        return "success";
+      } else {
+        ToggleError("Error, unable to delete supplemental note");
+        return "error";
+      }
+    } else {
+      ToggleError("Error, unable to delete supplemental note");
+      return "error";
+    }
+  };
+
+//-- file review thunks
+export const createReview =
   (complaintId: string, isReviewRequired: boolean, reviewComplete: ReviewCompleteAction | null): AppThunk =>
   async (dispatch, getState) => {
     const {
@@ -605,9 +664,9 @@ export const updateReview =
   };
 
   export const deleteEquipment =
-  (equipmentGuid: string): AppThunk =>
+  (id: string): AppThunk =>
   async (dispatch, getState) => {
-    if (!equipmentGuid) {
+    if (!id) {
       return;
     }
 
@@ -617,16 +676,15 @@ export const updateReview =
 
 
     const deleteEquipmentInput = {
-      equipmentGuid: equipmentGuid,
+      id: id,
       updateUserId: profile.idir_username,
     };
-    
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
       await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
         if (res) {
           // remove equipment from state
           const { cases: { equipment } } =  getState();
-          const updatedEquipment = equipment?.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
+          const updatedEquipment = equipment?.filter(equipment => equipment.id !== id);
           
           dispatch(setCaseFile({ equipment: updatedEquipment }));
           ToggleSuccess(`Equipment has been deleted`);
@@ -636,7 +694,7 @@ export const updateReview =
       });
      }
 
-  export const upsertEquipment =
+export const upsertEquipment =
   (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
   async (dispatch, getState) => {
     if (!equipment) {
@@ -648,7 +706,7 @@ export const updateReview =
     } = getState();
     // equipment does not exist, let's create it
     if (complaintIdentifier
-       && !equipment.equipmentGuid) {
+       && !equipment.id) {
       let createEquipmentInput = {
         createEquipmentInput: {
           leadIdentifier: complaintIdentifier,
@@ -667,11 +725,12 @@ export const updateReview =
           ToggleError(`Unable to update equipment`);
         }
       });
-    } else { // equipment exists, we're updating it here
+    } else {
+      // equipment exists, we're updating it here
       let updateEquipmentInput = {
         updateEquipmentInput: {
           leadIdentifier: complaintIdentifier,
-          createUserId: profile.idir_username,
+          updateUserId: profile.idir_username,
           agencyCode: "COS",
           caseCode: "HWCR",
           equipment: [equipment],
@@ -687,6 +746,5 @@ export const updateReview =
           ToggleError(`Unable to update equipment`);
         }
       });
-     }
     }
-    
+  };

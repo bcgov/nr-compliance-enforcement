@@ -1,11 +1,11 @@
 import { CaseActionDto } from "./case-action";
 
 export interface EquipmentDetailsDto {
-  equipmentGuid?: string;
-  equipmentTypeCode: string;
-  equipmentTypeShortDescription?: string;
-  equipmentTypeLongDescription?: string;
-  equipmentTypeActiveIndicator: boolean;
+  id?: string;
+  typeCode: string;
+  shortDescription: string;
+  longDescription: string ;
+  activeIndicator: boolean;
   address?: string;
   xCoordinate: string;
   yCoordinate: string;
