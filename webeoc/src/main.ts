@@ -7,6 +7,7 @@ import { ExpressAdapter } from "@nestjs/platform-express";
 import { connect, RetentionPolicy, StorageType } from "nats";
 
 async function bootstrap() {
+  console.log("Starting Nats");
   dotenv.config();
   const server = express();
   server.disable("x-powered-by");
