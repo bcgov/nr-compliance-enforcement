@@ -1,6 +1,6 @@
 import { Action, ThunkAction } from "@reduxjs/toolkit";
 import config from "../../../config";
-import { generateApiParameters, get, patch, post } from "../../common/api";
+import { deleteMethod, generateApiParameters, get, patch, post } from "../../common/api";
 import { AppThunk, RootState } from "../store";
 import { ToggleError, ToggleSuccess } from "../../common/toast";
 import { CaseFileDto } from "../../types/app/case-files/case-file";
@@ -28,6 +28,9 @@ import { UUID } from "crypto";
 import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
 import { ReviewInput } from "../../types/app/case-files/review-input";
 import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
+import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
+import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
+import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 
 //-- general thunks
 export const findCase =
@@ -43,7 +46,6 @@ export const getCaseFile =
   async (dispatch) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
-
     dispatch(setCaseFile(response));
   };
 
@@ -217,7 +219,16 @@ const parseAssessmentResponse = async (
     })[0];
 
     let officerFullName = null;
-
+    
+    console.trace();
+    console.log("actor:", actor);
+    console.log("officers:");
+    officers.map((officer) => {
+      const {person_guid, first_name, last_name} = officer.person_guid;
+      console.log(`  guid='${person_guid}' name='${first_name} ${last_name}'`);
+      return null;
+    });
+    
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
@@ -592,3 +603,90 @@ export const updateReview =
       }
     });
   };
+
+  export const deleteEquipment =
+  (equipmentGuid: string): AppThunk =>
+  async (dispatch, getState) => {
+    if (!equipmentGuid) {
+      return;
+    }
+
+    const {
+      app: { profile },
+    } = getState();
+
+
+    const deleteEquipmentInput = {
+      equipmentGuid: equipmentGuid,
+      updateUserId: profile.idir_username,
+    };
+    
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
+      await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
+        if (res) {
+          // remove equipment from state
+          const { cases: { equipment } } =  getState();
+          const updatedEquipment = equipment?.filter(equipment => equipment.equipmentGuid !== equipmentGuid);
+          
+          dispatch(setCaseFile({ equipment: updatedEquipment }));
+          ToggleSuccess(`Equipment has been deleted`);
+        } else {
+          ToggleError(`Unable to update equipment`);
+        }
+      });
+     }
+
+  export const upsertEquipment =
+  (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
+  async (dispatch, getState) => {
+    if (!equipment) {
+      return;
+    }
+
+    const {
+      app: { profile },
+    } = getState();
+    // equipment does not exist, let's create it
+    if (complaintIdentifier
+       && !equipment.equipmentGuid) {
+      let createEquipmentInput = {
+        createEquipmentInput: {
+          leadIdentifier: complaintIdentifier,
+          createUserId: profile.idir_username,
+          agencyCode: "COS",
+          caseCode: "HWCR",
+          equipment: [equipment],
+        },
+      } as CreateEquipmentInput;
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
+      await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        if (res) {
+          dispatch(setCaseFile(res));
+          ToggleSuccess(`Equipment has been updated`);
+        } else {
+          ToggleError(`Unable to update equipment`);
+        }
+      });
+    } else { // equipment exists, we're updating it here
+      let updateEquipmentInput = {
+        updateEquipmentInput: {
+          leadIdentifier: complaintIdentifier,
+          createUserId: profile.idir_username,
+          agencyCode: "COS",
+          caseCode: "HWCR",
+          equipment: [equipment],
+        },
+      } as UpdateEquipmentInput;
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, updateEquipmentInput);
+      await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+        if (res) {
+          dispatch(setCaseFile(res));
+          ToggleSuccess(`Equipment has been updated`);
+        } else {
+          ToggleError(`Unable to update equipment`);
+        }
+      });
+     }
+    }
+    
