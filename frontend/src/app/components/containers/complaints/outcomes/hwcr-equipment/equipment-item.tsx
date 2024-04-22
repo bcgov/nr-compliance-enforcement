@@ -26,19 +26,19 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const [showModal, setShowModal] = useState(false);
 
   const handleEdit = (equipment: EquipmentDetailsDto) => {
-    if (equipment.equipmentGuid) {
-      onEdit(equipment.equipmentGuid);
+    if (equipment.id) {
+      onEdit(equipment.id);
     }
   };
 
   // for turning codes into values
   const getValue = (property: string): Option | undefined => {
-    return equipmentTypeCodes.find((item) => item.value === equipment.equipmentTypeCode);
+    return equipmentTypeCodes.find((item) => item.value === equipment.typeCode);
   };
 
-  const handleDeleteEquipment = (equipmentGuid: string | undefined) => {
-    if (equipmentGuid) {
-      dispatch(deleteEquipment(equipmentGuid));
+  const handleDeleteEquipment = (id: string | undefined) => {
+    if (id) {
+      dispatch(deleteEquipment(id));
     }
   };
 
@@ -75,7 +75,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         content="All the data in this section will be lost."
         onHide={() => setShowModal(false)}
         onDelete={() => {
-          handleDeleteEquipment(equipment.equipmentGuid);
+          handleDeleteEquipment(equipment.id);
           setShowModal(false);
         }}
         confirmText="Yes, delete equipment"
@@ -178,7 +178,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             </div>
           </Col>
         </Row>
-        {equipment.equipmentGuid && removedEquipmentActor && (
+        {equipment.id && removedEquipmentActor && (
           <Row>
             <Col
               xs={12}
