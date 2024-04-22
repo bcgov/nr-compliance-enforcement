@@ -7,6 +7,7 @@ import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
 
 @Injectable({ scope: Scope.REQUEST })
@@ -56,7 +57,8 @@ export class CaseFileService {
       action { 
         actor
         actionCode
-        date
+        date,
+        actionGuid
       }
     }
     equipment {
@@ -81,16 +83,13 @@ export class CaseFileService {
     this.mapper = mapper;
   }
 
-  find = async (
-    complaint_id: string,
-    token: string
-  ): Promise<CaseFileDto> => {
-
+  find = async (complaint_id: string, token: string): Promise<CaseFileDto> => {
     const { data } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
         ${this.caseFileQueryFields}
-      }`
+      }`,
     });
+
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
       return caseFileDto;
@@ -98,195 +97,149 @@ export class CaseFileService {
       this.logger.error(`Case with complaint Id ${complaint_id} not found.`);
       return null;
     }
-  }
+  };
 
-  createAssessment = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
-
+  createAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
         createAssessment(createAssessmentInput: $createAssessmentInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
-    },
-    );
+      variables: model,
+    });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createAssessment;
-  }
+  };
 
- updateAssessment = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
-
+  updateAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
         updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
-    },
-    );
+      variables: model,
+    });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateAssessment;
+  };
 
-  }
-
-  createReview = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
+  createReview = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation CreateReview($reviewInput: ReviewInput!) {
         createReview(reviewInput: $reviewInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
+      variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createReview;
-  }
+  };
 
-  updateReview = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
+  updateReview = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation UpdateReview($reviewInput: ReviewInput!) {
         updateReview(reviewInput: $reviewInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
+      variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateReview;
-  }
+  };
 
-  createPrevention = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
-
+  createPrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
         createPrevention(createPreventionInput: $createPreventionInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
-    },
-    );
+      variables: model,
+    });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createPrevention;
-  }
+  };
 
-  updatePrevention = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
-    
+  updatePrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
         updatePrevention(updatePreventionInput: $updatePreventionInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
-    },
-    );
+      variables: model,
+    });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updatePrevention;
+  };
 
-  }
-
-  private handleAPIResponse = async (result: { response: AxiosResponse, error: AxiosError }):
-    Promise<any> => {
+  private handleAPIResponse = async (result: { response: AxiosResponse; error: AxiosError }): Promise<any> => {
     if (result?.response?.data?.data) {
       const caseFileDto = result.response.data.data;
       return caseFileDto;
     } else if (result?.response?.data?.errors) {
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
       return null;
-    }
-    else if (result?.error) {
+    } else if (result?.error) {
       this.logger.error(`Error occurred. ${JSON.stringify(result.error)}`);
     } else {
       this.logger.error(`Unknwown error occurred during web request`);
       return null;
     }
-  }
+  };
 
-  createEquipment = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
-
+  createEquipment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const mutationQuery = {
       query: `mutation CreateEquipment($createEquipmentInput: CreateEquipmentInput!) {
         createEquipment(createEquipmentInput: $createEquipmentInput)
           ${this.caseFileQueryFields}
       }`,
-      variables: model
+      variables: model,
     };
 
     this.logger.debug(mutationQuery);
-  
+
     const result = await post(token, mutationQuery);
-  
+
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createEquipment;
-  }
-  
+  };
 
-  updateEquipment = async (
-    token: string,
-    model: CaseFileDto
-  ): Promise<CaseFileDto> => {
-
+  updateEquipment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation UpdateEquipment($updateEquipmentInput: UpdateEquipmentInput!) {
         updateEquipment(updateEquipmentInput: $updateEquipmentInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model
-    },
-    );
+      variables: model,
+    });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateEquipment;
-  }
+  };
 
-  deleteEquipment = async (
-    token: string,
-    model: DeleteEquipmentDto
-  ): Promise<boolean> => {
-
+  deleteEquipment = async (token: string, model: DeleteEquipmentDto): Promise<boolean> => {
     const result = await post(token, {
       query: `mutation DeleteEquipment($deleteEquipmentInput: DeleteEquipmentInput!) {
         deleteEquipment(deleteEquipmentInput: $deleteEquipmentInput) 
       }`,
       variables: {
-        deleteEquipmentInput: model // Ensure that the key matches the name of the variable in your mutation
-      }
-    },
-    );
+        deleteEquipmentInput: model, // Ensure that the key matches the name of the variable in your mutation
+      },
+    });
     const returnValue = await this.handleAPIResponse(result);
     return returnValue;
-
-  }
+  };
 
   createNote = async (token: any, model: CreateSupplementalNotesInput): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
         createNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode } }
+          note { note, action { actor,date,actionCode, actionGuid } }
         }
       }`,
       variables: { input: model },
     });
-    const returnValue = await this.handleAPIResponse(result);
 
+    const returnValue = await this.handleAPIResponse(result);
     return returnValue?.createNote;
   };
 
@@ -294,13 +247,29 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
         updateNote(input: $input) {
-          note { note, action { actor,date,actionCode } }
+          caseIdentifier
+          note { note, action { actor,date,actionCode,actionGuid } }
         }
       }`,
       variables: { input: model },
     });
-    const returnValue = await this.handleAPIResponse(result);
 
+    const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateNote;
+  };
+
+  deleteNote = async (token: any, model: DeleteSupplementalNotesInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
+        deleteNote(input: $input) {
+          caseIdentifier
+          note { note, action { actor,date,actionCode,actionGuid } }
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.deleteNote;
   };
 }

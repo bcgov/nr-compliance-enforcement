@@ -4,7 +4,7 @@ import config from "../../config";
 import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
 import { toggleLoading, toggleNotification } from "../store/reducers/app";
-import { store } from '../../app/store/store';
+import { store } from "../../app/store/store";
 
 const STATUS_CODES = {
   Ok: 200,
@@ -21,15 +21,13 @@ const STATUS_CODES = {
 let requestCounter = 0;
 
 // Request interceptor to enable the loading indicator
-axios.interceptors.request.use(
-  function (config) {
-    requestCounter++;
-    if (requestCounter > 0) {
-      store.dispatch(toggleLoading(true));
-    }
-    return config;
+axios.interceptors.request.use(function (config) {
+  requestCounter++;
+  if (requestCounter > 0) {
+    store.dispatch(toggleLoading(true));
   }
-);
+  return config;
+});
 
 // Response interceptor to hide the loading indicator
 axios.interceptors.response.use(
@@ -46,7 +44,7 @@ axios.interceptors.response.use(
       store.dispatch(toggleLoading(false));
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 const { KEYCLOAK_URL } = config;
@@ -70,19 +68,13 @@ export const generateApiParameters = <T = {}>(
   return result;
 };
 
-export const get = <T, M = {}>(
-  dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>,
-  headers?: {}
-): Promise<T> => {
+export const get = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>, headers?: {}): Promise<T> => {
   let config: AxiosRequestConfig = { headers: headers };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
     if (requiresAuthentication) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     if (params) {
@@ -110,19 +102,19 @@ export const get = <T, M = {}>(
   });
 };
 
+//-- this function is named this way becasue 'delete' is a reserved word
+//-- in javascript, don't try to rename
 export const deleteMethod = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
-  headers?: {}
+  headers?: {},
 ): Promise<T> => {
   let config: AxiosRequestConfig = { headers: headers };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
     if (requiresAuthentication) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     if (params) {
@@ -150,18 +142,13 @@ export const deleteMethod = <T, M = {}>(
   });
 };
 
-export const post = <T, M = {}>(
-  dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>,
-): Promise<T> => {
+export const post = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>): Promise<T> => {
   let config: AxiosRequestConfig = { headers: {} };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
     if (requiresAuthentication) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     axios
@@ -178,18 +165,13 @@ export const post = <T, M = {}>(
   });
 };
 
-export const patch = <T, M = {}>(
-  dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>,
-): Promise<T> => {
+export const patch = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>): Promise<T> => {
   let config: AxiosRequestConfig = { headers: {} };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params: data } = parameters;
 
     if (requiresAuthentication) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     axios
@@ -212,18 +194,13 @@ export const patch = <T, M = {}>(
   });
 };
 
-export const put = <T, M = {}>(
-  dispatch: Dispatch,
-  parameters: ApiRequestParameters<M>,
-): Promise<T> => {
+export const put = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>): Promise<T> => {
   let config: AxiosRequestConfig = { headers: {} };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params: data } = parameters;
 
     if (requiresAuthentication) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     axios
@@ -255,16 +232,13 @@ export const putFile = <T, M = {}>(
   let config: AxiosRequestConfig = { headers: headers };
 
   const formData = new FormData();
-  if (file)
-  formData.append('file', file); 
+  if (file) formData.append("file", file);
 
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication } = parameters;
 
     if (requiresAuthentication) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
     axios
