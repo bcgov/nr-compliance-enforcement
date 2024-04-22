@@ -39,7 +39,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       },
     };
 
-    const sub = await this.natsConnection.jetstream().pullSubscribe(stream, opts);
+    const sub = await this.natsConnection.jetstream().subscribe(stream, opts);
 
     (async () => {
       for await (const msg of sub) {
@@ -73,7 +73,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       },
     };
 
-    const sub = await this.natsConnection.jetstream().pullSubscribe(stream, opts);
+    const sub = await this.natsConnection.jetstream().subscribe(stream, opts);
 
     (async () => {
       for await (const msg of sub) {
