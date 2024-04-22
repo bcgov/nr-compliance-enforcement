@@ -76,6 +76,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
             click={() => deleteNote()}
           />
           <CompTextIconButton
+            id="notes-edit-button"
             buttonClasses="button-text"
             text="Edit"
             icon={BsPencil}
