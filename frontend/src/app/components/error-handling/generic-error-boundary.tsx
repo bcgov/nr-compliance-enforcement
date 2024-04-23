@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react";
 import { useErrorBoundary } from "../../hooks/error-boundary";
 import logo from "../../../assets/images/branding/CE-Temp-Logo.svg";
 import { Footer } from "../containers/layout";
-import { GiDeerTrack } from "react-icons/gi";
+import { TbFaceIdError } from "react-icons/tb";
 
 type props = {
   children?: ReactNode;
@@ -49,9 +49,11 @@ const GenericErrorBoundary: FC<props> = ({ children }) => {
 
         <div className="error-container">
           <div className="message">
-            <GiDeerTrack />
-            <h1>System error</h1>please refresh the page to try again. If you still have problems, contact the
-            Compliance & Enforcement Digital Services team at <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
+            <TbFaceIdError />
+            {/* <br /> */}
+            <h1 className="comp-padding-top-25">System error</h1>Please refresh the page to try again. If you still have
+            problems, contact the Compliance & Enforcement Digital Services team at{" "}
+            <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
           </div>
         </div>
 
