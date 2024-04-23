@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
-import { BsPencil } from "react-icons/bs";
+import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { formatDate } from "../../../../../common/methods";
 
@@ -11,10 +11,12 @@ type props = {
   notes: string;
   action: CaseAction;
   enableEditMode: Function;
+  deleteNote: Function;
 };
 
-export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode }) => {
+export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode, deleteNote }) => {
   const { initials, displayName } = useAppSelector(selectNotesOfficer);
+
   return (
     <div className="comp-outcome-supporting-notes">
       <div className="comp-details-edit-container">
@@ -65,6 +67,14 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
           </div>
         </div>
         <div className="comp-details-right-column">
+          <CompTextIconButton
+            id="notes-delete-button"
+            buttonClasses="button-text"
+            style={{ marginRight: "15px" }}
+            text="Delete"
+            icon={BsTrash3}
+            click={() => deleteNote()}
+          />
           <CompTextIconButton
             id="notes-edit-button"
             buttonClasses="button-text"
