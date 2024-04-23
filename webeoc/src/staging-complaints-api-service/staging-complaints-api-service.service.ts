@@ -9,6 +9,7 @@ export class StagingComplaintsApiService {
   private readonly logger = new Logger(StagingComplaintsApiService.name);
   constructor(private readonly complaintsPublisherService: ComplaintsPublisherService) {}
 
+  // add complaint data to staging table
   async postComplaintToStaging(complaintData: Complaint): Promise<void> {
     try {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT}`;
@@ -29,6 +30,7 @@ export class StagingComplaintsApiService {
     }
   }
 
+  // create complaint based on complaint data in the staging table
   async postComplaint(complaint_identifier: string): Promise<void> {
     try {
       this.logger.debug("Creating new complaint based on new complaint from webeoc.");
@@ -42,8 +44,7 @@ export class StagingComplaintsApiService {
         },
       };
 
-      const response = await axios.post(apiUrl, {}, config);
-      this.logger.debug(`Post Complaint from NATS Topic - API Response: ${response.data}`);
+      await axios.post(apiUrl, {}, config);
     } catch (error) {
       this.logger.error("Error calling Complaint API:", error);
     }
