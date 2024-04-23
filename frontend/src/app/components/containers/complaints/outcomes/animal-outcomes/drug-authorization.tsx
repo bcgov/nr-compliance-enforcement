@@ -33,7 +33,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
     update(newDrugAuth, "officer");
   };
 
-  const handleAuthorizedOnChange = (input: Date | undefined | null) => {
+  const handleAuthorizedOnChange = (input: Date | undefined) => {
     setAuthorizedOn(input ?? undefined);
     update({ officer: authorizedBy, date: input ?? undefined , officerErrorMessage: drugAuthorization?.officerErrorMessage, dateErrorMessage: drugAuthorization?.dateErrorMessage}, "date");
   };
