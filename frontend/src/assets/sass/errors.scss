@@ -1,0 +1,19 @@
+.error-container {
+  margin-top: auto;
+  position: relative;
+
+  .message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 625px;
+    transform: translateX(-50%);
+
+    svg {
+      height: 140px;
+      width: 140px;
+      float: left;
+      padding-right: 25px;
+    }
+  }
+}
