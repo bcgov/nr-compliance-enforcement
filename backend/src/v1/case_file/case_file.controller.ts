@@ -8,6 +8,7 @@ import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -34,12 +35,12 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async deleteEquipment(
     @Token() token,
-    @Query("equipmentGuid") equipmentGuid: string,
-    @Query("updateUserId") updateUserId: string,
+    @Query("id") id: string,
+    @Query("updateUserId") userId: string,
   ): Promise<boolean> {
     const deleteEquipment = {
-      equipmentGuid: equipmentGuid,
-      updateUserId: updateUserId,
+      id: id,
+      updateUserId: userId,
     };
     return await this.service.deleteEquipment(token, deleteEquipment);
   }
@@ -96,5 +97,24 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async UpdateNote(@Token() token, @Body() model: UpdateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.updateNote(token, model);
+  }
+
+  @Delete("/note")
+  @Roles(Role.COS_OFFICER)
+  async deleteNote(
+    @Token() token,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("actor") actor: string,
+    @Query("updateUserId") updateUserId: string,
+    @Query("actionId") actionId: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      caseIdentifier,
+      actor,
+      updateUserId,
+      actionId,
+    };
+
+    return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);
   }
 }

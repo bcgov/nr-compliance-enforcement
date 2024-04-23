@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-  
+
       # Deploy NATS before the rest of the containers.
       - name: Set up OpenShift CLI
         uses: redhat-actions/oc-login@v1
@@ -53,10 +53,10 @@ jobs:
           openshift_server_url: ${{ vars.OC_SERVER }}
           openshift_token: ${{ secrets.OC_TOKEN }}
           namespace: ${{ vars.OC_NAMESPACE }}
-  
+
       - name: Add NATS Helm repo
         run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-  
+
       - name: Check if NATS release exists in TEST
         run: |
           RELEASE_NAME=${{ github.event.repository.name }}-test-nats
@@ -67,7 +67,7 @@ jobs:
             echo "TEST Release $RELEASE_NAME does not exist. Proceeding with install."
             echo "release_exists=false" >> $GITHUB_ENV
           fi
-  
+
       - name: Deploy NATS to TEST using Helm
         if: env.release_exists == 'false'
         run: |
@@ -78,18 +78,17 @@ jobs:
             --set container.merge.resources.requests.memory=100Mi \
             --set container.merge.resources.limits.memory=400Mi \
             --set reloader.enabled=false \
-  
+
       # Deploy other components using matrix strategy
       - name: Deploy Components
-        uses: bcgov-nr/action-deployer-openshift@v1.1.0
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
+          parameters: -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
           penetration_test: true
     strategy:
@@ -108,15 +107,13 @@ jobs:
             overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
-            parameters: 
-              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST }} 
+            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST }}
               -p COMS_URL=${{ vars.COMS_URL_TEST }}
               -p COMS_BUCKET=${{ vars.COMS_BUCKET_TEST }}
             overwrite: true
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-        
 
   deploys-prod:
     name: PROD Deployments
@@ -137,8 +134,7 @@ jobs:
             overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
-            parameters: 
-              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD}}
+            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD}}
               -p COMS_URL=${{vars.COMS_URL_PRD}}
               -p COMS_BUCKET=${{vars.COMS_BUCKET_PROD}}
             overwrite: true
@@ -146,15 +142,14 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.1.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
+          parameters: -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
           penetration_test: false
 
