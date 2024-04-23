@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -81,6 +81,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [speciesErrorMessage, setSpeciesErrorMessage] = useState<string>("");
   const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
   const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
+
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
@@ -263,8 +264,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       });
     if (update.length === 0) {
       if (drugAuthorization) {
-        drugAuthorization.officerErrorMessage = "";
-        drugAuthorization.dateErrorMessage = "";
+        setDrugAuthorization({
+          officer: "",
+          date: new Date(),
+        })
       }
     }
     setDrugs(update);
@@ -347,42 +350,37 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     setDrugs(update);
   };
 
-  const updateDrugAuthorization = (drugAuthorization: DrugAuthorization | undefined) => {
+  const updateDrugAuthorization = (newDrugAuthorization: DrugAuthorization | undefined) => {
     let isValid = true;
-    if (drugAuthorization) {
-      if (!drugAuthorization?.officer) {
-        drugAuthorization.officerErrorMessage = "Required";
-        isValid = false;
-      } else {
-        drugAuthorization.officerErrorMessage = "";
-      }
-      if (!drugAuthorization?.date) {
-        drugAuthorization.dateErrorMessage = "Required";
-        isValid = false;
-      } else {
-        drugAuthorization.dateErrorMessage = "";
-      }
-    } else {
-      isValid = false;
-    }
-    setDrugAuthorization(drugAuthorization);
+    isValid = updateDrugAuthorizationFromInput(newDrugAuthorization, "officer");
+    isValid = updateDrugAuthorizationFromInput(newDrugAuthorization, "date") && isValid;
     return isValid;
   };
 
-  const updateDrugAuthorizationFromInput = (drugAuthorization: DrugAuthorization | undefined, type: string) => {
-    if (drugAuthorization) {
-      if (!drugAuthorization?.officer && type === "officer") {
-        drugAuthorization.officerErrorMessage = "Required";
-      } else {
-        drugAuthorization.officerErrorMessage = "";
+  const updateDrugAuthorizationFromInput = (newDrugAuthorization: DrugAuthorization | undefined, type: string) => {
+    let isValid = true;
+    if (newDrugAuthorization) {
+      if(type === "officer")
+      {
+        if (!newDrugAuthorization?.officer) {
+          newDrugAuthorization.officerErrorMessage = "Required";
+          isValid = false;
+        } else {
+          newDrugAuthorization.officerErrorMessage = "";
+        }
       }
-      if (!drugAuthorization?.date && type === "date") {
-        drugAuthorization.dateErrorMessage = "Required";
-      } else {
-        drugAuthorization.dateErrorMessage = "";
+      if(type === "date")
+      {
+        if (!newDrugAuthorization?.date) {
+          newDrugAuthorization.dateErrorMessage = "Required";
+          isValid = false;
+        } else {
+          newDrugAuthorization.dateErrorMessage = "";
+        }
       }
+      setDrugAuthorization(newDrugAuthorization);
     }
-    setDrugAuthorization(drugAuthorization);
+    return isValid;
   };
 
   const renderDrugs = () => {
