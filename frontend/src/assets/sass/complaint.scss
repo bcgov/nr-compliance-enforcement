@@ -583,6 +583,27 @@ p {
   }
 }
 
+.drug-auth-details-label-input-pair {
+  display: flex;
+  min-height: 70px;
+
+  label {
+    color: $gray-500;
+    margin-top: 6px;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .comp-details-input {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
 .comp-details-label-div-pair {
   display: flex;
   align-items: center;
