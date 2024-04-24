@@ -57,7 +57,7 @@ export class ComplaintsPublisherService {
       });
 
       if (ack.duplicate) {
-        this.logger.log(
+        this.logger.debug(
           `Complaint ${incident_number} has already been published to ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`,
         );
       } else {
