@@ -38,7 +38,7 @@ jobs:
           --set config.jetstream.enabled=true \
           --set config.jetstream.fileStore.pvc.size=200Mi \
           --set config.jetstream.memoryStore.enabled=true \
-          --set config.jetstream.memoryStore.maxSize= 500Mi \
+          --set config.jetstream.memoryStore.maxSize=500Mi \
           --set cluster.enabled=true \
           --set natsBox.enabled=false \
           --set persistence.enabled=true \
