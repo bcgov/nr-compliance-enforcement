@@ -37,14 +37,16 @@ jobs:
         helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
           --set config.jetstream.enabled=true \
           --set config.jetstream.fileStore.pvc.size=200Mi \
+          --set config.jetstream.memoryStore.enabled=true \
+          --set config.jetstream.memoryStore.maxSize= 500Mi \
           --set cluster.enabled=true \
           --set natsBox.enabled=false \
           --set persistence.enabled=true \
           --set persistence.size=200Mi \
           --set container.merge.resources.requests.cpu=25m \
           --set container.merge.resources.limits.cpu=100m \
-          --set container.merge.resources.requests.memory=100Mi \
-          --set container.merge.resources.limits.memory=200Mi \
+          --set container.merge.resources.requests.memory=500Mi \
+          --set container.merge.resources.limits.memory=1000Mi \
           --set reloader.enabled=false \
           --set replicaCount=1
 
