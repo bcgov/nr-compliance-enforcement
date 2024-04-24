@@ -49,7 +49,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   async setupStream(): Promise<void> {
     const streamConfig = {
       name: "complaintsStream",
-      subjects: [NEW_STAGING_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
+      subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
       retention: RetentionPolicy.Limits, // Using RetentionPolicy enum
       maxAge: 0,
       storage: StorageType.Memory,
