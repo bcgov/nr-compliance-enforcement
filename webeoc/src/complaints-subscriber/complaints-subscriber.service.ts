@@ -8,7 +8,11 @@ import {
   StorageType,
   StringCodec,
 } from "nats";
-import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
+import {
+  NATS_NEW_COMPLAINTS_TOPIC_NAME,
+  NATS_STREAM_NAME,
+  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+} from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { Complaint } from "../types/Complaints";
 
@@ -18,6 +22,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection | null = null;
   private js: JetStreamClient | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
+  private processedComplaintIds = new Set();
 
   constructor(private readonly service: StagingComplaintsApiService) {
     this.natsConnection = null;
@@ -48,12 +53,12 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   async setupStream(): Promise<void> {
     const streamConfig = {
-      name: "complaintsStream",
+      name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
-      retention: RetentionPolicy.Limits, // Using RetentionPolicy enum
+      retention: RetentionPolicy.Limits,
       maxAge: 0,
       storage: StorageType.Memory,
-      duplicateWindow: 10 * 60 * 1000000000, // 2 minutes in nanoseconds
+      duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds
     };
 
     try {
@@ -78,7 +83,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       for await (const msg of sub) {
         try {
           const complaintMessage: Complaint = JSON.parse(sc.decode(msg.data));
-          this.logger.debug(`Received complaint: ${complaintMessage.incident_number}`);
+          const incidentNumber = complaintMessage.incident_number;
+          // do not process the complaint if it already has been processed
+          if (this.processedComplaintIds.has(incidentNumber)) {
+            this.logger.debug(`Ignoring duplicate complaint: ${incidentNumber}`);
+            continue; // Skip this iteration if we've already processed this incident_number
+          }
+          this.processedComplaintIds.add(incidentNumber);
+          this.logger.debug(`Received complaint, adding to staging table: ${complaintMessage.incident_number}`);
           await this.service.postComplaintToStaging(complaintMessage);
         } catch (error) {
           this.logger.error("Error processing received complaint:", error);
