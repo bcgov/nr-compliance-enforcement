@@ -423,6 +423,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     }
 
     if (drugs.length > 0) {
+      let isDrugItemValid = true;
       from(drugs)
         .orderBy((item) => item.id)
         .toArray()
@@ -434,11 +435,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             !isPositiveNum(item.amountUsed) ||
             !item.injectionMethod
           ) {
-            isValid = false;
+            isDrugItemValid = false;
           }
           updateDrug(item);
         });
-      isValid = updateDrugAuthorization(drugAuthorization);
+
+      isValid = updateDrugAuthorization(drugAuthorization) && isDrugItemValid;
     }
 
     if (outcome) {
