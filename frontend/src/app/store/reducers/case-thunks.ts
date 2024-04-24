@@ -524,6 +524,7 @@ export const upsertNote =
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
+
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
@@ -680,6 +681,7 @@ export const deleteEquipment =
       id: id,
       updateUserId: profile.idir_username,
     };
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {
