@@ -32,11 +32,11 @@ export class ComplaintsPublisherService {
       natsHeaders.set("Nats-Msg-Id", complaint.incident_number);
       const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
       if (ack.duplicate) {
-        this.logger.log(
+        this.logger.debug(
           `Complaint ${complaint.incident_number} has already been published to ${NATS_NEW_COMPLAINTS_TOPIC_NAME}`,
         );
       } else {
-        this.logger.log(`Complaint published: ${complaint.incident_number}`);
+        this.logger.debug(`Complaint published: ${complaint.incident_number}`);
       }
     } catch (error) {
       this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
