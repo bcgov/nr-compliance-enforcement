@@ -3,7 +3,7 @@ import Option from "../../../../types/app/option";
 import { Button } from "react-bootstrap";
 import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficersByAgency, selectOfficers } from "../../../../store/reducers/officer";
+import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
@@ -75,7 +75,7 @@ export const HWCRComplaintPrevention: FC = () => {
   const preventionTypeList = useAppSelector(selectPreventionTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
-  const officerList = useAppSelector(selectOfficers);
+  const { officers } = useAppSelector((state) => state.officers);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -87,10 +87,10 @@ export const HWCRComplaintPrevention: FC = () => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(getPrevention(complaintData.id, officerList ?? undefined));
+      dispatch(getPrevention(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complaintData]);
+  }, [complaintData, officers]);
 
   useEffect(() => {
     populatePreventionUI();
