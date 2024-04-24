@@ -29,8 +29,13 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
 
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
-    const newDrugAuth: DrugAuthorizationType = { officer: input ?? "", date: authorizedOn ?? undefined };
-    update(newDrugAuth);
+    const newDrugAuth: DrugAuthorizationType = {
+      officer: input ?? "",
+      date: authorizedOn ?? undefined,
+      officerErrorMessage: drugAuthorization?.officerErrorMessage,
+      dateErrorMessage: drugAuthorization?.dateErrorMessage,
+    };
+    update(newDrugAuth, "officer");
   };
 
   const handleAuthorizedOnChange = (input: Date) => {
@@ -43,7 +48,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
       <Row>
         <Col md={5}>
           <div
-            className="comp-details-label-input-pair"
+            className="drug-auth-details-label-input-pair"
             id="officer-assigned-pair-id"
           >
             <label
@@ -70,7 +75,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
 
         <Col md="4">
           <div
-            className="comp-details-label-input-pair"
+            className="drug-auth-details-label-input-pair"
             id="officer-assigned-pair-id"
           >
             <label
