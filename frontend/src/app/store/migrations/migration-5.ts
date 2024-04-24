@@ -5,12 +5,12 @@ export const AddPersonGuidAndOutcomeReview = {
       ...state,
       app: {
         profile: {
-          personGuid: ""
+          personGuid: "",
         },
       },
       cases: {
         isReviewRequired: false,
-        reviewComplete: null
+        reviewComplete: null,
       },
     };
   },

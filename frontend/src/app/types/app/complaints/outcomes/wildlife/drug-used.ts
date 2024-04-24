@@ -1,6 +1,6 @@
 export interface DrugUsed {
   id: number;
-  
+
   vial: string;
   vialErrorMessage: string;
   drug: string;

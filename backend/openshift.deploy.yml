@@ -118,8 +118,8 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: NODE_TLS_REJECT_UNAUTHORIZED 
-                  value: '0'
+                - name: NODE_TLS_REJECT_UNAUTHORIZED
+                  value: "0"
                 - name: POSTGRESQL_HOST
                   value: ${NAME}-${ZONE}-database
                 - name: POSTGRESQL_DATABASE
@@ -221,7 +221,7 @@ objects:
                   memory: ${MEMORY_REQUEST}
                 limits:
                   cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}      
+                  memory: ${MEMORY_LIMIT}
   - apiVersion: v1
     kind: Service
     metadata:

@@ -17,27 +17,26 @@ export const SpaceReference: FC = () => {
 
   return (
     <>
-      <Container fluid style={{ backgroundColor: "#F5F5F5" }}>
+      <Container
+        fluid
+        style={{ backgroundColor: "#F5F5F5" }}
+      >
         <ReferenceHeader title="B.C. Gov Design System: Spacing" />
 
         <Row>
           <Col className="comp-margin-bottom-sm comp-padding-top-sm">
             <h2>How it works</h2>
             <p>
-              Assign responsive-friendly margin or padding values to an element
-              or a subset of its sides with shorthand classes. Includes support
-              for individual properties, all properties, and vertical and
-              horizontal properties. Classes are built from a custom Sass map
-              ranging from 4px to 48px
+              Assign responsive-friendly margin or padding values to an element or a subset of its sides with shorthand
+              classes. Includes support for individual properties, all properties, and vertical and horizontal
+              properties. Classes are built from a custom Sass map ranging from 4px to 48px
             </p>
             <p>Units and sizes in pixels, and orientations</p>
             <p>
-              <code>$space-units</code>: sass map{" "}
-              <code>{JSON.stringify(spaceUnits)}</code>
+              <code>$space-units</code>: sass map <code>{JSON.stringify(spaceUnits)}</code>
             </p>
             <p>
-              <code>$orientation</code>: sass map{" "}
-              <code>{JSON.stringify(orientations)}</code>
+              <code>$orientation</code>: sass map <code>{JSON.stringify(orientations)}</code>
             </p>
           </Col>
         </Row>
@@ -47,11 +46,9 @@ export const SpaceReference: FC = () => {
             <p>
               Spacing utilities that apply to all breakpoints, from
               <code> xxs</code> to
-              <code> xxl</code>, have no breakpoint abbreviation in them. This
-              is because those classes are applied from{" "}
-              <code>min-width: 0</code> and up, and thus are not bound by a
-              media query. The remaining breakpoints, however, do include a
-              breakpoint abbreviation.
+              <code> xxl</code>, have no breakpoint abbreviation in them. This is because those classes are applied from{" "}
+              <code>min-width: 0</code> and up, and thus are not bound by a media query. The remaining breakpoints,
+              however, do include a breakpoint abbreviation.
             </p>
             <p>
               The classes are named using the format
@@ -65,8 +62,7 @@ export const SpaceReference: FC = () => {
                 <code>margin</code> - for classes that set <code>margin</code>
               </li>
               <li>
-                <code>nmargin</code> - for classes that set{" "}
-                <code>negative margin</code>
+                <code>nmargin</code> - for classes that set <code>negative margin</code>
               </li>
               <li>
                 <code>pading</code> - for classes that set <code>padding</code>
@@ -77,26 +73,21 @@ export const SpaceReference: FC = () => {
             </p>
             <ul>
               <li>
-                <code>top</code> - for classes that set <code>margin-top</code>{" "}
-                or <code>padding-top</code>
+                <code>top</code> - for classes that set <code>margin-top</code> or <code>padding-top</code>
               </li>
               <li>
-                <code>bottom</code> - for classes that set{" "}
-                <code>margin-bottom</code> or <code>padding-bottom</code>
+                <code>bottom</code> - for classes that set <code>margin-bottom</code> or <code>padding-bottom</code>
               </li>
               <li>
-                <code>left</code> - for classes that set{" "}
-                <code>margin-left</code> or <code>padding-left</code>
+                <code>left</code> - for classes that set <code>margin-left</code> or <code>padding-left</code>
               </li>
               <li>
-                <code>right</code> - for classes that set{" "}
-                <code>margin-right</code> or <code>padding-right</code>
+                <code>right</code> - for classes that set <code>margin-right</code> or <code>padding-right</code>
               </li>
             </ul>
             <p>
-              In addition to applying maring and padding to specific sides
-              maring and padding can be applied to a block without providing an
-              orientation: <code> {`.comp-{property}-{size}`}</code>
+              In addition to applying maring and padding to specific sides maring and padding can be applied to a block
+              without providing an orientation: <code> {`.comp-{property}-{size}`}</code>
             </p>
 
             <h2>Examples</h2>

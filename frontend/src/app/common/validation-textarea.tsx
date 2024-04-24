@@ -22,8 +22,7 @@ export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
   placeholderText,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
-  const calulatedClass =
-    errMsg === "" ? className : className + " error-border";
+  const calulatedClass = errMsg === "" ? className : className + " error-border";
   return (
     <div className="width-full">
       <div>

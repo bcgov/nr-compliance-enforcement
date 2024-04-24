@@ -10,10 +10,10 @@ export interface CaseFileDto {
   createUserId: string;
   agencyCode: string;
   caseCode: string;
-  assessmentDetails: AssessmentDetailsDto
-  preventionDetails: PreventionDetailsDto
-  updateUserId: string
+  assessmentDetails: AssessmentDetailsDto;
+  preventionDetails: PreventionDetailsDto;
+  updateUserId: string;
   isReviewRequired: boolean;
-  reviewComplete?: ReviewCompleteAction
+  reviewComplete?: ReviewCompleteAction;
   equipment: EquipmentDetailsDto[];
 }

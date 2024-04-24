@@ -9,11 +9,7 @@ interface Props {
   className?: string;
 }
 
-const MapListToggle: React.FC<Props> = ({
-  activeView,
-  onToggle,
-  className,
-}) => {
+const MapListToggle: React.FC<Props> = ({ activeView, onToggle, className }) => {
   return (
     <ToggleButtonGroup
       className={className}

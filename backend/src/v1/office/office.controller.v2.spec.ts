@@ -61,19 +61,13 @@ describe("Testing: Office Controller", () => {
     const _unit = "CRSTN";
     const _zone = "NCHKOLKS";
 
-    let response = await request(app.getHttpServer()).get(
-      `/office/${_officeId}`
-    );
+    let response = await request(app.getHttpServer()).get(`/office/${_officeId}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app.getHttpServer()).get(
-      `/office/by-zone/${_zone}`
-    );
+    response = await request(app.getHttpServer()).get(`/office/by-zone/${_zone}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app.getHttpServer()).get(
-      `/office/by-geo-code/${_unit}`
-    );
+    response = await request(app.getHttpServer()).get(`/office/by-geo-code/${_unit}`);
     expect(response.statusCode).toBe(200);
   });
 
@@ -99,10 +93,7 @@ describe("Testing: Office Controller", () => {
       update_utc_timestamp: new Date(),
     };
 
-    return request(app.getHttpServer())
-      .post("/office/")
-      .send({ payload })
-      .expect(201);
+    return request(app.getHttpServer()).post("/office/").send({ payload }).expect(201);
   });
 
   it("should return 501 when a PATCH is is not implemented", () => {
@@ -136,9 +127,7 @@ describe("Testing: Office Controller", () => {
   it("should return 501 when a DELETE is is not implemented", async () => {
     const _officeId: UUID = "2044f08d-b53c-489a-8584-dd867b63514a";
 
-    let response = await request(app.getHttpServer()).delete(
-      `/office/${_officeId}`
-    );
+    let response = await request(app.getHttpServer()).delete(`/office/${_officeId}`);
     expect(response.statusCode).toBe(501);
   });
 });

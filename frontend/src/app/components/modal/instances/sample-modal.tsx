@@ -32,7 +32,10 @@ export const SampleModal: FC<SampleModalProps> = ({ close, submit }) => {
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary" onClick={close}>
+        <Button
+          variant="outline-primary"
+          onClick={close}
+        >
           Close
         </Button>
         <Button onClick={submit}>OK</Button>

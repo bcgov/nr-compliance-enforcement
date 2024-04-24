@@ -3,9 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AllegationComplaint } from "./entities/allegation_complaint.entity";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([AllegationComplaint]),
-  ],
+  imports: [TypeOrmModule.forFeature([AllegationComplaint])],
   controllers: [],
   providers: [],
 })

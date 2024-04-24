@@ -1,4 +1,4 @@
-export interface Sector { 
-   code: string
-   name: string
+export interface Sector {
+  code: string;
+  name: string;
 }

@@ -1,23 +1,13 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import COMPLAINT_TYPES, {
-  complaintTypeToName,
-} from "../../../../types/app/complaint-types";
+import COMPLAINT_TYPES, { complaintTypeToName } from "../../../../types/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
-import {
-  applyStatusClass,
-  formatDate,
-  formatTime,
-  getAvatarInitials,
-} from "../../../../common/methods";
+import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
 import { Button } from "react-bootstrap";
 import { BsPersonPlus, BsArrowRepeat } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
-import {
-  ASSIGN_OFFICER,
-  CHANGE_STATUS,
-} from "../../../../types/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -36,7 +26,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
 }) => {
-
   const {
     loggedDate,
     createdBy,
@@ -98,11 +87,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 <i className="bi bi-house-door"></i> Home
               </li>
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to={`/complaints/${complaintType}`}>
-                  {complaintTypeToName(complaintType)}
-                </Link>
+                <Link to={`/complaints/${complaintType}`}>{complaintTypeToName(complaintType)}</Link>
               </li>
-              <li className="breadcrumb-item" aria-current="page">
+              <li
+                className="breadcrumb-item"
+                aria-current="page"
+              >
                 {id}
               </li>
             </ol>
@@ -116,9 +106,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             <div className="comp-box-complaint-id">Complaint #{id}</div>
             <div
               className={`comp-box-conflict-type ${
-                complaintType !== COMPLAINT_TYPES.ERS
-                  ? "hwcr-conflict-type"
-                  : "allegation-conflict-type"
+                complaintType !== COMPLAINT_TYPES.ERS ? "hwcr-conflict-type" : "allegation-conflict-type"
               }`}
             >
               {complaintTypeToName(complaintType, true)}
@@ -175,9 +163,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               className="comp-nature-of-complaint"
               id="comp-nature-of-complaint"
             >
-              {complaintType !== COMPLAINT_TYPES.ERS
-                ? natureOfComplaint
-                : violationType}
+              {complaintType !== COMPLAINT_TYPES.ERS ? natureOfComplaint : violationType}
             </div>
           )}
         </div>
@@ -200,9 +186,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
           <div className="comp-details-header-column">
             <div className="comp-complaint-created-width">
-              <div className="comp-details-content-label">
-                Date / Time Logged
-              </div>
+              <div className="comp-details-content-label">Date / Time Logged</div>
               <div className="comp-details-content">
                 <i className="bi bi-calendar comp-margin-right-xxs"></i>
                 {formatDate(loggedDate)}

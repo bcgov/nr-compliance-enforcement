@@ -7,11 +7,7 @@ type Props = {
   sortDirection: string;
 };
 
-export const WildlifeComplaintListHeader: FC<Props> = ({
-  handleSort,
-  sortKey,
-  sortDirection,
-}) => {
+export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sortDirection }) => {
   return (
     <thead className="fixed-table-header">
       <tr>

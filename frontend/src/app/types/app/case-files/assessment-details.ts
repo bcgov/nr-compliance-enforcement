@@ -5,5 +5,5 @@ export interface AssessmentDetailsDto {
   actionJustificationShortDescription: string;
   actionJustificationLongDescription: string;
   actionJustificationActiveIndicator: boolean;
-  actions: Array<AssessmentActionDto>
+  actions: Array<AssessmentActionDto>;
 }

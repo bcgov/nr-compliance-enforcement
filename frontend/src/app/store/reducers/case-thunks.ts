@@ -220,16 +220,16 @@ const parseAssessmentResponse = async (
     })[0];
 
     let officerFullName = null;
-    
+
     console.trace();
     console.log("actor:", actor);
     console.log("officers:");
     officers.map((officer) => {
-      const {person_guid, first_name, last_name} = officer.person_guid;
+      const { person_guid, first_name, last_name } = officer.person_guid;
       console.log(`  guid='${person_guid}' name='${first_name} ${last_name}'`);
       return null;
     });
-    
+
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
@@ -663,7 +663,7 @@ export const updateReview =
     });
   };
 
-  export const deleteEquipment =
+export const deleteEquipment =
   (id: string): AppThunk =>
   async (dispatch, getState) => {
     if (!id) {
@@ -674,25 +674,26 @@ export const updateReview =
       app: { profile },
     } = getState();
 
-
     const deleteEquipmentInput = {
       id: id,
       updateUserId: profile.idir_username,
     };
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
-      await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
-        if (res) {
-          // remove equipment from state
-          const { cases: { equipment } } =  getState();
-          const updatedEquipment = equipment?.filter(equipment => equipment.id !== id);
-          
-          dispatch(setCaseFile({ equipment: updatedEquipment }));
-          ToggleSuccess(`Equipment has been deleted`);
-        } else {
-          ToggleError(`Unable to update equipment`);
-        }
-      });
-     }
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
+    await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
+      if (res) {
+        // remove equipment from state
+        const {
+          cases: { equipment },
+        } = getState();
+        const updatedEquipment = equipment?.filter((equipment) => equipment.id !== id);
+
+        dispatch(setCaseFile({ equipment: updatedEquipment }));
+        ToggleSuccess(`Equipment has been deleted`);
+      } else {
+        ToggleError(`Unable to update equipment`);
+      }
+    });
+  };
 
 export const upsertEquipment =
   (complaintIdentifier: string, equipment: EquipmentDetailsDto): AppThunk =>
@@ -705,8 +706,7 @@ export const upsertEquipment =
       app: { profile },
     } = getState();
     // equipment does not exist, let's create it
-    if (complaintIdentifier
-       && !equipment.id) {
+    if (complaintIdentifier && !equipment.id) {
       let createEquipmentInput = {
         createEquipmentInput: {
           leadIdentifier: complaintIdentifier,

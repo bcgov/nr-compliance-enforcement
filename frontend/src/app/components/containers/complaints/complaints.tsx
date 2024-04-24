@@ -1,23 +1,15 @@
 import { FC, useState, useContext } from "react";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
-import COMPLAINT_TYPES, {
-  complaintTypeToName,
-} from "../../../types/app/complaint-types";
+import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
 import { useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
 import { ComplaintFilterBar } from "./complaint-filter-bar";
-import {
-  ComplaintFilterContext,
-  ComplaintFilterProvider,
-} from "../../../providers/complaint-filter-provider";
-import {
-  resetFilters,
-  ComplaintFilterPayload,
-} from "../../../store/reducers/complaint-filters";
+import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
+import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
@@ -34,9 +26,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
-  const totalComplaints = useAppSelector(
-    selectTotalComplaintsByType(complaintType)
-  );
+  const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
 
   const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
 
@@ -48,19 +38,16 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
 
-  const complaintTypes: Array<{ name: string; id: string; code: string }> =
-    Object.keys(COMPLAINT_TYPES).map((item) => {
-      return {
-        name: complaintTypeToName(item),
-        id: `${item.toLocaleLowerCase()}-tab`,
-        code: item,
-      };
-    });
+  const complaintTypes: Array<{ name: string; id: string; code: string }> = Object.keys(COMPLAINT_TYPES).map((item) => {
+    return {
+      name: complaintTypeToName(item),
+      id: `${item.toLocaleLowerCase()}-tab`,
+      code: item,
+    };
+  });
 
   // renders the complaint count on the list and map views, for the selected complaint type
-  const renderComplaintTotal = (
-    selectedComplaintType: string
-  ): string | undefined => {
+  const renderComplaintTotal = (selectedComplaintType: string): string | undefined => {
     if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
       if (complaintType === selectedComplaintType) {
         return `(${totalComplaintsOnMap})`;
@@ -106,15 +93,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           {complaintTypes.map(({ id, code, name }) => {
             return (
               <Nav.Item
-                className={`nav-item comp-tab-${
-                  complaintType === code ? "active" : "inactive"
-                }`}
+                className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
                 key={`${code}-tab-item`}
               >
                 <div
-                  className={`nav-link ${
-                    complaintType === code ? "active" : "inactive"
-                  }`}
+                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
                   id={id}
                   onClick={() => handleComplaintTabChange(code)}
                 >
@@ -127,7 +110,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           {/* <!-- dynamic tabs end --> */}
 
           <Nav.Item className="ms-auto">
-            <div className="cursor-pointer" onClick={() => handleCreateClick()}>
+            <div
+              className="cursor-pointer"
+              onClick={() => handleCreateClick()}
+            >
               <div
                 className="complaint-create-image-container left-float"
                 id="complaint-create-image-id"
@@ -141,17 +127,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <Nav.Item
             {...getToggleProps({
               onClick: () => {
-                const filterElem = document.querySelector(
-                  "#collapsible-complaints-list-filter-id"
-                );
+                const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
                 const rect = filterElem?.getBoundingClientRect();
                 const bottom = rect?.bottom;
 
-                if (
-                  { isExpanded }.isExpanded &&
-                  bottom !== undefined &&
-                  bottom < 140
-                ) {
+                if ({ isExpanded }.isExpanded && bottom !== undefined && bottom < 140) {
                   //page has been scrolled while filter is open... need to close it!
                   setExpanded((prevExpanded) => !prevExpanded);
                 }
@@ -176,7 +156,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       </Navbar>
 
       <div>
-        <ComplaintFilter type={complaintType} isOpen={isExpanded} />
+        <ComplaintFilter
+          type={complaintType}
+          isOpen={isExpanded}
+        />
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
@@ -185,9 +168,15 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           applySearchQuery={setSearch}
         />
         {viewType === "list" ? (
-          <ComplaintList type={complaintType} searchQuery={search} />
+          <ComplaintList
+            type={complaintType}
+            searchQuery={search}
+          />
         ) : (
-          <ComplaintMap type={complaintType} searchQuery={search} />
+          <ComplaintMap
+            type={complaintType}
+            searchQuery={search}
+          />
         )}
       </div>
     </>
