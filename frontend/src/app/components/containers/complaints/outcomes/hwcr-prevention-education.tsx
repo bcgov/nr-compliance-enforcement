@@ -75,7 +75,6 @@ export const HWCRComplaintPrevention: FC = () => {
   const preventionTypeList = useAppSelector(selectPreventionTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
-  const { officers } = useAppSelector((state) => state.officers);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -90,7 +89,7 @@ export const HWCRComplaintPrevention: FC = () => {
       dispatch(getPrevention(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complaintData, officers]);
+  }, [complaintData]);
 
   useEffect(() => {
     populatePreventionUI();

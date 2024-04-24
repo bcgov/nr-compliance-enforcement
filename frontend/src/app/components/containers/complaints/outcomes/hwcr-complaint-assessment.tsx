@@ -62,7 +62,6 @@ export const HWCRComplaintAssessment: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const { officers } = useAppSelector((state) => state.officers);
 
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
@@ -115,7 +114,7 @@ export const HWCRComplaintAssessment: FC = () => {
       dispatch(getAssessment(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complaintData, officers]);
+  }, [complaintData]);
 
   useEffect(() => {
     populateAssessmentUI();
