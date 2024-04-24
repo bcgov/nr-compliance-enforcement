@@ -3,7 +3,7 @@ import Option from "../../../../types/app/option";
 import { Button } from "react-bootstrap";
 import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { selectOfficersByAgency, selectOfficers } from "../../../../store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
@@ -75,6 +75,7 @@ export const HWCRComplaintPrevention: FC = () => {
   const preventionTypeList = useAppSelector(selectPreventionTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
+  const officerList = useAppSelector(selectOfficers);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -86,7 +87,7 @@ export const HWCRComplaintPrevention: FC = () => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(getPrevention(complaintData.id));
+      dispatch(getPrevention(complaintData.id, officerList ?? undefined));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
@@ -130,20 +131,23 @@ export const HWCRComplaintPrevention: FC = () => {
     setEditable(!preventionState.date);
 
     if (!selectedOfficer && officersInAgencyList && assigned) {
-      const officerAssigned: Option[] = officersInAgencyList.filter((officer : Officer) =>
-        officer.person_guid.person_guid === assigned)
-        .map((element : Officer) => {
+      const officerAssigned: Option[] = officersInAgencyList
+        .filter((officer: Officer) => officer.person_guid.person_guid === assigned)
+        .map((element: Officer) => {
           return {
-            label: `${element.person_guid?.first_name} ${element.person_guid?.last_name}`, value: assigned
+            label: `${element.person_guid?.first_name} ${element.person_guid?.last_name}`,
+            value: assigned,
           } as Option;
         });
-      if (officerAssigned && Array.isArray(officerAssigned) &&
-        officerAssigned.length > 0 && 
-        typeof (officerAssigned[0].label) !== 'undefined') {
+      if (
+        officerAssigned &&
+        Array.isArray(officerAssigned) &&
+        officerAssigned.length > 0 &&
+        typeof officerAssigned[0].label !== "undefined"
+      ) {
         setSelectedOfficer(officerAssigned[0]);
       }
     }
-
   };
 
   const cancelConfirmed = () => {
