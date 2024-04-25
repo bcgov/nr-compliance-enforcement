@@ -1,4 +1,4 @@
 import { PreventionActionDto } from "./prevention-action";
-export interface PreventionDetailsDto { 
-    actions: Array<PreventionActionDto>
+export interface PreventionDetailsDto {
+  actions: Array<PreventionActionDto>;
 }

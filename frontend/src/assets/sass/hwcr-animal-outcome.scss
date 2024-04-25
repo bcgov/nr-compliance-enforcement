@@ -114,10 +114,9 @@
     .animal-item-edit {
       font-size: 14px;
 
-      :hover
-          {
-            text-decoration: underline;
-          }
+      :hover {
+        text-decoration: underline;
+      }
       span {
         font-size: inherit;
         padding-right: 0px;
@@ -131,19 +130,18 @@
     .animal-item-delete {
       font-size: 14px;
       padding-right: 10px;
-      :hover
-          {
-            text-decoration: underline;
-          }
-        span {
-          font-size: inherit;
-          margin-right: 4px;
-          padding-right: 0px;
-        }
+      :hover {
+        text-decoration: underline;
+      }
+      span {
+        font-size: inherit;
+        margin-right: 4px;
+        padding-right: 0px;
+      }
 
-        svg {
-          font-size: 16px;
-        }
+      svg {
+        font-size: 16px;
+      }
     }
 
     .comp-ear-tag-list {
@@ -266,7 +264,6 @@
   }
 }
 
-.mt-delete-button
-{
+.mt-delete-button {
   margin-top: 36px;
 }

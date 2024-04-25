@@ -17,7 +17,7 @@ import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
-  isEditDisabled: boolean; 
+  isEditDisabled: boolean;
   onEdit: (guid: string) => void;
 }
 export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisabled, onEdit }) => {
@@ -106,11 +106,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         </div>
         <div className="equipment-item-content">
           <div className="label">Address</div>
-          <div
-            className="value"
-          >
-            {equipment.address}
-          </div>
+          <div className="value">{equipment.address}</div>
         </div>
         <Row>
           <Col
@@ -119,11 +115,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
           >
             <div className="equipment-item-content">
               <div className="label">X Coordinate</div>
-              <div
-                className="value"
-              >
-                {equipment.xCoordinate}
-              </div>
+              <div className="value">{equipment.xCoordinate}</div>
             </div>
           </Col>
           <Col

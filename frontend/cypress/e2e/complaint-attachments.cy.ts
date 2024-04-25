@@ -19,7 +19,7 @@ describe("Complaint Attachments", () => {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
       }
 
-      cy.verifyAttachmentsCarousel(false,"complaint_attachments_div_id");
+      cy.verifyAttachmentsCarousel(false, "complaint_attachments_div_id");
     });
   });
 
@@ -33,9 +33,7 @@ describe("Complaint Attachments", () => {
 
       // should be able to upload on details view
       cy.get("button.coms-carousel-upload-container").should("exist");
-
     });
-
   });
 
   it("Verifies that upload option exists on the create page", () => {

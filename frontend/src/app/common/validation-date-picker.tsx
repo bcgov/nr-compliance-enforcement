@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import DatePicker from 'react-datepicker';
+import { FC } from "react";
+import DatePicker from "react-datepicker";
 
 interface ValidationDatePickerProps {
   className: string;
@@ -24,13 +24,12 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   classNamePrefix,
   errMsg,
 }) => {
-
   const handleDateChange = (date: Date) => {
     onChange(date);
   };
 
-  const calculatedClass = errMsg === '' ? '' : 'error-message';
-  const calculatedBorderClass = errMsg === '' ? '' : 'error-border';
+  const calculatedClass = errMsg === "" ? "" : "error-message";
+  const calculatedBorderClass = errMsg === "" ? "" : "error-border";
 
   return (
     <div className={className}>
@@ -46,7 +45,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           wrapperClassName="comp-details-edit-calendar-input"
           maxDate={maxDate}
           minDate={minDate}
-          autoComplete='false'
+          autoComplete="false"
         />
       </div>
       <div className={calculatedClass}>{errMsg}</div>

@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { GeoOrganizationUnitCodeService } from './geo_organization_unit_code.service';
+import { Module } from "@nestjs/common";
+import { GeoOrganizationUnitCodeService } from "./geo_organization_unit_code.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { GeoOrganizationUnitCode } from './entities/geo_organization_unit_code.entity';
+import { GeoOrganizationUnitCode } from "./entities/geo_organization_unit_code.entity";
 
 @Module({
   imports: [TypeOrmModule.forFeature([GeoOrganizationUnitCode])],
   controllers: [],
-  providers: [GeoOrganizationUnitCodeService]
+  providers: [GeoOrganizationUnitCodeService],
 })
 export class GeoOrganizationUnitCodeModule {}

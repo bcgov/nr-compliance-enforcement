@@ -39,9 +39,6 @@ export class StagingActivityCode {
   @Column("timestamp without time zone", { name: "update_utc_timestamp" })
   updateUtcTimestamp: Date;
 
-  @OneToMany(
-    () => StagingComplaint,
-    (stagingComplaint) => stagingComplaint.stagingActivityCode
-  )
+  @OneToMany(() => StagingComplaint, (stagingComplaint) => stagingComplaint.stagingActivityCode)
   stagingComplaints: StagingComplaint[];
 }

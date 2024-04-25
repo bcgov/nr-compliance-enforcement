@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigurationController } from './configuration.controller';
-import { ConfigurationService } from './configuration.service';
-import { Configuration } from './entities/configuration.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ConfigurationController } from "./configuration.controller";
+import { ConfigurationService } from "./configuration.service";
+import { Configuration } from "./entities/configuration.entity";
+import { getRepositoryToken } from "@nestjs/typeorm";
 
-describe('ConfigurationController', () => {
+describe("ConfigurationController", () => {
   let controller: ConfigurationController;
 
   beforeEach(async () => {
@@ -14,16 +14,15 @@ describe('ConfigurationController', () => {
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
-          useValue: {
-
-          },
-        },],
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<ConfigurationController>(ConfigurationController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });

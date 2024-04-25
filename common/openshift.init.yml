@@ -24,7 +24,7 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
     stringData:
-      case-management-api-url: "fill in"
+      case-management-api-url: "https://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql"
   - apiVersion: v1
     kind: Secret
     metadata:

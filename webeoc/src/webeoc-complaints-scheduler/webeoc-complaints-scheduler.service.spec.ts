@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { WebEOCComplaintsScheduler } from './webeoc-complaints-scheduler.service';
-import { ComplaintsPublisherService } from '../complaints-publisher/complaints-publisher.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { WebEOCComplaintsScheduler } from "./webeoc-complaints-scheduler.service";
+import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
 
-describe('WebEOCComplaintsScheduler', () => {
+describe("WebEOCComplaintsScheduler", () => {
   let service: WebEOCComplaintsScheduler;
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe('WebEOCComplaintsScheduler', () => {
     service = module.get<WebEOCComplaintsScheduler>(WebEOCComplaintsScheduler);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

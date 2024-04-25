@@ -7,7 +7,7 @@ import { CosGeoOrgUnit } from "./entities/cos_geo_org_unit.entity";
 export class CosGeoOrgUnitService {
   constructor(
     @InjectRepository(CosGeoOrgUnit)
-    private cosGeoOrgUnitRepository: Repository<CosGeoOrgUnit>
+    private cosGeoOrgUnitRepository: Repository<CosGeoOrgUnit>,
   ) {}
 
   async findAll(): Promise<CosGeoOrgUnit[]> {
@@ -42,17 +42,13 @@ export class CosGeoOrgUnitService {
     });
   }
 
-  async findByOfficeLocationCode(
-    officeLocationCode: string
-  ): Promise<CosGeoOrgUnit[]> {
+  async findByOfficeLocationCode(officeLocationCode: string): Promise<CosGeoOrgUnit[]> {
     return this.cosGeoOrgUnitRepository.findBy({
       office_location_code: officeLocationCode,
     });
   }
 
-  async findByOfficeLocationName(
-    officeLocationName: string
-  ): Promise<CosGeoOrgUnit[]> {
+  async findByOfficeLocationName(officeLocationName: string): Promise<CosGeoOrgUnit[]> {
     return this.cosGeoOrgUnitRepository.findBy({
       office_location_code: officeLocationName,
     });

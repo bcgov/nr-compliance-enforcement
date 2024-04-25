@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateGeoOrganizationUnitCodeDto } from './dto/create-geo_organization_unit_code.dto';
-import { UpdateGeoOrganizationUnitCodeDto } from './dto/update-geo_organization_unit_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { GeoOrganizationUnitCode } from './entities/geo_organization_unit_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateGeoOrganizationUnitCodeDto } from "./dto/create-geo_organization_unit_code.dto";
+import { UpdateGeoOrganizationUnitCodeDto } from "./dto/update-geo_organization_unit_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { GeoOrganizationUnitCode } from "./entities/geo_organization_unit_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class GeoOrganizationUnitCodeService {
   constructor(
     @InjectRepository(GeoOrganizationUnitCode)
-    private geoOrganizationUnitCodeRepository: Repository<GeoOrganizationUnitCode>
+    private geoOrganizationUnitCodeRepository: Repository<GeoOrganizationUnitCode>,
   ) {}
 
   async create(geoOrganizationUnitCode: CreateGeoOrganizationUnitCodeDto): Promise<GeoOrganizationUnitCode> {
@@ -24,16 +24,22 @@ export class GeoOrganizationUnitCodeService {
 
   async findDistinctGeoCodes(geo_org_unit_type_code: any): Promise<GeoOrganizationUnitCode[]> {
     return this.geoOrganizationUnitCodeRepository.find({
-      where: {geo_org_unit_type_code: geo_org_unit_type_code},
+      where: { geo_org_unit_type_code: geo_org_unit_type_code },
     });
   }
 
   async findOne(id: string): Promise<GeoOrganizationUnitCode> {
-    return this.geoOrganizationUnitCodeRepository.findOneByOrFail({geo_organization_unit_code: id});
+    return this.geoOrganizationUnitCodeRepository.findOneByOrFail({ geo_organization_unit_code: id });
   }
 
-  async update(geo_organization_unit_code: string, updateGeoOrganizationUnitCodeDto: UpdateGeoOrganizationUnitCodeDto): Promise<GeoOrganizationUnitCode> {
-    await this.geoOrganizationUnitCodeRepository.update({ geo_organization_unit_code }, updateGeoOrganizationUnitCodeDto);
+  async update(
+    geo_organization_unit_code: string,
+    updateGeoOrganizationUnitCodeDto: UpdateGeoOrganizationUnitCodeDto,
+  ): Promise<GeoOrganizationUnitCode> {
+    await this.geoOrganizationUnitCodeRepository.update(
+      { geo_organization_unit_code },
+      updateGeoOrganizationUnitCodeDto,
+    );
     return this.findOne(geo_organization_unit_code);
   }
 

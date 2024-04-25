@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
-import { StagingComplaintService } from './staging_complaint.service';
-import { ApiTags } from '@nestjs/swagger';
-import { WebEOCComplaint } from '../../types/webeoc-complaint';
-import { ApiKeyGuard } from '../../auth/apikey.guard';
-import { Public } from '../../auth/decorators/public.decorator';
+import { Controller, Post, Body, Param, UseGuards } from "@nestjs/common";
+import { StagingComplaintService } from "./staging_complaint.service";
+import { ApiTags } from "@nestjs/swagger";
+import { WebEOCComplaint } from "../../types/webeoc-complaint";
+import { ApiKeyGuard } from "../../auth/apikey.guard";
+import { Public } from "../../auth/decorators/public.decorator";
 
 @ApiTags("staging-complaint")
 @Public()
@@ -22,9 +22,7 @@ export class StagingComplaintController {
 
   @Post("/process/:complaintIdentifier")
   @UseGuards(ApiKeyGuard)
-  async process(
-    @Param("complaintIdentifier") complaintIdentifier: string,
-  ): Promise<any> {
+  async process(@Param("complaintIdentifier") complaintIdentifier: string): Promise<any> {
     return await this.stagingComplaintService.process(complaintIdentifier);
   }
 }

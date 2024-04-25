@@ -1,10 +1,5 @@
 import { FC, useEffect } from "react";
-import {
-  Route,
-  BrowserRouter as Router,
-  Routes,
-  useParams,
-} from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
 import Roles from "./constants/roles";
 import ProtectedRoutes from "./components/routing";
@@ -42,7 +37,10 @@ const App: FC = () => {
       <PageLoader />
       <Routes>
         <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
-          <Route path="/" element={<ComplaintsRouteWrapper />} />
+          <Route
+            path="/"
+            element={<ComplaintsRouteWrapper />}
+          />
           <Route
             path="/complaints/:type?"
             element={<ComplaintsRouteWrapper />}
@@ -51,20 +49,37 @@ const App: FC = () => {
             path="/complaint/:complaintType/:id"
             element={<ComplaintDetailsEdit />}
           />
-          <Route path="/zone/at-a-glance" element={<ZoneAtAGlance />} />
+          <Route
+            path="/zone/at-a-glance"
+            element={<ZoneAtAGlance />}
+          />
           <Route
             path="/complaint/createComplaint"
             element={<CreateComplaint />}
           />
         </Route>
-        <Route
-          element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}
-        >
-          <Route path="/admin/user" element={<UserManagement />} />
+        <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+          <Route
+            path="/admin/user"
+            element={<UserManagement />}
+          />
         </Route>
-        <Route path="/not-authorized" element={<NotAuthorized />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/reference" element={<><ColorReference/> <MiscReference/> <SpaceReference /></>} />
+        <Route
+          path="/not-authorized"
+          element={<NotAuthorized />}
+        />
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
+        <Route
+          path="/reference"
+          element={
+            <>
+              <ColorReference /> <MiscReference /> <SpaceReference />
+            </>
+          }
+        />
       </Routes>
     </Router>
   );

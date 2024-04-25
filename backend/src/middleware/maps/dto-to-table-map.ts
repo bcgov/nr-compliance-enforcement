@@ -13,55 +13,55 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
     "UpdateComplaintDto",
     forMember(
       (dest) => dest.detail_text,
-      mapFrom((src) => src.details)
+      mapFrom((src) => src.details),
     ),
     forMember(
       (dest) => dest.caller_name,
-      mapFrom((src) => src.name)
+      mapFrom((src) => src.name),
     ),
     forMember(
       (dest) => dest.caller_address,
-      mapFrom((src) => src.address)
+      mapFrom((src) => src.address),
     ),
     forMember(
       (dest) => dest.caller_email,
-      mapFrom((src) => src.email)
+      mapFrom((src) => src.email),
     ),
     forMember(
       (dest) => dest.caller_phone_1,
-      mapFrom((src) => src.phone1)
+      mapFrom((src) => src.phone1),
     ),
     forMember(
       (dest) => dest.caller_phone_2,
-      mapFrom((src) => src.phone2)
+      mapFrom((src) => src.phone2),
     ),
     forMember(
       (dest) => dest.caller_phone_3,
-      mapFrom((src) => src.phone3)
+      mapFrom((src) => src.phone3),
     ),
     forMember(
       (dest) => dest.location_geometry_point,
-      mapFrom((src) => src.location)
+      mapFrom((src) => src.location),
     ),
     forMember(
       (dest) => dest.location_summary_text,
-      mapFrom((src) => src.locationSummary)
+      mapFrom((src) => src.locationSummary),
     ),
     forMember(
       (dest) => dest.location_detailed_text,
-      mapFrom((src) => src.locationDetail)
+      mapFrom((src) => src.locationDetail),
     ),
     forMember(
       (dest) => dest.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime)
+      mapFrom((src) => src.incidentDateTime),
     ),
     forMember(
       (dest) => dest.reported_by_other_text,
-      mapFrom((src) => src.reportedByOther)
+      mapFrom((src) => src.reportedByOther),
     ),
     forMember(
       (dest) => dest.complaint_identifier,
-      mapFrom((src) => src.id)
+      mapFrom((src) => src.id),
     ),
     forMember(
       (dest) => dest.reported_by_code,
@@ -71,7 +71,7 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
           : {
               reported_by_code: src.reportedBy,
             };
-      })
+      }),
     ),
     forMember(
       (dest) => dest.owned_by_agency_code,
@@ -79,7 +79,7 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         return {
           agency_code: src.ownedBy,
         };
-      })
+      }),
     ),
     forMember(
       (dest) => dest.complaint_status_code,
@@ -87,7 +87,7 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         return {
           complaint_status_code: src.status,
         };
-      })
+      }),
     ),
     forMember(
       (dest) => dest.cos_geo_org_unit,
@@ -98,8 +98,8 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
           zone_code: zone,
           area_code: area,
         };
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -110,7 +110,7 @@ export const mapDelegateDtoToPersonComplaintXrefTable = (mapper: Mapper) => {
     "PersonComplaintXrefTable",
     forMember(
       (dest) => dest.active_ind,
-      mapFrom((src) => src.isActive)
+      mapFrom((src) => src.isActive),
     ),
     forMember(
       (dest) => dest.person_guid,
@@ -122,12 +122,12 @@ export const mapDelegateDtoToPersonComplaintXrefTable = (mapper: Mapper) => {
         return {
           person_guid: id,
         };
-      })
+      }),
     ),
     forMember(
       (dest) => dest.person_complaint_xref_code,
-      mapFrom((src) => src.type)
-    )
+      mapFrom((src) => src.type),
+    ),
   );
 };
 
@@ -138,18 +138,18 @@ export const mapAttactantDtoToAttractant = (mapper: Mapper) => {
     "AttractantXrefTable",
     forMember(
       (dest) => dest.active_ind,
-      mapFrom((src) => src.isActive)
+      mapFrom((src) => src.isActive),
     ),
     forMember(
       (dest) => dest.attractant_code,
       mapFrom((src) => {
         const { attractant } = src;
         return { attractant_code: attractant, active_ind: true };
-      })
+      }),
     ),
     forMember(
       (dest) => dest.hwcr_complaint_guid,
-      mapFrom((src) => src.xrefId)
-    )
+      mapFrom((src) => src.xrefId),
+    ),
   );
 };

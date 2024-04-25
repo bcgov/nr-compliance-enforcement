@@ -64,7 +64,7 @@ export class OfficerService {
         person_guid: {},
         office_guid: {
           cos_geo_org_unit: true,
-          agency_code: true
+          agency_code: true,
         },
       },
     });
@@ -76,7 +76,7 @@ export class OfficerService {
         person_guid: true,
         office_guid: {
           cos_geo_org_unit: true,
-          agency_code: true
+          agency_code: true,
         },
       },
     });
@@ -93,9 +93,7 @@ export class OfficerService {
 
     try {
       //Look for the Office
-      officeObject = await this.officeService.findByGeoOrgCode(
-        officer.geo_organization_unit_code
-      );
+      officeObject = await this.officeService.findByGeoOrgCode(officer.geo_organization_unit_code);
       if (officeObject.length === 0) {
         // insertOffice
 
@@ -117,15 +115,10 @@ export class OfficerService {
       }
 
       //Will always insert the person
-      personObject = await this.personService.createInTransaction(
-        <CreatePersonDto>officer,
-        queryRunner
-      );
+      personObject = await this.personService.createInTransaction(<CreatePersonDto>officer, queryRunner);
       officer.person_guid = personObject.person_guid;
 
-      newOfficerString = await this.officerRepository.create(
-        <CreateOfficerDto>officer
-      );
+      newOfficerString = await this.officerRepository.create(<CreateOfficerDto>officer);
       await queryRunner.manager.save(newOfficerString);
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -138,10 +131,7 @@ export class OfficerService {
     return newOfficerString;
   }
 
-  async update(
-    officer_guid: UUID,
-    updateOfficerDto: UpdateOfficerDto
-  ): Promise<Officer> {
+  async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
     await this.officerRepository.update({ officer_guid }, updateOfficerDto);
     return this.findOne(officer_guid);
   }

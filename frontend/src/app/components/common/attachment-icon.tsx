@@ -18,7 +18,6 @@ type Props = {
 
 // given a file name, display an icon
 const AttachmentIcon: React.FC<Props> = ({ filename, imageIconString }) => {
-
   const extension = getFileExtension(filename);
 
   switch (extension) {
@@ -32,7 +31,14 @@ const AttachmentIcon: React.FC<Props> = ({ filename, imageIconString }) => {
     case "webp":
     case "abif":
     case "svg":
-      return (imageIconString ? <img alt="thumbnail" src={imageIconString} /> : <FontAwesomeIcon icon={faImage} />);
+      return imageIconString ? (
+        <img
+          alt="thumbnail"
+          src={imageIconString}
+        />
+      ) : (
+        <FontAwesomeIcon icon={faImage} />
+      );
     case "mp4":
     case "asf":
     case "flv":

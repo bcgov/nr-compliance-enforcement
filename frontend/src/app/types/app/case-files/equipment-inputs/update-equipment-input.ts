@@ -1,4 +1,4 @@
-import { CaseFileDto } from "../case-file"
+import { CaseFileDto } from "../case-file";
 export interface UpdateEquipmentInput {
-  updateEquipmentInput: CaseFileDto
+  updateEquipmentInput: CaseFileDto;
 }

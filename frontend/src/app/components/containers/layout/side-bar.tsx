@@ -41,7 +41,10 @@ export const SideBar: FC = () => {
         {!route ? (
           <i className={`comp-nav-item-icon ${icon}`}></i>
         ) : (
-          <Link to={route} id={`icon-${id}`}>
+          <Link
+            to={route}
+            id={`icon-${id}`}
+          >
             <i className={`comp-nav-item-icon ${icon}`}></i>
           </Link>
         )}
@@ -49,7 +52,10 @@ export const SideBar: FC = () => {
           {!route ? (
             <>{name}</>
           ) : (
-            <Link to={route} id={id}>
+            <Link
+              to={route}
+              id={id}
+            >
               {name}
             </Link>
           )}
@@ -60,7 +66,10 @@ export const SideBar: FC = () => {
         key={`overlay-${idx}`}
         placement="right"
         overlay={
-          <Tooltip id={`tt-${id}`} className="comp-tooltip comp-tooltip-right">
+          <Tooltip
+            id={`tt-${id}`}
+            className="comp-tooltip comp-tooltip-right"
+          >
             {name}
           </Tooltip>
         }
@@ -69,7 +78,10 @@ export const SideBar: FC = () => {
           {!route ? (
             <i className={`comp-nav-item-icon ${icon}`}></i>
           ) : (
-            <Link to={route} id={`icon-${id}`}>
+            <Link
+              to={route}
+              id={`icon-${id}`}
+            >
               <i className={`comp-nav-item-icon ${icon}`}></i>
             </Link>
           )}
@@ -77,7 +89,10 @@ export const SideBar: FC = () => {
             {!route ? (
               <>{name}</>
             ) : (
-              <Link to={route} id={id}>
+              <Link
+                to={route}
+                id={id}
+              >
                 {name}
               </Link>
             )}
@@ -88,12 +103,7 @@ export const SideBar: FC = () => {
   };
 
   return (
-    <div
-      className={`d-flex flex-column flex-shrink-0 comp-side-bar  ${(!isOpen
-        ? "collapsed"
-        : ""
-      ).trim()}`}
-    >
+    <div className={`d-flex flex-column flex-shrink-0 comp-side-bar  ${(!isOpen ? "collapsed" : "").trim()}`}>
       {/* <!-- organization name --> */}
       <AgencyBanner />
 
@@ -109,11 +119,7 @@ export const SideBar: FC = () => {
           dispatch(toggleSidebar());
         }}
       >
-        <i
-          className={`bi ${
-            isOpen ? "bi-chevron-double-left" : "bi-chevron-double-right"
-          }`}
-        ></i>
+        <i className={`bi ${isOpen ? "bi-chevron-double-left" : "bi-chevron-double-right"}`}></i>
       </div>
     </div>
   );

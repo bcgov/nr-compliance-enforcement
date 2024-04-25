@@ -11,6 +11,6 @@ export interface PersonComplaintXref {
     first_name: string;
     last_name: string;
     middle_name_1: string;
-    middle_name_2: string
+    middle_name_2: string;
   };
 }
