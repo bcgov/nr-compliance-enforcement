@@ -9,10 +9,9 @@ type props = {
 };
 
 const GenericErrorBoundary: FC<props> = ({ children }) => {
-  const [error, errorInfo] = useErrorBoundary();
+  const [error] = useErrorBoundary();
 
   if (error) {
-    const { message, cause, name } = error;
     return (
       <div className="comp-container fixed-header">
         {/* <!-- --> */}

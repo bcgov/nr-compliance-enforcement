@@ -29,7 +29,6 @@ class ErrorBoundary extends Component<PropsWithChildren<ErrorBoundaryProps>> {
     // ErrorBoundary: Error boundaries should implement getDerivedStateFromError().
     // In that method, return a state update to display an error message or fallback UI
     this.setState({});
-    console.log("ARGS: ", args);
     this.props.onError(...args);
   }
 
@@ -55,7 +54,7 @@ const errorBoundaryContext = createContext<ErrorBoundaryCtx>({
 });
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function ErrorBoundaryContext({ children }: { children?: ReactNode | undefined }) {
+export function ErrorBoundaryContext({ children }: { children?: ReactNode }) {
   const [error, setError] = useState<Error>();
   const [errorInfo, setErrorInfo] = useState<ErrorInfo>();
 
