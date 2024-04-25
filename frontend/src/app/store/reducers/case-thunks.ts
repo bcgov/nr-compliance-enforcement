@@ -52,15 +52,14 @@ export const getCaseFile =
 
 //-- assessment thunks
 export const getAssessment =
-  (complaintIdentifier?: string, officerList?: Officer[]): AppThunk =>
+  (complaintIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
     } = getState();
-    const officerListParam = officers ?? officerList;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officerListParam);
+      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       dispatch(setCaseId(res.caseIdentifier));
       dispatch(setAssessment({ assessment: updatedAssessmentData }));
       dispatch(setIsReviewedRequired(res.isReviewRequired));
@@ -260,15 +259,14 @@ const parseAssessmentResponse = async (
 
 //-- prevention and education thunks
 export const getPrevention =
-  (complaintIdentifier?: string, officerList?: Officer[]): AppThunk =>
+  (complaintIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
     } = getState();
-    const officerListParam = officers ?? officerList;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedPreventionData = await parsePreventionResponse(res, officerListParam);
+      const updatedPreventionData = await parsePreventionResponse(res, officers);
       dispatch(setPrevention({ prevention: updatedPreventionData }));
     });
   };
