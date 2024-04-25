@@ -82,7 +82,6 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
   const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
 
-
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
     const newAnimalOutcome: AnimalOutcome = {
@@ -240,6 +239,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         amountUsed: "",
         amountUsedErrorMessage: "",
         amountDiscarded: "",
+        amountDiscardedErrorMessage: "",
         reactions: "",
         remainingUse: "",
         injectionMethod: "",
@@ -267,7 +267,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         setDrugAuthorization({
           officer: "",
           date: new Date(),
-        })
+        });
       }
     }
     setDrugs(update);
@@ -313,6 +313,21 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           currentDrug.injectionMethodErrorMessage = "";
         }
         break;
+      case "amountDiscarded":
+        currentDrug.amountDiscarded = drug.amountDiscarded;
+        if (drug.amountDiscarded && !isPositiveNum(drug.amountDiscarded)) {
+          currentDrug.amountDiscardedErrorMessage = "Must be a positive number";
+        } else {
+          currentDrug.amountDiscardedErrorMessage = "";
+        }
+        break;
+      case "discardMethod":
+        currentDrug.discardMethod = drug.discardMethod;
+        break;
+      case "remainingUse":
+        currentDrug.remainingUse = drug.remainingUse;
+        break;
+
       default:
     }
     const update = [...otherDrugs, currentDrug];
@@ -344,6 +359,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     } else {
       drug.injectionMethodErrorMessage = "";
     }
+    if (drug.amountDiscarded && !isPositiveNum(drug.amountDiscarded)) {
+      drug.amountDiscardedErrorMessage = "Must be a positive number";
+    } else {
+      drug.amountDiscardedErrorMessage = "";
+    }
+
     const items = drugs.filter(({ id }) => id !== drug.id);
     const update = [...items, drug];
 
@@ -360,8 +381,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const updateDrugAuthorizationFromInput = (newDrugAuthorization: DrugAuthorization | undefined, type: string) => {
     let isValid = true;
     if (newDrugAuthorization) {
-      if(type === "officer")
-      {
+      if (type === "officer") {
         if (!newDrugAuthorization?.officer) {
           newDrugAuthorization.officerErrorMessage = "Required";
           isValid = false;
@@ -369,8 +389,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           newDrugAuthorization.officerErrorMessage = "";
         }
       }
-      if(type === "date")
-      {
+      if (type === "date") {
         if (!newDrugAuthorization?.date) {
           newDrugAuthorization.dateErrorMessage = "Required";
           isValid = false;

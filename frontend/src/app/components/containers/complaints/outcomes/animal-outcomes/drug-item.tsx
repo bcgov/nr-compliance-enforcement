@@ -21,7 +21,6 @@ type props = {
 
   officer?: string;
   date?: Date;
-
 };
 
 export const DrugItem: FC<props> = ({
@@ -40,7 +39,7 @@ export const DrugItem: FC<props> = ({
   const drugs = useAppSelector(selectDrugs);
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(complaintData?.ownedBy ?? 'COS'));
+  const officers = useAppSelector(selectOfficersByAgencyDropdown(complaintData?.ownedBy ?? "COS"));
 
   const [injectedMethod, setInjectedMethod] = useState("");
   const [remaining, setRemaining] = useState("");
@@ -105,12 +104,12 @@ export const DrugItem: FC<props> = ({
       </Row>
       <Row>
         <Col md={6}>
-          <span className="comp-fake-label">Fate of remaining drug in vial</span> {remaining}
+          <span className="comp-fake-label">Fate of remaining drug in vial </span> {remaining}
         </Col>
         <Col md={3}>
           {remainingUse === "DISC" && (
             <>
-              <span className="comp-fake-label">Amount discarded</span> {amountDiscarded}ml
+              <span className="comp-fake-label">Amount discarded</span> {amountDiscarded} {amountDiscarded ? "ml" : ""}
             </>
           )}
         </Col>
@@ -129,7 +128,10 @@ export const DrugItem: FC<props> = ({
             data-initials-sm={getAvatarInitials(assignedOfficer())}
             className="comp-orange-avatar-sm comp-details-inner-content"
           >
-            <span id="comp-review-required-officer" className="comp-padding-left-xs">
+            <span
+              id="comp-review-required-officer"
+              className="comp-padding-left-xs"
+            >
               {assignedOfficer()}
             </span>
           </div>

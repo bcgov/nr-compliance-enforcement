@@ -1,6 +1,6 @@
 export interface DrugUsed {
   id: number;
-  
+
   vial: string;
   vialErrorMessage: string;
   drug: string;
@@ -8,6 +8,7 @@ export interface DrugUsed {
   amountUsed: string;
   amountUsedErrorMessage: string;
   amountDiscarded: string;
+  amountDiscardedErrorMessage: string;
 
   injectionMethod: string;
   injectionMethodErrorMessage: string;
