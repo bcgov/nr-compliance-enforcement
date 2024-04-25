@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ComplaintsPublisherService } from './complaints-publisher.service';
-import { StagingComplaintsApiService } from '../staging-complaints-api-service/staging-complaints-api-service.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ComplaintsPublisherService } from "./complaints-publisher.service";
+import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 
-describe('ComplaintsPublisherService', () => {
+describe("ComplaintsPublisherService", () => {
   let service: ComplaintsPublisherService;
 
   beforeEach(async () => {
@@ -10,12 +10,10 @@ describe('ComplaintsPublisherService', () => {
       providers: [ComplaintsPublisherService, StagingComplaintsApiService],
     }).compile();
 
-    service = module.get<ComplaintsPublisherService>(
-      ComplaintsPublisherService,
-    );
+    service = module.get<ComplaintsPublisherService>(ComplaintsPublisherService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });
