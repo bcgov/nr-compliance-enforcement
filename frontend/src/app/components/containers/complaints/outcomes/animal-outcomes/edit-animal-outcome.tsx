@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -76,16 +76,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   );
   const [outcome, setOutcome] = useState<Option | undefined>(animalOutcomeItemData?.outcome);
   const [outcomeOfficer, setOutcomeOfficer] = useState<Option | undefined>(animalOutcomeItemData?.officer);
-  const [outcomeDate, setOutcomeDate] = useState<Date | undefined>();
+  const [outcomeDate, setOutcomeDate] = useState<Date | undefined>(animalOutcomeItemData?.date);
 
   const [speciesErrorMessage, setSpeciesErrorMessage] = useState<string>("");
   const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
   const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
 
-  useEffect(() => {
-    const date = animalOutcomeItemData?.date ? new Date(animalOutcomeItemData?.date) : new Date();
-    setOutcomeDate(date);
-  }, [animalOutcomeItemData]);
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
@@ -268,8 +264,10 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       });
     if (update.length === 0) {
       if (drugAuthorization) {
-        drugAuthorization.officerErrorMessage = "";
-        drugAuthorization.dateErrorMessage = "";
+        setDrugAuthorization({
+          officer: "",
+          date: new Date(),
+        })
       }
     }
     setDrugs(update);
@@ -352,25 +350,36 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     setDrugs(update);
   };
 
-  const updateDrugAuthorization = (drugAuthorization: DrugAuthorization | undefined) => {
+  const updateDrugAuthorization = (newDrugAuthorization: DrugAuthorization | undefined) => {
     let isValid = true;
-    if (drugAuthorization) {
-      if (!drugAuthorization?.officer) {
-        drugAuthorization.officerErrorMessage = "Required";
-        isValid = false;
-      } else {
-        drugAuthorization.officerErrorMessage = "";
+    isValid = updateDrugAuthorizationFromInput(newDrugAuthorization, "officer");
+    isValid = updateDrugAuthorizationFromInput(newDrugAuthorization, "date") && isValid;
+    return isValid;
+  };
+
+  const updateDrugAuthorizationFromInput = (newDrugAuthorization: DrugAuthorization | undefined, type: string) => {
+    let isValid = true;
+    if (newDrugAuthorization) {
+      if(type === "officer")
+      {
+        if (!newDrugAuthorization?.officer) {
+          newDrugAuthorization.officerErrorMessage = "Required";
+          isValid = false;
+        } else {
+          newDrugAuthorization.officerErrorMessage = "";
+        }
       }
-      if (!drugAuthorization?.date) {
-        drugAuthorization.dateErrorMessage = "Required";
-        isValid = false;
-      } else {
-        drugAuthorization.dateErrorMessage = "";
+      if(type === "date")
+      {
+        if (!newDrugAuthorization?.date) {
+          newDrugAuthorization.dateErrorMessage = "Required";
+          isValid = false;
+        } else {
+          newDrugAuthorization.dateErrorMessage = "";
+        }
       }
-    } else {
-      isValid = false;
+      setDrugAuthorization(newDrugAuthorization);
     }
-    setDrugAuthorization(drugAuthorization);
     return isValid;
   };
 
@@ -396,7 +405,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
           <AddDrugAuthorization
             drugAuthorization={drugAuthorization}
             agency={complaintData?.ownedBy ?? "COS"}
-            update={updateDrugAuthorization}
+            update={updateDrugAuthorizationFromInput}
           />
         </>
       );
@@ -423,6 +432,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     }
 
     if (drugs.length > 0) {
+      let isDrugItemValid = true;
       from(drugs)
         .orderBy((item) => item.id)
         .toArray()
@@ -434,11 +444,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
             !isPositiveNum(item.amountUsed) ||
             !item.injectionMethod
           ) {
-            isValid = false;
+            isDrugItemValid = false;
           }
           updateDrug(item);
         });
-      isValid = updateDrugAuthorization(drugAuthorization);
+      isValid = updateDrugAuthorization(drugAuthorization) && isDrugItemValid;
     }
 
     if (outcome) {
