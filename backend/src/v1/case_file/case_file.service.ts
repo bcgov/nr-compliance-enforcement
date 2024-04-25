@@ -8,7 +8,7 @@ import { AxiosResponse, AxiosError } from "axios";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
-import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
+import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete-equipment-dto";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
