@@ -4,13 +4,13 @@ import { Person } from "../../person/entities/person.entity";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { PersonComplaintXrefCode } from "../../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 
-export class PersonComplaintXrefDto
-{
+export class PersonComplaintXrefDto {
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "System generated unique key for a person complaint relationship. This key should never be exposed to users via any system utilizing the tables.",
+    description:
+      "System generated unique key for a person complaint relationship. This key should never be exposed to users via any system utilizing the tables.",
   })
-  public person_complaint_xref_guid: UUID
+  public person_complaint_xref_guid: UUID;
 
   @ApiProperty({
     example: "mburns",
@@ -54,6 +54,9 @@ export class PersonComplaintXrefDto
   })
   public person_complaint_xref_code: PersonComplaintXrefCode;
 
-  @ApiProperty({ example: "True", description: "A boolean indicator to determine if the person and a complaint is active." })
+  @ApiProperty({
+    example: "True",
+    description: "A boolean indicator to determine if the person and a complaint is active.",
+  })
   public active_ind: boolean;
 }

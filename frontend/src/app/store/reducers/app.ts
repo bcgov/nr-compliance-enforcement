@@ -59,18 +59,12 @@ export const toggleLoading = (loading: boolean) => ({
   payload: loading,
 });
 
-export const toggleNotification = (
-  type: "success" | "info" | "warning" | "error",
-  message: string
-) => ({
+export const toggleNotification = (type: "success" | "info" | "warning" | "error", message: string) => ({
   type: ActionTypes.TOGGLE_NOTIFICATION,
   payload: { type, message },
 });
 
-export const toggleToast = (
-  type: "success" | "info" | "warning" | "error",
-  message: string
-) => ({
+export const toggleToast = (type: "success" | "info" | "warning" | "error", message: string) => ({
   type: ActionTypes.TOGGLE_NOTIFICATION,
   payload: { type, message },
 });
@@ -96,8 +90,7 @@ export const openModal = ({
   modalSize,
   hideCallback = null,
   modalIsStatic = false,
-}: ModalProperties) => (
-  {
+}: ModalProperties) => ({
   type: ActionTypes.SHOW_MODAL,
   modalType,
   callback,
@@ -127,10 +120,7 @@ export const isSidebarOpen = (state: RootState) => state.app.isSidebarOpen;
 
 export const profileInitials = (state: RootState) => {
   const { profile } = state.app;
-  return `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(
-    0,
-    1
-  )}`;
+  return `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(0, 1)}`;
 };
 
 export const userGuid = (state: RootState) => {
@@ -139,7 +129,9 @@ export const userGuid = (state: RootState) => {
 };
 
 export const userId = (state: RootState) => {
-  const { profile: { idir_username } } = state.app;
+  const {
+    profile: { idir_username },
+  } = state.app;
   return idir_username as string;
 };
 
@@ -176,9 +168,7 @@ export const selectModalOpenState = (state: RootState): boolean => {
   return app.modalIsOpen;
 };
 
-export const selectModalSize = (
-  state: RootState
-): "sm" | "lg" | "xl" | undefined => {
+export const selectModalSize = (state: RootState): "sm" | "lg" | "xl" | undefined => {
   const { app } = state;
   return app.modalSize;
 };
@@ -217,7 +207,7 @@ export const isLoading = (state: RootState) => {
 export const selectDefaultPageSize = (state: RootState): any => {
   const { app } = state;
   const configuration = app.configurations?.configurations?.find(
-    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode
+    (record) => Configurations.DEFAULT_PAGE_SIZE === record.configurationCode,
   );
   if (configuration?.configurationValue) {
     return +configuration.configurationValue;
@@ -229,7 +219,7 @@ export const selectDefaultPageSize = (state: RootState): any => {
 export const selectMaxFileSize = (state: RootState): any => {
   const { app } = state;
   const configuration = app.configurations?.configurations?.find(
-    (record) => Configurations.MAX_FILES_SIZE === record.configurationCode
+    (record) => Configurations.MAX_FILES_SIZE === record.configurationCode,
   );
   if (configuration?.configurationValue) {
     return +configuration.configurationValue;
@@ -244,13 +234,13 @@ export const selectNotification = (state: RootState): NotificationState => {
   return notifications;
 };
 
-export const selectOfficerAgency = (state: RootState): string => { 
+export const selectOfficerAgency = (state: RootState): string => {
   const {
     profile: { agency },
   } = state.app;
 
-  return agency
-}
+  return agency;
+};
 
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
@@ -259,14 +249,11 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
   if (token) {
     try {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
-      const { given_name, family_name, email, idir_user_guid, idir_username } =
-        decoded;
+      const { given_name, family_name, email, idir_user_guid, idir_username } = decoded;
       let idir_user_guid_transformed: UUID;
       idir_user_guid_transformed = idir_user_guid as UUID;
 
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
-      );
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
       const response = await get<Officer>(dispatch, parameters);
 
       let office = "";
@@ -279,7 +266,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       if (response.office_guid !== null) {
         const {
           office_guid: { cos_geo_org_unit: unit, agency_code: agencyCode },
-          person_guid: { person_guid }
+          person_guid: { person_guid },
         } = response;
 
         office = unit.office_location_code;
@@ -287,7 +274,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         zone = unit.zone_code;
         zoneDescription = unit.zone_name;
         agency = agencyCode.agency_code;
-        personGuid = person_guid
+        personGuid = person_guid;
       }
 
       const profile: Profile = {
@@ -301,7 +288,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         zone: zone,
         zoneDescription: zoneDescription,
         agency,
-        personGuid
+        personGuid,
       };
 
       dispatch(setTokenProfile(profile));
@@ -322,9 +309,7 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
       const { idir_username } = decoded;
 
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`
-      );
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
       const response = await get<Officer>(dispatch, parameters);
 
       if (response.office_guid !== null) {
@@ -350,16 +335,14 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
 // Get list of the officers and update store
 export const getConfigurations = (): AppThunk => async (dispatch) => {
   try {
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/configuration/`
-    );
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/configuration/`);
     const response = await get<Array<ConfigurationType>>(dispatch, parameters);
 
     if (response && from(response).any()) {
       dispatch(
         setConfigurations({
           configurations: response,
-        })
+        }),
       );
     }
   } catch (error) {
@@ -371,15 +354,14 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
   try {
     const state = store.getState();
     //Get previous codeTableVersion from store
-    const { app: { codeTableVersion: {
-      complaintManagement: prevComplaint,
-      caseManagement: prevCase
-    } } } = state;
+    const {
+      app: {
+        codeTableVersion: { complaintManagement: prevComplaint, caseManagement: prevCase },
+      },
+    } = state;
 
     //Call new codeTableVersion from api
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/configuration/CDTABLEVER`
-    );
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/configuration/CDTABLEVER`);
     const response = await get<CodeTableVersionState>(dispatch, parameters);
 
     if (response) {
@@ -439,14 +421,14 @@ const initialState: AppState = {
     complaintManagement: {
       configurationCode: "",
       configurationValue: "",
-      activeInd: true
+      activeInd: true,
     },
     caseManagement: {
       configurationCode: "",
       configurationValue: "",
-      activeInd: true
-    }
-  }
+      activeInd: true,
+    },
+  },
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -465,7 +447,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
         agency: payload.agency,
-        personGuid: payload.personGuid
+        personGuid: payload.personGuid,
       };
 
       return { ...state, profile };
@@ -477,7 +459,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SHOW_MODAL: {
       const {
         callback,
-        
+
         data,
         hideCallback,
         modalIsStatic,

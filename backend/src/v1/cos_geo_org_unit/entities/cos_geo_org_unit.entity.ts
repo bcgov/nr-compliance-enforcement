@@ -48,8 +48,6 @@ export class CosGeoOrgUnit {
   area_name: string;
 
   constructor(zone_code: string) {
-    this.zone_code = zone_code;    
+    this.zone_code = zone_code;
   }
 }
-
-

@@ -15,15 +15,9 @@ type Props = {
 };
 
 export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
-  const areaCodes = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.AREA_CODES)
-  );
-  const statusCodes = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS)
-  );
-  const violationCodes = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS)
-  );
+  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
+  const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
+  const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -49,7 +43,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     return code.areaName;
   };
 
-    const getStatusDescription = (input: string): string => {
+  const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
     return code.longDescription;
   };
@@ -66,12 +60,9 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
         person: { firstName, lastName },
       } = officer;
 
-      const firstInitial =
-        firstName.length > 0 ? firstName.substring(0, 1) : "";
+      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
 
-      return firstInitial.length > 0
-        ? `${firstInitial}. ${lastName}`
-        : lastName;
+      return firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
     }
 
     return "";
@@ -84,8 +75,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
         person: { firstName, lastName },
       } = officer;
 
-      const firstInitial =
-        firstName.length > 0 ? firstName.substring(0, 1) : "";
+      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
       const lastInitial = lastName.length > 0 ? lastName.substring(0, 1) : "";
       const initials = firstInitial + lastInitial;
 
@@ -100,10 +90,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const location = getLocationName(locationCode);
 
-  const statusButtonClass =
-    status === "CLOSED"
-      ? "badge comp-status-badge-closed"
-      : "badge comp-status-badge-open";
+  const statusButtonClass = status === "CLOSED" ? "badge comp-status-badge-closed" : "badge comp-status-badge-open";
 
   const inProgressFlag = isInProgress ? "In Progress" : "";
 
@@ -130,15 +117,16 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     <>
       <tr
         key={id}
-        className={`${isExpandedClass} ${
-          isRowHovered ? "comp-table-row-hover-style" : ""
-        }`}
+        className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
           className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <Link to={`/complaint/ERS/${id}`} id={id}>
+          <Link
+            to={`/complaint/ERS/${id}`}
+            id={id}
+          >
             {id}
           </Link>
         </td>
@@ -188,9 +176,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`sortableHeader comp-cell-width-75 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div className={statusButtonClass}>
-            {getStatusDescription(status)}
-          </div>
+          <div className={statusButtonClass}>{getStatusDescription(status)}</div>
         </td>
         <td
           className={`comp-cell-width-130 ${isExpandedClass}`}
@@ -211,14 +197,10 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 zone={zone ?? ""}
                 agency_code={ownedBy}
               />
-              <span className={!isExpanded ? "comp-table-update-date" : ""}>
-                {updatedOnDateTime}
-              </span>
+              <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
             </div>
           )}
-          <span className={!isExpanded ? "comp-table-update-date" : ""}>
-            {updatedOnDateTime}
-          </span>
+          <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
         </td>
       </tr>
       {isExpanded && (
@@ -237,7 +219,10 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           >
             {truncatedComplaintDetailText}
           </td>
-          <td onClick={toggleExpand} className="comp-cell-child-expanded" />
+          <td
+            onClick={toggleExpand}
+            className="comp-cell-child-expanded"
+          />
           <td
             onClick={toggleExpand}
             className="comp-cell-expanded-truncated comp-cell-child-expanded"
@@ -250,10 +235,11 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             className="comp-cell-child-expanded comp-cell-child-actions"
           >
             <div className="comp-view-complaint-details-button">
-              <Link to={`/complaint/ERS/${id}`} id={id}>
-                <span className="badge comp-view-complaint-badge">
-                  View Details
-                </span>
+              <Link
+                to={`/complaint/ERS/${id}`}
+                id={id}
+              >
+                <span className="badge comp-view-complaint-badge">View Details</span>
               </Link>
               <ComplaintActionItems
                 complaint_identifier={id}

@@ -46,7 +46,7 @@ import { AutomapperModule } from "@automapper/nestjs";
     CodeTableModule,
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,
-    AutomapperModule
+    AutomapperModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],

@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ComplaintTypeCodeService } from './complaint_type_code.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { ComplaintTypeCode } from './entities/complaint_type_code.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ComplaintTypeCodeService } from "./complaint_type_code.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { ComplaintTypeCode } from "./entities/complaint_type_code.entity";
 
-describe('ComplaintTypeCodeService', () => {
+describe("ComplaintTypeCodeService", () => {
   let service: ComplaintTypeCodeService;
 
   beforeEach(async () => {
@@ -12,16 +12,15 @@ describe('ComplaintTypeCodeService', () => {
         ComplaintTypeCodeService,
         {
           provide: getRepositoryToken(ComplaintTypeCode),
-          useValue: {
-
-          },
-        },],
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<ComplaintTypeCodeService>(ComplaintTypeCodeService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

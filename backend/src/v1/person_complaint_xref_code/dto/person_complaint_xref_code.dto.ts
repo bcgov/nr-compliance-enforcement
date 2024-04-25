@@ -1,24 +1,36 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 
-export class PersonComplaintXrefCodeDto 
-{
+export class PersonComplaintXrefCodeDto {
   @ApiProperty({
     example: "ASSIGNEE",
     description: "A human readable code used to identify a relationship type between a person and a complaint.",
   })
   person_complaint_xref_code: string;
 
-  @ApiProperty({ example: "Assignee", description: "The short description of the relationship type between a person and a complaint." })
+  @ApiProperty({
+    example: "Assignee",
+    description: "The short description of the relationship type between a person and a complaint.",
+  })
   short_description: string;
 
-  @ApiProperty({ example: "Assignee", description: "The long description of the relationship type between a person and a complaint." })
+  @ApiProperty({
+    example: "Assignee",
+    description: "The long description of the relationship type between a person and a complaint.",
+  })
   long_description: string;
 
-  @ApiProperty({ example: "1", description: "The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list." })
+  @ApiProperty({
+    example: "1",
+    description:
+      "The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list.",
+  })
   display_order: number;
 
-  @ApiProperty({ example: "True", description: "A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active." })
+  @ApiProperty({
+    example: "True",
+    description: "A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active.",
+  })
   active_ind: boolean;
 
   @ApiProperty({

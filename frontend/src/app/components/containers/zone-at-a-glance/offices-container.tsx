@@ -7,10 +7,7 @@ type Props = {
   allegationOpenComplaintsOfficeStats: OfficeStats[];
 };
 
-export const OfficesContainer: FC<Props> = ({
-  hwcrOpenComplaintsOfficeStats,
-  allegationOpenComplaintsOfficeStats,
-}) => {
+export const OfficesContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStats, allegationOpenComplaintsOfficeStats }) => {
   return (
     <>
       {hwcrOpenComplaintsOfficeStats.map((item, index) => {
@@ -19,9 +16,7 @@ export const OfficesContainer: FC<Props> = ({
           <OfficeContainer
             key={item.name}
             hwcrOpenComplaintsOfficeStat={item}
-            allegationOpenComplaintsOfficeStat={
-              allegationOpenComplaintsOfficeStats[index]
-            }
+            allegationOpenComplaintsOfficeStat={allegationOpenComplaintsOfficeStats[index]}
           />
         );
       })}

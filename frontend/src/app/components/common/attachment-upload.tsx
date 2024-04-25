@@ -5,9 +5,7 @@ type Props = {
   onFileSelect: (selectedFile: FileList) => void;
 };
 
-export const AttachmentUpload: FC<Props> = ({
-   onFileSelect,
-}) => {
+export const AttachmentUpload: FC<Props> = ({ onFileSelect }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       onFileSelect(event.target.files);

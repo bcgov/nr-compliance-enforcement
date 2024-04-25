@@ -1,14 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  Entity,
-  Column,
-  JoinColumn,
-  PrimaryColumn,
-  Index,
-  ManyToOne,
-  OneToOne,
-  OneToMany,
-} from "typeorm";
+import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne, OneToOne, OneToMany } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
@@ -28,8 +19,7 @@ export class Complaint {
 
   @ApiProperty({
     example: "COS",
-    description:
-      "The organization code of the organization that reported the complaint",
+    description: "The organization code of the organization that reported the complaint",
   })
   @ManyToOne(() => ReportedByCode, { nullable: true })
   @JoinColumn({ name: "reported_by_code" })
@@ -37,8 +27,7 @@ export class Complaint {
 
   @ApiProperty({
     example: "COS",
-    description:
-      "The organization code of the organization that currently owns the complaint",
+    description: "The organization code of the organization that currently owns the complaint",
   })
   @ManyToOne(() => AgencyCode)
   @JoinColumn({ name: "owned_by_agency_code" })
@@ -54,8 +43,7 @@ export class Complaint {
 
   @ApiProperty({
     example: "DCC",
-    description:
-      "The geographical organization code of the organization that currently owns the complaint",
+    description: "The geographical organization code of the organization that currently owns the complaint",
   })
   @ManyToOne(() => GeoOrganizationUnitCode)
   @JoinColumn({ name: "geo_organization_unit_code" })
@@ -63,10 +51,9 @@ export class Complaint {
 
   @ApiProperty({
     example: "DCC",
-    description:
-      "The geographical organization code of the organization that currently owns the complaint",
+    description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  @OneToOne(() => CosGeoOrgUnit, { cascade: true})
+  @OneToOne(() => CosGeoOrgUnit, { cascade: true })
   @JoinColumn({ name: "geo_organization_unit_code" })
   cos_geo_org_unit: CosGeoOrgUnit;
 
@@ -74,10 +61,7 @@ export class Complaint {
     example: "DCC",
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  @OneToMany(
-    () => PersonComplaintXref,
-    (person_complaint_xref) => person_complaint_xref.complaint_identifier
-  )
+  @OneToMany(() => PersonComplaintXref, (person_complaint_xref) => person_complaint_xref.complaint_identifier)
   person_complaint_xref: PersonComplaintXref[];
 
   @ApiProperty({
@@ -175,8 +159,7 @@ export class Complaint {
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",
-    description:
-      "The text explaining the reason for referral and other details",
+    description: "The text explaining the reason for referral and other details",
   })
   @Column({ length: 120, nullable: true })
   reported_by_other_text: string;

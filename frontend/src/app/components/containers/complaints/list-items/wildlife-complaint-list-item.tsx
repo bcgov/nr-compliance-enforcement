@@ -13,18 +13,10 @@ type Props = {
 };
 
 export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
-  const areaCodes = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.AREA_CODES)
-  );
-  const statusCodes = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS)
-  );
-  const natureOfComplaints = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT)
-  );
-  const speciesCodes = useAppSelector(
-    selectCodeTable(CODE_TABLE_TYPES.SPECIES)
-  );
+  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
+  const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
+  const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
+  const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
 
   const [isExpanded, setIsExpanded] = useState(false); // used to indicate if the row is in an expanded state or not (row is expanded/contracted when click)
   const [isRowHovered, setIsRowHovered] = useState(false); // we want to apply the hover highlighting to the parent row when the expanded child row is hovered over
@@ -56,9 +48,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
   };
 
   const getNatureOfComplaint = (input: string): string => {
-    const code = natureOfComplaints.find(
-      (item) => item.natureOfComplaint === input
-    );
+    const code = natureOfComplaints.find((item) => item.natureOfComplaint === input);
     return code.longDescription;
   };
 
@@ -74,12 +64,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         person: { firstName, lastName },
       } = officer;
 
-      const firstInitial =
-        firstName.length > 0 ? firstName.substring(0, 1) : "";
+      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
 
-      return firstInitial.length > 0
-        ? `${firstInitial}. ${lastName}`
-        : lastName;
+      return firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
     }
 
     return "";
@@ -92,8 +79,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         person: { firstName, lastName },
       } = officer;
 
-      const firstInitial =
-        firstName.length > 0 ? firstName.substring(0, 1) : "";
+      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
       const lastInitial = lastName.length > 0 ? lastName.substring(0, 1) : "";
       const initials = firstInitial + lastInitial;
 
@@ -111,10 +97,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const location = getLocationName(locationCode);
 
-  const statusButtonClass =
-    status === "CLOSED"
-      ? "badge comp-status-badge-closed"
-      : "badge comp-status-badge-open";
+  const statusButtonClass = status === "CLOSED" ? "badge comp-status-badge-closed" : "badge comp-status-badge-open";
 
   const toggleExpand = () => {
     if (isExpanded) {
@@ -139,15 +122,16 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
     <>
       <tr
         key={id}
-        className={`${isExpandedClass} ${
-          isRowHovered ? "comp-table-row-hover-style" : ""
-        }`}
+        className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
           className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <Link to={`/complaint/HWCR/${id}`} id={id}>
+          <Link
+            to={`/complaint/HWCR/${id}`}
+            id={id}
+          >
             {id}
           </Link>
         </td>
@@ -167,7 +151,10 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`comp-cell-width-130 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <button type="button" className="btn btn-primary comp-species-btn">
+          <button
+            type="button"
+            className="btn btn-primary comp-species-btn"
+          >
             {species}
           </button>
         </td>
@@ -187,9 +174,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`comp-cell-width-75 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div className={statusButtonClass}>
-            {getStatusDescription(status)}
-          </div>
+          <div className={statusButtonClass}>{getStatusDescription(status)}</div>
         </td>
         <td
           className={`comp-cell-width-130 ${isExpandedClass}`}
@@ -210,14 +195,10 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 zone={zone ?? ""}
                 agency_code={ownedBy}
               />
-              <span className={!isExpanded ? "comp-table-update-date" : ""}>
-                {updatedOnDateTime}
-              </span>
+              <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
             </div>
           )}
-          <span className={!isExpanded ? "comp-table-update-date" : ""}>
-            {updatedOnDateTime}
-          </span>
+          <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
         </td>
       </tr>
       {isExpanded && (
@@ -236,7 +217,10 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           >
             {truncatedComplaintDetailText}
           </td>
-          <td onClick={toggleExpand} className="comp-cell-child-expanded" />
+          <td
+            onClick={toggleExpand}
+            className="comp-cell-child-expanded"
+          />
           <td
             onClick={toggleExpand}
             className="comp-cell-expanded-truncated comp-cell-child-expanded"
@@ -244,16 +228,20 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           >
             {truncatedLocationDetailedText}
           </td>
-          <td onClick={toggleExpand} className="comp-cell-child-expanded" />
+          <td
+            onClick={toggleExpand}
+            className="comp-cell-child-expanded"
+          />
           <td
             colSpan={2}
             className="comp-cell-child-expanded comp-cell-child-actions"
           >
             <div className="comp-cell-action-icon comp-view-complaint-details-button">
-              <Link to={`/complaint/HWCR/${id}`} id={id}>
-                <span className="badge comp-view-complaint-badge">
-                  View Details
-                </span>
+              <Link
+                to={`/complaint/HWCR/${id}`}
+                id={id}
+              >
+                <span className="badge comp-view-complaint-badge">View Details</span>
               </Link>
               <ComplaintActionItems
                 complaint_identifier={id}

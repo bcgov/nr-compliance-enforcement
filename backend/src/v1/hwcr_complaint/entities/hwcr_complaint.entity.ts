@@ -1,16 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
-import {
-  Entity,
-  Column,
-  OneToOne,
-  JoinColumn,
-  Unique,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-} from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { SpeciesCode } from "../../species_code/entities/species_code.entity";
 import { HwcrComplaintNatureCode } from "../../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AttractantHwcrXref } from "../../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
@@ -44,24 +35,19 @@ export class HwcrComplaint {
 
   @ApiProperty({
     example: "HUMINJ",
-    description:
-      "A human readable code used to identify the nature of the Human Wildlife Conflict.",
+    description: "A human readable code used to identify the nature of the Human Wildlife Conflict.",
   })
   @ManyToOne(() => HwcrComplaintNatureCode, { nullable: true })
   @JoinColumn({ name: "hwcr_complaint_nature_code" })
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
 
-  @OneToMany(
-    () => AttractantHwcrXref,
-    (attractant_hwcr_xref) => attractant_hwcr_xref.hwcr_complaint_guid
-  )
+  @OneToMany(() => AttractantHwcrXref, (attractant_hwcr_xref) => attractant_hwcr_xref.hwcr_complaint_guid)
   @JoinColumn({ name: "hwcr_complaint_guid" })
   attractant_hwcr_xref: AttractantHwcrXref[];
 
   @ApiProperty({
     example: "Witnessed individual dumping garbage on crown land",
-    description:
-      'Provides a more detailed description when the attractant of type "OTHER" is included.',
+    description: 'Provides a more detailed description when the attractant of type "OTHER" is included.',
   })
   @Column({ length: 4000, nullable: true })
   other_attractants_text: string;
@@ -75,8 +61,7 @@ export class HwcrComplaint {
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
-    description:
-      "The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.",
+    description: "The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.",
   })
   @Column()
   create_utc_timestamp: Date;
@@ -90,8 +75,7 @@ export class HwcrComplaint {
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",
-    description:
-      "The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.",
+    description: "The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.",
   })
   @Column()
   update_utc_timestamp: Date;
@@ -105,7 +89,7 @@ export class HwcrComplaint {
     create_user_id?: string,
     create_utc_timestamp?: Date,
     update_user_id?: string,
-    update_utc_timestamp?: Date
+    update_utc_timestamp?: Date,
   ) {
     this.complaint_identifier = complaint_identifier;
     this.species_code = species_code;

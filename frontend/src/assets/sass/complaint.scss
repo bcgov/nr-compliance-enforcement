@@ -47,7 +47,7 @@ p {
     align-items: center;
     font-size: 16px;
 
-    .comp-details-content-label+div {
+    .comp-details-content-label + div {
       margin-top: 10px;
     }
 
@@ -192,7 +192,6 @@ p {
     font-size: 14px;
   }
 
-
   .comp-box-actions button span {
     padding-right: 8px;
   }
@@ -289,7 +288,7 @@ p {
 
 .comp-view-complaint-details-button span.comp-view-complaint-badge:hover {
   color: $white;
-  background-color: $bc-gov-primary
+  background-color: $bc-gov-primary;
 }
 
 .comp-status-badge-open {
@@ -395,8 +394,6 @@ p {
   }
 }
 
-
-
 .comp-complaint-details-block {
   margin-left: 24px;
   margin-right: 24px;
@@ -429,7 +426,7 @@ p {
     margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
-  }  
+  }
 
   .comp-details-content-label {
     padding-right: 25px;
@@ -551,7 +548,7 @@ p {
   button svg {
     vertical-align: text-top;
     margin-top: 1px;
-   }
+  }
 }
 
 .comp-details-right-column {
@@ -637,7 +634,7 @@ p {
 
   .checkbox-label {
     max-width: 100%;
-    color: black
+    color: black;
   }
 
   .check-spacing {
@@ -861,7 +858,7 @@ p {
   border-collapse: initial;
   margin-left: 12px;
 
-  > :not(caption)>*>* {
+  > :not(caption) > * > * {
     background: $gray-500;
     background-color: $gray-200;
     border-color: $gray-500;
@@ -992,7 +989,7 @@ p {
   border-bottom: none !important;
 }
 
-.comp-cell-parent-expanded:hover+tr {
+.comp-cell-parent-expanded:hover + tr {
   background-color: $gray-110;
 }
 
@@ -1388,13 +1385,13 @@ p {
   padding: 24px;
 }
 
-.comp-outcome-report-file-review>.comp-details-content-label {
+.comp-outcome-report-file-review > .comp-details-content-label {
   padding-right: 25px;
   margin-bottom: 16px;
   display: inline-block;
 }
 
-.comp-outcome-report-file-review>.comp-details-content {
+.comp-outcome-report-file-review > .comp-details-content {
   margin-bottom: 16px;
   display: inline-block;
 
@@ -1444,4 +1441,3 @@ p {
   cursor: not-allowed;
   pointer-events: all;
 }
-

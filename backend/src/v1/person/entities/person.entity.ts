@@ -48,9 +48,6 @@ export class Person {
   @OneToOne(() => Officer, (officer) => officer.person_guid)
   officer: Officer;
 
-  @OneToMany(
-    () => PersonComplaintXref,
-    (personComplaintXref) => personComplaintXref.person_guid
-  )
+  @OneToMany(() => PersonComplaintXref, (personComplaintXref) => personComplaintXref.person_guid)
   personComplaintXrefs: PersonComplaintXref[];
 }

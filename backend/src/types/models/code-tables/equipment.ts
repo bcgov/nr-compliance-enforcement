@@ -1,5 +1,5 @@
 import { BaseCodeTable } from "./code-table";
 
-export interface Equipment extends BaseCodeTable { 
-   equipment: string
+export interface Equipment extends BaseCodeTable {
+  equipment: string;
 }

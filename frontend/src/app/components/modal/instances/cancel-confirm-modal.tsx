@@ -9,11 +9,7 @@ type CancelConfirmProps = {
   cancelConfirmed: () => void;
 };
 
-export const CancelConfirmModal: FC<CancelConfirmProps> = ({
-  close,
-  submit,
-  cancelConfirmed,
-}) => {
+export const CancelConfirmModal: FC<CancelConfirmProps> = ({ close, submit, cancelConfirmed }) => {
   const modalData = useAppSelector(selectModalData);
 
   const { title, description } = modalData;
@@ -40,7 +36,10 @@ export const CancelConfirmModal: FC<CancelConfirmProps> = ({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary" onClick={close}>
+        <Button
+          variant="outline-primary"
+          onClick={close}
+        >
           No, go back
         </Button>
         <Button onClick={closeAndCancel}>Yes, cancel changes</Button>

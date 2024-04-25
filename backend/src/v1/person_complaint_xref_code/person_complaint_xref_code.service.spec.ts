@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PersonComplaintXrefCodeService } from './person_complaint_xref_code.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { dataSourceMockFactory } from '../../../test/mocks/datasource';
-import { PersonComplaintXrefCode } from './entities/person_complaint_xref_code.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { PersonComplaintXrefCodeService } from "./person_complaint_xref_code.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
+import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { PersonComplaintXrefCode } from "./entities/person_complaint_xref_code.entity";
 
-describe('PersonComplaintXrefCodeService', () => {
+describe("PersonComplaintXrefCodeService", () => {
   let service: PersonComplaintXrefCodeService;
 
   beforeEach(async () => {
@@ -14,21 +14,19 @@ describe('PersonComplaintXrefCodeService', () => {
         PersonComplaintXrefCodeService,
         {
           provide: getRepositoryToken(PersonComplaintXrefCode),
-          useValue: {
-
-          },
+          useValue: {},
         },
         {
           provide: DataSource,
-          useFactory: dataSourceMockFactory
-        }
+          useFactory: dataSourceMockFactory,
+        },
       ],
     }).compile();
 
     service = module.get<PersonComplaintXrefCodeService>(PersonComplaintXrefCodeService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

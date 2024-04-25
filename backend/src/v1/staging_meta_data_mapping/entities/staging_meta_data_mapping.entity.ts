@@ -31,10 +31,7 @@ export class StagingMetadataMapping {
   @Column("timestamp without time zone", { name: "update_utc_timestamp" })
   updateUtcTimestamp: Date;
 
-  @ManyToOne(
-    () => EntityCode,
-    (entityCode) => entityCode.stagingMetadataMappings
-  )
+  @ManyToOne(() => EntityCode, (entityCode) => entityCode.stagingMetadataMappings)
   @JoinColumn([{ name: "entity_code", referencedColumnName: "entityCode" }])
   entityCode: EntityCode;
 }

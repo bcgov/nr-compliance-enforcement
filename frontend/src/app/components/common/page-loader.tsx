@@ -11,7 +11,11 @@ export const PageLoader: FC = () => {
   ) : (
     <div className="comp-loader-overlay">
       <div className="comp-overlay-content d-flex align-items-center justify-content-center">
-        <Spinner animation="border" role="loading" id="page-loader" />
+        <Spinner
+          animation="border"
+          role="loading"
+          id="page-loader"
+        />
       </div>
     </div>
   );
