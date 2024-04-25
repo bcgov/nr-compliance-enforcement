@@ -1,10 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import {
-  getComplaintLocationByAddress,
-  selectGeocodedComplaintCoordinates,
-} from "../../store/reducers/complaints";
+import { getComplaintLocationByAddress, selectGeocodedComplaintCoordinates } from "../../store/reducers/complaints";
 
 interface Props {
   value?: string;
@@ -21,12 +18,7 @@ interface AddressOption {
 /**
  *  Component that uses the BC Geocoder to autocomplete address input.
  */
-export const BCGeocoderAutocomplete: FC<Props> = ({
-  value,
-  id,
-  maxResults,
-  parentOnChange,
-}) => {
+export const BCGeocoderAutocomplete: FC<Props> = ({ value, id, maxResults, parentOnChange }) => {
   const [addressOptions, setAddressOptions] = useState<AddressOption[]>([]);
   const [inputValue, setInputValue] = useState<string>(`${value ?? ""}`);
 

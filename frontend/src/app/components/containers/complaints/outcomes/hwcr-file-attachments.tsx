@@ -40,11 +40,10 @@ export const HWCRFileAttachments: FC = () => {
   const [cancelPendingUpload, setCancelPendingUpload] = useState<boolean>(false);
 
   useEffect(() => {
-    if(carouselData.length > 0) {
+    if (carouselData.length > 0) {
       setComponentState(DISPLAY_STATE);
-    }
-    else setComponentState(EDIT_STATE);
-  },[carouselData])
+    } else setComponentState(EDIT_STATE);
+  }, [carouselData]);
 
   const handleSlideCountChange = (count: number) => {
     setOutcomeAttachmentCount(count);
@@ -52,7 +51,7 @@ export const HWCRFileAttachments: FC = () => {
 
   const saveButtonClick = async () => {
     //initial state when there is no attachments
-    if(outcomeAttachmentCount === 0 && carouselData.length === 0) {
+    if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
       setComponentState(EDIT_STATE);
       return;
     }
@@ -67,10 +66,9 @@ export const HWCRFileAttachments: FC = () => {
         setAttachmentsToDelete,
         AttachmentEnum.OUTCOME_ATTACHMENT,
       );
-      if(outcomeAttachmentCount === 0) {
+      if (outcomeAttachmentCount === 0) {
         setComponentState(EDIT_STATE);
-      } 
-      else setComponentState(DISPLAY_STATE);
+      } else setComponentState(DISPLAY_STATE);
     } else {
       ToggleError("Errors in form");
     }
@@ -78,20 +76,19 @@ export const HWCRFileAttachments: FC = () => {
 
   const cancelConfirmed = () => {
     //initial state when there is no attachments
-    if(outcomeAttachmentCount === 0 && carouselData.length === 0) {
+    if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
       setComponentState(EDIT_STATE);
       return;
     }
 
-    if(outcomeAttachmentCount > 0){
+    if (outcomeAttachmentCount > 0) {
       setAttachmentsToAdd([]);
       dispatch(clearAttachments);
       setCancelPendingUpload(true);
     }
-    if(carouselData.length > 0) {
+    if (carouselData.length > 0) {
       setComponentState(DISPLAY_STATE);
-    } 
-    else {
+    } else {
       setComponentState(EDIT_STATE);
     }
     setAttachmentsToDelete([]);
@@ -127,11 +124,17 @@ export const HWCRFileAttachments: FC = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block" id="outcome_attachments_div_id">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome_attachments_div_id"
+    >
       <h6>Outcome attachments ({outcomeAttachmentCount})</h6>
       <div className="comp-outcome-report-complaint-attachments">
         <div className="comp-details-edit-container">
-          <div className="comp-details-edit-column" style={{marginRight: '0px'}}>
+          <div
+            className="comp-details-edit-column"
+            style={{ marginRight: "0px" }}
+          >
             <AttachmentsCarousel
               attachmentType={AttachmentEnum.OUTCOME_ATTACHMENT}
               complaintIdentifier={id}
@@ -144,19 +147,25 @@ export const HWCRFileAttachments: FC = () => {
               onSlideCountChange={handleSlideCountChange}
             />
           </div>
-          {componentState === DISPLAY_STATE && 
-            <div className="comp-details-right-column" style={{marginTop: '24px'}}>
+          {componentState === DISPLAY_STATE && (
+            <div
+              className="comp-details-right-column"
+              style={{ marginTop: "24px" }}
+            >
               <CompTextIconButton
                 buttonClasses="button-text"
                 text="Edit"
                 icon={BsPencil}
-                click={e => setComponentState(EDIT_STATE)}
+                click={(e) => setComponentState(EDIT_STATE)}
               />
             </div>
-          }
+          )}
         </div>
-        {componentState === EDIT_STATE && 
-          <div className="comp-outcome-report-container" style={{marginBottom: '24px'}}>
+        {componentState === EDIT_STATE && (
+          <div
+            className="comp-outcome-report-container"
+            style={{ marginBottom: "24px" }}
+          >
             <div className="comp-outcome-report-actions">
               <Button
                 id="outcome-cancel-button"
@@ -176,7 +185,7 @@ export const HWCRFileAttachments: FC = () => {
               </Button>
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
   );

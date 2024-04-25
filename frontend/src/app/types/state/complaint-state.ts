@@ -7,7 +7,7 @@ import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
   totalCount: number;
-  complaint: WildlifeComplaintDto | AllegationComplaintDto | null
+  complaint: WildlifeComplaintDto | AllegationComplaintDto | null;
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
   mappedItems: MappedComplaintsState;

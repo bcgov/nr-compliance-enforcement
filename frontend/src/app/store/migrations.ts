@@ -13,15 +13,15 @@ const BaseMigration = {
   },
 };
 
-let migration = {...BaseMigration}
+let migration = { ...BaseMigration };
 migration = {
-  ...migration, 
-  ...Migration1, 
-  ...Migration2, 
+  ...migration,
+  ...Migration1,
+  ...Migration2,
   ...Migration3,
   ...AddOutcomeNote,
   ...AddPersonGuidAndOutcomeReview,
-  ...AddEquipment
+  ...AddEquipment,
 };
 
 export default migration;

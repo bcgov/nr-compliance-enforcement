@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateGeoOrgUnitTypeCodeDto } from './dto/create-geo_org_unit_type_code.dto';
-import { UpdateGeoOrgUnitTypeCodeDto } from './dto/update-geo_org_unit_type_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { GeoOrgUnitTypeCode } from './entities/geo_org_unit_type_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateGeoOrgUnitTypeCodeDto } from "./dto/create-geo_org_unit_type_code.dto";
+import { UpdateGeoOrgUnitTypeCodeDto } from "./dto/update-geo_org_unit_type_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { GeoOrgUnitTypeCode } from "./entities/geo_org_unit_type_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class GeoOrgUnitTypeCodeService {
   constructor(
     @InjectRepository(GeoOrgUnitTypeCode)
-    private geoOrgUnitTypeCodeRepository: Repository<GeoOrgUnitTypeCode>
+    private geoOrgUnitTypeCodeRepository: Repository<GeoOrgUnitTypeCode>,
   ) {}
 
   async create(user: CreateGeoOrgUnitTypeCodeDto): Promise<GeoOrgUnitTypeCode> {
@@ -26,7 +26,10 @@ export class GeoOrgUnitTypeCodeService {
     return this.geoOrgUnitTypeCodeRepository.findOneOrFail(id);
   }
 
-  async update(geo_org_unit_type_code: string, updateGeoOrgUnitTypeCodeDto: UpdateGeoOrgUnitTypeCodeDto): Promise<GeoOrgUnitTypeCode> {
+  async update(
+    geo_org_unit_type_code: string,
+    updateGeoOrgUnitTypeCodeDto: UpdateGeoOrgUnitTypeCodeDto,
+  ): Promise<GeoOrgUnitTypeCode> {
     await this.geoOrgUnitTypeCodeRepository.update({ geo_org_unit_type_code }, updateGeoOrgUnitTypeCodeDto);
     return this.findOne(geo_org_unit_type_code);
   }

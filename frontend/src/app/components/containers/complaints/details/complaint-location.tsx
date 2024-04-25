@@ -29,51 +29,46 @@ export const ComplaintLocation: FC<Props> = ({
   draggable,
   onMarkerMove,
   hideMarker,
-  editComponent
+  editComponent,
 }) => {
   const dispatch = useAppDispatch();
-  const { area, coordinates } = useAppSelector(
-    selectComplaintDetails(complaintType),
-  ) as ComplaintDetails;
+  const { area, coordinates } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const [markerPosition, setMarkerPosition] = useState<{
     lat: number;
     lng: number;
-  }>({lat: 0, lng: 0});
+  }>({ lat: 0, lng: 0 });
 
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
   useEffect(() => {
-    if (editComponent && area && coordinates && +coordinates[Coordinates.Latitude] === 0 && +coordinates[Coordinates.Longitude] === 0) {
+    if (
+      editComponent &&
+      area &&
+      coordinates &&
+      +coordinates[Coordinates.Latitude] === 0 &&
+      +coordinates[Coordinates.Longitude] === 0
+    ) {
       // geocode the complaint using the area.  Used in case there are no parentCoordinates
       dispatch(getGeocodedComplaintCoordinates(area));
     }
   }, [area, dispatch, editComponent, coordinates]);
 
-
   useEffect(() => {
     if (parentCoordinates && isWithinBC([parentCoordinates.lng, parentCoordinates.lat])) {
       setMarkerPosition(parentCoordinates);
-    } else if(geocodedComplaintCoordinates?.features)
-      {
-        const lat =
-        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
-            Coordinates.Latitude
-          ] !== undefined
-            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
-                Coordinates.Latitude
-              ]
-            : 0;
-        const lng = geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
-            Coordinates.Longitude
-          ] !== undefined
-            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[
-                Coordinates.Longitude
-              ]
-            : 0;
-            
-          setMarkerPosition({lat: lat, lng: lng});
-        }
+    } else if (geocodedComplaintCoordinates?.features) {
+      const lat =
+        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
+          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
+          : 0;
+      const lng =
+        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
+          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
+          : 0;
+
+      setMarkerPosition({ lat: lat, lng: lng });
+    }
   }, [parentCoordinates, geocodedComplaintCoordinates?.features]);
 
   const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";

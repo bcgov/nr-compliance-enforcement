@@ -18,10 +18,7 @@ export const AgencyBanner: FC = () => {
   };
   const { longDescription: name, agency: code } = selected;
 
-  const agencyNameStyle =
-    name.length > 28
-      ? "comp-organization-nav-long-name"
-      : "comp-organization-nav-name";
+  const agencyNameStyle = name.length > 28 ? "comp-organization-nav-long-name" : "comp-organization-nav-name";
   return (
     <span className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none comp-organization-nav-item">
       <img

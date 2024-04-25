@@ -8,15 +8,15 @@ export class ComplaintStatusCode {
     example: "OPN",
     description: "The complaint status code",
   })
-  @PrimaryColumn({length: 10})
+  @PrimaryColumn({ length: 10 })
   complaint_status_code: string;
 
   @ApiProperty({ example: "Open", description: "The short description of the complaint status code" })
-  @Column({length: 50})
+  @Column({ length: 50 })
   short_description: string;
 
   @ApiProperty({ example: "Open", description: "The short description of the complaint status code" })
-  @Column( {length: 4000, nullable: true} )
+  @Column({ length: 4000, nullable: true })
   long_description: string;
 
   @ApiProperty({ example: "1", description: "The display order of the complaint status code" })
@@ -28,10 +28,10 @@ export class ComplaintStatusCode {
   active_ind: boolean;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that created the complaint",
   })
-  @Column({length: 32})
+  @Column({ length: 32 })
   create_user_id: string;
 
   @ApiProperty({
@@ -42,10 +42,10 @@ export class ComplaintStatusCode {
   create_utc_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that last updated the complaint",
   })
-  @Column({length: 32})
+  @Column({ length: 32 })
   update_user_id: string;
 
   @ApiProperty({

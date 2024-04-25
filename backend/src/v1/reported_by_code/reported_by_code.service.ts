@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateReportedByCodeDto } from './dto/create-reported_by_code.dto';
-import { UpdateReportedByCodeDto } from './dto/update-reported_by_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ReportedByCode } from './entities/reported_by_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateReportedByCodeDto } from "./dto/create-reported_by_code.dto";
+import { UpdateReportedByCodeDto } from "./dto/update-reported_by_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ReportedByCode } from "./entities/reported_by_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class ReportedByCodeService {
   constructor(
     @InjectRepository(ReportedByCode)
-    private reportedByCodeRepository: Repository<ReportedByCode>
+    private reportedByCodeRepository: Repository<ReportedByCode>,
   ) {}
 
   async create(reportedByCode: CreateReportedByCodeDto): Promise<ReportedByCode> {

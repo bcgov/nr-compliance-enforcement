@@ -43,9 +43,6 @@ export class PersonComplaintXrefCode {
   @Column("timestamp without time zone", { name: "update_utc_timestamp" })
   update_utc_timestamp: Date;
 
-  @OneToMany(
-    () => PersonComplaintXref,
-    (personComplaintXref) => personComplaintXref.person_complaint_xref_code
-  )
+  @OneToMany(() => PersonComplaintXref, (personComplaintXref) => personComplaintXref.person_complaint_xref_code)
   personComplaintXrefs: PersonComplaintXref[];
 }

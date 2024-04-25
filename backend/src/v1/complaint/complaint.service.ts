@@ -77,7 +77,7 @@ export class ComplaintService {
     private readonly _codeTableService: CodeTableService,
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
-    private dataSource: DataSource
+    private dataSource: DataSource,
   ) {
     this.mapper = mapper;
 
@@ -137,7 +137,7 @@ export class ComplaintService {
           .createQueryBuilder("allegation")
           .addSelect(
             "GREATEST(complaint.update_utc_timestamp, allegation.update_utc_timestamp)",
-            "_update_utc_timestamp"
+            "_update_utc_timestamp",
           )
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
@@ -153,7 +153,7 @@ export class ComplaintService {
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .addSelect(
             "GREATEST(complaint.update_utc_timestamp,  wildlife.update_utc_timestamp)",
-            "_update_utc_timestamp"
+            "_update_utc_timestamp",
           )
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
           .leftJoin("wildlife.species_code", "species_code")
@@ -211,7 +211,7 @@ export class ComplaintService {
       speciesCode,
       violationCode,
     }: ComplaintFilterParameters,
-    complaintType: COMPLAINT_TYPE
+    complaintType: COMPLAINT_TYPE,
   ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
@@ -292,7 +292,7 @@ export class ComplaintService {
   private _applySearch(
     builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
     complaintType: COMPLAINT_TYPE,
-    query: string
+    query: string,
   ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
     builder.andWhere(
       new Brackets((qb) => {
@@ -404,7 +404,7 @@ export class ComplaintService {
         qb.orWhere("person.last_name ILIKE :query", {
           query: `%${query}%`,
         });
-      })
+      }),
     );
 
     return builder;
@@ -499,7 +499,7 @@ export class ComplaintService {
       .innerJoinAndSelect(
         "complaint.person_complaint_xref",
         "person_complaint_xref",
-        "person_complaint_xref.active_ind = true"
+        "person_complaint_xref.active_ind = true",
       )
       .where("area_code.zone_code = :zone", { zone })
       .andWhere("complaint.complaint_status_code = :status", {
@@ -514,7 +514,7 @@ export class ComplaintService {
 
   private _getTotalAssignedComplaintsByOffice = async (
     complaintType: COMPLAINT_TYPE,
-    office: string
+    office: string,
   ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
@@ -672,7 +672,7 @@ export class ComplaintService {
   };
 
   findAllByType = async (
-    complaintType: COMPLAINT_TYPE
+    complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
     const builder = this._generateQueryBuilder(complaintType);
     const results = await builder.getMany();
@@ -683,14 +683,14 @@ export class ComplaintService {
           return this.mapper.mapArray<AllegationComplaint, AllegationComplaintDto>(
             results as Array<AllegationComplaint>,
             "AllegationComplaint",
-            "AllegationComplaintDto"
+            "AllegationComplaintDto",
           );
         case "HWCR":
         default:
           return this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             results as Array<HwcrComplaint>,
             "HwcrComplaint",
-            "WildlifeComplaintDto"
+            "WildlifeComplaintDto",
           );
       }
     } catch (error) {
@@ -702,11 +702,11 @@ export class ComplaintService {
 
   findById = async (
     id: string,
-    complaintType?: COMPLAINT_TYPE
+    complaintType?: COMPLAINT_TYPE,
   ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto> => {
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
-    try { 
+    try {
       if (complaintType) {
         builder = this._generateQueryBuilder(complaintType);
       } else {
@@ -734,23 +734,23 @@ export class ComplaintService {
             "person.last_name",
           ]);
       }
-  
+
       builder.where("complaint.complaint_identifier = :id", { id });
       const result = await builder.getOne();
-  
+
       switch (complaintType) {
         case "ERS": {
           return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
             result as AllegationComplaint,
             "AllegationComplaint",
-            "AllegationComplaintDto"
+            "AllegationComplaintDto",
           );
         }
         case "HWCR": {
           const hwcr = this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
             result as HwcrComplaint,
             "HwcrComplaint",
-            "WildlifeComplaintDto"
+            "WildlifeComplaintDto",
           );
           return hwcr;
         }
@@ -758,7 +758,7 @@ export class ComplaintService {
           return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
         }
       }
-    } catch (error) { 
+    } catch (error) {
       this.logger.error(error);
     }
   };
@@ -799,7 +799,7 @@ export class ComplaintService {
           .orderBy(sortString, orderBy)
           .addOrderBy(
             "complaint.incident_reported_utc_timestmp",
-            sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC"
+            sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
           );
       }
 
@@ -813,7 +813,7 @@ export class ComplaintService {
           const items = this.mapper.mapArray<AllegationComplaint, AllegationComplaintDto>(
             complaints as Array<AllegationComplaint>,
             "AllegationComplaint",
-            "AllegationComplaintDto"
+            "AllegationComplaintDto",
           );
           results.complaints = items;
           break;
@@ -823,7 +823,7 @@ export class ComplaintService {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             complaints as Array<HwcrComplaint>,
             "HwcrComplaint",
-            "WildlifeComplaintDto"
+            "WildlifeComplaintDto",
           );
 
           results.complaints = items;
@@ -908,7 +908,7 @@ export class ComplaintService {
           const items = this.mapper.mapArray<AllegationComplaint, AllegationComplaintDto>(
             mappedComplaints as Array<AllegationComplaint>,
             "AllegationComplaint",
-            "AllegationComplaintDto"
+            "AllegationComplaintDto",
           );
           results.complaints = items;
           break;
@@ -918,7 +918,7 @@ export class ComplaintService {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             mappedComplaints as Array<HwcrComplaint>,
             "HwcrComplaint",
-            "WildlifeComplaintDto"
+            "WildlifeComplaintDto",
           );
 
           results.complaints = items;
@@ -952,7 +952,7 @@ export class ComplaintService {
         this.logger.log(`Unable to update complaint: ${id} complaint status to ${status}`);
         throw new HttpException(
           `Unable to update complaint: ${id} complaint status to ${status}`,
-          HttpStatus.UNPROCESSABLE_ENTITY
+          HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
     } catch (error) {
@@ -961,7 +961,7 @@ export class ComplaintService {
 
       throw new HttpException(
         `Unable to update complaint: ${id} complaint status to ${status}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   };
@@ -969,7 +969,7 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
+    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
@@ -993,7 +993,7 @@ export class ComplaintService {
       let entity: Complaint | HwcrComplaint | AllegationComplaint = this.mapper.map<ComplaintDto, Complaint>(
         model as ComplaintDto,
         "ComplaintDto",
-        "Complaint"
+        "Complaint",
       );
 
       switch (complaintType) {
@@ -1001,7 +1001,7 @@ export class ComplaintService {
           entity = this.mapper.map<AllegationComplaintDto, AllegationComplaint>(
             model as AllegationComplaintDto,
             "AllegationComplaintDto",
-            "AllegationComplaint"
+            "AllegationComplaint",
           );
           break;
         }
@@ -1010,7 +1010,7 @@ export class ComplaintService {
           entity = this.mapper.map<WildlifeComplaintDto, HwcrComplaint>(
             model as WildlifeComplaintDto,
             "WildlifeComplaintDto",
-            "HwcrComplaint"
+            "HwcrComplaint",
           );
           break;
         }
@@ -1022,7 +1022,7 @@ export class ComplaintService {
       const complaintTable = this.mapper.map<ComplaintDto, UpdateComplaintDto>(
         model as ComplaintDto,
         "ComplaintDto",
-        "UpdateComplaintDto"
+        "UpdateComplaintDto",
       );
 
       //set the audit field
@@ -1045,7 +1045,7 @@ export class ComplaintService {
             const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
               assignee,
               "DelegateDto",
-              "PersonComplaintXrefTable"
+              "PersonComplaintXrefTable",
             );
             converted.create_user_id = idir;
             converted.complaint_identifier = id;
@@ -1058,7 +1058,7 @@ export class ComplaintService {
               const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
                 officer,
                 "DelegateDto",
-                "PersonComplaintXrefTable"
+                "PersonComplaintXrefTable",
               );
 
               converted.create_user_id = idir;
@@ -1124,7 +1124,7 @@ export class ComplaintService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.log(
-        `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`
+        `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`,
       );
       this.logger.log(error.response);
 
@@ -1137,9 +1137,9 @@ export class ComplaintService {
   create = async (
     complaintType: COMPLAINT_TYPE,
     model: WildlifeComplaintDto | AllegationComplaintDto,
-    webeocInd?: boolean
+    webeocInd?: boolean,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
-    this.logger.debug('Creating new complaint');
+    this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
       await queryRunner.manager.query("SELECT nextval('complaint_sequence')").then(function (returnData) {
@@ -1172,7 +1172,7 @@ export class ComplaintService {
       let entity: Complaint = this.mapper.map<ComplaintDto, Complaint>(
         model as ComplaintDto,
         "ComplaintDto",
-        "Complaint"
+        "Complaint",
       );
 
       //-- apply audit user data
@@ -1190,7 +1190,7 @@ export class ComplaintService {
 
         const selectedAssignee = person_complaint_xref.find(
           ({ person_complaint_xref_code: { person_complaint_xref_code }, active_ind }) =>
-            person_complaint_xref_code === "ASSIGNEE" && active_ind
+            person_complaint_xref_code === "ASSIGNEE" && active_ind,
         );
 
         if (selectedAssignee) {
@@ -1269,13 +1269,13 @@ export class ComplaintService {
 
       await queryRunner.commitTransaction();
 
-      return await this.findById(complaintId, complaintType) as WildlifeComplaintDto | AllegationComplaintDto;
+      return (await this.findById(complaintId, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.log(
         `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(
-          model
-        )}`
+          model,
+        )}`,
       );
       this.logger.log(error.response);
       throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);

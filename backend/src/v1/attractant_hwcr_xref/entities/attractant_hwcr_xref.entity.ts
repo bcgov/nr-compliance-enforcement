@@ -2,13 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { AttractantCode } from "../../attractant_code/entities/attractant_code.entity";
 import { HwcrComplaint } from "../../hwcr_complaint/entities/hwcr_complaint.entity";
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class AttractantHwcrXref {
@@ -22,8 +16,7 @@ export class AttractantHwcrXref {
 
   @ApiProperty({
     example: "IDIRmburns",
-    description:
-      "The id of the user that created the attractant hwcr cross reference.",
+    description: "The id of the user that created the attractant hwcr cross reference.",
   })
   @Column({ length: 32 })
   create_user_id: string;
@@ -38,8 +31,7 @@ export class AttractantHwcrXref {
 
   @ApiProperty({
     example: "IDIRmburns",
-    description:
-      "The id of the user that updated the attractant hwcr cross reference.",
+    description: "The id of the user that updated the attractant hwcr cross reference.",
   })
   @Column({ length: 32 })
   update_user_id: string;
@@ -52,10 +44,7 @@ export class AttractantHwcrXref {
   @Column()
   update_utc_timestamp: Date;
 
-  @ManyToOne(
-    () => AttractantCode,
-    (attractant_code) => attractant_code.attractant_code
-  )
+  @ManyToOne(() => AttractantCode, (attractant_code) => attractant_code.attractant_code)
   @JoinColumn({ name: "attractant_code" })
   @ApiProperty({
     example: "INDCAMP",
@@ -63,10 +52,7 @@ export class AttractantHwcrXref {
   })
   public attractant_code: AttractantCode;
 
-  @ManyToOne(
-    () => HwcrComplaint,
-    (hwcr_complaint) => hwcr_complaint.hwcr_complaint_guid
-  )
+  @ManyToOne(() => HwcrComplaint, (hwcr_complaint) => hwcr_complaint.hwcr_complaint_guid)
   @JoinColumn({ name: "hwcr_complaint_guid" })
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
@@ -76,8 +62,7 @@ export class AttractantHwcrXref {
 
   @ApiProperty({
     example: "true",
-    description:
-      "A boolean indicating if this is an active attractant for the HWCR",
+    description: "A boolean indicating if this is an active attractant for the HWCR",
   })
   @Column()
   public active_ind: Boolean;

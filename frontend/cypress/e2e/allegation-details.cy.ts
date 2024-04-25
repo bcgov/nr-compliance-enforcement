@@ -48,27 +48,19 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-007890", true);
 
     //-- verify the call details block
-    cy.get('p[id="comp-details-description"]').contains(
-      callDetails.description,
-    );
+    cy.get('p[id="comp-details-description"]').contains(callDetails.description);
     cy.get('div[id="comp-details-location"]').contains(callDetails.location);
-    cy.get('p[id="comp-details-location-description"]').contains(
-      callDetails.locationDescription,
-    );
+    cy.get('p[id="comp-details-location-description"]').contains(callDetails.locationDescription);
     cy.get('span[id="comp-details-community"]').contains(callDetails.community);
-    cy.get('span[id="comp-details-violation-in-progress"]').contains(
-      callDetails.violationInProgress ? "Yes" : "No",
-    );
+    cy.get('span[id="comp-details-violation-in-progress"]').contains(callDetails.violationInProgress ? "Yes" : "No");
     cy.get('span[id="comp-details-office"]').contains(callDetails.office);
-    cy.get('span[id="comp-details-violation-observed"]').contains(
-      callDetails.violationObserved ? "Yes" : "No",
-    );
+    cy.get('span[id="comp-details-violation-observed"]').contains(callDetails.violationObserved ? "Yes" : "No");
     cy.get('span[id="comp-details-zone"]').contains(callDetails.zone);
     cy.get('span[id="comp-details-region"]').contains(callDetails.region);
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS,"23-032528", true);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-032528", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
@@ -76,8 +68,7 @@ describe("COMPENF-37 Display ECR Details", () => {
   it("validates breadcrumb styles", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-007890", true);
 
-    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'text-decoration').should('include', 'underline');
-    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'color').should('include', 'rgb(255, 255, 255)');
+    cy.get(".comp-nav-item-name-inverted > a").should("have.css", "text-decoration").should("include", "underline");
+    cy.get(".comp-nav-item-name-inverted > a").should("have.css", "color").should("include", "rgb(255, 255, 255)");
   });
-
 });

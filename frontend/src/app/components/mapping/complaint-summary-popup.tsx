@@ -26,7 +26,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
     useAppSelector(selectComplaintHeader(complaintType));
 
   const { violationInProgress, location, area } = useAppSelector(
-    selectComplaintDetails(complaintType)
+    selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
 
   // used to indicate what sections should be rendered in the popup
@@ -35,7 +35,10 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
   return (
-    <Popup keepInView={true} className="map-comp-popup">
+    <Popup
+      keepInView={true}
+      className="map-comp-popup"
+    >
       <div className="map-comp-summary-popup-container">
         <div className="map-comp-summary-popup-details">
           <div className="map-comp-popup-header-container">
@@ -48,7 +51,10 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                     "Not Assigned" === officerAssigned ? "leaflet-popup-not-assigned" : "comp-orange-avatar-sm"
                   }
                 >
-                  <span id="comp-details-assigned-officer-name-text-id" className="comp-padding-left-xs">
+                  <span
+                    id="comp-details-assigned-officer-name-text-id"
+                    className="comp-padding-left-xs"
+                  >
                     {getFirstInitialAndLastName(officerAssigned)}
                   </span>
                 </div>
@@ -68,13 +74,22 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                   <div className="comp-box-species-type">{species}</div>
                 ) : (
                   violationInProgress && (
-                    <div id="comp-details-status-text-id" className="comp-box-violation-in-progress">
-                      <FontAwesomeIcon id="violation-in-progress-icon" icon={faExclamationCircle} />
+                    <div
+                      id="comp-details-status-text-id"
+                      className="comp-box-violation-in-progress"
+                    >
+                      <FontAwesomeIcon
+                        id="violation-in-progress-icon"
+                        icon={faExclamationCircle}
+                      />
                       {inProgressInd}
                     </div>
                   )
                 )}
-                <div id="comp-details-status-text-id" className={`badge ${applyStatusClass(status)}`}>
+                <div
+                  id="comp-details-status-text-id"
+                  className={`badge ${applyStatusClass(status)}`}
+                >
                   {status}
                 </div>
               </div>
@@ -114,7 +129,10 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
           </div>
         </div>
         <Link to={`/complaint/${complaintType}/${complaint_identifier}`}>
-          <Button id="view-complaint-details-button-id" variant="primary">
+          <Button
+            id="view-complaint-details-button-id"
+            variant="primary"
+          >
             View Details
           </Button>
         </Link>

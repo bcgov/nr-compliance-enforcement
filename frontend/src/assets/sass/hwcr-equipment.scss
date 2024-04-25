@@ -59,10 +59,10 @@
   .equipment-item-header {
     display: flex;
     justify-content: space-between;
-  
+
     .title {
       display: flex;
-  
+
       h6 {
         font-size: 20px;
         font-weight: 700;
@@ -80,11 +80,11 @@
       }
     }
   }
-  
+
   .equipment-item-content {
     display: flex;
     margin: 16px 0px;
-    
+
     .label {
       color: $gray-500;
       min-width: 155px;

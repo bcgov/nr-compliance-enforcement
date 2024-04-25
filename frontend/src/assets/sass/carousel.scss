@@ -15,14 +15,15 @@
   gap: 10px;
 }
 
-.coms-carousel:hover .back-icon, 
+.coms-carousel:hover .back-icon,
 .coms-carousel:hover .next-icon {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.back-icon, .next-icon {
+.back-icon,
+.next-icon {
   display: none;
   z-index: 1000;
   position: absolute;
@@ -42,12 +43,16 @@
 }
 
 .next-icon {
- right: 50px;
+  right: 50px;
 }
 
-.back-icon:disabled { visibility: hidden } 
+.back-icon:disabled {
+  visibility: hidden;
+}
 
-.next-icon:disabled { visibility: hidden }
+.next-icon:disabled {
+  visibility: hidden;
+}
 
 .coms-slider {
   margin-right: 10px;
@@ -59,7 +64,8 @@
   float: right;
 }
 
-.delete-icon, .download-icon {
+.delete-icon,
+.download-icon {
   font-size: 24px;
   background-color: $gray-300;
   width: 40px;
@@ -68,7 +74,8 @@
   border-radius: 4px;
 }
 
-.delete-icon:hover, .download-icon:hover {
+.delete-icon:hover,
+.download-icon:hover {
   background-color: $gray-200;
   cursor: pointer;
 }
@@ -136,7 +143,8 @@
   color: black;
 }
 
-.error-slide .top-section, .error-slide .bottom-section {
+.error-slide .top-section,
+.error-slide .bottom-section {
   color: $bc-gov-danger;
 }
 

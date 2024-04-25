@@ -359,7 +359,7 @@ button.modal-buttons {
   background-color: $gray-100;
 }
 
-.modal-scroll { 
+.modal-scroll {
   min-height: 70px;
   max-height: 264px;
   overflow-y: scroll;
@@ -386,10 +386,9 @@ button.modal-buttons {
     align-items: flex-start;
     padding: 0px 24px 32px 24px;
     color: $gray-500;
-
   }
 
-  .input_row input { 
+  .input_row input {
     padding-left: 32px;
   }
 
@@ -398,7 +397,7 @@ button.modal-buttons {
     left: 36px;
   }
 
-  button { 
+  button {
     position: absolute;
     border: none;
     display: block;
@@ -414,7 +413,7 @@ button.modal-buttons {
     outline: none;
     cursor: pointer;
     background-color: $bc-gov-primary;
-    color: $white
+    color: $white;
   }
 }
 

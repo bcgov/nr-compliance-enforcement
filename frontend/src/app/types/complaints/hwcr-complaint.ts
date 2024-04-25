@@ -5,7 +5,7 @@ import { Complaint } from "./complaint";
 
 export interface HwcrComplaint {
   complaint_identifier: Complaint;
-  
+
   hwcr_complaint_nature_code: HwcrComplaintNatureCode;
   species_code: SpeciesCode;
   update_utc_timestamp: string;
@@ -17,5 +17,5 @@ export interface HwcrComplaint {
     create_user_id: string;
     active_ind: boolean;
   }[];
-  other_attractants_text: string
+  other_attractants_text: string;
 }

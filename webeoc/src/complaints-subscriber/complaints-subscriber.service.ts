@@ -78,7 +78,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const sc = StringCodec();
 
     const sub = await this.natsConnection.subscribe(NATS_NEW_COMPLAINTS_TOPIC_NAME);
-
     (async () => {
       for await (const msg of sub) {
         try {

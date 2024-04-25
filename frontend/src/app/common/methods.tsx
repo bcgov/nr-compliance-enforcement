@@ -8,7 +8,7 @@ import { Species } from "../types/app/code-tables/species";
 import { NatureOfComplaint } from "../types/app/code-tables/nature-of-complaint";
 import { UUID } from "crypto";
 import { Complaint as ComplaintDto } from "../types/app/complaints/complaint";
-import { GifReader } from 'omggif';
+import { GifReader } from "omggif";
 import { fromImage } from "imtool";
 import AttachmentEnum from "../constants/attachment-enum";
 import Option from "../types/app/option";
@@ -18,9 +18,7 @@ type Coordinate = number[] | string[] | undefined;
 const SLIDE_HEIGHT = 130;
 const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
 
-export const loadGifFrameList = async (
-  gifUrl: string,
-): Promise<HTMLCanvasElement[]> => {
+export const loadGifFrameList = async (gifUrl: string): Promise<HTMLCanvasElement[]> => {
   const response = await fetch(gifUrl);
   const blob = await response.blob();
   const arrayBuffer = await blob.arrayBuffer();
@@ -31,18 +29,18 @@ export const loadGifFrameList = async (
   const info = reader.frameInfo(0);
 
   return new Array(reader.numFrames()).fill(0).map((_, k) => {
-      const image = new ImageData(info.width, info.height);
+    const image = new ImageData(info.width, info.height);
 
-      reader.decodeAndBlitFrameRGBA(k, image.data as any);
+    reader.decodeAndBlitFrameRGBA(k, image.data as any);
 
-      let canvas = document.createElement('canvas');
+    let canvas = document.createElement("canvas");
 
-      canvas.width = info.width;
-      canvas.height = info.height;
+    canvas.width = info.width;
+    canvas.height = info.height;
 
-      canvas.getContext('2d')!.putImageData(image, 0, 0);
+    canvas.getContext("2d")!.putImageData(image, 0, 0);
 
-      return canvas;
+    return canvas;
   });
 };
 
@@ -60,25 +58,23 @@ export const getAvatarInitials = (input: string): string => {
   }
 };
 
-// handy for those times where we want to set a selected option, but we only have the value. 
+// handy for those times where we want to set a selected option, but we only have the value.
 // Useful for Compselect, which requires an Option.  In the future, best to refactor CompSelect to accept a value
 // instead of an Option
 export const getSelectedItem = (value: string, options: Option[]): Option => {
-
   const selectedOption = options.find((option) => option.value === value);
   if (selectedOption) {
     return selectedOption;
   } else {
-    return {value: '', label: ''};
+    return { value: "", label: "" };
   }
-}
+};
 
 export const getSelectedOfficer = (
   officers: Option[],
   personGuid: UUID | string,
-  update: ComplaintDto | undefined
+  update: ComplaintDto | undefined,
 ): any => {
-
   if (update && personGuid) {
     const { delegates } = update;
 
@@ -132,13 +128,10 @@ export const getFirstInitialAndLastName = (fullName: string): string => {
 };
 
 export const getFileExtension = (filename: string) => {
-  return filename
-    .slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2)
-    .toLowerCase();
+  return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
 };
 
 export const formatDate = (input: string | undefined): string => {
-
   if (!input) {
     return "";
   }
@@ -157,7 +150,6 @@ export const formatDate = (input: string | undefined): string => {
   }
 };
 
-
 export const formatTime = (input: string | undefined): string => {
   if (!input) {
     return "";
@@ -175,7 +167,11 @@ export const formatDateTime = (input: string | undefined): string => {
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
-export const injectComplaintIdentifierToFilename = (filename: string, complaintIdentifier: string, attachmentType: AttachmentEnum): string => {
+export const injectComplaintIdentifierToFilename = (
+  filename: string,
+  complaintIdentifier: string,
+  attachmentType: AttachmentEnum,
+): string => {
   // Find the last dot in the filename to separate the extension
   const lastDotIndex = filename.lastIndexOf(".");
 
@@ -191,26 +187,30 @@ export const injectComplaintIdentifierToFilename = (filename: string, complaintI
   return `${fileNameWithoutExtension} ${complaintIdentifier} ${attachmentType}${fileExtension}`;
 };
 
-export const isImage = (filename: string) : boolean => {
-  return ["jpg","jpeg","png", "gif", "bmp","webp","abif","svg"].includes(getFileExtension(filename));
+export const isImage = (filename: string): boolean => {
+  return ["jpg", "jpeg", "png", "gif", "bmp", "webp", "abif", "svg"].includes(getFileExtension(filename));
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
-export const injectComplaintIdentifierToThumbFilename = (filename: string, complaintIdentifier: string, attachmentType: AttachmentEnum): string => {
+export const injectComplaintIdentifierToThumbFilename = (
+  filename: string,
+  complaintIdentifier: string,
+  attachmentType: AttachmentEnum,
+): string => {
   // Find the last dot in the filename to separate the extension
-  const lastDotIndex = filename.lastIndexOf('.');
+  const lastDotIndex = filename.lastIndexOf(".");
 
   // If there's no dot, just append the complaintId at the end
   if (lastDotIndex === -1) {
-      return (`${filename} ${complaintIdentifier} ${attachmentType}`);
+    return `${filename} ${complaintIdentifier} ${attachmentType}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex) + "-thumb";
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return (`${fileNameWithoutExtension} ${complaintIdentifier}${attachmentType}${fileExtension}`);
-}
+  return `${fileNameWithoutExtension} ${complaintIdentifier}${attachmentType}${fileExtension}`;
+};
 
 // Used to retrieve the coordinates in the decimal format
 export const parseDecimalDegreesCoordinates = (coordinates: Coordinate): { lat: number; lng: number } => {
@@ -352,7 +352,15 @@ export const getThumbnailFile = async (file: File): Promise<File> => {
     const tool = await fromImage(file);
     const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
     const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-    return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg") : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toFile(file.name + "-thumb.jpg"));
+    return await (heightRatio > widthRatio
+      ? tool
+          .scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio)
+          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
+          .toFile(file.name + "-thumb.jpg")
+      : tool
+          .scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio)
+          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
+          .toFile(file.name + "-thumb.jpg"));
   } catch (error) {
     return Promise.reject(error);
   }
@@ -363,7 +371,15 @@ export const getThumbnailDataURL = async (file: File): Promise<string> => {
     const tool = await fromImage(file);
     const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
     const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-    return await (heightRatio > widthRatio ? tool.scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL() : tool.scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio).crop(0,0,SLIDE_WIDTH, SLIDE_HEIGHT).toDataURL());
+    return await (heightRatio > widthRatio
+      ? tool
+          .scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio)
+          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
+          .toDataURL()
+      : tool
+          .scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio)
+          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
+          .toDataURL());
   } catch {
     return "";
   }

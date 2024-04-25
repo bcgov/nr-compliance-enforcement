@@ -29,8 +29,7 @@ export const ValidationInput: FC<ValidationInputProps> = ({
   };
 
   const errClass = errMsg === "" ? "" : "error-message";
-  const calulatedClass =
-    errMsg === "" ? className : className + " error-border";
+  const calulatedClass = errMsg === "" ? className : className + " error-border";
   return (
     <div>
       <div>
