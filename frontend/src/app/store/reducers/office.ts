@@ -44,27 +44,23 @@ export const { setOfficesInZone, setOfficeAssignments } = officeSlice.actions;
 export const getOfficesInZone =
   (zone?: string): AppThunk =>
   async (dispatch) => {
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/office/by-zone/${zone}`
-    );
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/office/by-zone/${zone}`);
     const response = await get<Array<Office>>(dispatch, parameters);
 
     if (response && from(response).any()) {
       dispatch(
         setOfficesInZone({
           officesInZone: response,
-        })
+        }),
       );
     }
   };
 
 export const fetchOfficeAssignments = (): AppThunk => async (dispatch) => {
-  let parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/office/offices-by-agency`
-  );
+  let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/office/offices-by-agency`);
 
   let response = await get<Array<OfficeAssignment>>(dispatch, parameters);
-  
+
   if (response && from(response).any()) {
     const payload = {
       offices: response,
@@ -73,9 +69,7 @@ export const fetchOfficeAssignments = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const selectOfficesForAssignmentDropdown = (
-  state: RootState
-): Array<DropdownOption> => {
+export const selectOfficesForAssignmentDropdown = (state: RootState): Array<DropdownOption> => {
   const {
     offices: { officeAssignments },
   } = state;

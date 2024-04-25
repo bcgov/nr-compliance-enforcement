@@ -1,11 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { AgencyCode } from '../../../v1/agency_code/entities/agency_code.entity';
-import { ComplaintStatusCode } from '../../../v1/complaint_status_code/entities/complaint_status_code.entity';
-import { GeoOrganizationUnitCode } from '../../../v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity';
-import { Point } from 'geojson';
-import { CosGeoOrgUnit } from '../../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity';
-import { PersonComplaintXref } from '../../../v1/person_complaint_xref/entities/person_complaint_xref.entity';
-import { ReportedByCode } from 'src/v1/reported_by_code/entities/reported_by_code.entity';
+import { ApiProperty } from "@nestjs/swagger";
+import { AgencyCode } from "../../../v1/agency_code/entities/agency_code.entity";
+import { ComplaintStatusCode } from "../../../v1/complaint_status_code/entities/complaint_status_code.entity";
+import { GeoOrganizationUnitCode } from "../../../v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
+import { Point } from "geojson";
+import { CosGeoOrgUnit } from "../../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { PersonComplaintXref } from "../../../v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 export class UpdateComplaintDto {
   @ApiProperty({
@@ -40,8 +40,7 @@ export class UpdateComplaintDto {
 
   @ApiProperty({
     example: "DCC",
-    description:
-      "The geographical organization code of the organization that currently owns the complaint",
+    description: "The geographical organization code of the organization that currently owns the complaint",
   })
   cos_geo_org_unit: CosGeoOrgUnit;
 
@@ -130,7 +129,7 @@ export class UpdateComplaintDto {
   reported_by_other_text: string;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that created the complaint",
   })
   create_user_id: string;
@@ -142,7 +141,7 @@ export class UpdateComplaintDto {
   create_utc_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that last updated the complaint",
   })
   update_user_id: string;

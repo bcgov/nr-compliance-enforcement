@@ -37,4 +37,4 @@ describe("Testing: Case File Service", () => {
 
     const unused = null;
   });
-})
+});

@@ -1,22 +1,13 @@
 import { FC, useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import {
-  assignOfficerToOffice,
-  selectOfficersDropdown,
-} from "../../../store/reducers/officer";
+import { assignOfficerToOffice, selectOfficersDropdown } from "../../../store/reducers/officer";
 import { CompSelect } from "../../common/comp-select";
 import Option from "../../../types/app/option";
-import {
-  fetchOfficeAssignments,
-  selectOfficesForAssignmentDropdown,
-} from "../../../store/reducers/office";
+import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown } from "../../../store/reducers/office";
 import { ToastContainer } from "react-toastify";
 import { ToggleSuccess } from "../../../common/toast";
-import {
-  clearNotification,
-  selectNotification,
-} from "../../../store/reducers/app";
+import { clearNotification, selectNotification } from "../../../store/reducers/app";
 
 export const UserManagement: FC = () => {
   const dispatch = useAppDispatch();
@@ -92,10 +83,7 @@ export const UserManagement: FC = () => {
         <Row>
           <Col>
             <h1>User Administration</h1>
-            <p>
-              Manage user agency / office location. Select a user and Agency +
-              Location{" "}
-            </p>
+            <p>Manage user agency / office location. Select a user and Agency + Location </p>
           </Col>
         </Row>
         <Row>
@@ -136,11 +124,17 @@ export const UserManagement: FC = () => {
           <Col>
             {" "}
             <br />
-            <Button variant="outline-primary" onClick={handleCancel}>
+            <Button
+              variant="outline-primary"
+              onClick={handleCancel}
+            >
               cancel
             </Button>{" "}
             &nbsp;
-            <Button variant="primary" onClick={handleSubmit}>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+            >
               Submit
             </Button>
           </Col>

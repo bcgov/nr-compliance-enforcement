@@ -774,5 +774,5 @@ export const MockUpdateComplaintsRepository = () => ({
     where: jest.fn().mockReturnThis(),
     getOne: jest.fn().mockResolvedValue(complaints[3]),
   })),
-})
+});
 // @SONAR_START@

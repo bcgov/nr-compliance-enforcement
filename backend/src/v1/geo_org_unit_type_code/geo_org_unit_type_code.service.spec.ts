@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { GeoOrgUnitTypeCodeService } from './geo_org_unit_type_code.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { GeoOrgUnitTypeCode } from './entities/geo_org_unit_type_code.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { GeoOrgUnitTypeCodeService } from "./geo_org_unit_type_code.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { GeoOrgUnitTypeCode } from "./entities/geo_org_unit_type_code.entity";
 
-describe('GeoOrgUnitTypeCodeService', () => {
+describe("GeoOrgUnitTypeCodeService", () => {
   let service: GeoOrgUnitTypeCodeService;
 
   beforeEach(async () => {
@@ -12,16 +12,15 @@ describe('GeoOrgUnitTypeCodeService', () => {
         GeoOrgUnitTypeCodeService,
         {
           provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useValue: {
-
-          },
-        },],
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<GeoOrgUnitTypeCodeService>(GeoOrgUnitTypeCodeService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

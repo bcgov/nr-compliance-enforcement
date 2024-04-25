@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { GeoOrgUnitStructureService } from './geo_org_unit_structure.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { GeoOrgUnitStructure } from './entities/geo_org_unit_structure.entity';
-import { GeoOrganizationUnitCode } from '../geo_organization_unit_code/entities/geo_organization_unit_code.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { GeoOrgUnitStructureService } from "./geo_org_unit_structure.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { GeoOrgUnitStructure } from "./entities/geo_org_unit_structure.entity";
+import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 
-describe('GeoOrgUnitStructureService', () => {
+describe("GeoOrgUnitStructureService", () => {
   let service: GeoOrgUnitStructureService;
 
   const geoOrganizationUnitCode1 = new GeoOrganizationUnitCode("Geo1");
@@ -31,7 +31,8 @@ describe('GeoOrgUnitStructureService', () => {
             // we just make sure that their resolve is true to not crash
             delete: jest.fn().mockResolvedValue(true),
           },
-        },],
+        },
+      ],
     }).compile();
 
     service = module.get<GeoOrgUnitStructureService>(GeoOrgUnitStructureService);
@@ -44,7 +45,7 @@ describe('GeoOrgUnitStructureService', () => {
     });
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

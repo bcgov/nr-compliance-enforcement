@@ -214,7 +214,7 @@ export const createAttractantCodeMetaData = () => {
   });
 };
 
-export const createViolationCodeMetadata = () => { 
+export const createViolationCodeMetadata = () => {
   PojosMetadataMap.create<ViolationCode>("VioltionCode", {
     violation_code: String,
     short_description: String,
@@ -230,7 +230,7 @@ export const createViolationCodeMetadata = () => {
     displayOrder: Number,
     isActive: Boolean,
   });
-}
+};
 
 export const createWildlifeComplaintMetadata = () => {
   createComplaintMetaData();
@@ -255,7 +255,7 @@ export const createWildlifeComplaintMetadata = () => {
   });
 };
 
-export const createAllegationComplaintMetaData = () => { 
+export const createAllegationComplaintMetaData = () => {
   createComplaintMetaData();
   createViolationCodeMetadata();
 
@@ -265,7 +265,7 @@ export const createAllegationComplaintMetaData = () => {
     in_progress_ind: Boolean,
     observed_ind: Boolean,
     allegation_complaint_guid: String,
-    suspect_witnesss_dtl_text: String
+    suspect_witnesss_dtl_text: String,
   });
 
   PojosMetadataMap.create<AllegationComplaintDto>("AllegationComplaintDto", {
@@ -273,6 +273,6 @@ export const createAllegationComplaintMetaData = () => {
     violation: String,
     isInProgress: Boolean,
     wasObserved: Boolean,
-    violationDetails: String
+    violationDetails: String,
   });
-}
+};

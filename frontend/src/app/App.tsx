@@ -20,10 +20,6 @@ import { CreateComplaint } from "./components/containers/complaints/details/comp
 import { UserManagement } from "./components/containers/admin/user-management";
 import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
 
-export const ThrowError: FC = () => {
-  throw new Error("Bombs away 💣");
-};
-
 const App: FC = () => {
   const dispatch = useAppDispatch();
 

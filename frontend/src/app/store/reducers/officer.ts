@@ -53,7 +53,7 @@ export const getOfficers =
         dispatch(
           setOfficers({
             officers: response,
-          })
+          }),
         );
       }
     } catch (error) {
@@ -87,12 +87,12 @@ export const assignCurrentUserToComplaint =
           userId,
           complaint_identifier,
           complaint_type,
-          officerResponse.person_guid.person_guid as UUID
-        )
+          officerResponse.person_guid.person_guid as UUID,
+        ),
       );
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
       );
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
@@ -125,12 +125,12 @@ export const updateComplaintAssignee =
       // assign a complaint to a person
       let personComplaintXrefGuidParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/person-complaint-xref/${complaint_identifier}`,
-        payload
+        payload,
       );
       await post<Array<PersonComplaintXref>>(dispatch, personComplaintXrefGuidParams);
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
       );
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
@@ -166,16 +166,16 @@ export const searchOfficers =
     const searchInput = input.toLowerCase();
 
     //-- look for any officers that match firstname, lastname, or office
-    if(input.length >= 2){ 
+    if (input.length >= 2) {
       results = items.filter((officer) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
         } = officer;
-  
+
         if (firstName.toLocaleLowerCase().includes(searchInput)) {
           return true;
         }
-  
+
         if (lastName.toLocaleLowerCase().includes(searchInput)) {
           return true;
         }
@@ -333,7 +333,7 @@ export const selectOfficerByIdir =
     return null;
   };
 
-  export const selectOfficerByPersonGuid =
+export const selectOfficerByPersonGuid =
   (personGuid: string) =>
   (state: RootState): Officer | null => {
     const {
@@ -348,7 +348,7 @@ export const selectOfficerByIdir =
     return null;
   };
 
-  export const selectCurrentOfficer =
+export const selectCurrentOfficer =
   () =>
   (state: RootState): OfficerDto | null => {
     const {
@@ -367,12 +367,12 @@ export const selectOfficerByIdir =
       const personId = person_guid as UUID;
       const officeId = office_guid as UUID;
 
-      return  {
+      return {
         id: officerId,
         userId: user_id,
         authorizedUserId: auth_user_guid,
         person: { id: personId, firstName, lastName },
-        office: { ...location, id: officeId }
+        office: { ...location, id: officeId },
       };
     }
 

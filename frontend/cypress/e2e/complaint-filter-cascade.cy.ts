@@ -1,42 +1,41 @@
 //This is probably only useful for this test, so it's not a command.
-function verifyFilters (expectedZones: number, expectedRegions: number, expectedCommunities: number) {
+function verifyFilters(expectedZones: number, expectedRegions: number, expectedCommunities: number) {
+  cy.get(
+    "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container",
+  ).click({ force: true });
+  cy.get(".comp-select__menu-list")
+    .find("div")
+    .then(({ length }) => {
+      expect(length, "rows N").to.be.eq(expectedZones);
+    });
+  cy.get(
+    "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container",
+  ).click({ force: true });
 
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(expectedZones);
-      });
-    cy.get(
-      "#region-select-filter-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
+  cy.get(
+    "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container",
+  ).click({ force: true });
+  cy.get(".comp-select__menu-list")
+    .find("div")
+    .then(({ length }) => {
+      expect(length, "rows N").to.be.eq(expectedRegions);
+    });
+  cy.get(
+    "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container",
+  ).click({ force: true });
 
-    cy.get(
-      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(expectedRegions);
-      });
-    cy.get(
-      "#zone-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-
-    cy.get(
-      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-    cy.get(".comp-select__menu-list")
-      .find("div")
-      .then(({ length }) => {
-        expect(length, "rows N").to.be.eq(expectedCommunities);
-      });
-    cy.get(
-      "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container"
-    ).click({ force: true });
-};
+  cy.get(
+    "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container",
+  ).click({ force: true });
+  cy.get(".comp-select__menu-list")
+    .find("div")
+    .then(({ length }) => {
+      expect(length, "rows N").to.be.eq(expectedCommunities);
+    });
+  cy.get(
+    "#community-select-id > .comp-select__control > .comp-select__value-container > .comp-select__input-container",
+  ).click({ force: true });
+}
 
 /*
 Test to verify that the filter types: region, zone, and communities cascade based
@@ -64,8 +63,7 @@ describe("Complaint Filter Cascading spec", () => {
 
     cy.get("#complaint-filter-image-id").click({ force: true });
 
-    verifyFilters (maxRegions, maxZones, maxCommunities);
-
+    verifyFilters(maxRegions, maxZones, maxCommunities);
   });
 
   it("Verifies zone and communities are cascaded when selecting a region", () => {
@@ -87,52 +85,50 @@ describe("Complaint Filter Cascading spec", () => {
     //-- select region
     cy.selectItemById("region-select-filter-id", _selected);
 
-    verifyFilters (_totalRegions, _totalZones, _totalCommunities);
+    verifyFilters(_totalRegions, _totalZones, _totalCommunities);
   });
 
   it("Verifies communities are cascaded when selecting a zone", () => {
-   //-- arrange
-   const _selected = "Fraser North";
+    //-- arrange
+    const _selected = "Fraser North";
 
-   const _totalRegions = 1;
-   const _totalZones = 1;
-   const _totalCommunities = 27;
+    const _totalRegions = 1;
+    const _totalZones = 1;
+    const _totalCommunities = 27;
 
-   //-- load the page and remove existing default filters
-   cy.visit("/");
-   cy.waitForSpinner();
+    //-- load the page and remove existing default filters
+    cy.visit("/");
+    cy.waitForSpinner();
 
-   cy.navigateToTab(complaintTypes[0], true);
+    cy.navigateToTab(complaintTypes[0], true);
 
-   cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#complaint-filter-image-id").click({ force: true });
 
-   //-- select region
-   cy.selectItemById("zone-select-id", _selected);
+    //-- select region
+    cy.selectItemById("zone-select-id", _selected);
 
-   verifyFilters (_totalRegions, _totalZones, _totalCommunities);
- });
+    verifyFilters(_totalRegions, _totalZones, _totalCommunities);
+  });
 
- it("Verifies regions and zones are cascaded when selecting a community", () => {
-   //-- arrange
-   const _selected = "Cluculz Lake";
+  it("Verifies regions and zones are cascaded when selecting a community", () => {
+    //-- arrange
+    const _selected = "Cluculz Lake";
 
-   const _totalRegions = 1;
-   const _totalZones = 1;
-   const _totalCommunities = 970;
+    const _totalRegions = 1;
+    const _totalZones = 1;
+    const _totalCommunities = 970;
 
-   //-- load the page and remove existing default filters
-   cy.visit("/");
-   cy.waitForSpinner();
+    //-- load the page and remove existing default filters
+    cy.visit("/");
+    cy.waitForSpinner();
 
-   cy.navigateToTab(complaintTypes[0], true);
+    cy.navigateToTab(complaintTypes[0], true);
 
-   cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#complaint-filter-image-id").click({ force: true });
 
-   //-- select region
-   cy.selectItemById("community-select-id", _selected);
+    //-- select region
+    cy.selectItemById("community-select-id", _selected);
 
-   verifyFilters (_totalRegions, _totalZones, _totalCommunities);
- });
-
+    verifyFilters(_totalRegions, _totalZones, _totalCommunities);
+  });
 });
-

@@ -5,10 +5,7 @@ import { CaseFileService } from "./case_file.service";
 import { CodeTableModule } from "../code-table/code-table.module";
 
 @Module({
-  imports: [
-    AutomapperModule,
-    CodeTableModule
-  ],
+  imports: [AutomapperModule, CodeTableModule],
   controllers: [CaseFileController],
   providers: [CaseFileService],
 })

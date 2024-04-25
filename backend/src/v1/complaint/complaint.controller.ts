@@ -23,7 +23,7 @@ export class ComplaintController {
   @Get(":complaintType")
   @Roles(Role.COS_OFFICER)
   async findAllByType(
-    @Param("complaintType") complaintType: COMPLAINT_TYPE
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto | AllegationComplaintDto>> {
     return await this.service.findAllByType(complaintType);
   }
@@ -52,7 +52,7 @@ export class ComplaintController {
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
+    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return await this.service.updateComplaintById(id, complaintType, model);
   }
@@ -61,7 +61,7 @@ export class ComplaintController {
   @Roles(Role.COS_OFFICER)
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Param("id") id: string
+    @Param("id") id: string,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
   }
@@ -70,14 +70,17 @@ export class ComplaintController {
   @Roles(Role.COS_OFFICER)
   async create(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Body() model: WildlifeComplaintDto | AllegationComplaintDto
+    @Body() model: WildlifeComplaintDto | AllegationComplaintDto,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
     return await this.service.create(complaintType, model);
   }
-  
+
   @Get("/stats/:complaintType/by-zone/:zone")
   @Roles(Role.COS_OFFICER)
-  statsByZone(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Param("zone") zone: string): Promise<ZoneAtAGlanceStats> {
+  statsByZone(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Param("zone") zone: string,
+  ): Promise<ZoneAtAGlanceStats> {
     return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
   }
 }

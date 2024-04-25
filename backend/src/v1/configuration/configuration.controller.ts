@@ -1,18 +1,19 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Logger } from '@nestjs/common';
-import { ConfigurationService } from './configuration.service';
-import { UpdateConfigurationDto } from './dto/update-configuration.dto';
-import { JwtRoleGuard } from './../../auth/jwtrole.guard';
-import { ApiTags } from '@nestjs/swagger';
-import { Roles } from './../../auth/decorators/roles.decorator';
-import { Token } from './../../auth/decorators/token.decorator';
-import { Role } from './../../enum/role.enum';
-import { get } from '../../external_api/case_management';
+import { Controller, Get, Body, Patch, Param, UseGuards, Logger } from "@nestjs/common";
+import { ConfigurationService } from "./configuration.service";
+import { UpdateConfigurationDto } from "./dto/update-configuration.dto";
+import { JwtRoleGuard } from "./../../auth/jwtrole.guard";
+import { ApiTags } from "@nestjs/swagger";
+import { Roles } from "./../../auth/decorators/roles.decorator";
+import { Token } from "./../../auth/decorators/token.decorator";
+import { Role } from "./../../enum/role.enum";
+import { get } from "../../external_api/case_management";
 
 @ApiTags("configuration")
 @UseGuards(JwtRoleGuard)
 @Controller({
-  path: 'configuration',
-  version: '1'})
+  path: "configuration",
+  version: "1",
+})
 export class ConfigurationController {
   constructor(private readonly configurationService: ConfigurationService) {}
   private readonly logger = new Logger(ConfigurationController.name);
@@ -23,49 +24,46 @@ export class ConfigurationController {
     return this.configurationService.findAll();
   }
 
-  @Get(':configurationCode')
+  @Get(":configurationCode")
   @Roles(Role.COS_OFFICER)
-  async findOne(
-    @Param('configurationCode') configurationCode: string, 
-    @Token() token) 
-  {
+  async findOne(@Param("configurationCode") configurationCode: string, @Token() token) {
     try {
       const result = await this.configurationService.findOne(configurationCode);
-  
+
       //If configuration is code table version, call another case managment api
-      if(configurationCode === 'CDTABLEVER') {
-        const { data } = await get(token, { 
-          query : '{configurationCodes (configurationCode: "CDTABLEVER") {configurationCode configurationValue  activeIndicator}}'
+      if (configurationCode === "CDTABLEVER") {
+        const { data } = await get(token, {
+          query:
+            '{configurationCodes (configurationCode: "CDTABLEVER") {configurationCode configurationValue  activeIndicator}}',
         });
-        let caseData = {}
-        let complaintData = {}
-        if(data) {
+        let caseData = {};
+        let complaintData = {};
+        if (data) {
           caseData = {
             configurationCode: data.configurationCodes[0].configurationCode,
             configurationValue: data.configurationCodes[0].configurationValue,
-            activeInd: data.configurationCodes[0].activeIndicator
-          }
+            activeInd: data.configurationCodes[0].activeIndicator,
+          };
         }
-        if(result.length > 0) {
+        if (result.length > 0) {
           complaintData = {
             configurationCode: result[0].configurationCode,
             configurationValue: result[0].configurationValue,
-            activeInd: result[0].activeInd
-          }
+            activeInd: result[0].activeInd,
+          };
         }
-        return {complaintManagement: complaintData, caseManagement: caseData };
+        return { complaintManagement: complaintData, caseManagement: caseData };
       }
-  
-      return result
-    }
-    catch (err) {
+
+      return result;
+    } catch (err) {
       this.logger.error(`Error calling configurationCode ${configurationCode}`, err);
     }
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @Roles(Role.COS_OFFICER)
-  update(@Param('id') id: string, @Body() updateConfigurationDto: UpdateConfigurationDto) {
+  update(@Param("id") id: string, @Body() updateConfigurationDto: UpdateConfigurationDto) {
     return this.configurationService.update(+id, updateConfigurationDto);
   }
 }

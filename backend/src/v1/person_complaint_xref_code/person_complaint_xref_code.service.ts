@@ -1,19 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePersonComplaintXrefCodeDto } from './dto/create-person_complaint_xref_code.dto';
-import { UpdatePersonComplaintXrefCodeDto } from './dto/update-person_complaint_xref_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PersonComplaintXrefCode } from './entities/person_complaint_xref_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreatePersonComplaintXrefCodeDto } from "./dto/create-person_complaint_xref_code.dto";
+import { UpdatePersonComplaintXrefCodeDto } from "./dto/update-person_complaint_xref_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { PersonComplaintXrefCode } from "./entities/person_complaint_xref_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class PersonComplaintXrefCodeService {
   constructor(
     @InjectRepository(PersonComplaintXrefCode)
-    private personComplaintXrefCodeRepository: Repository<PersonComplaintXrefCode>
+    private personComplaintXrefCodeRepository: Repository<PersonComplaintXrefCode>,
   ) {}
 
   async create(createPersonComplaintXrefCode: CreatePersonComplaintXrefCodeDto) {
-    const newPersonComplaintXrefCodeDto= this.personComplaintXrefCodeRepository.create(createPersonComplaintXrefCode);
+    const newPersonComplaintXrefCodeDto = this.personComplaintXrefCodeRepository.create(createPersonComplaintXrefCode);
     await this.personComplaintXrefCodeRepository.save(newPersonComplaintXrefCodeDto);
     return newPersonComplaintXrefCodeDto;
   }

@@ -90,7 +90,7 @@ export const AddDrug: FC<props> = ({
   };
 
   const handleAmountDiscarded = (input: string) => {
-      updateModel("amountDiscarded", input);
+    updateModel("amountDiscarded", input);
   };
 
   const handleRemainingUsed = (input: string) => {
@@ -102,7 +102,10 @@ export const AddDrug: FC<props> = ({
     <div className="comp-animal-outcome-report-inner-spacing">
       <Row>
         <Col>
-          <label htmlFor={`vial-number-${id}`} className="comp-margin-bottom-8">
+          <label
+            htmlFor={`vial-number-${id}`}
+            className="comp-margin-bottom-8"
+          >
             Vial number
           </label>
           <CompInput
@@ -122,7 +125,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`select-drug-name-${id}`} className="comp-margin-bottom-8">
+          <label
+            htmlFor={`select-drug-name-${id}`}
+            className="comp-margin-bottom-8"
+          >
             Drug name
           </label>
           <CompSelect
@@ -140,7 +146,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`amount-used-${id}`} className="comp-margin-bottom-8">
+          <label
+            htmlFor={`amount-used-${id}`}
+            className="comp-margin-bottom-8"
+          >
             Amount used (mL)
           </label>
           <CompInput
@@ -160,7 +169,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`injection-method-${id}`} className="comp-margin-bottom-8">
+          <label
+            htmlFor={`injection-method-${id}`}
+            className="comp-margin-bottom-8"
+          >
             Injection method
           </label>
           <CompSelect
@@ -178,7 +190,10 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col>
-          <label htmlFor={`adverse-reactions-${id}`} className="comp-margin-bottom-8">
+          <label
+            htmlFor={`adverse-reactions-${id}`}
+            className="comp-margin-bottom-8"
+          >
             Adverse reactions
           </label>
           <CompInput
@@ -198,14 +213,23 @@ export const AddDrug: FC<props> = ({
         </Col>
         <Col className="mt-delete-button mb-2">
           <CompIconButton onClick={() => remove(id)}>
-            <BsXCircle size={24} className="comp-outcome-remove-botton" />
-            <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
+            <BsXCircle
+              size={24}
+              className="comp-outcome-remove-botton"
+            />
+            <BsFillXCircleFill
+              size={24}
+              className="comp-outcome-remove-botton-hover"
+            />
           </CompIconButton>
         </Col>
       </Row>
       <Row className="comp-padding-top-md">
         <Col>
-          <label htmlFor={`remaining-drug-use-${id}`} className="comp-margin-bottom-8">
+          <label
+            htmlFor={`remaining-drug-use-${id}`}
+            className="comp-margin-bottom-8"
+          >
             Fate of remaining drug in vial
           </label>
           <CompSelect
@@ -225,7 +249,10 @@ export const AddDrug: FC<props> = ({
           {showDiscarded && (
             <>
               {" "}
-              <label htmlFor={`amount-discarded-${id}`} className="comp-margin-bottom-8">
+              <label
+                htmlFor={`amount-discarded-${id}`}
+                className="comp-margin-bottom-8"
+              >
                 Amount discarded (mL)
               </label>
               <CompInput
@@ -248,7 +275,10 @@ export const AddDrug: FC<props> = ({
         <Col>
           {showDiscarded && (
             <>
-              <label htmlFor={`discard-method-${id}`} className="comp-margin-bottom-8">
+              <label
+                htmlFor={`discard-method-${id}`}
+                className="comp-margin-bottom-8"
+              >
                 Discard method
               </label>
               <CompInput

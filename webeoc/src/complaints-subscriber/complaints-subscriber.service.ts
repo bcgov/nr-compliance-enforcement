@@ -1,11 +1,8 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { connect, NatsConnection, Subscription } from 'nats';
-import {
-  NATS_NEW_COMPLAINTS_TOPIC_NAME,
-  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-} from '../common/constants';
-import { StagingComplaintsApiService } from '../staging-complaints-api-service/staging-complaints-api-service.service';
-import { ComplaintMessage } from '../types/Complaints';
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { connect, NatsConnection, Subscription } from "nats";
+import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
+import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
+import { ComplaintMessage } from "../types/Complaints";
 
 @Injectable()
 /**
@@ -22,7 +19,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       });
       this.logger.debug(`Connected to NATS ${process.env.NATS_HOST}`);
     } catch (error) {
-      this.logger.error('Failed to connect to NATS:', error);
+      this.logger.error("Failed to connect to NATS:", error);
     }
     this.subscribeToNewComplaintsFromWebEOC();
     this.subscribeToNewStagingComplaints();
@@ -33,30 +30,23 @@ export class ComplaintsSubscriberService implements OnModuleInit {
    * @returns
    */
   private subscribeToNewComplaintsFromWebEOC(): Subscription {
-    const subscription: Subscription = this.natsConnection.subscribe(
-      NATS_NEW_COMPLAINTS_TOPIC_NAME,
-    );
+    const subscription: Subscription = this.natsConnection.subscribe(NATS_NEW_COMPLAINTS_TOPIC_NAME);
 
     (async () => {
       for await (const msg of subscription) {
         try {
-          const messageData =
-            msg.data instanceof Uint8Array
-              ? this.decodeMessage(msg.data)
-              : msg.data;
+          const messageData = msg.data instanceof Uint8Array ? this.decodeMessage(msg.data) : msg.data;
           const messageJson = JSON.parse(messageData);
 
           const complaintMessage = messageJson as ComplaintMessage;
-          this.logger.debug(
-            `Received complaint: ${complaintMessage.data.incident_number}`,
-          );
+          this.logger.debug(`Received complaint: ${complaintMessage.data.incident_number}`);
           this.service.postComplaintToStaging(complaintMessage.data);
         } catch (error) {
-          this.logger.error('Error processing received complaint:', error);
+          this.logger.error("Error processing received complaint:", error);
         }
       }
     })().catch((error) => {
-      this.logger.error('Error in NATS subscription:', error);
+      this.logger.error("Error in NATS subscription:", error);
     });
     return subscription;
   }
@@ -66,28 +56,23 @@ export class ComplaintsSubscriberService implements OnModuleInit {
    * @returns
    */
   private subscribeToNewStagingComplaints(): Subscription {
-    const subscription: Subscription = this.natsConnection.subscribe(
-      NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-    );
+    const subscription: Subscription = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME);
 
     (async () => {
       for await (const msg of subscription) {
         try {
-          const messageData =
-            msg.data instanceof Uint8Array
-              ? this.decodeMessage(msg.data)
-              : msg.data;
+          const messageData = msg.data instanceof Uint8Array ? this.decodeMessage(msg.data) : msg.data;
 
           const messageJson = JSON.parse(messageData);
 
           this.logger.debug(`New complaint in staging: ${messageJson.data}`);
           this.service.postComplaint(messageJson.data);
         } catch (error) {
-          this.logger.error('Error processing complaint in staging:', error);
+          this.logger.error("Error processing complaint in staging:", error);
         }
       }
     })().catch((error) => {
-      this.logger.error('Error in NATS subscription:', error);
+      this.logger.error("Error in NATS subscription:", error);
     });
     return subscription;
   }

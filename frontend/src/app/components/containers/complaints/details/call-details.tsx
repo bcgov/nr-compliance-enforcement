@@ -1,11 +1,7 @@
 import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import {
-  formatDate,
-  formatTime,
-  renderCoordinates,
-} from "../../../../common/methods";
+import { formatDate, formatTime, renderCoordinates } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "../../../../store/reducers/complaints";
@@ -40,11 +36,12 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
       {/* readonly call details section */}
       <div className="comp-complaint-call-details">
         <Row>
-          <Col md="6" className="comp-padding-right-28">
+          <Col
+            md="6"
+            className="comp-padding-right-28"
+          >
             <div>
-              <div className="comp-details-content-label">
-                Complaint Description
-              </div>
+              <div className="comp-details-content-label">Complaint Description</div>
               <p id="comp-details-description">{details}</p>
             </div>
             <div>
@@ -68,18 +65,16 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                 <div className="comp-details-content-label ">Attractants</div>
                 <span className="comp-complaint-attactants">
                   {!attractants ||
-                    attractants.map(
-                      ({ key, description }: ComplaintDetailsAttractant) => {
-                        return (
-                          <span
-                            className="badge comp-attactant-badge comp-margin-left-xxs"
-                            key={key}
-                          >
-                            {description}
-                          </span>
-                        );
-                      },
-                    )}
+                    attractants.map(({ key, description }: ComplaintDetailsAttractant) => {
+                      return (
+                        <span
+                          className="badge comp-attactant-badge comp-margin-left-xxs"
+                          key={key}
+                        >
+                          {description}
+                        </span>
+                      );
+                    })}
                 </span>
               </div>
             )}
@@ -87,9 +82,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
             {complaintType === COMPLAINT_TYPES.ERS && (
               <>
                 <div>
-                  <span className="comp-details-content-label">
-                    Violation In Progress
-                  </span>
+                  <span className="comp-details-content-label">Violation In Progress</span>
                   <span
                     id="comp-details-violation-in-progress"
                     className="comp-details-content"
@@ -98,9 +91,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   </span>
                 </div>
                 <div>
-                  <span className="comp-details-content-label ">
-                    Violation Observed
-                  </span>
+                  <span className="comp-details-content-label ">Violation Observed</span>
                   <span
                     id="comp-details-violation-observed"
                     className="comp-details-content"
@@ -111,22 +102,22 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               </>
             )}
           </Col>
-          <Col md="6" className="comp-padding-left-28">
+          <Col
+            md="6"
+            className="comp-padding-left-28"
+          >
             <div>
-              <div className="comp-details-content-label ">
-                Complaint Location
-              </div>
-              <div id="comp-details-location" className="comp-details-content">
+              <div className="comp-details-content-label ">Complaint Location</div>
+              <div
+                id="comp-details-location"
+                className="comp-details-content"
+              >
                 {location}
               </div>
             </div>
             <div>
-              <div className="comp-details-content-label ">
-                Location Description
-              </div>
-              <p id="comp-details-location-description">
-                {locationDescription}
-              </p>
+              <div className="comp-details-content-label ">Location Description</div>
+              <p id="comp-details-location-description">{locationDescription}</p>
             </div>
             <div>
               <div className="comp-details-content-label ">X Coordinate</div>
@@ -156,20 +147,29 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
             </div>
             <div>
               <span className="comp-details-content-label ">Office</span>
-              <span id="comp-details-office" className="comp-details-content">
+              <span
+                id="comp-details-office"
+                className="comp-details-content"
+              >
                 {office}
               </span>
             </div>
 
             <div className="comp-complaint-section">
               <span className="comp-details-content-label ">Zone</span>
-              <span id="comp-details-zone" className="comp-details-content">
+              <span
+                id="comp-details-zone"
+                className="comp-details-content"
+              >
                 {zone}
               </span>
             </div>
             <div className="comp-complaint-section">
               <span className="comp-details-content-label ">Region</span>
-              <span id="comp-details-region" className="comp-details-content">
+              <span
+                id="comp-details-region"
+                className="comp-details-content"
+              >
                 {region}
               </span>
             </div>
