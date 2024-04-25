@@ -3,7 +3,7 @@ import Option from "../../../../types/app/option";
 import { Button } from "react-bootstrap";
 import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { selectOfficersByAgency, selectOfficers } from "../../../../store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
@@ -62,6 +62,8 @@ export const HWCRComplaintAssessment: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officerList = useAppSelector(selectOfficers);
+
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
@@ -110,7 +112,7 @@ export const HWCRComplaintAssessment: FC = () => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(getAssessment(complaintData.id));
+      dispatch(getAssessment(complaintData.id, officerList ?? undefined));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);

@@ -52,14 +52,15 @@ export const getCaseFile =
 
 //-- assessment thunks
 export const getAssessment =
-  (complaintIdentifier?: string): AppThunk =>
+  (complaintIdentifier?: string, officerList?: Officer[]): AppThunk =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
     } = getState();
+    const officerListParam = officers ?? officerList;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const updatedAssessmentData = await parseAssessmentResponse(res, officerListParam);
       dispatch(setCaseId(res.caseIdentifier));
       dispatch(setAssessment({ assessment: updatedAssessmentData }));
       dispatch(setIsReviewedRequired(res.isReviewRequired));
@@ -221,15 +222,6 @@ const parseAssessmentResponse = async (
 
     let officerFullName = null;
 
-    console.trace();
-    console.log("actor:", actor);
-    console.log("officers:");
-    officers.map((officer) => {
-      const { person_guid, first_name, last_name } = officer.person_guid;
-      console.log(`  guid='${person_guid}' name='${first_name} ${last_name}'`);
-      return null;
-    });
-
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
@@ -266,14 +258,15 @@ const parseAssessmentResponse = async (
 
 //-- prevention and education thunks
 export const getPrevention =
-  (complaintIdentifier?: string): AppThunk =>
+  (complaintIdentifier?: string, officerList?: Officer[]): AppThunk =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
     } = getState();
+    const officerListParam = officers ?? officerList;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedPreventionData = await parsePreventionResponse(res, officers);
+      const updatedPreventionData = await parsePreventionResponse(res, officerListParam);
       dispatch(setPrevention({ prevention: updatedPreventionData }));
     });
   };
