@@ -40,20 +40,20 @@ const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
     "OrganizationCodeTable", //-- destination
     forMember(
       (destination) => destination.area,
-      mapFrom((source) => source.area_code)
+      mapFrom((source) => source.area_code),
     ),
     forMember(
       (destination) => destination.officeLocation,
-      mapFrom((source) => source.office_location_code)
+      mapFrom((source) => source.office_location_code),
     ),
     forMember(
       (destination) => destination.region,
-      mapFrom((source) => source.region_code)
+      mapFrom((source) => source.region_code),
     ),
     forMember(
       (destination) => destination.zone,
-      mapFrom((source) => source.zone_code)
-    )
+      mapFrom((source) => source.zone_code),
+    ),
   );
 };
 
@@ -64,15 +64,15 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
     "Delegate",
     forMember(
       (destination) => destination.xrefId,
-      mapFrom((source) => source.personComplaintXrefGuid)
+      mapFrom((source) => source.personComplaintXrefGuid),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
+      mapFrom((source) => source.active_ind),
     ),
     forMember(
       (destination) => destination.type,
-      mapFrom((source) => source.person_complaint_xref_code.person_complaint_xref_code)
+      mapFrom((source) => source.person_complaint_xref_code.person_complaint_xref_code),
     ),
     forMember(
       (destination) => destination.person,
@@ -84,8 +84,8 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
           middleName2: source.person_guid.middle_name_2,
           lastName: source.person_guid.last_name,
         };
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -96,35 +96,35 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
     "ComplaintDto", //-- destination
     forMember(
       (destination) => destination.id,
-      mapFrom((source) => source.complaint_identifier)
+      mapFrom((source) => source.complaint_identifier),
     ),
     forMember(
       (destination) => destination.details,
-      mapFrom((source) => source.detail_text)
+      mapFrom((source) => source.detail_text),
     ),
     forMember(
       (destination) => destination.name,
-      mapFrom((source) => source.caller_name)
+      mapFrom((source) => source.caller_name),
     ),
     forMember(
       (destination) => destination.address,
-      mapFrom((source) => source.caller_address)
+      mapFrom((source) => source.caller_address),
     ),
     forMember(
       (destination) => destination.email,
-      mapFrom((source) => source.caller_email)
+      mapFrom((source) => source.caller_email),
     ),
     forMember(
       (destination) => destination.phone1,
-      mapFrom((source) => source.caller_phone_1)
+      mapFrom((source) => source.caller_phone_1),
     ),
     forMember(
       (destination) => destination.phone2,
-      mapFrom((source) => source.caller_phone_2)
+      mapFrom((source) => source.caller_phone_2),
     ),
     forMember(
       (destination) => destination.phone3,
-      mapFrom((source) => source.caller_phone_3)
+      mapFrom((source) => source.caller_phone_3),
     ),
     forMember(
       (destination) => destination.location,
@@ -133,15 +133,15 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
           location_geometry_point: { type: locationType, coordinates },
         } = source;
         return { type: locationType, coordinates };
-      })
+      }),
     ),
     forMember(
       (destination) => destination.locationSummary,
-      mapFrom((source) => source.location_summary_text)
+      mapFrom((source) => source.location_summary_text),
     ),
     forMember(
       (destination) => destination.locationDetail,
-      mapFrom((source) => source.location_detailed_text)
+      mapFrom((source) => source.location_detailed_text),
     ),
     forMember(
       (destination) => destination.status,
@@ -150,7 +150,7 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
           complaint_status_code: { complaint_status_code },
         } = source;
         return complaint_status_code;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.reportedBy,
@@ -163,7 +163,7 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
         } else {
           return "";
         }
-      })
+      }),
     ),
     forMember(
       (destination) => destination.ownedBy,
@@ -176,31 +176,31 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
         } else {
           return "";
         }
-      })
+      }),
     ),
     forMember(
       (destination) => destination.reportedByOther,
-      mapFrom((source) => source.reported_by_other_text)
+      mapFrom((source) => source.reported_by_other_text),
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.incident_utc_datetime)
+      mapFrom((source) => source.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => source.incident_reported_utc_timestmp)
+      mapFrom((source) => source.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => source.update_utc_timestamp)
+      mapFrom((source) => source.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.createdBy,
-      mapFrom((source) => source.create_user_id)
+      mapFrom((source) => source.create_user_id),
     ),
     forMember(
       (destination) => destination.updatedBy,
-      mapFrom((source) => source.update_user_id)
+      mapFrom((source) => source.update_user_id),
     ),
     forMember(
       (destination) => destination.organization,
@@ -217,7 +217,7 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
 
           return { region, zone, area, officeLocation };
         }
-      })
+      }),
     ),
     forMember(
       (destination) => destination.delegates,
@@ -226,8 +226,8 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
         const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
 
         return delegates;
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -238,28 +238,28 @@ const speciesCodeToSpeciesDtoMap = (mapper: Mapper) => {
     "SpeciesDto",
     forMember(
       (destination) => destination.species,
-      mapFrom((source) => source.species_code)
+      mapFrom((source) => source.species_code),
     ),
     forMember(
       (destination) => destination.legacy,
-      mapFrom((source) => source.legacy_code)
+      mapFrom((source) => source.legacy_code),
     ),
     forMember(
       (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description)
+      mapFrom((source) => source.short_description),
     ),
     forMember(
       (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description)
+      mapFrom((source) => source.long_description),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
+      mapFrom((source) => source.active_ind),
     ),
     forMember(
       (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order)
-    )
+      mapFrom((source) => source.display_order),
+    ),
   );
 };
 
@@ -270,24 +270,24 @@ const natureOfComplaintCodeToNatureOfComplaintDtoMap = (mapper: Mapper) => {
     "NatureOfComplaintDto",
     forMember(
       (destination) => destination.natureOfComplaint,
-      mapFrom((source) => source.hwcr_complaint_nature_code)
+      mapFrom((source) => source.hwcr_complaint_nature_code),
     ),
     forMember(
       (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description)
+      mapFrom((source) => source.short_description),
     ),
     forMember(
       (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description)
+      mapFrom((source) => source.long_description),
     ),
     forMember(
       (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order)
+      mapFrom((source) => source.display_order),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
-    )
+      mapFrom((source) => source.active_ind),
+    ),
   );
 };
 
@@ -298,24 +298,24 @@ const attractantCodeToAttractantDtoMap = (mapper: Mapper) => {
     "AttractantDto",
     forMember(
       (destination) => destination.attractant,
-      mapFrom((source) => source.attractant_code)
+      mapFrom((source) => source.attractant_code),
     ),
     forMember(
       (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description)
+      mapFrom((source) => source.short_description),
     ),
     forMember(
       (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description)
+      mapFrom((source) => source.long_description),
     ),
     forMember(
       (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order)
+      mapFrom((source) => source.display_order),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
-    )
+      mapFrom((source) => source.active_ind),
+    ),
   );
 };
 
@@ -326,24 +326,24 @@ const agencyCodeToAgencyDto = (mapper: Mapper) => {
     "AgencyCodeDto",
     forMember(
       (destination) => destination.agency,
-      mapFrom((source) => source.agency_code)
+      mapFrom((source) => source.agency_code),
     ),
     forMember(
       (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description)
+      mapFrom((source) => source.short_description),
     ),
     forMember(
       (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description)
+      mapFrom((source) => source.long_description),
     ),
     forMember(
       (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order)
+      mapFrom((source) => source.display_order),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
-    )
+      mapFrom((source) => source.active_ind),
+    ),
   );
 };
 
@@ -356,24 +356,24 @@ const reportedByCodeToReportedByDto = (mapper: Mapper) => {
       (destination) => destination.reportedBy,
       mapFrom((source) => {
         return source.reported_by_code;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description)
+      mapFrom((source) => source.short_description),
     ),
     forMember(
       (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description)
+      mapFrom((source) => source.long_description),
     ),
     forMember(
       (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order)
+      mapFrom((source) => source.display_order),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
-    )
+      mapFrom((source) => source.active_ind),
+    ),
   );
 };
 
@@ -384,19 +384,19 @@ const attractantXrefToAttractantXrefDto = (mapper: Mapper) => {
     "AttractantXrefDto",
     forMember(
       (destination) => destination.xrefId,
-      mapFrom((source) => source.attractant_hwcr_xref_guid)
+      mapFrom((source) => source.attractant_hwcr_xref_guid),
     ),
     forMember(
       (destination) => destination.attractant,
       mapFrom((src) => {
         const item = mapper.map<AttractantCode, Attractant>(src.attractant_code, "AttractantCode", "AttractantDto");
         return item.attractant;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
-    )
+      mapFrom((source) => source.active_ind),
+    ),
   );
 };
 
@@ -407,24 +407,24 @@ const violationCodeToViolationDto = (mapper: Mapper) => {
     "ViolationCodeDto",
     forMember(
       (destination) => destination.violation,
-      mapFrom((source) => source.violation_code)
+      mapFrom((source) => source.violation_code),
     ),
     forMember(
       (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description)
+      mapFrom((source) => source.short_description),
     ),
     forMember(
       (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description)
+      mapFrom((source) => source.long_description),
     ),
     forMember(
       (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order)
+      mapFrom((source) => source.display_order),
     ),
     forMember(
       (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind)
-    )
+      mapFrom((source) => source.active_ind),
+    ),
   );
 };
 
@@ -444,56 +444,56 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     "WildlifeComplaintDto",
     forMember(
       (destination) => destination.id,
-      mapFrom((source) => source.complaint_identifier.complaint_identifier)
+      mapFrom((source) => source.complaint_identifier.complaint_identifier),
     ),
     forMember(
       (destination) => destination.details,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.detail_text !== null ? complaint.detail_text : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.name,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_name !== null ? complaint.caller_name : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.address,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_address !== null ? complaint.caller_address : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.email,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_email !== null ? complaint.caller_email : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.location,
@@ -504,15 +504,15 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
           },
         } = source;
         return { type: locationType, coordinates };
-      })
+      }),
     ),
     forMember(
       (destination) => destination.locationSummary,
-      mapFrom((source) => source.complaint_identifier.location_summary_text)
+      mapFrom((source) => source.complaint_identifier.location_summary_text),
     ),
     forMember(
       (destination) => destination.locationDetail,
-      mapFrom((source) => source.complaint_identifier.location_detailed_text)
+      mapFrom((source) => source.complaint_identifier.location_detailed_text),
     ),
     forMember(
       (destination) => destination.status,
@@ -523,7 +523,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
           },
         } = source;
         return complaint_status_code;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.reportedBy,
@@ -537,7 +537,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.ownedBy,
@@ -551,31 +551,31 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.reportedByOther,
-      mapFrom((source) => source.complaint_identifier.reported_by_other_text)
+      mapFrom((source) => source.complaint_identifier.reported_by_other_text),
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime)
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp)
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => source.update_utc_timestamp)
+      mapFrom((source) => source.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.createdBy,
-      mapFrom((source) => source.create_user_id)
+      mapFrom((source) => source.create_user_id),
     ),
     forMember(
       (destination) => destination.updatedBy,
-      mapFrom((source) => source.update_user_id)
+      mapFrom((source) => source.update_user_id),
     ),
     forMember(
       (destination) => destination.organization,
@@ -586,9 +586,9 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
           sourceOrganization,
           "CosGeoOrgUnit",
-          "OrganizationCodeTable"
+          "OrganizationCodeTable",
         );
-      })
+      }),
     ),
     forMember(
       (destination) => destination.delegates,
@@ -600,11 +600,11 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
 
         return delegates;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.hwcrId,
-      mapFrom((src) => src.hwcr_complaint_guid)
+      mapFrom((src) => src.hwcr_complaint_guid),
     ),
     forMember(
       (destination) => destination.attractants,
@@ -613,12 +613,12 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
           return mapper.mapArray<AttractantHwcrXref, AttractantXrefDto>(
             src.attractant_hwcr_xref,
             "AttractantXref",
-            "AttractantXrefDto"
+            "AttractantXrefDto",
           );
         }
 
         return [];
-      })
+      }),
     ),
     forMember(
       (destination) => destination.otherAttractants,
@@ -628,7 +628,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.species,
@@ -639,7 +639,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.natureOfComplaint,
@@ -647,15 +647,15 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         const item = mapper.map<HwcrComplaintNatureCode, NatureOfComplaint>(
           src.hwcr_complaint_nature_code,
           "NatureOfComplaintCode",
-          "NatureOfComplaintDto"
+          "NatureOfComplaintDto",
         );
         if (item !== null) {
           return item.natureOfComplaint;
         }
 
         return "";
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -672,56 +672,56 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     "AllegationComplaintDto",
     forMember(
       (destination) => destination.id,
-      mapFrom((source) => source.complaint_identifier.complaint_identifier)
+      mapFrom((source) => source.complaint_identifier.complaint_identifier),
     ),
     forMember(
       (destination) => destination.details,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.detail_text !== null ? complaint.detail_text : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.name,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_name !== null ? complaint.caller_name : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.address,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_address !== null ? complaint.caller_address : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.email,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_email !== null ? complaint.caller_email : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.location,
@@ -732,15 +732,15 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
           },
         } = source;
         return { type: locationType, coordinates };
-      })
+      }),
     ),
     forMember(
       (destination) => destination.locationSummary,
-      mapFrom((source) => source.complaint_identifier.location_summary_text)
+      mapFrom((source) => source.complaint_identifier.location_summary_text),
     ),
     forMember(
       (destination) => destination.locationDetail,
-      mapFrom((source) => source.complaint_identifier.location_detailed_text)
+      mapFrom((source) => source.complaint_identifier.location_detailed_text),
     ),
     forMember(
       (destination) => destination.status,
@@ -751,7 +751,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
           },
         } = source;
         return complaint_status_code;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.reportedBy,
@@ -765,7 +765,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.ownedBy,
@@ -779,31 +779,31 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.reportedByOther,
-      mapFrom((source) => source.complaint_identifier.reported_by_other_text)
+      mapFrom((source) => source.complaint_identifier.reported_by_other_text),
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime)
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp)
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => source.update_utc_timestamp)
+      mapFrom((source) => source.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.createdBy,
-      mapFrom((source) => source.create_user_id)
+      mapFrom((source) => source.create_user_id),
     ),
     forMember(
       (destination) => destination.updatedBy,
-      mapFrom((source) => source.update_user_id)
+      mapFrom((source) => source.update_user_id),
     ),
     forMember(
       (destination) => destination.organization,
@@ -814,9 +814,9 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
           sourceOrganization,
           "CosGeoOrgUnit",
-          "OrganizationCodeTable"
+          "OrganizationCodeTable",
         );
-      })
+      }),
     ),
     forMember(
       (destination) => destination.delegates,
@@ -828,11 +828,11 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
 
         return delegates;
-      })
+      }),
     ),
     forMember(
       (destination) => destination.ersId,
-      mapFrom((src) => src.allegation_complaint_guid)
+      mapFrom((src) => src.allegation_complaint_guid),
     ),
     forMember(
       (destination) => destination.violation,
@@ -843,20 +843,20 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         }
 
         return "";
-      })
+      }),
     ),
     forMember(
       (destination) => destination.isInProgress,
-      mapFrom((src) => src.in_progress_ind)
+      mapFrom((src) => src.in_progress_ind),
     ),
     forMember(
       (destination) => destination.wasObserved,
-      mapFrom((src) => src.observed_ind)
+      mapFrom((src) => src.observed_ind),
     ),
     forMember(
       (destination) => destination.violationDetails,
-      mapFrom((src) => src.suspect_witnesss_dtl_text)
-    )
+      mapFrom((src) => src.suspect_witnesss_dtl_text),
+    ),
   );
 };
 // @SONAR_START@

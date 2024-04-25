@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 
-export class SpeciesCodeDto 
-{
+export class SpeciesCodeDto {
   @ApiProperty({
     example: "GRZBEAR",
     description: "A human readable code used to identify a wildlife species.",
@@ -15,17 +14,24 @@ export class SpeciesCodeDto
   @ApiProperty({ example: "Grizzly bear", description: "The long description of the species code." })
   long_description: string;
 
-  @ApiProperty({ example: "1", description: "The order in which the values of the species code table should be displayed when presented to a user in a list." })
+  @ApiProperty({
+    example: "1",
+    description:
+      "The order in which the values of the species code table should be displayed when presented to a user in a list.",
+  })
   display_order: number;
 
   @ApiProperty({ example: "True", description: "A boolean indicator to determine if the species code is active." })
   active_ind: boolean;
 
-  @ApiProperty({ example: "COD", description: "The code for the species from the CORS_SPECIES_CODE table in the COORS database.   "})
+  @ApiProperty({
+    example: "COD",
+    description: "The code for the species from the CORS_SPECIES_CODE table in the COORS database.   ",
+  })
   legacy_code: string;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that created the species code.",
   })
   create_user_id: string;
@@ -37,7 +43,7 @@ export class SpeciesCodeDto
   create_utc_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that updated the species code.",
   })
   update_user_id: string;

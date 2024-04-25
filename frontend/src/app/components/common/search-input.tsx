@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  FC,
-  KeyboardEvent,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
+import { ChangeEvent, FC, KeyboardEvent, useContext, useState, useEffect } from "react";
 import { InputGroup } from "react-bootstrap";
 import { ComplaintFilterContext } from "../../providers/complaint-filter-provider";
 import { getComplaints, getMappedComplaints } from "../../store/reducers/complaints";
@@ -21,12 +14,7 @@ type Props = {
   applySearchQuery: Function;
 };
 
-const SearchInput: FC<Props> = ({
-  complaintType,
-  viewType,
-  searchQuery,
-  applySearchQuery,
-}) => {
+const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySearchQuery }) => {
   const dispatch = useAppDispatch();
   const { state: filters } = useContext(ComplaintFilterContext);
 
@@ -49,22 +37,17 @@ const SearchInput: FC<Props> = ({
           1,
           50,
           "incident_reported_utc_timestmp",
-          SORT_TYPES.DESC
+          SORT_TYPES.DESC,
         );
 
         payload = { ...payload, query: input };
 
         dispatch(getComplaints(complaintType, payload));
       } else {
-        let payload = generateMapComplaintRequestPayload(
-          complaintType,
-          filters,
-          "",
-          ""
-        );
+        let payload = generateMapComplaintRequestPayload(complaintType, filters, "", "");
 
         payload = { ...payload, query: input };
-        
+
         dispatch(getMappedComplaints(complaintType, payload));
       }
     }
@@ -74,9 +57,7 @@ const SearchInput: FC<Props> = ({
     applySearchQuery(undefined);
   };
 
-  const handleKeyPress = (
-    evt: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void => {
+  const handleKeyPress = (evt: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { key } = evt;
 
     if (key.toUpperCase() === "ENTER") {
@@ -84,9 +65,7 @@ const SearchInput: FC<Props> = ({
     }
   };
 
-  const handleInputChange = (
-    evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void => {
+  const handleInputChange = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const {
       target: { value },
     } = evt;

@@ -58,26 +58,15 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
     //-- verify the call details block
-    cy.get('p[id="comp-details-description"]').contains(
-      callDetails.description,
-    );
+    cy.get('p[id="comp-details-description"]').contains(callDetails.description);
     cy.get('div[id="comp-details-location"]').contains(callDetails.location);
 
     //-- verify that the conflict type is singular, not plural
     cy.get("div.hwcr-conflict-type").should("exist");
-    cy.get("div.hwcr-conflict-type").should(
-      "have.text",
-      "Human Wildlife Conflict",
-    );
-    cy.get("div.hwcr-conflict-type").should(
-      "not.have.text",
-      "Human Wildlife Conflicts",
-    );
+    cy.get("div.hwcr-conflict-type").should("have.text", "Human Wildlife Conflict");
+    cy.get("div.hwcr-conflict-type").should("not.have.text", "Human Wildlife Conflicts");
 
-    cy.get('p[id="comp-details-location-description"]').should(
-      "have.value",
-      "",
-    );
+    cy.get('p[id="comp-details-location-description"]').should("have.value", "");
     cy.get('span[id="comp-details-community"]').contains(callDetails.community);
     cy.get('span[id="comp-details-office"]').contains(callDetails.office);
     cy.get('span[id="comp-details-zone"]').contains(callDetails.zone);
@@ -98,23 +87,19 @@ describe("COMPENF-35 Display HWCR Details", () => {
       expect($el.text().trim()).equal(callerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-address"]').contains(
-      callerInformation.address,
-    );
+    cy.get('div[id="comp-details-address"]').contains(callerInformation.address);
     cy.get('div[id="comp-details-email"]').contains(callerInformation.email);
-    cy.get('div[id="comp-details-reported"]').contains(
-      callerInformation.reported,
-    );
+    cy.get('div[id="comp-details-reported"]').contains(callerInformation.reported);
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032525", true);
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-032525", true);
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR,"23-032527", true);
+    cy.navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-032527", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
@@ -122,8 +107,7 @@ describe("COMPENF-35 Display HWCR Details", () => {
   it("validates breadcrumb styles", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-007023", true);
 
-    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'text-decoration').should('include', 'underline');
-    cy.get(".comp-nav-item-name-inverted > a").should('have.css', 'color').should('include', 'rgb(255, 255, 255)');
+    cy.get(".comp-nav-item-name-inverted > a").should("have.css", "text-decoration").should("include", "underline");
+    cy.get(".comp-nav-item-name-inverted > a").should("have.css", "color").should("include", "rgb(255, 255, 255)");
   });
-
 });

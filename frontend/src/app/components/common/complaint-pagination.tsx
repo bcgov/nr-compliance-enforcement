@@ -24,9 +24,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   resultsPerPage,
 }) => {
   const [specificPage, setSpecificPage] = useState<string>("");
-  const pageSizeOptions: Option[] = [
-    { label: `${resultsPerPage} / page`, value: `${resultsPerPage}` },
-  ];
+  const pageSizeOptions: Option[] = [{ label: `${resultsPerPage} / page`, value: `${resultsPerPage}` }];
   const defaultOption: Option = {
     label: `${resultsPerPage} / page`,
     value: `${resultsPerPage}`,
@@ -37,9 +35,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     onPageChange(1);
   }, [totalItems]);
 
-  const handleEnterKeyPress = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
+  const handleEnterKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       handleSpecificPageChange();
     }

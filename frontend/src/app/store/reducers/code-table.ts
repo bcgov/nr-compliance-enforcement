@@ -56,8 +56,8 @@ const initialState: CodeTableState = {
   "ear-tag": [],
   "wildlife-outcomes": [],
   drugs: [],
-  "drug-methods":[],
-  "drug-remaining-outcomes":[],
+  "drug-methods": [],
+  "drug-remaining-outcomes": [],
   equipment: [],
 };
 
@@ -273,7 +273,7 @@ export const fetchComplaintStatus = (): AppThunk => async (dispatch) => {
 
 export const fetchNatureOfComplaints = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.NATURE_OF_COMPLAINT}`
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.NATURE_OF_COMPLAINT}`,
   );
   const response = await get<Array<NatureOfComplaint>>(dispatch, parameters);
 
@@ -397,7 +397,7 @@ export const fetchReportedByCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.JUSTIFICATION}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.JUSTIFICATION}`,
   );
   const response = await get<Array<Justification>>(dispatch, parameters);
   if (response && from(response).any()) {
@@ -408,7 +408,7 @@ export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.ASSESSMENT_TYPE}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.ASSESSMENT_TYPE}`,
   );
   const response = await get<Array<AssessmentType>>(dispatch, parameters);
   if (response && from(response).any()) {
@@ -419,7 +419,7 @@ export const fetchAssessmentTypeCodes = (): AppThunk => async (dispatch) => {
 
 export const fetchPreventionAction = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENTION_TYPE}`
+    `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.PREVENTION_TYPE}`,
   );
 
   const response = await get<Array<PreventionType>>(dispatch, parameters);
@@ -481,7 +481,7 @@ export const fetchEars = (): AppThunk => async (dispatch) => {
 
 export const fetchWildlifeComplaintOutcomes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.WILDLIFE_OUTCOMES}`
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.WILDLIFE_OUTCOMES}`,
   );
 
   const response = await get<Array<WildlifeComplaintOutcome>>(dispatch, parameters);
@@ -491,11 +491,8 @@ export const fetchWildlifeComplaintOutcomes = (): AppThunk => async (dispatch) =
   }
 };
 
-
 export const fetchDrugs = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DRUGS}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DRUGS}`);
 
   const response = await get<Array<Drug>>(dispatch, parameters);
   if (response && from(response).any()) {
@@ -505,9 +502,7 @@ export const fetchDrugs = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchDrugUseMethods = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DRUG_METHOD_USE}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DRUG_METHOD_USE}`);
 
   const response = await get<Array<DrugMethod>>(dispatch, parameters);
   if (response && from(response).any()) {
@@ -518,7 +513,7 @@ export const fetchDrugUseMethods = (): AppThunk => async (dispatch) => {
 
 export const fetchRemainingDrugUse = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REMAINING_DRUG_USE}`
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.REMAINING_DRUG_USE}`,
   );
 
   const response = await get<Array<DrugRemainingOutcome>>(dispatch, parameters);
@@ -529,9 +524,7 @@ export const fetchRemainingDrugUse = (): AppThunk => async (dispatch) => {
 };
 
 export const fetchEquipment = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(
-    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EQUIPMENT}`
-  );
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EQUIPMENT}`);
 
   const response = await get<Array<Equipment>>(dispatch, parameters);
   if (response && from(response).any()) {
@@ -1164,7 +1157,7 @@ export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
 
 export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { "equipment": items },
+    codeTables: { equipment: items },
   } = state;
 
   const data = items.map(({ equipment: value, shortDescription: label }) => {

@@ -23,7 +23,6 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
 
   let selectedEar = ear === "L" ? leftEar : rightEar;
 
-
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, number };
     const updatedTag = { ...source, [property]: value };
@@ -34,7 +33,12 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
     <div className="comp-animal-outcome-report-inner-spacing comp-padding-top-2">
       <Row>
         <Col>
-          <label htmlFor={`comp-ear-tag-value-${id}`} className="comp-margin-bottom-8">Ear Tag</label>
+          <label
+            htmlFor={`comp-ear-tag-value-${id}`}
+            className="comp-margin-bottom-8"
+          >
+            Ear Tag
+          </label>
           <CompInput
             id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
@@ -56,7 +60,12 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
           />
         </Col>
         <Col>
-          <label htmlFor={`comp-ear-tag-${id}`} className="comp-margin-bottom-8">&nbsp;</label>
+          <label
+            htmlFor={`comp-ear-tag-${id}`}
+            className="comp-margin-bottom-8"
+          >
+            &nbsp;
+          </label>
           <CompSelect
             id={`comp-ear-tag-${id}`}
             classNamePrefix="comp-select"
@@ -72,8 +81,14 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
         </Col>
         <Col className="mt-delete-button mb-2">
           <CompIconButton onClick={() => remove(id)}>
-            <BsXCircle size={24} className="comp-outcome-remove-botton" />
-            <BsFillXCircleFill size={24} className="comp-outcome-remove-botton-hover" />
+            <BsXCircle
+              size={24}
+              className="comp-outcome-remove-botton"
+            />
+            <BsFillXCircleFill
+              size={24}
+              className="comp-outcome-remove-botton-hover"
+            />
           </CompIconButton>
         </Col>
         <Col></Col>

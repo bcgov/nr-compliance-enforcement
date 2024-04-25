@@ -16,19 +16,12 @@ type Props = {
   allowDelete?: boolean;
 };
 
-export const AttachmentSlide: FC<Props> = ({
-  index,
-  attachment,
-  allowDelete,
-  onFileRemove,
-}) => {
+export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onFileRemove }) => {
   const dispatch = useAppDispatch();
 
   // download attachment
   const handleAttachmentClick = async (objectid: string, filename: string) => {
-    const parameters = generateApiParameters(
-      `${config.COMS_URL}/object/${objectid}?download=url`
-    );
+    const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectid}?download=url`);
 
     const response = await get<string>(dispatch, parameters);
 
@@ -51,35 +44,44 @@ export const AttachmentSlide: FC<Props> = ({
     }
 
     return className;
-  }
+  };
 
   return (
-    <Slide index={index} key={index}>
+    <Slide
+      index={index}
+      key={index}
+    >
       <div className={`coms-carousel-slide ${getSlideClass()}`}>
         <div className="coms-carousel-actions">
-        {!attachment.pendingUpload && (
-          <BsCloudDownload
-            tabIndex={index}
-            className="download-icon"
-            onClick={() =>
-              handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)
-            }
-          />)}
-          {allowDelete && <BsTrash className="delete-icon" tabIndex={index} onClick={() => onFileRemove(attachment)}  />}
+          {!attachment.pendingUpload && (
+            <BsCloudDownload
+              tabIndex={index}
+              className="download-icon"
+              onClick={() => handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)}
+            />
+          )}
+          {allowDelete && (
+            <BsTrash
+              className="delete-icon"
+              tabIndex={index}
+              onClick={() => onFileRemove(attachment)}
+            />
+          )}
         </div>
         <div className="top-section">
-        <AttachmentIcon filename={attachment.name} imageIconString={attachment.imageIconString}/>
+          <AttachmentIcon
+            filename={attachment.name}
+            imageIconString={attachment.imageIconString}
+          />
         </div>
         <div className="bottom-section">
-          <div className="slide_text slide_file_name" >{decodeURIComponent(attachment.name)}</div>
+          <div className="slide_text slide_file_name">{decodeURIComponent(attachment.name)}</div>
           {attachment?.pendingUpload && attachment?.errorMesage ? (
-          <div>
-            {attachment?.errorMesage}
-          </div>
+            <div>{attachment?.errorMesage}</div>
           ) : (
-          <div className="slide_text">
-            {attachment?.pendingUpload ? 'Pending upload...' : formatDateTime(attachment.createdAt?.toString())}
-          </div>
+            <div className="slide_text">
+              {attachment?.pendingUpload ? "Pending upload..." : formatDateTime(attachment.createdAt?.toString())}
+            </div>
           )}
         </div>
       </div>

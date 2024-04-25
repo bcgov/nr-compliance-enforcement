@@ -16,14 +16,14 @@ import { DataSource } from "typeorm";
 export class PersonComplaintXrefController {
   constructor(
     private readonly personComplaintXrefService: PersonComplaintXrefService,
-    private dataSource: DataSource
+    private dataSource: DataSource,
   ) {}
 
   @Post(":complaint_id")
   @Roles(Role.COS_OFFICER)
   assignOfficer(
     @Param("complaint_id") complaintId: string,
-    @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto
+    @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,
   ) {
     const queryRunner = this.dataSource.createQueryRunner();
     return this.personComplaintXrefService.assignOfficer(queryRunner, complaintId, createPersonComplaintXrefDto, true);

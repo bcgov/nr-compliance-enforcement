@@ -1,5 +1,5 @@
 export interface ComplaintHeader {
-  loggedDate: string; 
+  loggedDate: string;
   createdBy: string;
   lastUpdated: string;
   status: string;
@@ -8,12 +8,12 @@ export interface ComplaintHeader {
   violationTypeCode?: string;
   species?: string;
   statusCode?: string;
-  natureOfComplaintCode?: string
-  speciesCode?: string
-  zone?: string
+  natureOfComplaintCode?: string;
+  speciesCode?: string;
+  zone?: string;
   complaintAgency?: string;
   officerAssigned: string;
-  personGuid: string
-  firstName?: string
-  lastName?: string
+  personGuid: string;
+  firstName?: string;
+  lastName?: string;
 }

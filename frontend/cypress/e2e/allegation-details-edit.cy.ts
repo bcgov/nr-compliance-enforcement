@@ -103,61 +103,59 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   it("Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data", function () {
     //start edit
     cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", false);
-    cy.get("#caller-name-id").click({force: true}).click({force: true}).clear().type(editCallerInformation.name);
-    cy.get("#complaint-address-id").click({force: true}).clear().type(editCallerInformation.address);
-    cy.get("#complaint-email-id").click({force: true}).clear().type(editCallerInformation.email);
+    cy.get("#caller-name-id").click({ force: true }).click({ force: true }).clear().type(editCallerInformation.name);
+    cy.get("#complaint-address-id").click({ force: true }).clear().type(editCallerInformation.address);
+    cy.get("#complaint-email-id").click({ force: true }).clear().type(editCallerInformation.email);
 
-    cy.get("#caller-primary-phone-id").click({force: true}).click({ force: true });
+    cy.get("#caller-primary-phone-id").click({ force: true }).click({ force: true });
 
-    cy.get("#caller-primary-phone-id").click({force: true}).clear();
+    cy.get("#caller-primary-phone-id").click({ force: true }).clear();
     cy.get("#caller-primary-phone-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .typeAndTriggerChange(editCallerInformation.phoneInput);
 
     cy.get("#caller-info-secondary-phone-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .typeAndTriggerChange(editCallerInformation.secondaryInput);
     cy.get("#caller-info-alternate-phone-id")
-      .click({force: true})  
+      .click({ force: true })
       .clear()
       .typeAndTriggerChange(editCallerInformation.alternateInput);
 
     cy.selectItemById("reported-select-id", editCallerInformation.reported);
 
     cy.get("#complaint-witness-details-textarea-id")
-      .click({force: true})  
+      .click({ force: true })
       .clear()
       .type(editCallerInformation.witnessDetails, { delay: 0 });
 
     cy.get("#location-edit-id").click({ force: true });
-    cy.get("#location-edit-id").click({force: true}).clear().type(editCallDetails.location);
+    cy.get("#location-edit-id").click({ force: true }).clear().type(editCallDetails.location);
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,
     });
     cy.get("#complaint-location-description-textarea-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .type(editCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .type(editCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","01","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time", "01", "13", "45");
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.selectItemById(
-      "violation-in-progress-select-id",
-      editCallDetails.violationInProgressString,
-    );
+    cy.selectItemById("violation-in-progress-select-id", editCallDetails.violationInProgressString);
 
-    cy.selectItemById(
-      "violation-observed-select-id",
-      editCallDetails.violationObservedString,
-    );
+    cy.selectItemById("violation-observed-select-id", editCallDetails.violationObservedString);
 
     cy.selectItemById("status-select-id", editCallDetails.status);
 
@@ -166,10 +164,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.selectItemById(
-      "violation-type-select-id",
-      editCallDetails.violationType,
-    );
+    cy.selectItemById("violation-type-select-id", editCallDetails.violationType);
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -180,12 +175,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.waitForSpinner();
 
     cy.get('div[id="comp-details-name"]').contains(editCallerInformation.name);
-    cy.get('div[id="comp-details-address"]').contains(
-      editCallerInformation.address,
-    );
-    cy.get('div[id="comp-details-email"]').contains(
-      editCallerInformation.email,
-    );
+    cy.get('div[id="comp-details-address"]').contains(editCallerInformation.address);
+    cy.get('div[id="comp-details-email"]').contains(editCallerInformation.email);
     cy.get('div[id="comp-details-phone"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.phone);
     });
@@ -195,47 +186,29 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get('div[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
-    cy.get('div[id="comp-details-reported"]').contains(
-      editCallerInformation.reported,
-    );
-    cy.get('div[id="comp-details-email"]').contains(
-      editCallerInformation.email,
-    );
+    cy.get('div[id="comp-details-reported"]').contains(editCallerInformation.reported);
+    cy.get('div[id="comp-details-email"]').contains(editCallerInformation.email);
 
     cy.get('p[id="comp-details-witness-details"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.witnessDetails);
     });
 
-    cy.get('div[id="comp-details-location"]').contains(
-      editCallDetails.location,
-    );
-    cy.get('p[id="comp-details-location-description"]').contains(
-      editCallDetails.locationDescription,
-    );
+    cy.get('div[id="comp-details-location"]').contains(editCallDetails.location);
+    cy.get('p[id="comp-details-location-description"]').contains(editCallDetails.locationDescription);
 
-    cy.get('div[id="complaint-incident-date-time"]').contains(
-      editCallDetails.incidentDateDay
-    );
+    cy.get('div[id="complaint-incident-date-time"]').contains(editCallDetails.incidentDateDay);
 
     cy.get('p[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(editCallDetails.description);
     });
 
-    cy.get('span[id="comp-details-community"]').contains(
-      editCallDetails.community,
-    );
+    cy.get('span[id="comp-details-community"]').contains(editCallDetails.community);
 
-    cy.get('span[id="comp-details-violation-in-progress"]').contains(
-      editCallDetails.violationInProgressString,
-    );
+    cy.get('span[id="comp-details-violation-in-progress"]').contains(editCallDetails.violationInProgressString);
 
-    cy.get('span[id="comp-details-violation-observed"]').contains(
-      editCallDetails.violationObservedString,
-    );
+    cy.get('span[id="comp-details-violation-observed"]').contains(editCallDetails.violationObservedString);
 
-    cy.get('div[id="comp-nature-of-complaint"]').contains(
-      editCallDetails.violationType,
-    );
+    cy.get('div[id="comp-nature-of-complaint"]').contains(editCallDetails.violationType);
 
     cy.get('span[id="comp-details-office"]').contains(editCallDetails.office);
 
@@ -249,27 +222,32 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   it("Puts everything back to the original details", () => {
     //start reverting changes
     cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
-    cy.get("#caller-name-id").click({force: true}).click({force: true}).clear().type(originalCallerInformation.name);
-    cy.get("#complaint-address-id")
-    .click({force: true}).clear()
-      .type(originalCallerInformation.address);
-    cy.get("#complaint-email-id").click({force: true}).clear(); //blank to start
+    cy.get("#caller-name-id")
+      .click({ force: true })
+      .click({ force: true })
+      .clear()
+      .type(originalCallerInformation.name);
+    cy.get("#complaint-address-id").click({ force: true }).clear().type(originalCallerInformation.address);
+    cy.get("#complaint-email-id").click({ force: true }).clear(); //blank to start
 
     cy.get("#caller-primary-phone-id").click({ force: true });
     cy.get("#caller-primary-phone-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .typeAndTriggerChange(originalCallerInformation.phoneInput);
 
     cy.get("#caller-info-secondary-phone-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .typeAndTriggerChange(originalCallerInformation.secondaryInput);
     cy.get("#caller-info-alternate-phone-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .typeAndTriggerChange(originalCallerInformation.alternateInput);
 
     cy.selectItemById("reported-select-id", originalCallerInformation.reported);
 
-    cy.get("#complaint-witness-details-textarea-id").click({force: true}).clear();
+    cy.get("#complaint-witness-details-textarea-id").click({ force: true }).clear();
 
     cy.get("#location-edit-id").click({ force: true });
     cy.get("#location-edit-id").clear().type(originalCallDetails.location);
@@ -277,41 +255,31 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       force: true,
     });
     cy.get("#complaint-location-description-textarea-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .type(originalCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
     cy.get("#complaint-description-textarea-id")
-      .click({force: true}).clear()
+      .click({ force: true })
+      .clear()
       .type(originalCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","11","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time", "11", "13", "45");
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.selectItemById("community-select-id", originalCallDetails.community);
 
-    cy.selectItemById(
-      "violation-in-progress-select-id",
-      originalCallDetails.violationInProgressString,
-    );
+    cy.selectItemById("violation-in-progress-select-id", originalCallDetails.violationInProgressString);
 
-    cy.selectItemById(
-      "violation-observed-select-id",
-      originalCallDetails.violationObservedString,
-    );
+    cy.selectItemById("violation-observed-select-id", originalCallDetails.violationObservedString);
 
     cy.selectItemById("status-select-id", originalCallDetails.status);
 
-    cy.selectItemById(
-      "officer-assigned-select-id",
-      originalCallDetails.assigned,
-    );
+    cy.selectItemById("officer-assigned-select-id", originalCallDetails.assigned);
 
-    cy.selectItemById(
-      "violation-type-select-id",
-      originalCallDetails.violationType,
-    );
+    cy.selectItemById("violation-type-select-id", originalCallDetails.violationType);
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -320,12 +288,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     //start verifying changes are reverted
     cy.waitForSpinner();
 
-    cy.get('div[id="comp-details-name"]').contains(
-      originalCallerInformation.name,
-    );
-    cy.get('div[id="comp-details-address"]').contains(
-      originalCallerInformation.address,
-    );
+    cy.get('div[id="comp-details-name"]').contains(originalCallerInformation.name);
+    cy.get('div[id="comp-details-address"]').contains(originalCallerInformation.address);
 
     cy.get('div[id="comp-details-email"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.email);
@@ -345,50 +309,30 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-reported"]').contains(
-      originalCallerInformation.reported,
-    );
+    cy.get('div[id="comp-details-reported"]').contains(originalCallerInformation.reported);
 
-    cy.get('div[id="comp-details-location"]').contains(
-      originalCallDetails.location,
-    );
-    cy.get('p[id="comp-details-location-description"]').contains(
-      originalCallDetails.locationDescription,
-    );
+    cy.get('div[id="comp-details-location"]').contains(originalCallDetails.location);
+    cy.get('p[id="comp-details-location-description"]').contains(originalCallDetails.locationDescription);
 
-    cy.get('div[id="complaint-incident-date-time"]').contains(
-      originalCallDetails.incidentDateDay
-    );
+    cy.get('div[id="complaint-incident-date-time"]').contains(originalCallDetails.incidentDateDay);
 
     cy.get('p[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallDetails.description);
     });
 
-    cy.get('span[id="comp-details-community"]').contains(
-      originalCallDetails.community,
-    );
+    cy.get('span[id="comp-details-community"]').contains(originalCallDetails.community);
 
-    cy.get('span[id="comp-details-violation-in-progress"]').contains(
-      originalCallDetails.violationInProgressString,
-    );
+    cy.get('span[id="comp-details-violation-in-progress"]').contains(originalCallDetails.violationInProgressString);
 
-    cy.get('span[id="comp-details-violation-observed"]').contains(
-      originalCallDetails.violationObservedString,
-    );
+    cy.get('span[id="comp-details-violation-observed"]').contains(originalCallDetails.violationObservedString);
 
-    cy.get('div[id="comp-nature-of-complaint"]').contains(
-      originalCallDetails.violationType,
-    );
+    cy.get('div[id="comp-nature-of-complaint"]').contains(originalCallDetails.violationType);
 
-    cy.get('span[id="comp-details-office"]').contains(
-      originalCallDetails.office,
-    );
+    cy.get('span[id="comp-details-office"]').contains(originalCallDetails.office);
 
     cy.get('span[id="comp-details-zone"]').contains(originalCallDetails.zone);
 
-    cy.get('span[id="comp-details-region"]').contains(
-      originalCallDetails.region,
-    );
+    cy.get('span[id="comp-details-region"]').contains(originalCallDetails.region);
     //end verifying changes are reverted
   });
 
@@ -565,13 +509,13 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-006888", true);
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
     cy.verifyMapMarkerExists(true);
     cy.get(".comp-complaint-details-alert").should("not.exist");
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS,"23-032528", true);
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-032528", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });

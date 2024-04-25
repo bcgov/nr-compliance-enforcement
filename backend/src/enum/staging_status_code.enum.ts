@@ -1,5 +1,5 @@
 export enum StagingStatusCodeEnum {
-    PENDING	= 'PENDING',
-    SUCCESS = 'SUCCESS',
-    ERROR	= 'ERROR',
-  }
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
+  ERROR = "ERROR",
+}

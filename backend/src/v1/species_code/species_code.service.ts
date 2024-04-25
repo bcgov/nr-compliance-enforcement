@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSpeciesCodeDto } from './dto/create-species_code.dto';
-import { UpdateSpeciesCodeDto } from './dto/update-species_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { SpeciesCode } from './entities/species_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateSpeciesCodeDto } from "./dto/create-species_code.dto";
+import { UpdateSpeciesCodeDto } from "./dto/update-species_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { SpeciesCode } from "./entities/species_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class SpeciesCodeService {
   constructor(
     @InjectRepository(SpeciesCode)
-    private speciesCodeRepository: Repository<SpeciesCode>
+    private speciesCodeRepository: Repository<SpeciesCode>,
   ) {}
 
   async create(speciesCode: CreateSpeciesCodeDto): Promise<SpeciesCode> {
@@ -19,13 +19,11 @@ export class SpeciesCodeService {
   }
 
   async findAll(): Promise<SpeciesCode[]> {
-    return (await this.speciesCodeRepository.find(
-        {order: {display_order: "ASC"}}
-      ));
+    return await this.speciesCodeRepository.find({ order: { display_order: "ASC" } });
   }
 
   async findOne(id: string): Promise<SpeciesCode> {
-    return this.speciesCodeRepository.findOneByOrFail({species_code: id});
+    return this.speciesCodeRepository.findOneByOrFail({ species_code: id });
   }
 
   async update(species_code: string, updatespeciesCodeDto: UpdateSpeciesCodeDto): Promise<SpeciesCode> {

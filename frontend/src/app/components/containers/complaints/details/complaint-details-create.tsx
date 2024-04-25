@@ -517,7 +517,7 @@ export const CreateComplaint: FC = () => {
           description: "Your changes will be lost.",
           cancelConfirmed,
         },
-      })
+      }),
     );
   };
 
@@ -623,8 +623,15 @@ export const CreateComplaint: FC = () => {
         saveButtonClick={saveButtonClick}
       />
       {/* edit header block */}
-      <div id="complaint-error-notification" className={errorNotificationClass}>
-        <img src={notificationInvalid} alt="error" className="filter-image-spacing" />
+      <div
+        id="complaint-error-notification"
+        className={errorNotificationClass}
+      >
+        <img
+          src={notificationInvalid}
+          alt="error"
+          className="filter-image-spacing"
+        />
         {/*
          */}
         Errors in form
@@ -635,8 +642,14 @@ export const CreateComplaint: FC = () => {
       <div className="comp-complaint-header-edit-block">
         <div className="comp-details-edit-container">
           <div className="comp-details-edit-column">
-            <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
-              <label id="nature-of-complaint-label-id" htmlFor="complaint-type-select-id">
+            <div
+              className="comp-details-label-input-pair"
+              id="nature-of-complaint-pair-id"
+            >
+              <label
+                id="nature-of-complaint-label-id"
+                htmlFor="complaint-type-select-id"
+              >
                 Complaint Type<span className="required-ind">*</span>
               </label>
               <ValidationSelect
@@ -651,8 +664,14 @@ export const CreateComplaint: FC = () => {
               />
             </div>
             {complaintType === COMPLAINT_TYPES.HWCR && (
-              <div className="comp-details-label-input-pair" id="nature-of-complaint-pair-id">
-                <label id="nature-of-complaint-label-id" htmlFor="nature-of-complaint-select-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="nature-of-complaint-pair-id"
+              >
+                <label
+                  id="nature-of-complaint-label-id"
+                  htmlFor="nature-of-complaint-select-id"
+                >
                   Nature of Complaint<span className="required-ind">*</span>
                 </label>
                 <ValidationSelect
@@ -667,7 +686,10 @@ export const CreateComplaint: FC = () => {
               </div>
             )}
             {complaintType === COMPLAINT_TYPES.ERS && (
-              <div className="comp-details-label-input-pair" id="violation-type-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="violation-type-pair-id"
+              >
                 <label id="violation-label-id">
                   Violation Type<span className="required-ind">*</span>
                 </label>
@@ -682,8 +704,14 @@ export const CreateComplaint: FC = () => {
                 />
               </div>
             )}
-            <div className="comp-details-label-input-pair" id="officer-assigned-pair-id">
-              <label id="officer-assigned-select-label-id" htmlFor="officer-assigned-select-id">
+            <div
+              className="comp-details-label-input-pair"
+              id="officer-assigned-pair-id"
+            >
+              <label
+                id="officer-assigned-select-label-id"
+                htmlFor="officer-assigned-select-id"
+              >
                 Officer Assigned
               </label>
               <CompSelect
@@ -701,7 +729,10 @@ export const CreateComplaint: FC = () => {
           <div className="comp-details-edit-column comp-details-right-column">
             <div className="comp-details-label-input-pair"></div>
             {complaintType === COMPLAINT_TYPES.HWCR && (
-              <div className="comp-details-label-input-pair" id="species-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="species-pair-id"
+              >
                 <label id="species-label-id">
                   Species<span className="required-ind">*</span>
                 </label>
@@ -716,10 +747,19 @@ export const CreateComplaint: FC = () => {
                 />
               </div>
             )}
-            <div className="comp-details-label-input-pair" id="office-pair-id">
+            <div
+              className="comp-details-label-input-pair"
+              id="office-pair-id"
+            >
               <label>Status</label>
               <div className="comp-details-edit-input">
-                <input type="text" id="status-readonly-id" className="comp-form-control" disabled defaultValue="Open" />
+                <input
+                  type="text"
+                  id="status-readonly-id"
+                  className="comp-form-control"
+                  disabled
+                  defaultValue="Open"
+                />
               </div>
             </div>
           </div>
@@ -732,7 +772,10 @@ export const CreateComplaint: FC = () => {
         <div className="comp-complaint-call-information">
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair" id="complaint-description-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="complaint-description-pair-id"
+              >
                 <label
                   id="complaint-description-edit-label-id"
                   className="col-auto"
@@ -749,7 +792,10 @@ export const CreateComplaint: FC = () => {
                   maxLength={4000}
                 />
               </div>
-              <div className="comp-details-label-input-pair comp-margin-top-30" id="incident-time-pair-id">
+              <div
+                className="comp-details-label-input-pair comp-margin-top-30"
+                id="incident-time-pair-id"
+              >
                 <label>Incident Time</label>
                 <DatePicker
                   showTimeInput
@@ -765,7 +811,10 @@ export const CreateComplaint: FC = () => {
                 />
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (
-                <div className="comp-details-label-input-pair" id="attractants-pair-id">
+                <div
+                  className="comp-details-label-input-pair"
+                  id="attractants-pair-id"
+                >
                   <label>Attractants</label>
                   <div className="comp-details-edit-input">
                     <ValidationMultiSelect
@@ -781,7 +830,10 @@ export const CreateComplaint: FC = () => {
                 </div>
               )}
               {complaintType === COMPLAINT_TYPES.ERS && (
-                <div className="comp-details-label-input-pair" id="violation-in-progress-pair-id">
+                <div
+                  className="comp-details-label-input-pair"
+                  id="violation-in-progress-pair-id"
+                >
                   <label>Violation in Progress</label>
                   <div className="comp-details-edit-input">
                     <Select
@@ -795,7 +847,10 @@ export const CreateComplaint: FC = () => {
                 </div>
               )}
               {complaintType === COMPLAINT_TYPES.ERS && (
-                <div className="comp-details-label-input-pair" id="violation-observed-pair-id">
+                <div
+                  className="comp-details-label-input-pair"
+                  id="violation-observed-pair-id"
+                >
                   <label>Violation Observed</label>
                   <div className="comp-details-edit-input">
                     <Select
@@ -810,8 +865,14 @@ export const CreateComplaint: FC = () => {
               )}
             </div>
             <div className="comp-details-edit-column comp-details-right-column">
-              <div className="comp-details-label-input-pair" id="complaint-location-pair-id">
-                <label id="complaint-location-label-id" htmlFor="location-edit-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="complaint-location-pair-id"
+              >
+                <label
+                  id="complaint-location-label-id"
+                  htmlFor="location-edit-id"
+                >
                   Complaint Location
                 </label>
                 <div className="comp-details-edit-input">
@@ -824,7 +885,10 @@ export const CreateComplaint: FC = () => {
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="location-description-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="location-description-pair-id"
+              >
                 <label>Location Description</label>
                 <textarea
                   className="comp-form-control"
@@ -858,7 +922,10 @@ export const CreateComplaint: FC = () => {
                 step="any"
                 onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
               />
-              <div className="comp-details-label-input-pair" id="area-community-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="area-community-pair-id"
+              >
                 <label>
                   Community<span className="required-ind">*</span>
                 </label>
@@ -874,22 +941,46 @@ export const CreateComplaint: FC = () => {
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="office-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="office-pair-id"
+              >
                 <label>Office</label>
                 <div className="comp-details-edit-input">
-                  <input type="text" id="office-edit-readonly-id" className="comp-form-control" disabled />
+                  <input
+                    type="text"
+                    id="office-edit-readonly-id"
+                    className="comp-form-control"
+                    disabled
+                  />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="zone-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="zone-pair-id"
+              >
                 <label>Zone</label>
                 <div className="comp-details-edit-input">
-                  <input type="text" id="zone-edit-readonly-id" className="comp-form-control" disabled />
+                  <input
+                    type="text"
+                    id="zone-edit-readonly-id"
+                    className="comp-form-control"
+                    disabled
+                  />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="region-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="region-pair-id"
+              >
                 <label>Region</label>
                 <div className="comp-details-edit-input">
-                  <input type="text" id="region-edit-readonly-id" className="comp-form-control" disabled />
+                  <input
+                    type="text"
+                    id="region-edit-readonly-id"
+                    className="comp-form-control"
+                    disabled
+                  />
                 </div>
               </div>
             </div>
@@ -911,8 +1002,15 @@ export const CreateComplaint: FC = () => {
         <div className="comp-complaint-call-information">
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair" id="name-pair-id">
-                <label id="complaint-caller-info-name-label-id" className="col-auto" htmlFor="caller-name-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="name-pair-id"
+              >
+                <label
+                  id="complaint-caller-info-name-label-id"
+                  className="col-auto"
+                  htmlFor="caller-name-id"
+                >
                   Name
                 </label>
                 <div className="comp-details-edit-input">
@@ -925,7 +1023,10 @@ export const CreateComplaint: FC = () => {
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="primary-phone-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="primary-phone-pair-id"
+              >
                 <label
                   id="complaint-caller-info-primary-phone-label-id"
                   className="col-auto"
@@ -945,7 +1046,10 @@ export const CreateComplaint: FC = () => {
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="secondary-phone-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="secondary-phone-pair-id"
+              >
                 <label
                   id="complaint-caller-info-secondary-phone-label-id"
                   className="col-auto"
@@ -965,7 +1069,10 @@ export const CreateComplaint: FC = () => {
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="alternate-phone-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="alternate-phone-pair-id"
+              >
                 <label
                   id="complaint-caller-info-alternate-phone-label-id"
                   className="col-auto"
@@ -987,7 +1094,10 @@ export const CreateComplaint: FC = () => {
               </div>
             </div>
             <div className="comp-details-edit-column comp-details-right-column">
-              <div className="comp-details-label-input-pair" id="address-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="address-pair-id"
+              >
                 <label htmlFor="complaint-address-id">Address</label>
                 <div className="comp-details-edit-input">
                   <input
@@ -1000,7 +1110,10 @@ export const CreateComplaint: FC = () => {
                 </div>
               </div>
 
-              <div className="comp-details-label-input-pair" id="email-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="email-pair-id"
+              >
                 <label htmlFor="complaint-email-id">Email</label>
                 <div className="comp-details-edit-input">
                   <ValidationInput
@@ -1013,7 +1126,10 @@ export const CreateComplaint: FC = () => {
                   />
                 </div>
               </div>
-              <div className="comp-details-label-input-pair" id="reported-pair-id">
+              <div
+                className="comp-details-label-input-pair"
+                id="reported-pair-id"
+              >
                 <label>Reported By</label>
                 <div className="comp-details-edit-input">
                   <CompSelect
@@ -1038,7 +1154,10 @@ export const CreateComplaint: FC = () => {
           <div className="comp-complaint-call-information">
             <div className="comp-suspect-witness-edit-container">
               <div className="comp-details-edit-column comp-details-right-column">
-                <div className="comp-details-label-input-pair" id="subject-of-complaint-pair-id">
+                <div
+                  className="comp-details-label-input-pair"
+                  id="subject-of-complaint-pair-id"
+                >
                   <label
                     id="complaint-witness-details-label-id"
                     className="col-auto"
@@ -1062,15 +1181,15 @@ export const CreateComplaint: FC = () => {
       )}
       <div className="comp-complaint-details-block">
         <h6>Complainant attachments ({complaintAttachmentCount})</h6>
-          <div className="comp-attachments">
-            <AttachmentsCarousel
-              attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-              allowUpload={true}
-              allowDelete={true}
-              onFilesSelected={onHandleAddAttachments}
-              onFileDeleted={onHandleDeleteAttachment}
-              onSlideCountChange={handleSlideCountChange}
-            />
+        <div className="comp-attachments">
+          <AttachmentsCarousel
+            attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+            allowUpload={true}
+            allowDelete={true}
+            onFilesSelected={onHandleAddAttachments}
+            onFileDeleted={onHandleDeleteAttachment}
+            onSlideCountChange={handleSlideCountChange}
+          />
         </div>
       </div>
     </div>

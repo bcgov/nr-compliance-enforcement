@@ -40,7 +40,12 @@ export const ModalComponent: FC = () => {
   };
 
   return (
-    <Modal size={modalSize} show={isOpen} onHide={handleCloseModal} centered>
+    <Modal
+      size={modalSize}
+      show={isOpen}
+      onHide={handleCloseModal}
+      centered
+    >
       {modalType && (
         <Content
           {...modalData}

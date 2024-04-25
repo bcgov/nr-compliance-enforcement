@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAgencyCodeDto } from './dto/create-agency_code.dto';
-import { UpdateAgencyCodeDto } from './dto/update-agency_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AgencyCode } from './entities/agency_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateAgencyCodeDto } from "./dto/create-agency_code.dto";
+import { UpdateAgencyCodeDto } from "./dto/update-agency_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AgencyCode } from "./entities/agency_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class AgencyCodeService {
   constructor(
     @InjectRepository(AgencyCode)
-    private agencyCodeRepository: Repository<AgencyCode>
+    private agencyCodeRepository: Repository<AgencyCode>,
   ) {}
 
   async create(agencyCode: CreateAgencyCodeDto): Promise<AgencyCode> {

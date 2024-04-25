@@ -17,7 +17,7 @@
     font-weight: 700;
   }
 
-  label{
+  label {
     color: $gray-500;
   }
 
@@ -109,7 +109,7 @@
     margin-top: 3px;
   }
 
-  .comp-outcome-report-complaint-prev-and-educ, 
+  .comp-outcome-report-complaint-prev-and-educ,
   .comp-outcome-report-complaint-assessment {
     margin-top: 24px;
     margin-bottom: 24px;
@@ -281,10 +281,9 @@
     .animal-item-edit {
       font-size: 14px;
 
-      :hover
-          {
-            text-decoration: underline;
-          }
+      :hover {
+        text-decoration: underline;
+      }
       span {
         font-size: inherit;
         padding-right: 0px;
@@ -298,19 +297,18 @@
     .animal-item-delete {
       font-size: 14px;
       padding-right: 10px;
-      :hover
-          {
-            text-decoration: underline;
-          }
-        span {
-          font-size: inherit;
-          margin-right: 4px;
-          padding-right: 0px;
-        }
+      :hover {
+        text-decoration: underline;
+      }
+      span {
+        font-size: inherit;
+        margin-right: 4px;
+        padding-right: 0px;
+      }
 
-        svg {
-          font-size: 16px;
-        }
+      svg {
+        font-size: 16px;
+      }
     }
 
     .comp-ear-tag-list {
