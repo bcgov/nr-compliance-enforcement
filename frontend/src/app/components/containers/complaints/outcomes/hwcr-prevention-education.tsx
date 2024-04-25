@@ -130,20 +130,23 @@ export const HWCRComplaintPrevention: FC = () => {
     setEditable(!preventionState.date);
 
     if (!selectedOfficer && officersInAgencyList && assigned) {
-      const officerAssigned: Option[] = officersInAgencyList.filter((officer : Officer) =>
-        officer.person_guid.person_guid === assigned)
-        .map((element : Officer) => {
+      const officerAssigned: Option[] = officersInAgencyList
+        .filter((officer: Officer) => officer.person_guid.person_guid === assigned)
+        .map((element: Officer) => {
           return {
-            label: `${element.person_guid?.first_name} ${element.person_guid?.last_name}`, value: assigned
+            label: `${element.person_guid?.first_name} ${element.person_guid?.last_name}`,
+            value: assigned,
           } as Option;
         });
-      if (officerAssigned && Array.isArray(officerAssigned) &&
-        officerAssigned.length > 0 && 
-        typeof (officerAssigned[0].label) !== 'undefined') {
+      if (
+        officerAssigned &&
+        Array.isArray(officerAssigned) &&
+        officerAssigned.length > 0 &&
+        typeof officerAssigned[0].label !== "undefined"
+      ) {
         setSelectedOfficer(officerAssigned[0]);
       }
     }
-
   };
 
   const cancelConfirmed = () => {

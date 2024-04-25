@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
@@ -19,12 +19,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   const [authorizedBy, setAuthorizedBy] = useState(drugAuthorization?.officer ?? assigned ?? undefined);
-  const [authorizedOn, setAuthorizedOn] = useState<Date | undefined>();
-
-  useEffect(() => {
-    const date = drugAuthorization?.date ? new Date(drugAuthorization?.date) : new Date();
-    setAuthorizedOn(date);
-  }, [drugAuthorization]);
+  const [authorizedOn, setAuthorizedOn] = useState<Date | undefined>(drugAuthorization?.date ?? undefined);
 
   const getValue = (property: string): Option | undefined => {
     if (property === "officer") {
@@ -34,13 +29,13 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
 
   const handleAuthorizedByChange = (input: string | undefined) => {
     setAuthorizedBy(input);
-    const newDrugAuth: DrugAuthorizationType = { officer: input ?? "", date: authorizedOn ?? undefined };
-    update(newDrugAuth);
+    const newDrugAuth: DrugAuthorizationType = { officer: input ?? "", date: authorizedOn ?? undefined, officerErrorMessage: drugAuthorization?.officerErrorMessage, dateErrorMessage: drugAuthorization?.dateErrorMessage};
+    update(newDrugAuth, "officer");
   };
 
-  const handleAuthorizedOnChange = (input: Date | undefined | null) => {
+  const handleAuthorizedOnChange = (input: Date | undefined) => {
     setAuthorizedOn(input ?? undefined);
-    update({ officer: authorizedBy, date: input ?? undefined });
+    update({ officer: authorizedBy, date: input ?? undefined , officerErrorMessage: drugAuthorization?.officerErrorMessage, dateErrorMessage: drugAuthorization?.dateErrorMessage}, "date");
   };
 
   return (
@@ -48,7 +43,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
       <Row>
         <Col md={5}>
           <div
-            className="comp-details-label-input-pair"
+            className="drug-auth-details-label-input-pair"
             id="officer-assigned-pair-id"
           >
             <label
@@ -75,7 +70,7 @@ export const DrugAuthorization: FC<Props> = ({ agency, drugAuthorization, update
 
         <Col md="4">
           <div
-            className="comp-details-label-input-pair"
+            className="drug-auth-details-label-input-pair"
             id="officer-assigned-pair-id"
           >
             <label
