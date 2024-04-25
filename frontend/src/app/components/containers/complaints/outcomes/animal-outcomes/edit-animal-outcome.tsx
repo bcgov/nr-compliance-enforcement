@@ -89,7 +89,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
       : new Date();
     setOutcomeDate(date);
     setDrugAuthorization({
-      officer: "",
+      officer: animalOutcomeItemData?.officer?.value ?? "",
       date: defaultDateDrug,
     });
   }, [animalOutcomeItemData]);
