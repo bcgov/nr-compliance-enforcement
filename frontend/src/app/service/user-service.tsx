@@ -40,12 +40,8 @@ const getToken = () => _kc.token;
 
 const isLoggedIn = () => !!_kc.token;
 
-const updateToken = (
-  successCallback:
-    | ((value: boolean) => boolean | PromiseLike<boolean>)
-    | null
-    | undefined,
-) => _kc.updateToken(5).then(successCallback).catch(doLogin);
+const updateToken = (successCallback: ((value: boolean) => boolean | PromiseLike<boolean>) | null | undefined) =>
+  _kc.updateToken(5).then(successCallback).catch(doLogin);
 
 const getUsername = () => _kc.tokenParsed?.display_name;
 
@@ -58,9 +54,7 @@ const hasRole = (roles: any) => {
   const jwt = _kc.tokenParsed;
   const userroles = jwt?.client_roles;
   const includesRoles =
-    typeof roles === "string"
-      ? userroles?.includes(roles)
-      : roles.some((r: any) => userroles?.includes(r));
+    typeof roles === "string" ? userroles?.includes(roles) : roles.some((r: any) => userroles?.includes(r));
   return includesRoles;
 };
 

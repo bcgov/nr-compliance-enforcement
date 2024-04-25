@@ -1,10 +1,5 @@
 import { FC, useEffect, useState, useRef } from "react";
-import {
-  CarouselProvider,
-  Slider,
-  ButtonBack,
-  ButtonNext,
-} from "pure-react-carousel";
+import { CarouselProvider, Slider, ButtonBack, ButtonNext } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
@@ -18,7 +13,7 @@ import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
 import { selectMaxFileSize } from "../../store/reducers/app";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { getThumbnailDataURL, isImage } from "../../common/methods";
 import AttachmentEnum from "../../constants/attachment-enum";
 
@@ -48,7 +43,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   const dispatch = useAppDispatch();
 
   // max file size for uploads
-  const maxFileSize = useAppSelector(selectMaxFileSize)
+  const maxFileSize = useAppSelector(selectMaxFileSize);
 
   const carouselData = useAppSelector(selectAttachments(attachmentType));
 
@@ -66,7 +61,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     if (carouselData) {
       setSlides(sortAttachmentsByName(carouselData));
     } else {
-      setSlides([])
+      setSlides([]);
     }
   }, [carouselData]);
 
@@ -88,37 +83,36 @@ export const AttachmentsCarousel: FC<Props> = ({
   // Update the slide count when the slides state changes
   useEffect(() => {
     setSlideCount(slides.length);
-  
+
     // Call the onSlideCountChange prop with the updated count
-    if (typeof onSlideCountChange === 'function') {
+    if (typeof onSlideCountChange === "function") {
       onSlideCountChange(slides.length);
     }
   }, [slides.length]);
 
   // Clear all pending upload attachments
   useEffect(() => {
-    if(cancelPendingUpload){
+    if (cancelPendingUpload) {
       setSlides([]);
-      if(setCancelPendingUpload) setCancelPendingUpload(false); //reset cancelPendingUpload
+      if (setCancelPendingUpload) setCancelPendingUpload(false); //reset cancelPendingUpload
     }
-  },[cancelPendingUpload])
+  }, [cancelPendingUpload]);
 
- function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
-  // Create a copy of the array using slice() or spread syntax
-  const copy = [...comsObjects];
+  function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
+    // Create a copy of the array using slice() or spread syntax
+    const copy = [...comsObjects];
 
-  // Sort the copy based on the name property
-  copy.sort((a, b) => a.name.localeCompare(b.name));
+    // Sort the copy based on the name property
+    copy.sort((a, b) => a.name.localeCompare(b.name));
 
-  return copy;
-}
+    return copy;
+  }
 
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = async (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
-    for (let selectedFile of selectedFilesArray)
-    {
+    for (let selectedFile of selectedFilesArray) {
       newSlides.push(await createSlideFromFile(selectedFile));
     }
     removeInvalidFiles(selectedFilesArray);
@@ -130,20 +124,17 @@ export const AttachmentsCarousel: FC<Props> = ({
   const removeInvalidFiles = (files: File[]) => {
     if (onFilesSelected) {
       // remove any of the selected files that fail validation so that they aren't uploaded
-      const validFiles = files.filter(file => file.size <= maxFileSize * 1_000_000);
+      const validFiles = files.filter((file) => file.size <= maxFileSize * 1_000_000);
       onFilesSelected(validFiles);
     }
-  }
-  
+  };
 
   // given a file, create a carousel slide
   const createSlideFromFile = async (file: File) => {
-    
     let imageIconString;
-    if(isImage(file.name))
-    {
+    if (isImage(file.name)) {
       const thumbnail = await getThumbnailDataURL(file);
-      if(thumbnail) {
+      if (thumbnail) {
         imageIconString = thumbnail;
       }
     }
@@ -160,28 +151,30 @@ export const AttachmentsCarousel: FC<Props> = ({
       pendingUpload: true,
     };
 
-    // check for large file sizes      
-    if (file.size > (maxFileSize  * 1_000_000)) { // convert MB to Bytes
+    // check for large file sizes
+    if (file.size > maxFileSize * 1_000_000) {
+      // convert MB to Bytes
       newSlide.errorMesage = `File exceeds ${maxFileSize} MB`;
-    }    
+    }
 
     return newSlide;
-  }
+  };
 
-  // fired when user wants to remove a slide from the carousel 
+  // fired when user wants to remove a slide from the carousel
   const onFileRemove = (attachment: COMSObject) => {
-    setSlides(slides => slides.filter(slide => slide.id !== attachment.id));
+    setSlides((slides) => slides.filter((slide) => slide.id !== attachment.id));
     if (onFileDeleted) {
       onFileDeleted(attachment);
     }
-  }
+  };
 
   // calculates how many slides will fit on the page
   useEffect(() => {
     const calcualteSlidesToDisplay = (containerWidth: number): number => {
       const SLIDE_WIDTH = 299; // width of a slide if 289, plus 10 for gap
       const slidesToDisplay = Math.floor(containerWidth / SLIDE_WIDTH);
-      if (allowUpload) { // account for the upload slide (which adds another slide to the carousel)
+      if (allowUpload) {
+        // account for the upload slide (which adds another slide to the carousel)
         return slidesToDisplay <= 1 ? 1 : slidesToDisplay - 1;
       } else {
         return slidesToDisplay <= 1 ? 1 : slidesToDisplay;
@@ -206,11 +199,14 @@ export const AttachmentsCarousel: FC<Props> = ({
     return () => {
       window.removeEventListener("resize", updateVisibleSlides);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowUpload]);
 
   return (
-    <div className="comp-complaint-details-block" ref={carouselContainerRef}>
+    <div
+      className="comp-complaint-details-block"
+      ref={carouselContainerRef}
+    >
       {(allowUpload || (slides && slides?.length > 0)) && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
@@ -225,11 +221,7 @@ export const AttachmentsCarousel: FC<Props> = ({
           <ButtonNext className="next-icon">
             <BsArrowRightShort />
           </ButtonNext>
-          {allowUpload && (
-            <AttachmentUpload
-              onFileSelect={onFileSelect}
-            />
-          )}
+          {allowUpload && <AttachmentUpload onFileSelect={onFileSelect} />}
           <Slider className="coms-slider">
             {slides?.map((item, index) => (
               <AttachmentSlide
@@ -246,4 +238,3 @@ export const AttachmentsCarousel: FC<Props> = ({
     </div>
   );
 };
-

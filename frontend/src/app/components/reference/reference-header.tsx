@@ -32,8 +32,12 @@ export const ReferenceHeader: FC<ReferenceHeaderProps> = ({ title }) => {
             lineHeight: "25px",
           }}
         >
-          <img style={{ height: "53px" }} src={logo} alt="logo" /> Ministry of
-          Environment and Climate Change Strategy
+          <img
+            style={{ height: "53px" }}
+            src={logo}
+            alt="logo"
+          />{" "}
+          Ministry of Environment and Climate Change Strategy
         </Col>
         <Col md={12}>
           <h1 style={{ fontSize: "96px", color: "white" }}>{title}</h1>

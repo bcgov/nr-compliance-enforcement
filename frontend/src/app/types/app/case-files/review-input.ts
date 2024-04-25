@@ -8,5 +8,5 @@ export interface ReviewInput {
   agencyCode: string;
   caseCode: string;
   isReviewRequired: boolean;
-  reviewComplete?: ReviewCompleteAction
+  reviewComplete?: ReviewCompleteAction;
 }

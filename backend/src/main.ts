@@ -2,20 +2,20 @@ import { NestFactory } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { VersioningType } from "@nestjs/common";
-import {customLogger} from "./common/logger.config";
-import * as bodyParser from 'body-parser';
+import { customLogger } from "./common/logger.config";
+import * as bodyParser from "body-parser";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule,{logger: customLogger,});
+  const app = await NestFactory.create(AppModule, { logger: customLogger });
   app.enableVersioning({
     type: VersioningType.URI,
   });
   app.enableCors();
 
-  app.use(bodyParser.json({limit: '10mb'}));
-  app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+  app.use(bodyParser.json({ limit: "10mb" }));
+  app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
-  process.env.TZ='UTC';
+  process.env.TZ = "UTC";
   const config = new DocumentBuilder()
     .setTitle("Compliance and Enforcement - Complaint Management API")
     .setDescription("The Complicance and Enforcement - Complaint Management API")

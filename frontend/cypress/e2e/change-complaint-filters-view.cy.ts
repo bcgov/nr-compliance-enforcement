@@ -68,9 +68,6 @@ describe("Complaint Change Status spec - Details View", () => {
       cy.selectItemById("officer-select-id", "Unassigned");
       cy.get("#comp-officer-filter").should("exist");
       cy.get("#comp-officer-filter").contains("Unassigned");
-
     });
-
   });
-  
 });

@@ -32,11 +32,11 @@ import { ConfigurationModule } from "./v1/configuration/configuration.module";
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
 import { CodeTableModule } from "./v1/code-table/code-table.module";
 import { ReportedByCodeModule } from "./v1/reported_by_code/reported_by_code.module";
-import { StagingComplaintModule } from './v1/staging_complaint/staging_complaint.module';
-import { EntityCodeModule } from './v1/entity_code/entity_code.module';
-import { StagingMetaDataMappingModule } from './v1/staging_meta_data_mapping/staging_meta_data_mapping.module';
-import { StagingStatusCodeModule } from './v1/staging_status_code/staging_status_code.module';
-import { StagingActivityCodeModule } from './v1/staging_activity_code/staging_activity_code.module';
+import { StagingComplaintModule } from "./v1/staging_complaint/staging_complaint.module";
+import { EntityCodeModule } from "./v1/entity_code/entity_code.module";
+import { StagingMetaDataMappingModule } from "./v1/staging_meta_data_mapping/staging_meta_data_mapping.module";
+import { StagingStatusCodeModule } from "./v1/staging_status_code/staging_status_code.module";
+import { StagingActivityCodeModule } from "./v1/staging_activity_code/staging_activity_code.module";
 import { RequestTokenMiddleware } from "./middleware/req.token";
 import { CaseFileModule } from "./v1/case_file/case_file.module";
 
@@ -63,7 +63,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
           username: process.env.POSTGRESQL_USER || "postgres",
           password: process.env.POSTGRESQL_PASSWORD,
           autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
-          logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true"
+          logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true",
         };
       },
     }),
@@ -100,7 +100,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     StagingStatusCodeModule,
     StagingMetaDataMappingModule,
     EntityCodeModule,
-    CaseFileModule
+    CaseFileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

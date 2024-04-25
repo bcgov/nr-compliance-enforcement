@@ -21,7 +21,10 @@ export const CreateComplaintHeader: FC<CreateComplaintHeaderProps> = ({
             <li className="breadcrumb-item">
               <i className="bi bi-house-door"></i> Home
             </li>
-            <li className="breadcrumb-item" aria-current="page">
+            <li
+              className="breadcrumb-item"
+              aria-current="page"
+            >
               Create Complaint
             </li>
           </ol>

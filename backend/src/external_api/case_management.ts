@@ -1,17 +1,19 @@
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 
-const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL
+const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL;
 
 axios.interceptors.response.use(undefined, (error: AxiosError) => {
   console.error(error.response);
-  return Promise.reject(error)
-})
+  return Promise.reject(error);
+});
 
-export const get = (token, params? : {}) => {
-  let config: AxiosRequestConfig = { headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    } };
+export const get = (token, params?: {}) => {
+  let config: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
 
   if (params) {
     config.params = params;
@@ -20,7 +22,7 @@ export const get = (token, params? : {}) => {
     .get(caseManagementlURL, config)
     .then((response: AxiosResponse) => {
       const { data } = response;
-      return data
+      return data;
     })
     .catch((error: AxiosError) => {
       if (error.response) {
@@ -36,20 +38,16 @@ export const get = (token, params? : {}) => {
 export const post = (token, payload?: {}) => {
   let config: AxiosRequestConfig = {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   };
   return axios
     .post(caseManagementlURL, payload, config)
     .then((response: AxiosResponse) => {
-      return {response: response, error: null as AxiosError};
+      return { response: response, error: null as AxiosError };
     })
     .catch((error: AxiosError) => {
-      return {response: null as AxiosResponse, error: error};
-    })
+      return { response: null as AxiosResponse, error: error };
+    });
 };
-
-
-
-

@@ -46,11 +46,7 @@ const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone }) => {
     [state],
   );
 
-  return (
-    <ComplaintFilterContext.Provider value={value}>
-      {children}
-    </ComplaintFilterContext.Provider>
-  );
+  return <ComplaintFilterContext.Provider value={value}>{children}</ComplaintFilterContext.Provider>;
 };
 
 export { ComplaintFilterContext, ComplaintFilterProvider };

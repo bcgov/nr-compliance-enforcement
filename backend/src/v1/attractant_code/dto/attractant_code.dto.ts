@@ -2,8 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { AttractantHwcrXref } from "../../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
-export class AttractantCodeDto 
-{
+export class AttractantCodeDto {
   @ApiProperty({
     example: "INDCAMP",
     description: "A human readable code used to identify an attractant.",
@@ -16,7 +15,11 @@ export class AttractantCodeDto
   @ApiProperty({ example: "Industrial Camp", description: "The long description of the attractant code." })
   long_description: string;
 
-  @ApiProperty({ example: "1", description: "The order in which the values of the attractant code table should be displayed when presented to a user in a list." })
+  @ApiProperty({
+    example: "1",
+    description:
+      "The order in which the values of the attractant code table should be displayed when presented to a user in a list.",
+  })
   display_order: number;
 
   @ApiProperty({ example: "True", description: "A boolean indicator to determine if the attractant code is active." })
@@ -25,7 +28,7 @@ export class AttractantCodeDto
   attractant_hwcr_xref: AttractantHwcrXref[];
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that created the attractant code.",
   })
   create_user_id: string;
@@ -37,7 +40,7 @@ export class AttractantCodeDto
   create_utc_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that last updated the attractant",
   })
   update_user_id: string;

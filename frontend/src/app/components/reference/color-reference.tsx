@@ -64,11 +64,7 @@ export const ColorReference: FC = () => {
     "doc-bg-bc-gov-neutral-500",
   ];
 
-  const shadeVariants: string[] = [
-    "doc-bg-bc-gov-shade-100",
-    "doc-bg-bc-gov-shade-200",
-    "doc-bg-bc-gov-shade-300",
-  ];
+  const shadeVariants: string[] = ["doc-bg-bc-gov-shade-100", "doc-bg-bc-gov-shade-200", "doc-bg-bc-gov-shade-300"];
 
   const bcStandard01Variants: string[] = [
     "doc-bg-bc-standard-01-100",
@@ -261,7 +257,10 @@ export const ColorReference: FC = () => {
 
   return (
     <>
-      <Container fluid style={{ backgroundColor: "#F5F5F5" }}>
+      <Container
+        fluid
+        style={{ backgroundColor: "#F5F5F5" }}
+      >
         <ReferenceHeader title="B.C. Gov Design System: Colors" />
         <Row>
           <Col md={12}>
@@ -269,34 +268,56 @@ export const ColorReference: FC = () => {
               <Card.Header>Bootstrap Primary Theme Colors</Card.Header>
               <Card.Body>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div className={`p-3 bg-primary text-white`}>Primary</div>
                   </Col>
-                  <Col md={4} className="mb-3">
-                    <div className={`p-3 bg-secondary text-dark`}>
-                      Secondary
-                    </div>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-secondary text-dark`}>Secondary</div>
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div className={`p-3 bg-success text-white`}>Success</div>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div className={`p-3 bg-danger text-white`}>Danger</div>
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div className={`p-3 bg-warning text-dark`}>Warning</div>
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div className={`p-3 bg-info text-dark`}>Info</div>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div className={`p-3 bg-dark text-white`}>Dark</div>
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       style={{ border: "1px solid black" }}
                       className={`p-3 bg-white text-dark`}
@@ -304,7 +325,10 @@ export const ColorReference: FC = () => {
                       Light
                     </div>
                   </Col>
-                  <Col md={4} className="mb-3"></Col>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  ></Col>
                 </Row>
               </Card.Body>
             </Card>
@@ -317,39 +341,43 @@ export const ColorReference: FC = () => {
               <Card.Header>BC Brand Colors</Card.Header>
               <Card.Body>
                 <Row>
-                  <Col md={4} className="mb-3">
-                    <div className={`p-3 bg-bc-brand-blue text-light`}>
-                      *.bc-brand-blue
-                    </div>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-bc-brand-blue text-light`}>*.bc-brand-blue</div>
                   </Col>
-                  <Col md={4} className="mb-3">
-                    <div className={`p-3 bg-bc-brand-gold text-light`}>
-                      *.bc-brand-gold
-                    </div>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-bc-brand-gold text-light`}>*.bc-brand-gold</div>
                   </Col>
-                  <Col md={4} className="mb-3">
-                    <div className={`p-3 bg-bc-brand-text text-light`}>
-                      *.bc-brand-text
-                    </div>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-bc-brand-text text-light`}>*.bc-brand-text</div>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className="mb-3">
-                    <div className={`p-3 bg-bc-brand-links text-light`}>
-                      *.bc-brand-links
-                    </div>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-bc-brand-links text-light`}>*.bc-brand-links</div>
                   </Col>
-                  <Col md={4} className="mb-3">
-                    <div
-                      className={`p-3 bg-bc-brand-background-blue text-light`}
-                    >
-                      *.bc-brand-background-blue
-                    </div>
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-bc-brand-background-blue text-light`}>*.bc-brand-background-blue</div>
                   </Col>
-                  <Col md={4} className="mb-3">
-                    <div
-                      className={`p-3 bg-bc-brand-background-light-gray text-dark`}
-                    >
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
+                    <div className={`p-3 bg-bc-brand-background-light-gray text-dark`}>
                       *.bc-brand-background-light-gray
                     </div>
                   </Col>
@@ -365,7 +393,10 @@ export const ColorReference: FC = () => {
               <Card.Header>Boostrap Primary Color Variants</Card.Header>
               <Card.Body>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {primaryVariants.map((item, idx) => {
                       return (
                         <div
@@ -377,7 +408,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {secondaryVariants.map((item, idx) => {
                       return (
                         <div
@@ -389,7 +423,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {successVariants.map((item, idx) => {
                       return (
                         <div
@@ -403,7 +440,10 @@ export const ColorReference: FC = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {dangerVariants.map((item, idx) => {
                       return (
                         <div
@@ -415,7 +455,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {warningVariants.map((item, idx) => {
                       return (
                         <div
@@ -427,7 +470,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {grayVariants.map((item, idx) => {
                       return (
                         <div
@@ -441,7 +487,10 @@ export const ColorReference: FC = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {neutralVariants.map((item, idx) => {
                       return (
                         <div
@@ -453,7 +502,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     {shadeVariants.map((item, idx) => {
                       return (
                         <div
@@ -477,7 +529,10 @@ export const ColorReference: FC = () => {
               <Card.Header>BC Standard Supplementry Colors</Card.Header>
               <Card.Body>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#004F4B", true)}
@@ -496,7 +551,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#20754E", true)}
@@ -516,7 +574,10 @@ export const ColorReference: FC = () => {
                     })}
                   </Col>
 
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#61A744", true)}
@@ -538,7 +599,10 @@ export const ColorReference: FC = () => {
                 </Row>
 
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#31BA9A", true)}
@@ -557,7 +621,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#05A6D1", true)}
@@ -577,7 +644,10 @@ export const ColorReference: FC = () => {
                     })}
                   </Col>
 
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#005C98", true)}
@@ -599,7 +669,10 @@ export const ColorReference: FC = () => {
                 </Row>
 
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#243C7C", true)}
@@ -618,7 +691,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#5F3795", true)}
@@ -638,7 +714,10 @@ export const ColorReference: FC = () => {
                     })}
                   </Col>
 
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#883895", true)}
@@ -660,7 +739,10 @@ export const ColorReference: FC = () => {
                 </Row>
 
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#DD5857", true)}
@@ -679,7 +761,10 @@ export const ColorReference: FC = () => {
                       );
                     })}
                   </Col>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#F38489", true)}
@@ -699,7 +784,10 @@ export const ColorReference: FC = () => {
                     })}
                   </Col>
 
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#F2A488", true)}
@@ -720,7 +808,10 @@ export const ColorReference: FC = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className="mb-3">
+                  <Col
+                    md={4}
+                    className="mb-3"
+                  >
                     <div
                       className="p-3 mb-2 position-relative"
                       style={swatch("#ECC51D", true)}

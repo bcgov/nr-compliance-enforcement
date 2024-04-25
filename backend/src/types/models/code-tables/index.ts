@@ -45,7 +45,7 @@ export const AvailableCodeTables = [
   "drug-methods",
   "drug-remaining-outcomes",
   "wildlife-outcomes",
-  "equipment"
+  "equipment",
 ];
 
 export const AvailableAgencies = ["cos"];
@@ -70,5 +70,5 @@ export {
   Justification,
   AssessmentType,
   PreventionType,
-  Equipment
+  Equipment,
 };

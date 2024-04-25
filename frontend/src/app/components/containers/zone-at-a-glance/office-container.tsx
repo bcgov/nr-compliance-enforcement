@@ -10,10 +10,7 @@ type Props = {
   hwcrOpenComplaintsOfficeStat: OfficeStats;
   allegationOpenComplaintsOfficeStat: OfficeStats;
 };
-export const OfficeContainer: FC<Props> = ({
-  hwcrOpenComplaintsOfficeStat,
-  allegationOpenComplaintsOfficeStat,
-}) => {
+export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, allegationOpenComplaintsOfficeStat }) => {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   let hwcrUnassigned: number = 0;
   let hwcrUnassignedStyle: { width: string } = { width: "49%" };
@@ -29,31 +26,21 @@ export const OfficeContainer: FC<Props> = ({
     hwcrOpenComplaintsOfficeStat?.officers !== undefined &&
     allegationOpenComplaintsOfficeStat?.officers !== undefined
   ) {
-    if (
-      hwcrOpenComplaintsOfficeStat.assigned === 0 &&
-      hwcrOpenComplaintsOfficeStat.unassigned !== 0
-    ) {
+    if (hwcrOpenComplaintsOfficeStat.assigned === 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0) {
       hwcrUnassigned = hwcrOpenComplaintsOfficeStat.unassigned;
       hwcrUnassignedStyle = { width: "93%" };
       hwcrAssignedStyle = { width: "5%" };
-    } else if (
-      hwcrOpenComplaintsOfficeStat.assigned !== 0 &&
-      hwcrOpenComplaintsOfficeStat.unassigned === 0
-    ) {
+    } else if (hwcrOpenComplaintsOfficeStat.assigned !== 0 && hwcrOpenComplaintsOfficeStat.unassigned === 0) {
       hwcrUnassignedStyle = { width: "5%" };
       hwcrAssigned = hwcrOpenComplaintsOfficeStat.assigned;
       hwcrAssignedStyle = { width: "93%" };
-    } else if (
-      hwcrOpenComplaintsOfficeStat.assigned !== 0 &&
-      hwcrOpenComplaintsOfficeStat.unassigned !== 0
-    ) {
+    } else if (hwcrOpenComplaintsOfficeStat.assigned !== 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0) {
       hwcrAssigned = hwcrOpenComplaintsOfficeStat.assigned;
       hwcrAssignedStyle = {
         width:
           Math.round(
             (hwcrOpenComplaintsOfficeStat.assigned /
-              (hwcrOpenComplaintsOfficeStat.assigned +
-                hwcrOpenComplaintsOfficeStat.unassigned)) *
+              (hwcrOpenComplaintsOfficeStat.assigned + hwcrOpenComplaintsOfficeStat.unassigned)) *
               100,
           ) -
           1 +
@@ -65,18 +52,14 @@ export const OfficeContainer: FC<Props> = ({
           100 -
           Math.round(
             (hwcrOpenComplaintsOfficeStat.assigned /
-              (hwcrOpenComplaintsOfficeStat.assigned +
-                hwcrOpenComplaintsOfficeStat.unassigned)) *
+              (hwcrOpenComplaintsOfficeStat.assigned + hwcrOpenComplaintsOfficeStat.unassigned)) *
               100,
           ) -
           1 +
           "%",
       };
     }
-    if (
-      allegationOpenComplaintsOfficeStat.assigned === 0 &&
-      allegationOpenComplaintsOfficeStat.unassigned !== 0
-    ) {
+    if (allegationOpenComplaintsOfficeStat.assigned === 0 && allegationOpenComplaintsOfficeStat.unassigned !== 0) {
       allegationUnassigned = allegationOpenComplaintsOfficeStat.unassigned;
       allegationUnassignedStyle = { width: "93%" };
       allegationAssignedStyle = { width: "5%" };
@@ -96,8 +79,7 @@ export const OfficeContainer: FC<Props> = ({
         width:
           Math.round(
             (allegationOpenComplaintsOfficeStat.assigned /
-              (allegationOpenComplaintsOfficeStat.assigned +
-                allegationOpenComplaintsOfficeStat.unassigned)) *
+              (allegationOpenComplaintsOfficeStat.assigned + allegationOpenComplaintsOfficeStat.unassigned)) *
               100,
           ) -
           1 +
@@ -109,8 +91,7 @@ export const OfficeContainer: FC<Props> = ({
           100 -
           Math.round(
             (allegationOpenComplaintsOfficeStat.assigned /
-              (allegationOpenComplaintsOfficeStat.assigned +
-                allegationOpenComplaintsOfficeStat.unassigned)) *
+              (allegationOpenComplaintsOfficeStat.assigned + allegationOpenComplaintsOfficeStat.unassigned)) *
               100,
           ) -
           1 +
@@ -119,84 +100,77 @@ export const OfficeContainer: FC<Props> = ({
     }
 
     return (
-        <div className="comp-zag-office-container">
-          <Row className="comp-zag-flex-container">
-            <Col className="comp-zag-office">
-              <div
-                className="ms-auto left-float"
-                {...getToggleProps({
-                  id: hwcrOpenComplaintsOfficeStat.name + " chevron",
-                })}
-              >
-                <img src={isExpanded ? chevronDown : chevronUp} alt="chevron" />
-              </div>
-              <div
-                id={hwcrOpenComplaintsOfficeStat.name + " Office"}
-                className="left-float comp-padding-left-md"
-              >
-                {hwcrOpenComplaintsOfficeStat.name + " Office"}
-              </div>
-            </Col>
-            <Col className="comp-padding-left-md">
-              <div className="comp-zag-stats-title">
-                Human Wildlife Conflict
-              </div>
-              <div className="comp-zag-bar-spacing">
-                <div
-                  className="comp-zag-float-bar hwcr-unassigned"
-                  style={hwcrUnassignedStyle}
-                >
-                  <div className="comp-zag-bar-text">{hwcrUnassigned}</div>
-                </div>
-                <div className="comp-zag-float-bar comp-zag-bar-spacer"></div>
-                <div
-                  className="comp-zag-float-bar hwcr-assigned"
-                  style={hwcrAssignedStyle}
-                >
-                  <div className="comp-zag-bar-text">{hwcrAssigned}</div>
-                </div>
-                <div className="clear-left-float" />
-              </div>
-              <div className="comp-zag-stats-view">
-                View Unassigned Compaints
-              </div>
-            </Col>
-            <Col className="comp-padding-left-md negative-office-margin">
-              <div className="comp-zag-stats-title">Enforcement</div>
-              <div className="comp-zag-bar-spacing">
-                <div
-                  className="comp-zag-float-bar allegation-unassigned"
-                  style={allegationUnassignedStyle}
-                >
-                  <div className="comp-zag-bar-text">
-                    {allegationUnassigned}
-                  </div>
-                </div>
-                <div className="comp-zag-float-bar comp-zag-bar-spacer"></div>
-                <div
-                  className="comp-zag-float-bar allegation-assigned"
-                  style={allegationAssignedStyle}
-                >
-                  <div className="comp-zag-bar-text">{allegationAssigned}</div>
-                </div>
-                <div className="clear-left-float" />
-              </div>
-              <div className="comp-zag-stats-view">
-                View Unassigned Compaints
-              </div>
-            </Col>
-          </Row>
-          <div className="collapsible">
+      <div className="comp-zag-office-container">
+        <Row className="comp-zag-flex-container">
+          <Col className="comp-zag-office">
             <div
-              {...getCollapseProps({ id: hwcrOpenComplaintsOfficeStat.name })}
+              className="ms-auto left-float"
+              {...getToggleProps({
+                id: hwcrOpenComplaintsOfficeStat.name + " chevron",
+              })}
             >
-              <OfficeUserContainer
-                hwcrOfficers={hwcrOpenComplaintsOfficeStat.officers}
-                allegationOfficers={allegationOpenComplaintsOfficeStat.officers}
+              <img
+                src={isExpanded ? chevronDown : chevronUp}
+                alt="chevron"
               />
             </div>
+            <div
+              id={hwcrOpenComplaintsOfficeStat.name + " Office"}
+              className="left-float comp-padding-left-md"
+            >
+              {hwcrOpenComplaintsOfficeStat.name + " Office"}
+            </div>
+          </Col>
+          <Col className="comp-padding-left-md">
+            <div className="comp-zag-stats-title">Human Wildlife Conflict</div>
+            <div className="comp-zag-bar-spacing">
+              <div
+                className="comp-zag-float-bar hwcr-unassigned"
+                style={hwcrUnassignedStyle}
+              >
+                <div className="comp-zag-bar-text">{hwcrUnassigned}</div>
+              </div>
+              <div className="comp-zag-float-bar comp-zag-bar-spacer"></div>
+              <div
+                className="comp-zag-float-bar hwcr-assigned"
+                style={hwcrAssignedStyle}
+              >
+                <div className="comp-zag-bar-text">{hwcrAssigned}</div>
+              </div>
+              <div className="clear-left-float" />
+            </div>
+            <div className="comp-zag-stats-view">View Unassigned Compaints</div>
+          </Col>
+          <Col className="comp-padding-left-md negative-office-margin">
+            <div className="comp-zag-stats-title">Enforcement</div>
+            <div className="comp-zag-bar-spacing">
+              <div
+                className="comp-zag-float-bar allegation-unassigned"
+                style={allegationUnassignedStyle}
+              >
+                <div className="comp-zag-bar-text">{allegationUnassigned}</div>
+              </div>
+              <div className="comp-zag-float-bar comp-zag-bar-spacer"></div>
+              <div
+                className="comp-zag-float-bar allegation-assigned"
+                style={allegationAssignedStyle}
+              >
+                <div className="comp-zag-bar-text">{allegationAssigned}</div>
+              </div>
+              <div className="clear-left-float" />
+            </div>
+            <div className="comp-zag-stats-view">View Unassigned Compaints</div>
+          </Col>
+        </Row>
+        <div className="collapsible">
+          <div {...getCollapseProps({ id: hwcrOpenComplaintsOfficeStat.name })}>
+            <OfficeUserContainer
+              hwcrOfficers={hwcrOpenComplaintsOfficeStat.officers}
+              allegationOfficers={allegationOpenComplaintsOfficeStat.officers}
+            />
           </div>
         </div>
+      </div>
     );
   } else {
     return <></>;

@@ -2,8 +2,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { BcGeoCoderService } from "./bc_geo_coder.service";
 import { HttpService, HttpModule } from "@nestjs/axios";
 import { Feature } from "../../types/bc_geocoder/bcGeocoderType";
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
+import { AxiosResponse } from "axios";
+import { of } from "rxjs";
 
 describe("BcGeoCoderService", () => {
   let service: BcGeoCoderService;
@@ -24,11 +24,7 @@ describe("BcGeoCoderService", () => {
   });
 
   it("should return coordinates for a given address", async () => {
-    
-    const mockCoordinates = [
-      -123.3776552,
-      48.4406837
-    ];
+    const mockCoordinates = [-123.3776552, 48.4406837];
 
     const mockResponse: AxiosResponse = {
       data: {
@@ -41,19 +37,16 @@ describe("BcGeoCoderService", () => {
         ],
       },
       status: 200,
-      statusText: 'OK',
+      statusText: "OK",
       headers: {},
       config: {
-        headers: undefined
+        headers: undefined,
       },
     };
 
-    jest.spyOn(httpService, 'get').mockReturnValue(of(mockResponse));
-    const features: Feature = await service.findAll(
-      "Victoria","2975 Jutland Road"
-    );
+    jest.spyOn(httpService, "get").mockReturnValue(of(mockResponse));
+    const features: Feature = await service.findAll("Victoria", "2975 Jutland Road");
 
     expect(features.features[0].geometry.coordinates).toEqual(mockCoordinates);
-
   });
 });

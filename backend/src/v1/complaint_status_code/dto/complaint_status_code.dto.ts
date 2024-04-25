@@ -20,7 +20,7 @@ export class ComplaintStatusCodeDto {
   active_ind: boolean;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that created the complaint",
   })
   create_user_id: string;
@@ -32,7 +32,7 @@ export class ComplaintStatusCodeDto {
   create_utc_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIR\mburns",
+    example: "IDIRmburns",
     description: "The id of the user that last updated the complaint",
   })
   update_user_id: string;
@@ -43,7 +43,5 @@ export class ComplaintStatusCodeDto {
   })
   update_utc_timestamp: Date;
 
-  constructor() {
-
-  }
+  constructor() {}
 }

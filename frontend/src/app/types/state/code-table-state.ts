@@ -56,7 +56,7 @@ export interface CodeTableState {
     | Array<Drug>
     | Array<DrugMethod>
     | Array<DrugRemainingOutcome>
-    | Array<Equipment>
+    | Array<Equipment>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -73,14 +73,14 @@ export interface CodeTableState {
   justification: Array<Justification>;
   "assessment-type": Array<AssessmentType>;
   "prevention-type": Array<PreventionType>;
-  sex: Array<Sex>
-  age: Array<Age>,
-  "threat-level": Array<ThreatLevel>,
-  "conflict-history": Array<ConflictHistory>
-  "ear-tag": Array<EarTag>
-  "wildlife-outcomes": Array<WildlifeComplaintOutcome>
-  drugs: Array<Drug>,
-  "drug-methods": Array<DrugMethod>,
-  "drug-remaining-outcomes": Array<DrugRemainingOutcome>,
-  equipment: Array<Equipment>,
+  sex: Array<Sex>;
+  age: Array<Age>;
+  "threat-level": Array<ThreatLevel>;
+  "conflict-history": Array<ConflictHistory>;
+  "ear-tag": Array<EarTag>;
+  "wildlife-outcomes": Array<WildlifeComplaintOutcome>;
+  drugs: Array<Drug>;
+  "drug-methods": Array<DrugMethod>;
+  "drug-remaining-outcomes": Array<DrugRemainingOutcome>;
+  equipment: Array<Equipment>;
 }

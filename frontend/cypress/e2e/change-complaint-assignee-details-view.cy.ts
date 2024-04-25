@@ -25,9 +25,7 @@ describe("Complaint Change Assignee spec - Details View", () => {
       // self assign the complaint
       cy.get("#self_assign_button").click({ force: true });
       cy.waitForSpinner();
-      cy.get("#comp-details-assigned-officer-name-text-id")
-        .contains("ENV TestAcct")
-        .should("exist");
+      cy.get("#comp-details-assigned-officer-name-text-id").contains("ENV TestAcct").should("exist");
     });
   });
 });
