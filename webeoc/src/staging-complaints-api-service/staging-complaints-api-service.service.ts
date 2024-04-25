@@ -7,6 +7,12 @@ import { Complaint } from "../types/Complaints";
 @Injectable()
 export class StagingComplaintsApiService {
   private readonly logger = new Logger(StagingComplaintsApiService.name);
+  private readonly _apiConfig = {
+    headers: {
+      "x-api-key": process.env.COMPLAINTS_API_KEY,
+    },
+  };
+
   constructor(private readonly complaintsPublisherService: ComplaintsPublisherService) {}
 
   // add complaint data to staging table
@@ -15,14 +21,7 @@ export class StagingComplaintsApiService {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT}`;
       this.logger.debug(`Posting new complaint to staging. API URL: ${apiUrl}`);
 
-      // Include the API key in the request headers
-      const config = {
-        headers: {
-          "x-api-key": process.env.COMPLAINTS_API_KEY, // Ensure this environment variable is set
-        },
-      };
-
-      const response = await axios.post(apiUrl, complaintData, config);
+      const response = await axios.post(apiUrl, complaintData, this._apiConfig);
       this.logger.debug(`Staging Complaint API Response: ${response.data}`);
       this.complaintsPublisherService.publishStagingComplaintInserted(complaintData.incident_number);
     } catch (error) {
@@ -37,14 +36,7 @@ export class StagingComplaintsApiService {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/staging-complaint/process/${complaint_identifier}`;
       this.logger.debug(`Posting new complaint. API URL: ${apiUrl}`);
 
-      // Include the API key in the request headers
-      const config = {
-        headers: {
-          "x-api-key": process.env.COMPLAINTS_API_KEY, // Ensure this environment variable is set
-        },
-      };
-
-      await axios.post(apiUrl, {}, config);
+      await axios.post(apiUrl, {}, this._apiConfig);
     } catch (error) {
       this.logger.error("Error calling Complaint API:", error);
     }
