@@ -239,6 +239,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         amountUsed: "",
         amountUsedErrorMessage: "",
         amountDiscarded: "",
+        amountDiscardedErrorMessage: "",
         reactions: "",
         remainingUse: "",
         injectionMethod: "",
@@ -279,19 +280,11 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     switch (type) {
       case "vial":
         currentDrug.vial = drug.vial;
-        if (!drug.vial) {
-          currentDrug.vialErrorMessage = "Required";
-        } else {
-          currentDrug.vialErrorMessage = "";
-        }
+        setErrorMessage(currentDrug, "vial");
         break;
       case "drug":
         currentDrug.drug = drug.drug;
-        if (!drug.drug) {
-          currentDrug.drugErrorMessage = "Required";
-        } else {
-          currentDrug.drugErrorMessage = "";
-        }
+        setErrorMessage(currentDrug, "drug");
         break;
 
       case "amountUsed":
@@ -306,17 +299,37 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
         break;
       case "injectionMethod":
         currentDrug.injectionMethod = drug.injectionMethod;
-        if (!drug.injectionMethod) {
-          currentDrug.injectionMethodErrorMessage = "Required";
+        setErrorMessage(currentDrug, "injectionMethod");
+        break;
+      case "reactions":
+        currentDrug.reactions = drug.reactions;
+        break;
+      case "amountDiscarded":
+        currentDrug.amountDiscarded = drug.amountDiscarded;
+        if (drug.amountDiscarded && !isPositiveNum(drug.amountDiscarded)) {
+          currentDrug.amountDiscardedErrorMessage = "Must be a positive number";
         } else {
-          currentDrug.injectionMethodErrorMessage = "";
+          currentDrug.amountDiscardedErrorMessage = "";
         }
         break;
+      case "discardMethod":
+        currentDrug.discardMethod = drug.discardMethod;
+        break;
+      case "remainingUse":
+        currentDrug.remainingUse = drug.remainingUse;
+        break;
+
       default:
     }
     const update = [...otherDrugs, currentDrug];
 
     setDrugs(update);
+  };
+
+  const setErrorMessage = (drug: any, field: string) => {
+    const dataField = field as keyof DrugUsed;
+    const errorField = (field + "ErrorMessage") as keyof DrugUsed;
+    drug[errorField] = drug[dataField] ? "" : "Required";
   };
 
   //update all input validation
@@ -343,6 +356,12 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
     } else {
       drug.injectionMethodErrorMessage = "";
     }
+    if (drug.amountDiscarded && !isPositiveNum(drug.amountDiscarded)) {
+      drug.amountDiscardedErrorMessage = "Must be a positive number";
+    } else {
+      drug.amountDiscardedErrorMessage = "";
+    }
+
     const items = drugs.filter(({ id }) => id !== drug.id);
     const update = [...items, drug];
 
