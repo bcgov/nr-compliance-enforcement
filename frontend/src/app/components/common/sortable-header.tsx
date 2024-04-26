@@ -11,15 +11,7 @@ type Props = {
   id?: string;
 };
 
-export const SortableHeader: FC<Props> = ({
-  title,
-  sortFnc,
-  sortKey,
-  currentSort,
-  sortDirection,
-  className,
-  id,
-}) => {
+export const SortableHeader: FC<Props> = ({ title, sortFnc, sortKey, currentSort, sortDirection, className, id }) => {
   return (
     <th
       className={["sortableHeader", className].join(" ")}

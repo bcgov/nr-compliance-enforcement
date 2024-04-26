@@ -35,27 +35,22 @@ export const CompSelect: FC<Props> = ({
 
   let items: Option[] = [];
 
-  if(options)
-  {
-    items = [...options]
+  if (options) {
+    items = [...options];
   }
 
   // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
-    styles = {
-      ...styles,
-      option: (provided, state) => ({
-        ...provided,
-        color:
-          state.label === "None" || state.label === "Unassigned"
-            ? "#a1a1a1"
-            : "black",
-      }),
-    };
+  styles = {
+    ...styles,
+    option: (provided, state) => ({
+      ...provided,
+      color: state.label === "None" || state.label === "Unassigned" ? "#a1a1a1" : "black",
+    }),
+  };
 
   //-- pass through the onChange event
   const handleChange = (s: any) => {
-    if(onChange)
-    {
+    if (onChange) {
       onChange(s);
     }
   };
@@ -64,9 +59,7 @@ export const CompSelect: FC<Props> = ({
     <div className={className}>
       <Select
         id={id}
-        className={
-          errorMessage ? `${className} error-select-border ` : className
-        }
+        className={errorMessage ? `${className} error-select-border ` : className}
         classNames={classNames}
         styles={styles}
         placeholder={placeholder}

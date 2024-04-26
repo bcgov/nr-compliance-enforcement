@@ -1,4 +1,4 @@
 export enum StagingActivityCodeEnum {
-    INSERT	= 'INSERT',
-    UPDATE = 'UPDATE',
-  }
+  INSERT = "INSERT",
+  UPDATE = "UPDATE",
+}

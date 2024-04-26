@@ -1,5 +1,5 @@
 import { BaseCodeTable } from "./code-table";
 
-export interface PreventionType  extends BaseCodeTable { 
-   preventionType: string
+export interface PreventionType extends BaseCodeTable {
+  preventionType: string;
 }

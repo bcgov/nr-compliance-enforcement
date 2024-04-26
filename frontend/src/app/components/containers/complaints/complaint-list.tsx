@@ -14,10 +14,7 @@ import { ComplaintFilters } from "../../../types/complaints/complaint-filters/co
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
-import {
-  selectDefaultPageSize,
-  selectDefaultZone,
-} from "../../../store/reducers/app";
+import { selectDefaultPageSize, selectDefaultZone } from "../../../store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
 import ComplaintPagination from "../../common/complaint-pagination";
@@ -37,20 +34,10 @@ export const generateComplaintRequestPayload = (
   page: number,
   pageSize: number,
   sortColumn: string,
-  sortOrder: string
+  sortOrder: string,
 ): ComplaintRequestPayload => {
-  const {
-    region,
-    zone,
-    community,
-    officer,
-    startDate,
-    endDate,
-    status,
-    species,
-    natureOfComplaint,
-    violationType,
-  } = filters;
+  const { region, zone, community, officer, startDate, endDate, status, species, natureOfComplaint, violationType } =
+    filters;
 
   const common = {
     sortColumn,
@@ -103,14 +90,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   useEffect(() => {
     if (defaultZone) {
-      let payload = generateComplaintRequestPayload(
-        type,
-        filters,
-        page,
-        pageSize,
-        sortKey,
-        sortDirection
-      );
+      let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
 
       if (searchQuery) {
         payload = { ...payload, query: searchQuery };
@@ -123,14 +103,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   useEffect(() => {
     //Refresh the list with the current filters when the search is cleared
     if (!searchQuery && defaultZone) {
-      let payload = generateComplaintRequestPayload(
-        type,
-        filters,
-        page,
-        pageSize,
-        sortKey,
-        sortDirection
-      );
+      let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
       payload = { ...payload, query: searchQuery };
       dispatch(getComplaints(type, payload));
     }
@@ -151,9 +124,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   const handleSort = (sortInput: string) => {
     if (sortKey === sortInput) {
-      setSortDirection(
-        sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC
-      );
+      setSortDirection(sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC);
     } else {
       setSortKey(sortInput);
       setSortDirection(SORT_TYPES.ASC);

@@ -281,7 +281,7 @@ export const getZoneAtAGlanceStats =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/stats/${
           type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : "ERS"
-        }/by-zone/${zone}`
+        }/by-zone/${zone}`,
       );
 
       const response = await get<ZoneAtAGlanceStats>(dispatch, parameters);
@@ -311,7 +311,7 @@ export const getGeocodedComplaintCoordinates =
       let parameters;
       if (address && area) {
         parameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`,
         );
       } else {
         parameters = generateApiParameters(`${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`);
@@ -338,7 +338,7 @@ export const updateWildlifeComplaintStatus =
 
       //-- get the wildlife conflict and update its status
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/HWCR/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/HWCR/${complaint_identifier}`,
       );
 
       const response = await get<WildlifeComplaintDto>(dispatch, parameters);
@@ -361,7 +361,7 @@ export const updateAllegationComplaintStatus =
 
       //-- get the wildlife conflict and update its status
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/ERS/${complaint_identifier}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/ERS/${complaint_identifier}`,
       );
       const response = await get<AllegationComplaintDto>(dispatch, parameters);
       dispatch(updateAllegationComplaintByRow(response));
@@ -381,7 +381,7 @@ export const updateComplaintById =
 
       const updateParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/update-by-id/${complaintType}/${id}`,
-        complaint
+        complaint,
       );
 
       await patch<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, updateParams);
@@ -400,7 +400,7 @@ export const getComplaintById =
       dispatch(setComplaint(null));
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
@@ -413,7 +413,7 @@ export const getComplaintById =
 export const createComplaint =
   (
     complaintType: string,
-    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto
+    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -433,7 +433,7 @@ export const createComplaint =
 
       if (coordinates[Coordinates.Latitude] === 0 && coordinates[Coordinates.Longitude] === 0) {
         const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${selectedCommunity?.areaName}&addressString=${locationSummary}`
+          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${selectedCommunity?.areaName}&addressString=${locationSummary}`,
         );
         const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
 
@@ -450,7 +450,7 @@ export const createComplaint =
 
       const postParameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/create/${complaintType}`,
-        complaint
+        complaint,
       );
 
       await post<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, postParameters).then(async (res) => {
@@ -592,7 +592,7 @@ export const selectComplaintDetails =
 
     const getAttractants = (
       attractants: Array<AttractantXrefDto>,
-      codes: Array<AttractantDto>
+      codes: Array<AttractantDto>,
     ): Array<ComplaintDetailsAttractant> => {
       const result = attractants.map(({ xrefId: key, attractant: code }) => {
         let record: ComplaintDetailsAttractant = { key: "", description: "", code };
@@ -764,7 +764,7 @@ export const selectComplaintHeader =
             const species = getSpeciesBySpeciesCode(speciesCode, speciesCodes);
             const natureOfComplaint = getNatureOfComplaintByNatureOfComplaintCode(
               natureOfComplaintCode,
-              natureOfComplaints
+              natureOfComplaints,
             );
 
             result = { ...result, species, speciesCode, natureOfComplaint, natureOfComplaintCode };
@@ -846,27 +846,26 @@ export const selectComplaintSuspectWitnessDetails = (state: RootState): Complain
   return results;
 };
 
-export const selectComplaintAssignedBy =
-  (state: RootState): string | null => {
-    const {
-      complaints: { complaint },
-    } = state;
+export const selectComplaintAssignedBy = (state: RootState): string | null => {
+  const {
+    complaints: { complaint },
+  } = state;
 
-    if (complaint?.delegates) {
-      const { delegates } = complaint;
-      if (from(delegates).any()) {
-        const assigned = delegates.find((item) => item.type === "ASSIGNEE");
-        if (assigned && assigned?.person !== null) {
-          const {
-            person: { id },
-          } = assigned;
+  if (complaint?.delegates) {
+    const { delegates } = complaint;
+    if (from(delegates).any()) {
+      const assigned = delegates.find((item) => item.type === "ASSIGNEE");
+      if (assigned && assigned?.person !== null) {
+        const {
+          person: { id },
+        } = assigned;
 
-          return id;
-        }
+        return id;
       }
     }
+  }
 
-    return null;
-  };
+  return null;
+};
 
 export default complaintSlice.reducer;

@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateHwcrComplaintNatureCodeDto } from './dto/create-hwcr_complaint_nature_code.dto';
-import { UpdateHwcrComplaintNatureCodeDto } from './dto/update-hwcr_complaint_nature_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HwcrComplaintNatureCode } from './entities/hwcr_complaint_nature_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateHwcrComplaintNatureCodeDto } from "./dto/create-hwcr_complaint_nature_code.dto";
+import { UpdateHwcrComplaintNatureCodeDto } from "./dto/update-hwcr_complaint_nature_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { HwcrComplaintNatureCode } from "./entities/hwcr_complaint_nature_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class HwcrComplaintNatureCodeService {
   constructor(
     @InjectRepository(HwcrComplaintNatureCode)
-    private hwcrComplaintNatureCodeRepository: Repository<HwcrComplaintNatureCode>
+    private hwcrComplaintNatureCodeRepository: Repository<HwcrComplaintNatureCode>,
   ) {}
 
   async create(createHwcrComplaintNatureCodeDto: CreateHwcrComplaintNatureCodeDto): Promise<HwcrComplaintNatureCode> {
@@ -23,11 +23,17 @@ export class HwcrComplaintNatureCodeService {
   }
 
   async findOne(id: string): Promise<HwcrComplaintNatureCode> {
-    return this.hwcrComplaintNatureCodeRepository.findOneByOrFail({hwcr_complaint_nature_code: id});
+    return this.hwcrComplaintNatureCodeRepository.findOneByOrFail({ hwcr_complaint_nature_code: id });
   }
 
-  async update(hwcr_complaint_nature_code: string, updateHwcrComplaintNatureCodeDto: UpdateHwcrComplaintNatureCodeDto): Promise<HwcrComplaintNatureCode> {
-    await this.hwcrComplaintNatureCodeRepository.update({ hwcr_complaint_nature_code }, updateHwcrComplaintNatureCodeDto);
+  async update(
+    hwcr_complaint_nature_code: string,
+    updateHwcrComplaintNatureCodeDto: UpdateHwcrComplaintNatureCodeDto,
+  ): Promise<HwcrComplaintNatureCode> {
+    await this.hwcrComplaintNatureCodeRepository.update(
+      { hwcr_complaint_nature_code },
+      updateHwcrComplaintNatureCodeDto,
+    );
     return this.findOne(hwcr_complaint_nature_code);
   }
 

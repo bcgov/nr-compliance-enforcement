@@ -1,6 +1,5 @@
 export const Migration3 = {
   1: (state: any) => {
-    
     return {
       ...state,
       app: {
@@ -9,15 +8,15 @@ export const Migration3 = {
           complaintManagement: {
             configurationCode: "",
             configurationValue: "",
-            activeInd: true
+            activeInd: true,
           },
           caseManagement: {
             configurationCode: "",
             configurationValue: "",
-            activeInd: true
-          }
-        }
-      }
+            activeInd: true,
+          },
+        },
+      },
     };
   },
 };

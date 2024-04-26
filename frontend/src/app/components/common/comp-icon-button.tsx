@@ -8,21 +8,24 @@ type props = {
 
 export const CompIconButton: FC<props> = ({ classNames, children, onClick }) => {
   const handleClickEvent = () => {
-    onClick()
+    onClick();
   };
 
-  const renderClassNames = () => { 
+  const renderClassNames = () => {
     let results = "comp-icon-button-container";
 
-    if(classNames){ 
-      results = `${results} ${classNames}`
+    if (classNames) {
+      results = `${results} ${classNames}`;
     }
 
     return results;
-  }
+  };
 
   return (
-    <button className={renderClassNames()} onClick={() => handleClickEvent()}>
+    <button
+      className={renderClassNames()}
+      onClick={() => handleClickEvent()}
+    >
       {children}
     </button>
   );

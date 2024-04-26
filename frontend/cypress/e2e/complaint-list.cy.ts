@@ -22,7 +22,7 @@ describe("Complaint List Functionality", () => {
         cy.get("#ers-tab").should("contain.text", "Enforcement");
       }
     });
-    
+
     it("Verifies that the complaint link styles are applied correctly", () => {
       cy.visit("/");
       cy.waitForSpinner();
@@ -33,11 +33,8 @@ describe("Complaint List Functionality", () => {
       cy.get("#comp-status-filter").click({ force: true });
       cy.get("#comp-zone-filter").click({ force: true });
 
-
-      cy.get(".comp-nav-item-name-underline > a").should('have.css', 'text-decoration').should('include', 'underline');
-      cy.get(".comp-nav-item-name-underline > a").should('have.css', 'color').should('include', 'rgb(26, 90, 150)');
-
+      cy.get(".comp-nav-item-name-underline > a").should("have.css", "text-decoration").should("include", "underline");
+      cy.get(".comp-nav-item-name-underline > a").should("have.css", "color").should("include", "rgb(26, 90, 150)");
     });
-
   });
 });

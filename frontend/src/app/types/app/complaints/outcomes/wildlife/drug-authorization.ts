@@ -1,4 +1,4 @@
-export interface DrugAuthorization { 
+export interface DrugAuthorization {
   officer: string;
   officerErrorMessage?: string;
   date?: Date;

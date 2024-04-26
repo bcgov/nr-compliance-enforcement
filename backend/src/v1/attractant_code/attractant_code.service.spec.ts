@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AttractantCodeService } from './attractant_code.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { AttractantCode } from './entities/attractant_code.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AttractantCodeService } from "./attractant_code.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { AttractantCode } from "./entities/attractant_code.entity";
 
-describe('AttractantCodeService', () => {
+describe("AttractantCodeService", () => {
   let service: AttractantCodeService;
 
   beforeEach(async () => {
@@ -12,16 +12,15 @@ describe('AttractantCodeService', () => {
         AttractantCodeService,
         {
           provide: getRepositoryToken(AttractantCode),
-          useValue: {
-
-          },
-        },],
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<AttractantCodeService>(AttractantCodeService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

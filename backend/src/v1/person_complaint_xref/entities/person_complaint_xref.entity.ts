@@ -2,14 +2,13 @@ import { Complaint } from "../../complaint/entities/complaint.entity";
 import { Person } from "../../person/entities/person.entity";
 import { PersonComplaintXrefCode } from "../../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { UUID } from 'crypto';
+import { UUID } from "crypto";
 
 @Index("PK_person_complaint_xref_guid", ["personComplaintXrefGuid"], {
   unique: true,
 })
 @Entity("person_complaint_xref", { schema: "public" })
 export class PersonComplaintXref {
-  
   @Column("uuid", {
     primary: true,
     name: "person_complaint_xref_guid",
@@ -41,10 +40,7 @@ export class PersonComplaintXref {
   ])
   complaint_identifier: Complaint;
 
-  @ManyToOne(
-    () => PersonComplaintXrefCode,
-    (personComplaintXrefCode) => personComplaintXrefCode.personComplaintXrefs
-  )
+  @ManyToOne(() => PersonComplaintXrefCode, (personComplaintXrefCode) => personComplaintXrefCode.personComplaintXrefs)
   @JoinColumn([
     {
       name: "person_complaint_xref_code",

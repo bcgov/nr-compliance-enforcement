@@ -23,9 +23,7 @@ export class OfficeService {
     await queryRunner.startTransaction();
     let newOfficeString;
     try {
-      newOfficeString = await this.officeRepository.create(
-        <CreateOfficeDto>office
-      );
+      newOfficeString = await this.officeRepository.create(<CreateOfficeDto>office);
       await queryRunner.manager.save(newOfficeString);
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -75,10 +73,7 @@ export class OfficeService {
       .select("office.office_guid")
       .leftJoin("office.cos_geo_org_unit", "organization")
       .leftJoin("office.agency_code", "agency")
-      .addSelect([
-        "organization.office_location_name",
-        "agency.short_description",
-      ]);
+      .addSelect(["organization.office_location_name", "agency.short_description"]);
 
     const data = await queryBuilder.getMany();
 

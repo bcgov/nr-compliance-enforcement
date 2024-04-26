@@ -45,7 +45,10 @@ export const OpenComplaints: FC<Props> = ({
   return (
     <div className="comp-zag-chart-container comp-nmargin-left-md">
       <div className="comp-zag-open-complaint-chart">
-        <Doughnut data={data} options={options} />
+        <Doughnut
+          data={data}
+          options={options}
+        />
       </div>
       <div className="comp-zag-legend item2">
         <h6>{complaintTypeToName(type)}</h6>
