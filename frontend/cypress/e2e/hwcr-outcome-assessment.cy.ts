@@ -31,7 +31,7 @@ describe("HWCR Outcome Assessments", () => {
         cy.get("#outcome-officer-div").find(".error-message").should("exist");
 
         //validate the date is required
-        cy.get("#complaint-outcome-date-div").find(".error-message").should("exist");
+        cy.get("#assessment-checkbox-div").find(".error-message").should("exist");
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
@@ -54,7 +54,17 @@ describe("HWCR Outcome Assessments", () => {
       if ($assessment.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
         cy.fillInHWCSection("ASSESSMENT", ["#ASSESSRISK"], "Olivia Benson", "01", "Yes");
-        cy.validateHWCSection("ASSESSMENT", ["Assessed public safety risk"], "Olivia Benson", "01", "Yes");
+
+        const params = {
+          section: "ASSESSMENT",
+          checkboxes: ["Assessed public safety risk"],
+          officer: "Olivia Benson",
+          date: "01",
+          actionRequired: "Yes",
+          toastText: "Assessment has been saved",
+        };
+
+        cy.validateHWCSection(params);
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -104,14 +114,17 @@ describe("HWCR Outcome Assessments", () => {
 
         cy.fillInHWCSection("ASSESSMENT", ["#ASSESSHIST"], "Jake Peralta", "01", "No", "No public safety concern");
 
-        cy.validateHWCSection(
-          "ASSESSMENT",
-          ["Assessed public safety risk", "Assessed known conflict history"],
-          "Jake Peralta",
-          "01",
-          "No",
-          "No public safety concern",
-        );
+        const params = {
+          section: "ASSESSMENT",
+          checkboxes: ["Assessed public safety risk", "Assessed known conflict history"],
+          officer: "Jake Peralta",
+          date: "01",
+          actionRequired: "No",
+          justification: "No public safety concern",
+          toastText: "Assessment has been updated",
+        };
+
+        cy.validateHWCSection(params);
       } else {
         cy.log("Assessment Not Found, did a previous test fail? Skip the Test");
         this.skip();

@@ -25,13 +25,14 @@ declare namespace Cypress {
       actionRequired?: string,
       justification?: string,
     ): Chainable<void>;
-    validateHWCSection(
-      section: string,
-      checkboxes: string[],
-      officer: string,
-      date: string,
-      actionRequired?: string,
-      justification?: string,
-    ): Chainable<void>;
+    validateHWCSection(params: {
+      section: string;
+      checkboxes: string[];
+      officer: string;
+      date: string;
+      actionRequired?: string;
+      justification?: string;
+      toastText?: string;
+    }): Chainable<void>;
   }
 }

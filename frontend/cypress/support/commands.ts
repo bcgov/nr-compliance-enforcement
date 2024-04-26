@@ -370,29 +370,19 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   "validateHWCSection",
-  (
-    section: string,
-    checkboxes: string[],
-    officer: string,
-    date: string,
-    actionRequired?: string,
-    justification?: string,
-  ) => {
+  ({ section, checkboxes, officer, date, actionRequired, justification, toastText }) => {
     let checkboxDiv = "";
     let officerDiv = "";
     let dateDiv = "";
-    let toastText = "";
 
     if (section === "ASSESSMENT") {
       checkboxDiv = "#assessment-checkbox-div";
       officerDiv = "#outcome-officer-div";
       dateDiv = "#complaint-outcome-date-div";
-      toastText = "Assessment has been updated";
     } else {
       checkboxDiv = "#prev-educ-checkbox-div";
       officerDiv = "#prev-educ-outcome-officer-div";
       dateDiv = "#prev-educ-outcome-date-div";
-      toastText = "Prevention and education has been updated";
     }
 
     //Verify Fields exist
@@ -423,9 +413,11 @@ Cypress.Commands.add(
     });
 
     //validate the toast
-    cy.get(".Toastify__toast-body").then(($toast) => {
-      expect($toast).to.contain.text(toastText);
-    });
+    if (toastText) {
+      cy.get(".Toastify__toast-body").then(($toast) => {
+        expect($toast).to.contain.text(toastText);
+      });
+    }
   },
 );
 
