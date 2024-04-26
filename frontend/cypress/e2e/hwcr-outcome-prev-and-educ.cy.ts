@@ -47,6 +47,14 @@ describe("HWCR Outcome Prevention and Education", () => {
   it("it can save prevention and education", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
 
+    const params = {
+      section: "PREV&EDUC",
+      checkboxes: ["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"],
+      officer: "Olivia Benson",
+      date: "01",
+      toastText: "Prevention and education has been saved",
+    };
+
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
@@ -55,18 +63,6 @@ describe("HWCR Outcome Prevention and Education", () => {
         cy.get("#outcome-report-add-prevention-outcome").click();
         cy.validateComplaint("23-030330", "Black Bear");
         cy.fillInHWCSection("PREV&EDUC", ["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01");
-
-        const params = {
-          section: "PREV&EDUC",
-          checkboxes: [
-            "Provided safety information to the public",
-            "Contacted bylaw to assist with managing attractants",
-          ],
-          officer: "Olivia Benson",
-          date: "01",
-          toastText: "Prevention and education has been saved",
-        };
-
         cy.validateHWCSection(params);
       } else {
         cy.log("Test was previously run. Skip the Test");
