@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -81,6 +81,18 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
   const [speciesErrorMessage, setSpeciesErrorMessage] = useState<string>("");
   const [outcomeOfficerErrorMessage, setOutcomeOfficerErrorMessage] = useState<string>("");
   const [outcomeDateErrorMessage, setOutcomeDateErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    const date = animalOutcomeItemData?.date ? new Date(animalOutcomeItemData?.date) : new Date();
+    const defaultDateDrug = animalOutcomeItemData?.drugAuthorization?.date
+      ? new Date(animalOutcomeItemData?.drugAuthorization?.date)
+      : new Date();
+    setOutcomeDate(date);
+    setDrugAuthorization({
+      officer: animalOutcomeItemData?.officer?.value ?? "",
+      date: defaultDateDrug,
+    });
+  }, [animalOutcomeItemData]);
 
   const handleSaveAnimalOutcome = () => {
     const id = editMode ? animalOutcomeItemData?.id?.toString() : uuidv4();
