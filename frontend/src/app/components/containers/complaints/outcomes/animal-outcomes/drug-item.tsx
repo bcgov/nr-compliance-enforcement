@@ -104,12 +104,12 @@ export const DrugItem: FC<props> = ({
       </Row>
       <Row>
         <Col md={6}>
-          <span className="comp-fake-label">Fate of remaining drug in vial</span> {remaining}
+          <span className="comp-fake-label">Fate of remaining drug in vial </span> {remaining}
         </Col>
         <Col md={3}>
           {remainingUse === "DISC" && (
             <>
-              <span className="comp-fake-label">Amount discarded</span> {amountDiscarded}ml
+              <span className="comp-fake-label">Amount discarded</span> {amountDiscarded} {amountDiscarded ? "ml" : ""}
             </>
           )}
         </Col>

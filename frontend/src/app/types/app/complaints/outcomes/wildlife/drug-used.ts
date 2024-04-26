@@ -8,6 +8,7 @@ export interface DrugUsed {
   amountUsed: string;
   amountUsedErrorMessage: string;
   amountDiscarded: string;
+  amountDiscardedErrorMessage: string;
 
   injectionMethod: string;
   injectionMethodErrorMessage: string;
