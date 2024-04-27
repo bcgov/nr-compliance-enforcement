@@ -18,6 +18,7 @@ type props = {
   amountUsed: string;
   amountUsedErrorMessage: string;
   amountDiscarded: string;
+  amountDiscardedErrorMessage: string;
 
   reactions: string;
   remainingUse: string;
@@ -42,6 +43,7 @@ export const AddDrug: FC<props> = ({
   injectionMethodErrorMessage,
   discardMethod,
   amountDiscarded,
+  amountDiscardedErrorMessage,
   reactions,
   remainingUse,
   remove,
@@ -262,6 +264,7 @@ export const AddDrug: FC<props> = ({
                 placeholder="Example"
                 inputClass="comp-form-control"
                 value={amountDiscarded}
+                error={amountDiscardedErrorMessage}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
