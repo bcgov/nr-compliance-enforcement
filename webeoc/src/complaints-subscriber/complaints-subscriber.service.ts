@@ -2,7 +2,6 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
   connect,
-  JetStreamClient,
   JetStreamManager,
   Msg,
   NatsConnection,
@@ -25,7 +24,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
-  private js: JetStreamClient | null = null;
 
   constructor(private readonly service: StagingComplaintsApiService) {
     this.natsConnection = null;
@@ -40,7 +38,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
       // Set up JetStream context
       this.jsm = await this.natsConnection.jetstreamManager();
-      this.js = this.natsConnection.jetstream();
 
       // Set up or validate the stream configuration
       await this.setupStream();
@@ -58,7 +55,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
       retention: RetentionPolicy.Limits,
-      maxAge: 0,
+      maxAge: 30 * 1000000000, // 30 seconds in nanoseconds
       storage: StorageType.Memory,
       duplicateWindow: 30 * 1000000000, // 30 seconds in nanoseconds
     };
