@@ -89,7 +89,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
 
-    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED);
+    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED, this._queue_group_config);
 
     const processMessage = async (msg: Msg) => {
       const complaintMessage: Complaint = JSON.parse(sc.decode(msg.data));
