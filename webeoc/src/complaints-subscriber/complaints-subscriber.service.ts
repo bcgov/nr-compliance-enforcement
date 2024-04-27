@@ -2,10 +2,8 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
   connect,
-  DeliverPolicy,
   JetStreamClient,
   JetStreamManager,
-  JSONCodec,
   Msg,
   NatsConnection,
   RetentionPolicy,
