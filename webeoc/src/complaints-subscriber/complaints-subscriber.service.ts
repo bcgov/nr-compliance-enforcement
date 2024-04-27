@@ -27,6 +27,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
+  private js: JetStreamClient | null = null;
 
   constructor(private readonly service: StagingComplaintsApiService) {
     this.natsConnection = null;
@@ -41,6 +42,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
       // Set up JetStream context
       this.jsm = await this.natsConnection.jetstreamManager();
+      this.js = this.natsConnection.jetstream();
 
       // Set up or validate the stream configuration
       await this.setupStream();
@@ -60,7 +62,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       retention: RetentionPolicy.Limits,
       maxAge: 0,
       storage: StorageType.Memory,
-      duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds
+      duplicateWindow: 30 * 1000000000, // 30 seconds in nanoseconds
     };
 
     try {
@@ -86,7 +88,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       ack_policy: AckPolicy.Explicit,
     };
 
-    this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
+    await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
 
     const sub = this.natsConnection.subscribe(NATS_NEW_COMPLAINTS_TOPIC_NAME_DELIVERED);
 
