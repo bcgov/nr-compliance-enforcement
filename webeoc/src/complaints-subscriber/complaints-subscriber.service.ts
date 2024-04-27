@@ -61,17 +61,18 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       retention: RetentionPolicy.Limits,
       maxAge: 0,
       storage: StorageType.Memory,
-      duplicateWindow: 5 * 60 * 1000000000, // 5 minutes in nanoseconds
+      duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds
     };
 
     try {
       if (!this.jsm) {
         throw new Error("JetStream Management client is not initialized.");
       }
+
       const streamInfo = await this.jsm.streams.add(streamConfig);
-      this.logger.debug("Stream created or updated:", streamInfo);
+      console.log("Stream created or updated:", streamInfo);
     } catch (error) {
-      this.logger.error("Failed to create or update stream:", error);
+      console.error("Failed to create or update stream:", error);
       throw error;
     }
   }
@@ -84,20 +85,20 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const consumerConfig = {
       filter_subject: NATS_NEW_COMPLAINTS_TOPIC_NAME,
       deliver_subject: NATS_NEW_COMPLAINTS_TOPIC_NAME_DELIVERED,
+      deliver_group: NATS_QUEUE_GROUP,
       ack_policy: AckPolicy.Explicit,
     };
-
     await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
 
-    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED, this._queue_group_config);
+    const sub = this.natsConnection.subscribe(NATS_NEW_COMPLAINTS_TOPIC_NAME_DELIVERED, this._queue_group_config);
 
     const processMessage = async (msg: Msg) => {
       const complaintMessage: Complaint = JSON.parse(sc.decode(msg.data));
+      this.logger.debug("Received complaint:", complaintMessage);
       try {
-        this.logger.debug(`Received ${complaintMessage?.incident_number} from NATS topic`);
         await this.service.postComplaintToStaging(complaintMessage);
       } catch (error) {
-        this.logger.error(`Complaint not processed ${complaintMessage?.incident_number}`);
+        this.logger.error("Message not processed");
       }
     };
 
@@ -117,6 +118,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const consumerConfig = {
       filter_subject: NEW_STAGING_COMPLAINTS_TOPIC_NAME,
       deliver_subject: NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED,
+      deliver_group: NATS_QUEUE_GROUP,
     };
 
     this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
@@ -125,12 +127,13 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     const processMessage = async (msg: Msg) => {
       const stagingData = sc.decode(msg.data);
+      this.logger.debug(`New complaint in staging: ${stagingData}`);
       await this.service.postComplaint(stagingData);
     };
 
+    this.logger.debug("Listening for messages...");
     for await (const message of await sub) {
       await processMessage(message);
     }
-    this.logger.error("No longer listening for new staged complaints");
   }
 }
