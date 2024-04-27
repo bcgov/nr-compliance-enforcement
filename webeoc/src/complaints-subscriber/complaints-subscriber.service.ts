@@ -68,9 +68,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         throw new Error("JetStream Management client is not initialized.");
       }
       const streamInfo = await this.jsm.streams.add(streamConfig);
-      console.log("Stream created or updated:", streamInfo);
+      this.logger.debug("Stream created or updated:", streamInfo);
     } catch (error) {
-      console.error("Failed to create or update stream:", error);
+      this.logger.error("Failed to create or update stream:", error);
       throw error;
     }
   }
@@ -92,11 +92,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     const processMessage = async (msg: Msg) => {
       const complaintMessage: Complaint = JSON.parse(sc.decode(msg.data));
-      this.logger.debug("Received complaint:", complaintMessage);
       try {
         await this.service.postComplaintToStaging(complaintMessage);
       } catch (error) {
-        this.logger.error("Message not processed");
+        this.logger.error(`Complaint not processed ${complaintMessage?.incident_number}`);
       }
     };
 
@@ -124,13 +123,12 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     const processMessage = async (msg: Msg) => {
       const stagingData = sc.decode(msg.data);
-      this.logger.debug(`New complaint in staging: ${stagingData}`);
       await this.service.postComplaint(stagingData);
     };
 
-    this.logger.debug("Listening for messages...");
     for await (const message of await sub) {
       await processMessage(message);
     }
+    this.logger.error("No longer listening for new staged complaints");
   }
 }
