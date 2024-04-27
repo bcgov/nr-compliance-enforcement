@@ -12,6 +12,7 @@ import {
 import {
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NATS_NEW_COMPLAINTS_TOPIC_NAME_DELIVERED,
+  NATS_QUEUE_GROUP,
   NATS_STREAM_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED,
@@ -25,7 +26,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
   private _queue_group_config = {
-    queue: "complaints_queue_group",
+    queue: NATS_QUEUE_GROUP,
   };
 
   constructor(private readonly service: StagingComplaintsApiService) {
@@ -58,6 +59,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
       retention: RetentionPolicy.Limits,
+      maxAge: 0,
       storage: StorageType.Memory,
       duplicateWindow: 5 * 60 * 1000000000, // 5 minutes in nanoseconds
     };
@@ -87,11 +89,12 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
 
-    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED, this._queue_group_config);
+    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED);
 
     const processMessage = async (msg: Msg) => {
       const complaintMessage: Complaint = JSON.parse(sc.decode(msg.data));
       try {
+        this.logger.debug(`Received ${complaintMessage?.incident_number} from NATS topic`);
         await this.service.postComplaintToStaging(complaintMessage);
       } catch (error) {
         this.logger.error(`Complaint not processed ${complaintMessage?.incident_number}`);

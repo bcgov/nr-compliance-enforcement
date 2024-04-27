@@ -36,7 +36,7 @@ export class WebEOCComplaintsScheduler {
     // Fetch complaints from WebEOC here
     const complaints = await this.fetchComplaintsFromWebEOC();
 
-    this.logger.debug(`Found ${complaints?.length} new complaints`);
+    this.logger.debug(`Found ${complaints?.length} complaints from WebEOC`);
 
     // Publish each complaint to NATS
     for (const complaint of complaints) {

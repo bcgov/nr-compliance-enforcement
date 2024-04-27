@@ -7,3 +7,4 @@ export const NATS_STREAM_NAME = "complaints_stream";
 
 export const STAGING_API_ENDPOINT = "staging-complaint";
 export const COMPLAINT_API_ENDPOINT = "complaint-internal";
+export const NATS_QUEUE_GROUP = "complaints_queue_group";
