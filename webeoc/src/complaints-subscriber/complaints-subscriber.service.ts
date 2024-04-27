@@ -24,6 +24,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
+  private _queue_group_config = {
+    queue: "complaints_queue_group",
+  };
 
   constructor(private readonly service: StagingComplaintsApiService) {
     this.natsConnection = null;
@@ -55,7 +58,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
       retention: RetentionPolicy.Limits,
-      maxAge: 30 * 1000000000, // 30 seconds in nanoseconds
       storage: StorageType.Memory,
       duplicateWindow: 30 * 1000000000, // 30 seconds in nanoseconds
     };
@@ -85,7 +87,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
 
-    const sub = this.natsConnection.subscribe(NATS_NEW_COMPLAINTS_TOPIC_NAME_DELIVERED);
+    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED, this._queue_group_config);
 
     const processMessage = async (msg: Msg) => {
       const complaintMessage: Complaint = JSON.parse(sc.decode(msg.data));
@@ -116,7 +118,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
 
-    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED);
+    const sub = this.natsConnection.subscribe(NEW_STAGING_COMPLAINTS_TOPIC_NAME_DELIVERED, this._queue_group_config);
 
     const processMessage = async (msg: Msg) => {
       const stagingData = sc.decode(msg.data);
