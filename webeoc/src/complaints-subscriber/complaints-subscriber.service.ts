@@ -59,7 +59,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
       retention: RetentionPolicy.Limits,
       storage: StorageType.Memory,
-      duplicateWindow: 30 * 1000000000, // 30 seconds in nanoseconds
+      duplicateWindow: 5 * 60 * 1000000000, // 5 minutes in nanoseconds
     };
 
     try {
