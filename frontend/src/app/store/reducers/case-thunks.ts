@@ -88,6 +88,7 @@ const addAssessment =
       codeTables: { "assessment-type": assessmentType },
       officers: { officers },
       app: { profile },
+      cases: { caseId },
     } = getState();
     let createAssessmentInput = {
       createAssessmentInput: {
@@ -137,6 +138,7 @@ const addAssessment =
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Assessment has been saved`);
       } else {
         await dispatch(clearAssessment());
@@ -290,6 +292,7 @@ const addPrevention =
       codeTables: { "prevention-type": preventionType },
       officers: { officers },
       app: { profile },
+      cases: { caseId },
     } = getState();
     let createPreventionInput = {
       createPreventionInput: {
@@ -338,6 +341,7 @@ const addPrevention =
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPrevention({ prevention: updatedPreventionData }));
+        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Prevention and education has been saved`);
       } else {
         await dispatch(clearPrevention());
@@ -510,7 +514,8 @@ export const upsertNote =
       result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
 
       if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier));
+        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
+
         ToggleSuccess("Supplemental note created");
       } else {
         ToggleError("Error, unable to create supplemental note");
@@ -612,9 +617,7 @@ export const createReview =
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
       if (res) {
-        if (!caseId) {
-          dispatch(setCaseId(res.caseIdentifier));
-        }
+        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         dispatch(setIsReviewedRequired(res.isReviewRequired));
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
@@ -669,6 +672,7 @@ export const deleteEquipment =
       id: id,
       updateUserId: profile.idir_username,
     };
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {
@@ -695,6 +699,7 @@ export const upsertEquipment =
 
     const {
       app: { profile },
+      cases: { caseId },
     } = getState();
     // equipment does not exist, let's create it
     if (complaintIdentifier && !equipment.id) {
@@ -711,6 +716,7 @@ export const upsertEquipment =
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
+          if (!caseId) dispatch(setCaseId(res.caseIdentifier));
           ToggleSuccess(`Equipment has been updated`);
         } else {
           ToggleError(`Unable to update equipment`);
