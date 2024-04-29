@@ -111,7 +111,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         try {
           for await (const message of await consumer.consume()) {
             const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
-            this.logger.debug("Received complaint:", complaintMessage);
+            this.logger.debug("Received complaint:", complaintMessage?.incident_number);
             try {
               await this.service.postComplaintToStaging(complaintMessage);
               message.ack();
