@@ -36,6 +36,7 @@ jobs:
         run: |
           helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
             --set config.jetstream.enabled=true \
+            --set config.jetstream.fileStore.pvc.size=200Mi \
             --set config.jetstream.memoryStore.enabled=true \
             --set config.jetstream.memoryStore.maxSize=250Mi \
             --set cluster.enabled=true \
