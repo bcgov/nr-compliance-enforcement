@@ -99,15 +99,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       // Add consumer configuration to JetStream Manager
       let consumer = null;
 
-      if (this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER)) {
-        consumer = await this.natsConnection
-          .jetstream()
-          .consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
-      } else {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
-          consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
-        });
+      // delete the existing consumer in case we've made a configuation change (this will be recreated)
+      if (await this.checkConsumerExists(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER)) {
+        await this.jsm.consumers.delete(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
       }
+      await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
+        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
+      });
+
       (async () => {
         try {
           for await (const message of await consumer.consume()) {
@@ -127,8 +126,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     } catch (error) {
       this.logger.error("Failed to subscribe or process messages:", error);
     }
-
-    this.logger.error("No longer listening for new webeoc complaints");
   }
 
   // subscribe to new nats to listen for new complaints added to the staging table.  These will be moved to the operational Complaints table.
@@ -145,15 +142,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     try {
       // Add consumer configuration to JetStream Manager
       let consumer = null;
-      if (this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER)) {
-        consumer = await this.natsConnection
-          .jetstream()
-          .consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
-      } else {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
-          consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
-        });
+      // delete the existing consumer in case we've made a configuation change (this will be recreated)
+      if (await this.checkConsumerExists(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER)) {
+        await this.jsm.consumers.delete(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
       }
+      await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
+        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
+      });
+
       (async () => {
         try {
           for await (const message of await consumer.consume()) {
@@ -173,7 +169,23 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     } catch (error) {
       this.logger.error("Failed to subscribe or process messages:", error);
     }
+  }
 
-    this.logger.error("No longer listening for new webeoc complaints");
+  // This function checks if a specific consumer exists in a stream
+  private async checkConsumerExists(stream: string, consumerName: string): Promise<boolean> {
+    const consumerLister = await this.jsm.consumers.list(stream);
+
+    let result;
+    while (true) {
+      result = await consumerLister.next();
+      if (result === null || result === undefined || Object.keys(result).length === 0) {
+        // No more consumers, or signal of end of list
+        break;
+      }
+      if (result.consumer && result.consumer.name === consumerName) {
+        return true; // Return true if the consumer is found
+      }
+    }
+    return false; // Return false if the consumer was not found
   }
 }
