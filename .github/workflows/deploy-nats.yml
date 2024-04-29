@@ -40,6 +40,7 @@ jobs:
             --set config.jetstream.memoryStore.maxSize=250Mi \
             --set cluster.enabled=true \
             --set natsBox.enabled=false \
+            --set persistence.enabled=false \
             --set container.merge.resources.requests.cpu=25m \
             --set container.merge.resources.limits.cpu=100m \
             --set container.merge.resources.requests.memory=50Mi \
