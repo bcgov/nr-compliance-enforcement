@@ -98,9 +98,16 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     try {
       // Add consumer configuration to JetStream Manager
       let consumer = null;
-      await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
-        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
-      });
+
+      if (this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER)) {
+        consumer = await this.natsConnection
+          .jetstream()
+          .consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
+      } else {
+        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
+          consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
+        });
+      }
       (async () => {
         try {
           for await (const message of await consumer.consume()) {
@@ -138,9 +145,15 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     try {
       // Add consumer configuration to JetStream Manager
       let consumer = null;
-      await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
-        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
-      });
+      if (this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER)) {
+        consumer = await this.natsConnection
+          .jetstream()
+          .consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
+      } else {
+        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
+          consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
+        });
+      }
       (async () => {
         try {
           for await (const message of await consumer.consume()) {

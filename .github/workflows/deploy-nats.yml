@@ -1,57 +1,53 @@
 name: Deploy NATS to OpenShift
 
 on:
-    pull_request:
+  pull_request:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Set up OpenShift CLI
-      uses: redhat-actions/oc-login@v1
-      with:
-        openshift_server_url: ${{ vars.OC_SERVER }}
-        openshift_token: ${{ secrets.OC_TOKEN }}
-        namespace: ${{ vars.OC_NAMESPACE }}
+      - name: Set up OpenShift CLI
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ vars.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ vars.OC_NAMESPACE }}
 
-    - name: Add NATS Helm repo
-      run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-  
-    - name: Check if NATS release exists
-      id: check_release
-      run: |
-        RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
-        if helm list -q | grep -q $RELEASE_NAME; then
-          echo "Release $RELEASE_NAME already exists. Skipping install."
-          echo "release_exists=true" >> $GITHUB_ENV
-        else
-          echo "Release $RELEASE_NAME does not exist. Proceeding with install."
-          echo "release_exists=false" >> $GITHUB_ENV  
-        fi
-    - name: Deploy NATS using Helm
-      if: env.release_exists == 'false'
-      run: |
-        helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
-          --set config.jetstream.enabled=true \
-          --set config.jetstream.fileStore.pvc.size=200Mi \
-          --set config.jetstream.memoryStore.enabled=true \
-          --set config.jetstream.memoryStore.maxSize=500Mi \
-          --set cluster.enabled=true \
-          --set natsBox.enabled=false \
-          --set persistence.enabled=true \
-          --set persistence.size=200Mi \
-          --set container.merge.resources.requests.cpu=25m \
-          --set container.merge.resources.limits.cpu=100m \
-          --set container.merge.resources.requests.memory=500Mi \
-          --set container.merge.resources.limits.memory=1000Mi \
-          --set reloader.enabled=false \
-          --set replicaCount=1
+      - name: Add NATS Helm repo
+        run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
 
-    - name: Label NATS Deployment
-      run: |
-        RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
-        oc label statefulset $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
-      
+      - name: Check if NATS release exists
+        id: check_release
+        run: |
+          RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+          if helm list -q | grep -q $RELEASE_NAME; then
+            echo "Release $RELEASE_NAME already exists. Skipping install."
+            echo "release_exists=true" >> $GITHUB_ENV
+          else
+            echo "Release $RELEASE_NAME does not exist. Proceeding with install."
+            echo "release_exists=false" >> $GITHUB_ENV  
+          fi
+      - name: Deploy NATS using Helm
+        if: env.release_exists == 'false'
+        run: |
+          helm install ${{ github.event.repository.name }}-${{ github.event.number }}-nats nats/nats \
+            --set config.jetstream.enabled=true \
+            --set config.jetstream.memoryStore.enabled=true \
+            --set config.jetstream.memoryStore.maxSize=250Mi \
+            --set cluster.enabled=true \
+            --set natsBox.enabled=false \
+            --set container.merge.resources.requests.cpu=25m \
+            --set container.merge.resources.limits.cpu=100m \
+            --set container.merge.resources.requests.memory=50Mi \
+            --set container.merge.resources.limits.memory=250Mi \
+            --set reloader.enabled=false \
+            --set replicaCount=1
+
+      - name: Label NATS Deployment
+        run: |
+          RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+          oc label statefulset $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
