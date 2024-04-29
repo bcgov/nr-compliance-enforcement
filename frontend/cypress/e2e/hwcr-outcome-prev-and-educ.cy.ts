@@ -79,40 +79,6 @@ describe("HWCR Outcome Prevention and Education", () => {
     });
   });
 
-  it("it can edit an existing prevention and education", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
-
-    cy.validateComplaint("23-030330", "Black Bear");
-
-    cy.get(".comp-outcome-report-complaint-prev-and-educ").then(function ($preventionAndEducation) {
-      if ($preventionAndEducation.find("#prevention-edit-button").length) {
-        cy.get("#prevention-edit-button").click();
-
-        let params = {
-          section: "PREV&EDUC",
-          checkboxes: ["#CNTCTBIOVT"],
-          officer: "Jake Peralta",
-          date: "01",
-          toastText: "Prevention and education has been updated",
-        };
-
-        cy.fillInHWCSection(params).then(() => {
-          //expand checkboxes for validating in view state
-          params.checkboxes = [
-            "Provided safety information to the public",
-            "Contacted bylaw to assist with managing attractants",
-            "Contacted biologist and/or veterinarian",
-          ];
-
-          cy.validateHWCSection(params);
-        });
-      } else {
-        cy.log("Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test");
-        this.skip();
-      }
-    });
-  });
-
   it("it can cancel prevention and education edits", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
 
@@ -139,6 +105,40 @@ describe("HWCR Outcome Prevention and Education", () => {
           expect($div).to.not.contain.text(
             "Directed livestock owner to or explained sections 2, 26(2) and 75 of the Wildlife Act",
           );
+        });
+      } else {
+        cy.log("Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test");
+        this.skip();
+      }
+    });
+  });
+
+  it("it can edit an existing prevention and education", () => {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
+
+    cy.validateComplaint("23-030330", "Black Bear");
+
+    cy.get(".comp-outcome-report-complaint-prev-and-educ").then(function ($preventionAndEducation) {
+      if ($preventionAndEducation.find("#prevention-edit-button").length) {
+        cy.get("#prevention-edit-button").click();
+
+        let params = {
+          section: "PREV&EDUC",
+          checkboxes: ["#CNTCTBIOVT"],
+          officer: "Jake Peralta",
+          date: "01",
+          toastText: "Prevention and education has been updated",
+        };
+
+        cy.fillInHWCSection(params).then(() => {
+          //expand checkboxes for validating in view state
+          params.checkboxes = [
+            "Provided safety information to the public",
+            "Contacted bylaw to assist with managing attractants",
+            "Contacted biologist and/or veterinarian",
+          ];
+
+          cy.validateHWCSection(params);
         });
       } else {
         cy.log("Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test");
