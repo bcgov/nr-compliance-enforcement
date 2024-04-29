@@ -39,7 +39,7 @@ export class ComplaintsPublisherService {
   async publishStagingComplaintInserted(complaint_identifier: string): Promise<void> {
     try {
       this.client.emit(NEW_STAGING_COMPLAINTS_TOPIC_NAME, complaint_identifier);
-      this.logger.log(`Complaint ready to be moved to operational tables: ${complaint_identifier}`);
+      this.logger.log(`Complaint ready to be moved to operational tables : ${complaint_identifier}`);
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
       throw error;
