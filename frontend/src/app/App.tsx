@@ -18,6 +18,7 @@ import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getCodeTableVersion, getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "./components/containers/admin/user-management";
+import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -31,57 +32,59 @@ const App: FC = () => {
   }, [dispatch]);
 
   return (
-    <Router>
-      <ScrollToTop />
-      <Modal />
-      <PageLoader />
-      <Routes>
-        <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
+    <GenericErrorBoundary>
+      <Router>
+        <ScrollToTop />
+        <Modal />
+        <PageLoader />
+        <Routes>
+          <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
+            <Route
+              path="/"
+              element={<ComplaintsRouteWrapper />}
+            />
+            <Route
+              path="/complaints/:type?"
+              element={<ComplaintsRouteWrapper />}
+            />
+            <Route
+              path="/complaint/:complaintType/:id"
+              element={<ComplaintDetailsEdit />}
+            />
+            <Route
+              path="/zone/at-a-glance"
+              element={<ZoneAtAGlance />}
+            />
+            <Route
+              path="/complaint/createComplaint"
+              element={<CreateComplaint />}
+            />
+          </Route>
+          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+            <Route
+              path="/admin/user"
+              element={<UserManagement />}
+            />
+          </Route>
           <Route
-            path="/"
-            element={<ComplaintsRouteWrapper />}
+            path="/not-authorized"
+            element={<NotAuthorized />}
           />
           <Route
-            path="/complaints/:type?"
-            element={<ComplaintsRouteWrapper />}
+            path="*"
+            element={<NotFound />}
           />
           <Route
-            path="/complaint/:complaintType/:id"
-            element={<ComplaintDetailsEdit />}
+            path="/reference"
+            element={
+              <>
+                <ColorReference /> <MiscReference /> <SpaceReference />
+              </>
+            }
           />
-          <Route
-            path="/zone/at-a-glance"
-            element={<ZoneAtAGlance />}
-          />
-          <Route
-            path="/complaint/createComplaint"
-            element={<CreateComplaint />}
-          />
-        </Route>
-        <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
-          <Route
-            path="/admin/user"
-            element={<UserManagement />}
-          />
-        </Route>
-        <Route
-          path="/not-authorized"
-          element={<NotAuthorized />}
-        />
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-        <Route
-          path="/reference"
-          element={
-            <>
-              <ColorReference /> <MiscReference /> <SpaceReference />
-            </>
-          }
-        />
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </GenericErrorBoundary>
   );
 };
 
