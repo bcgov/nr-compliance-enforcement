@@ -27,13 +27,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private readonly logger = new Logger(ComplaintsSubscriberService.name);
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
-  private _queue_group_config_staging = {
-    queue: NATS_QUEUE_GROUP_STAGING,
-  } as SubscriptionOptions;
-
-  private _queue_group_config_complaints = {
-    queue: NATS_QUEUE_GROUP_COMPLAINTS,
-  } as SubscriptionOptions;
 
   constructor(private readonly service: StagingComplaintsApiService) {
     this.natsConnection = null;
@@ -100,8 +93,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       let consumer = null;
 
       // delete the existing consumer in case we've made a configuation change (this will be recreated)
-      if (await this.checkConsumerExists(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER)) {
+      try {
         await this.jsm.consumers.delete(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
+      } catch (error) {
+        this.logger.debug("Consumer not deleted since it doesn't exist");
       }
       await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
         consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
@@ -143,8 +138,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       // Add consumer configuration to JetStream Manager
       let consumer = null;
       // delete the existing consumer in case we've made a configuation change (this will be recreated)
-      if (await this.checkConsumerExists(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER)) {
+      try {
         await this.jsm.consumers.delete(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
+      } catch (error) {
+        this.logger.debug("Consumer not deleted since it doesn't exist");
       }
       await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
         consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
