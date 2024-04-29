@@ -1,6 +1,16 @@
 /// <reference types="cypress" />
 
 declare namespace Cypress {
+  export interface HwcSection {
+    section: string;
+    checkboxes: string[];
+    officer: string;
+    date: string;
+    actionRequired?: string;
+    justification?: string;
+    toastText?: string;
+  }
+
   interface Chainable {
     kcLogin(): Chainable<Element>;
     kcLogout(): Chainable<any>;
@@ -17,22 +27,7 @@ declare namespace Cypress {
     enterDateTimeInDatePicker(datePickerId: string, day: string, hour?: string, minute?: string): Chainable<any>;
     navigateToTab(complaintTab: string, removeFilters: boolean): Chainable<void>;
     validateComplaint(complaintIdentifier: string, species: string): Chainable<void>;
-    fillInHWCSection(
-      section: string,
-      checkboxes: string[],
-      officer: string,
-      date: string,
-      actionRequired?: string,
-      justification?: string,
-    ): Chainable<void>;
-    validateHWCSection(params: {
-      section: string;
-      checkboxes: string[];
-      officer: string;
-      date: string;
-      actionRequired?: string;
-      justification?: string;
-      toastText?: string;
-    }): Chainable<void>;
+    fillInHWCSection(section: HwcSection): Chainable<void>;
+    validateHWCSection(section: HwcSection): Chainable<void>;
   }
 }

@@ -53,18 +53,21 @@ describe("HWCR Outcome Assessments", () => {
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
-        cy.fillInHWCSection("ASSESSMENT", ["#ASSESSRISK"], "Olivia Benson", "01", "Yes");
 
-        const params = {
+        let sectionParams = {
           section: "ASSESSMENT",
-          checkboxes: ["Assessed public safety risk"],
+          checkboxes: ["#ASSESSRISK"],
           officer: "Olivia Benson",
           date: "01",
           actionRequired: "Yes",
           toastText: "Assessment has been saved",
         };
 
-        cy.validateHWCSection(params);
+        cy.fillInHWCSection(sectionParams).then(() => {
+          sectionParams.checkboxes = ["Assessed public safety risk"];
+
+          cy.validateHWCSection(sectionParams);
+        });
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -112,11 +115,9 @@ describe("HWCR Outcome Assessments", () => {
       if ($assessment.find("#assessment-edit-button").length) {
         cy.get("#assessment-edit-button").click();
 
-        cy.fillInHWCSection("ASSESSMENT", ["#ASSESSHIST"], "Jake Peralta", "01", "No", "No public safety concern");
-
-        const params = {
+        let sectionParams = {
           section: "ASSESSMENT",
-          checkboxes: ["Assessed public safety risk", "Assessed known conflict history"],
+          checkboxes: ["#ASSESSHIST"],
           officer: "Jake Peralta",
           date: "01",
           actionRequired: "No",
@@ -124,7 +125,10 @@ describe("HWCR Outcome Assessments", () => {
           toastText: "Assessment has been updated",
         };
 
-        cy.validateHWCSection(params);
+        cy.fillInHWCSection(sectionParams).then(() => {
+          sectionParams.checkboxes = ["Assessed public safety risk", "Assessed known conflict history"];
+          cy.validateHWCSection(sectionParams);
+        });
       } else {
         cy.log("Assessment Not Found, did a previous test fail? Skip the Test");
         this.skip();

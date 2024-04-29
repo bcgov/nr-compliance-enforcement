@@ -47,9 +47,9 @@ describe("HWCR Outcome Prevention and Education", () => {
   it("it can save prevention and education", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
 
-    const params = {
+    let params = {
       section: "PREV&EDUC",
-      checkboxes: ["Provided safety information to the public", "Contacted bylaw to assist with managing attractants"],
+      checkboxes: ["#PROVSFTYIN", "#CNTCTBYLAW"],
       officer: "Olivia Benson",
       date: "01",
       toastText: "Prevention and education has been saved",
@@ -62,8 +62,16 @@ describe("HWCR Outcome Prevention and Education", () => {
       if ($outcome.find("#outcome-report-add-prevention-outcome").length > 0) {
         cy.get("#outcome-report-add-prevention-outcome").click();
         cy.validateComplaint("23-030330", "Black Bear");
-        cy.fillInHWCSection("PREV&EDUC", ["#PROVSFTYIN", "#CNTCTBYLAW"], "Olivia Benson", "01");
-        cy.validateHWCSection(params);
+
+        cy.fillInHWCSection(params).then(() => {
+          //expand checkboxes for validating in view state
+          params.checkboxes = [
+            "Provided safety information to the public",
+            "Contacted bylaw to assist with managing attractants",
+          ];
+
+          cy.validateHWCSection(params);
+        });
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -80,21 +88,24 @@ describe("HWCR Outcome Prevention and Education", () => {
       if ($preventionAndEducation.find("#prevention-edit-button").length) {
         cy.get("#prevention-edit-button").click();
 
-        cy.fillInHWCSection("PREV&EDUC", ["#CNTCTBIOVT"], "Jake Peralta", "01");
-
-        const params = {
+        let params = {
           section: "PREV&EDUC",
-          checkboxes: [
-            "Provided safety information to the public",
-            "Contacted bylaw to assist with managing attractants",
-            "Contacted biologist and/or veterinarian",
-          ],
+          checkboxes: ["#CNTCTBIOVT"],
           officer: "Jake Peralta",
           date: "01",
           toastText: "Prevention and education has been updated",
         };
 
-        cy.validateHWCSection(params);
+        cy.fillInHWCSection(params).then(() => {
+          //expand checkboxes for validating in view state
+          params.checkboxes = [
+            "Provided safety information to the public",
+            "Contacted bylaw to assist with managing attractants",
+            "Contacted biologist and/or veterinarian",
+          ];
+
+          cy.validateHWCSection(params);
+        });
       } else {
         cy.log("Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test");
         this.skip();

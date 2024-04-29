@@ -323,50 +323,40 @@ Cypress.Commands.add("validateComplaint", (complaintIdentifier: string, species:
   });
 });
 
-Cypress.Commands.add(
-  "fillInHWCSection",
-  (
-    section: string,
-    checkboxes: string[],
-    officer: string,
-    date: string,
-    actionRequired?: string,
-    justification?: string,
-  ) => {
-    let officerId = "";
-    let datePickerId = "";
-    let saveButtonId = "";
+Cypress.Commands.add("fillInHWCSection", ({ section, checkboxes, officer, date, actionRequired, justification }) => {
+  let officerId = "";
+  let datePickerId = "";
+  let saveButtonId = "";
 
-    if (section === "ASSESSMENT") {
-      officerId = "outcome-officer";
-      datePickerId = "complaint-outcome-date";
-      saveButtonId = "#outcome-save-button";
-    } else {
-      officerId = "prev-educ-outcome-officer";
-      datePickerId = "prev-educ-outcome-date";
-      saveButtonId = "#outcome-save-prev-and-educ-button";
-    }
+  if (section === "ASSESSMENT") {
+    officerId = "outcome-officer";
+    datePickerId = "complaint-outcome-date";
+    saveButtonId = "#outcome-save-button";
+  } else {
+    officerId = "prev-educ-outcome-officer";
+    datePickerId = "prev-educ-outcome-date";
+    saveButtonId = "#outcome-save-prev-and-educ-button";
+  }
 
-    Cypress._.times(checkboxes.length, (index) => {
-      cy.get(checkboxes[index]).check();
-    });
+  Cypress._.times(checkboxes.length, (index) => {
+    cy.get(checkboxes[index]).check();
+  });
 
-    if (actionRequired) {
-      cy.selectItemById("action-required", actionRequired);
-    }
+  if (actionRequired) {
+    cy.selectItemById("action-required", actionRequired);
+  }
 
-    if (justification) {
-      cy.selectItemById("justification", justification);
-    }
+  if (justification) {
+    cy.selectItemById("justification", justification);
+  }
 
-    cy.selectItemById(officerId, officer);
+  cy.selectItemById(officerId, officer);
 
-    cy.enterDateTimeInDatePicker(datePickerId, date);
+  cy.enterDateTimeInDatePicker(datePickerId, date);
 
-    //click Save Button
-    cy.get(saveButtonId).click();
-  },
-);
+  //click Save Button
+  cy.get(saveButtonId).click();
+});
 
 Cypress.Commands.add(
   "validateHWCSection",
