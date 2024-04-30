@@ -21,8 +21,7 @@ export class StagingComplaintsApiService {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT}`;
       this.logger.debug(`Posting new complaint to staging. API URL: ${apiUrl}`);
 
-      const response = await axios.post(apiUrl, complaintData, this._apiConfig);
-      this.logger.debug(`Staging Complaint API Response: ${response.data}`);
+      await axios.post(apiUrl, complaintData, this._apiConfig);
       this.complaintsPublisherService.publishStagingComplaintInserted(complaintData.incident_number);
     } catch (error) {
       this.logger.error("Error calling Staging Complaint API:", error);

@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
   connect,
+  Consumer,
   ConsumerConfig,
   JetStreamManager,
   NatsConnection,
@@ -89,18 +90,16 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     } as Partial<ConsumerConfig>;
 
     try {
-      // Add consumer configuration to JetStream Manager
-      let consumer = null;
-
-      // delete the existing consumer in case we've made a configuation change (this will be recreated)
+      let consumer: Consumer;
       try {
-        await this.jsm.consumers.delete(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
+        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
+        consumer = await this.natsConnection
+          .jetstream()
+          .consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
       } catch (error) {
-        this.logger.debug("Consumer not deleted since it doesn't exist");
+        consumer = await (await this.jsm.streams.get(NATS_STREAM_NAME)).getConsumer(consumerConfig);
+        this.logger.debug(`Consumer already exists`);
       }
-      await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
-        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
-      });
 
       (async () => {
         try {
@@ -133,19 +132,17 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       filter_subject: NEW_STAGING_COMPLAINTS_TOPIC_NAME,
       deliver_group: NATS_QUEUE_GROUP_COMPLAINTS,
     } as Partial<ConsumerConfig>;
-
     try {
-      // Add consumer configuration to JetStream Manager
-      let consumer = null;
-      // delete the existing consumer in case we've made a configuation change (this will be recreated)
+      let consumer: Consumer;
       try {
-        await this.jsm.consumers.delete(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
+        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
+        consumer = await this.natsConnection
+          .jetstream()
+          .consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME);
       } catch (error) {
-        this.logger.debug("Consumer not deleted since it doesn't exist");
+        consumer = await (await this.jsm.streams.get(NATS_STREAM_NAME)).getConsumer(consumerConfig);
+        this.logger.debug(`Consumer already exists`);
       }
-      await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig).then(async (info) => {
-        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, info.name);
-      });
 
       (async () => {
         try {
