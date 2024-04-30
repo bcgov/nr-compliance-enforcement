@@ -25,6 +25,7 @@ export class StagingComplaintsApiService {
       this.complaintsPublisherService.publishStagingComplaintInserted(complaintData.incident_number);
     } catch (error) {
       this.logger.error("Error calling Staging Complaint API:", error);
+      throw error;
     }
   }
 
@@ -38,6 +39,7 @@ export class StagingComplaintsApiService {
       await axios.post(apiUrl, {}, this._apiConfig);
     } catch (error) {
       this.logger.error("Error calling Complaint API:", error);
+      throw error;
     }
   }
 }
