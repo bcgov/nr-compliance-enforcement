@@ -9,3 +9,5 @@ export const STAGING_API_ENDPOINT = "staging-complaint";
 export const COMPLAINT_API_ENDPOINT = "complaint-internal";
 export const NATS_QUEUE_GROUP_STAGING = "staging_complaints_queue_group";
 export const NATS_QUEUE_GROUP_COMPLAINTS = "complaints_queue_group";
+export const NATS_DURABLE_COMPLAINTS = "nats_durable_complaints";
+export const NATS_DURABLE_STAGING = "nats_durable_staging";

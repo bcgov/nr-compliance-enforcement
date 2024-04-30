@@ -2,7 +2,6 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
   connect,
-  Consumer,
   ConsumerConfig,
   JetStreamManager,
   NatsConnection,
@@ -11,6 +10,8 @@ import {
   StringCodec,
 } from "nats";
 import {
+  NATS_DURABLE_COMPLAINTS,
+  NATS_DURABLE_STAGING,
   NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NATS_QUEUE_GROUP_COMPLAINTS,
@@ -47,7 +48,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
       // Subscribe to topics after ensuring the stream is correctly configured
       this.subscribeToNewComplaintsFromWebEOC();
-      this.subscribeToNewStagingComplaints();
     } catch (error) {
       this.logger.error("Failed to connect to NATS or set up stream:", error);
     }
@@ -70,89 +70,50 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
       const streamInfo = await this.jsm.streams.add(streamConfig);
       console.log("Stream created or updated:", streamInfo);
+
+      // Consumer configuration
+      const consumer = {
+        ack_policy: AckPolicy.Explicit,
+        filter_subjects: [NATS_NEW_COMPLAINTS_TOPIC_CONSUMER, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER],
+        deliver_group: NATS_QUEUE_GROUP_STAGING,
+      } as Partial<ConsumerConfig>;
+      try {
+        await this.jsm.consumers.info(NATS_STREAM_NAME, consumer.name);
+        console.log(`Consumer ${consumer.name} already exists. No need to create.`);
+      } catch (error) {
+        await this.jsm.consumers.add(NATS_STREAM_NAME, consumer);
+        this.logger.debug(`Consumer ${consumer.name} created`);
+      }
     } catch (error) {
-      console.error("Failed to create or update stream:", error);
-      throw error;
+      this.logger.error(`Unable to setup streams and consumers`, error);
     }
   }
 
   // subscribe to new nats to listen for new complaints from webeoc.  These will be moved to the staging table.
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
+    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME);
 
-    // Consumer configuration
-    const consumerConfig = {
-      name: NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
-      ack_policy: AckPolicy.Explicit,
-      filter_subject: NATS_NEW_COMPLAINTS_TOPIC_NAME,
-      deliver_group: NATS_QUEUE_GROUP_STAGING,
-    } as Partial<ConsumerConfig>;
-
-    try {
-      let consumer: Consumer;
-      try {
-        const consumerInfo = await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
-        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, consumerInfo.name);
-      } catch (error) {
-        this.logger.debug(`Consumer already exists`);
-      }
-
-      (async () => {
+    for await (const message of await consumer.consume()) {
+      if (message.subject === NATS_NEW_COMPLAINTS_TOPIC_NAME) {
+        const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
+        this.logger.debug("Received complaint:", complaintMessage?.incident_number);
         try {
-          for await (const message of await consumer.consume()) {
-            const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
-            this.logger.debug("Received complaint:", complaintMessage?.incident_number);
-            try {
-              await this.service.postComplaintToStaging(complaintMessage);
-              message.ack();
-            } catch (error) {
-              this.logger.error(`Message not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`);
-            }
-          }
+          await this.service.postComplaintToStaging(complaintMessage);
+          message.ack();
         } catch (error) {
-          this.logger.error("Error consuming messages:", error);
+          this.logger.error(`Message not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`);
         }
-      })();
-    } catch (error) {
-      this.logger.error("Failed to subscribe or process messages:", error);
-    }
-  }
-
-  // subscribe to new nats to listen for new complaints added to the staging table.  These will be moved to the operational Complaints table.
-  private async subscribeToNewStagingComplaints() {
-    // Consumer configuration
-    const consumerConfig = {
-      ack_policy: AckPolicy.Explicit,
-      filter_subject: NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-      deliver_group: NATS_QUEUE_GROUP_COMPLAINTS,
-    } as Partial<ConsumerConfig>;
-    try {
-      let consumer: Consumer;
-      try {
-        const consumerInfo = await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
-        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, consumerInfo.name);
-      } catch (error) {
-        this.logger.debug(`Consumer already exists`);
-      }
-
-      (async () => {
+      } else {
+        const stagingData = new TextDecoder().decode(message.data);
+        this.logger.debug("Received staged complaint:", stagingData);
         try {
-          for await (const message of await consumer.consume()) {
-            const stagingData = new TextDecoder().decode(message.data);
-            this.logger.debug("Received staged complaint:", stagingData);
-            try {
-              await this.service.postComplaint(stagingData);
-              message.ack();
-            } catch (error) {
-              this.logger.error(`Message not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
-            }
-          }
+          await this.service.postComplaint(stagingData);
+          message.ack();
         } catch (error) {
-          this.logger.error("Error consuming messages:", error);
+          this.logger.error(`Message not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
         }
-      })();
-    } catch (error) {
-      this.logger.error("Failed to subscribe or process messages:", error);
+      }
     }
   }
 }
