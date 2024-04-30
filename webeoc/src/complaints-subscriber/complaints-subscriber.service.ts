@@ -9,7 +9,6 @@ import {
   RetentionPolicy,
   StorageType,
   StringCodec,
-  SubscriptionOptions,
 } from "nats";
 import {
   NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
@@ -163,23 +162,5 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     } catch (error) {
       this.logger.error("Failed to subscribe or process messages:", error);
     }
-  }
-
-  // This function checks if a specific consumer exists in a stream
-  private async checkConsumerExists(stream: string, consumerName: string): Promise<boolean> {
-    const consumerLister = await this.jsm.consumers.list(stream);
-
-    let result;
-    while (true) {
-      result = await consumerLister.next();
-      if (result === null || result === undefined || Object.keys(result).length === 0) {
-        // No more consumers, or signal of end of list
-        break;
-      }
-      if (result.consumer && result.consumer.name === consumerName) {
-        return true; // Return true if the consumer is found
-      }
-    }
-    return false; // Return false if the consumer was not found
   }
 }
