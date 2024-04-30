@@ -109,7 +109,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
               await this.service.postComplaintToStaging(complaintMessage);
               message.ack();
             } catch (error) {
-              this.logger.error("Message not processed");
+              this.logger.error(`Message not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`);
             }
           }
         } catch (error) {
@@ -123,7 +123,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   // subscribe to new nats to listen for new complaints added to the staging table.  These will be moved to the operational Complaints table.
   private async subscribeToNewStagingComplaints() {
-    const sc = StringCodec();
     // Consumer configuration
     const consumerConfig = {
       name: NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER,
@@ -146,13 +145,13 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       (async () => {
         try {
           for await (const message of await consumer.consume()) {
-            const stagingData = sc.decode(message.data);
-            this.logger.debug("Received complaint:", stagingData);
+            const stagingData = new TextDecoder().decode(message.data);
+            this.logger.debug("Received staged complaint:", stagingData);
             try {
               await this.service.postComplaint(stagingData);
               message.ack();
             } catch (error) {
-              this.logger.error("Message not processed");
+              this.logger.error(`Message not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
             }
           }
         } catch (error) {
