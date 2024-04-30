@@ -77,13 +77,8 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         filter_subjects: [NATS_NEW_COMPLAINTS_TOPIC_CONSUMER, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER],
         deliver_group: NATS_QUEUE_GROUP_STAGING,
       } as Partial<ConsumerConfig>;
-      try {
-        await this.jsm.consumers.info(NATS_STREAM_NAME, consumer.name);
-        console.log(`Consumer ${consumer.name} already exists. No need to create.`);
-      } catch (error) {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, consumer);
-        this.logger.debug(`Consumer ${consumer.name} created`);
-      }
+      await this.jsm.consumers.add(NATS_STREAM_NAME, consumer);
+      this.logger.debug(`Consumer ${consumer.name} created`);
     } catch (error) {
       this.logger.error(`Unable to setup streams and consumers`, error);
     }
