@@ -91,12 +91,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     try {
       let consumer: Consumer;
       try {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
-        consumer = await this.natsConnection
-          .jetstream()
-          .consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
+        const consumerInfo = await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
+        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, consumerInfo.name);
       } catch (error) {
-        consumer = await (await this.jsm.streams.get(NATS_STREAM_NAME)).getConsumer(consumerConfig);
         this.logger.debug(`Consumer already exists`);
       }
 
@@ -125,7 +122,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private async subscribeToNewStagingComplaints() {
     // Consumer configuration
     const consumerConfig = {
-      name: NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER,
       ack_policy: AckPolicy.Explicit,
       filter_subject: NEW_STAGING_COMPLAINTS_TOPIC_NAME,
       deliver_group: NATS_QUEUE_GROUP_COMPLAINTS,
@@ -133,12 +129,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     try {
       let consumer: Consumer;
       try {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
-        consumer = await this.natsConnection
-          .jetstream()
-          .consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
+        const consumerInfo = await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
+        consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, consumerInfo.name);
       } catch (error) {
-        consumer = await (await this.jsm.streams.get(NATS_STREAM_NAME)).getConsumer(consumerConfig);
         this.logger.debug(`Consumer already exists`);
       }
 
