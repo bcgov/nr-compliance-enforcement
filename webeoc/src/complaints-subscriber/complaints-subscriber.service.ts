@@ -136,7 +136,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         await this.jsm.consumers.add(NATS_STREAM_NAME, consumerConfig);
         consumer = await this.natsConnection
           .jetstream()
-          .consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME);
+          .consumers.get(NATS_STREAM_NAME, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER);
       } catch (error) {
         consumer = await (await this.jsm.streams.get(NATS_STREAM_NAME)).getConsumer(consumerConfig);
         this.logger.debug(`Consumer already exists`);
