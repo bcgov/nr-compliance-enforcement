@@ -1358,7 +1358,7 @@ p {
 }
 
 .toggle-button {
-  background-color: $gray-100 !important;
+  background-color: white !important;
   color: $gray-800 !important;
   border-color: $gray-300 !important;
   border-radius: 8px;
@@ -1366,11 +1366,25 @@ p {
 }
 
 .toggle-button.active {
-  background-color: white !important;
+  background-color: $gray-100 !important;
   color: $gray-800 !important;
   border-color: $gray-300 !important;
   border-radius: 8px;
   z-index: 0 !important;
+}
+
+.toggle-button-icon.active {
+  color: $gray-600 !important;
+}
+
+.toggle-button-text {
+  color: $gray-800 !important;
+  margin-left: 4px;
+}
+
+.toggle-button-text.active {
+  color: $gray-600 !important;
+  margin-left: 4px;
 }
 
 .comp-filter-search {
