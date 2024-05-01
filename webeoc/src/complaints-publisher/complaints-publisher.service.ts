@@ -29,7 +29,7 @@ export class ComplaintsPublisherService {
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", complaint.incident_number);
+      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}`);
       const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`New complaint: ${complaint.incident_number}`);
@@ -47,13 +47,15 @@ export class ComplaintsPublisherService {
   async publishStagingComplaintInserted(incident_number: string): Promise<void> {
     try {
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", incident_number);
+      natsHeaders.set("Nats-Msg-Id", `complaint-${incident_number}`);
       const ack = await this.jsClient.publish(NEW_STAGING_COMPLAINTS_TOPIC_NAME, incident_number, {
         headers: natsHeaders,
       });
 
       if (!ack?.duplicate) {
         this.logger.log(`Complaint ready to be moved to operational tables: ${incident_number}`);
+      } else {
+        this.logger.log(`Complaint already moved to operational: ${incident_number}`);
       }
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
