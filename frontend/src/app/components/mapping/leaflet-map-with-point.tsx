@@ -8,6 +8,7 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Leaflet from "leaflet";
 import NonDismissibleAlert from "../common/non-dismissible-alert";
+import { MapGestureHandler } from "./map-gesture-handler";
 
 type Props = {
   coordinates?: { lat: number; lng: number };
@@ -76,6 +77,7 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
         style={{ height: "400px", width: "100%" }}
         className="map-container"
       >
+        <MapGestureHandler />
         <Centerer />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {!hideMarker && (

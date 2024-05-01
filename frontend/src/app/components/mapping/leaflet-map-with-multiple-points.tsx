@@ -14,6 +14,7 @@ import { isEqual } from "lodash";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
 import { from } from "linq-to-typescript";
+import { MapGestureHandler } from "./map-gesture-handler";
 
 interface MapProps {
   complaintType: string;
@@ -109,6 +110,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
         zoom={6}
         ref={mapRef}
       >
+        <MapGestureHandler />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

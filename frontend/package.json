@@ -55,6 +55,7 @@
     "jwt-decode": "^3.1.2",
     "keycloak-js": "^21.0.0",
     "leaflet": "^1.9.4",
+    "leaflet-gesture-handling": "^1.2.2",
     "leaflet.markercluster": "^1.5.3",
     "linq-to-typescript": "^11.0.0",
     "lodash": "^4.17.21",
