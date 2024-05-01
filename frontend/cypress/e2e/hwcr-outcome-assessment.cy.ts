@@ -31,7 +31,7 @@ describe("HWCR Outcome Assessments", () => {
         cy.get("#outcome-officer-div").find(".error-message").should("exist");
 
         //validate the date is required
-        cy.get("#complaint-outcome-date-div").find(".error-message").should("exist");
+        cy.get("#assessment-checkbox-div").find(".error-message").should("exist");
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
@@ -53,8 +53,21 @@ describe("HWCR Outcome Assessments", () => {
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
-        cy.fillInHWCSection("ASSESSMENT", ["#ASSESSRISK"], "Olivia Benson", "01", "Yes");
-        cy.validateHWCSection("ASSESSMENT", ["Assessed public safety risk"], "Olivia Benson", "01", "Yes");
+
+        let sectionParams = {
+          section: "ASSESSMENT",
+          checkboxes: ["#ASSESSRISK"],
+          officer: "Olivia Benson",
+          date: "01",
+          actionRequired: "Yes",
+          toastText: "Assessment has been saved",
+        };
+
+        cy.fillInHWCSection(sectionParams).then(() => {
+          sectionParams.checkboxes = ["Assessed public safety risk"];
+
+          cy.validateHWCSection(sectionParams);
+        });
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -102,16 +115,20 @@ describe("HWCR Outcome Assessments", () => {
       if ($assessment.find("#assessment-edit-button").length) {
         cy.get("#assessment-edit-button").click();
 
-        cy.fillInHWCSection("ASSESSMENT", ["#ASSESSHIST"], "Jake Peralta", "01", "No", "No public safety concern");
+        let sectionParams = {
+          section: "ASSESSMENT",
+          checkboxes: ["#ASSESSHIST"],
+          officer: "Jake Peralta",
+          date: "01",
+          actionRequired: "No",
+          justification: "No public safety concern",
+          toastText: "Assessment has been updated",
+        };
 
-        cy.validateHWCSection(
-          "ASSESSMENT",
-          ["Assessed public safety risk", "Assessed known conflict history"],
-          "Jake Peralta",
-          "01",
-          "No",
-          "No public safety concern",
-        );
+        cy.fillInHWCSection(sectionParams).then(() => {
+          sectionParams.checkboxes = ["Assessed public safety risk", "Assessed known conflict history"];
+          cy.validateHWCSection(sectionParams);
+        });
       } else {
         cy.log("Assessment Not Found, did a previous test fail? Skip the Test");
         this.skip();
