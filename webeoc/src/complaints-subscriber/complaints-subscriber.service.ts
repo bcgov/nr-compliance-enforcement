@@ -46,7 +46,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       await this.setupStream();
 
       // Subscribe to topics after ensuring the stream is correctly configured
-      this.subscribeToNewComplaintsFromWebEOC();
+      await this.subscribeToNewComplaintsFromWebEOC();
+
+      this.logger.debug((await this.jsm.streams.info(NATS_STREAM_NAME)).state);
     } catch (error) {
       this.logger.error("Failed to connect to NATS or set up stream:", error);
     }
@@ -56,7 +58,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const streamConfig = {
       name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
-      retention: RetentionPolicy.Limits,
+      retention: RetentionPolicy.Workqueue,
       maxAge: 0,
       storage: StorageType.Memory,
       duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds,
@@ -93,7 +95,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   // subscribe to new nats to listen for new complaints from webeoc.  These will be moved to the staging table.
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
-    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME);
+    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
 
     for await (const message of await consumer.consume()) {
       // listen for messages indicating that a new complaint was found from webeoc
