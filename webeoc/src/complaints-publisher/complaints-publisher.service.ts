@@ -53,9 +53,9 @@ export class ComplaintsPublisherService {
       });
 
       if (!ack?.duplicate) {
-        this.logger.log(`Complaint ready to be moved to operational tables: ${incident_number}`);
+        this.logger.debug(`Complaint ready to be moved to operational tables: ${incident_number}`);
       } else {
-        this.logger.log(`Complaint already moved to operational: ${incident_number}`);
+        this.logger.debug(`Complaint already moved to operational: ${incident_number}`);
       }
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);

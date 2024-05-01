@@ -10,11 +10,10 @@ import {
   StringCodec,
 } from "nats";
 import {
+  NATS_DELIVER_SUBJECT,
   NATS_DURABLE_COMPLAINTS,
-  NATS_DURABLE_STAGING,
   NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
-  NATS_QUEUE_GROUP_COMPLAINTS,
   NATS_QUEUE_GROUP_STAGING,
   NATS_STREAM_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER,
@@ -76,6 +75,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         ack_policy: AckPolicy.Explicit,
         filter_subjects: [NATS_NEW_COMPLAINTS_TOPIC_CONSUMER, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER],
         deliver_group: NATS_QUEUE_GROUP_STAGING,
+        deliver_subject: NATS_DELIVER_SUBJECT,
         durable_name: NATS_DURABLE_COMPLAINTS,
       } as Partial<ConsumerConfig>;
       try {
@@ -96,6 +96,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME);
 
     for await (const message of await consumer.consume()) {
+      // listen for messages indicating that a new complaint was found from webeoc
       if (message.subject === NATS_NEW_COMPLAINTS_TOPIC_NAME) {
         const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
         this.logger.debug("Received complaint:", complaintMessage?.incident_number);
@@ -106,6 +107,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
           this.logger.error(`Message not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`);
         }
       } else {
+        // listen for messages indicating that a new complaint was staged
         const stagingData = new TextDecoder().decode(message.data);
         this.logger.debug("Received staged complaint:", stagingData);
         try {
