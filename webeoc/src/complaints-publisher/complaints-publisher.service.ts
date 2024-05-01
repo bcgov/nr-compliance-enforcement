@@ -33,6 +33,8 @@ export class ComplaintsPublisherService {
       const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`New complaint: ${complaint.incident_number}`);
+      } else {
+        this.logger.debug(`Complaint already published: ${complaint.incident_number}`);
       }
     } catch (error) {
       this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
