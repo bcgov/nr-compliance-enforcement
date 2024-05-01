@@ -80,7 +80,9 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
             <div>{attachment?.errorMesage}</div>
           ) : (
             <div className="slide_text">
-              {attachment?.pendingUpload ? "Pending upload..." : formatDateTime(attachment.createdAt?.toString())}
+              {attachment?.pendingUpload
+                ? "Save to upload attachment(s)"
+                : formatDateTime(attachment.createdAt?.toString())}
             </div>
           )}
         </div>
