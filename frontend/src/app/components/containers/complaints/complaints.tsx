@@ -1,4 +1,5 @@
 import { FC, useState, useContext } from "react";
+import { shallowEqual } from "react-redux";
 import { Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
@@ -184,11 +185,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 };
 
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
-  const defaultZone = useAppSelector(selectDefaultZone);
-
+  const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
   return (
-    <ComplaintFilterProvider zone={defaultZone}>
-      <Complaints defaultComplaintType={defaultComplaintType} />
-    </ComplaintFilterProvider>
+    <>
+      {defaultZone && (
+        <ComplaintFilterProvider zone={defaultZone}>
+          <Complaints defaultComplaintType={defaultComplaintType} />
+        </ComplaintFilterProvider>
+      )}
+    </>
   );
 };
