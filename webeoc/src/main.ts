@@ -12,7 +12,6 @@ async function bootstrap() {
   server.get("/health", (req, res) => res.status(200).send("ok"));
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   await app.listen(3002);
-  console.log("Started WebEOC Connection Container");
 }
 
 bootstrap();
