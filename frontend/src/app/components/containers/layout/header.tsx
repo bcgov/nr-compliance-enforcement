@@ -50,15 +50,18 @@ export const Header: FC = () => {
               <div className="widget-content-wrapper">
                 <div className="widget-content-left">{/* <!-- search --> */}</div>
                 <div className="widget-content-left">
-                  <div className="item1">
+                  {/* <div className="item1">
                     <i className="bi bi-bell"></i>
                     {alerts > 0 && renderBadge()}
-                  </div>
+                  </div> */}
                 </div>
                 <div className="widget-content-right">
-                  {/* <!-- --> */}
-
-                  <NavDropdown
+                  <div
+                    data-initials={initials}
+                    className="comp-profile-avatar"
+                  ></div>
+                  {/* <!-- placeholder menu --> */}
+                  {/* <NavDropdown
                     title={
                       <div
                         data-initials={initials}
@@ -66,15 +69,12 @@ export const Header: FC = () => {
                       ></div>
                     }
                   >
-                    {/* <!-- placeholder menu --> */}
                     <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                     <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
                     <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-                  </NavDropdown>
-
-                  {/* <!-- --> */}
+                  </NavDropdown> */}
                 </div>
               </div>
             </div>

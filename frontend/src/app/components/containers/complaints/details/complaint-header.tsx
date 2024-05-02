@@ -83,9 +83,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <div className="comp-complaint-breadcrumb">
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item">
+              {/* <li className="breadcrumb-item">
                 <i className="bi bi-house-door"></i> Home
-              </li>
+              </li> */}
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/complaints/${complaintType}`}>{complaintTypeToName(complaintType)}</Link>
               </li>

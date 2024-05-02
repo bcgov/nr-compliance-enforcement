@@ -128,7 +128,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               </div>
               <div className="assign_officer_modal_profile_card_column">
                 <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-                <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+                {/* <div className="assign_officer_modal_profile_card_row_2">Officer</div> */}
               </div>
               <div className="assign_officer_modal_profile_card_column"></div>
             </div>
@@ -171,7 +171,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-            <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+            {/* <div className="assign_officer_modal_profile_card_row_2">Officer</div> */}
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <Button

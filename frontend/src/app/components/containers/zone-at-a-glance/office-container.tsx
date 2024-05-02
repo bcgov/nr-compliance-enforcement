@@ -139,7 +139,7 @@ export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, alleg
               </div>
               <div className="clear-left-float" />
             </div>
-            <div className="comp-zag-stats-view">View Unassigned Compaints</div>
+            {/* <div className="comp-zag-stats-view">View Unassigned Compaints</div> */}
           </Col>
           <Col className="comp-padding-left-md negative-office-margin">
             <div className="comp-zag-stats-title">Enforcement</div>
@@ -159,7 +159,7 @@ export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, alleg
               </div>
               <div className="clear-left-float" />
             </div>
-            <div className="comp-zag-stats-view">View Unassigned Compaints</div>
+            {/* <div className="comp-zag-stats-view">View Unassigned Compaints</div> */}
           </Col>
         </Row>
         <div className="collapsible">

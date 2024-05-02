@@ -329,7 +329,7 @@ button.modal-buttons {
   gap: 24px;
 
   width: 498px;
-  height: 88px;
+  height: 70px;
 
   flex: none;
   order: 4;
@@ -367,6 +367,7 @@ button.modal-buttons {
 }
 
 .self-assign {
+  margin-bottom: 10px;
   &:hover {
     background-color: $white;
     cursor: default;
@@ -426,7 +427,7 @@ button.modal-buttons {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 7px 8px 9px 8px;
+  // padding: 7px 8px 9px 8px;
   gap: 8px;
 
   width: 56px;
@@ -472,6 +473,7 @@ button.modal-buttons {
   font-weight: 700;
   font-size: 16px;
   color: $gray-800;
+  margin: 9px 0px;
 }
 
 .assign_officer_modal_profile_card_row_2 {

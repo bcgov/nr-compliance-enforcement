@@ -90,7 +90,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           />
         </span>
       </OverlayTrigger>
-      <OverlayTrigger
+      {/* <OverlayTrigger
         placement="top"
         key={`tt-refer-${complaint_identifier}`}
         overlay={
@@ -105,7 +105,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
         <span>
           <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
         </span>
-      </OverlayTrigger>
+      </OverlayTrigger> */}
     </>
   );
 };
