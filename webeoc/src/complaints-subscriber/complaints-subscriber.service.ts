@@ -95,7 +95,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   // subscribe to new nats to listen for new complaints from webeoc.  These will be moved to the staging table.
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
-    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
+    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME);
 
     for await (const message of await consumer.consume()) {
       // listen for messages indicating that a new complaint was found from webeoc
