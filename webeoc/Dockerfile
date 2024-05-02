@@ -36,8 +36,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
 # Port and health check
-EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/health
+EXPOSE 3002
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3002/health
 
 # Non-privileged user
 USER app
