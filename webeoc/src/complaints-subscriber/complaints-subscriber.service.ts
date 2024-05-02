@@ -1,22 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, StringCodec } from "nats";
 import {
-  AckPolicy,
-  connect,
-  ConsumerConfig,
-  JetStreamManager,
-  NatsConnection,
-  RetentionPolicy,
-  StorageType,
-  StringCodec,
-} from "nats";
-import {
-  NATS_DELIVER_SUBJECT,
   NATS_DURABLE_COMPLAINTS,
   NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
-  NATS_QUEUE_GROUP_STAGING,
   NATS_STREAM_NAME,
-  NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
 } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
@@ -58,8 +46,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const streamConfig = {
       name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
-      retention: RetentionPolicy.Limits,
-      maxAge: 0,
       storage: StorageType.Memory,
       duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds,
     };
@@ -72,19 +58,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       const streamInfo = await this.jsm.streams.add(streamConfig);
       console.log("Stream created or updated:", streamInfo);
 
-      // Consumer configuration
-      const consumer = {
-        ack_policy: AckPolicy.Explicit,
-        filter_subjects: [NATS_NEW_COMPLAINTS_TOPIC_CONSUMER, NEW_STAGING_COMPLAINTS_TOPIC_CONSUMER],
-        deliver_group: NATS_QUEUE_GROUP_STAGING,
-        deliver_subject: NATS_DELIVER_SUBJECT,
-        durable_name: NATS_DURABLE_COMPLAINTS,
-      } as Partial<ConsumerConfig>;
       try {
         await this.jsm.consumers.info(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
         console.log(`Consumer already exists. No need to create.`);
       } catch (error) {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, consumer);
+        await this.jsm.consumers.add(NATS_STREAM_NAME, {
+          ack_policy: AckPolicy.Explicit,
+          durable_name: NATS_DURABLE_COMPLAINTS,
+        });
         this.logger.debug(`Consumer created`);
       }
     } catch (error) {
@@ -97,7 +78,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const sc = StringCodec();
     const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME);
 
-    for await (const message of await consumer.consume()) {
+    const iter = await consumer.consume({ max_messages: 3 });
+
+    for await (const message of iter) {
       // listen for messages indicating that a new complaint was found from webeoc
       if (message.subject === NATS_NEW_COMPLAINTS_TOPIC_NAME) {
         const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
