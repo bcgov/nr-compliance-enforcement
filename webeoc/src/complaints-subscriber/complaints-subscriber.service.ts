@@ -58,7 +58,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const streamConfig = {
       name: NATS_STREAM_NAME,
       subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
-      retention: RetentionPolicy.Workqueue,
+      retention: RetentionPolicy.Limits,
       maxAge: 0,
       storage: StorageType.Memory,
       duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds,
