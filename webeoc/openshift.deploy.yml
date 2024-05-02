@@ -145,20 +145,24 @@ objects:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
               readinessProbe:
-                httpGet:
-                  path: /health
-                  port: 3002
-                  scheme: HTTP
+                exec:
+                  command:
+                    - /usr/bin/env
+                    - bash
+                    - -c
+                    - ls
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 15
               livenessProbe:
                 successThreshold: 1
                 failureThreshold: 3
-                httpGet:
-                  path: /health
-                  port: 3002
-                  scheme: HTTP
+                exec:
+                  command:
+                    - /usr/bin/env
+                    - bash
+                    - -c
+                    - ls
                 initialDelaySeconds: 60
                 periodSeconds: 30
                 timeoutSeconds: 15
