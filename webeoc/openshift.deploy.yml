@@ -136,6 +136,7 @@ objects:
                       key: webeoc-cron-expression
               ports:
                 - containerPort: 3002
+                  protocol: TCP
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}
@@ -147,6 +148,7 @@ objects:
                 httpGet:
                   path: /health
                   port: 3002
+                  scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 5
@@ -156,6 +158,7 @@ objects:
                 httpGet:
                   path: /health
                   port: 3002
+                  scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 30
                 timeoutSeconds: 5
