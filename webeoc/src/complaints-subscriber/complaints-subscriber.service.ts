@@ -9,6 +9,7 @@ import {
 } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { Complaint } from "../types/Complaints";
+import { ComplaintsPublisherService } from "src/complaints-publisher/complaints-publisher.service";
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {
@@ -16,7 +17,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null; // For managing streams
 
-  constructor(private readonly service: StagingComplaintsApiService) {
+  constructor(
+    private readonly service: StagingComplaintsApiService,
+    private readonly complaintsPublisherService: ComplaintsPublisherService,
+  ) {
     this.natsConnection = null;
   }
 
@@ -78,7 +82,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     const sc = StringCodec();
     const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME);
 
-    const iter = await consumer.consume({ max_messages: 3 });
+    const iter = await consumer.consume({ max_messages: 1 });
 
     for await (const message of iter) {
       // listen for messages indicating that a new complaint was found from webeoc
@@ -87,9 +91,13 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         this.logger.debug("Received complaint:", complaintMessage?.incident_number);
         try {
           await this.service.postComplaintToStaging(complaintMessage);
+          this.complaintsPublisherService.publishStagingComplaintInserted(complaintMessage.incident_number);
           message.ack();
         } catch (error) {
-          this.logger.error(`Message not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`);
+          message.nak(10_000); // retry in 10 seconds
+          this.logger.error(
+            `Message ${complaintMessage.incident_number} not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`,
+          );
         }
       } else {
         // listen for messages indicating that a new complaint was staged
@@ -99,7 +107,8 @@ export class ComplaintsSubscriberService implements OnModuleInit {
           await this.service.postComplaint(stagingData);
           message.ack();
         } catch (error) {
-          this.logger.error(`Message not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
+          message.nak(10_000); // retry in 10 seconds
+          this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
         }
       }
     }

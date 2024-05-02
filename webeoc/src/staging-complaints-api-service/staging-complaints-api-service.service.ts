@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import axios from "axios";
 import { STAGING_API_ENDPOINT } from "../common/constants";
-import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
 import { Complaint } from "../types/Complaints";
 
 @Injectable()
@@ -13,8 +12,6 @@ export class StagingComplaintsApiService {
     },
   };
 
-  constructor(private readonly complaintsPublisherService: ComplaintsPublisherService) {}
-
   // add complaint data to staging table
   async postComplaintToStaging(complaintData: Complaint): Promise<void> {
     try {
@@ -22,7 +19,6 @@ export class StagingComplaintsApiService {
       this.logger.debug(`Posting new complaint to staging. API URL: ${apiUrl}`);
 
       await axios.post(apiUrl, complaintData, this._apiConfig);
-      this.complaintsPublisherService.publishStagingComplaintInserted(complaintData.incident_number);
     } catch (error) {
       this.logger.error("Error calling Staging Complaint API:", error);
       throw error;
