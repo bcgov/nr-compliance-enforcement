@@ -3,6 +3,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { complaintTypeToName } from "../../../types/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
+import config from "../../../../config";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -72,9 +73,11 @@ export const OpenComplaints: FC<Props> = ({
           <Col className="comp-zag-legend-label">Assigned</Col>
           <Col className="comp-zag-legend-value">{assigned}</Col>
         </Row>
-        {/* <Row>
-          <Col>View Complaints</Col>
-        </Row> */}
+        {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+          <Row>
+            <Col>View Complaints</Col>
+          </Row>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
 import { Row, Col } from "react-bootstrap";
+import config from "../../../../config";
 
 type Props = {
   hwcrOfficers: OfficerStats[];
@@ -40,7 +41,9 @@ export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficer
                     >
                       {item.name}
                     </div>
-                    {/* <div className="comp-zag-stats-view">Conservation Officer</div> */}
+                    {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                      <div className="comp-zag-stats-view">Conservation Officer</div>
+                    )}
                   </div>
                   <div className="clear-left-float"></div>
                 </Col>
@@ -53,7 +56,9 @@ export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficer
                   </div>
                   <div className="comp-zag-float-left">
                     <div className="comp-zag-stats-title">Human Wildlife Conflict</div>
-                    {/* <div className="comp-zag-stats-view">View Complaints</div> */}
+                    {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                      <div className="comp-zag-stats-view">View Complaints</div>
+                    )}
                   </div>
                 </Col>
                 <Col className="comp-zag-office-user">
@@ -65,7 +70,9 @@ export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficer
                   </div>
                   <div className="comp-zag-float-left">
                     <div className="comp-zag-stats-title">Enforcement</div>
-                    {/* <div className="comp-zag-stats-view">View Complaints</div> */}
+                    {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                      <div className="comp-zag-stats-view">View Complaints</div>
+                    )}
                   </div>
                 </Col>
               </Row>

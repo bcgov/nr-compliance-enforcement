@@ -5,6 +5,7 @@ import { NavDropdown, Badge } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { alertCount, getTokenProfile, profileInitials } from "../../../store/reducers/app";
 import { Link } from "react-router-dom";
+import config from "../../../../config";
 
 export const Header: FC = () => {
   const dispatch = useAppDispatch();
@@ -50,31 +51,36 @@ export const Header: FC = () => {
               <div className="widget-content-wrapper">
                 <div className="widget-content-left">{/* <!-- search --> */}</div>
                 <div className="widget-content-left">
-                  {/* <div className="item1">
-                    <i className="bi bi-bell"></i>
-                    {alerts > 0 && renderBadge()}
-                  </div> */}
+                  {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                    <div className="item1">
+                      <i className="bi bi-bell"></i>
+                      {alerts > 0 && renderBadge()}
+                    </div>
+                  )}
                 </div>
                 <div className="widget-content-right">
-                  <div
-                    data-initials={initials}
-                    className="comp-profile-avatar"
-                  ></div>
                   {/* <!-- placeholder menu --> */}
-                  {/* <NavDropdown
-                    title={
-                      <div
-                        data-initials={initials}
-                        className="comp-profile-avatar"
-                      ></div>
-                    }
-                  >
-                    <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                    <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-                    <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-                  </NavDropdown> */}
+                  {config.SHOW_EXPERIMENTAL_FEATURES === "true" ? (
+                    <NavDropdown
+                      title={
+                        <div
+                          data-initials={initials}
+                          className="comp-profile-avatar"
+                        ></div>
+                      }
+                    >
+                      <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+                      <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
+                      <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+                    </NavDropdown>
+                  ) : (
+                    <div
+                      data-initials={initials}
+                      className="comp-profile-avatar"
+                    ></div>
+                  )}
                 </div>
               </div>
             </div>

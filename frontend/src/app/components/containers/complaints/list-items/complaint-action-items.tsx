@@ -4,6 +4,7 @@ import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import config from "../../../../../config";
 
 type Props = {
   complaint_identifier: string;
@@ -90,22 +91,24 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           />
         </span>
       </OverlayTrigger>
-      {/* <OverlayTrigger
-        placement="top"
-        key={`tt-refer-${complaint_identifier}`}
-        overlay={
-          <Tooltip
-            id="tt-refer"
-            className="comp-tooltip"
-          >
-            Refer
-          </Tooltip>
-        }
-      >
-        <span>
-          <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-        </span>
-      </OverlayTrigger> */}
+      {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+        <OverlayTrigger
+          placement="top"
+          key={`tt-refer-${complaint_identifier}`}
+          overlay={
+            <Tooltip
+              id="tt-refer"
+              className="comp-tooltip"
+            >
+              Refer
+            </Tooltip>
+          }
+        >
+          <span>
+            <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
+          </span>
+        </OverlayTrigger>
+      )}
     </>
   );
 };
