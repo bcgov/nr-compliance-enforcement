@@ -52,7 +52,7 @@ parameters:
     value: "info"
   - name: SHOW_EXPERIMENTAL_FEATURES
     description: Hides or shows experimental SHOW_EXPERIMENTAL_FEATURES
-    value: false
+    value: "false"
 objects:
   - apiVersion: v1
     kind: ImageStream
