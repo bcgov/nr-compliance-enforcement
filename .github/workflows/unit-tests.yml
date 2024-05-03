@@ -32,7 +32,7 @@ jobs:
             sonar_projectKey: bcgov_nr-compliance-enforcement_frontend
             token: SONAR_TOKEN_FRONTEND
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v0.0.1
+      - uses: bcgov-nr/action-test-and-analyse@v0.0.2
         with:
           commands: |
             npm ci
@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.12.0
+        uses: aquasecurity/trivy-action@0.19.0
         with:
           format: "sarif"
           output: "trivy-results.sarif"

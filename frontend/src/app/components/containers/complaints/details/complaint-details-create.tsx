@@ -333,29 +333,11 @@ export const CreateComplaint: FC = () => {
     if (!selectedItems) {
       return;
     }
-
-    const { attractants } = complaintData as WildlifeComplaintDto;
     let updates: Array<AttractantXref> = [];
-
-    if (attractants) {
-      attractants.forEach((item) => {
-        const { attractant, xrefId } = item;
-
-        if (from(selectedItems).any(({ value: selected }) => selected === attractant)) {
-          updates.push({ xrefId, attractant, isActive: true });
-        } else {
-          updates.push({ xrefId, attractant, isActive: false });
-        }
-      });
-    }
-
     selectedItems.forEach(({ value: selected }) => {
-      if (attractants && !from(attractants).any(({ attractant }) => attractant === selected)) {
-        const record: AttractantXref = { attractant: selected as string, isActive: true };
-        updates.push(record);
-      }
+      const record: AttractantXref = { attractant: selected as string, isActive: true };
+      updates.push(record);
     });
-
     const model = { ...complaintData, attractants: updates } as WildlifeComplaintDto;
     applyComplaintData(model);
   };
