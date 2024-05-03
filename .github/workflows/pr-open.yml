@@ -96,7 +96,8 @@ jobs:
           - name: webeoc
             file: webeoc/openshift.deploy.yml
             overwrite: true
-            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+            needs: [backend]
+            parameters: -p MIN_REPLICAS=2 -p MAX_REPLICAS=2
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
