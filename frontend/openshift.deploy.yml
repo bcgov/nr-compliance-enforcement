@@ -50,6 +50,9 @@ parameters:
   - name: LOG_LEVEL
     description: Caddy logging level DEBUG, INFO, WARN, ERROR, PANIC, and FATAL (https://github.com/caddyserver/caddy/blob/master/logging.go)
     value: "info"
+  - name: SHOW_EXPERIMENTAL_FEATURES
+    description: Hides or shows experimental SHOW_EXPERIMENTAL_FEATURES
+    value: false
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -114,6 +117,8 @@ objects:
                   value: ${COMS_BUCKET}
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: SHOW_EXPERIMENTAL_FEATURES
+                  value: ${SHOW_EXPERIMENTAL_FEATURES}
               ports:
                 - containerPort: 3000
                   protocol: TCP
