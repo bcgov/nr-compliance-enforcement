@@ -69,6 +69,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         await this.jsm.consumers.add(NATS_STREAM_NAME, {
           ack_policy: AckPolicy.Explicit,
           durable_name: NATS_DURABLE_COMPLAINTS,
+          name: NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
         });
         this.logger.debug(`Consumer created`);
       }
@@ -80,7 +81,9 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   // subscribe to new nats to listen for new complaints from webeoc.  These will be moved to the staging table.
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
-    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
+    const consumer = await this.natsConnection
+      .jetstream()
+      .consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
 
     const iter = await consumer.consume({ max_messages: 1 });
 
