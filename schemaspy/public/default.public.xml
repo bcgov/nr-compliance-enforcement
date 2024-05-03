@@ -2974,6 +2974,11 @@ BEGIN
     -- Truncate and uppercase the webEOC value, get rid of spaces, and truncate to 9 characters to ensure we have room for adding a number for uniqueness
     truncated_code := UPPER(LEFT(regexp_replace(webeoc_value, '\s', '', 'g'), 10));
    
+    -- Return null if truncated_code is empty or null
+    IF truncated_code IS NULL OR truncated_code = '' THEN
+        RETURN NULL;
+    END IF;
+
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
         WHEN 'reprtdbycd' THEN
