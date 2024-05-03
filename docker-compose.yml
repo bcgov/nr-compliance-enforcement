@@ -90,6 +90,9 @@ services:
     working_dir: "/app"
   nats:
     image: nats:latest # Using the latest official NATS image
+    command:
+      - "-js"
+      - "-DVV"
     ports:
       - "4222:4222" # Default NATS client port
       - "8222:8222" # NATS monitoring port
