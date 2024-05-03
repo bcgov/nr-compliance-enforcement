@@ -69,7 +69,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         await this.jsm.consumers.add(NATS_STREAM_NAME, {
           ack_policy: AckPolicy.Explicit,
           durable_name: NATS_DURABLE_COMPLAINTS,
-          name: NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
         });
         this.logger.debug(`Consumer created`);
       }
@@ -81,9 +80,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   // subscribe to new nats to listen for new complaints from webeoc.  These will be moved to the staging table.
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
-    const consumer = await this.natsConnection
-      .jetstream()
-      .consumers.get(NATS_STREAM_NAME, NATS_NEW_COMPLAINTS_TOPIC_CONSUMER);
+    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
 
     const iter = await consumer.consume({ max_messages: 1 });
 
@@ -93,9 +90,11 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
         this.logger.debug("Received complaint:", complaintMessage?.incident_number);
         try {
-          await this.service.postComplaintToStaging(complaintMessage);
-          this.complaintsPublisherService.publishStagingComplaintInserted(complaintMessage.incident_number);
-          message.ack();
+          const success = await message.ackAck();
+          if (success) {
+            await this.service.postComplaintToStaging(complaintMessage);
+            this.complaintsPublisherService.publishStagingComplaintInserted(complaintMessage.incident_number);
+          }
         } catch (error) {
           message.nak(10_000); // retry in 10 seconds
           this.logger.error(
@@ -108,7 +107,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         this.logger.debug("Received staged complaint:", stagingData);
         try {
           await this.service.postComplaint(stagingData);
-          message.ack();
+          message.ackAck();
         } catch (error) {
           message.nak(10_000); // retry in 10 seconds
           this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
