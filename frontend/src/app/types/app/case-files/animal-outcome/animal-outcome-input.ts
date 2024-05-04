@@ -1,8 +1,8 @@
+import { AnimalOutcomeActionInput } from "./animal-outcome-action-input";
 import { DrugUsedInput } from "./drug-used-input";
 import { EarTagInput } from "./ear-tag-input";
-import { WildlifeActionInput } from "./wildlife-action-input";
 
-export interface WildlifeInput {
+export interface AnimalOutcomeInput {
   id?: string;
   species: string;
   sex?: string;
@@ -12,5 +12,9 @@ export interface WildlifeInput {
   outcome?: string;
   tags?: Array<EarTagInput>;
   drugs?: Array<DrugUsedInput>;
-  actions?: Array<WildlifeActionInput>;
+
+  //-- if there's any drugs added or
+  //-- an outcome selected then add an
+  //-- action to the collection
+  actions?: Array<AnimalOutcomeActionInput>;
 }

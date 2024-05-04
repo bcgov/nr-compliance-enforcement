@@ -9,6 +9,7 @@ import { CreateSupplementalNotesInput } from "src/types/models/case-files/supple
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete-equipment-dto";
+import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -69,6 +70,39 @@ export class CaseFileService {
       xCoordinate
       yCoordinate
       createDate
+      actions { 
+        actionGuid
+        actor
+        actionCode
+        date
+      }
+    },
+    subject { 
+      id
+      species
+      sex
+      age
+      categoryLevel
+      conflictHistory
+      outcome
+      tags { 
+        id
+        ear
+        identifier
+      }
+      drugs { 
+        id
+
+        vial
+        drug
+        amountUsed
+        injectionMethod
+        reactions
+      
+        remainingUse
+        amountDiscarded
+        discardMethod
+      }
       actions { 
         actionGuid
         actor
@@ -271,5 +305,27 @@ export class CaseFileService {
 
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.deleteNote;
+  };
+
+  createWildlife = async (token: any, model: CreateWildlifeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation createWildlife($input: CreateWildlifeInput!) {
+        createWildlife(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createNote;
+  };
+
+  updateWildlife = async (token: any): Promise<CaseFileDto> => {
+    throw new Error("Method not implemented.");
+  };
+
+  deleteWildlife = async (token: any): Promise<CaseFileDto> => {
+    throw new Error("Method not implemented.");
   };
 }

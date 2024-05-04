@@ -32,6 +32,14 @@ import { DeleteSupplementalNoteInput } from "../../types/app/case-files/suppleme
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
+import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
+import KeyValuePair from "../../types/app/key-value-pair";
+import { CASE_ACTION_CODE } from "../../constants/case_actions";
+import { from } from "linq-to-typescript";
+import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
+import { DrugUsedInput } from "../../types/app/case-files/animal-outcome/drug-used-input";
+import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
 
 //-- general thunks
 export const findCase =
@@ -657,6 +665,7 @@ export const updateReview =
     });
   };
 
+//-- equipment thunks
 export const deleteEquipment =
   (id: string): AppThunk =>
   async (dispatch, getState) => {
@@ -743,5 +752,85 @@ export const upsertEquipment =
           ToggleError(`Unable to update equipment`);
         }
       });
+    }
+  };
+
+//-- animal outcome thunks
+export const createAnimalOutcome =
+  (
+    id: string,
+    animalOutcome: AnimalOutcomeV2,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+    } = getState();
+
+    const { species, sex, age, conflictHistory, outcome, threatLevel, officer, date, tags, drugs, drugAuthorization } =
+      animalOutcome;
+    let actions: Array<AnimalOutcomeActionInput> = [];
+
+    //-- add an action if there is an outcome with officer
+    if (outcome && date) {
+      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer, date }];
+    }
+
+    //-- add an action if there are any drugs used
+    if (from(drugs).any() && drugAuthorization) {
+      const { officer, date } = drugAuthorization;
+      actions = [...actions, { action: CASE_ACTION_CODE.ADMNSTRDRG, actor: officer, date }];
+    }
+
+    //-- convert eartags and drugs to input types
+    const earTags = tags.map(({ ear, number }) => {
+      let record: EarTagInput = { ear, identifier: number };
+      return record;
+    });
+
+    const drugsUsed = drugs.map((item) => {
+      const { vial, drug, amountUsed, amountDiscarded, injectionMethod, discardMethod, reactions, remainingUse } = item;
+      const record: DrugUsedInput = {
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        injectionMethod,
+        discardMethod,
+        reactions,
+        remainingUse,
+      };
+
+      return record;
+    });
+
+    const input: CreateAnimalOutcomeInput = {
+      leadIdentifier: id,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      createUserId: idir,
+      wildlife: {
+        species,
+        sex,
+        age,
+        categoryLevel: threatLevel,
+        conflictHistory,
+        outcome,
+        tags: earTags,
+        drugs: drugsUsed,
+        actions: from(actions).any() ? actions : undefined,
+      },
+    };
+
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
+    let result = await post<CaseFileDto>(dispatch, parameters);
+
+    console.log(input);
+
+    if (result !== null) {
+      return "success";
+    } else {
+      return "error";
     }
   };

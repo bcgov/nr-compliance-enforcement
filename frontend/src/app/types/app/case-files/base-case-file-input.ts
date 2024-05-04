@@ -4,13 +4,13 @@ export interface BaseCaseFileCreateInput {
   leadIdentifier: string;
   agencyCode: string;
   caseCode: string;
-  actor: string;
+  actor?: string;
   createUserId: string;
 }
 
 export interface BaseCaseFileUpdateInput {
   caseIdentifier: UUID;
-  actor: string;
+  actor?: string;
   updateUserId: string;
   actionId?: string;
 }

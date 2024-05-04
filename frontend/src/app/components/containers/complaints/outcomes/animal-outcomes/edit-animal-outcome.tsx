@@ -667,7 +667,7 @@ export const EditAnimalOutcome: FC<EditAnimalOutcomeProps> = ({
                   classNamePrefix="comp-select"
                   className="animal-outcome-details-input"
                   options={officers}
-                  placeholder="Select"
+                  placeholder="Select derp"
                   enableValidation={true}
                   errorMessage={outcomeOfficerErrorMessage}
                   onChange={(evt) => {

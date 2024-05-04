@@ -9,6 +9,7 @@ import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -116,5 +117,11 @@ export class CaseFileController {
     };
 
     return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);
+  }
+
+  @Post("/wildlife")
+  @Roles(Role.COS_OFFICER)
+  async createWildlife(@Token() token, @Body() model: CreateWildlifeInput): Promise<CaseFileDto> {
+    return await this.service.createWildlife(token, model);
   }
 }

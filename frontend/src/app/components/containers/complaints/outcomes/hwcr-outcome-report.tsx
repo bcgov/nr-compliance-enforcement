@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { getCaseFile } from "../../../../store/reducers/case-thunks";
+import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 
 export const HWCROutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -27,7 +28,9 @@ export const HWCROutcomeReport: FC = () => {
       <HWCRComplaintAssessment />
       <HWCRComplaintPrevention />
       <HWCREquipment />
+      {/* HWCROutcomeByAnimal is temporary */}
       <HWCROutcomeByAnimal />
+      <HWCROutcomeByAnimalv2 />
       <HWCRSupplementalNotes />
       <HWCRFileAttachments />
       <HWCRFileReview />
