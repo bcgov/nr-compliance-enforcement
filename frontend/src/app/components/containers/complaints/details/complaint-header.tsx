@@ -8,6 +8,7 @@ import { Button } from "react-bootstrap";
 import { BsPersonPlus, BsArrowRepeat } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
+import config from "../../../../../config";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -83,9 +84,11 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <div className="comp-complaint-breadcrumb">
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item">
-                <i className="bi bi-house-door"></i> Home
-              </li>
+              {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                <li className="breadcrumb-item">
+                  <i className="bi bi-house-door"></i> Home
+                </li>
+              )}
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/complaints/${complaintType}`}>{complaintTypeToName(complaintType)}</Link>
               </li>
