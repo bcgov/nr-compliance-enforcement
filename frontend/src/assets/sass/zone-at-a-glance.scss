@@ -170,6 +170,9 @@
     .comp-zag-float-left {
       float: left;
       margin-left: 8px;
+      display: grid;
+      align-items: center;
+      height: 40px;
     }
     .comp-zag-officer {
       width: 330px;

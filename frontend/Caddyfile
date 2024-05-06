@@ -20,7 +20,8 @@
                    window.REACT_APP_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-web-4794";
                    window.REACT_APP_API_URL="{$BACKEND_URL}";
                    window.REACT_APP_COMS_URL="{$COMS_URL}";
-                   window.REACT_APP_COMS_BUCKET="{$COMS_BUCKET}";`
+                   window.REACT_APP_COMS_BUCKET="{$COMS_BUCKET}";
+                   window.REACT_APP_SHOW_EXPERIMENTAL_FEATURES="{$SHOW_EXPERIMENTAL_FEATURES}"`
   }
 
   root * /app/dist

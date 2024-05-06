@@ -110,6 +110,7 @@ jobs:
             parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST }}
               -p COMS_URL=${{ vars.COMS_URL_TEST }}
               -p COMS_BUCKET=${{ vars.COMS_BUCKET_TEST }}
+              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_TEST }}
             overwrite: true
           - name: init
             file: common/openshift.init.yml
@@ -137,6 +138,7 @@ jobs:
             parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD}}
               -p COMS_URL=${{vars.COMS_URL_PRD}}
               -p COMS_BUCKET=${{vars.COMS_BUCKET_PROD}}
+              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_TEST }}
             overwrite: true
           - name: init
             file: common/openshift.init.yml
