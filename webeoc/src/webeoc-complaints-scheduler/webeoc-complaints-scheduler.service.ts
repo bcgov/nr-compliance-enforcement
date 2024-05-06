@@ -4,6 +4,7 @@ import { ComplaintsPublisherService } from "../complaints-publisher/complaints-p
 import { Complaint } from "src/types/Complaints";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
+import { format } from "date-fns";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {
@@ -35,7 +36,7 @@ export class WebEOCComplaintsScheduler {
     // Fetch complaints from WebEOC here
     const complaints = await this.fetchComplaintsFromWebEOC();
 
-    this.logger.debug(`Found ${complaints?.length} new complaints`);
+    this.logger.debug(`Found ${complaints?.length} complaints from WebEOC`);
 
     // Publish each complaint to NATS
     for (const complaint of complaints) {
@@ -120,6 +121,6 @@ export class WebEOCComplaintsScheduler {
 
   // Formats a date to be in a format required by WEBEOC.  Used to determine how far back in time to go to grab new complaints.
   private formatDate(date: Date): string {
-    return date.toISOString().replace("T", " ").substring(0, 19);
+    return format(date, "yyyy-MM-dd HH:mm:ss");
   }
 }

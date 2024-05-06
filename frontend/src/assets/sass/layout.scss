@@ -329,7 +329,7 @@ button.modal-buttons {
   gap: 24px;
 
   width: 498px;
-  height: 88px;
+  height: 80px;
 
   flex: none;
   order: 4;
@@ -367,6 +367,7 @@ button.modal-buttons {
 }
 
 .self-assign {
+  margin-bottom: 10px;
   &:hover {
     background-color: $white;
     cursor: default;
@@ -374,8 +375,9 @@ button.modal-buttons {
 }
 
 .assign_officer_modal_profile_card_column {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  align-items: center;
+  height: 48px;
 }
 
 #assign_officer_modal_search {
@@ -423,14 +425,11 @@ button.modal-buttons {
 }
 
 .assign_officer_modal_profile_card_profile-picture {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 7px 8px 9px 8px;
-  gap: 8px;
+  display: grid;
+  align-items: center;
 
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
 
   /* Inside auto layout */
 

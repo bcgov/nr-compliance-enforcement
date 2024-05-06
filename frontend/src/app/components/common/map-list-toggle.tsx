@@ -10,6 +10,11 @@ interface Props {
 }
 
 const MapListToggle: React.FC<Props> = ({ activeView, onToggle, className }) => {
+  const setElementActive = (classPrefix: string, viewType: string): string => {
+    const result = `${classPrefix} ` + (activeView === viewType ? "active" : "");
+    return result;
+  };
+
   return (
     <ToggleButtonGroup
       className={className}
@@ -24,17 +29,25 @@ const MapListToggle: React.FC<Props> = ({ activeView, onToggle, className }) => 
         title="Complaint List View"
         value="list"
         id="list_toggle_id"
-        className={`toggle-button ${activeView === "list" ? "active" : ""}`}
+        className={setElementActive("toggle-button", "list")}
       >
-        <FontAwesomeIcon icon={faList} />
+        <FontAwesomeIcon
+          icon={faList}
+          className={setElementActive("toggle-button-icon", "list")}
+        />
+        <span className={setElementActive("toggle-button-text", "list")}>List</span>
       </ToggleButton>
       <ToggleButton
         title="Complaint Map View"
         value="map"
         id="map_toggle_id"
-        className={`toggle-button ${activeView === "map" ? "active" : ""}`}
+        className={setElementActive("toggle-button", "map")}
       >
-        <FontAwesomeIcon icon={faMap} />
+        <FontAwesomeIcon
+          icon={faMap}
+          className={setElementActive("toggle-button-icon", "map")}
+        />
+        <span className={setElementActive("toggle-button-text", "map")}>Map</span>
       </ToggleButton>
     </ToggleButtonGroup>
   );
