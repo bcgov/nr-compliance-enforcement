@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 export interface CaseActionDto {
-  actionGuid: UUID;
+  actionId: UUID;
   actor: UUID;
   date: Date;
   actionCode: string;

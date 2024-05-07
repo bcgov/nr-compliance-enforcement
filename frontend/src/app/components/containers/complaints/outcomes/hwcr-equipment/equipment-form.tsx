@@ -96,12 +96,12 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         const setOfficer = getSelectedItem(action.actor, assignableOfficers);
         setOfficerSet(setOfficer);
         setDateSet(new Date(action.date));
-        setActionSetGuid(action.actionGuid);
+        setActionSetGuid(action.actionId);
       } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT && complaintData) {
         const removedOfficer = getSelectedItem(action.actor, assignableOfficers);
         setOfficerRemoved(removedOfficer);
         setDateRemoved(new Date(action.date));
-        setActionRemovedGuid(action.actionGuid);
+        setActionRemovedGuid(action.actionId);
       }
     });
   }, [equipment]);
@@ -232,7 +232,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
     let actions = [
       {
-        actionGuid: actionSetGuid,
+        actionId: actionSetGuid,
         actor: officerSet?.value,
         date: dateSet,
         activeIndicator: true,
@@ -243,7 +243,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     // if this equipment has also been removed by an officer, set that action as well
     if (dateRemoved && officerRemoved?.value) {
       actions.push({
-        actionGuid: actionRemovedGuid,
+        actionId: actionRemovedGuid,
         actor: officerRemoved.value,
         date: dateRemoved,
         activeIndicator: true,
