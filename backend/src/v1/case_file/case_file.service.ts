@@ -58,7 +58,8 @@ export class CaseFileService {
         actor
         actionCode
         date,
-        actionId
+        actionId,
+        activeIndicator
       }
     }
     equipment {
@@ -238,7 +239,7 @@ export class CaseFileService {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
         createNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode, actionGuid } }
+          note { note, action { actor,date,actionCode, actionId } }
         }
       }`,
       variables: { input: model },
@@ -253,7 +254,7 @@ export class CaseFileService {
       query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
         updateNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode,actionGuid } }
+          note { note, action { actor,date,actionCode, actionId } }
         }
       }`,
       variables: { input: model },
@@ -268,7 +269,7 @@ export class CaseFileService {
       query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
         deleteNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode,actionGuid } }
+          note { note, action { actor,date,actionCode, actionId } }
         }
       }`,
       variables: { input: model },
