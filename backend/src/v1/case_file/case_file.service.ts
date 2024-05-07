@@ -26,7 +26,7 @@ export class CaseFileService {
       actionJustificationLongDescription
       actionJustificationActiveIndicator
       actions {
-        actionGuid
+        actionId
         actor
         date
         actionCode
@@ -43,7 +43,7 @@ export class CaseFileService {
     }
     preventionDetails {
       actions {
-        actionGuid
+        actionId
         actor
         date
         actionCode
@@ -58,7 +58,7 @@ export class CaseFileService {
         actor
         actionCode
         date,
-        actionGuid
+        actionId
       }
     }
     equipment {
@@ -70,7 +70,7 @@ export class CaseFileService {
       yCoordinate
       createDate
       actions { 
-        actionGuid
+        actionId
         actor
         actionCode
         date
@@ -84,11 +84,16 @@ export class CaseFileService {
   }
 
   find = async (complaint_id: string, token: string): Promise<CaseFileDto> => {
-    const { data } = await get(token, {
+    const { data, errors } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
         ${this.caseFileQueryFields}
       }`,
     });
+
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
 
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
