@@ -47,7 +47,7 @@ p {
     align-items: center;
     font-size: 16px;
 
-    .comp-details-content-label+div {
+    .comp-details-content-label + div {
       margin-top: 10px;
     }
 
@@ -192,7 +192,6 @@ p {
     font-size: 14px;
   }
 
-
   .comp-box-actions button span {
     padding-right: 8px;
   }
@@ -289,7 +288,7 @@ p {
 
 .comp-view-complaint-details-button span.comp-view-complaint-badge:hover {
   color: $white;
-  background-color: $bc-gov-primary
+  background-color: $bc-gov-primary;
 }
 
 .comp-status-badge-open {
@@ -395,8 +394,6 @@ p {
   }
 }
 
-
-
 .comp-complaint-details-block {
   margin-left: 24px;
   margin-right: 24px;
@@ -429,7 +426,7 @@ p {
     margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
-  }  
+  }
 
   .comp-details-content-label {
     padding-right: 25px;
@@ -551,7 +548,7 @@ p {
   button svg {
     vertical-align: text-top;
     margin-top: 1px;
-   }
+  }
 }
 
 .comp-details-right-column {
@@ -569,6 +566,27 @@ p {
 
   label {
     color: $gray-500;
+    min-width: 191px;
+    max-width: 191px;
+  }
+
+  .comp-details-input {
+    flex-basis: 100%;
+    color: $gray-900;
+
+    i.bi {
+      color: $gray-500;
+    }
+  }
+}
+
+.drug-auth-details-label-input-pair {
+  display: flex;
+  min-height: 70px;
+
+  label {
+    color: $gray-500;
+    margin-top: 6px;
     min-width: 191px;
     max-width: 191px;
   }
@@ -616,7 +634,7 @@ p {
 
   .checkbox-label {
     max-width: 100%;
-    color: black
+    color: black;
   }
 
   .check-spacing {
@@ -840,7 +858,7 @@ p {
   border-collapse: initial;
   margin-left: 12px;
 
-  > :not(caption)>*>* {
+  > :not(caption) > * > * {
     background: $gray-500;
     background-color: $gray-200;
     border-color: $gray-500;
@@ -971,7 +989,7 @@ p {
   border-bottom: none !important;
 }
 
-.comp-cell-parent-expanded:hover+tr {
+.comp-cell-parent-expanded:hover + tr {
   background-color: $gray-110;
 }
 
@@ -1340,7 +1358,7 @@ p {
 }
 
 .toggle-button {
-  background-color: $gray-100 !important;
+  background-color: white !important;
   color: $gray-800 !important;
   border-color: $gray-300 !important;
   border-radius: 8px;
@@ -1348,11 +1366,25 @@ p {
 }
 
 .toggle-button.active {
-  background-color: white !important;
+  background-color: $gray-100 !important;
   color: $gray-800 !important;
   border-color: $gray-300 !important;
   border-radius: 8px;
   z-index: 0 !important;
+}
+
+.toggle-button-icon.active {
+  color: $gray-600 !important;
+}
+
+.toggle-button-text {
+  color: $gray-800 !important;
+  margin-left: 4px;
+}
+
+.toggle-button-text.active {
+  color: $gray-600 !important;
+  margin-left: 4px;
 }
 
 .comp-filter-search {
@@ -1367,13 +1399,13 @@ p {
   padding: 24px;
 }
 
-.comp-outcome-report-file-review>.comp-details-content-label {
+.comp-outcome-report-file-review > .comp-details-content-label {
   padding-right: 25px;
   margin-bottom: 16px;
   display: inline-block;
 }
 
-.comp-outcome-report-file-review>.comp-details-content {
+.comp-outcome-report-file-review > .comp-details-content {
   margin-bottom: 16px;
   display: inline-block;
 
@@ -1423,4 +1455,3 @@ p {
   cursor: not-allowed;
   pointer-events: all;
 }
-

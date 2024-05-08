@@ -4,6 +4,7 @@ import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import config from "../../../../../config";
 
 type Props = {
   complaint_identifier: string;
@@ -29,7 +30,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           zone: zone,
           agency_code: agency_code,
         },
-      })
+      }),
     );
   };
 
@@ -45,7 +46,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
         },
-      })
+      }),
     );
   };
 
@@ -55,12 +56,19 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
         placement="top"
         key={`tt-assign-${complaint_identifier}`}
         overlay={
-          <Tooltip id={`tt-assign-${complaint_identifier}`} className="comp-tooltip">
+          <Tooltip
+            id={`tt-assign-${complaint_identifier}`}
+            className="comp-tooltip"
+          >
             Assign
           </Tooltip>
         }
       >
-        <span className="tt-assign-span" onClick={openAsignOfficerModal} onKeyUp={openAsignOfficerModal}>
+        <span
+          className="tt-assign-span"
+          onClick={openAsignOfficerModal}
+          onKeyUp={openAsignOfficerModal}
+        >
           <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
         </span>
       </OverlayTrigger>
@@ -68,7 +76,10 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
         placement="top"
         key={`tt-update-${complaint_identifier}`}
         overlay={
-          <Tooltip id={`tt-update-${complaint_identifier}`} className="comp-tooltip">
+          <Tooltip
+            id={`tt-update-${complaint_identifier}`}
+            className="comp-tooltip"
+          >
             Update Status
           </Tooltip>
         }
@@ -80,19 +91,24 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           />
         </span>
       </OverlayTrigger>
-      <OverlayTrigger
-        placement="top"
-        key={`tt-refer-${complaint_identifier}`}
-        overlay={
-          <Tooltip id="tt-refer" className="comp-tooltip">
-            Refer
-          </Tooltip>
-        }
-      >
-        <span>
-          <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-        </span>
-      </OverlayTrigger>
+      {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+        <OverlayTrigger
+          placement="top"
+          key={`tt-refer-${complaint_identifier}`}
+          overlay={
+            <Tooltip
+              id="tt-refer"
+              className="comp-tooltip"
+            >
+              Refer
+            </Tooltip>
+          }
+        >
+          <span>
+            <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
+          </span>
+        </OverlayTrigger>
+      )}
     </>
   );
 };

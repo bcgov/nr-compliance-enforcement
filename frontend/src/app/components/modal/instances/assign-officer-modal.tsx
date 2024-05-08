@@ -11,6 +11,7 @@ import {
 import { UUID } from "crypto";
 import { BsPerson } from "react-icons/bs";
 import { from } from "linq-to-typescript";
+import config from "../../../../config";
 
 type AssignOfficerModalProps = {
   close: () => void;
@@ -87,7 +88,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     const getOfficerList = () => {
       if (searchInput.length >= 2 && from(searchResults).any()) {
         return searchResults;
-      } else if (searchInput.length >=2 && !from(searchResults).any()) {
+      } else if (searchInput.length >= 2 && !from(searchResults).any()) {
         return [];
       } else {
         return officersJson;
@@ -128,7 +129,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               </div>
               <div className="assign_officer_modal_profile_card_column">
                 <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-                <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+                {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                  <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+                )}
               </div>
               <div className="assign_officer_modal_profile_card_column"></div>
             </div>
@@ -171,7 +174,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-            <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+            {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+              <div className="assign_officer_modal_profile_card_row_2">Officer</div>
+            )}
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <Button

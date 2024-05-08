@@ -17,10 +17,7 @@ import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
 import { useCollapse } from "react-collapsed";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import {
-  ComplaintFilterPayload,
-  updateFilter,
-} from "../../../store/reducers/complaint-filters";
+import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
 import Option from "../../../types/app/option";
 
 type Props = {
@@ -31,29 +28,15 @@ type Props = {
 export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   const { getCollapseProps } = useCollapse({ isExpanded: isOpen });
   const {
-    state: {
-      region,
-      zone,
-      community,
-      officer,
-      species,
-      natureOfComplaint,
-      violationType,
-      status,
-      startDate,
-      endDate,
-    },
+    state: { region, zone, community, officer, species, natureOfComplaint, violationType, status, startDate, endDate },
     dispatch,
   } = useContext(ComplaintFilterContext);
 
   let officers = useAppSelector(selectOfficersDropdown);
-  if(officers && officers[0]?.value !== "Unassigned")
-  {
-    officers.unshift({value: "Unassigned", label: "Unassigned"})
+  if (officers && officers[0]?.value !== "Unassigned") {
+    officers.unshift({ value: "Unassigned", label: "Unassigned" });
   }
-  const natureOfComplaintTypes = useAppSelector(
-    selectHwcrNatureOfComplaintCodeDropdown
-  );
+  const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown);
@@ -67,7 +50,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
       dispatch(updateFilter(payload));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
@@ -87,9 +70,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   };
 
   // manual entry of date change listener.  Looks for a date range format of {yyyy-mm-dd} - {yyyy-mm-dd}
-  const handleManualDateRangeChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleManualDateRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.value?.includes(" - ")) {
       const [startDateStr, endDateStr] = e.target.value.split(" - ");
       const startDate = new Date(startDateStr);
@@ -139,7 +120,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                 />
               </div>
             </div>
-            <div className="comp-filter" id="comp-species-filter-id">
+            <div
+              className="comp-filter"
+              id="comp-species-filter-id"
+            >
               <div className="comp-filter-label">Species</div>
               <div className="filter-select-padding">
                 <CompSelect
@@ -162,7 +146,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         )}
 
         {COMPLAINT_TYPES.ERS === type && ( // wildlife only filter
-          <div className="comp-filter-left" id="comp-filter-violation-id">
+          <div
+            className="comp-filter-left"
+            id="comp-filter-violation-id"
+          >
             {/* <!-- violation types --> */}
             <div className="comp-filter-label">Violation Type</div>
             <div className="filter-select-padding">
@@ -185,24 +172,20 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         )}
 
         {/* <!-- date logged --> */}
-        <div className="comp-filter" id="comp-filter-date-id">
+        <div
+          className="comp-filter"
+          id="comp-filter-date-id"
+        >
           <div className="comp-filter-label">Date Logged</div>
           <div className="filter-select-padding">
             <DatePicker
               showIcon={true}
-              renderCustomHeader={({
-                monthDate,
-                customHeaderCount,
-                decreaseMonth,
-                increaseMonth,
-              }) => (
+              renderCustomHeader={({ monthDate, customHeaderCount, decreaseMonth, increaseMonth }) => (
                 <div>
                   <button
                     aria-label="Previous Month"
                     className={`react-datepicker__navigation react-datepicker__navigation--previous ${
-                      customHeaderCount === 1
-                        ? "datepicker-nav-hidden"
-                        : "datepicker-nav-visible"
+                      customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
                     }`}
                     onClick={decreaseMonth}
                   >
@@ -223,9 +206,7 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
                   <button
                     aria-label="Next Month"
                     className={`react-datepicker__navigation react-datepicker__navigation--next ${
-                      customHeaderCount === 1
-                        ? "datepicker-nav-hidden"
-                        : "datepicker-nav-visible"
+                      customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
                     }`}
                     onClick={increaseMonth}
                   >
@@ -254,7 +235,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
         </div>
 
         {/* <!-- status --> */}
-        <div className="comp-filter" id="comp-filter-status-id">
+        <div
+          className="comp-filter"
+          id="comp-filter-status-id"
+        >
           <div className="comp-filter-label">Status</div>
           <div className="filter-select-padding">
             <CompSelect
@@ -279,12 +263,18 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
   };
 
   return (
-    <div className="collapsible" id="collapsible-complaints-list-filter-id">
+    <div
+      className="collapsible"
+      id="collapsible-complaints-list-filter-id"
+    >
       <div {...getCollapseProps()}>
         {/* props */}
         <div className="content filter-container">
           {/* <!-- tombstone --> */}
-          <div className="comp-filter-left" id="comp-filter-region-id">
+          <div
+            className="comp-filter-left"
+            id="comp-filter-region-id"
+          >
             {/* <!-- region --> */}
             <div className="comp-filter-label">Region</div>
             <div className="filter-select-padding">
@@ -305,7 +295,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
             </div>
           </div>
           {/* <!-- zones --> */}
-          <div className="comp-filter" id="comp-filter-zone-id">
+          <div
+            className="comp-filter"
+            id="comp-filter-zone-id"
+          >
             <div className="comp-filter-label">Zone</div>
             <div className="filter-select-padding">
               <CompSelect
@@ -326,7 +319,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           </div>
 
           {/* <!-- communities --> */}
-          <div className="comp-filter" id="comp-filter-community-id">
+          <div
+            className="comp-filter"
+            id="comp-filter-community-id"
+          >
             <div className="comp-filter-label">Community</div>
             <div className="filter-select-padding">
               <CompSelect
@@ -347,7 +343,10 @@ export const ComplaintFilter: FC<Props> = ({ type, isOpen }) => {
           </div>
 
           {/* <!-- officers --> */}
-          <div className="comp-filter" id="comp-filter-officer-id">
+          <div
+            className="comp-filter"
+            id="comp-filter-officer-id"
+          >
             <div className="comp-filter-label">Officer Assigned</div>
             <div className="filter-select-padding">
               <CompSelect

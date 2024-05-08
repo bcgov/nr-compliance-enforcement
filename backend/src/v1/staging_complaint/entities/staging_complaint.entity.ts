@@ -30,10 +30,7 @@ export class StagingComplaint {
   @Column("timestamp without time zone", { name: "update_utc_timestamp" })
   updateUtcTimestamp: Date;
 
-  @ManyToOne(
-    () => StagingActivityCode,
-    (stagingActivityCode) => stagingActivityCode.stagingComplaints
-  )
+  @ManyToOne(() => StagingActivityCode, (stagingActivityCode) => stagingActivityCode.stagingComplaints)
   @JoinColumn([
     {
       name: "staging_activity_code",
@@ -42,12 +39,7 @@ export class StagingComplaint {
   ])
   stagingActivityCode: StagingActivityCode;
 
-  @ManyToOne(
-    () => StagingStatusCode,
-    (stagingStatusCode) => stagingStatusCode.stagingComplaints
-  )
-  @JoinColumn([
-    { name: "staging_status_code", referencedColumnName: "stagingStatusCode" },
-  ])
+  @ManyToOne(() => StagingStatusCode, (stagingStatusCode) => stagingStatusCode.stagingComplaints)
+  @JoinColumn([{ name: "staging_status_code", referencedColumnName: "stagingStatusCode" }])
   stagingStatusCode: StagingStatusCode;
 }

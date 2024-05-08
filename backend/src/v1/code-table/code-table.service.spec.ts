@@ -331,7 +331,6 @@ describe("Testing: CodeTable service", () => {
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(8);
   });
-
 });
 
 describe("Testing: CodeTable service", () => {
@@ -399,7 +398,6 @@ describe("Testing: CodeTable service", () => {
     expect(service).toBeDefined();
   });
 
-
   it("should return collection of zones", async () => {
     //-- arrange
     const _agency = "cos";
@@ -412,7 +410,6 @@ describe("Testing: CodeTable service", () => {
     expect(results.length).not.toBe(0);
     expect(results.length).toBe(9);
   });
-
 });
 
 describe("Testing: CodeTable service", () => {
@@ -502,10 +499,10 @@ describe("Testing: CodeTable service", () => {
 
     //-- assert
     expect(result).not.toBe(null);
-    
+
     const { complaint_status_code, short_description, long_description } = result;
-    expect(complaint_status_code).toBe("OPEN")
-    expect(short_description).toBe("OPEN")
-    expect(long_description).toBe("Open")
+    expect(complaint_status_code).toBe("OPEN");
+    expect(short_description).toBe("OPEN");
+    expect(long_description).toBe("Open");
   });
 });

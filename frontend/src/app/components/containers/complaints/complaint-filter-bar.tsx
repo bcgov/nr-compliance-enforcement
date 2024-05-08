@@ -9,26 +9,22 @@ import SearchInput from "../../common/search-input";
 type Props = {
   toggleViewType: (view: "map" | "list") => void;
   viewType: "map" | "list";
-  complaintType: string,
-  searchQuery: string | undefined
-  applySearchQuery: Function
+  complaintType: string;
+  searchQuery: string | undefined;
+  applySearchQuery: Function;
 };
 
-export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType, complaintType, searchQuery, applySearchQuery }) => {
+export const ComplaintFilterBar: FC<Props> = ({
+  viewType,
+  toggleViewType,
+  complaintType,
+  searchQuery,
+  applySearchQuery,
+}) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
-  const {
-    region,
-    zone,
-    community,
-    officer,
-    startDate,
-    endDate,
-    status,
-    species,
-    natureOfComplaint,
-    violationType,
-  } = state;
+  const { region, zone, community, officer, startDate, endDate, status, species, natureOfComplaint, violationType } =
+    state;
 
   const dateRangeLabel = (): string | undefined => {
     if (startDate !== null && endDate !== null) {
@@ -43,10 +39,7 @@ export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType, compla
   };
 
   const hasDate = () => {
-    if (
-      (startDate === undefined || startDate === null) &&
-      (endDate === undefined || endDate === null)
-    ) {
+    if ((startDate === undefined || startDate === null) && (endDate === undefined || endDate === null)) {
       return false;
     }
 
@@ -163,7 +156,12 @@ export const ComplaintFilterBar: FC<Props> = ({ viewType, toggleViewType, compla
         )}
 
         <div className="comp-filter-search">
-          <SearchInput viewType={viewType} complaintType={complaintType} searchQuery={searchQuery} applySearchQuery={applySearchQuery} />
+          <SearchInput
+            viewType={viewType}
+            complaintType={complaintType}
+            searchQuery={searchQuery}
+            applySearchQuery={applySearchQuery}
+          />
         </div>
       </div>
     </div>

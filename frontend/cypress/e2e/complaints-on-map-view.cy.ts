@@ -43,9 +43,7 @@ describe("Complaints on map tests", () => {
       }
 
       // find how many markers there are, we'll compare this to the count after another filter is applied
-      cy.get(".leaflet-marker-icon")
-        .its("length")
-        .as("complaintCountWithoutFilters");
+      cy.get(".leaflet-marker-icon").its("length").as("complaintCountWithoutFilters");
 
       cy.get("#complaint-filter-image-id").click({ force: true });
 
@@ -69,14 +67,9 @@ describe("Complaints on map tests", () => {
       }
 
       // count the markers again, they should now have a different count
-      cy.get(".leaflet-marker-icon")
-        .its("length")
-        .as("complaintCountWithFilters");
+      cy.get(".leaflet-marker-icon").its("length").as("complaintCountWithFilters");
 
-      cy.wrap("@complaintCountWithoutFilters").should(
-        "not.eq",
-        "@complaintCountWithFilters",
-      );
+      cy.wrap("@complaintCountWithoutFilters").should("not.eq", "@complaintCountWithFilters");
 
       // switch back to list view to verify filters are still applied
       cy.get("#list_toggle_id").click({ force: true });
@@ -134,19 +127,10 @@ describe("Complaints on map tests", () => {
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.get("div.hwcr-conflict-type").should("exist");
-        cy.get("div.hwcr-conflict-type").should(
-          "have.text",
-          "Human Wildlife Conflict",
-        );
+        cy.get("div.hwcr-conflict-type").should("have.text", "Human Wildlife Conflict");
         cy.get("#popup-community-label").should("exist");
-        cy.get("#popup-community-label").should(
-          "have.text",
-          "CommunityKelowna",
-        );
-        cy.get("div.hwcr-conflict-type").should(
-          "not.have.text",
-          "Human Wildlife Conflicts",
-        );
+        cy.get("#popup-community-label").should("have.text", "CommunityKelowna");
+        cy.get("div.hwcr-conflict-type").should("not.have.text", "Human Wildlife Conflicts");
       }
 
       // click the "view details" button to navigate to the complaint

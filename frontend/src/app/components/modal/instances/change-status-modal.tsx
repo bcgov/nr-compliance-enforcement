@@ -72,7 +72,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   return (
     <>
       {title && (
-        <Modal.Header closeButton={true} className="border-0">
+        <Modal.Header
+          closeButton={true}
+          className="border-0"
+        >
           <Modal.Title style={{ fontSize: "20px" }}>{title}</Modal.Title>
         </Modal.Header>
       )}
@@ -91,10 +94,16 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary" onClick={close}>
+        <Button
+          variant="outline-primary"
+          onClick={close}
+        >
           Cancel
         </Button>
-        <Button id="update_complaint_status_button" onClick={handleSubmit}>
+        <Button
+          id="update_complaint_status_button"
+          onClick={handleSubmit}
+        >
           Update
         </Button>
       </Modal.Footer>

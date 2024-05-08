@@ -28,7 +28,7 @@ jobs:
             Thanks for the PR!
 
             Any successful deployments (not always required) will be available below.
-            [Backend](https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}/) available
+            [Backend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/api/) available
             [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
 
             Once merged, code will be promoted and handed off to following workflow run.
@@ -65,7 +65,7 @@ jobs:
             build_context: ./backend/db
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.2
+      - uses: bcgov-nr/action-builder-ghcr@v1.3.0
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
@@ -87,41 +87,41 @@ jobs:
           - name: backend
             file: backend/openshift.deploy.yml
             overwrite: true
-            parameters:
-              -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
               -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:${{ github.event.number }}
-              -p CPU_REQUEST=40m 
-              -p CPU_LIMIT=80m 
+              -p CPU_REQUEST=40m
+              -p CPU_LIMIT=80m
               -p MEMORY_REQUEST=100Mi
               -p MEMORY_LIMIT=200Mi
           - name: webeoc
             file: webeoc/openshift.deploy.yml
             overwrite: true
-            parameters:
-              -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+            needs: [backend]
+            parameters: -p MIN_REPLICAS=2 -p MAX_REPLICAS=2
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
-            parameters: -p CPU_REQUEST=100m 
-                        -p CPU_LIMIT=200m 
-                        -p MEMORY_REQUEST=250Mi
-                        -p MEMORY_LIMIT=500Mi
+            parameters: -p CPU_REQUEST=100m
+              -p CPU_LIMIT=200m
+              -p MEMORY_REQUEST=250Mi
+              -p MEMORY_LIMIT=500Mi
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-                        -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV}}
-                        -p COMS_URL=${{vars.COMS_URL_DEV}}
-                        -p COMS_BUCKET=${{vars.COMS_BUCKET_DEV}}
-                        -p CPU_REQUEST=25m 
-                        -p CPU_LIMIT=50m 
-                        -p MEMORY_REQUEST=40Mi
-                        -p MEMORY_LIMIT=80Mi
+              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV}}
+              -p COMS_URL=${{vars.COMS_URL_DEV}}
+              -p COMS_BUCKET=${{vars.COMS_BUCKET_DEV}}
+              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_DEV }}
+              -p CPU_REQUEST=25m
+              -p CPU_LIMIT=50m
+              -p MEMORY_REQUEST=40Mi
+              -p MEMORY_LIMIT=80Mi
           - name: init
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.1.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
@@ -129,31 +129,30 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
-          parameters:
-            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             ${{ matrix.parameters }}
   cypress-tests:
     needs: deploys
     env:
-        DOMAIN: apps.silver.devops.gov.bc.ca
-        PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitCode
         uses: actions/checkout@v3
-  
+
       - name: Run Cypress Test
         uses: cypress-io/github-action@v5
         with:
           working-directory: ./frontend
           command: npx cypress run --browser electron --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL_DEV }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
-          
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         if: always()
         with:
-            name: cypress-artifacts
-            path: |-
-                  /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
-                  /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
+          name: cypress-artifacts
+          path: |-
+            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
+            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/

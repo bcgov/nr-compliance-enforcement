@@ -15,12 +15,10 @@ export class BcGeoCoderService {
     const maxResults = 1; // will need to update this for the purposes of autocomplete.
     let apiUrl: string;
     this.logger.debug(
-      `Calling BC Geocoder.  Parameters sent to backend were localityName: ${localityName} and addressString: ${addressString}`
+      `Calling BC Geocoder.  Parameters sent to backend were localityName: ${localityName} and addressString: ${addressString}`,
     );
     if (addressString && localityName) {
-      this.logger.debug(
-        `Calling BC Geocoder with address ${addressString} and community ${localityName}`
-      );
+      this.logger.debug(`Calling BC Geocoder with address ${addressString} and community ${localityName}`);
 
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString},${localityName},bc&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90`;
     } else if (localityName) {
@@ -34,27 +32,25 @@ export class BcGeoCoderService {
       const apiKey = process.env.BC_GEOCODER_API_URL;
 
       const headers = {
-        'apikey': apiKey,
+        apikey: apiKey,
         // Add any other headers you need here
       };
-  
+
       const config: AxiosRequestConfig = {
         headers,
         // Add any other Axios request configuration options here
       };
-      try
-      {
+      try {
         const { data } = await firstValueFrom(
           this.httpService.get<any>(apiUrl, config).pipe(
             catchError((error: AxiosError) => {
               this.logger.error(error.response);
               throw "Error getting BC Geocoder response";
-            })
-          )
+            }),
+          ),
         );
         return data;
-      }
-      catch{}
+      } catch {}
       return null;
     }
   }

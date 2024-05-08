@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Logger,
-  NotFoundException,
-  Param,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, Logger, NotFoundException, Param, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
 import { CodeTableService } from "./code-table.service";
@@ -29,10 +22,7 @@ export class CodeTableController {
 
   @Get(":table")
   @Roles(Role.COS_OFFICER)
-  async getCodeTableByName(
-    @Param("table") table: string,
-    @Token() token
-  ): Promise<BaseCodeTable[]> {
+  async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }
@@ -43,9 +33,7 @@ export class CodeTableController {
 
   @Get("/organization-by-agency/:agency")
   @Roles(Role.COS_OFFICER)
-  async getOrganizationsByAgency(
-    @Param("agency") agency: string
-  ): Promise<OrganizationCodeTable[]> {
+  async getOrganizationsByAgency(@Param("agency") agency: string): Promise<OrganizationCodeTable[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
     }
@@ -78,9 +66,7 @@ export class CodeTableController {
 
   @Get("/communities-by-agency/:agency")
   @Roles(Role.COS_OFFICER)
-  async getCommunitiesByAgency(
-    @Param("agency") agency: string
-  ): Promise<Sector[]> {
+  async getCommunitiesByAgency(@Param("agency") agency: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
     }
@@ -99,10 +85,7 @@ export class CaseManagementCodeTableController {
 
   @Get(":table")
   @Roles(Role.COS_OFFICER)
-  async getCodeTableByName(
-    @Param("table") table: string,
-    @Token() token
-  ): Promise<BaseCodeTable[]> {
+  async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     this.logger.debug("in case management: " + JSON.stringify(table));
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();

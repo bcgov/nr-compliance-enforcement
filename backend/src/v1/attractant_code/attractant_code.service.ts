@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAttractantCodeDto } from './dto/create-attractant_code.dto';
-import { UpdateAttractantCodeDto } from './dto/update-attractant_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AttractantCode } from './entities/attractant_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateAttractantCodeDto } from "./dto/create-attractant_code.dto";
+import { UpdateAttractantCodeDto } from "./dto/update-attractant_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AttractantCode } from "./entities/attractant_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class AttractantCodeService {
   constructor(
     @InjectRepository(AttractantCode)
-    private attractantCodeRepository: Repository<AttractantCode>
+    private attractantCodeRepository: Repository<AttractantCode>,
   ) {}
 
   async create(attractantCode: CreateAttractantCodeDto): Promise<AttractantCode> {
@@ -19,14 +19,11 @@ export class AttractantCodeService {
   }
 
   async findAll(): Promise<AttractantCode[]> {
-    return this.attractantCodeRepository.find(
-      {
-        order: 
-        {
-          display_order: "ASC"
-        }
-      }
-    );
+    return this.attractantCodeRepository.find({
+      order: {
+        display_order: "ASC",
+      },
+    });
   }
 
   async findOne(id: any): Promise<AttractantCode> {

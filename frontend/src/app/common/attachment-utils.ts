@@ -1,41 +1,31 @@
 import AttachmentEnum from "../constants/attachment-enum";
-import {
-  deleteAttachments,
-  getAttachments,
-  saveAttachments,
-} from "../store/reducers/attachments";
+import { deleteAttachments, getAttachments, saveAttachments } from "../store/reducers/attachments";
 import { COMSObject } from "../types/coms/object";
 
 // used to update the state of attachments that are to be added to a complaint
 export const handleAddAttachments = (
   setAttachmentsToAdd: React.Dispatch<React.SetStateAction<File[] | null>>,
-  selectedFiles: File[]
+  selectedFiles: File[],
 ) => {
-  setAttachmentsToAdd((prevFiles) =>
-    prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles
-  );
+  setAttachmentsToAdd((prevFiles) => (prevFiles ? [...prevFiles, ...selectedFiles] : selectedFiles));
 };
 
 // used to update the state of attachments that are to be deleted from a complaint
 export const handleDeleteAttachments = (
   attachmentsToAdd: File[] | null,
   setAttachmentsToAdd: React.Dispatch<React.SetStateAction<File[] | null>>,
-  setAttachmentsToDelete: React.Dispatch<
-    React.SetStateAction<COMSObject[] | null>
-  >,
-  fileToDelete: COMSObject
+  setAttachmentsToDelete: React.Dispatch<React.SetStateAction<COMSObject[] | null>>,
+  fileToDelete: COMSObject,
 ) => {
   if (!fileToDelete.pendingUpload) {
     // a user is wanting to delete a previously uploaded attachment
-    setAttachmentsToDelete((prevFiles) =>
-      prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]
-    );
+    setAttachmentsToDelete((prevFiles) => (prevFiles ? [...prevFiles, fileToDelete] : [fileToDelete]));
   } else if (attachmentsToAdd) {
     // a user has added an attachment and deleted it, before the complaint was saved.  Let's make sure this file isn't uploaded, so remove it from the "attachmentsToAdd" state
     setAttachmentsToAdd((prevAttachments) =>
       prevAttachments
         ? prevAttachments.filter((file) => decodeURIComponent(file.name) !== decodeURIComponent(fileToDelete.name))
-        : null
+        : null,
     );
   }
 };

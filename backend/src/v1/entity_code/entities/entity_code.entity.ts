@@ -39,9 +39,6 @@ export class EntityCode {
   @Column("timestamp without time zone", { name: "update_utc_timestamp" })
   updateUtcTimestamp: Date;
 
-  @OneToMany(
-    () => StagingMetadataMapping,
-    (stagingMetadataMapping) => stagingMetadataMapping.entityCode
-  )
+  @OneToMany(() => StagingMetadataMapping, (stagingMetadataMapping) => stagingMetadataMapping.entityCode)
   stagingMetadataMappings: StagingMetadataMapping[];
 }

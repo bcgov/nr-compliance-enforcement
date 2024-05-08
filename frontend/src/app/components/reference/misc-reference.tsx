@@ -16,15 +16,15 @@ export const MiscReference: FC = () => {
 
   return (
     <>
-      <Container fluid style={{ backgroundColor: "#F5F5F5" }}>
+      <Container
+        fluid
+        style={{ backgroundColor: "#F5F5F5" }}
+      >
         <ReferenceHeader title="B.C. Gov Design System: Misc" />
         <Row>
           <Col className="comp-margin-bottom-sm comp-padding-top-sm">
             <h2>Shadows</h2>
-            <p>
-              Shadows can be set using the following bootstrap classes. These
-              have been customized
-            </p>
+            <p>Shadows can be set using the following bootstrap classes. These have been customized</p>
             <Row>
               <Col>
                 <div
@@ -69,18 +69,20 @@ export const MiscReference: FC = () => {
           <Col className="comp-margin-bottom-sm">
             <h2>Borders</h2>
             <p>
-              Borders can set per orientation or on all sides by using the
-              following classes <code>.comp-border-$size </code> or{" "}
-              <code>.comp-border-$orientation-$size</code>
+              Borders can set per orientation or on all sides by using the following classes{" "}
+              <code>.comp-border-$size </code> or <code>.comp-border-$orientation-$size</code>
             </p>
             <p>
-              the foloowing units are defined in the <code>$border-units</code>{" "}
-              sass map <code>{JSON.stringify(borderUnits)}</code>
+              the foloowing units are defined in the <code>$border-units</code> sass map{" "}
+              <code>{JSON.stringify(borderUnits)}</code>
             </p>
             <Row>
               {orientations.map((orientation) => {
                 return (
-                  <Col md={3} className="comp-margin-bottom-sm ">
+                  <Col
+                    md={3}
+                    className="comp-margin-bottom-sm "
+                  >
                     {borderUnits.map(({ unit, size }, idx) => {
                       return (
                         <div

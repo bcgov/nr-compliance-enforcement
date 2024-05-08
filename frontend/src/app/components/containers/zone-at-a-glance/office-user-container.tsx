@@ -1,16 +1,14 @@
 import { FC } from "react";
 import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
 import { Row, Col } from "react-bootstrap";
+import config from "../../../../config";
 
 type Props = {
   hwcrOfficers: OfficerStats[];
   allegationOfficers: OfficerStats[];
 };
 
-export const OfficeUserContainer: FC<Props> = ({
-  hwcrOfficers,
-  allegationOfficers,
-}) => {
+export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficers }) => {
   if (
     hwcrOfficers !== undefined &&
     hwcrOfficers.length !== 0 &&
@@ -31,8 +29,7 @@ export const OfficeUserContainer: FC<Props> = ({
                   <div style={{ float: "left" }}>
                     <div
                       data-initials-zagview={
-                        item.name.split(" ")[0].substring(0, 1) +
-                        item.name.split(" ")[1].substring(0, 1)
+                        item.name.split(" ")[0].substring(0, 1) + item.name.split(" ")[1].substring(0, 1)
                       }
                       className="data-initials-zagview"
                     ></div>
@@ -44,9 +41,9 @@ export const OfficeUserContainer: FC<Props> = ({
                     >
                       {item.name}
                     </div>
-                    <div className="comp-zag-stats-view">
-                      Conservation Officer
-                    </div>
+                    {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                      <div className="comp-zag-stats-view">Conservation Officer</div>
+                    )}
                   </div>
                   <div className="clear-left-float"></div>
                 </Col>
@@ -58,24 +55,24 @@ export const OfficeUserContainer: FC<Props> = ({
                     ></div>
                   </div>
                   <div className="comp-zag-float-left">
-                    <div className="comp-zag-stats-title">
-                      Human Wildlife Conflict
-                    </div>
-                    <div className="comp-zag-stats-view">View Complaints</div>
+                    <div className="comp-zag-stats-title">Human Wildlife Conflict</div>
+                    {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                      <div className="comp-zag-stats-view">View Complaints</div>
+                    )}
                   </div>
                 </Col>
                 <Col className="comp-zag-office-user">
                   <div style={{ float: "left" }}>
                     <div
-                      data-initials-zagview-allegation={
-                        allegationOfficers[index].allegationAssigned
-                      }
+                      data-initials-zagview-allegation={allegationOfficers[index].allegationAssigned}
                       className="data-initials-zagview-allegation"
                     ></div>
                   </div>
                   <div className="comp-zag-float-left">
                     <div className="comp-zag-stats-title">Enforcement</div>
-                    <div className="comp-zag-stats-view">View Complaints</div>
+                    {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                      <div className="comp-zag-stats-view">View Complaints</div>
+                    )}
                   </div>
                 </Col>
               </Row>

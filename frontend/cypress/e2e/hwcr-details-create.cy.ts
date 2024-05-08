@@ -55,23 +55,15 @@ describe("Complaint Create Page spec - Create View", () => {
     // select complaint type
     cy.selectItemById("complaint-type-select-id", "Human Wildlife Conflict");
     cy.get("#caller-name-id").clear().type(createCallerInformation.name);
-    cy.get("#complaint-address-id")
-      .clear()
-      .type(createCallerInformation.address);
+    cy.get("#complaint-address-id").clear().type(createCallerInformation.address);
     cy.get("#complaint-email-id").clear().type(createCallerInformation.email);
 
     cy.get("#caller-primary-phone-id").click({ force: true });
     cy.get("#caller-primary-phone-id").clear();
-    cy.get("#caller-primary-phone-id").typeAndTriggerChange(
-      createCallerInformation.phoneInput,
-    );
+    cy.get("#caller-primary-phone-id").typeAndTriggerChange(createCallerInformation.phoneInput);
 
-    cy.get("#caller-info-secondary-phone-id")
-      .clear()
-      .typeAndTriggerChange(createCallerInformation.secondaryInput);
-    cy.get("#caller-info-alternate-phone-id")
-      .clear()
-      .typeAndTriggerChange(createCallerInformation.alternateInput);
+    cy.get("#caller-info-secondary-phone-id").clear().typeAndTriggerChange(createCallerInformation.secondaryInput);
+    cy.get("#caller-info-alternate-phone-id").clear().typeAndTriggerChange(createCallerInformation.alternateInput);
 
     cy.selectItemById("reported-select-id", createCallerInformation.reported);
 
@@ -84,32 +76,18 @@ describe("Complaint Create Page spec - Create View", () => {
       .clear()
       .type(createCallDetails.locationDescription, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
-    cy.get("#complaint-description-textarea-id")
-      .clear()
-      .type(createCallDetails.description, { delay: 0 });
+    cy.get("#complaint-description-textarea-id").clear().type(createCallDetails.description, { delay: 0 });
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
-    cy.enterDateTimeInDatePicker("complaint-incident-time","01","13","45");
+    cy.enterDateTimeInDatePicker("complaint-incident-time", "01", "13", "45");
 
-    cy.selectItemById(
-      "attractants-select-id",
-      createCallDetails.attractants[0],
-    );
-    cy.selectItemById(
-      "attractants-select-id",
-      createCallDetails.attractants[1],
-    );
-    cy.selectItemById(
-      "attractants-select-id",
-      createCallDetails.attractants[2],
-    );
+    cy.selectItemById("attractants-select-id", createCallDetails.attractants[0]);
+    cy.selectItemById("attractants-select-id", createCallDetails.attractants[1]);
+    cy.selectItemById("attractants-select-id", createCallDetails.attractants[2]);
 
     cy.selectItemById("community-select-id", createCallDetails.community);
 
-    cy.selectItemById(
-      "nature-of-complaint-select-id",
-      createCallDetails.natureOfComplaint,
-    );
+    cy.selectItemById("nature-of-complaint-select-id", createCallDetails.natureOfComplaint);
 
     cy.selectItemById("species-select-id", createCallDetails.species);
 
@@ -120,19 +98,11 @@ describe("Complaint Create Page spec - Create View", () => {
     //start verifying changes are created
     cy.waitForSpinner();
 
-    cy.get('div[id="comp-details-name"]').contains(
-      createCallerInformation.name,
-    );
-    cy.get('div[id="comp-details-address"]').contains(
-      createCallerInformation.address,
-    );
-    cy.get('div[id="comp-details-email"]').contains(
-      createCallerInformation.email,
-    );
+    cy.get('div[id="comp-details-name"]').contains(createCallerInformation.name);
+    cy.get('div[id="comp-details-address"]').contains(createCallerInformation.address);
+    cy.get('div[id="comp-details-email"]').contains(createCallerInformation.email);
 
-    cy.get('div[id="comp-details-phone"]').contains(
-      createCallerInformation.phone,
-    );
+    cy.get('div[id="comp-details-phone"]').contains(createCallerInformation.phone);
     cy.get('div[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(createCallerInformation.secondary);
     });
@@ -140,39 +110,22 @@ describe("Complaint Create Page spec - Create View", () => {
       expect($el.text().trim()).equal(createCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-reported"]').contains(
-      createCallerInformation.reported,
-    );
+    cy.get('div[id="comp-details-reported"]').contains(createCallerInformation.reported);
 
-    cy.get('div[id="comp-details-location"]').contains(
-      createCallDetails.location,
-    );
+    cy.get('div[id="comp-details-location"]').contains(createCallDetails.location);
 
-    cy.get('p[id="comp-details-location-description"]').should(
-      "have.text",
-      createCallDetails.locationDescription,
-    );
+    cy.get('p[id="comp-details-location-description"]').should("have.text", createCallDetails.locationDescription);
 
-    cy.get('div[id="call-details-x-coordinate-div"]').contains(
-      createCallDetails.xCoord
-    );
+    cy.get('div[id="call-details-x-coordinate-div"]').contains(createCallDetails.xCoord);
 
-    cy.get('div[id="call-details-y-coordinate-div"]').contains(
-      createCallDetails.yCoord
-    );
+    cy.get('div[id="call-details-y-coordinate-div"]').contains(createCallDetails.yCoord);
 
     //Commented out until COMPENF-843 is Fixed
-    cy.get('div[id="complaint-incident-date-time"]').contains(
-      createCallDetails.incidentDateDay
-    );
+    cy.get('div[id="complaint-incident-date-time"]').contains(createCallDetails.incidentDateDay);
 
-    cy.get('p[id="comp-details-description"]').contains(
-      createCallDetails.description,
-    );
+    cy.get('p[id="comp-details-description"]').contains(createCallDetails.description);
 
-    cy.get('span[id="comp-details-community"]').contains(
-      createCallDetails.community,
-    );
+    cy.get('span[id="comp-details-community"]').contains(createCallDetails.community);
 
     cy.get('span[id="comp-details-office"]').contains(createCallDetails.office);
 

@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ReportedByCodeService } from './reported_by_code.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { ReportedByCode } from './entities/reported_by_code.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ReportedByCodeService } from "./reported_by_code.service";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { ReportedByCode } from "./entities/reported_by_code.entity";
 
-describe('ReportedByCodeService', () => {
+describe("ReportedByCodeService", () => {
   let service: ReportedByCodeService;
 
   beforeEach(async () => {
@@ -12,16 +12,15 @@ describe('ReportedByCodeService', () => {
         ReportedByCodeService,
         {
           provide: getRepositoryToken(ReportedByCode),
-          useValue: {
-
-          },
-        },],
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<ReportedByCodeService>(ReportedByCodeService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

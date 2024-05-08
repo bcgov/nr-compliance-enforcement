@@ -10,10 +10,10 @@ export interface CasesState {
   note: SupplementalNote;
   isReviewRequired: boolean;
   reviewComplete?: {
-    actor: string
-    date: Date
-    actionCode: string
-    actionId?: string
+    actor: string;
+    date: Date;
+    actionCode: string;
+    actionId?: string;
   } | null;
   equipment: EquipmentDetailsDto[];
 }

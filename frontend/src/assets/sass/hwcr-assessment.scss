@@ -2,14 +2,13 @@
 @import "./complaint.scss";
 
 .assessment-details-label-input-pair {
-    @extend .comp-details-label-input-pair;
-    align-items: baseline;
-    margin: 16px 0px;
-    min-height: 0;
-  }
+  @extend .comp-details-label-input-pair;
+  align-items: baseline;
+  margin: 16px 0px;
+  min-height: 0;
+}
 
-  .assessment-details-edit-column {
-    @extend .comp-details-edit-column;
-    margin-right: 0px;
-  }
-  
+.assessment-details-edit-column {
+  @extend .comp-details-edit-column;
+  margin-right: 0px;
+}

@@ -5,7 +5,7 @@ export const AddEquipment = {
       ...state,
       app: {
         profile: {
-          personGuid: ""
+          personGuid: "",
         },
       },
       cases: {

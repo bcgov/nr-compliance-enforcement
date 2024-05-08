@@ -16,18 +16,12 @@ export const ZoneAtAGlance: FC = () => {
   const dispatch = useAppDispatch();
   const currentZone = useAppSelector<string>(profileZone);
   const hwcrOpenComplaints = useAppSelector(selectWildlifeZagOpenComplaints);
-  const allegationOpenComplaints = useAppSelector(
-    selectAllegationZagOpenComplaints,
-  );
+  const allegationOpenComplaints = useAppSelector(selectAllegationZagOpenComplaints);
 
   useEffect(() => {
     if (currentZone) {
-      dispatch(
-        getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT),
-      );
-      dispatch(
-        getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT),
-      );
+      dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT));
+      dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT));
     }
   }, [dispatch, currentZone]);
 
@@ -38,7 +32,12 @@ export const ZoneAtAGlance: FC = () => {
       <div className="comp-sub-header">Zone At a Glance</div>
       <div className="comp-zag-container">
         <div className="comp-zag-banner">
-          <img src={bannerSource} alt="" width="355px" height="176px" />
+          <img
+            src={bannerSource}
+            alt=""
+            width="355px"
+            height="176px"
+          />
         </div>
         <div className="comp-zag-charts comp-padding-left-md">
           <h6 className="comp-margin-top-xs">Open Complaints</h6>

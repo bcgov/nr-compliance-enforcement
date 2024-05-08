@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateViolationCodeDto } from './dto/create-violation_code.dto';
-import { UpdateViolationCodeDto } from './dto/update-violation_code.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ViolationCode } from './entities/violation_code.entity';
-import { Repository } from 'typeorm';
+import { Injectable } from "@nestjs/common";
+import { CreateViolationCodeDto } from "./dto/create-violation_code.dto";
+import { UpdateViolationCodeDto } from "./dto/update-violation_code.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ViolationCode } from "./entities/violation_code.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class ViolationCodeService {
   constructor(
     @InjectRepository(ViolationCode)
-    private violationCodeRepository: Repository<ViolationCode>
+    private violationCodeRepository: Repository<ViolationCode>,
   ) {}
 
   async create(violation_code: CreateViolationCodeDto): Promise<ViolationCode> {
@@ -23,7 +23,7 @@ export class ViolationCodeService {
   }
 
   async findOne(id: string): Promise<ViolationCode> {
-    return this.violationCodeRepository.findOneByOrFail({violation_code: id});
+    return this.violationCodeRepository.findOneByOrFail({ violation_code: id });
   }
 
   async update(violation_code: string, updateViolationCodeDto: UpdateViolationCodeDto): Promise<ViolationCode> {

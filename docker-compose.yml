@@ -16,10 +16,10 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-        test: ["CMD-SHELL", "pg_isready"]
-        interval: 15s
-        timeout: 5s
-        retries: 3
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     volumes:
       - /pgdata
   database-migrations:
@@ -53,7 +53,7 @@ services:
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: postgres
     hostname: backend
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
       - database
     ports:
@@ -78,7 +78,7 @@ services:
       NODE_ENV: development
       REACT_APP_API_URL: http://localhost:3001
     hostname: frontend
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
       - backend
     ports:
@@ -89,13 +89,16 @@ services:
     user: root
     working_dir: "/app"
   nats:
-    image: nats:latest  # Using the latest official NATS image
+    image: nats:latest # Using the latest official NATS image
+    command:
+      - "-js"
+      - "-DVV"
     ports:
-      - "4222:4222"  # Default NATS client port
-      - "8222:8222"  # NATS monitoring port
+      - "4222:4222" # Default NATS client port
+      - "8222:8222" # NATS monitoring port
     environment:
-      - NATS_USER=natsuser  # this is just for the developer instance of nats
-      - NATS_PASSWORD=natspass  # this is just for the developer instance of nats
+      - NATS_USER=natsuser # this is just for the developer instance of nats
+      - NATS_PASSWORD=natspass # this is just for the developer instance of nats
   webeoc:
     container_name: webeoc
     entrypoint:
@@ -103,7 +106,7 @@ services:
       - "-c"
       - "npm i && npm run start"
     hostname: webeoc
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:74af9dc2b620022c77fcd712b811f64a03c1444ff1e9b9596a242b2edf3cf96f
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
       - nats
     ports:

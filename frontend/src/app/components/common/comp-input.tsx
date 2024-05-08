@@ -77,15 +77,33 @@ export const CompInput: FC<Props> = ({
   };
 
   if (type === "text") {
-    Component = <textarea {...props} cols={cols} rows={rows} />;
+    Component = (
+      <textarea
+        {...props}
+        cols={cols}
+        rows={rows}
+      />
+    );
   } else {
-    Component = <input {...props} type={type} inputMode="numeric" />;
+    Component = (
+      <input
+        {...props}
+        type={type}
+        inputMode="numeric"
+      />
+    );
   }
 
   return (
-    <div className={formClass} id={divid}>
+    <div
+      className={formClass}
+      id={divid}
+    >
       {label && (
-        <label className="text-box" htmlFor={id}>
+        <label
+          className="text-box"
+          htmlFor={id}
+        >
           {label}
         </label>
       )}

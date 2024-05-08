@@ -69,7 +69,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
     if (validateInput()) {
       dispatch(upsertNote(id, currentNotes)).then((result) => {
         if (result === "success") {
-          dispatch(getCaseFile(id))
+          dispatch(getCaseFile(id));
           setShowInput(false);
         }
       });

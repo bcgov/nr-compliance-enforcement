@@ -72,12 +72,7 @@ describe("Testing: OfficeService", () => {
     const item = results[1];
     const {
       office_guid: id,
-      cos_geo_org_unit: {
-        zone_code,
-        region_code,
-        office_location_code: officeLocation,
-        area_code,
-      },
+      cos_geo_org_unit: { zone_code, region_code, office_location_code: officeLocation, area_code },
       officers,
     } = item;
 
@@ -128,8 +123,7 @@ describe("Testing: OfficeService", () => {
     let response = await service.create(payload);
     expect(response).not.toBe(null);
 
-    const { create_user_id, update_user_id, agency_code, office_guid } =
-      response;
+    const { create_user_id, update_user_id, agency_code, office_guid } = response;
     expect(create_user_id).toBe("TEST");
     expect(update_user_id).toBe("TEST");
     expect(agency_code).toBe("COS");

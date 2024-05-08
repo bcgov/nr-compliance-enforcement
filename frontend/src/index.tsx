@@ -10,6 +10,7 @@ import "./assets/sass/app.scss";
 
 import reportWebVitals from "./reportWebVitals";
 import { PersistGate } from "redux-persist/integration/react";
+import { ErrorBoundaryContext } from "./app/hooks/error-boundary";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -17,11 +18,16 @@ const root = createRoot(container);
 const onAuthenticatedCallback = () =>
   root.render(
     <StrictMode>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
+      <ErrorBoundaryContext>
+        <Provider store={store}>
+          <PersistGate
+            loading={null}
+            persistor={persistor}
+          >
+            <App />
+          </PersistGate>
+        </Provider>
+      </ErrorBoundaryContext>
     </StrictMode>,
   );
 

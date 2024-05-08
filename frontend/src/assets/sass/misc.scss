@@ -121,9 +121,9 @@
   display: inline-block;
   border-radius: 50%;
   vertical-align: middle;
-  width: 35px;
-  height: 35px;
-  line-height: 35px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
   font-size: 16px;
   text-align: center;
   margin-right: 8px;
@@ -244,8 +244,8 @@
   margin: 10px;
   position: absolute;
 }
-  
-.datepicker-disabled > .react-datepicker__view-calendar-icon input{
+
+.datepicker-disabled > .react-datepicker__view-calendar-icon input {
   background-color: hsl(0, 0%, 95%);
   border-color: hwb(0 90% 10%);
   color: hsl(0, 0%, 60%);

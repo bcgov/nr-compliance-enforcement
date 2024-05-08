@@ -118,8 +118,8 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: NODE_TLS_REJECT_UNAUTHORIZED 
-                  value: '0'
+                - name: NODE_TLS_REJECT_UNAUTHORIZED
+                  value: "0"
                 - name: POSTGRESQL_HOST
                   value: ${NAME}-${ZONE}-database
                 - name: POSTGRESQL_DATABASE
@@ -179,7 +179,7 @@ objects:
                   memory: ${MEMORY_LIMIT}
               readinessProbe:
                 httpGet:
-                  path: /
+                  path: /api
                   port: 3000
                   scheme: HTTP
                 initialDelaySeconds: 60
@@ -189,7 +189,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 3
                 httpGet:
-                  path: /
+                  path: /api
                   port: 3000
                   scheme: HTTP
                 initialDelaySeconds: 60
@@ -221,7 +221,7 @@ objects:
                   memory: ${MEMORY_REQUEST}
                 limits:
                   cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}      
+                  memory: ${MEMORY_LIMIT}
   - apiVersion: v1
     kind: Service
     metadata:
@@ -236,23 +236,7 @@ objects:
           targetPort: 3000
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
-      port:
-        targetPort: 3000-tcp
-      to:
-        kind: Service
-        name: ${NAME}-${ZONE}-${COMPONENT}
-        weight: 100
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect
+
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:

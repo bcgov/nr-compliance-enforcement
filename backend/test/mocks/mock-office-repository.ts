@@ -10,10 +10,61 @@ const simpleCollection = [
 ];
 
 const collection = [
-  { "office_guid": "ee09bf4d-e5a1-4fb8-9012-c192692dd1bd", "cos_geo_org_unit": { "zone_code": "NCHKOLKS", "region_code": "OMINECA", "region_name": "Omineca", "zone_name": "Nechako-Lakes", "office_location_code": "BURNSLK", "office_location_name": "Burns Lake", "area_code": "WISTARIA", "area_name": "Wistaria" }, "officers": [ {  "officer_guid": "af70aeb7-2a6b-45a6-b722-926ebec005b5",  "user_id": "RGRIMES",  "auth_user_guid": null,  "person_guid": { "person_guid": "1a9a91e1-143d-4b54-82d4-c08137d929f7", "first_name": "Rick", "middle_name_1": null, "middle_name_2": null, "last_name": "Grimes",  } } ]  },
-  { "office_guid": "5128179c-f622-499b-b8e5-b39199081f22", "cos_geo_org_unit": { "zone_code": "NCHKOLKS", "region_code": "OMINECA", "region_name": "Omineca", "zone_name": "Nechako-Lakes", "office_location_code": "VNDHF", "office_location_name": "Vanderhoof", "area_code": "VANDERHF", "area_name": "Vanderhoof" }, "officers": [ {  "officer_guid": "7fe1cc4e-fc73-412e-9c0e-3f3fec364aac",  "user_id": "HOLSON",  "auth_user_guid": "92a81ac4-d767-414f-a759-b0be2373a072",  "person_guid": { "person_guid": "7430e049-ac60-441c-a873-ee826a0b0bfc", "first_name": "Harry", "middle_name_1": null, "middle_name_2": null, "last_name": "Olson",  } } ]  }
-]
-
+  {
+    office_guid: "ee09bf4d-e5a1-4fb8-9012-c192692dd1bd",
+    cos_geo_org_unit: {
+      zone_code: "NCHKOLKS",
+      region_code: "OMINECA",
+      region_name: "Omineca",
+      zone_name: "Nechako-Lakes",
+      office_location_code: "BURNSLK",
+      office_location_name: "Burns Lake",
+      area_code: "WISTARIA",
+      area_name: "Wistaria",
+    },
+    officers: [
+      {
+        officer_guid: "af70aeb7-2a6b-45a6-b722-926ebec005b5",
+        user_id: "RGRIMES",
+        auth_user_guid: null,
+        person_guid: {
+          person_guid: "1a9a91e1-143d-4b54-82d4-c08137d929f7",
+          first_name: "Rick",
+          middle_name_1: null,
+          middle_name_2: null,
+          last_name: "Grimes",
+        },
+      },
+    ],
+  },
+  {
+    office_guid: "5128179c-f622-499b-b8e5-b39199081f22",
+    cos_geo_org_unit: {
+      zone_code: "NCHKOLKS",
+      region_code: "OMINECA",
+      region_name: "Omineca",
+      zone_name: "Nechako-Lakes",
+      office_location_code: "VNDHF",
+      office_location_name: "Vanderhoof",
+      area_code: "VANDERHF",
+      area_name: "Vanderhoof",
+    },
+    officers: [
+      {
+        officer_guid: "7fe1cc4e-fc73-412e-9c0e-3f3fec364aac",
+        user_id: "HOLSON",
+        auth_user_guid: "92a81ac4-d767-414f-a759-b0be2373a072",
+        person_guid: {
+          person_guid: "7430e049-ac60-441c-a873-ee826a0b0bfc",
+          first_name: "Harry",
+          middle_name_1: null,
+          middle_name_2: null,
+          last_name: "Olson",
+        },
+      },
+    ],
+  },
+];
 
 const simpleSingle = (idx: number = 0) => {
   return simpleCollection[idx];

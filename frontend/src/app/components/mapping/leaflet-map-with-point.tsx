@@ -8,6 +8,7 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Leaflet from "leaflet";
 import NonDismissibleAlert from "../common/non-dismissible-alert";
+import { MapGestureHandler } from "./map-gesture-handler";
 
 type Props = {
   coordinates?: { lat: number; lng: number };
@@ -20,19 +21,12 @@ type Props = {
  * Renders a map with a marker at the supplied location
  *
  */
-const LeafletMapWithPoint: FC<Props> = ({
-  coordinates,
-  draggable,
-  onMarkerMove,
-  hideMarker,
-}) => {
-  const iconHTML = ReactDOMServer.renderToString(
-    <FontAwesomeIcon icon={faMapMarkerAlt} />,
-  );
+const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, hideMarker }) => {
+  const iconHTML = ReactDOMServer.renderToString(<FontAwesomeIcon icon={faMapMarkerAlt} />);
   const [markerPosition, setMarkerPosition] = useState<{
     lat: number;
     lng: number;
-  }>({lat: 0, lng: 0});
+  }>({ lat: 0, lng: 0 });
 
   // update the marker poisition when the coordinates are updated (occurs when geocoded).
   // but don't update them if the marker position has already been set manually
@@ -75,27 +69,27 @@ const LeafletMapWithPoint: FC<Props> = ({
 
   return (
     <>
-    {hideMarker && (
-      <NonDismissibleAlert/>
-    )}
-    <MapContainer
-      id="map"
-      center={markerPosition}
-      zoom={12}
-      style={{ height: "400px", width: "100%" }}
-      className="map-container"
-    >
-      <Centerer />
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {!hideMarker && (
-      <Marker
-        data-testid="complaint-location-marker"
-        position={markerPosition}
-        icon={customMarkerIcon}
-        draggable={draggable}
-        eventHandlers={{ dragend: handleMarkerDragEnd }}
-      ></Marker>)}
-    </MapContainer>
+      {hideMarker && <NonDismissibleAlert />}
+      <MapContainer
+        id="map"
+        center={markerPosition}
+        zoom={12}
+        style={{ height: "400px", width: "100%" }}
+        className="map-container"
+      >
+        <MapGestureHandler />
+        <Centerer />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        {!hideMarker && (
+          <Marker
+            data-testid="complaint-location-marker"
+            position={markerPosition}
+            icon={customMarkerIcon}
+            draggable={draggable}
+            eventHandlers={{ dragend: handleMarkerDragEnd }}
+          ></Marker>
+        )}
+      </MapContainer>
     </>
   );
 };
