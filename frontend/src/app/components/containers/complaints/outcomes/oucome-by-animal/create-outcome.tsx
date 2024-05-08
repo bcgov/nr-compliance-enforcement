@@ -24,6 +24,7 @@ import { DrugUsed } from "./drug-used";
 import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
+import { v4 as uuidv4 } from "uuid";
 
 type props = {
   index: number;
@@ -156,6 +157,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
               update={updateEarTag}
               remove={removeEarTag}
               ref={(el) => (earTagRefs.current[idx] = el)}
+              // ref={(el) => earTagRefs.current.push(el)}
             />
           );
         });
@@ -166,28 +168,29 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     const { tags } = data;
 
     if (tags.length < 2) {
-      let id = tags.length + 1;
+      let id = uuidv4().toString();
 
       const update = !from(tags).any()
-        ? [{ id, ear: "L", number: "" }]
-        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", number: "" }];
+        ? [{ id, ear: "L", identifier: "" }]
+        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", identifier: "" }];
 
       updateModel("tags", update);
     }
   };
 
-  const removeEarTag = (id: number) => {
+  const removeEarTag = (id: string) => {
     const { tags: source } = data;
     const items = source.filter((tag) => id !== tag.id);
-    let updatedId = 0;
+    const refs = earTagRefs.current.filter((r) => r.id !== null && r.id !== id);
 
     const update = from(items)
       .orderBy((item) => item.id)
       .toArray()
       .map((item) => {
-        updatedId = updatedId + 1;
-        return { ...item, id: updatedId };
+        return { ...item, id: uuidv4().toString() };
       });
+
+    earTagRefs.current = refs;
 
     updateModel("tags", update);
   };
@@ -240,7 +243,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const addDrugUsed = () => {
     const { drugs } = data;
 
-    let id = drugs.length + 1;
+    let id = uuidv4().toString();
 
     const update = [
       ...drugs,
@@ -260,18 +263,16 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     updateModel("drugs", update);
   };
 
-  const removeDrugUsed = (id: number) => {
+  const removeDrugUsed = (id: string) => {
     const { drugs } = data;
 
     const items = drugs.filter((drug) => id !== drug.id);
-    let updatedId = 0;
 
     const update = from(items)
       .orderBy((item) => item.id)
       .toArray()
       .map((item) => {
-        updatedId = updatedId + 1;
-        return { ...item, id: updatedId };
+        return { ...item, id: uuidv4().toString() };
       });
 
     updateModel("drugs", update);
@@ -284,6 +285,8 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
         });
       }
     }
+
+    earTagRefs.current = earTagRefs.current.filter((item) => item.id === id);
   };
 
   const updateDrugUsed = (drug: DrugUsedV2) => {

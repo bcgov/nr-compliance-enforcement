@@ -6,7 +6,7 @@ export interface AnimalTag {
 }
 
 export interface AnimalTagV2 {
-  id: number;
+  id: string;
   ear: string;
-  number: string;
+  identifier: string;
 }

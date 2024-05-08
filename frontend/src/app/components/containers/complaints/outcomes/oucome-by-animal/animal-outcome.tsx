@@ -172,16 +172,16 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }
             </div>
           </div>
 
-          {from(data?.tags).any() && (
+          {data?.tags && from(data?.tags).any() && (
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
                 <label className="comp-details-inner-content-label top">Ear Tag{data?.tags.length > 1 && "s"}</label>
 
                 <div className="comp-animal-outcome-fill-space">
                   <ul className="comp-ear-tag-list">
-                    {data?.tags.map(({ id, number, ear }) => (
+                    {data?.tags.map(({ id, identifier, ear }) => (
                       <li key={id}>
-                        {number} {ear === "L" ? leftEar?.label : rightEar?.label} side
+                        {identifier} {ear === "L" ? leftEar?.label : rightEar?.label} side
                       </li>
                     ))}
                   </ul>
@@ -190,7 +190,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }
             </div>
           )}
 
-          {from(data?.drugs).any() && (
+          {data?.drugs && from(data?.drugs).any() && (
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
                 <label className="comp-details-inner-content-label top">{`Drug${data?.drugs.length}s`}</label>

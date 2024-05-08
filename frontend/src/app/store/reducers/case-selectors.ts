@@ -1,8 +1,13 @@
+import { from } from "linq-to-typescript";
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
+import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { Assessment } from "../../types/outcomes/assessment";
 import { Prevention } from "../../types/outcomes/prevention";
 import { SupplementalNote } from "../../types/outcomes/supplemental-note";
+import { AnimalOutcomeSubject } from "../../types/state/cases-state";
 import { RootState } from "../store";
+import { CASE_ACTION_CODE, CASE_ACTION_TYPE } from "../../constants/case_actions";
+import { DrugAuthorization } from "../../types/app/complaints/outcomes/wildlife/drug-authorization";
 
 //-- Case file selectors
 export const selectAssessment = (state: RootState): Assessment => {
@@ -59,4 +64,80 @@ export const selectNotesOfficer = (state: RootState) => {
 export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
   const { cases } = state;
   return cases.equipment;
+};
+
+export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> => {
+  const {
+    cases: { subject: subjects },
+  } = state;
+
+  if (subjects && from(subjects).any()) {
+    //-- this will filter out all animal-outcome-subjets from the subject collection
+    const animals = subjects.filter((subject): subject is AnimalOutcomeSubject => "species" in subject);
+
+    //-- map the animals to an animal-outcome-v2 collection
+    const results = animals.map((item) => {
+      const {
+        id,
+        species,
+        sex,
+        age,
+        categoryLevel: threatLevel,
+        conflictHistory,
+        outcome,
+        tags,
+        drugs,
+        actions,
+      } = item;
+
+      //-- map or emtpy out the drugs-used and ear-tags collections
+      const _tags = tags && from(tags).any() ? tags : [];
+      const _drugs = drugs && from(drugs).any() ? drugs : [];
+
+      let record: AnimalOutcomeV2 = {
+        id,
+        species,
+        sex,
+        age,
+        threatLevel,
+        conflictHistory,
+        outcome,
+        tags: _tags,
+        drugs: _drugs,
+      };
+
+      //-- pull the drug-authroized-by and officer/date from the actions
+      if (actions && from(actions).any()) {
+        //-- drug-authorized-by
+        if (from(actions).any((r) => r.actionCode === CASE_ACTION_CODE.ADMNSTRDRG)) {
+          const item = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.ADMNSTRDRG);
+          const drugAuthorization = {
+            officer: item?.actor ?? "",
+            date: new Date(item?.date ?? ""),
+          };
+
+          record = { ...record, drugAuthorization };
+        }
+
+        //-- officer / date outcome added
+        if (from(actions).any((r) => r.actionCode === CASE_ACTION_CODE.RECOUTCOME)) {
+          const item = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.RECOUTCOME);
+
+          if (item?.actor) {
+            record = { ...record, officer: item?.actor };
+          }
+          if (item?.date) {
+            record = { ...record, date: new Date(item?.date ?? "") };
+          }
+        }
+      }
+
+      return record;
+    });
+
+    console.log("RESULTS: ", results);
+    return results;
+  }
+
+  return [];
 };

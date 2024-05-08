@@ -39,16 +39,16 @@ export interface AnimalOutcomeV2 {
   id: string;
 
   species: string;
-  sex: string;
-  age: string;
-  threatLevel: string;
-  conflictHistory: string;
+  sex?: string;
+  age?: string;
+  threatLevel?: string;
+  conflictHistory?: string;
 
   tags: Array<AnimalTagV2>;
   drugs: Array<DrugUsedV2>;
   drugAuthorization?: DrugAuthorization;
 
-  outcome: string;
-  officer: string;
+  outcome?: string;
+  officer?: string;
   date?: Date;
 }

@@ -15,7 +15,7 @@ type refProps = {
 };
 
 type props = {
-  id: number;
+  id: string;
 
   vial: string;
   drug: string;

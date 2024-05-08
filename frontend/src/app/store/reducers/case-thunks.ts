@@ -34,7 +34,6 @@ import { CreateEquipmentInput } from "../../types/app/case-files/equipment-input
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
-import KeyValuePair from "../../types/app/key-value-pair";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { from } from "linq-to-typescript";
 import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
@@ -774,7 +773,7 @@ export const createAnimalOutcome =
 
     //-- add an action if there is an outcome with officer
     if (outcome && date) {
-      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer, date }];
+      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
     }
 
     //-- add an action if there are any drugs used
@@ -784,8 +783,8 @@ export const createAnimalOutcome =
     }
 
     //-- convert eartags and drugs to input types
-    const earTags = tags.map(({ ear, number }) => {
-      let record: EarTagInput = { ear, identifier: number };
+    const earTags = tags.map(({ ear, identifier }) => {
+      let record: EarTagInput = { ear, identifier };
       return record;
     });
 

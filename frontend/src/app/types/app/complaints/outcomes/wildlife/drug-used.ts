@@ -20,7 +20,7 @@ export interface DrugUsed {
 }
 
 export interface DrugUsedV2 {
-  id: number;
+  id: string;
 
   vial: string;
   drug: string;

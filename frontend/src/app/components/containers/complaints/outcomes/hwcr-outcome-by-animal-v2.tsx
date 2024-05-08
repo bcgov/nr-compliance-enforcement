@@ -11,6 +11,7 @@ import { AnimalOutcome } from "./oucome-by-animal/animal-outcome";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
 import { createAnimalOutcome, getCaseFile } from "../../../../store/reducers/case-thunks";
+import { selectAnimalOutcomes } from "../../../../store/reducers/case-selectors";
 
 type props = {};
 
@@ -25,6 +26,8 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const dispatch = useAppDispatch();
 
   const complaint = useAppSelector(selectComplaint);
+  const subjects = useAppSelector(selectAnimalOutcomes);
+
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
 
   //-- if there's an assigned officer pull them off
@@ -74,6 +77,12 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
       }
     }
   }, [complaint]);
+
+  useEffect(() => {
+    if (subjects && from(subjects).any()) {
+      setOutcomes(subjects);
+    }
+  }, [subjects]);
 
   //-- render a list of outcomes
   const renderOutcomeList = () => {

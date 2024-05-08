@@ -6,11 +6,12 @@ import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectEarDropdown } from "../../../../../store/reducers/code-table";
+import { REQUIRED } from "../../../../../constants/general";
 
 type props = {
-  id: number;
+  id: string;
   ear: string;
-  number: string;
+  identifier: string;
   update: Function;
   remove: Function;
 };
@@ -18,7 +19,7 @@ type props = {
 export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   const ears = useAppSelector(selectEarDropdown);
 
-  const { id, ear, number, update, remove } = props;
+  const { id, ear, identifier, update, remove } = props;
 
   const [error, setError] = useState("");
 
@@ -28,19 +29,20 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   let selectedEar = ear === "L" ? leftEar : rightEar;
 
   const updateModel = (property: string, value: string | undefined) => {
-    const source = { id, ear, number };
+    const source = { id, ear, identifier };
     const updatedTag = { ...source, [property]: value };
     update(updatedTag, property);
   };
 
   const isValid = (): boolean => {
-    let error = !number ? "Required" : "";
+    let error = !identifier ? REQUIRED : "";
     setError(error);
 
-    return number !== "";
+    return identifier !== "";
   };
   useImperativeHandle(ref, () => {
     return {
+      id,
       isValid,
     };
   });
@@ -61,7 +63,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
-            value={number}
+            value={identifier}
             error={error}
             maxLength={7}
             onChange={(evt: any) => {
@@ -70,7 +72,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
               } = evt;
 
               if (value.length <= 6) {
-                updateModel("number", value);
+                updateModel("identifier", value);
               }
             }}
           />
