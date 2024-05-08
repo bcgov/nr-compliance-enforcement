@@ -7,6 +7,7 @@ import * as bodyParser from "body-parser";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: customLogger });
+  app.setGlobalPrefix("api");
   app.enableVersioning({
     type: VersioningType.URI,
   });
@@ -24,7 +25,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api", app, document);
+  SwaggerModule.setup("/api/docs", app, document);
 
   await app.listen(parseInt(process.env.PORT, 10) || 3000);
 }
