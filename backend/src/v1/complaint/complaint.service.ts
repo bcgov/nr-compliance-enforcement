@@ -553,9 +553,11 @@ export class ComplaintService {
 
   private _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
     try {
+      const agency = await this._getAgencyByUser();
       const officeGuidQuery = await this._officeRepository
         .createQueryBuilder("office")
-        .where("office.geo_organization_unit_code = :code", { code });
+        .where("office.geo_organization_unit_code = :code", { code })
+        .andWhere("office.agency_code = :agency", { agency: agency.agency_code });
 
       const office = await officeGuidQuery.getOne();
 
