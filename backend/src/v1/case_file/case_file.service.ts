@@ -10,6 +10,7 @@ import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supple
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete-equipment-dto";
 import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -325,7 +326,17 @@ export class CaseFileService {
     throw new Error("Method not implemented.");
   };
 
-  deleteWildlife = async (token: any): Promise<CaseFileDto> => {
-    throw new Error("Method not implemented.");
+  deleteWildlife = async (token: any, model: DeleteWildlifeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation DeleteWildlife($input: DeleteWildlifeInput!) {
+        deleteWildlife(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.deleteWildlife;
   };
 }

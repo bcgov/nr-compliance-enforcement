@@ -102,7 +102,14 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }
         setOutcomeOfficer(selected.label);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ages, conflictHistories, data, outcomes, sexes, speciesList, threatLevels]);
+
+  //-- events
+  const handleDeleteItem = () => {
+    const { id } = data;
+    remove(id);
+  };
 
   return (
     <div className="comp-animal-outcome">
@@ -117,8 +124,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }
               style={{ marginRight: "15px" }}
               text="Delete"
               icon={BsTrash3}
-              // click={() => setShowModal(true)}
-              click={() => {}}
+              click={() => handleDeleteItem()}
             />
             <CompTextIconButton
               buttonClasses="button-text"

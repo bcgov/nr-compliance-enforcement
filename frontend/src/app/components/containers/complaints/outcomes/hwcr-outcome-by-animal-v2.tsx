@@ -12,6 +12,8 @@ import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
 import { createAnimalOutcome, getCaseFile } from "../../../../store/reducers/case-thunks";
 import { selectAnimalOutcomes } from "../../../../store/reducers/case-selectors";
+import { openModal } from "../../../../store/reducers/app";
+import { DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
 
 type props = {};
 
@@ -38,6 +40,25 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- for the selected complaint
   const [outcomes, setOutcomes] = useState<Array<AnimalOutcomeV2>>([]);
 
+  //-- modals
+  //-- delete animal outcome modal
+  const openDeleteAnimalOutcomeModal = (outcomeId: string) => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: DELETE_ANIMAL_OUTCOME,
+        data: {
+          caseFileId: id,
+          outcomeId, //-- this is the id of the animal outcome thats being deleted
+          title: "Delete Animal Outcome",
+          description: "All the data in this section will be lost.",
+          ok: "Yes, delete animal outcome",
+          cancel: "No, go back",
+        },
+      }),
+    );
+  };
+
   //-- crud events
 
   //-- save an item from the create-complaint component
@@ -57,8 +78,6 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const handleCancel = () => {
     setShowForm(false);
   };
-
-  const handleRemove = (id: string) => {};
 
   const [showForm, setShowForm] = useState(false);
 
@@ -81,6 +100,8 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   useEffect(() => {
     if (subjects && from(subjects).any()) {
       setOutcomes(subjects);
+    } else {
+      setOutcomes([]);
     }
   }, [subjects]);
 
@@ -93,7 +114,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
           data={item}
           agency={agency}
           update={handleUpdate}
-          remove={handleRemove}
+          remove={openDeleteAnimalOutcomeModal}
         />
       ));
     }

@@ -6,10 +6,16 @@ import { Prevention } from "../../types/outcomes/prevention";
 import { SupplementalNote } from "../../types/outcomes/supplemental-note";
 import { AnimalOutcomeSubject } from "../../types/state/cases-state";
 import { RootState } from "../store";
-import { CASE_ACTION_CODE, CASE_ACTION_TYPE } from "../../constants/case_actions";
-import { DrugAuthorization } from "../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { CASE_ACTION_CODE } from "../../constants/case_actions";
 
 //-- Case file selectors
+export const selectCaseId = (state: RootState): string => {
+  const {
+    cases: { caseId },
+  } = state;
+  return caseId ?? "";
+};
+
 export const selectAssessment = (state: RootState): Assessment => {
   const { cases } = state;
   return cases.assessment;
@@ -70,6 +76,8 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
   const {
     cases: { subject: subjects },
   } = state;
+
+  console.log("HAS SUBJECTS", subjects);
 
   if (subjects && from(subjects).any()) {
     //-- this will filter out all animal-outcome-subjets from the subject collection
@@ -135,7 +143,6 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
       return record;
     });
 
-    console.log("RESULTS: ", results);
     return results;
   }
 

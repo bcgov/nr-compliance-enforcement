@@ -39,6 +39,7 @@ import { from } from "linq-to-typescript";
 import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
 import { DrugUsedInput } from "../../types/app/case-files/animal-outcome/drug-used-input";
 import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
+import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -830,6 +831,47 @@ export const createAnimalOutcome =
     if (result !== null) {
       return "success";
     } else {
+      return "error";
+    }
+  };
+
+export const deleteAnimalOutcome =
+  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      officers: { officers },
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { caseId },
+    } = getState();
+
+    const _deleteAnimalOutcome =
+      (
+        outcomeId: string,
+        actor: string,
+        userId: string,
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: DeleteAnimalOutcomeInput = {
+          caseIdentifier: caseId as UUID,
+          actor,
+          updateUserId: userId,
+          outcomeId,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
+        return await deleteMethod<CaseFileDto>(dispatch, parameters);
+      };
+
+    const officer = officers.find((item) => item.user_id === idir);
+    const result = await dispatch(_deleteAnimalOutcome(id, officer ? officer.officer_guid : "", idir));
+
+    if (result !== null) {
+      ToggleSuccess("Animal outcome deleted");
+      return "success";
+    } else {
+      ToggleError("Error, unable to delete animal outcome");
       return "error";
     }
   };
