@@ -1,62 +1,34 @@
-import { FC, useRef, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
-import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import { CompSelect } from "../../../../common/comp-select";
-import { BsPlusCircle } from "react-icons/bs";
-import { pad } from "../../../../../common/methods";
+import { FC, useState } from "react";
+import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import {
-  selectAgeDropdown,
-  selectConflictHistoryDropdown,
-  selectSexDropdown,
   selectSpeciesCodeDropdown,
+  selectSexDropdown,
+  selectAgeDropdown,
   selectThreatLevelDropdown,
+  selectConflictHistoryDropdown,
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
-import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { Button, Col, Row } from "react-bootstrap";
+import { CompSelect } from "../../../../common/comp-select";
+import { BsPlusCircle } from "react-icons/bs";
+import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
+import { pad } from "../../../../../common/methods";
+import Option from "../../../../../types/app/option";
 import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsedV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
-import Option from "../../../../../types/app/option";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
-import { from } from "linq-to-typescript";
-import { EarTag } from "./ear-tag";
-import { DrugUsed } from "./drug-used";
 import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
-import { DrugAuthorizedBy } from "./drug-authorized-by";
-import { REQUIRED } from "../../../../../constants/general";
-import { v4 as uuidv4 } from "uuid";
 
 type props = {
+  id: string;
   index: number;
-  assignedOfficer: string;
+  outcome: AnimalOutcomeV2;
   agency: string;
-  species: string;
-  save: Function;
   cancel: Function;
 };
 
-//-- this object is used to create an empty outcome
-//-- do not export this object
-const defaultOutcome: AnimalOutcomeV2 = {
-  id: "",
-  species: "",
-  sex: "",
-  age: "",
-  threatLevel: "",
-  conflictHistory: "",
-  tags: [],
-  drugs: [],
-  outcome: "",
-  officer: "",
-  date: new Date(),
-};
-
-const defaultAuthorization: DrugAuthorization = {
-  officer: "",
-  date: new Date(),
-};
-
-export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer, agency, species, save, cancel }) => {
+export const EditOutcome: FC<props> = ({ id, index, outcome, agency, cancel }) => {
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -66,6 +38,9 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
 
+  //-- new input data
+  const [data, applyData] = useState<AnimalOutcomeV2>({ ...outcome });
+
   //-- misc
   const [animalNumber] = useState(index + 1);
 
@@ -73,25 +48,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
   const [outcomeDateError, setOutcomeDateError] = useState("");
-
-  //-- new input data
-  // const [data, applyData] = useState<AnimalOutcomeV2>({ ...initial });
-  const [data, applyData] = useState<AnimalOutcomeV2>({ ...defaultOutcome, species, officer });
-
-  //-- refs
-  // eslint-disable-next-line @typescript-eslint/no-array-constructor
-  const earTagRefs = useRef(Array(0));
-  const drugRefs = useRef(Array(0));
-  const authorizationRef = useRef({ isValid: Function });
-
-  //-- input handlers
-  const updateModel = (
-    property: string,
-    value: string | Date | Array<AnimalTagV2 | DrugUsedV2> | DrugAuthorization | null | undefined,
-  ) => {
-    const model = { ...data, [property]: value };
-    applyData(model);
-  };
 
   const getValue = (property: string): Option | undefined => {
     switch (property) {
@@ -136,218 +92,19 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     }
   };
 
+  //-- input handlers
+  const updateModel = (
+    property: string,
+    value: string | Date | Array<AnimalTagV2 | DrugUsedV2> | DrugAuthorization | null | undefined,
+  ) => {
+    const model = { ...data, [property]: value };
+    applyData(model);
+  };
+
+  //-- events
   const handleSpeciesChange = (input: Option | null) => {
     updateModel("species", input?.value);
     setSpeciesError(!(input ?? undefined) ? "Required" : "");
-  };
-
-  //-- handle adding / removing ear tags
-  const renderEarTags = () => {
-    const { tags } = data;
-
-    if (tags && from(tags).any()) {
-      return from(tags)
-        .orderBy((item) => item.id)
-        .toArray()
-        .map((item, idx) => {
-          return (
-            <EarTag
-              key={idx}
-              {...item}
-              update={updateEarTag}
-              remove={removeEarTag}
-              ref={(el) => (earTagRefs.current[idx] = el)}
-              // ref={(el) => earTagRefs.current.push(el)}
-            />
-          );
-        });
-    }
-  };
-
-  const addEarTag = () => {
-    const { tags } = data;
-
-    if (tags.length < 2) {
-      let id = uuidv4().toString();
-
-      const update = !from(tags).any()
-        ? [{ id, ear: "L", identifier: "" }]
-        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", identifier: "" }];
-
-      updateModel("tags", update);
-    }
-  };
-
-  const removeEarTag = (id: string) => {
-    const { tags: source } = data;
-    const items = source.filter((tag) => id !== tag.id);
-    const refs = earTagRefs.current.filter((r) => r.id !== null && r.id !== id);
-
-    const update = from(items)
-      .orderBy((item) => item.id)
-      .toArray()
-      .map((item) => {
-        return { ...item, id: uuidv4().toString() };
-      });
-
-    earTagRefs.current = refs;
-
-    updateModel("tags", update);
-  };
-
-  const updateEarTag = (tag: AnimalTagV2) => {
-    const { tags: source } = data;
-
-    const items = source.filter(({ id }) => id !== tag.id);
-    const update = [...items, tag];
-
-    updateModel("tags", update);
-  };
-
-  //-- handle adding / removing drugs used
-  const renderDrugsUsed = () => {
-    const { drugs } = data;
-
-    if (drugs && from(drugs).any()) {
-      const { drugAuthorization } = data;
-
-      return (
-        <>
-          {from(drugs)
-            .orderBy((item) => item.id)
-            .toArray()
-            .map((item, idx) => {
-              const { id } = item;
-              return (
-                <DrugUsed
-                  {...item}
-                  update={updateDrugUsed}
-                  remove={removeDrugUsed}
-                  key={id}
-                  ref={(el) => (drugRefs.current[idx] = el)}
-                />
-              );
-            })}
-
-          <DrugAuthorizedBy
-            drugAuthorization={drugAuthorization ?? { ...defaultAuthorization, officer }}
-            agency={agency}
-            update={updateModel}
-            ref={authorizationRef}
-          />
-        </>
-      );
-    }
-  };
-
-  const addDrugUsed = () => {
-    const { drugs } = data;
-
-    let id = uuidv4().toString();
-
-    const update = [
-      ...drugs,
-      {
-        id,
-        vial: "",
-        drug: "",
-        amountUsed: "",
-        amountDiscarded: "",
-        reactions: "",
-        remainingUse: "",
-        injectionMethod: "",
-        discardMethod: "",
-        officer: officer ?? "",
-      },
-    ];
-    updateModel("drugs", update);
-  };
-
-  const removeDrugUsed = (id: string) => {
-    const { drugs } = data;
-
-    const items = drugs.filter((drug) => id !== drug.id);
-
-    const update = from(items)
-      .orderBy((item) => item.id)
-      .toArray()
-      .map((item) => {
-        return { ...item, id: uuidv4().toString() };
-      });
-
-    updateModel("drugs", update);
-
-    if (update.length === 0) {
-      if (data.drugAuthorization) {
-        updateModel("drugAuthorization", {
-          officer: "",
-          date: new Date(),
-        });
-      }
-    }
-
-    earTagRefs.current = earTagRefs.current.filter((item) => item.id === id);
-  };
-
-  const updateDrugUsed = (drug: DrugUsedV2) => {
-    const { drugs: source } = data;
-
-    const items = source.filter(({ id }) => id !== drug.id);
-    const update = [...items, drug];
-
-    updateModel("drugs", update);
-  };
-
-  const isValid = (): boolean => {
-    const { outcome, date: outcomeDate, officer } = data;
-    let _isValid = true;
-
-    if (!species) {
-      _isValid = false;
-      setSpeciesError(REQUIRED);
-    }
-
-    //-- if the outcome is set make sure that there's an officer and date
-    if (outcome) {
-      if (!officer) {
-        _isValid = false;
-        setOfficerError(REQUIRED);
-      }
-
-      if (!outcomeDate) {
-        _isValid = false;
-        setOutcomeDateError(REQUIRED);
-      }
-    }
-
-    //-- validate any ear-tags, drugs-used and
-    //-- drug-authorized-by components
-    earTagRefs.current.forEach((tag) => {
-      if (tag && !tag.isValid()) {
-        _isValid = false;
-      }
-    });
-
-    drugRefs.current.forEach((drug) => {
-      if (drug && !drug.isValid()) {
-        _isValid = false;
-      }
-    });
-
-    if (!authorizationRef.current.isValid()) {
-      _isValid = false;
-    }
-
-    return _isValid;
-  };
-
-  //-- event handlers
-  const handleOutcomeDateChange = (input: Date) => {
-    updateModel("date", input);
-
-    if (outcomeDateError && input) {
-      setOutcomeDateError("");
-    }
   };
 
   const handleOfficerChange = (input: Option | null) => {
@@ -358,14 +115,16 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     }
   };
 
-  const handleSave = () => {
-    if (isValid()) {
-      save(data);
+  const handleOutcomeDateChange = (input: Date) => {
+    updateModel("date", input);
+
+    if (outcomeDateError && input) {
+      setOutcomeDateError("");
     }
   };
 
   const handleCancel = () => {
-    cancel(index);
+    cancel(id);
   };
 
   return (
@@ -419,6 +178,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 onChange={(evt) => {
                   updateModel("sex", evt?.value);
                 }}
+                defaultOption={getValue("sex")}
               />
             </Col>
             <Col>
@@ -438,6 +198,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 onChange={(evt) => {
                   updateModel("age", evt?.value);
                 }}
+                defaultOption={getValue("age")}
               />
             </Col>
             <Col>
@@ -457,6 +218,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 onChange={(evt) => {
                   updateModel("threatLevel", evt?.value);
                 }}
+                defaultOption={getValue("threatLevel")}
               />
             </Col>
             <Col>
@@ -476,30 +238,31 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 onChange={(evt) => {
                   updateModel("conflictHistory", evt?.value);
                 }}
+                defaultOption={getValue("conflictHistory")}
               />
             </Col>
           </Row>
         </div>
 
-        {renderEarTags()}
+        {/* {renderEarTags()} */}
         {data.tags.length < 2 && (
           <Button
             className="comp-animal-outcome-add-button"
             title="Add ear tag"
             variant="link"
-            onClick={() => addEarTag()}
+            // onClick={() => addEarTag()}
           >
             <BsPlusCircle size={16} />
             <span> Add ear tag</span>
           </Button>
         )}
 
-        {renderDrugsUsed()}
+        {/* {renderDrugsUsed()} */}
         <Button
           className="comp-animal-outcome-add-button"
           title="Add drug"
           variant="link"
-          onClick={() => addDrugUsed()}
+          // onClick={() => addDrugUsed()}
         >
           <BsPlusCircle size={16} />
           <span> Add drug</span>
@@ -527,6 +290,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 onChange={(evt) => {
                   updateModel("outcome", evt?.value);
                 }}
+                defaultOption={getValue("outcome")}
               />
             </Col>
             <Col md={4}>
@@ -550,7 +314,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                   onChange={(evt) => {
                     handleOfficerChange(evt);
                   }}
-                  value={getValue("officer")}
+                  defaultOption={getValue("officer")}
                   errorMessage={officerError}
                 />
               </div>
@@ -596,7 +360,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
             id="equipment-save-button"
             title="Save Outcome"
             className="comp-outcome-save"
-            onClick={handleSave}
+            // onClick={handleSave}
           >
             Save
           </Button>

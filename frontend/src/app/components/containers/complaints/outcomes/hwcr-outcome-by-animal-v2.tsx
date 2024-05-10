@@ -14,6 +14,7 @@ import { createAnimalOutcome, getCaseFile } from "../../../../store/reducers/cas
 import { selectAnimalOutcomes } from "../../../../store/reducers/case-selectors";
 import { openModal } from "../../../../store/reducers/app";
 import { DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
+import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 
 type props = {};
 
@@ -73,7 +74,13 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
     });
   };
 
-  const handleUpdate = () => {};
+  const handleEnableEdit = (id: string) => {
+    const items = outcomes.map((item) => {
+      return { ...item, editable: item.id === id && !item.editable ? true : false };
+    });
+
+    setOutcomes(items);
+  };
 
   const handleCancel = () => {
     setShowForm(false);
@@ -98,25 +105,40 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   }, [complaint]);
 
   useEffect(() => {
-    if (subjects && from(subjects).any()) {
-      setOutcomes(subjects);
-    } else {
-      setOutcomes([]);
-    }
+    const items = subjects && from(subjects).any() ? subjects : [];
+    setOutcomes(items);
   }, [subjects]);
 
   //-- render a list of outcomes
   const renderOutcomeList = () => {
     if (outcomes && from(outcomes).any()) {
-      return outcomes.map((item, idx) => (
-        <AnimalOutcome
-          index={idx}
-          data={item}
-          agency={agency}
-          update={handleUpdate}
-          remove={openDeleteAnimalOutcomeModal}
-        />
-      ));
+      return outcomes.map((item, idx) => {
+        const { id, editable } = item;
+
+        if (editable) {
+          return (
+            <EditOutcome
+              key={id}
+              id={id}
+              index={idx}
+              outcome={item}
+              agency={agency}
+              cancel={handleEnableEdit}
+            />
+          );
+        }
+
+        return (
+          <AnimalOutcome
+            key={id}
+            index={idx}
+            data={item}
+            agency={agency}
+            edit={handleEnableEdit}
+            remove={openDeleteAnimalOutcomeModal}
+          />
+        );
+      });
     }
   };
 

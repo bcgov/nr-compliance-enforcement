@@ -11,6 +11,7 @@ import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supple
 import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete-equipment-dto";
 import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -319,11 +320,21 @@ export class CaseFileService {
     });
 
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createNote;
+    return returnValue?.createWildlife;
   };
 
-  updateWildlife = async (token: any): Promise<CaseFileDto> => {
-    throw new Error("Method not implemented.");
+  updateWildlife = async (token: any, model: UpdateWildlifeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateWildlife($input: UpdateWildlifeInput!) {
+        updateWildlife(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateWildlife;
   };
 
   deleteWildlife = async (token: any, model: DeleteWildlifeInput): Promise<CaseFileDto> => {

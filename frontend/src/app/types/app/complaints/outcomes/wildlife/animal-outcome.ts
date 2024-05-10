@@ -51,4 +51,6 @@ export interface AnimalOutcomeV2 {
   outcome?: string;
   officer?: string;
   date?: Date;
+
+  editable?: boolean;
 }

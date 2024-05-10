@@ -21,11 +21,11 @@ type props = {
   index: number;
   data: AnimalOutcomeV2;
   agency: string;
-  update: Function;
+  edit: Function;
   remove: Function;
 };
 
-export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }) => {
+export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) => {
   //-- select data from redux
   const ears = useAppSelector(selectEarDropdown);
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
@@ -111,6 +111,11 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }
     remove(id);
   };
 
+  const hendleEnableEditMode = () => {
+    const { id } = data;
+    edit(id);
+  };
+
   return (
     <div className="comp-animal-outcome">
       <div className="equipment-item">
@@ -130,8 +135,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, update, remove }
               buttonClasses="button-text"
               text="Edit"
               icon={BsPencil}
-              // click={() => handleEdit(indexItem)}
-              click={() => {}}
+              click={() => hendleEnableEditMode()}
             />
           </div>
         </div>

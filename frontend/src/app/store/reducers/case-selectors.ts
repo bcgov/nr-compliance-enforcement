@@ -77,8 +77,6 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
     cases: { subject: subjects },
   } = state;
 
-  console.log("HAS SUBJECTS", subjects);
-
   if (subjects && from(subjects).any()) {
     //-- this will filter out all animal-outcome-subjets from the subject collection
     const animals = subjects.filter((subject): subject is AnimalOutcomeSubject => "species" in subject);

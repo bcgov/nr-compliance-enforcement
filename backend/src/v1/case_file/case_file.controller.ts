@@ -11,6 +11,7 @@ import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supple
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -124,6 +125,12 @@ export class CaseFileController {
   @Roles(Role.COS_OFFICER)
   async createWildlife(@Token() token, @Body() model: CreateWildlifeInput): Promise<CaseFileDto> {
     return await this.service.createWildlife(token, model);
+  }
+
+  @Patch("/wildlife")
+  @Roles(Role.COS_OFFICER)
+  async updateWildlife(@Token() token, @Body() model: UpdateWildlifeInput): Promise<CaseFileDto> {
+    return await this.service.updateWildlife(token, model);
   }
 
   @Delete("/wildlife")
