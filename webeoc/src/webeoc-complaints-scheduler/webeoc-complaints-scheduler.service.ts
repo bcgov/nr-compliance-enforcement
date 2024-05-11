@@ -5,6 +5,8 @@ import { Complaint } from "src/types/Complaints";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
 import { format } from "date-fns";
+import { WEBEOC_API_COMPLAINTS_LIST_PATH, WEBEOC_API_COMPLAINTS_UPDATE_PATH } from "src/common/constants";
+import { ComplaintUpdate } from "src/types/ComplaintUpdate";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {
@@ -17,6 +19,7 @@ export class WebEOCComplaintsScheduler {
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
       await this.fetchAndPublishComplaintsFromWebEOC();
+      await this.fetchAndPublishComplaintUpdatesFromWebEOC();
     });
 
     this.cronJob.start();
@@ -41,6 +44,20 @@ export class WebEOCComplaintsScheduler {
     // Publish each complaint to NATS
     for (const complaint of complaints) {
       await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+    }
+  }
+
+  // Grabs the complaints and publishes them to NATS
+  async fetchAndPublishComplaintUpdatesFromWebEOC() {
+    await this.authenticateWithWebEOC();
+    // Fetch complaints from WebEOC here
+    const complaintUpdates = await this.fetchComplaintUpdatesFromWebEOC();
+
+    this.logger.debug(`Found ${complaintUpdates?.length} complaint updates from WebEOC`);
+
+    // Publish each complaint to NATS
+    for (const complaintUpdate of complaintUpdates) {
+      await this.complaintsPublisherService.publishComplaintUpdatesFromWebEOC(complaintUpdate);
     }
   }
 
@@ -108,13 +125,60 @@ export class WebEOCComplaintsScheduler {
       },
     };
 
-    const url = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - COS Integration Incidents`;
+    const url = `${process.env.WEBEOC_URL}/${WEBEOC_API_COMPLAINTS_LIST_PATH}`;
 
     try {
       const response = await axios.post(url, body, config);
       return response.data as Complaint[];
     } catch (error) {
       this.logger.error("Error fetching complaints from WebEOC:", error);
+      throw error;
+    }
+  }
+
+  // Grabs all complaints created within a certain period (defined by WEBEOC_COMPLAINT_HISTORY_DAYS)
+  public async fetchComplaintUpdatesFromWebEOC(): Promise<ComplaintUpdate[]> {
+    const complaintsAsOfDate = new Date(); // Grab complaints that have been created on a date greater than or equal to this date
+    const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
+
+    if (isNaN(complaintHistoryDays)) {
+      throw new Error("WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number");
+    }
+    complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
+
+    const formattedDate = this.formatDate(complaintsAsOfDate);
+
+    if (!this.cookie) {
+      throw new Error("No authentication cookie available. Please authenticate first.");
+    }
+
+    // add the auth cookie to the header.  Note that WebEOC requires this format, which is why we're not using the encrypted authorization header.
+    const config: AxiosRequestConfig = {
+      headers: {
+        Cookie: this.cookie,
+      },
+    };
+
+    const body = {
+      customFilter: {
+        boolean: "and",
+        items: [
+          {
+            fieldname: "entrydate",
+            operator: "GreaterThan",
+            fieldvalue: formattedDate,
+          },
+        ],
+      },
+    };
+
+    const url = `${process.env.WEBEOC_URL}/${WEBEOC_API_COMPLAINTS_UPDATE_PATH}`;
+
+    try {
+      const response = await axios.post(url, body, config);
+      return response.data as ComplaintUpdate[];
+    } catch (error) {
+      this.logger.error("Error fetching complaint updates from WebEOC:", error);
       throw error;
     }
   }

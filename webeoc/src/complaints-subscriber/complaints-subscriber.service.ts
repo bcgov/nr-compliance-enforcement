@@ -5,11 +5,14 @@ import {
   NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NATS_STREAM_NAME,
+  NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+  NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
 } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { Complaint } from "../types/Complaints";
 import { ComplaintsPublisherService } from "src/complaints-publisher/complaints-publisher.service";
+import { ComplaintUpdate } from "src/types/ComplaintUpdate";
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {
@@ -49,7 +52,12 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   async setupStream(): Promise<void> {
     const streamConfig = {
       name: NATS_STREAM_NAME,
-      subjects: [NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME],
+      subjects: [
+        NATS_NEW_COMPLAINTS_TOPIC_NAME,
+        NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+        NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
+        NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
+      ],
       storage: StorageType.Memory,
       duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds,
     };
@@ -92,7 +100,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         try {
           const success = await message.ackAck();
           if (success) {
-            await this.service.postComplaintToStaging(complaintMessage);
+            await this.service.postNewComplaintToStaging(complaintMessage);
             this.complaintsPublisherService.publishStagingComplaintInserted(complaintMessage.incident_number);
           }
         } catch (error) {
@@ -101,16 +109,45 @@ export class ComplaintsSubscriberService implements OnModuleInit {
             `Message ${complaintMessage.incident_number} not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`,
           );
         }
-      } else {
+      } else if (message.subject === NATS_UPDATED_COMPLAINTS_TOPIC_NAME) {
+        const complaintMessage: ComplaintUpdate = JSON.parse(sc.decode(message.data));
+        this.logger.debug("Received complaint: update", complaintMessage?.parent_incident_number);
+        try {
+          const success = await message.ackAck();
+          if (success) {
+            await this.service.postUpdateComplaintToStaging(complaintMessage);
+            this.complaintsPublisherService.publishStagingComplaintUpdateInserted(
+              complaintMessage.parent_incident_number,
+              complaintMessage.update_number,
+            );
+          }
+        } catch (error) {
+          message.nak(10_000); // retry in 10 seconds
+          this.logger.error(
+            `Message ${complaintMessage.parent_incident_number} not processed from ${NATS_UPDATED_COMPLAINTS_TOPIC_NAME}`,
+          );
+        }
+      } else if (message.subject === NEW_STAGING_COMPLAINTS_TOPIC_NAME) {
         // listen for messages indicating that a new complaint was staged
         const stagingData = new TextDecoder().decode(message.data);
         this.logger.debug("Received staged complaint:", stagingData);
         try {
-          await this.service.postComplaint(stagingData);
+          await this.service.createComplaintFromStaging(stagingData);
           message.ackAck();
         } catch (error) {
           message.nak(10_000); // retry in 10 seconds
           this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
+        }
+      } else if (message.subject === NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME) {
+        // listen for messages indicating that a new complaint was staged
+        const stagingData = new TextDecoder().decode(message.data);
+        this.logger.debug("Received staged complaint update:", stagingData);
+        try {
+          //await this.service.postComplaint(stagingData);
+          //message.ackAck();
+        } catch (error) {
+          //message.nak(10_000); // retry in 10 seconds
+          //this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
         }
       }
     }

@@ -62,7 +62,8 @@ AS $function$
     INTO   complaint_data
     FROM   staging_complaint sc
     WHERE  sc.complaint_identifier = _complaint_identifier
-    AND    sc.staging_status_code = 'PENDING';
+    AND    sc.staging_status_code = 'PENDING' -- meaning that this complaint hasn't yet been moved to the complaint table yet
+    AND    sc.staging_activity_code = 'INSERT'; -- this means that we're dealing with a new complaint from webeoc, not an update
     
     IF complaint_data IS NULL THEN
       RETURN;
