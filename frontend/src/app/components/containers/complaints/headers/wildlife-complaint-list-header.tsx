@@ -17,7 +17,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="complaint_identifier"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-left-radius"
+          className="sticky-col-left comp-cell-width-100 incident-col"
         />
         <SortableHeader
           id="incident-date-column"
@@ -26,7 +26,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-horizontal-border  comp-header-vertical-border"
+          className="comp-cell-width-100"
         />
         <SortableHeader
           title="Nature of Complaint"
@@ -34,7 +34,6 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="hwcr_complaint_nature_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-330 comp-header-horizontal-border"
         />
 
         <SortableHeader
@@ -43,7 +42,6 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="species_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-130 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -52,9 +50,9 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="geo_organization_unit_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border-left unsortable">
+
+        <th className="unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
 
@@ -64,7 +62,6 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="complaint_status_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-75 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -73,7 +70,6 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="last_name"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-130 comp-header-horizontal-border"
         />
 
         <SortableHeader
@@ -83,8 +79,9 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 comp-header-horizontal-border comp-header-right-radius"
         />
+
+        <th className="sticky-col-right actions-col">Actions</th>
       </tr>
     </thead>
   );

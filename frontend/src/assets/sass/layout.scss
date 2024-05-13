@@ -1,47 +1,80 @@
+// Main Layout Components
 .comp-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   flex-direction: column;
   margin: 0;
+  overflow: hidden;
 }
 
-.fixed-header .comp-header {
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 9000;
+.comp-container-inner {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
-.fixed-nav-header {
-  position: sticky !important;
-  padding-bottom: 0px !important;
-  top: 72px; // Header (72px)
-  background-color: $white;
-  z-index: 8000;
+// Main Container
+.comp-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
 }
 
-.fixed-filter-header {
-  position: sticky;
-  top: 120px; // Header (72px) + Tabs (48px)
-  background-color: $white;
-  z-index: 6000;
+// Sidebar
+.comp-side-bar {
+  width: 254px;
+  padding: 16px;
+  overflow: hidden;
+  background-color: $gray-110;
+
+  ul > li:first-child {
+    margin-top: 0px;
+  }
+
+  ul > li:last-child {
+    margin-bottom: 0px;
+  }
+
+  &.collapsed {
+    width: 72px;
+  }
+
+  .comp-sidebar-toggle > i {
+    float: right;
+    cursor: pointer;
+  }
 }
 
-.fixed-table-header {
-  position: sticky;
-  top: 166px; // Header (72px) + Tabs (48px) + filters (46px)
+// Sidebar - Collapsed State
+.comp-side-bar.collapsed {
+  > span > span.comp-organization-nav-name,
+  > span > span.comp-organization-nav-long-name,
+  > ul > li > span.comp-nav-item-name {
+    display: none;
+  }
+  > div.comp-sidebar-toggle > i {
+    float: none;
+    margin-left: 25%;
+  }
+  > ul > li > a > i.bi {
+    margin-left: 25%;
+    font-size: 22px;
+  }
 }
 
-.comp-create-header {
-  top: 72px;
-  position: sticky !important;
-  z-index: 8000;
-}
-
-.comp-details-header {
-  top: 72px;
-  position: sticky !important;
-  z-index: 8000;
+// Page Headers
+.comp-page-header {
+  flex: 0 0 auto;
+  padding: 24px;
+  h1 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 24px;
+    font-weight: bold;
+  }
 }
 
 .comp-header {
@@ -97,51 +130,11 @@
   }
 }
 
-.fixed-sidebar .comp-side-bar {
-  position: fixed;
-}
-
-.comp-side-bar {
-  background-color: $gray-110;
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  width: 254px;
-  top: 72px;
-  padding: 16px;
-  z-index: 9000;
-  overflow: hidden;
-
-  ul > li:first-child {
-    margin-top: 0px;
-  }
-
-  ul > li:last-child {
-    margin-bottom: 0px;
-  }
-
-  &.collapsed {
-    width: 72px;
-  }
-
-  .comp-sidebar-toggle > i {
-    float: right;
-    cursor: pointer;
-  }
-}
-
-.comp-main-content {
-  margin-left: 254px;
-  margin-top: 72px;
-  padding: 24px;
-
-  -webkit-transition: all 0.1s ease-in-out;
-  -moz-transition: all 0.1s ease-in-out;
-  transition: all 0.1s ease-in-out;
-}
-
-.collapsed + .comp-main-content {
-  margin-left: 72px;
+.comp-details-header,
+.comp-create-header {
+  position: sticky !important;
+  top: 0;
+  z-index: 8000;
 }
 
 .comp-organization-nav-logo {
@@ -162,19 +155,6 @@
   letter-spacing: -0.0064em;
   font-weight: 700;
   color: $bc-gov-primary;
-}
-
-.comp-side-bar.collapsed > span > span.comp-organization-nav-name {
-  display: none;
-}
-
-.comp-side-bar.collapsed > span > span.comp-organization-nav-long-name {
-  display: none;
-}
-
-.comp-side-bar.collapsed > div.comp-sidebar-toggle > i {
-  float: none;
-  margin-left: 25%;
 }
 
 // Start of Hyperlink Styles
@@ -237,15 +217,6 @@
 }
 
 // End of Hyperlink Styles
-
-.comp-side-bar.collapsed > ul > li > span.comp-nav-item-name {
-  display: none;
-}
-
-.comp-side-bar.collapsed > ul > li > a > i.bi {
-  margin-left: 25%;
-  font-size: 22px;
-}
 
 .comp-nav-item-list {
   padding-top: 28px;
@@ -514,10 +485,16 @@ button.modal-buttons {
 .pagination_container {
   display: flex;
   align-items: baseline;
-  width: 1300px;
   justify-content: center;
-  padding-top: 10px;
+  padding: 8px;
   gap: 8px;
+  border-top: 1px solid #ccc;
+  background: #eee;
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .pagination_container .page-item.active .page-link {
@@ -567,4 +544,10 @@ p {
   img {
     opacity: 0.5;
   }
+}
+
+// Tables
+.fixed-table-header {
+  position: sticky;
+  top: 0;
 }

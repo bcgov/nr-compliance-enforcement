@@ -159,37 +159,39 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   };
 
   return (
-    <>
-      <Table id="complaint-list">
-        {renderComplaintListHeader(type)}
-        <tbody>
-          {complaints.map((item) => {
-            const { id } = item;
+    <div className="table-container">
+      <div className="table-container-inner">
+        <Table id="complaint-list">
+          {renderComplaintListHeader(type)}
+          <tbody>
+            {complaints.map((item) => {
+              const { id } = item;
 
-            switch (type) {
-              case COMPLAINT_TYPES.ERS: {
-                return (
-                  <AllegationComplaintListItem
-                    key={id}
-                    type={type}
-                    complaint={item as AllegationComplaint}
-                  />
-                );
+              switch (type) {
+                case COMPLAINT_TYPES.ERS: {
+                  return (
+                    <AllegationComplaintListItem
+                      key={id}
+                      type={type}
+                      complaint={item as AllegationComplaint}
+                    />
+                  );
+                }
+                case COMPLAINT_TYPES.HWCR:
+                default: {
+                  return (
+                    <WildlifeComplaintListItem
+                      key={id}
+                      type={type}
+                      complaint={item as WildlifeComplaint}
+                    />
+                  );
+                }
               }
-              case COMPLAINT_TYPES.HWCR:
-              default: {
-                return (
-                  <WildlifeComplaintListItem
-                    key={id}
-                    type={type}
-                    complaint={item as WildlifeComplaint}
-                  />
-                );
-              }
-            }
-          })}
-        </tbody>
-      </Table>
+            })}
+          </tbody>
+        </Table>
+      </div>
 
       <ComplaintPagination
         currentPage={page}
@@ -197,6 +199,6 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         onPageChange={handlePageChange}
         resultsPerPage={pageSize}
       />
-    </>
+    </div>
   );
 };

@@ -67,13 +67,27 @@ export const ComplaintFilterBar: FC<Props> = ({
   );
 
   return (
-    <div className="fixed-filter-header comp-filter-pill-container">
-      <MapListToggle
-        onToggle={toggleViewType}
-        activeView={viewType}
-        className="map-list-toggle"
-      />
-      <div className="comp-filter-pills">
+    <div className="comp-filter-bar">
+      <div className="comp-filter-bar-inputs">
+        {/* Search Field */}
+        <div className="comp-filter-search">
+          <SearchInput
+            viewType={viewType}
+            complaintType={complaintType}
+            searchQuery={searchQuery}
+            applySearchQuery={applySearchQuery}
+          />
+        </div>
+
+        {/* Map List Toggle */}
+        <MapListToggle
+          onToggle={toggleViewType}
+          activeView={viewType}
+          className="map-list-toggle"
+        />
+      </div>
+
+      <div className="comp-filter-bar-pills">
         {hasFilter("status") && (
           <FilterButton
             id="comp-status-filter"
@@ -154,15 +168,6 @@ export const ComplaintFilterBar: FC<Props> = ({
             clear={removeFilter}
           />
         )}
-
-        <div className="comp-filter-search">
-          <SearchInput
-            viewType={viewType}
-            complaintType={complaintType}
-            searchQuery={searchQuery}
-            applySearchQuery={applySearchQuery}
-          />
-        </div>
       </div>
     </div>
   );

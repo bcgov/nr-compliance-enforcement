@@ -85,82 +85,82 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <>
-      <div className="comp-sub-header">Complaints</div>
+      <div className="comp-page-header">
+        <div>
+          <h1>Complaints</h1>
+        </div>
 
-      {/* <!-- create list of complaint types --> */}
-      <Navbar className="fixed-nav-header basic-navbar-nav complaint-tab-container-width">
-        <Nav className="nav nav-tabs comp-tab container-fluid">
-          {/* <!-- dynamic tabs --> */}
-          {complaintTypes.map(({ id, code, name }) => {
-            return (
-              <Nav.Item
-                className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
-                key={`${code}-tab-item`}
+        {/* Navigation Bar */}
+        {/* <!-- create list of complaint types --> */}
+        <Navbar className="basic-navbar-nav complaint-navbar">
+          <Nav className="nav nav-tabs comp-tab container-fluid">
+            {/* <!-- dynamic tabs --> */}
+            {complaintTypes.map(({ id, code, name }) => {
+              return (
+                <Nav.Item
+                  className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
+                  key={`${code}-tab-item`}
+                >
+                  <div
+                    className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
+                    id={id}
+                    onClick={() => handleComplaintTabChange(code)}
+                  >
+                    {name} {renderComplaintTotal(code)}
+                  </div>
+                </Nav.Item>
+              );
+            })}
+
+            {/* <!-- dynamic tabs end --> */}
+
+            <Nav.Item className="ms-auto">
+              <div
+                className="cursor-pointer"
+                onClick={() => handleCreateClick()}
               >
                 <div
-                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
-                  id={id}
-                  onClick={() => handleComplaintTabChange(code)}
+                  className="complaint-create-image-container left-float"
+                  id="complaint-create-image-id"
                 >
-                  {name} {renderComplaintTotal(code)}
+                  <i className="bi bi-plus-circle filter-image-spacing"></i>
                 </div>
-              </Nav.Item>
-            );
-          })}
+                <div className="left-float">Create</div>
+                <div className="clear-left-float"></div>
+              </div>
+            </Nav.Item>
+            <Nav.Item
+              {...getToggleProps({
+                onClick: () => {
+                  const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
+                  const rect = filterElem?.getBoundingClientRect();
+                  const bottom = rect?.bottom;
 
-          {/* <!-- dynamic tabs end --> */}
-
-          <Nav.Item className="ms-auto">
-            <div
-              className="cursor-pointer"
-              onClick={() => handleCreateClick()}
+                  if ({ isExpanded }.isExpanded && bottom !== undefined && bottom < 140) {
+                    //page has been scrolled while filter is open... need to close it!
+                    setExpanded((prevExpanded) => !prevExpanded);
+                  }
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                  });
+                  setExpanded((prevExpanded) => !prevExpanded);
+                },
+              })}
             >
               <div
-                className="complaint-create-image-container left-float"
-                id="complaint-create-image-id"
+                className="complaint-filter-image-container"
+                id="complaint-filter-image-id"
               >
-                <i className="bi bi-plus-circle filter-image-spacing"></i>
+                <i className="bi bi-filter filter-image-spacing"></i>
               </div>
-              <div className="left-float">Create</div>
+              <div className="left-float">Filters</div>
               <div className="clear-left-float"></div>
-            </div>
-          </Nav.Item>
-          <Nav.Item
-            {...getToggleProps({
-              onClick: () => {
-                const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
-                const rect = filterElem?.getBoundingClientRect();
-                const bottom = rect?.bottom;
+            </Nav.Item>
+          </Nav>
+        </Navbar>
 
-                if ({ isExpanded }.isExpanded && bottom !== undefined && bottom < 140) {
-                  //page has been scrolled while filter is open... need to close it!
-                  setExpanded((prevExpanded) => !prevExpanded);
-                }
-                window.scrollTo({
-                  top: 0,
-                  behavior: "smooth",
-                });
-                setExpanded((prevExpanded) => !prevExpanded);
-              },
-            })}
-          >
-            <div
-              className="complaint-filter-image-container"
-              id="complaint-filter-image-id"
-            >
-              <i className="bi bi-filter filter-image-spacing"></i>
-            </div>
-            <div className="left-float">Filters</div>
-            <div className="clear-left-float"></div>
-          </Nav.Item>
-        </Nav>
-      </Navbar>
-
-      <div>
-        <ComplaintFilter
-          type={complaintType}
-          isOpen={isExpanded}
-        />
+        {/* Filter Bar */}
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
@@ -168,6 +168,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           searchQuery={search}
           applySearchQuery={setSearch}
         />
+
+        <ComplaintFilter
+          type={complaintType}
+          isOpen={isExpanded}
+        />
+      </div>
+
+      <div className="comp-page-body">
         {viewType === "list" ? (
           <ComplaintList
             type={complaintType}

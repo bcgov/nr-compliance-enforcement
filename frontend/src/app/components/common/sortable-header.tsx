@@ -18,13 +18,15 @@ export const SortableHeader: FC<Props> = ({ title, sortFnc, sortKey, currentSort
       id={id}
       onClick={() => sortFnc(sortKey)}
     >
-      <div className="comp-header-label">{title}</div>
-      <div className="comp-header-caret">
-        <SortArrow
-          sortKey={sortKey}
-          current={currentSort}
-          direction={sortDirection}
-        />
+      <div className="sortableHeader-inner">
+        <div className="comp-header-label">{title}</div>
+        <div className="comp-header-caret">
+          <SortArrow
+            sortKey={sortKey}
+            current={currentSort}
+            direction={sortDirection}
+          />
+        </div>
       </div>
     </th>
   );

@@ -125,7 +125,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
-          className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpandedClass}`}
+          className={`sticky-col-left comp-nav-item-name-underline incident-col ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <Link
@@ -136,19 +136,19 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           </Link>
         </td>
         <td
-          className={`comp-cell-width-95 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {reportedOnDateTime}
         </td>
         <td
-          className={`comp-cell-width-330 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {natureCode}
         </td>
         <td
-          className={`comp-cell-width-130 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <button
@@ -159,25 +159,25 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           </button>
         </td>
         <td
-          className={`comp-cell-width-165 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {location}
         </td>
         <td
-          className={`comp-cell-width-170 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {locationSummary}
         </td>
         <td
-          className={`comp-cell-width-75 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <div className={statusButtonClass}>{getStatusDescription(status)}</div>
         </td>
         <td
-          className={`comp-cell-width-130 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <div
@@ -186,19 +186,16 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           ></div>
           {getOfficerAssigned()}
         </td>
-        <td className={`comp-cell-width-110 ${isExpandedClass}`}>
-          {!isExpanded && (
-            <div className="comp-table-icons">
-              <ComplaintActionItems
-                complaint_identifier={id}
-                complaint_type={type}
-                zone={zone ?? ""}
-                agency_code={ownedBy}
-              />
-              <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
-            </div>
-          )}
-          <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
+        <td className={`${isExpandedClass}`}>
+          <span>{updatedOnDateTime}</span>
+        </td>
+        <td className="sticky-col-right">
+          <ComplaintActionItems
+            complaint_identifier={id}
+            complaint_type={type}
+            zone={zone ?? ""}
+            agency_code={ownedBy}
+          />
         </td>
       </tr>
       {isExpanded && (

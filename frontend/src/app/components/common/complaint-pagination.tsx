@@ -123,7 +123,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
       {totalItems > resultsPerPage && (
         <>
           <div>
-            <Pagination>
+            <Pagination size="sm">
               <Pagination.Prev
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
@@ -135,15 +135,15 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
               />
             </Pagination>
           </div>
-          <div>
+          {/* <div>
             <Select
               id="resultsPerPageSelect"
               options={pageSizeOptions}
               classNamePrefix="comp-select"
               defaultValue={defaultOption}
             />
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <Form.Label>Go to</Form.Label>
           </div>
           <div className="pagination_specific_page">
@@ -154,7 +154,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
               onKeyPress={handleEnterKeyPress}
               onChange={(e) => setSpecificPage(e.target.value)}
             />
-          </div>
+          </div> */}
         </>
       )}
     </div>
