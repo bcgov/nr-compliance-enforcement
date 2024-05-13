@@ -98,14 +98,16 @@ const addAssessment =
         caseCode: "HWCR",
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
-          actions: assessment.assessment_type.map((item) => {
-            return {
-              date: assessment.date,
-              actor: assessment.officer?.value,
-              activeIndicator: true,
-              actionCode: item.value,
-            };
-          }),
+          actions: assessment.assessment_type
+            ? assessment.assessment_type.map((item) => {
+                return {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value,
+                };
+              })
+            : [],
           actionJustificationCode: assessment.justification?.value,
         },
       },
@@ -166,14 +168,16 @@ const updateAssessment =
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
           actionJustificationCode: assessment.justification?.value,
-          actions: assessment.assessment_type.map((item) => {
-            return {
-              actor: assessment.officer?.value,
-              date: assessment.date,
-              actionCode: item.value,
-              activeIndicator: true,
-            };
-          }),
+          actions: assessment.assessment_type
+            ? assessment.assessment_type.map((item) => {
+                return {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.value,
+                  activeIndicator: true,
+                };
+              })
+            : [],
         },
       },
     } as UpdateAssessmentInput;
