@@ -14,7 +14,7 @@ export class StagingComplaintsApiService {
   };
 
   // add complaint data to staging table
-  async postNewComplaintToStaging(complaintData: Complaint): Promise<void> {
+  async createNewComplaintInStaging(complaintData: Complaint): Promise<void> {
     try {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT_CREATES}`;
       this.logger.debug(`Posting new complaint to staging. API URL: ${apiUrl}`);
@@ -27,7 +27,7 @@ export class StagingComplaintsApiService {
   }
 
   // add complaint update data to staging table
-  async postUpdateComplaintToStaging(complaintData: ComplaintUpdate): Promise<void> {
+  async createUpdateComplaintInStaging(complaintData: ComplaintUpdate): Promise<void> {
     try {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT_UPDATES}`;
       this.logger.debug(`Posting new complaint to staging. API URL: ${apiUrl}`);
@@ -54,10 +54,10 @@ export class StagingComplaintsApiService {
   }
 
   // create complaint update based on complaint data in the staging table
-  async createComplaintUpdateFromStaging(complaint_identifier: string): Promise<void> {
+  async createComplaintUpdateFromStaging(complaint_identifier: string, update_number: string): Promise<void> {
     try {
       this.logger.debug("Creating new complaint based on new complaint from webeoc.");
-      const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/staging-complaint/process/${complaint_identifier}`;
+      const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/staging-complaint/process/${complaint_identifier}/${update_number}`;
       this.logger.debug(`Posting new complaint. API URL: ${apiUrl}`);
 
       await axios.post(apiUrl, {}, this._apiConfig);

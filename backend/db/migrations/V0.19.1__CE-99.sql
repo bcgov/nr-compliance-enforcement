@@ -1,5 +1,5 @@
 CREATE TABLE public.complaint_update (
-	complaint_update_guid uuid NOT NULL,
+	complaint_update_guid uuid DEFAULT uuid_generate_v4() NOT NULL,
 	complaint_identifier varchar(20) NOT NULL,
 	update_seq_number int4 NOT NULL,
 	upd_detail_text text NULL,
@@ -28,3 +28,157 @@ COMMENT ON COLUMN public.complaint_update.create_user_id IS 'The id of the user 
 COMMENT ON COLUMN public.complaint_update.create_utc_timestamp IS 'The timestamp when the complaint update record was created.  The timestamp is stored in UTC with no Offset.';
 COMMENT ON COLUMN public.complaint_update.update_user_id IS 'The id of the user that updated the complaint update record.';
 COMMENT ON COLUMN public.complaint_update.update_utc_timestamp IS 'The timestamp when the complaint_update record was updated.  The timestamp is stored in UTC with no Offset.';
+
+create or replace
+function public.insert_complaint_update_from_staging(_complaint_identifier character varying,
+_update_number int4)
+ returns void
+ language plpgsql
+as $function$
+  declare
+-- used to determine if an update comes in that's the same as the previous complaint update
+prev_complaint_update_record public.complaint_update;
+-- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint 
+complaint_data jsonb;
+-- Variables for 'complaint' table
+_upd_detail_text text;
+
+_upd_location_summary_text VARCHAR(120);
+
+_upd_location_detailed_text VARCHAR(4000);
+
+_update_address_coordinates_lat VARCHAR(200);
+
+_update_address_coordinates_long VARCHAR(200);
+
+_upd_location_geometry_point geometry;
+
+_create_utc_timestamp timestamp := (now() at TIME zone 'UTC');
+
+_update_utc_timestamp timestamp := (now() at TIME zone 'UTC');
+
+_create_userid VARCHAR(200);
+
+_update_userid VARCHAR(200);
+
+begin
+-- Fetch the JSONB data from complaint_staging using the provided identifier
+    select
+	sc.complaint_jsonb
+    into
+	complaint_data
+from
+	staging_complaint sc
+where
+	sc.complaint_identifier = _complaint_identifier
+	and (sc.complaint_jsonb->>'update_number')::int = _update_number
+	and sc.staging_status_code = 'PENDING'
+	-- meaning that this complaint hasn't yet been moved to the complaint table yet
+	and sc.staging_activity_code = 'UPDATE';
+-- this means that we're dealing with a new complaint from webeoc, not an update
+    
+    if complaint_data is null then
+      return;
+end if;
+-- Extract and prepare data for 'complaint_update' table
+_upd_detail_text := complaint_data ->> 'update_call_details';
+
+_upd_location_summary_text := complaint_data ->> 'update_address';
+
+_upd_location_detailed_text := complaint_data ->> 'update_location_decription';
+
+_update_address_coordinates_lat := complaint_data ->> 'update_address_coordinates_lat';
+
+_update_address_coordinates_long := complaint_data ->> 'update_address_coordinates_long';
+
+_create_userid := complaint_data ->> 'username';
+
+_update_userid := complaint_data ->> 'username';
+-- create a geometry point based on the latitude and longitude
+_upd_location_geometry_point := ST_SetSRID(ST_MakePoint(cast(_update_address_coordinates_long as numeric),
+cast(_update_address_coordinates_lat as numeric)),
+4326);
+-- get the previous update, we want to make sure that this update is actually different
+	select
+	*
+    into
+	prev_complaint_update_record
+from
+	public.complaint_update
+where
+	complaint_identifier = _complaint_identifier
+	and update_seq_number = _update_number - 1;
+-- If there is no previous record or if there are changes in any of the columns, insert a new record
+    if not found
+or (prev_complaint_update_record.upd_detail_text <> _upd_detail_text
+	or
+                      prev_complaint_update_record.upd_location_summary_text <> _upd_location_summary_text
+	or
+                      prev_complaint_update_record.upd_location_detailed_text <> _upd_location_detailed_text
+	or
+                      prev_complaint_update_record.upd_location_geometry_point <> _upd_location_geometry_point
+	or
+                      prev_complaint_update_record.create_user_id <> _create_userid
+	or
+                      prev_complaint_update_record.update_user_id <> _update_userid
+	or
+                      prev_complaint_update_record.create_utc_timestamp <> _create_utc_timestamp
+	or
+                      prev_complaint_update_record.update_utc_timestamp <> _update_utc_timestamp) then
+-- Insert data into 'complaint' table
+    insert
+	into
+	PUBLIC.complaint_update
+                (
+                            complaint_identifier,
+	update_seq_number ,
+	upd_detail_text,
+	upd_location_summary_text,
+	upd_location_detailed_text,
+	upd_location_geometry_point,
+	create_user_id,
+	create_utc_timestamp,
+	update_user_id,
+	update_utc_timestamp
+                )
+values
+                (
+                            _complaint_identifier,
+                            _update_number,
+                            _upd_detail_text,
+                            _upd_location_summary_text,
+                            _upd_location_detailed_text,
+                            _upd_location_geometry_point,
+                            _create_userid,
+                            _create_utc_timestamp,
+                            _update_userid,
+                            _update_utc_timestamp
+                );
+end if;
+
+update
+	staging_complaint
+set
+	staging_status_code = 'SUCCESS'
+where
+	complaint_identifier = _complaint_identifier
+	and (complaint_jsonb->>'update_number')::int = _update_number
+	and staging_activity_code = 'UPDATE';
+
+exception
+when others then
+    raise notice 'An unexpected error occurred: %',
+sqlerrm;
+
+update
+	staging_complaint
+set
+	staging_status_code = 'ERROR'
+where
+	complaint_identifier = _complaint_identifier
+	and staging_status_code = 'PENDING'
+	and staging_activity_code = 'UPDATE';
+end;
+
+$function$
+;

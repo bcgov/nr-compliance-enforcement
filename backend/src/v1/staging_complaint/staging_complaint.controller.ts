@@ -29,7 +29,17 @@ export class StagingComplaintController {
 
   @Post("/process/:complaintIdentifier")
   @UseGuards(ApiKeyGuard)
-  async process(@Param("complaintIdentifier") complaintIdentifier: string): Promise<any> {
-    return await this.stagingComplaintService.process(complaintIdentifier);
+  async processWebEOCComplaint(@Param("complaintIdentifier") complaintIdentifier: string): Promise<any> {
+    return await this.stagingComplaintService.processWebEOCComplaint(complaintIdentifier);
+  }
+
+  @Post("/process/:complaintIdentifier/:update_number")
+  @UseGuards(ApiKeyGuard)
+  async processWebEOCComplaintUpdate(
+    @Param("complaintIdentifier") complaintIdentifier: string,
+    @Param("update_number") updateNumber: string,
+  ): Promise<any> {
+    const updateNumberAsNumber: number = parseInt(updateNumber, 10);
+    return await this.stagingComplaintService.processWebEOCComplaintUpdate(complaintIdentifier, updateNumberAsNumber);
   }
 }

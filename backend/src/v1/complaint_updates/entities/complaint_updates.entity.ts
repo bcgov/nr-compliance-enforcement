@@ -60,6 +60,7 @@ export class ComplaintUpdate {
     type: "geometry",
     nullable: true,
     srid: 4326,
+    name: "upd_location_geometry_point",
   })
   updLocationGeometryPoint: Point | null;
 
@@ -98,7 +99,7 @@ export class ComplaintUpdate {
   @JoinColumn([
     {
       name: "complaint_identifier",
-      referencedColumnName: "complaintIdentifier",
+      referencedColumnName: "complaint_identifier",
     },
   ])
   complaintIdentifier: Complaint;

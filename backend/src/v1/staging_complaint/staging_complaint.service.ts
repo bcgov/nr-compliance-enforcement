@@ -19,6 +19,7 @@ export class StagingComplaintService {
     private stagingComplaintRepository: Repository<StagingComplaint>,
   ) {}
 
+  // Creates a new Complaint record based on data retrieved from WebEOC.  The new complaint is created based off of the data in the staging table
   async createNewComplaint(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
     const existingStagingComplaint = await this.stagingComplaintRepository
       .createQueryBuilder("stagingComplaint")
@@ -58,6 +59,7 @@ export class StagingComplaintService {
     return newStagingComplaint;
   }
 
+  // Creates a Complaint Update record.  Used when WebEOC creates a complaint update.  The complaint update record is created based off of the data in the staging table
   async createComplaintUpdate(stagingComplaint: WebEOCComplaintUpdate): Promise<StagingComplaint> {
     // ignore existing updates of the same incident number and update number, they already exist in the staging table
     const existingStagingComplaint = await this.stagingComplaintRepository
@@ -97,9 +99,16 @@ export class StagingComplaintService {
     return newStagingComplaint;
   }
 
-  async process(complaintIdentifier: string): Promise<any> {
+  async processWebEOCComplaint(complaintIdentifier: string): Promise<any> {
     await this.stagingComplaintRepository.manager.query("SELECT public.insert_complaint_from_staging($1)", [
       complaintIdentifier,
+    ]);
+  }
+
+  async processWebEOCComplaintUpdate(complaintIdentifier: string, updateNumber: number): Promise<any> {
+    await this.stagingComplaintRepository.manager.query("SELECT public.insert_complaint_update_from_staging($1, $2)", [
+      complaintIdentifier,
+      updateNumber,
     ]);
   }
 }

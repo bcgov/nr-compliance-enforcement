@@ -100,8 +100,8 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         try {
           const success = await message.ackAck();
           if (success) {
-            await this.service.postNewComplaintToStaging(complaintMessage);
-            this.complaintsPublisherService.publishStagingComplaintInserted(complaintMessage.incident_number);
+            await this.service.createNewComplaintInStaging(complaintMessage); // create the complaint in staging
+            this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage.incident_number); // create message indicating success
           }
         } catch (error) {
           message.nak(10_000); // retry in 10 seconds
@@ -115,11 +115,8 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         try {
           const success = await message.ackAck();
           if (success) {
-            await this.service.postUpdateComplaintToStaging(complaintMessage);
-            this.complaintsPublisherService.publishStagingComplaintUpdateInserted(
-              complaintMessage.parent_incident_number,
-              complaintMessage.update_number,
-            );
+            await this.service.createUpdateComplaintInStaging(complaintMessage);
+            this.complaintsPublisherService.publishStagingComplaintUpdateInsertedMessage(complaintMessage);
           }
         } catch (error) {
           message.nak(10_000); // retry in 10 seconds
@@ -139,15 +136,17 @@ export class ComplaintsSubscriberService implements OnModuleInit {
           this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
         }
       } else if (message.subject === NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME) {
-        // listen for messages indicating that a new complaint was staged
-        const stagingData = new TextDecoder().decode(message.data);
-        this.logger.debug("Received staged complaint update:", stagingData);
+        const complaintUpdate: ComplaintUpdate = JSON.parse(sc.decode(message.data));
+        const incident_number = complaintUpdate.parent_incident_number;
+        const update_number = complaintUpdate.update_number;
+
+        this.logger.debug("Received staged complaint update:", incident_number);
         try {
-          //await this.service.postComplaint(stagingData);
-          //message.ackAck();
+          await this.service.createComplaintUpdateFromStaging(incident_number, update_number);
+          message.ackAck();
         } catch (error) {
-          //message.nak(10_000); // retry in 10 seconds
-          //this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
+          message.nak(10_000); // retry in 10 seconds
+          this.logger.error(`Message ${incident_number} not processed from ${NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME}`);
         }
       }
     }
