@@ -9,6 +9,6 @@ export const STAGING_API_ENDPOINT_CREATES = "staging-complaint/creates";
 export const STAGING_API_ENDPOINT_UPDATES = "staging-complaint/updates";
 export const NATS_DURABLE_COMPLAINTS = "nats_durable_complaints";
 export const WEBEOC_API_COMPLAINTS_LIST_PATH =
-  "board/Conservation Officer Service/display/List - COS Integration Incidents";
+  "board/Conservation Officer Service/display/List - API COS Complaints Incidents";
 export const WEBEOC_API_COMPLAINTS_UPDATE_PATH =
-  "board/Conservation Officer Service/display/List - COS Integration Updates";
+  "board/Conservation Officer Service/display/List - API COS Complaints Updates";

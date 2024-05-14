@@ -139,7 +139,7 @@ AS $function$
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
     _location_geometry_point := coalesce( nullif(complaint_data ->> 'location', ''):: geometry, 'POINT(0 0)' :: geometry );
-    _create_userid := complaint_data ->> 'username';
+    _create_userid := substring(complaint_data ->> 'username' from 1 for 32);
     _update_userid := _create_userid;
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
