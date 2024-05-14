@@ -1,3 +1,7 @@
+body {
+  overflow: hidden;
+}
+
 // COMPLAINT LIST/MAP PAGE
 .comp-page-body {
   display: flex;
@@ -88,28 +92,22 @@
   }
 }
 
+thead {
+  position: sticky;
+  top: 0;
+}
+
 th {
-  min-width: 100px;
   border-top: 1px solid #fff;
   border-right: 1px solid #fff;
   z-index: 999;
 
-  .sortableHeader-inner {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    white-space: nowrap;
-  }
-
   .comp-header-label {
-    flex: 1 1 auto;
+    float: left;
   }
 
   .comp-header-caret {
-    flex: 0;
+    float: right;
   }
 }
 
@@ -119,11 +117,13 @@ th {
   border-right: 1px solid #ccc !important;
 }
 
-// .sticky-col-right {
-//   position: sticky;
-//   right: 0;
-//   border-left: 1px solid #ccc !important;
-// }
+@media only screen and (min-width: 1024px) {
+  .sticky-col-right {
+    position: sticky;
+    right: 0;
+    border-left: 1px solid #ccc !important;
+  }
+}
 
 td.sticky-col-left,
 td.sticky-col-right {
@@ -132,12 +132,34 @@ td.sticky-col-right {
 
 .incident-col {
   width: 100px;
+  min-width: 100px;
   text-align: center;
 }
 
+.status-col {
+  min-width: 100px;
+}
+
+.assigned-col {
+  min-width: 140px;
+}
+
+th.species-col {
+  min-width: 200px;
+}
+
+th.actions-col {
+  width: 200px !important;
+}
+
 .actions-col {
-  width: 150px;
+  max-width: 120px;
+  text-align: center;
   white-space: nowrap;
+
+  button + button {
+    margin-left: 4px;
+  }
 }
 
 // COMPLAINT DETAILS START
@@ -884,6 +906,8 @@ p {
 
     td {
       border-color: $gray-300;
+      white-space: nowrap;
+      vertical-align: middle;
     }
 
     .comp-table-icon-weighted:hover {

@@ -189,7 +189,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         <td className={`${isExpandedClass}`}>
           <span>{updatedOnDateTime}</span>
         </td>
-        <td className="sticky-col-right">
+        <td className="sticky-col-right actions-col">
           <ComplaintActionItems
             complaint_identifier={id}
             complaint_type={type}
@@ -203,18 +203,15 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           onMouseEnter={() => toggleHoverState(true)}
           onMouseLeave={() => toggleHoverState(false)}
         >
+          <td className="sticky-col-left"></td>
           <td
-            onClick={toggleExpand}
-            colSpan={2}
-            className="comp-cell-child-expanded"
-          ></td>
-          <td
+            colSpan={9}
             onClick={toggleExpand}
             className="comp-cell-width-330 comp-cell-expanded-truncated comp-cell-child-expanded"
           >
-            {truncatedComplaintDetailText}
+            <div>{truncatedComplaintDetailText}</div>
           </td>
-          <td
+          {/* <td
             onClick={toggleExpand}
             className="comp-cell-child-expanded"
           />
@@ -224,12 +221,12 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
             colSpan={2}
           >
             {truncatedLocationDetailedText}
-          </td>
-          <td
+          </td> */}
+          {/* <td
             onClick={toggleExpand}
             className="comp-cell-child-expanded"
-          />
-          <td
+          /> */}
+          {/* <td
             colSpan={2}
             className="comp-cell-child-expanded comp-cell-child-actions"
           >
@@ -247,7 +244,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
                 agency_code={ownedBy}
               />
             </div>
-          </td>
+          </td> */}
         </tr>
       )}
     </>

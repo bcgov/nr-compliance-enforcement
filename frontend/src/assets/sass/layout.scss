@@ -77,6 +77,18 @@
   }
 }
 
+// BUTTONS
+.btn.icon-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+
+  i {
+    font-size: 1.25rem;
+    color: #003366;
+  }
+}
+
 .comp-header {
   height: 72px;
   padding: 0 0 0 12px;

@@ -3,7 +3,7 @@ import { BsPersonPlus, BsSend, BsArrowRepeat } from "react-icons/bs";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import config from "../../../../../config";
 
 type Props = {
@@ -54,6 +54,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
     <>
       <OverlayTrigger
         placement="top"
+        delay={{ show: 250, hide: 0 }}
         key={`tt-assign-${complaint_identifier}`}
         overlay={
           <Tooltip
@@ -64,15 +65,19 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           </Tooltip>
         }
       >
-        <span
-          className="tt-assign-span"
+        <Button
+          size="sm"
+          variant="light"
+          aria-label="Assign"
+          className="icon-btn"
           onClick={openAsignOfficerModal}
           onKeyUp={openAsignOfficerModal}
         >
-          <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-        </span>
+          <i className="bi bi-person-plus"></i>
+        </Button>
       </OverlayTrigger>
       <OverlayTrigger
+        delay={{ show: 500, hide: 0 }}
         placement="top"
         key={`tt-update-${complaint_identifier}`}
         overlay={
@@ -84,12 +89,15 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           </Tooltip>
         }
       >
-        <span>
-          <BsArrowRepeat
-            onClick={openStatusChangeModal}
-            className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted tt-status-icon"
-          />
-        </span>
+        <Button
+          size="sm"
+          variant="light"
+          className="icon-btn"
+          aria-label="Update Status"
+          onClick={openStatusChangeModal}
+        >
+          <i className="bi bi-arrow-repeat"></i>
+        </Button>
       </OverlayTrigger>
       {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
         <OverlayTrigger
