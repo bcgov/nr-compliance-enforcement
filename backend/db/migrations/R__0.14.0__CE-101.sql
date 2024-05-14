@@ -330,7 +330,8 @@ AS $function$
    
     UPDATE staging_complaint
     SET    staging_status_code = 'SUCCESS'
-    WHERE  complaint_identifier = _complaint_identifier;
+    WHERE  complaint_identifier = _complaint_identifier
+    AND    staging_activity_code = 'INSERT';
   
   EXCEPTION
   WHEN OTHERS THEN
@@ -338,11 +339,13 @@ AS $function$
     UPDATE staging_complaint
     SET    staging_status_code = 'ERROR'
     WHERE  complaint_identifier = _complaint_identifier
-    and staging_status_code = 'PENDING';
+    and staging_status_code = 'PENDING'
+    AND    staging_activity_code = 'INSERT';
   
   END;
   $function$
 ;
+
 
 CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
  RETURNS character varying

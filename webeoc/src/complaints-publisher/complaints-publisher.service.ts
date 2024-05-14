@@ -56,11 +56,12 @@ export class ComplaintsPublisherService {
     try {
       const jsonData = JSON.stringify(complaintUpdate);
       const incidentNumber = complaintUpdate.parent_incident_number;
+      const updateNumber = complaintUpdate.update_number;
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-update-${incidentNumber}`);
+      natsHeaders.set("Nats-Msg-Id", `staged-update-${incidentNumber}-${updateNumber}`);
       const ack = await this.jsClient.publish(NATS_UPDATED_COMPLAINTS_TOPIC_NAME, jsonData, { headers: natsHeaders });
       if (!ack.duplicate) {
-        this.logger.debug(`Complaint update: ${incidentNumber}`);
+        this.logger.debug(`Complaint update: ${incidentNumber} ${incidentNumber}`);
       } else {
         this.logger.debug(`Complaint update already published: ${incidentNumber}`);
       }
@@ -110,9 +111,11 @@ export class ComplaintsPublisherService {
       });
 
       if (!ack?.duplicate) {
-        this.logger.debug(`Complaint update ready to be moved to operational tables: ${incidentNumber}`);
+        this.logger.debug(
+          `Complaint update ready to be moved to operational tables: ${incidentNumber} ${updateNumber}`,
+        );
       } else {
-        this.logger.debug(`Complaint update already moved to operational: ${incidentNumber}`);
+        this.logger.debug(`Complaint update already moved to operational: ${incidentNumber} ${updateNumber}`);
       }
     } catch (error) {
       this.logger.error(`Error saving complaint update to staging: ${error.message}`, error.stack);

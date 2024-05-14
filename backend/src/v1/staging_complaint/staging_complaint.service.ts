@@ -59,7 +59,7 @@ export class StagingComplaintService {
     return newStagingComplaint;
   }
 
-  // Creates a Complaint Update record.  Used when WebEOC creates a complaint update.  The complaint update record is created based off of the data in the staging table
+  // Creates a Complaint Update staging record.  Used when WebEOC creates a complaint update.
   async createComplaintUpdate(stagingComplaint: WebEOCComplaintUpdate): Promise<StagingComplaint> {
     // ignore existing updates of the same incident number and update number, they already exist in the staging table
     const existingStagingComplaint = await this.stagingComplaintRepository

@@ -452,6 +452,109 @@ p {
     background-color: $gray-200;
     color: $black;
   }
+
+  .comp-complaint-update-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $green-90;
+    background-color: $green-90-10;
+    border-radius: 3px;
+    padding: 24px;
+
+    .comp-complaint-update-item-row {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .first-row {
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .first-row .update-number {
+      box-sizing: border-box;
+      color: $gray-600;
+
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 150%;
+    }
+
+    .first-row .received {
+      flex: 1;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 150%;
+    }
+
+    .received span {
+      color: $gray-900;
+    }
+
+    .received label,
+    .received i {
+      color: $gray-600;
+      margin-right: 10px;
+    }
+
+    .complaint-description-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+
+      .complaint-description-label {
+        color: $gray-600;
+
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+      }
+
+      .complaint-description-text {
+        color: $gray-900;
+
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+      }
+    }
+
+    .complaint-location-section {
+      display: flex;
+      flex-direction: column;
+
+      .complaint-location-label-value-pair {
+        display: flex;
+        align-items: center;
+      }
+
+      .complaint-location-label {
+        color: $gray-600;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+        margin-right: 10px;
+      }
+
+      .complaint-location-value {
+        color: $gray-900;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 24px */
+      }
+    }
+  }
 }
 
 .comp-cell-violation-in-progress-icon {

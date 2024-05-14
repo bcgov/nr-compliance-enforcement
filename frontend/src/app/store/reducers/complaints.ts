@@ -36,6 +36,7 @@ import {
 } from "../../common/methods";
 import { Agency } from "../../types/app/code-tables/agency";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
+import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -52,6 +53,8 @@ const initialState: ComplaintState = {
   },
 
   mappedItems: { items: [], unmapped: 0 },
+
+  webeocUpdates: [],
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -153,6 +156,10 @@ export const complaintSlice = createSlice({
 
       return { ...state, mappedItems: update };
     },
+
+    setWebEOCUpdates: (state, action: PayloadAction<WebEOCComplaintUpdateDTO[]>) => {
+      state.webeocUpdates = action.payload;
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -170,6 +177,7 @@ export const {
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
   setMappedComplaints,
+  setWebEOCUpdates,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -319,6 +327,18 @@ export const getGeocodedComplaintCoordinates =
       const response = await get<Feature>(dispatch, parameters);
       dispatch(setGeocodedComplaintCoordinates(response));
     } catch (error) {}
+  };
+
+export const getWebEOCUpdates =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-updates/${complaintIdentifier}`);
+      const response = await get<WebEOCComplaintUpdateDTO[]>(dispatch, parameters);
+      dispatch(setWebEOCUpdates(response));
+    } catch (error) {
+      console.error(`Unable to retrieve WebEOC updates for complaint ${complaintIdentifier}: ${error}`);
+    }
   };
 
 const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: string) => {
@@ -866,6 +886,13 @@ export const selectComplaintAssignedBy = (state: RootState): string | null => {
   }
 
   return null;
+};
+
+export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintUpdateDTO[] | null => {
+  const {
+    complaints: { webeocUpdates },
+  } = state;
+  return webeocUpdates;
 };
 
 export default complaintSlice.reducer;

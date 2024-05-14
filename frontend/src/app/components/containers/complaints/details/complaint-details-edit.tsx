@@ -67,6 +67,7 @@ import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
+import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
 
 export type ComplaintParams = {
   id: string;
@@ -718,6 +719,7 @@ export const ComplaintDetailsEdit: FC = () => {
           <div className="clear-left-float clear-right-float"></div>
         </div>
       </div>
+      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
       {readOnly && <CallDetails complaintType={complaintType} />}
       {readOnly && <CallerInformation />}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
