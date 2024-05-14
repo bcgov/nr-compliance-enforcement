@@ -26,7 +26,7 @@ export class CaseFileService {
       actionJustificationLongDescription
       actionJustificationActiveIndicator
       actions {
-        actionGuid
+        actionId
         actor
         date
         actionCode
@@ -43,7 +43,7 @@ export class CaseFileService {
     }
     preventionDetails {
       actions {
-        actionGuid
+        actionId
         actor
         date
         actionCode
@@ -58,7 +58,8 @@ export class CaseFileService {
         actor
         actionCode
         date,
-        actionGuid
+        actionId,
+        activeIndicator
       }
     }
     equipment {
@@ -70,7 +71,7 @@ export class CaseFileService {
       yCoordinate
       createDate
       actions { 
-        actionGuid
+        actionId
         actor
         actionCode
         date
@@ -84,11 +85,16 @@ export class CaseFileService {
   }
 
   find = async (complaint_id: string, token: string): Promise<CaseFileDto> => {
-    const { data } = await get(token, {
+    const { data, errors } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
         ${this.caseFileQueryFields}
       }`,
     });
+
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
 
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
@@ -233,7 +239,7 @@ export class CaseFileService {
       query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
         createNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode, actionGuid } }
+          note { note, action { actor,date,actionCode, actionId } }
         }
       }`,
       variables: { input: model },
@@ -248,7 +254,7 @@ export class CaseFileService {
       query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
         updateNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode,actionGuid } }
+          note { note, action { actor,date,actionCode, actionId } }
         }
       }`,
       variables: { input: model },
@@ -263,7 +269,7 @@ export class CaseFileService {
       query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
         deleteNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode,actionGuid } }
+          note { note, action { actor,date,actionCode, actionId } }
         }
       }`,
       variables: { input: model },
