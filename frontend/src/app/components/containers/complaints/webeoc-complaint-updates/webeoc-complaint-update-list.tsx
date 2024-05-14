@@ -31,7 +31,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
               <div className="comp-complaint-update-item-row first-row">
                 <div className="update-number">Update {update.updateSeqNumber}:</div>
                 <div className="received">
-                  <label id="date-time-logged-label-id">Recieved</label>
+                  <label id="date-time-logged-label-id">Received</label>
                   <i className="bi bi-calendar comp-margin-right-xxs"></i>
                   <span>{formatDate(update.createUtcTimestamp)}</span>
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
@@ -40,20 +40,20 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
               </div>
               {update.updDetailText && (
                 <div className="complaint-description-section">
-                  <div className="complaint-description-label">Complaint Description</div>
+                  <div className="complaint-description-label">Complaint description</div>
                   <div className="complaint-description-text">{update.updDetailText}</div>
                 </div>
               )}
               <div className="comp-complaint-update-item-row complaint-location-section">
                 {update.updLocationSummaryText && (
                   <div className="complaint-location-label-value-pair">
-                    <div className="complaint-location-label">Complaint Location</div>
+                    <div className="complaint-location-label">Complaint location</div>
                     <div className="complaint-location-value">{update.updLocationSummaryText}</div>
                   </div>
                 )}
                 {update.updLocationDetailedText && (
                   <div className="complaint-location-label-value-pair">
-                    <div className="complaint-location-label">Location Description</div>
+                    <div className="complaint-location-label">Location description</div>
                     <div className="complaint-location-value">{update.updLocationDetailedText}</div>
                   </div>
                 )}

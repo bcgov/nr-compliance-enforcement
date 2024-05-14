@@ -17,6 +17,9 @@ export class ComplaintUpdatesService {
           complaint_identifier: id,
         },
       },
+      order: {
+        updateSeqNumber: "DESC",
+      },
     });
   }
 }

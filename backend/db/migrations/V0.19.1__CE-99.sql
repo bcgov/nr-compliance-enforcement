@@ -39,3 +39,35 @@ COMMENT ON COLUMN public.complaint_update.create_utc_timestamp IS 'The timestamp
 COMMENT ON COLUMN public.complaint_update.update_user_id IS 'The id of the user that updated the complaint update record.';
 
 COMMENT ON COLUMN public.complaint_update.update_utc_timestamp IS 'The timestamp when the complaint_update record was updated.  The timestamp is stored in UTC with no Offset.';
+
+-- history table
+CREATE TABLE
+	public.complaint_update_h (
+		h_complaint_update_guid uuid NOT NULL DEFAULT uuid_generate_v4 (),
+		target_row_id uuid NOT NULL,
+		operation_type char(1) NOT NULL,
+		operation_user_id varchar(32) NOT NULL DEFAULT current_user,
+		operation_executed_at timestamp NOT NULL DEFAULT now (),
+		data_after_executed_operation jsonb,
+		CONSTRAINT "PK_h_complaint_update" PRIMARY KEY (h_complaint_update_guid)
+	);
+
+CREATE
+or REPLACE TRIGGER complaint_update_history_trigger BEFORE INSERT
+OR DELETE
+OR
+UPDATE ON complaint_update FOR EACH ROW EXECUTE PROCEDURE audit_history ('complaint_update_h', 'complaint_update_guid');
+
+COMMENT on table public.complaint_update_h is 'History table for complaint_update table';
+
+COMMENT on column public.complaint_update_h.h_complaint_update_guid is 'System generated unique key for complaint update history. This key should never be exposed to users via any system utilizing the tables.';
+
+COMMENT on column public.complaint_update_h.target_row_id is 'The unique key for the complaint update that has been created or modified.';
+
+COMMENT on column public.complaint_update_h.operation_type is 'The operation performed: I = Insert, U = Update, D = Delete';
+
+COMMENT on column public.complaint_update_h.operation_user_id is 'The id of the user that created or modified the data in the complaint update table.  Defaults to the logged in user if not passed in by the application.';
+
+COMMENT on column public.complaint_update_h.operation_executed_at is 'The timestamp when the data in the complaint update table was created or modified.  The timestamp is stored in UTC with no Offset.';
+
+COMMENT on column public.complaint_update_h.data_after_executed_operation is 'A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.';
