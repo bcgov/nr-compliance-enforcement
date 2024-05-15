@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
 import { HWCREquipment } from "./hwcr-equipment";
-import { HWCROutcomeByAnimal } from "./hwcr-outcome-by-animal";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { HWCRSupplementalNotes } from "./hwcr-supplemental-notes";
 import { HWCRFileAttachments } from "./hwcr-file-attachments";
@@ -28,8 +27,6 @@ export const HWCROutcomeReport: FC = () => {
       <HWCRComplaintAssessment />
       <HWCRComplaintPrevention />
       <HWCREquipment />
-      {/* HWCROutcomeByAnimal is temporary */}
-      <HWCROutcomeByAnimal />
       <HWCROutcomeByAnimalv2 />
       <HWCRSupplementalNotes />
       <HWCRFileAttachments />
