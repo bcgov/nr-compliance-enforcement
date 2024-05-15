@@ -526,9 +526,9 @@ export const upsertNote =
       }
     } else {
       const {
-        action: { actionGuid },
+        action: { actionId },
       } = currentNote;
-      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir, actionGuid));
+      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir, actionId));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier));
@@ -576,11 +576,11 @@ export const deleteNote =
 
     if (currentNote?.action) {
       const {
-        action: { actionGuid },
+        action: { actionId },
       } = currentNote;
 
       const officer = officers.find((item) => item.user_id === idir);
-      const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionGuid));
+      const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionId));
 
       if (result !== null) {
         ToggleSuccess("Supplemental note deleted");
@@ -676,7 +676,7 @@ export const deleteEquipment =
       id: id,
       updateUserId: profile.idir_username,
     };
-
+    
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {
