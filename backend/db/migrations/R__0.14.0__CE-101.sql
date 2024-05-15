@@ -1,3 +1,26 @@
+CREATE OR REPLACE FUNCTION public.format_phone_number(phone_number text)
+ RETURNS text
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    formatted_phone_number TEXT;
+BEGIN
+    -- Remove all non-digit characters
+    formatted_phone_number := regexp_replace(phone_number, '[^0-9]', '', 'g');
+    
+    -- Check if the first character is '1'
+    IF left(formatted_phone_number, 1) = '1' THEN
+        -- Add '+' in front of the phone number
+        RETURN '+' || left(formatted_phone_number, 15);
+    ELSE
+        -- Add '+1' in front of the phone number
+        RETURN '+1' || formatted_phone_number;
+    END IF;
+END;
+$function$
+;
+
+
 CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
  RETURNS void
  LANGUAGE plpgsql
@@ -108,25 +131,10 @@ AS $function$
     -- If the numbers from webeoc contain non-numeric characters, strip those and 
     -- add the + (or +1) prefix
    
-	_caller_phone_1 := CASE
-	    WHEN left(regexp_replace(complaint_data ->> jsonb_cos_primary_phone, non_digit_regex, '', 'g'), 15) ~ '^1'
-	    THEN '+' || left(regexp_replace(complaint_data ->> jsonb_cos_primary_phone, non_digit_regex, '', 'g'), 15)
-	    ELSE '+1' || regexp_replace(complaint_data ->> jsonb_cos_primary_phone, non_digit_regex, '', 'g')
-	END;
-	
-	_caller_phone_2 := CASE
-	    WHEN left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone, non_digit_regex, '', 'g'), 15) ~ '^1'
-	    THEN '+' || left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone, non_digit_regex, '', 'g'), 15)
-	    ELSE '+1' || regexp_replace(complaint_data ->> jsonb_cos_alt_phone, non_digit_regex, '', 'g')
-	END;
-	
-	_caller_phone_3 := CASE
-	    WHEN left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone_2, non_digit_regex, '', 'g'), 15) ~ '^1'
-	    THEN '+' || left(regexp_replace(complaint_data ->> jsonb_cos_alt_phone_2, non_digit_regex, '', 'g'), 15)
-	    ELSE '+1' || regexp_replace(complaint_data ->> jsonb_cos_alt_phone_2, non_digit_regex, '', 'g')
-	END;
-
-   
+	_caller_phone_1 := format_phone_number(complaint_data ->> jsonb_cos_primary_phone);
+	_caller_phone_2 := format_phone_number(complaint_data ->> jsonb_cos_alt_phone);
+	_caller_phone_2 := format_phone_number(complaint_data ->> jsonb_cos_alt_phone_2);
+	   
     _location_summary_text := left(complaint_data ->> 'address', 100)
     ||
     CASE
@@ -345,7 +353,6 @@ AS $function$
   END;
   $function$
 ;
-
 
 CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
  RETURNS character varying
