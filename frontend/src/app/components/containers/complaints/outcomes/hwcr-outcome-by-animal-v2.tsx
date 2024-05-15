@@ -10,11 +10,12 @@ import { CreateAnimalOutcome } from "./oucome-by-animal/create-outcome";
 import { AnimalOutcome } from "./oucome-by-animal/animal-outcome";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
-import { createAnimalOutcome, getCaseFile } from "../../../../store/reducers/case-thunks";
-import { selectAnimalOutcomes } from "../../../../store/reducers/case-selectors";
+import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "../../../../store/reducers/case-thunks";
+import { selectAnimalOutcomes, selectCaseId } from "../../../../store/reducers/case-selectors";
 import { openModal } from "../../../../store/reducers/app";
 import { DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
+import { UUID } from "crypto";
 
 type props = {};
 
@@ -30,6 +31,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   const complaint = useAppSelector(selectComplaint);
   const subjects = useAppSelector(selectAnimalOutcomes);
+  const caseId = useAppSelector(selectCaseId) as UUID;
 
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
 
@@ -67,6 +69,18 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- saved before adding the outcome to the list of outcomes
   const handleSave = (item: AnimalOutcomeV2) => {
     dispatch(createAnimalOutcome(id, item)).then((result) => {
+      if (result === "success") {
+        dispatch(getCaseFile(id));
+        setShowForm(false);
+      }
+    });
+  };
+
+  //-- save an item from the create-complaint component
+  //-- when saving make sure that the outcome is successfully
+  //-- saved before adding the outcome to the list of outcomes
+  const handleUpdate = (item: AnimalOutcomeV2) => {
+    dispatch(updateAnimalOutcome(caseId, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
         setShowForm(false);
@@ -123,7 +137,9 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
               index={idx}
               outcome={item}
               agency={agency}
+              assignedOfficer={assignedOfficer}
               cancel={handleEnableEdit}
+              update={handleUpdate}
             />
           );
         }

@@ -37,9 +37,10 @@ import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outc
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { from } from "linq-to-typescript";
 import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
-import { DrugUsedInput } from "../../types/app/case-files/animal-outcome/drug-used-input";
+import { DrugUsedInputV2 } from "../../types/app/case-files/animal-outcome/drug-used-input";
 import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
 import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
+import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -791,7 +792,7 @@ export const createAnimalOutcome =
 
     const drugsUsed = drugs.map((item) => {
       const { vial, drug, amountUsed, amountDiscarded, injectionMethod, discardMethod, reactions, remainingUse } = item;
-      const record: DrugUsedInput = {
+      const record: DrugUsedInputV2 = {
         vial,
         drug,
         amountUsed,
@@ -827,6 +828,106 @@ export const createAnimalOutcome =
     let result = await post<CaseFileDto>(dispatch, parameters);
 
     console.log(input);
+
+    if (result !== null) {
+      return "success";
+    } else {
+      return "error";
+    }
+  };
+
+export const updateAnimalOutcome =
+  (
+    id: UUID,
+    animalOutcome: AnimalOutcomeV2,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+    } = getState();
+
+    const {
+      id: wildlifeId,
+      species,
+      sex,
+      age,
+      conflictHistory,
+      outcome,
+      threatLevel,
+      officer,
+      date,
+      tags,
+      drugs,
+      drugAuthorization,
+    } = animalOutcome;
+    let actions: Array<AnimalOutcomeActionInput> = [];
+
+    //-- add an action if there is an outcome with officer
+    if (outcome && date) {
+      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
+    }
+
+    //-- add an action if there are any drugs used
+    if (from(drugs).any() && drugAuthorization) {
+      const { officer, date } = drugAuthorization;
+      actions = [...actions, { action: CASE_ACTION_CODE.ADMNSTRDRG, actor: officer, date }];
+    }
+
+    //-- convert eartags and drugs to input types
+    //-- might be able to remove the mapping for ear tags and drugs
+    // const earTags = tags.map(({ id: tagId, ear, identifier }) => {
+    //   let record: EarTagInput = { id: tagId, ear, identifier };
+    //   return record;
+    // });
+
+    const drugsUsed = drugs.map((item) => {
+      const {
+        id: drugId,
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        injectionMethod,
+        discardMethod,
+        reactions,
+        remainingUse,
+      } = item;
+      const record: DrugUsedInputV2 = {
+        id: drugId,
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        injectionMethod,
+        discardMethod,
+        reactions,
+        remainingUse,
+      };
+
+      return record;
+    });
+
+    const input: UpdateAnimalOutcomeInput = {
+      caseIdentifier: id,
+      updateUserId: idir,
+      wildlife: {
+        id: wildlifeId,
+        species,
+        sex,
+        age,
+        categoryLevel: threatLevel,
+        conflictHistory,
+        outcome,
+        tags,
+        drugs: drugsUsed,
+        actions: from(actions).any() ? actions : undefined,
+      },
+    };
+
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
+    let result = await patch<CaseFileDto>(dispatch, parameters);
 
     if (result !== null) {
       return "success";
