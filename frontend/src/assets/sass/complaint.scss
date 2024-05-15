@@ -13,6 +13,7 @@ body {
   margin-left: 24px;
   overflow: hidden;
   border: 1px solid #999;
+
   .map-container {
     position: absolute;
     top: 0;
@@ -49,6 +50,7 @@ body {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 4px;
+  row-gap: 4px;
 
   &:has(button) {
     padding-top: 16px;
@@ -89,6 +91,21 @@ body {
   .table-container-inner {
     flex: 1 1 auto;
     overflow: auto;
+  }
+}
+
+// FILTER COMPONENT
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  label {
+    margin-bottom: 8px;
+  }
+
+  & + .filter-container {
+    margin-top: 16px;
   }
 }
 
@@ -1032,24 +1049,6 @@ p {
   flex-grow: 0;
 }
 
-.comp-filter-label {
-  padding: 0px 0px 8px;
-  gap: 4px;
-  width: 298px;
-  height: 32px;
-}
-
-.comp-filter-left {
-  float: left;
-  width: 298px;
-}
-
-.comp-filter {
-  float: left;
-  width: 298px;
-  margin: 0px 0px 0px 43px;
-}
-
 .comp-box-footer {
   margin-right: 24px;
   height: 100px;
@@ -1130,10 +1129,6 @@ p {
 //override for horizontal dual month display
 .react-datepicker__month-container {
   float: left;
-}
-
-.collapsible .content {
-  padding: 6px;
 }
 
 .collapsible .header {
@@ -1340,14 +1335,6 @@ p {
   gap: 8px;
   height: 32px;
   cursor: pointer;
-}
-
-.filter-container {
-  margin: 0px 0px 10px 0px;
-}
-
-.filter-select-padding {
-  padding: 6px, 12px, 6px, 12px;
 }
 
 .clear-left-float {

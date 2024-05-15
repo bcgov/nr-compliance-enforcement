@@ -1,6 +1,6 @@
-import { FC, useState, useContext } from "react";
+import { FC, useState, useContext, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Nav, Navbar } from "react-bootstrap";
+import { Button, Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
 import { useAppSelector } from "../../../hooks/hooks";
@@ -15,6 +15,7 @@ import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useNavigate } from "react-router-dom";
+import Offcanvas from "react-bootstrap/Offcanvas";
 
 type Props = {
   defaultComplaintType: string;
@@ -31,7 +32,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
 
-  const [isExpanded, setExpanded] = useState(false);
+  const [isExpanded, setExpanded] = useState(true);
   const { getToggleProps } = useCollapse({ isExpanded });
 
   const defaultZone = useAppSelector(selectDefaultZone);
@@ -83,17 +84,23 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     setViewType(view);
   };
 
+  const [show, setShow] = useState(false);
+  const toggleFilters = useCallback(() => setShow((prevShow) => !prevShow), []);
+
   return (
     <>
       <div className="comp-page-header">
-        <div>
+        <div className="comp-page-header-inner">
           <h1>Complaints</h1>
+          <Button onClick={() => handleCreateClick()}>
+            <span>Create Complaint</span>
+          </Button>
         </div>
 
         {/* Navigation Bar */}
         {/* <!-- create list of complaint types --> */}
         <Navbar className="basic-navbar-nav complaint-navbar">
-          <Nav className="nav nav-tabs comp-tab container-fluid">
+          <Nav className="nav nav-tabs">
             {/* <!-- dynamic tabs --> */}
             {complaintTypes.map(({ id, code, name }) => {
               return (
@@ -114,7 +121,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
             {/* <!-- dynamic tabs end --> */}
 
-            <Nav.Item className="ms-auto">
+            {/* <Nav.Item className="ms-auto">
               <div
                 className="cursor-pointer"
                 onClick={() => handleCreateClick()}
@@ -128,8 +135,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
                 <div className="left-float">Create</div>
                 <div className="clear-left-float"></div>
               </div>
-            </Nav.Item>
-            <Nav.Item
+            </Nav.Item> */}
+            {/* <Nav.Item
               {...getToggleProps({
                 onClick: () => {
                   const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
@@ -156,7 +163,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
               </div>
               <div className="left-float">Filters</div>
               <div className="clear-left-float"></div>
-            </Nav.Item>
+            </Nav.Item> */}
           </Nav>
         </Navbar>
 
@@ -164,14 +171,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
+          toggleFilters={toggleFilters}
           complaintType={complaintType}
           searchQuery={search}
           applySearchQuery={setSearch}
-        />
-
-        <ComplaintFilter
-          type={complaintType}
-          isOpen={isExpanded}
         />
       </div>
 
@@ -188,6 +191,22 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           />
         )}
       </div>
+
+      <Offcanvas
+        show={show}
+        onHide={toggleFilters}
+        placement="end"
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Filters</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <ComplaintFilter
+            type={complaintType}
+            isOpen={isExpanded}
+          />
+        </Offcanvas.Body>
+      </Offcanvas>
     </>
   );
 };

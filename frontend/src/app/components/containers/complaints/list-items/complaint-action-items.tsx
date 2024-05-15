@@ -71,9 +71,8 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           aria-label="Assign"
           className="icon-btn"
           onClick={openAsignOfficerModal}
-          onKeyUp={openAsignOfficerModal}
         >
-          <i className="bi bi-person-plus"></i>
+          <i className="bi bi-person-up"></i>
         </Button>
       </OverlayTrigger>
       <OverlayTrigger

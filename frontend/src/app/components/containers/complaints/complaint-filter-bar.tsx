@@ -5,6 +5,7 @@ import { clearFilter } from "../../../store/reducers/complaint-filters";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import MapListToggle from "../../common/map-list-toggle";
 import SearchInput from "../../common/search-input";
+import { Button } from "react-bootstrap";
 
 type Props = {
   toggleViewType: (view: "map" | "list") => void;
@@ -12,6 +13,7 @@ type Props = {
   complaintType: string;
   searchQuery: string | undefined;
   applySearchQuery: Function;
+  toggleFilters: any;
 };
 
 export const ComplaintFilterBar: FC<Props> = ({
@@ -20,6 +22,7 @@ export const ComplaintFilterBar: FC<Props> = ({
   complaintType,
   searchQuery,
   applySearchQuery,
+  toggleFilters,
 }) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
@@ -88,6 +91,16 @@ export const ComplaintFilterBar: FC<Props> = ({
       </div>
 
       <div className="comp-filter-bar-pills">
+        <Button
+          variant="outline-primary"
+          size="sm"
+          className="icon-start filter-pill mr-8"
+          onClick={toggleFilters}
+        >
+          <i className="bi bi-filter"></i>
+          <span>Filters</span>
+        </Button>
+
         {hasFilter("status") && (
           <FilterButton
             id="comp-status-filter"
