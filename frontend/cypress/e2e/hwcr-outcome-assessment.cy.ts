@@ -21,7 +21,7 @@ describe("HWCR Outcome Assessments", () => {
 
         //validate error message
         cy.get(".error-message").should(($error) => {
-          expect($error).to.contain.text("One or more assessment is required");
+          expect($error).to.contain.text("Required");
         });
 
         //validate Action Required is required
@@ -126,7 +126,6 @@ describe("HWCR Outcome Assessments", () => {
         };
 
         cy.fillInHWCSection(sectionParams).then(() => {
-          sectionParams.checkboxes = ["Assessed public safety risk", "Assessed known conflict history"];
           cy.validateHWCSection(sectionParams);
         });
       } else {
