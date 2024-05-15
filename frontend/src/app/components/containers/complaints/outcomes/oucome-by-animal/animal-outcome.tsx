@@ -15,7 +15,7 @@ import { BsTrash3, BsPencil } from "react-icons/bs";
 import { getAvatarInitials, formatDate, pad } from "../../../../../common/methods";
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
-import { DrugItem } from "../animal-outcomes/drug-item";
+import { DrugItem } from "./drug-item";
 
 type props = {
   index: number;
