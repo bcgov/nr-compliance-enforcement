@@ -107,7 +107,7 @@ export class CaseFileService {
         discardMethod
       }
       actions { 
-        actionGuid
+        actionId
         actor
         actionCode
         date
