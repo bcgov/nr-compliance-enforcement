@@ -136,16 +136,6 @@ p {
   width: 329px;
 }
 
-.comp-header-label {
-  float: left;
-  margin-top: 1px;
-}
-
-.comp-header-caret {
-  float: right;
-  cursor: pointer;
-}
-
 .comp-top-right {
   border-top-right-radius: 4px;
 }
@@ -713,12 +703,9 @@ p {
 // COMPLAINT DETAILS END
 
 #complaint-list {
-  width: 1330px;
   border-collapse: initial;
   border-spacing: 0px;
-
   font-style: normal;
-  font-size: 12px;
 
   thead {
     font-weight: 600;
@@ -730,6 +717,7 @@ p {
       background: $gray-400;
       background-color: #e4e4e4;
       border-color: $gray-400;
+      white-space: nowrap;
     }
 
     th.unsortable {
@@ -770,6 +758,7 @@ p {
 
     td {
       border-color: $gray-300;
+      white-space: nowrap;
     }
 
     .comp-table-icon-weighted:hover {
@@ -803,26 +792,6 @@ p {
   }
 
   .comp-header-right-border {
-    border-right-width: 1px;
-  }
-
-  .comp-header-left-radius {
-    border-top-left-radius: 4px !important;
-    border-width: 1px 0px 1px 1px;
-  }
-
-  .comp-header-right-radius {
-    border-top-right-radius: 4px !important;
-    border-width: 1px;
-  }
-
-  .comp-header-horizontal-border {
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-  }
-
-  .comp-header-vertical-border {
-    border-left-width: 1px;
     border-right-width: 1px;
   }
 
@@ -994,7 +963,8 @@ p {
 }
 
 .comp-cell-child-expanded {
-  border-top: none !important;
+  padding-top: 0 !important;
+  // border-top: none !important;
 }
 
 .comp-cell-left {
@@ -1454,4 +1424,53 @@ p {
 .form-check-input:disabled {
   cursor: not-allowed;
   pointer-events: all;
+}
+
+// COMPLAINT TABLE CUSTOMIZATION
+th,
+td {
+  white-space: nowrap;
+}
+
+td {
+  vertical-align: middle;
+}
+
+td.indicent-col {
+  text-align: center;
+}
+
+.actions-col {
+  text-align: center;
+}
+
+.hwc-table-dl {
+  margin: 0;
+
+  + dl {
+    margin-top: 16px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  dt {
+    width: 40ch;
+  }
+
+  dd {
+    margin: 0;
+    white-space: normal;
+    max-width: 92ch;
+  }
+}
+
+.bg-species-badge {
+  font-size: 0.75rem;
+  line-height: normal;
+  background-color: #e4e4e4;
+  color: #313132;
 }

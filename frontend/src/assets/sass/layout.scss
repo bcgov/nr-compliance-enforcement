@@ -27,11 +27,6 @@
   z-index: 6000;
 }
 
-.fixed-table-header {
-  position: sticky;
-  top: 166px; // Header (72px) + Tabs (48px) + filters (46px)
-}
-
 .comp-create-header {
   top: 72px;
   position: sticky !important;
@@ -567,4 +562,87 @@ p {
   img {
     opacity: 0.5;
   }
+}
+
+// TABLES
+table {
+  font-size: 0.875rem;
+
+  th {
+    border-width: 1px 0;
+    + th {
+      border-left-width: 1px;
+    }
+  }
+
+  td {
+    border-color: $gray-300;
+  }
+
+  a {
+    color: #1a5a96;
+  }
+}
+
+// Utilities
+.sticky-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.sticky-col {
+  position: sticky;
+
+  &--left {
+    left: 0;
+    border-right: 1px solid $gray-300;
+
+    + th {
+      border-left-width: 0;
+    }
+  }
+
+  &--right {
+    right: 0;
+    border-left: 1px solid $gray-300;
+  }
+}
+
+td.sticky-col {
+  background-color: #fff;
+}
+
+.actions-col {
+  .btn + .btn {
+    margin-left: 8px;
+  }
+}
+
+// Sortable Heaader
+.sortable-header {
+  white-space: nowrap;
+
+  &-inner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  & .header-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// BUTTONS
+.btn.icon-btn {
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  color: #1a5a96;
 }
