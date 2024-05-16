@@ -682,7 +682,7 @@ export const deleteEquipment =
       id: id,
       updateUserId: profile.idir_username,
     };
-    
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {
@@ -830,8 +830,10 @@ export const createAnimalOutcome =
     console.log(input);
 
     if (result !== null) {
+      ToggleSuccess("Animal outcome added");
       return "success";
     } else {
+      ToggleError("Error, unable to add animal outcome");
       return "error";
     }
   };
@@ -876,12 +878,6 @@ export const updateAnimalOutcome =
     }
 
     //-- convert eartags and drugs to input types
-    //-- might be able to remove the mapping for ear tags and drugs
-    // const earTags = tags.map(({ id: tagId, ear, identifier }) => {
-    //   let record: EarTagInput = { id: tagId, ear, identifier };
-    //   return record;
-    // });
-
     const drugsUsed = drugs.map((item) => {
       const {
         id: drugId,
@@ -930,8 +926,10 @@ export const updateAnimalOutcome =
     let result = await patch<CaseFileDto>(dispatch, parameters);
 
     if (result !== null) {
+      ToggleSuccess("Animal outcome updated");
       return "success";
     } else {
+      ToggleError("Error, unable to update animal outcome");
       return "error";
     }
   };
