@@ -35,29 +35,37 @@ export class WebEOCComplaintsScheduler {
 
   // Grabs the complaints and publishes them to NATS
   async fetchAndPublishComplaintsFromWebEOC() {
-    await this.authenticateWithWebEOC();
-    // Fetch complaints from WebEOC here
-    const complaints = await this.fetchComplaintsFromWebEOC();
+    try {
+      await this.authenticateWithWebEOC();
+      // Fetch complaints from WebEOC here
+      const complaints = await this.fetchComplaintsFromWebEOC();
 
-    this.logger.debug(`Found ${complaints?.length} complaints from WebEOC`);
+      this.logger.debug(`Found ${complaints?.length} complaints from WebEOC`);
 
-    // Publish each complaint to NATS
-    for (const complaint of complaints) {
-      await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+      // Publish each complaint to NATS
+      for (const complaint of complaints) {
+        await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+      }
+    } catch (error) {
+      this.logger.error(`Unable to fetch complaint from WebEOC`, error);
     }
   }
 
   // Grabs the complaints and publishes them to NATS
   async fetchAndPublishComplaintUpdatesFromWebEOC() {
-    await this.authenticateWithWebEOC();
-    // Fetch complaints from WebEOC here
-    const complaintUpdates = await this.fetchComplaintUpdatesFromWebEOC();
+    try {
+      await this.authenticateWithWebEOC();
+      // Fetch complaints from WebEOC here
+      const complaintUpdates = await this.fetchComplaintUpdatesFromWebEOC();
 
-    this.logger.debug(`Found ${complaintUpdates?.length} complaint updates from WebEOC`);
+      this.logger.debug(`Found ${complaintUpdates?.length} complaint updates from WebEOC`);
 
-    // Publish each complaint to NATS
-    for (const complaintUpdate of complaintUpdates) {
-      await this.complaintsPublisherService.publishComplaintUpdatesFromWebEOC(complaintUpdate);
+      // Publish each complaint to NATS
+      for (const complaintUpdate of complaintUpdates) {
+        await this.complaintsPublisherService.publishComplaintUpdatesFromWebEOC(complaintUpdate);
+      }
+    } catch (error) {
+      this.logger.error(`Unable to fetch complaint updates from WebEOC`, error);
     }
   }
 
