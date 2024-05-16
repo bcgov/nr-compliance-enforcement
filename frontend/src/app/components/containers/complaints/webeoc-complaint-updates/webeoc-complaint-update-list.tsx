@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { getWebEOCUpdates, selectWebEOCComplaintUpdates } from "../../../../store/reducers/complaints";
 import { WebEOCComplaintUpdateDTO } from "../../../../types/app/complaints/webeoc-complaint-update";
@@ -53,7 +53,12 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
               <div className="comp-complaint-update-item-row first-row">
                 <div className="update-number">Update {update.updateSeqNumber}:</div>
                 <div className="received">
-                  <label id="date-time-logged-label-id">Received</label>
+                  <span
+                    className="date-time-logged-label"
+                    id="date-time-logged-label-id"
+                  >
+                    Received
+                  </span>
                   <i className="bi bi-calendar comp-margin-right-xxs"></i>
                   <span>{formatDate(update.createUtcTimestamp)}</span>
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
@@ -78,8 +83,15 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   {showLinks[update.complaintUpdateGuid] && !expandedUpdates[update.complaintUpdateGuid] && (
                     <div className="show-more-container">
                       <span
+                        role="button"
+                        tabIndex={0}
                         className="show-more-link"
                         onClick={() => toggleExpand(update.complaintUpdateGuid)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            toggleExpand(update.complaintUpdateGuid);
+                          }
+                        }}
                       >
                         Click to expand
                       </span>

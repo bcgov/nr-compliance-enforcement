@@ -145,6 +145,7 @@ CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_ident
 AS $function$
   declare
     non_digit_regex CONSTANT text := '[^\d]'; -- used to strip out non-numeric characters from the phone number fields
+    webeoc_user_id CONSTANT varchar(6) := 'webeoc';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -397,9 +398,9 @@ AS $function$
                       (
                                   _attractant_code,
                                   generated_uuid,
-                                  'webeoc',
+                                  webeoc_user_id,
                                   _create_utc_timestamp,
-                                  'webeoc',
+                                  webeoc_user_id,
                                   _update_utc_timestamp
                       );
         
