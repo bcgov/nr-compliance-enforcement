@@ -42,8 +42,7 @@ export const HWCRSupplementalNotes: FC = () => {
 
   const renderNote = useMemo(() => {
     const { action, note } = !supplementalNote ? { action: undefined, note: "" } : supplementalNote;
-
-    if (action && !showInput) {
+    if (action?.activeIndicator && !showInput) {
       return (
         <SupplementalNotesItem
           notes={note}
