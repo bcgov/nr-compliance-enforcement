@@ -92,7 +92,7 @@
     "redux-persist": "^6.0.0",
     "stream-browserify": "^3.0.0",
     "typescript": "*",
-    "uncontrollable": "^8.0.2"
+    "uncontrollable": "^8.0.2",
     "urlpattern-polyfill": "^9.0.0",
     "util": "^0.12.5",
     "uuid": "^9.0.1",
