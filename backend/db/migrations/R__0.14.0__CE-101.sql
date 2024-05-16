@@ -13,6 +13,8 @@ DECLARE
     suffix VARCHAR(10) := ''; -- Suffix for uniqueness
     counter INTEGER := 1; -- Counter for unique code generation
     new_display_order INTEGER; -- used for setting the display_order value of the new code
+    webeoc_user_id CONSTANT varchar(6) := 'webeoc';
+   
 BEGIN
     -- Truncate and uppercase the webEOC value, get rid of spaces, and truncate to 9 characters to ensure we have room for adding a number for uniqueness
     truncated_code := UPPER(LEFT(regexp_replace(webeoc_value, '\s', '', 'g'), 10));
@@ -91,8 +93,8 @@ BEGIN
             USING new_display_order;
            
             -- Insert new code into the specific code table
-            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', ''webeoc'', $4, ''webeoc'', $4, $5)', target_code_table, column_name)
-            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order;
+            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
+            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
             UPDATE configuration
@@ -101,7 +103,7 @@ BEGIN
 
             -- Insert into staging_metadata_mapping
             INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-            VALUES (code_table_type, webeoc_value, new_code, 'webeoc', current_utc_timestamp, 'webeoc', current_utc_timestamp);
+            VALUES (code_table_type, webeoc_value, new_code, webeoc_user_id, current_utc_timestamp, webeoc_user_id, current_utc_timestamp);
 
             RETURN new_code; -- Return the new unique code
         ELSE
@@ -146,6 +148,10 @@ AS $function$
   declare
     non_digit_regex CONSTANT text := '[^\d]'; -- used to strip out non-numeric characters from the phone number fields
     webeoc_user_id CONSTANT varchar(6) := 'webeoc';
+    webeoc_update_type_insert CONSTANT varchar(6) := 'INSERT';
+    staging_status_code_pending CONSTANT varchar(7) := 'PENDING';
+    staging_status_code_success CONSTANT varchar(7) := 'SUCCESS' ;
+    staging_status_code_error CONSTANT varchar(7) := 'ERROR';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -204,8 +210,8 @@ AS $function$
     INTO   complaint_data
     FROM   staging_complaint sc
     WHERE  sc.complaint_identifier = _complaint_identifier
-    AND    sc.staging_status_code = 'PENDING' -- meaning that this complaint hasn't yet been moved to the complaint table yet
-    AND    sc.staging_activity_code = 'INSERT'; -- this means that we're dealing with a new complaint from webeoc, not an update
+    AND    sc.staging_status_code = staging_status_code_pending -- meaning that this complaint hasn't yet been moved to the complaint table yet
+    AND    sc.staging_activity_code = webeoc_update_type; -- this means that we're dealing with a new complaint from webeoc, not an update
     
     IF complaint_data IS NULL THEN
       RETURN;
@@ -456,18 +462,18 @@ AS $function$
     END IF;
    
     UPDATE staging_complaint
-    SET    staging_status_code = 'SUCCESS'
+    SET    staging_status_code = staging_status_code_success
     WHERE  complaint_identifier = _complaint_identifier
-    AND    staging_activity_code = 'INSERT';
+    AND    staging_activity_code = webeoc_update_type_insert;
   
   EXCEPTION
   WHEN OTHERS THEN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
     UPDATE staging_complaint
-    SET    staging_status_code = 'ERROR'
+    SET    staging_status_code = staging_status_code_error
     WHERE  complaint_identifier = _complaint_identifier
-    and staging_status_code = 'PENDING'
-    AND    staging_activity_code = 'INSERT';
+    and staging_status_code = staging_status_code_pending
+    AND    staging_activity_code = webeoc_update_type_insert;
   
   END;
   $function$
