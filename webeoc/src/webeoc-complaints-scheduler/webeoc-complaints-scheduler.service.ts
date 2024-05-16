@@ -108,7 +108,7 @@ export class WebEOCComplaintsScheduler {
       },
     };
 
-    const url = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - COS Integration Incidents`;
+    const url = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - API COS Complaints Incidents`;
 
     try {
       const response = await axios.post(url, body, config);
