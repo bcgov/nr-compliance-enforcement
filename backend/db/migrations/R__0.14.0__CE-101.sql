@@ -146,12 +146,11 @@ CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_ident
  LANGUAGE plpgsql
 AS $function$
   declare
-    non_digit_regex CONSTANT text := '[^\d]'; -- used to strip out non-numeric characters from the phone number fields
-    webeoc_user_id CONSTANT varchar(6) := 'webeoc';
-    webeoc_update_type_insert CONSTANT varchar(6) := 'INSERT';
-    staging_status_code_pending CONSTANT varchar(7) := 'PENDING';
-    staging_status_code_success CONSTANT varchar(7) := 'SUCCESS' ;
-    staging_status_code_error CONSTANT varchar(7) := 'ERROR';
+    WEBEOC_USER_ID CONSTANT varchar(6) := 'webeoc';
+    WEBEOC_UPDATE_TYPE_INSERT CONSTANT varchar(6) := 'INSERT';
+    STAGING_STATUS_CODE_PENDING CONSTANT varchar(7) := 'PENDING';
+    STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
+    STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -210,7 +209,7 @@ AS $function$
     INTO   complaint_data
     FROM   staging_complaint sc
     WHERE  sc.complaint_identifier = _complaint_identifier
-    AND    sc.staging_status_code = staging_status_code_pending -- meaning that this complaint hasn't yet been moved to the complaint table yet
+    AND    sc.staging_status_code = STAGING_STATUS_CODE_PENDING -- meaning that this complaint hasn't yet been moved to the complaint table yet
     AND    sc.staging_activity_code = webeoc_update_type; -- this means that we're dealing with a new complaint from webeoc, not an update
     
     IF complaint_data IS NULL THEN
@@ -404,9 +403,9 @@ AS $function$
                       (
                                   _attractant_code,
                                   generated_uuid,
-                                  webeoc_user_id,
+                                  WEBEOC_USER_ID,
                                   _create_utc_timestamp,
-                                  webeoc_user_id,
+                                  WEBEOC_USER_ID,
                                   _update_utc_timestamp
                       );
         
@@ -462,18 +461,18 @@ AS $function$
     END IF;
    
     UPDATE staging_complaint
-    SET    staging_status_code = staging_status_code_success
+    SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
     WHERE  complaint_identifier = _complaint_identifier
-    AND    staging_activity_code = webeoc_update_type_insert;
+    AND    staging_activity_code = WEBEOC_UPDATE_TYPE_INSERT;
   
   EXCEPTION
   WHEN OTHERS THEN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
     UPDATE staging_complaint
-    SET    staging_status_code = staging_status_code_error
+    SET    staging_status_code = STAGING_STATUS_CODE_ERROR
     WHERE  complaint_identifier = _complaint_identifier
-    and staging_status_code = staging_status_code_pending
-    AND    staging_activity_code = webeoc_update_type_insert;
+    and staging_status_code = STAGING_STATUS_CODE_PENDING
+    AND    staging_activity_code = WEBEOC_UPDATE_TYPE_INSERT;
   
   END;
   $function$

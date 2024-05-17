@@ -7,8 +7,8 @@ import { StagingActivityCodeEnum } from "../../enum/staging_activity_code.enum";
 import { StagingActivityCode } from "../staging_activity_code/entities/staging_activity_code.entity";
 import { WebEOCComplaint } from "../../types/webeoc-complaint";
 import { StagingComplaint } from "./entities/staging_complaint.entity";
-import { WEBEOC_REPORT_TYPE } from "src/types/constants";
-import { WebEOCComplaintUpdate } from "src/types/webeoc-complaint-update";
+import { WEBEOC_REPORT_TYPE } from "../../types/constants";
+import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 
 @Injectable()
 export class StagingComplaintService {
