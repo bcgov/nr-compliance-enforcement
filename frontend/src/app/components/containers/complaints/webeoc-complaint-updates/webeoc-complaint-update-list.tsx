@@ -59,10 +59,10 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   >
                     Received
                   </span>
-                  <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                  <span>{formatDate(update.createUtcTimestamp)}</span>
-                  <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                  <span>{formatTime(update.createUtcTimestamp)}</span>
+                  <i className="bi bi-calendar"></i>
+                  {formatDate(update.createUtcTimestamp)}
+                  <i className="bi bi-clock comp-margin-left-xs"></i>
+                  {formatTime(update.createUtcTimestamp)}
                 </div>
               </div>
               {update.updDetailText && (
