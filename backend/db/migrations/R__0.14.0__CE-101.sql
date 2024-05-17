@@ -126,7 +126,7 @@ DECLARE
 BEGIN
     -- Remove all non-digit characters
     formatted_phone_number := regexp_replace(phone_number, '[^0-9]', '', 'g');
-    IF (formatted_phone_number IS NULL or formatted_phone_number = '') then
+    IF (formatted_phone_number IS NULL or (length(formatted_phone_number) = 0)) then
 		return null;
     END IF;
     -- Check if the first character is '1'
