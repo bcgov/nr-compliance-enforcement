@@ -29,18 +29,10 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      // Connect to NATS server using environment variable for the server address
-      this.natsConnection = await connect({
-        servers: process.env.NATS_HOST,
-      });
-
-      // Set up JetStream context
+      this.natsConnection = await connect({ servers: process.env.NATS_HOST });
       this.jsm = await this.natsConnection.jetstreamManager();
 
-      // Set up or validate the stream configuration
       await this.setupStream();
-
-      // Subscribe to topics after ensuring the stream is correctly configured
       await this.subscribeToNewComplaintsFromWebEOC();
 
       this.logger.debug((await this.jsm.streams.info(NATS_STREAM_NAME)).state);
@@ -49,7 +41,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     }
   }
 
-  async setupStream(): Promise<void> {
+  private async setupStream(): Promise<void> {
     const streamConfig = {
       name: NATS_STREAM_NAME,
       subjects: [
@@ -59,96 +51,122 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
       ],
       storage: StorageType.Memory,
-      duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds,
+      duplicateWindow: 10 * 60 * 1000000000, // 10 minutes in nanoseconds
     };
 
     try {
-      if (!this.jsm) {
-        throw new Error("JetStream Management client is not initialized.");
-      }
+      if (!this.jsm) throw new Error("JetStream Management client is not initialized.");
 
-      const streamInfo = await this.jsm.streams.add(streamConfig);
-      console.log("Stream created or updated:", streamInfo);
-
-      try {
-        await this.jsm.consumers.info(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
-        console.log(`Consumer already exists. No need to create.`);
-      } catch (error) {
-        await this.jsm.consumers.add(NATS_STREAM_NAME, {
-          ack_policy: AckPolicy.Explicit,
-          durable_name: NATS_DURABLE_COMPLAINTS,
-        });
-        this.logger.debug(`Consumer created`);
-      }
+      await this.jsm.streams.add(streamConfig);
+      await this.ensureConsumer(NATS_DURABLE_COMPLAINTS);
     } catch (error) {
       this.logger.error(`Unable to setup streams and consumers`, error);
     }
   }
 
-  // subscribe to new nats to listen for new complaints from webeoc.  These will be moved to the staging table.
+  private async ensureConsumer(consumerName: string): Promise<void> {
+    try {
+      await this.jsm.consumers.info(NATS_STREAM_NAME, consumerName);
+      this.logger.debug(`Consumer ${consumerName} already exists.`);
+    } catch (error) {
+      await this.jsm.consumers.add(NATS_STREAM_NAME, {
+        ack_policy: AckPolicy.Explicit,
+        durable_name: consumerName,
+      });
+      this.logger.debug(`Consumer ${consumerName} created`);
+    }
+  }
+
   private async subscribeToNewComplaintsFromWebEOC() {
     const sc = StringCodec();
     const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
-
     const iter = await consumer.consume({ max_messages: 1 });
 
     for await (const message of iter) {
-      // listen for messages indicating that a new complaint was found from webeoc
-      if (message.subject === NATS_NEW_COMPLAINTS_TOPIC_NAME) {
-        const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
-        this.logger.debug("Received complaint:", complaintMessage?.incident_number);
-        try {
-          const success = await message.ackAck();
-          if (success) {
-            await this.service.createNewComplaintInStaging(complaintMessage); // create the complaint in staging
-            this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage.incident_number); // create message indicating success
-          }
-        } catch (error) {
-          message.nak(10_000); // retry in 10 seconds
-          this.logger.error(
-            `Message ${complaintMessage.incident_number} not processed from ${NATS_NEW_COMPLAINTS_TOPIC_CONSUMER}`,
-          );
-        }
-      } else if (message.subject === NATS_UPDATED_COMPLAINTS_TOPIC_NAME) {
-        const complaintMessage: ComplaintUpdate = JSON.parse(sc.decode(message.data));
-        this.logger.debug("Received complaint: update", complaintMessage?.parent_incident_number);
-        try {
-          const success = await message.ackAck();
-          if (success) {
-            await this.service.createUpdateComplaintInStaging(complaintMessage);
-            this.complaintsPublisherService.publishStagingComplaintUpdateInsertedMessage(complaintMessage);
-          }
-        } catch (error) {
-          message.nak(10_000); // retry in 10 seconds
-          this.logger.error(
-            `Message ${complaintMessage.parent_incident_number} not processed from ${NATS_UPDATED_COMPLAINTS_TOPIC_NAME}`,
-          );
-        }
-      } else if (message.subject === NEW_STAGING_COMPLAINTS_TOPIC_NAME) {
-        // listen for messages indicating that a new complaint was staged
-        const stagingData = new TextDecoder().decode(message.data);
-        this.logger.debug("Received staged complaint:", stagingData);
-        try {
-          await this.service.createComplaintFromStaging(stagingData);
-          message.ackAck();
-        } catch (error) {
-          message.nak(10_000); // retry in 10 seconds
-          this.logger.error(`Message ${stagingData} not processed from ${NEW_STAGING_COMPLAINTS_TOPIC_NAME}`);
-        }
-      } else if (message.subject === NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME) {
-        const complaintUpdate: ComplaintUpdate = JSON.parse(sc.decode(message.data));
-        const incident_number = complaintUpdate.parent_incident_number;
-        const update_number = complaintUpdate.update_number;
+      await this.processMessage(message, sc);
+    }
+  }
 
-        this.logger.debug("Received staged complaint update:", incident_number);
-        try {
-          await this.service.createComplaintUpdateFromStaging(incident_number, update_number);
-          message.ackAck();
-        } catch (error) {
-          message.nak(10_000); // retry in 10 seconds
-          this.logger.error(`Message ${incident_number} not processed from ${NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME}`);
-        }
+  private async processMessage(message: any, sc: any) {
+    switch (message.subject) {
+      case NATS_NEW_COMPLAINTS_TOPIC_NAME:
+        await this.handleNewComplaintMessage(message, sc);
+        break;
+      case NATS_UPDATED_COMPLAINTS_TOPIC_NAME:
+        await this.handleUpdatedComplaintMessage(message, sc);
+        break;
+      case NEW_STAGING_COMPLAINTS_TOPIC_NAME:
+        await this.handleNewStagingComplaintMessage(message);
+        break;
+      case NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME:
+        await this.handleNewStagingComplaintUpdateMessage(message, sc);
+        break;
+      default:
+        this.logger.warn(`Unhandled message subject: ${message.subject}`);
+    }
+  }
+
+  private async handleNewComplaintMessage(message: any, sc: any) {
+    const complaintMessage: Complaint = JSON.parse(sc.decode(message.data));
+    this.logger.debug("Received complaint:", complaintMessage?.incident_number);
+    await this.processComplaintMessage(
+      message,
+      async () => await this.service.createNewComplaintInStaging(complaintMessage),
+      complaintMessage.incident_number,
+      NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
+    );
+  }
+
+  private async handleUpdatedComplaintMessage(message: any, sc: any) {
+    const complaintMessage: ComplaintUpdate = JSON.parse(sc.decode(message.data));
+    this.logger.debug("Received complaint update:", complaintMessage?.parent_incident_number);
+    await this.processComplaintMessage(
+      message,
+      async () => await this.service.createUpdateComplaintInStaging(complaintMessage),
+      complaintMessage.parent_incident_number,
+      NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
+    );
+  }
+
+  private async handleNewStagingComplaintMessage(message: any) {
+    const stagingData = new TextDecoder().decode(message.data);
+    this.logger.debug("Received staged complaint:", stagingData);
+    await this.processComplaintMessage(
+      message,
+      async () => await this.service.createComplaintFromStaging(stagingData),
+      stagingData,
+      NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+    );
+  }
+
+  private async handleNewStagingComplaintUpdateMessage(message: any, sc: any) {
+    const complaintUpdate: ComplaintUpdate = JSON.parse(sc.decode(message.data));
+    const incident_number = complaintUpdate.parent_incident_number;
+    const update_number = complaintUpdate.update_number;
+    this.logger.debug("Received staged complaint update:", incident_number);
+    await this.processComplaintMessage(
+      message,
+      async () => await this.service.createComplaintUpdateFromStaging(incident_number, update_number),
+      incident_number,
+      NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
+    );
+  }
+
+  private async processComplaintMessage(
+    message: any,
+    action: () => Promise<void>,
+    identifier: string,
+    topicName: string,
+  ) {
+    try {
+      const success = await message.ackAck();
+      if (success) {
+        await action();
+        this.complaintsPublisherService.publishStagingComplaintInsertedMessage(identifier);
       }
+    } catch (error) {
+      message.nak(10_000); // retry in 10 seconds
+      this.logger.error(`Message ${identifier} not processed from ${topicName}`, error);
     }
   }
 }
