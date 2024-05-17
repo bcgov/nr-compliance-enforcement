@@ -566,10 +566,15 @@ p {
     cursor: pointer;
     text-decoration: underline;
     text-align: right;
+    background: none;
+    padding: 0;
+    border: none;
   }
 
   .show-more-link:hover {
     text-decoration: none;
+    outline: none;
+    text-decoration: underline;
   }
 
   .complaint-location-section {

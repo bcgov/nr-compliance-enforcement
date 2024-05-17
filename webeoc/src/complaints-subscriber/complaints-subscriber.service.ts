@@ -2,7 +2,6 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, StringCodec } from "nats";
 import {
   NATS_DURABLE_COMPLAINTS,
-  NATS_NEW_COMPLAINTS_TOPIC_CONSUMER,
   NATS_NEW_COMPLAINTS_TOPIC_NAME,
   NATS_STREAM_NAME,
   NATS_UPDATED_COMPLAINTS_TOPIC_NAME,

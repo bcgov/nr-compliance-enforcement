@@ -82,19 +82,13 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   </div>
                   {showLinks[update.complaintUpdateGuid] && !expandedUpdates[update.complaintUpdateGuid] && (
                     <div className="show-more-container">
-                      <span
-                        role="button"
-                        tabIndex={0}
+                      <button
+                        type="button"
                         className="show-more-link"
                         onClick={() => toggleExpand(update.complaintUpdateGuid)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            toggleExpand(update.complaintUpdateGuid);
-                          }
-                        }}
                       >
                         Click to expand
-                      </span>
+                      </button>
                     </div>
                   )}
                 </div>
