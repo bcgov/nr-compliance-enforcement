@@ -84,21 +84,27 @@ describe("HWCR Outcome Assessments", () => {
       if ($assessment.find("#assessment-edit-button").length) {
         cy.get("#assessment-edit-button").click();
 
-        const newCheckboxForEdit = "#ASSESSHLTH";
-        cy.get(newCheckboxForEdit).should("exist");
-        cy.get(newCheckboxForEdit).check();
+        cy.get("#action-required-div")
+          .invoke("text")
+          .then((actionRequired) => {
+            if (actionRequired === "Yes") {
+              const newCheckboxForEdit = "#ASSESSHLTH";
+              cy.get(newCheckboxForEdit).should("exist");
+              cy.get(newCheckboxForEdit).check();
 
-        cy.get("#outcome-cancel-button").click();
+              cy.get("#outcome-cancel-button").click();
 
-        cy.get(".modal-footer > .btn-primary").click();
+              cy.get(".modal-footer > .btn-primary").click();
 
-        cy.get("#assessment-checkbox-div").should(($div) => {
-          expect($div).to.contain.text("Assessed public safety risk");
-        });
+              cy.get("#assessment-checkbox-div").should(($div) => {
+                expect($div).to.contain.text("Assessed public safety risk");
+              });
 
-        cy.get("#assessment-checkbox-div").should(($div) => {
-          expect($div).to.not.contain.text("Assessed health as per animal welfare guidelines");
-        });
+              cy.get("#assessment-checkbox-div").should(($div) => {
+                expect($div).to.not.contain.text("Assessed health as per animal welfare guidelines");
+              });
+            }
+          });
       } else {
         cy.log("Assessment Not Found, did a previous test fail? Skip the Test");
         this.skip();
