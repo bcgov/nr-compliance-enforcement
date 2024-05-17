@@ -40,7 +40,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
 
   return (
     <>
-      {complaintUpdates && complaintUpdates.length > 0 ? (
+      {complaintUpdates && complaintUpdates.length > 0 && (
         <div className="comp-complaint-details-block">
           <div>
             <h6>Complaint Updates ({complaintUpdates.length})</h6>
@@ -120,8 +120,6 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
             </div>
           ))}
         </div>
-      ) : (
-        ""
       )}
     </>
   );
