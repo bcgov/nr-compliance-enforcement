@@ -61,7 +61,7 @@ export class ComplaintsPublisherService {
       natsHeaders.set("Nats-Msg-Id", `staged-update-${incidentNumber}-${updateNumber}`);
       const ack = await this.jsClient.publish(NATS_UPDATED_COMPLAINTS_TOPIC_NAME, jsonData, { headers: natsHeaders });
       if (!ack.duplicate) {
-        this.logger.debug(`Complaint update: ${incidentNumber} ${incidentNumber}`);
+        this.logger.debug(`Complaint update: ${incidentNumber} ${updateNumber}`);
       } else {
         this.logger.debug(`Complaint update already published: ${incidentNumber}`);
       }
