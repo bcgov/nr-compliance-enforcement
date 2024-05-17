@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import axios from "axios";
 import { STAGING_API_ENDPOINT_CREATES, STAGING_API_ENDPOINT_UPDATES } from "../common/constants";
-import { Complaint } from "../types/Complaints";
-import { ComplaintUpdate } from "src/types/ComplaintUpdate";
+import { Complaint } from "../types/complaint-type";
+import { ComplaintUpdate } from "src/types/complaint-update-type";
 
 @Injectable()
 export class StagingComplaintsApiService {

@@ -6,8 +6,8 @@ import {
   NEW_STAGING_COMPLAINTS_TOPIC_NAME,
   NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
 } from "../common/constants";
-import { Complaint } from "src/types/Complaints";
-import { ComplaintUpdate } from "src/types/ComplaintUpdate";
+import { Complaint } from "src/types/complaint-type";
+import { ComplaintUpdate } from "src/types/complaint-update-type";
 
 @Injectable()
 export class ComplaintsPublisherService {

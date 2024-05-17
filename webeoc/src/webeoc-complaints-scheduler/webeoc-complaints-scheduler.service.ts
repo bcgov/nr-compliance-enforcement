@@ -1,12 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CronExpression } from "@nestjs/schedule";
 import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
-import { Complaint } from "src/types/Complaints";
+import { Complaint } from "src/types/complaint-type";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
 import { format } from "date-fns";
 import { WEBEOC_API_COMPLAINTS_LIST_PATH, WEBEOC_API_COMPLAINTS_UPDATE_PATH } from "src/common/constants";
-import { ComplaintUpdate } from "src/types/ComplaintUpdate";
+import { ComplaintUpdate } from "src/types/complaint-update-type";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {

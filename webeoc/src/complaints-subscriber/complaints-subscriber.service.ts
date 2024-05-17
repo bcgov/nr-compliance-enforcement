@@ -9,9 +9,9 @@ import {
   NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
 } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
-import { Complaint } from "../types/Complaints";
+import { Complaint } from "../types/complaint-type";
 import { ComplaintsPublisherService } from "src/complaints-publisher/complaints-publisher.service";
-import { ComplaintUpdate } from "src/types/ComplaintUpdate";
+import { ComplaintUpdate } from "src/types/complaint-update-type";
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {
