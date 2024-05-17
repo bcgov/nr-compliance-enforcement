@@ -700,6 +700,7 @@ export const ComplaintDetailsEdit: FC = () => {
       />
       {readOnly && <hr className="blue-seperator" />}
       {!readOnly && <div className="spacer-seperator" />}
+      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
       <div className="comp-details-subsection">
         <div className="comp-complaint-info">
           <div className="comp-sub-header comp-vertical-align-middle">Complaint details</div>
@@ -719,7 +720,6 @@ export const ComplaintDetailsEdit: FC = () => {
           <div className="clear-left-float clear-right-float"></div>
         </div>
       </div>
-      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
       {readOnly && <CallDetails complaintType={complaintType} />}
       {readOnly && <CallerInformation />}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}

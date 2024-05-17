@@ -12,7 +12,7 @@ import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 
 @Injectable()
 export class StagingComplaintService {
-  private readonly logger = new Logger(StagingComplaintService.name);
+  private readonly WEBEOC_USER = "WebEOC";
 
   constructor(
     @InjectRepository(StagingComplaint)
@@ -21,6 +21,7 @@ export class StagingComplaintService {
 
   // Creates a new Complaint record based on data retrieved from WebEOC.  The new complaint is created based off of the data in the staging table
   async createNewComplaint(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
+    const currentDate = new Date();
     const existingStagingComplaint = await this.stagingComplaintRepository
       .createQueryBuilder("stagingComplaint")
       .leftJoinAndSelect("stagingComplaint.stagingActivityCode", "stagingActivityCode")
@@ -50,10 +51,10 @@ export class StagingComplaintService {
     } as StagingActivityCode;
     newStagingComplaint.complaintIdentifer = stagingComplaint.incident_number;
     newStagingComplaint.complaintJsonb = stagingComplaint;
-    newStagingComplaint.createUserId = "WebEOC";
-    newStagingComplaint.createUtcTimestamp = new Date();
-    newStagingComplaint.updateUserId = "WebEOC";
-    newStagingComplaint.updateUtcTimestamp = new Date();
+    newStagingComplaint.createUserId = this.WEBEOC_USER;
+    newStagingComplaint.createUtcTimestamp = currentDate;
+    newStagingComplaint.updateUserId = this.WEBEOC_USER;
+    newStagingComplaint.updateUtcTimestamp = currentDate;
 
     await this.stagingComplaintRepository.save(newStagingComplaint);
     return newStagingComplaint;
@@ -61,6 +62,7 @@ export class StagingComplaintService {
 
   // Creates a Complaint Update staging record.  Used when WebEOC creates a complaint update.
   async createComplaintUpdate(stagingComplaint: WebEOCComplaintUpdate): Promise<StagingComplaint> {
+    const currentDate = new Date();
     // ignore existing updates of the same incident number and update number, they already exist in the staging table
     const existingStagingComplaint = await this.stagingComplaintRepository
       .createQueryBuilder("stagingComplaint")
@@ -90,10 +92,10 @@ export class StagingComplaintService {
     } as StagingActivityCode;
     newStagingComplaint.complaintIdentifer = stagingComplaint.parent_incident_number;
     newStagingComplaint.complaintJsonb = stagingComplaint;
-    newStagingComplaint.createUserId = "WebEOC";
-    newStagingComplaint.createUtcTimestamp = new Date();
-    newStagingComplaint.updateUserId = "WebEOC";
-    newStagingComplaint.updateUtcTimestamp = new Date();
+    newStagingComplaint.createUserId = this.WEBEOC_USER;
+    newStagingComplaint.createUtcTimestamp = currentDate;
+    newStagingComplaint.updateUserId = this.WEBEOC_USER;
+    newStagingComplaint.updateUtcTimestamp = currentDate;
 
     await this.stagingComplaintRepository.save(newStagingComplaint);
     return newStagingComplaint;

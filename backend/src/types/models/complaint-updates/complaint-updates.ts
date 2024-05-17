@@ -4,12 +4,12 @@ export class ComplaintUpdatesDto {
   complaintUpdateGuid: string;
   complaintIdentifier: string;
   updateSeqNumber: number;
-  updDetailText: string | null;
-  updLocationSummaryText: string | null;
-  updLocationDetailedText: string | null;
-  updLocationGeometryPoint: Point | null;
+  updDetailText?: string;
+  updLocationSummaryText?: string;
+  updLocationDetailedText?: string;
+  updLocationGeometryPoint?: Point;
   createUserId: string;
   createUtcTimestamp: Date;
   updateUserId: string;
-  updateUtcTimestamp: Date | null;
+  updateUtcTimestamp?: Date;
 }

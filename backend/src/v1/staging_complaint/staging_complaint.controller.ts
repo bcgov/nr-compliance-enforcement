@@ -15,13 +15,13 @@ import { WebEOCComplaintUpdate } from "src/types/webeoc-complaint-update";
 export class StagingComplaintController {
   constructor(private readonly stagingComplaintService: StagingComplaintService) {}
 
-  @Post("/creates")
+  @Post("/webeoc-complaint")
   @UseGuards(ApiKeyGuard)
   createNewComplaint(@Body() createStagingComplaint: WebEOCComplaint) {
     return this.stagingComplaintService.createNewComplaint(createStagingComplaint);
   }
 
-  @Post("/updates")
+  @Post("/webeoc-complaint-update")
   @UseGuards(ApiKeyGuard)
   createComplaintUpdate(@Body() createStagingComplaint: WebEOCComplaintUpdate) {
     return this.stagingComplaintService.createComplaintUpdate(createStagingComplaint);
@@ -33,11 +33,11 @@ export class StagingComplaintController {
     return await this.stagingComplaintService.processWebEOCComplaint(complaintIdentifier);
   }
 
-  @Post("/process/:complaintIdentifier/:update_number")
+  @Post("/process/:complaintIdentifier/:updateNumber")
   @UseGuards(ApiKeyGuard)
   async processWebEOCComplaintUpdate(
     @Param("complaintIdentifier") complaintIdentifier: string,
-    @Param("update_number") updateNumber: string,
+    @Param("updateNumber") updateNumber: string,
   ): Promise<any> {
     const updateNumberAsNumber: number = parseInt(updateNumber, 10);
     return await this.stagingComplaintService.processWebEOCComplaintUpdate(complaintIdentifier, updateNumberAsNumber);

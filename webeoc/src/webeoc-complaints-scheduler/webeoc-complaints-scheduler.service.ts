@@ -88,7 +88,7 @@ export class WebEOCComplaintsScheduler {
 
     try {
       const response = await axios.post(url, body, config);
-      return response.data as any[];
+      return response.data as Complaint[];
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
       throw error;
