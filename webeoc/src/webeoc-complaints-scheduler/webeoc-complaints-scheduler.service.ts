@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CronExpression } from "@nestjs/schedule";
-import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service"; // The service to handle NATS publishing
+import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
 import { Complaint } from "src/types/Complaints";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
@@ -18,14 +18,13 @@ export class WebEOCComplaintsScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.fetchAndPublishComplaintsFromWebEOC();
-      await this.fetchAndPublishComplaintUpdatesFromWebEOC();
+      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_LIST_PATH, this.publishComplaint.bind(this));
+      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_UPDATE_PATH, this.publishComplaintUpdate.bind(this));
     });
 
     this.cronJob.start();
   }
 
-  // Get the cron expression from the WEBEOC_CRON_EXPRESSION environment variable.  Detaults to 5 minutes if no schedule is found.
   private getCronExpression(): string {
     const defaultCron = CronExpression.EVERY_5_MINUTES;
     const envCronExpression = process.env.WEBEOC_CRON_EXPRESSION || defaultCron;
@@ -33,44 +32,22 @@ export class WebEOCComplaintsScheduler {
     return envCronExpression;
   }
 
-  // Grabs the complaints and publishes them to NATS
-  async fetchAndPublishComplaintsFromWebEOC() {
+  private async fetchAndPublishComplaints(urlPath: string, publishMethod: (data: any) => Promise<void>) {
     try {
       await this.authenticateWithWebEOC();
-      // Fetch complaints from WebEOC here
-      const complaints = await this.fetchComplaintsFromWebEOC();
+      const data = await this.fetchDataFromWebEOC(urlPath);
 
-      this.logger.debug(`Found ${complaints?.length} complaints from WebEOC`);
+      this.logger.debug(`Found ${data?.length} items from WebEOC`);
 
-      // Publish each complaint to NATS
-      for (const complaint of complaints) {
-        await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+      for (const item of data) {
+        await publishMethod(item);
       }
     } catch (error) {
-      this.logger.error(`Unable to fetch complaint from WebEOC`, error);
+      this.logger.error(`Unable to fetch data from WebEOC`, error);
     }
   }
 
-  // Grabs the complaints and publishes them to NATS
-  async fetchAndPublishComplaintUpdatesFromWebEOC() {
-    try {
-      await this.authenticateWithWebEOC();
-      // Fetch complaints from WebEOC here
-      const complaintUpdates = await this.fetchComplaintUpdatesFromWebEOC();
-
-      this.logger.debug(`Found ${complaintUpdates?.length} complaint updates from WebEOC`);
-
-      // Publish each complaint to NATS
-      for (const complaintUpdate of complaintUpdates) {
-        await this.complaintsPublisherService.publishComplaintUpdatesFromWebEOC(complaintUpdate);
-      }
-    } catch (error) {
-      this.logger.error(`Unable to fetch complaint updates from WebEOC`, error);
-    }
-  }
-
-  // WebEOC requires that a cookie be attached to each authenticated request.  This method grabs that cookie.
-  public async authenticateWithWebEOC(): Promise<string> {
+  private async authenticateWithWebEOC(): Promise<string> {
     const authUrl = `${process.env.WEBEOC_URL}/sessions`;
     const credentials = {
       username: process.env.WEBEOC_USERNAME,
@@ -85,35 +62,17 @@ export class WebEOCComplaintsScheduler {
 
     try {
       const response = await axios.post(authUrl, credentials, config);
-
-      // Extract the cookie from the response
-      const cookie = response.headers["set-cookie"][0];
-      this.cookie = cookie; // Store the cookie for future use
-
-      return cookie;
+      this.cookie = response.headers["set-cookie"][0];
+      return this.cookie;
     } catch (error) {
       this.logger.error("Error authenticating with WebEOC:", error);
       throw error;
     }
   }
 
-  // Grabs all complaints created within a certain period (defined by WEBEOC_COMPLAINT_HISTORY_DAYS)
-  public async fetchComplaintsFromWebEOC(): Promise<Complaint[]> {
-    const complaintsAsOfDate = new Date(); // Grab complaints that have been created on a date greater than or equal to this date
-    const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
-
-    if (isNaN(complaintHistoryDays)) {
-      throw new Error("WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number");
-    }
-    complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
-
-    const formattedDate = this.formatDate(complaintsAsOfDate);
-
-    if (!this.cookie) {
-      throw new Error("No authentication cookie available. Please authenticate first.");
-    }
-
-    // add the auth cookie to the header.  Note that WebEOC requires this format, which is why we're not using the encrypted authorization header.
+  private async fetchDataFromWebEOC(urlPath: string): Promise<any[]> {
+    const dateFilter = this.getDateFilter();
+    const url = `${process.env.WEBEOC_URL}/${urlPath}`;
     const config: AxiosRequestConfig = {
       headers: {
         Cookie: this.cookie,
@@ -123,30 +82,21 @@ export class WebEOCComplaintsScheduler {
     const body = {
       customFilter: {
         boolean: "and",
-        items: [
-          {
-            fieldname: "incident_datetime",
-            operator: "GreaterThan",
-            fieldvalue: formattedDate,
-          },
-        ],
+        items: [dateFilter],
       },
     };
 
-    const url = `${process.env.WEBEOC_URL}/${WEBEOC_API_COMPLAINTS_LIST_PATH}`;
-
     try {
       const response = await axios.post(url, body, config);
-      return response.data as Complaint[];
+      return response.data as any[];
     } catch (error) {
-      this.logger.error("Error fetching complaints from WebEOC:", error);
+      this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
       throw error;
     }
   }
 
-  // Grabs all complaints created within a certain period (defined by WEBEOC_COMPLAINT_HISTORY_DAYS)
-  public async fetchComplaintUpdatesFromWebEOC(): Promise<ComplaintUpdate[]> {
-    const complaintsAsOfDate = new Date(); // Grab complaints that have been created on a date greater than or equal to this date
+  private getDateFilter() {
+    const complaintsAsOfDate = new Date();
     const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
 
     if (isNaN(complaintHistoryDays)) {
@@ -155,43 +105,21 @@ export class WebEOCComplaintsScheduler {
     complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
 
     const formattedDate = this.formatDate(complaintsAsOfDate);
-
-    if (!this.cookie) {
-      throw new Error("No authentication cookie available. Please authenticate first.");
-    }
-
-    // add the auth cookie to the header.  Note that WebEOC requires this format, which is why we're not using the encrypted authorization header.
-    const config: AxiosRequestConfig = {
-      headers: {
-        Cookie: this.cookie,
-      },
+    return {
+      fieldname: "entrydate",
+      operator: "GreaterThan",
+      fieldvalue: formattedDate,
     };
-
-    const body = {
-      customFilter: {
-        boolean: "and",
-        items: [
-          {
-            fieldname: "entrydate",
-            operator: "GreaterThan",
-            fieldvalue: formattedDate,
-          },
-        ],
-      },
-    };
-
-    const url = `${process.env.WEBEOC_URL}/${WEBEOC_API_COMPLAINTS_UPDATE_PATH}`;
-
-    try {
-      const response = await axios.post(url, body, config);
-      return response.data as ComplaintUpdate[];
-    } catch (error) {
-      this.logger.error("Error fetching complaint updates from WebEOC:", error);
-      throw error;
-    }
   }
 
-  // Formats a date to be in a format required by WEBEOC.  Used to determine how far back in time to go to grab new complaints.
+  private async publishComplaint(complaint: Complaint) {
+    await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+  }
+
+  private async publishComplaintUpdate(complaintUpdate: ComplaintUpdate) {
+    await this.complaintsPublisherService.publishComplaintUpdatesFromWebEOC(complaintUpdate);
+  }
+
   private formatDate(date: Date): string {
     return format(date, "yyyy-MM-dd HH:mm:ss");
   }
