@@ -98,16 +98,14 @@ const addAssessment =
         caseCode: "HWCR",
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
-          actions: assessment.assessment_type
-            ? assessment.assessment_type.map((item) => {
-                return {
-                  date: assessment.date,
-                  actor: assessment.officer?.value,
-                  activeIndicator: true,
-                  actionCode: item.value,
-                };
-              })
-            : [],
+          actions: assessment.assessment_type.map((item) => {
+            return {
+              date: assessment.date,
+              actor: assessment.officer?.value,
+              activeIndicator: true,
+              actionCode: item.value,
+            };
+          }),
           actionJustificationCode: assessment.justification?.value,
         },
       },
@@ -168,16 +166,14 @@ const updateAssessment =
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
           actionJustificationCode: assessment.justification?.value,
-          actions: assessment.assessment_type
-            ? assessment.assessment_type.map((item) => {
-                return {
-                  actor: assessment.officer?.value,
-                  date: assessment.date,
-                  actionCode: item.value,
-                  activeIndicator: true,
-                };
-              })
-            : [],
+          actions: assessment.assessment_type.map((item) => {
+            return {
+              actor: assessment.officer?.value,
+              date: assessment.date,
+              actionCode: item.value,
+              activeIndicator: true,
+            };
+          }),
         },
       },
     } as UpdateAssessmentInput;
@@ -676,7 +672,7 @@ export const deleteEquipment =
       id: id,
       updateUserId: profile.idir_username,
     };
-    
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {

@@ -33,6 +33,7 @@ import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 import "../../../../../assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "../../../../store/reducers/case-selectors";
 import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
+import { OptionLabels } from "../../../../constants/option-labels";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
@@ -230,7 +231,7 @@ export const HWCRComplaintAssessment: FC = () => {
           value: selectedJustification?.value,
         },
         assessment_type:
-          selectedActionRequired?.label === "No"
+          selectedActionRequired?.label === OptionLabels.OPTION_NO
             ? []
             : selectedAssessmentTypes?.map((item) => {
                 return {
@@ -280,7 +281,10 @@ export const HWCRComplaintAssessment: FC = () => {
       hasErrors = true;
     }
 
-    if (selectedActionRequired?.value === "Yes" && (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0)) {
+    if (
+      selectedActionRequired?.value === OptionLabels.OPTION_YES &&
+      (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0)
+    ) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
       hasErrors = true;
     }
