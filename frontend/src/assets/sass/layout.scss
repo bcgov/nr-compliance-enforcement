@@ -564,6 +564,23 @@ p {
   }
 }
 
+// PAGE HEADER/TITLE CONTAINER
+.nat-page-header {
+  margin-bottom: 16px;
+}
+
+.nat-title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+}
+
 // TABLES
 table {
   font-size: 0.875rem;
@@ -619,7 +636,7 @@ td.sticky-col {
   }
 }
 
-// Sortable Heaader
+// Sortable Header
 .sortable-header {
   white-space: nowrap;
 

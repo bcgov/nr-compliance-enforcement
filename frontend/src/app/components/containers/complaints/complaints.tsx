@@ -1,6 +1,6 @@
 import { FC, useState, useContext } from "react";
 import { shallowEqual } from "react-redux";
-import { Nav, Navbar } from "react-bootstrap";
+import { Button, Nav, Navbar } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
 import { useAppSelector } from "../../../hooks/hooks";
@@ -85,76 +85,70 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <>
-      <div className="comp-sub-header">Complaints</div>
+      <div className="nat-page-header">
+        <div className="nat-title-container">
+          <h1>Complaints</h1>
+          <Button onClick={() => handleCreateClick()}>Create Complaint</Button>
+        </div>
+      </div>
+
+      {/* <div className="comp-sub-header">Complaints</div> */}
 
       {/* <!-- create list of complaint types --> */}
-      <Navbar className="fixed-nav-header basic-navbar-nav complaint-tab-container-width">
-        <Nav className="nav nav-tabs comp-tab container-fluid">
-          {/* <!-- dynamic tabs --> */}
-          {complaintTypes.map(({ id, code, name }) => {
-            return (
-              <Nav.Item
-                className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
-                key={`${code}-tab-item`}
-              >
-                <div
-                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
-                  id={id}
-                  onClick={() => handleComplaintTabChange(code)}
-                >
-                  {name} {renderComplaintTotal(code)}
-                </div>
-              </Nav.Item>
-            );
-          })}
 
-          {/* <!-- dynamic tabs end --> */}
-
-          <Nav.Item className="ms-auto">
-            <div
-              className="cursor-pointer"
-              onClick={() => handleCreateClick()}
+      <Nav
+        variant="underline"
+        className="nav nav-tabs"
+      >
+        {/* <!-- dynamic tabs --> */}
+        {complaintTypes.map(({ id, code, name }) => {
+          return (
+            <Nav.Item
+              className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
+              key={`${code}-tab-item`}
             >
               <div
-                className="complaint-create-image-container left-float"
-                id="complaint-create-image-id"
+                className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
+                id={id}
+                onClick={() => handleComplaintTabChange(code)}
               >
-                <i className="bi bi-plus-circle filter-image-spacing"></i>
+                {name} {renderComplaintTotal(code)}
               </div>
-              <div className="left-float">Create</div>
-              <div className="clear-left-float"></div>
-            </div>
-          </Nav.Item>
-          <Nav.Item
-            {...getToggleProps({
-              onClick: () => {
-                const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
-                const rect = filterElem?.getBoundingClientRect();
-                const bottom = rect?.bottom;
+            </Nav.Item>
+          );
+        })}
 
-                if ({ isExpanded }.isExpanded && bottom !== undefined && bottom < 140) {
-                  //page has been scrolled while filter is open... need to close it!
-                  setExpanded((prevExpanded) => !prevExpanded);
-                }
-                window.scrollTo({
-                  top: 0,
-                  behavior: "smooth",
-                });
+        {/* <!-- dynamic tabs end --> */}
+
+        {/* <Nav.Item
+          {...getToggleProps({
+            onClick: () => {
+              const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
+              const rect = filterElem?.getBoundingClientRect();
+              const bottom = rect?.bottom;
+
+              if ({ isExpanded }.isExpanded && bottom !== undefined && bottom < 140) {
+                //page has been scrolled while filter is open... need to close it!
                 setExpanded((prevExpanded) => !prevExpanded);
-              },
-            })}
+              }
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+              setExpanded((prevExpanded) => !prevExpanded);
+            },
+          })}
+        >
+          <div
+            className="complaint-filter-image-container"
+            id="complaint-filter-image-id"
           >
-            <div
-              className="complaint-filter-image-container"
-              id="complaint-filter-image-id"
-            >
-              <i className="bi bi-filter filter-image-spacing"></i>
-            </div>
-            <div className="left-float">Filters</div>
-            <div className="clear-left-float"></div>
-          </Nav.Item>
-        </Nav>
-      </Navbar>
+            <i className="bi bi-filter filter-image-spacing"></i>
+          </div>
+          <div className="left-float">Filters</div>
+          <div className="clear-left-float"></div>
+        </Nav.Item> */}
+      </Nav>
 
       <div>
         <ComplaintFilter

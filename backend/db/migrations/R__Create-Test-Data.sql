@@ -1384,3 +1384,17 @@ values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now())
 -- CE-326 Opps
 UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
 UPDATE species_code SET display_order = 3 where species_code = 'BOBCAT';
+
+-- Insert JXDUNSDO as user
+WITH inserted AS (
+  INSERT INTO public.person
+  (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+  VALUES(gen_random_uuid(), 'Jeremy', NULL, NULL, 'Dunsdon', 'FLYWAY', now(), 'FLYWAY', now())
+  ON CONFLICT DO NOTHING
+  RETURNING person_guid
+)
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+SELECT gen_random_uuid(), 'JXDUNSDO', 'FLYWAY', now(), 'FLYWAY', now(), person_guid, '45abdc96-1b07-4b9c-8b05-e2b0c46c1d1d'::uuid
+FROM inserted
+ON CONFLICT DO NOTHING;
