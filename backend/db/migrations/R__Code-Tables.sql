@@ -205,3 +205,7 @@ set
     short_description = 'Open'
 where
     complaint_status_code = 'OPEN';
+
+UPDATE configuration
+            SET    configuration_value = configuration_value::int + 1
+            WHERE  configuration_code = 'CDTABLEVER';
