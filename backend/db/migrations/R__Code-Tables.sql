@@ -178,7 +178,8 @@ insert into
         create_user_id,
         create_utc_timestamp,
         update_user_id,
-        update_utc_timestamp
+        update_utc_timestamp,
+        manually_assignable_ind
     )
 values
     (
@@ -190,7 +191,8 @@ values
         'FLYWAY',
         CURRENT_TIMESTAMP,
         'FLYWAY',
-        CURRENT_TIMESTAMP
+        CURRENT_TIMESTAMP,
+        false
     ) on conflict do nothing;
 
 update complaint_status_code
