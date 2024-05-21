@@ -64,11 +64,20 @@
 
 // SCROLLABLE LIST/MAP CONTAINER
 .comp-data-container {
+  position: relative;
   display: flex;
   flex: 1 1 auto;
   overflow: hidden;
   border: 1px solid $gray-300;
   border-radius: 4px;
+
+  .map-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
 }
 
 // COMPLAINT LIST
