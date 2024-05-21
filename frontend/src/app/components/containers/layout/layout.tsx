@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SideBar, Footer, Header } from "./";
+import { SideBar, Header } from "./";
 
 type Props = {
   children: React.ReactNode;
@@ -23,9 +23,10 @@ export const Layout: FC<Props> = ({ fixedSidebar, fixedHeader, children }) => {
   return (
     <div className={generateContainerClasses()}>
       <Header />
-      <SideBar />
-      <div className="comp-main-content">{children}</div>
-      <Footer />
+      <div className="comp-body-container">
+        <SideBar />
+        <div className="comp-main-content">{children}</div>
+      </div>
     </div>
   );
 };

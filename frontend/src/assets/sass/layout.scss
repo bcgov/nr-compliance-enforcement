@@ -1,8 +1,24 @@
+// LAYOUT
 .comp-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   flex-direction: column;
   margin: 0;
+}
+
+.comp-body-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.comp-main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  padding: 24px;
+  overflow-x: hidden;
 }
 
 .fixed-header .comp-header {
@@ -98,11 +114,7 @@
 
 .comp-side-bar {
   background-color: $gray-110;
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
   width: 254px;
-  top: 72px;
   padding: 16px;
   z-index: 9000;
   overflow: hidden;
@@ -123,20 +135,6 @@
     float: right;
     cursor: pointer;
   }
-}
-
-.comp-main-content {
-  margin-left: 254px;
-  margin-top: 72px;
-  padding: 24px;
-
-  -webkit-transition: all 0.1s ease-in-out;
-  -moz-transition: all 0.1s ease-in-out;
-  transition: all 0.1s ease-in-out;
-}
-
-.collapsed + .comp-main-content {
-  margin-left: 72px;
 }
 
 .comp-organization-nav-logo {
@@ -509,7 +507,6 @@ button.modal-buttons {
 .pagination_container {
   display: flex;
   align-items: baseline;
-  width: 1300px;
   justify-content: center;
   padding-top: 10px;
   gap: 8px;
@@ -564,30 +561,12 @@ p {
   }
 }
 
-// PAGE HEADER/TITLE CONTAINER
-.nat-page-header {
-  margin-bottom: 16px;
-}
-
-.nat-title-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-
-  h1 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-}
-
 // TABLES
 table {
   font-size: 0.875rem;
 
   th {
-    border-width: 1px 0;
+    border-bottom-width: 1px 0;
     + th {
       border-left-width: 1px;
     }

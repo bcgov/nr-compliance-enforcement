@@ -168,9 +168,9 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   };
 
   return (
-    <div className="complaint-list-container">
+    <div className="comp-table-container">
       <div
-        className="complaint-table-container"
+        className="comp-table-scroll-container"
         ref={divRef}
       >
         <Table id="complaint-list">

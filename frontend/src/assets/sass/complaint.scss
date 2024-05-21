@@ -1,3 +1,31 @@
+// COMPLAINTS PAGE CONTAINER
+.comp-page-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+// PAGE HEADER/TITLE CONTAINER
+.comp-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comp-page-title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
 // SEARCH BAR
 .search-bar {
   display: flex;
@@ -18,10 +46,6 @@
   align-items: center;
   gap: 4px;
   row-gap: 4px;
-
-  &:has(button) {
-    margin-bottom: 16px;
-  }
 }
 
 .comp-filter-btn {
@@ -38,15 +62,24 @@
   border-color: $bc-gov-neutral-500;
 }
 
-// COMPLAINT LIST
-.complaint-list-container {
+// SCROLLABLE LIST/MAP CONTAINER
+.comp-data-container {
   display: flex;
-  flex-direction: column;
+  flex: 1 1 auto;
   overflow: hidden;
-  height: 400px; //TEMP
+  border: 1px solid $gray-300;
+  border-radius: 4px;
 }
 
-.complaint-table-container {
+// COMPLAINT LIST
+.comp-table-container {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.comp-table-scroll-container {
   flex: 1 1 auto;
   overflow: auto;
 }

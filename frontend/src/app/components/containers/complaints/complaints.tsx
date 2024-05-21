@@ -84,9 +84,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   };
 
   return (
-    <>
-      <div className="nat-page-header">
-        <div className="nat-title-container">
+    <div className="comp-page-container">
+      <div className="comp-page-header">
+        <div className="comp-page-title-container">
           <h1>Complaints</h1>
           <Button onClick={() => handleCreateClick()}>Create Complaint</Button>
         </div>
@@ -145,13 +145,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <div className="clear-left-float"></div>
         </Nav.Item> */}
         </Nav>
-      </div>
 
-      <div>
-        <ComplaintFilter
-          type={complaintType}
-          isOpen={isExpanded}
-        />
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
@@ -159,6 +153,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           searchQuery={search}
           applySearchQuery={setSearch}
         />
+
+        <ComplaintFilter
+          type={complaintType}
+          isOpen={isExpanded}
+        />
+      </div>
+
+      <div className="comp-data-container">
         {viewType === "list" ? (
           <ComplaintList
             type={complaintType}
@@ -171,7 +173,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 
