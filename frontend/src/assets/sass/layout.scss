@@ -2,6 +2,7 @@
 .comp-container {
   display: flex;
   height: 100vh;
+  height: 100svh; // iOS devices
   flex-direction: column;
   margin: 0;
 }
@@ -17,7 +18,6 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  padding: 24px;
   overflow-x: hidden;
 }
 
@@ -26,33 +26,6 @@
   width: 100%;
   top: 0;
   z-index: 9000;
-}
-
-.fixed-nav-header {
-  position: sticky !important;
-  padding-bottom: 0px !important;
-  top: 72px; // Header (72px)
-  background-color: $white;
-  z-index: 8000;
-}
-
-.fixed-filter-header {
-  position: sticky;
-  top: 120px; // Header (72px) + Tabs (48px)
-  background-color: $white;
-  z-index: 6000;
-}
-
-.comp-create-header {
-  top: 72px;
-  position: sticky !important;
-  z-index: 8000;
-}
-
-.comp-details-header {
-  top: 72px;
-  position: sticky !important;
-  z-index: 8000;
 }
 
 .comp-header {
@@ -116,7 +89,6 @@
   background-color: $gray-110;
   width: 254px;
   padding: 16px;
-  z-index: 9000;
   overflow: hidden;
 
   ul > li:first-child {
@@ -171,6 +143,9 @@
 }
 
 // Start of Hyperlink Styles
+a {
+  color: $bc-brand-links;
+}
 
 .comp-nav-item-name {
   color: $bc-brand-links;
@@ -561,6 +536,30 @@ p {
   }
 }
 
+// BUTTONS
+.btn {
+  // Utility classes for icon placement in buttons with labels
+  &.icon-start i {
+    margin-right: 4px;
+  }
+
+  &.icon-end i {
+    margin-left: 4px;
+  }
+
+  // Icon only
+  &.icon-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+
+    i {
+      font-size: 1.5rem;
+      color: #003366;
+    }
+  }
+}
+
 // TABLES
 table {
   font-size: 0.875rem;
@@ -581,7 +580,7 @@ table {
   }
 }
 
-// Utilities
+// TABLE UTILITIES
 .sticky-table-header {
   position: sticky;
   top: 0;
@@ -616,7 +615,7 @@ td.sticky-col {
   }
 }
 
-// Sortable Header
+// SORTABLE TABLE HEADER
 .sortable-header {
   white-space: nowrap;
 
@@ -625,7 +624,7 @@ td.sticky-col {
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    gap: 8px;
+    gap: 0.5rem;
   }
 
   & .header-label {
@@ -635,11 +634,12 @@ td.sticky-col {
   }
 }
 
-// BUTTONS
-.btn.icon-btn {
-  padding: 0;
-  width: 44px;
-  height: 44px;
-  font-size: 1.5rem;
-  color: #1a5a96;
+// TABS
+.nav-link {
+  color: $bc-brand-links;
+  cursor: pointer;
+
+  &:hover {
+    color: $bc-brand-links;
+  }
 }

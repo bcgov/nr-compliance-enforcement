@@ -1,6 +1,6 @@
-import { FC, useState, useContext } from "react";
+import { FC, useState, useContext, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Nav, Navbar } from "react-bootstrap";
+import { Button, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import { useCollapse } from "react-collapsed";
 import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
 import { useAppSelector } from "../../../hooks/hooks";
@@ -31,7 +31,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
 
-  const [isExpanded, setExpanded] = useState(false);
+  const [isExpanded, setExpanded] = useState(true);
   const { getToggleProps } = useCollapse({ isExpanded });
 
   const defaultZone = useAppSelector(selectDefaultZone);
@@ -83,6 +83,12 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     setViewType(view);
   };
 
+  // Show/Hide Mobile Filters
+  const [show, setShow] = useState(false);
+
+  const hideFilters = () => setShow(false);
+  const toggleShowFilters = useCallback(() => setShow((prevShow) => !prevShow), []);
+
   return (
     <div className="comp-page-container">
       <div className="comp-page-header">
@@ -92,10 +98,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         </div>
         {/* <!-- create list of complaint types --> */}
 
-        <Nav
-          variant="underline"
-          className="nav nav-tabs"
-        >
+        <Nav className="nav nav-tabs">
           {/* <!-- dynamic tabs --> */}
           {complaintTypes.map(({ id, code, name }) => {
             return (
@@ -115,64 +118,58 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           })}
 
           {/* <!-- dynamic tabs end --> */}
-
-          {/* <Nav.Item
-          {...getToggleProps({
-            onClick: () => {
-              const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
-              const rect = filterElem?.getBoundingClientRect();
-              const bottom = rect?.bottom;
-
-              if ({ isExpanded }.isExpanded && bottom !== undefined && bottom < 140) {
-                //page has been scrolled while filter is open... need to close it!
-                setExpanded((prevExpanded) => !prevExpanded);
-              }
-              window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-              });
-              setExpanded((prevExpanded) => !prevExpanded);
-            },
-          })}
-        >
-          <div
-            className="complaint-filter-image-container"
-            id="complaint-filter-image-id"
-          >
-            <i className="bi bi-filter filter-image-spacing"></i>
-          </div>
-          <div className="left-float">Filters</div>
-          <div className="clear-left-float"></div>
-        </Nav.Item> */}
         </Nav>
 
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
+          toggleShowFilters={toggleShowFilters}
           complaintType={complaintType}
           searchQuery={search}
           applySearchQuery={setSearch}
         />
-
-        <ComplaintFilter
-          type={complaintType}
-          isOpen={isExpanded}
-        />
       </div>
 
       <div className="comp-data-container">
-        {viewType === "list" ? (
-          <ComplaintList
-            type={complaintType}
-            searchQuery={search}
-          />
-        ) : (
-          <ComplaintMap
-            type={complaintType}
-            searchQuery={search}
-          />
-        )}
+        <div className="comp-data-filters">
+          <div className="comp-data-filters-header">Filter by</div>
+          <div className="comp-data-filters-body">
+            <ComplaintFilter
+              type={complaintType}
+              isOpen={isExpanded}
+            />
+          </div>
+        </div>
+
+        <div className="comp-data-list-map">
+          {viewType === "list" ? (
+            <ComplaintList
+              type={complaintType}
+              searchQuery={search}
+            />
+          ) : (
+            <ComplaintMap
+              type={complaintType}
+              searchQuery={search}
+            />
+          )}
+        </div>
       </div>
+
+      <Offcanvas
+        show={show}
+        onHide={hideFilters}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Offcanvas</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <ComplaintFilter
+            type={complaintType}
+            isOpen={isExpanded}
+          />
+        </Offcanvas.Body>
+      </Offcanvas>
     </div>
   );
 };
