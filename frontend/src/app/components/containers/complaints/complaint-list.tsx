@@ -1,4 +1,4 @@
-import { FC, useState, useContext, useEffect } from "react";
+import { FC, useRef, useState, useContext, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import {
@@ -133,7 +133,16 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   const handlePageChange = (page: number) => {
     setPage(page);
-    window.scrollTo({ top: 0, behavior: "auto" });
+    scrollToTop();
+  };
+
+  // Scroll to top of table container when paginating
+  const divRef = useRef<HTMLDivElement>(null);
+  const scrollToTop = () => {
+    divRef.current?.scroll({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const renderComplaintListHeader = (type: string): JSX.Element => {
@@ -159,37 +168,42 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   };
 
   return (
-    <>
-      <Table id="complaint-list">
-        {renderComplaintListHeader(type)}
-        <tbody>
-          {complaints.map((item) => {
-            const { id } = item;
+    <div className="complaint-list-container">
+      <div
+        className="complaint-table-container"
+        ref={divRef}
+      >
+        <Table id="complaint-list">
+          {renderComplaintListHeader(type)}
+          <tbody>
+            {complaints.map((item) => {
+              const { id } = item;
 
-            switch (type) {
-              case COMPLAINT_TYPES.ERS: {
-                return (
-                  <AllegationComplaintListItem
-                    key={id}
-                    type={type}
-                    complaint={item as AllegationComplaint}
-                  />
-                );
+              switch (type) {
+                case COMPLAINT_TYPES.ERS: {
+                  return (
+                    <AllegationComplaintListItem
+                      key={id}
+                      type={type}
+                      complaint={item as AllegationComplaint}
+                    />
+                  );
+                }
+                case COMPLAINT_TYPES.HWCR:
+                default: {
+                  return (
+                    <WildlifeComplaintListItem
+                      key={id}
+                      type={type}
+                      complaint={item as WildlifeComplaint}
+                    />
+                  );
+                }
               }
-              case COMPLAINT_TYPES.HWCR:
-              default: {
-                return (
-                  <WildlifeComplaintListItem
-                    key={id}
-                    type={type}
-                    complaint={item as WildlifeComplaint}
-                  />
-                );
-              }
-            }
-          })}
-        </tbody>
-      </Table>
+            })}
+          </tbody>
+        </Table>
+      </div>
 
       <ComplaintPagination
         currentPage={page}
@@ -197,6 +211,6 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         onPageChange={handlePageChange}
         resultsPerPage={pageSize}
       />
-    </>
+    </div>
   );
 };

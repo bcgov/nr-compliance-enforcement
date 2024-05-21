@@ -5,6 +5,13 @@
   gap: 8px;
 }
 
+// FILTER BAR
+.comp-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 // FILTER PILLS
 .filter-pills-container {
   display: flex;
@@ -29,6 +36,19 @@
   color: white;
   border-radius: 100px;
   border-color: $bc-gov-neutral-500;
+}
+
+// COMPLAINT LIST
+.complaint-list-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 400px; //TEMP
+}
+
+.complaint-table-container {
+  flex: 1 1 auto;
+  overflow: auto;
 }
 
 // COMPLAINT DETAILS START
@@ -717,13 +737,6 @@ p {
 }
 
 // COMPLAINT DETAILS END
-
-// FILTER BAR
-.comp-filter-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
 
 #complaint-list {
   border-collapse: initial;
