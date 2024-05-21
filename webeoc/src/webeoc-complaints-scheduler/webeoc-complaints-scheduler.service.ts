@@ -100,10 +100,14 @@ export class WebEOCComplaintsScheduler {
         boolean: "and",
         items: [
           {
-            fieldname: "incident_datetime",
+            fieldname: "entrydate",
             operator: "GreaterThan",
             fieldvalue: formattedDate,
           },
+          {
+            fieldname:"flag_COS",
+            operator:"Equals",
+            fieldvalue:"Yes"}
         ],
       },
     };
