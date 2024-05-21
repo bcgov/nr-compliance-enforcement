@@ -1,3 +1,36 @@
+// SEARCH BAR
+.search-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+// FILTER PILLS
+.filter-pills-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  row-gap: 4px;
+
+  &:has(button) {
+    margin-bottom: 16px;
+  }
+}
+
+.comp-filter-btn {
+  width: auto;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 5px 4px 10px;
+  background-color: $bc-gov-neutral-500;
+  color: white;
+  border-radius: 100px;
+  border-color: $bc-gov-neutral-500;
+}
+
 // COMPLAINT DETAILS START
 .comp-complaint-details {
   margin: -24px;
@@ -672,23 +705,6 @@ p {
   flex: 1;
 }
 
-.comp-filter-btn {
-  width: auto;
-
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-
-  display: flex;
-  flex-direction: row;
-  padding: 4px 5px 4px 10px;
-
-  background-color: $bc-gov-neutral-500;
-  color: white;
-  border-radius: 100px;
-  border-color: $bc-gov-neutral-500;
-}
-
 .btn-close {
   box-sizing: content-box;
   width: 0.15em;
@@ -701,6 +717,13 @@ p {
 }
 
 // COMPLAINT DETAILS END
+
+// FILTER BAR
+.comp-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 #complaint-list {
   border-collapse: initial;
@@ -882,16 +905,6 @@ p {
   height: 32px;
 }
 
-.comp-filter-pill-container {
-  display: flex;
-  align-items: center;
-  /* Vertically center items */
-  height: 46px;
-  /* Set the container's height */
-  width: 1330px;
-  margin: 7px 0px;
-}
-
 .comp-filter-left {
   float: left;
   width: 298px;
@@ -901,19 +914,6 @@ p {
   float: left;
   width: 298px;
   margin: 0px 0px 0px 43px;
-}
-
-.comp-filter-pills {
-  align-items: center;
-  display: flex;
-  margin-left: auto;
-}
-
-.comp-filter-pill {
-  padding-left: 10px;
-  padding-right: 5px;
-  margin-left: 4px;
-  margin-right: 4px;
 }
 
 .comp-box-footer {
@@ -1333,6 +1333,7 @@ p {
   border-color: $gray-300 !important;
   border-radius: 8px;
   z-index: 0 !important;
+  white-space: nowrap;
 }
 
 .toggle-button.active {

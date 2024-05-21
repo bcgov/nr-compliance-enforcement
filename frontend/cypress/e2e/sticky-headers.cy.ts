@@ -29,7 +29,6 @@ describe("Sticky Headers", () => {
       cy.scrollTo("bottom");
 
       cy.get(".comp-header").isInViewport();
-      cy.get(".fixed-filter-header").isInViewport();
       cy.get(".fixed-table-header").isInViewport();
     });
   });

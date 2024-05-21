@@ -90,37 +90,33 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <h1>Complaints</h1>
           <Button onClick={() => handleCreateClick()}>Create Complaint</Button>
         </div>
-      </div>
+        {/* <!-- create list of complaint types --> */}
 
-      {/* <div className="comp-sub-header">Complaints</div> */}
-
-      {/* <!-- create list of complaint types --> */}
-
-      <Nav
-        variant="underline"
-        className="nav nav-tabs"
-      >
-        {/* <!-- dynamic tabs --> */}
-        {complaintTypes.map(({ id, code, name }) => {
-          return (
-            <Nav.Item
-              className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
-              key={`${code}-tab-item`}
-            >
-              <div
-                className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
-                id={id}
-                onClick={() => handleComplaintTabChange(code)}
+        <Nav
+          variant="underline"
+          className="nav nav-tabs"
+        >
+          {/* <!-- dynamic tabs --> */}
+          {complaintTypes.map(({ id, code, name }) => {
+            return (
+              <Nav.Item
+                className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
+                key={`${code}-tab-item`}
               >
-                {name} {renderComplaintTotal(code)}
-              </div>
-            </Nav.Item>
-          );
-        })}
+                <div
+                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
+                  id={id}
+                  onClick={() => handleComplaintTabChange(code)}
+                >
+                  {name} {renderComplaintTotal(code)}
+                </div>
+              </Nav.Item>
+            );
+          })}
 
-        {/* <!-- dynamic tabs end --> */}
+          {/* <!-- dynamic tabs end --> */}
 
-        {/* <Nav.Item
+          {/* <Nav.Item
           {...getToggleProps({
             onClick: () => {
               const filterElem = document.querySelector("#collapsible-complaints-list-filter-id");
@@ -148,7 +144,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <div className="left-float">Filters</div>
           <div className="clear-left-float"></div>
         </Nav.Item> */}
-      </Nav>
+        </Nav>
+      </div>
 
       <div>
         <ComplaintFilter
