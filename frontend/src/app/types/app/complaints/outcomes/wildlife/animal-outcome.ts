@@ -24,17 +24,6 @@ export interface AnimalOutcome {
   isInEditMode: boolean;
 }
 
-export interface NewAnimalOutcome {
-  //-- this value is only used to indicate which
-  //-- animal number to display
-  index: number;
-
-  //-- the assigned officer is the officer assigned
-  //-- to the selected complaint and is not the
-  //-- officer that has administered any drugs
-  assignedOfficer: string;
-}
-
 export interface AnimalOutcomeV2 {
   id: string;
 

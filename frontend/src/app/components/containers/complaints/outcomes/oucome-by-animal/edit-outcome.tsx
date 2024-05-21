@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from "react";
 import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import {
   selectSpeciesCodeDropdown,
   selectSexDropdown,
@@ -25,14 +25,16 @@ import { v4 as uuidv4 } from "uuid";
 import { DrugUsed } from "./drug-used";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
+import { openModal } from "../../../../../store/reducers/app";
+import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 
 type props = {
-  id: string;
   index: number;
+  id: string;
   outcome: AnimalOutcomeV2;
   assignedOfficer: string;
   agency: string;
-  cancel: Function;
+  edit: Function;
   update: Function;
 };
 
@@ -41,7 +43,9 @@ const defaultAuthorization: DrugAuthorization = {
   date: new Date(),
 };
 
-export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: officer, agency, cancel, update }) => {
+export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: officer, agency, edit, update }) => {
+  const dispatch = useAppDispatch();
+
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -52,7 +56,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
 
   //-- new input data
-  const [data, applyData] = useState<AnimalOutcomeV2>({ ...outcome });
+  const [data, applyData] = useState<AnimalOutcomeV2>({
+    ...outcome,
+    officer: !outcome.officer ? officer : outcome.officer,
+  });
 
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
@@ -350,7 +357,20 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   };
 
   const handleCancel = () => {
-    cancel(index);
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: () => {
+            console.log("wtf");
+            // edit(index);
+          },
+        },
+      }),
+    );
   };
 
   return (
@@ -563,7 +583,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(input: Date) => {
                     handleOutcomeDateChange(input);
                   }}
-                  selectedDate={data?.date}
+                  selectedDate={!data?.date ? new Date() : data.date}
                   classNamePrefix="comp-details-edit-calendar-input"
                   className={"animal-outcome-details-input"}
                   placeholder={"Select"}

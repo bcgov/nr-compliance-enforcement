@@ -573,7 +573,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                   onChange={(input: Date) => {
                     handleOutcomeDateChange(input);
                   }}
-                  selectedDate={data?.date}
+                  selectedDate={!data?.date ? new Date() : data.date}
                   classNamePrefix="comp-details-edit-calendar-input"
                   className={"animal-outcome-details-input"}
                   placeholder={"Select"}

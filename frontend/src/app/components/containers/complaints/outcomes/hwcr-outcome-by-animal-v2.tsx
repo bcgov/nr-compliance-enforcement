@@ -13,7 +13,7 @@ import { ComplaintParams } from "../details/complaint-details-edit";
 import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "../../../../store/reducers/case-thunks";
 import { selectAnimalOutcomes, selectCaseId } from "../../../../store/reducers/case-selectors";
 import { openModal } from "../../../../store/reducers/app";
-import { DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
+import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
 
@@ -96,8 +96,20 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
     setOutcomes(items);
   };
 
-  const handleCancel = () => {
-    setShowForm(false);
+  const handleCancelChanges = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel Changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: () => {
+            setShowForm(false);
+          },
+        },
+      }),
+    );
   };
 
   const [showForm, setShowForm] = useState(false);
@@ -119,9 +131,9 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   }, [complaint]);
 
   useEffect(() => {
-    const items = subjects && from(subjects).any() ? subjects : [];
+    const items = subjects ? subjects : [];
     setOutcomes(items);
-  }, [subjects]);
+  }, [dispatch, subjects]);
 
   //-- render a list of outcomes
   const renderOutcomeList = () => {
@@ -138,7 +150,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
               outcome={item}
               agency={agency}
               assignedOfficer={assignedOfficer}
-              cancel={handleEnableEdit}
+              edit={handleEnableEdit}
               update={handleUpdate}
             />
           );
@@ -183,7 +195,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             agency={agency}
             species={species}
             save={handleSave}
-            cancel={handleCancel}
+            cancel={handleCancelChanges}
           />
         )}
       </div>

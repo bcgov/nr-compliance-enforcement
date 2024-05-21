@@ -203,7 +203,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
           {data?.drugs && from(data?.drugs).any() && (
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
-                <label className="comp-details-inner-content-label top">{`Drug${data?.drugs.length}s`}</label>
+                <label className="comp-details-inner-content-label top">Drug{data?.drugs.length > 1 && "s"}</label>
                 <div className="comp-animal-outcome-fill-space">
                   {data.drugs.map((item) => {
                     const { officer, date } = data?.drugAuthorization || {};
