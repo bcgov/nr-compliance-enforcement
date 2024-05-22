@@ -159,9 +159,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <Offcanvas
         show={show}
         onHide={hideFilters}
+        placement="end"
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Offcanvas</Offcanvas.Title>
+          <Offcanvas.Title>Filters</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ComplaintFilter

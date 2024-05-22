@@ -87,7 +87,7 @@
 
 .comp-side-bar {
   background-color: $gray-110;
-  width: 254px;
+  width: 220px;
   padding: 16px;
   overflow: hidden;
 
@@ -479,18 +479,23 @@ button.modal-buttons {
   flex-grow: 0;
 }
 
+// PAGINATION CONTAINER
 .pagination_container {
   display: flex;
-  align-items: baseline;
-  justify-content: center;
-  padding-top: 10px;
+  align-items: center;
+  padding: 12px 16px;
   gap: 8px;
+  border-top: 1px solid $gray-300;
+
+  * {
+    font-size: 0.875rem;
+  }
 }
 
 .pagination_container .page-item.active .page-link {
   background-color: $bc-gov-neutral-500; /* Background color of the active page link */
   color: #fff; /* Text color of the active page link */
-  border-color: $gray-300; /* Border color of the active page link */
+  border-color: $bc-gov-neutral-500; /* Border color of the active page link */
 }
 
 .pagination_container .page-link {
@@ -504,16 +509,61 @@ button.modal-buttons {
   pointer-events: none; /* Disable click events on disabled links */
 }
 
+.pagination_controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1 1 auto;
+}
+
+.pagination_controls_end {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.pagination {
+  margin: 0;
+}
+
+.page-link {
+  // The select component doesn't have a size prop so we're matching the size here.
+  height: 38px;
+}
+
+@include media-breakpoint-down(xl) {
+  .page-item:not(:first-of-type):not(:last-of-type):not(.active) {
+    display: none;
+  }
+
+  .page-item {
+    text-align: center;
+  }
+}
+
 .pagination_total {
-  width: 140px;
-  height: 24px;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
+  line-height: 1.5;
 }
 
 .pagination_specific_page {
-  width: 110px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+
+  label {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .form-control {
+    width: 80px;
+    // The select component doesn't have a size prop so we're matching the size here.
+    height: 38px;
+  }
 }
 
 .blue-seperator {
@@ -561,13 +611,32 @@ p {
 }
 
 // TABLES
-table {
+.table {
   font-size: 0.875rem;
 
-  th {
-    border-bottom-width: 1px 0;
-    + th {
-      border-left-width: 1px;
+  thead {
+    font-weight: 600;
+    height: 44px;
+    text-align: left;
+
+    th {
+      background: $gray-200;
+      background-color: $gray-200;
+      border-color: $gray-300;
+      white-space: nowrap;
+      vertical-align: middle;
+
+      + th {
+        border-left-width: 1px;
+      }
+
+      &.sortable-header {
+        cursor: pointer;
+      }
+
+      &.unsortable {
+        cursor: default;
+      }
     }
   }
 
@@ -577,6 +646,10 @@ table {
 
   a {
     color: #1a5a96;
+  }
+
+  tbody {
+    font-weight: 400;
   }
 }
 
@@ -642,4 +715,14 @@ td.sticky-col {
   &:hover {
     color: $bc-brand-links;
   }
+}
+
+// OFFCANVAS CUSTOMIZATION
+.offcanvas-header .btn-close {
+  margin-right: 0.5rem;
+}
+
+.offcanvas-title {
+  font-size: 1.5rem;
+  font-weight: 700;
 }
