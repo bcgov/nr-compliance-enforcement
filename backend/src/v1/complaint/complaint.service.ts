@@ -136,7 +136,7 @@ export class ComplaintService {
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
           .addSelect(
-            "GREATEST(complaint.update_utc_timestamp, allegation.update_utc_timestamp)",
+            "GREATEST(complaint.update_utc_timestamp, allegation.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
             "_update_utc_timestamp",
           )
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
@@ -152,7 +152,7 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .addSelect(
-            "GREATEST(complaint.update_utc_timestamp,  wildlife.update_utc_timestamp)",
+            "GREATEST(complaint.update_utc_timestamp, wildlife.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
             "_update_utc_timestamp",
           )
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")

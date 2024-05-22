@@ -22,7 +22,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
   const toggleExpand = (id: string) => {
     setExpandedUpdates((prev) => ({
       ...prev,
-      [id]: true,
+      [id]: !prev[id], // Toggle the expanded state
     }));
   };
 
@@ -80,14 +80,14 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   >
                     {update.updDetailText}
                   </div>
-                  {showLinks[update.complaintUpdateGuid] && !expandedUpdates[update.complaintUpdateGuid] && (
+                  {showLinks[update.complaintUpdateGuid] && (
                     <div className="show-more-container">
                       <button
                         type="button"
                         className="show-more-link"
                         onClick={() => toggleExpand(update.complaintUpdateGuid)}
                       >
-                        Click to expand
+                        {expandedUpdates[update.complaintUpdateGuid] ? "Click to collapse" : "Click to expand"}
                       </button>
                     </div>
                   )}

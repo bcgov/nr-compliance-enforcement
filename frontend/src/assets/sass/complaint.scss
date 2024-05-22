@@ -532,11 +532,13 @@ p {
     transition: max-height 0.3s ease;
     position: relative;
     max-height: 6em; /* Limit the height to approximately 4 lines */
+    white-space: pre-wrap;
   }
 
   .complaint-description-text.expanded {
     max-height: none;
     overflow: visible;
+    white-space: pre-wrap;
   }
 
   .complaint-description-text.needs-gradient::after {
