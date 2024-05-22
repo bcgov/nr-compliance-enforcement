@@ -171,6 +171,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the complaint status code." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="manually_assignable_ind" nullable="false" remarks="Indicates if the stastus code can be manually assigned by a user." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="complaint_status_code" sequenceNumberInPK="1"/>
          <index name="PK_cmpntstscd" unique="true">
             <column ascending="true" name="complaint_status_code"/>
