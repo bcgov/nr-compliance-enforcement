@@ -68,7 +68,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
 
   //-- misc
-  const [animalNumber] = useState(index + 1);
+  const [animalNumber] = useState(index);
 
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
@@ -211,6 +211,11 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
     if (drugs && from(drugs).any()) {
       const { drugAuthorization } = data;
+
+      if (!drugAuthorization) {
+        const authorization = { ...defaultAuthorization, officer };
+        updateModel("drugAuthorization", authorization);
+      }
 
       return (
         <>
@@ -362,6 +367,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   const handleSave = () => {
     if (isValid()) {
+      debugger;
       save(data);
     }
   };

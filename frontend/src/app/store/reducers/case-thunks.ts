@@ -777,7 +777,7 @@ export const createAnimalOutcome =
     if (outcome && date) {
       actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
     }
-
+    debugger;
     //-- add an action if there are any drugs used
     if (from(drugs).any() && drugAuthorization) {
       const { officer, date } = drugAuthorization;
@@ -824,10 +824,9 @@ export const createAnimalOutcome =
       },
     };
 
+    debugger;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
     let result = await post<CaseFileDto>(dispatch, parameters);
-
-    console.log(input);
 
     if (result !== null) {
       ToggleSuccess("Animal outcome added");

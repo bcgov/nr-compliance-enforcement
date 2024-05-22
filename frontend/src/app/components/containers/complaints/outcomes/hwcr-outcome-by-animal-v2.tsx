@@ -24,6 +24,10 @@ type props = {};
 //-- the right number values, get the most recent order number and increase
 //-- by 1, default 1 if no items in array exist
 export const getNextOrderNumber = <T extends { order: number }>(input: Array<T>): number => {
+  if (input.length === 0) {
+    return 1;
+  }
+
   let result = (input as Array<T>).reduce((prev, current) => {
     return prev.order > current.order ? prev : current;
   });
