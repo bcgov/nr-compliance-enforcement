@@ -134,7 +134,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
     if (tags && from(tags).any()) {
       return from(tags)
-        .orderBy((item) => item.id)
+        .orderBy((item) => item.order)
         .toArray()
         .map((item, idx) => {
           return (
@@ -152,13 +152,14 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   const addEarTag = () => {
     const { tags } = data;
+    const order = tags.length === 0 ? 1 : 2;
 
     if (tags.length < 2) {
       let id = uuidv4().toString();
 
       const update = !from(tags).any()
-        ? [{ id, ear: "L", identifier: "" }]
-        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", identifier: "" }];
+        ? [{ id, ear: "L", identifier: "", order }]
+        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", identifier: "", order }];
 
       updateModel("tags", update);
     }
@@ -172,10 +173,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       items.length === 0
         ? []
         : from(items)
-            .orderBy((item) => item.id)
+            .orderBy((item) => item.order)
             .toArray()
-            .map((item) => {
-              return { ...item, id: uuidv4().toString() };
+            .map((item, idx) => {
+              return { ...item, id: uuidv4().toString(), order: idx + 1 };
             });
 
     earTagRefs.current = update.length === 0 ? [] : earTagRefs.current.filter((r) => r.id !== null && r.id !== id);

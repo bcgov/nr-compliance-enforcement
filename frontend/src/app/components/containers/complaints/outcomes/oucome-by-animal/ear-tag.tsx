@@ -12,6 +12,7 @@ type props = {
   id: string;
   ear: string;
   identifier: string;
+  order: number;
   update: Function;
   remove: Function;
 };
@@ -19,7 +20,7 @@ type props = {
 export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   const ears = useAppSelector(selectEarDropdown);
 
-  const { id, ear, identifier, update, remove } = props;
+  const { id, ear, identifier, order, update, remove } = props;
 
   const [error, setError] = useState("");
 
@@ -29,7 +30,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   let selectedEar = ear === "L" ? leftEar : rightEar;
 
   const updateModel = (property: string, value: string | undefined) => {
-    const source = { id, ear, identifier };
+    const source = { id, ear, identifier, order };
     const updatedTag = { ...source, [property]: value };
     update(updatedTag, property);
   };

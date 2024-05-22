@@ -172,8 +172,8 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
       let id = uuidv4().toString();
 
       const update = !from(tags).any()
-        ? [{ id, ear: "L", identifier: "" }]
-        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", identifier: "" }];
+        ? [{ id, ear: "L", identifier: "", order: 1 }]
+        : [...tags, { id, ear: tags[0].ear === "L" ? "R" : "L", identifier: "", order: 2 }];
 
       updateModel("tags", update);
     }
@@ -187,8 +187,8 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     const update = from(items)
       .orderBy((item) => item.id)
       .toArray()
-      .map((item) => {
-        return { ...item, id: uuidv4().toString() };
+      .map((item, idx) => {
+        return { ...item, id: uuidv4().toString(), order: idx + 1 };
       });
 
     earTagRefs.current = refs;
