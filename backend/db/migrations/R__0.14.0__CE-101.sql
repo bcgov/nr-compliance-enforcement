@@ -179,7 +179,10 @@ AS $function$
     _update_userid              VARCHAR(200);
     _geo_organization_unit_code VARCHAR(10);
     _incident_reported_utc_timestmp timestamp;
-    _location_geometry_point geometry;
+    _address_coordinates_lat VARCHAR(200);
+    _address_coordinates_long VARCHAR(200);
+    _location_geometry_point GEOMETRY;
+
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
     _webeoc_hwcr_complaint_nature_code VARCHAR(200);
@@ -270,7 +273,21 @@ AS $function$
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-    _location_geometry_point := coalesce( nullif(complaint_data ->> 'location', ''):: geometry, 'POINT(0 0)' :: geometry );
+	_address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
+    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+   
+    -- Create a geometry point based on the latitude and longitude
+    IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
+       _address_coordinates_long IS NOT NULL AND _address_coordinates_long <> '' THEN
+        _location_geometry_point := ST_SetSRID(
+            ST_MakePoint(
+                CAST(_address_coordinates_long AS NUMERIC),
+                CAST(_address_coordinates_lat AS NUMERIC)
+            ),
+            4326
+        );
+    END IF;
+
     _create_userid := substring(complaint_data ->> 'username' from 1 for 32);
     _update_userid := _create_userid;
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
