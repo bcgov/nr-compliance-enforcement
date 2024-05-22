@@ -133,8 +133,6 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 8px;
-  padding: 8px;
 }
 
 .react-datepicker-wrapper {
@@ -1147,6 +1145,7 @@ p {
 .react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle {
   top: 0;
   margin-top: -7px;
+  background: #fff;
 }
 
 .no-bullets {

@@ -485,6 +485,7 @@ button.modal-buttons {
   align-items: center;
   padding: 12px 16px;
   gap: 8px;
+  min-height: 63px;
   border-top: 1px solid $gray-300;
 
   * {
@@ -620,8 +621,8 @@ p {
     text-align: left;
 
     th {
-      background: $gray-200;
-      background-color: $gray-200;
+      background: $gray-100;
+      background-color: $gray-100;
       border-color: $gray-300;
       white-space: nowrap;
       vertical-align: middle;
@@ -666,16 +667,16 @@ p {
   &--left {
     left: 0;
     border-right: 1px solid $gray-300;
-
-    + th {
-      border-left-width: 0;
-    }
   }
 
   &--right {
     right: 0;
     border-left: 1px solid $gray-300;
   }
+}
+
+th.sticky-col + th {
+  border-left: none;
 }
 
 td.sticky-col {
