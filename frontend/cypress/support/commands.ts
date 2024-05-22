@@ -323,44 +323,58 @@ Cypress.Commands.add("validateComplaint", (complaintIdentifier: string, species:
   });
 });
 
-Cypress.Commands.add("fillInHWCSection", ({ section, checkboxes, officer, date, actionRequired, justification }) => {
-  let officerId = "";
-  let datePickerId = "";
-  let saveButtonId = "";
+Cypress.Commands.add(
+  "fillInHWCSection",
+  ({ section, checkboxes, officer, date, actionRequired, justification, equipmentType }) => {
+    let officerId = "";
+    let datePickerId = "";
+    let saveButtonId = "";
 
-  if (section === "ASSESSMENT") {
-    officerId = "outcome-officer";
-    datePickerId = "complaint-outcome-date";
-    saveButtonId = "#outcome-save-button";
-  } else {
-    officerId = "prev-educ-outcome-officer";
-    datePickerId = "prev-educ-outcome-date";
-    saveButtonId = "#outcome-save-prev-and-educ-button";
-  }
+    if (section === "ASSESSMENT") {
+      officerId = "outcome-officer";
+      datePickerId = "complaint-outcome-date";
+      saveButtonId = "#outcome-save-button";
+    }
+    if (section === "EQUIPMENT") {
+      officerId = "equipment-officer-set-select";
+      datePickerId = "equipment-day-set";
+      saveButtonId = "#equipment-save-button";
+    } else {
+      officerId = "prev-educ-outcome-officer";
+      datePickerId = "prev-educ-outcome-date";
+      saveButtonId = "#outcome-save-prev-and-educ-button";
+    }
 
-  Cypress._.times(checkboxes.length, (index) => {
-    cy.get(checkboxes[index]).check();
-  });
+    if (checkboxes) {
+      Cypress._.times(checkboxes.length, (index) => {
+        cy.get(checkboxes[index]).check();
+      });
+    }
 
-  if (actionRequired) {
-    cy.selectItemById("action-required", actionRequired);
-  }
+    if (actionRequired) {
+      cy.selectItemById("action-required", actionRequired);
+    }
 
-  if (justification) {
-    cy.selectItemById("justification", justification);
-  }
+    if (justification) {
+      cy.selectItemById("justification", justification);
+    }
 
-  cy.selectItemById(officerId, officer);
+    if (equipmentType) {
+      cy.selectItemById("equipment-type-select", equipmentType);
+    }
 
-  cy.enterDateTimeInDatePicker(datePickerId, date);
+    cy.selectItemById(officerId, officer);
 
-  //click Save Button
-  cy.get(saveButtonId).click();
-});
+    cy.enterDateTimeInDatePicker(datePickerId, date);
+
+    //click Save Button
+    cy.get(saveButtonId).click();
+  },
+);
 
 Cypress.Commands.add(
   "validateHWCSection",
-  ({ section, checkboxes, officer, date, actionRequired, justification, toastText }) => {
+  ({ section, checkboxes, officer, date, actionRequired, justification, toastText, equipmentType }) => {
     let checkboxDiv = "";
     let officerDiv = "";
     let dateDiv = "";
@@ -369,6 +383,10 @@ Cypress.Commands.add(
       checkboxDiv = "#assessment-checkbox-div";
       officerDiv = "#outcome-officer-div";
       dateDiv = "#complaint-outcome-date-div";
+    }
+    if (section === "EQUIPMENT") {
+      officerDiv = "#equipment-officer-set-div";
+      dateDiv = "#equipment-date-set-div";
     } else {
       checkboxDiv = "#prev-educ-checkbox-div";
       officerDiv = "#prev-educ-outcome-officer-div";
@@ -376,11 +394,13 @@ Cypress.Commands.add(
     }
 
     //Verify Fields exist
-    Cypress._.times(checkboxes.length, (index) => {
-      cy.get(checkboxDiv).should(($div) => {
-        expect($div).to.contain.text(checkboxes[index]);
+    if (checkboxes) {
+      Cypress._.times(checkboxes.length, (index) => {
+        cy.get(checkboxDiv).should(($div) => {
+          expect($div).to.contain.text(checkboxes[index]);
+        });
       });
-    });
+    }
 
     if (actionRequired) {
       cy.get("#action-required-div").should(($div) => {
@@ -391,6 +411,12 @@ Cypress.Commands.add(
     if (justification) {
       cy.get("#justification-div").should(($div) => {
         expect($div).to.contain.text(justification);
+      });
+    }
+
+    if (equipmentType) {
+      cy.get("#equipment-type-title").should(($div) => {
+        expect($div).to.contain.text(equipmentType);
       });
     }
 
