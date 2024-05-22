@@ -55,6 +55,13 @@ export class ComplaintStatusCode {
   @Column()
   update_utc_timestamp: Date;
 
+  @ApiProperty({
+    example: "true",
+    description: "Indicates if the complaint status code can be assigned manually by a user",
+  })
+  @Column()
+  manually_assignable_ind: boolean;
+
   constructor(complaint_status_code?: string) {
     this.complaint_status_code = complaint_status_code;
   }
