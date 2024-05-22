@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-bottom: 16px;
 }
 
 .comp-page-title-container {
@@ -38,10 +39,9 @@
 .comp-filter-bar {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 
-  :has(button) {
-    padding-bottom: 16px;
+  :has(button.comp-filter-btn) {
+    padding-top: 16px;
   }
 }
 
@@ -49,8 +49,9 @@
 .filter-pills-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  row-gap: 8px;
+  gap: 4px;
+  row-gap: 4px;
+  margin-top: 16px;
 }
 
 // ADD FILTER BUTTON
@@ -127,6 +128,19 @@
   }
 }
 
+// Fixing width of datepicker in this container
+.react-datepicker {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 8px;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
 .comp-data-list-map {
   position: relative;
   display: flex;
@@ -157,6 +171,10 @@
 
 // FILTER COMPONENT BREAKPOINTS
 @include media-breakpoint-up(xl) {
+  .filter-pills-container {
+    margin-top: 0;
+  }
+
   .btn.add-filter-btn {
     display: none;
   }
@@ -1096,11 +1114,6 @@ p {
   width: 170px;
 }
 
-//override for horizontal dual month display
-.react-datepicker__month-container {
-  float: left;
-}
-
 .collapsible .header {
   padding: 6px;
   cursor: pointer;
@@ -1550,6 +1563,8 @@ td.indicent-col {
 
   dt {
     width: 40ch;
+    font-weight: 400;
+    color: $gray-500;
   }
 
   dd {
