@@ -17,9 +17,15 @@ export class WebEOCComplaintsScheduler {
   constructor(private complaintsPublisherService: ComplaintsPublisherService) {}
 
   onModuleInit() {
+    const FLAG_COS = "flag_COS"; // flag required for new complaints
+    const FLAG_UPD = "flag_UPD"; // flag required for complaint updates
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_LIST_PATH, this.publishComplaint.bind(this));
-      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_UPDATE_PATH, this.publishComplaintUpdate.bind(this));
+      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_LIST_PATH, FLAG_COS, this.publishComplaint.bind(this));
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_COMPLAINTS_UPDATE_PATH,
+        FLAG_UPD,
+        this.publishComplaintUpdate.bind(this),
+      );
     });
 
     this.cronJob.start();
@@ -32,10 +38,14 @@ export class WebEOCComplaintsScheduler {
     return envCronExpression;
   }
 
-  private async fetchAndPublishComplaints(urlPath: string, publishMethod: (data: any) => Promise<void>) {
+  private async fetchAndPublishComplaints(
+    urlPath: string,
+    flagName: string,
+    publishMethod: (data: any) => Promise<void>,
+  ) {
     try {
       await this.authenticateWithWebEOC();
-      const data = await this.fetchDataFromWebEOC(urlPath);
+      const data = await this.fetchDataFromWebEOC(urlPath, flagName);
 
       this.logger.debug(`Found ${data?.length} items from WebEOC`);
 
@@ -70,7 +80,7 @@ export class WebEOCComplaintsScheduler {
     }
   }
 
-  private async fetchDataFromWebEOC(urlPath: string): Promise<any[]> {
+  private async fetchDataFromWebEOC(urlPath: string, flagName: string): Promise<any[]> {
     const dateFilter = this.getDateFilter();
     const url = `${process.env.WEBEOC_URL}/${urlPath}`;
     const config: AxiosRequestConfig = {
@@ -85,7 +95,7 @@ export class WebEOCComplaintsScheduler {
         items: [
           dateFilter,
           {
-            fieldname: "flag_COS",
+            fieldname: flagName,
             operator: "Equals",
             fieldvalue: "Yes",
           },
