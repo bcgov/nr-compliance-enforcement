@@ -9,6 +9,8 @@ import { CreateSupplementalNotesInput } from "src/types/models/case-files/supple
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
+import { ComplaintService } from "../complaint/complaint.service";
+import { ComplaintStatusCodeEnum } from "src/enum/complaint_status_code.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -80,7 +82,11 @@ export class CaseFileService {
   }
   `;
 
-  constructor(@Inject(REQUEST) private request: Request, @InjectMapper() mapper) {
+  constructor(
+    @Inject(REQUEST) private request: Request,
+    @InjectMapper() mapper,
+    private readonly complaintService: ComplaintService,
+  ) {
     this.mapper = mapper;
   }
 
@@ -138,7 +144,14 @@ export class CaseFileService {
       variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createReview;
+    const caseFileDTO = returnValue.createReview as CaseFileDto;
+    if (caseFileDTO.isReviewRequired) {
+      this.complaintService.updateComplaintStatusById(
+        caseFileDTO.leadIdentifier,
+        ComplaintStatusCodeEnum.PENDING_REVIEW,
+      );
+    }
+    return caseFileDTO;
   };
 
   updateReview = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
@@ -150,7 +163,17 @@ export class CaseFileService {
       variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.updateReview;
+
+    const caseFileDTO = returnValue.updateReview as CaseFileDto;
+    if (caseFileDTO.isReviewRequired) {
+      this.complaintService.updateComplaintStatusById(
+        caseFileDTO.leadIdentifier,
+        ComplaintStatusCodeEnum.PENDING_REVIEW,
+      );
+    } else if (!caseFileDTO.isReviewRequired) {
+      this.complaintService.updateComplaintStatusById(caseFileDTO.leadIdentifier, ComplaintStatusCodeEnum.OPEN);
+    }
+    return caseFileDTO;
   };
 
   createPrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
