@@ -20,6 +20,20 @@ import { UUID } from "crypto";
 type props = {};
 
 //--
+//-- in order to make sure things are inserted into the correct spot and get
+//-- the right number values, get the most recent order number and increase
+//-- by 1, default 1 if no items in array exist
+export const getNextOrderNumber = <T extends { order: number }>(input: Array<T>): number => {
+  let result = (input as Array<T>).reduce((prev, current) => {
+    return prev.order > current.order ? prev : current;
+  });
+
+  let { order } = result || { order: 1 };
+  console.log("getNextOrderNumber: ", order + 1);
+  return order + 1;
+};
+
+//--
 //-- the HWCROutcomeByAnimal component is a container
 //-- that shouldn't contain any business logic other than
 //-- displaying a list of animal outcomes and providing
@@ -138,15 +152,15 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- render a list of outcomes
   const renderOutcomeList = () => {
     if (outcomes && from(outcomes).any()) {
-      return outcomes.map((item, idx) => {
-        const { id, editable } = item;
+      return outcomes.map((item) => {
+        const { id, editable, order } = item;
 
         if (editable) {
           return (
             <EditOutcome
               key={id}
               id={id}
-              index={idx}
+              index={order}
               outcome={item}
               agency={agency}
               assignedOfficer={assignedOfficer}
@@ -159,7 +173,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         return (
           <AnimalOutcome
             key={id}
-            index={idx}
+            index={order}
             data={item}
             agency={agency}
             edit={handleEnableEdit}
@@ -190,7 +204,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
         {showForm && (
           <CreateAnimalOutcome
-            index={outcomes.length}
+            index={getNextOrderNumber<AnimalOutcomeV2>(outcomes)}
             assignedOfficer={assignedOfficer}
             agency={agency}
             species={species}

@@ -94,6 +94,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
         tags,
         drugs,
         actions,
+        order,
       } = item;
 
       //-- map or emtpy out the drugs-used and ear-tags collections
@@ -110,6 +111,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
         outcome,
         tags: _tags,
         drugs: _drugs,
+        order,
       };
 
       //-- pull the drug-authroized-by and officer/date from the actions

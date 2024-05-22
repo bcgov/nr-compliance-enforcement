@@ -92,6 +92,8 @@ export class CaseFileService {
         id
         ear
         identifier
+
+        order
       }
       drugs { 
         id
@@ -105,6 +107,8 @@ export class CaseFileService {
         remainingUse
         amountDiscarded
         discardMethod
+
+        order
       }
       actions { 
         actionId
@@ -112,6 +116,7 @@ export class CaseFileService {
         actionCode
         date
       }
+      order
     }
   }
   `;

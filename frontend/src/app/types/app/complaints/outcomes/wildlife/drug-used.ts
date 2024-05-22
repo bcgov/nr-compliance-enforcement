@@ -32,4 +32,6 @@ export interface DrugUsedV2 {
 
   reactions: string;
   remainingUse: string;
+
+  order: number;
 }

@@ -45,7 +45,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const [outcomeOfficer, setOutcomeOfficer] = useState("");
 
   //-- misc
-  const [animalNumber] = useState(index + 1);
+  const [animalNumber] = useState(index);
 
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");

@@ -42,4 +42,5 @@ export interface AnimalOutcomeV2 {
   date?: Date;
 
   editable?: boolean;
+  order: number;
 }

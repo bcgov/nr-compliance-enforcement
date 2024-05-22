@@ -24,7 +24,7 @@ export interface Review {
   actionId?: string;
 }
 
-type Subject = AnimalOutcomeSubject | PersonSubject;
+export type Subject = AnimalOutcomeSubject | PersonSubject;
 
 export interface PersonSubject {}
 
@@ -39,4 +39,5 @@ export interface AnimalOutcomeSubject {
   tags?: Array<AnimalTagV2>;
   drugs?: Array<DrugUsedV2>;
   actions?: Array<CaseAction>;
+  order: number;
 }

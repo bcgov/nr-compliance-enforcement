@@ -49,6 +49,7 @@ const defaultOutcome: AnimalOutcomeV2 = {
   outcome: "",
   officer: "",
   date: new Date(),
+  order: 0,
 };
 
 const defaultAuthorization: DrugAuthorization = {
@@ -258,6 +259,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
         injectionMethod: "",
         discardMethod: "",
         officer: officer ?? "",
+        order: 0,
       },
     ];
     updateModel("drugs", update);

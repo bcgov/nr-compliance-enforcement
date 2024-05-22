@@ -27,6 +27,7 @@ import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
+import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
 
 type props = {
   index: number;
@@ -68,7 +69,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const authorizationRef = useRef({ isValid: Function });
 
   //-- misc
-  const [animalNumber] = useState(index + 1);
+  const [animalNumber] = useState(index);
 
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
@@ -200,7 +201,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       return (
         <>
           {from(drugs)
-            .orderBy((item) => item.id)
+            .orderBy((item) => item.order)
             .toArray()
             .map((item, idx) => {
               const { id } = item;
@@ -228,6 +229,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   const addDrugUsed = () => {
     const { drugs } = data;
+    const nextOrder = getNextOrderNumber<DrugUsedV2>(drugs);
 
     let id = uuidv4().toString();
 
@@ -244,6 +246,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         injectionMethod: "",
         discardMethod: "",
         officer: officer ?? "",
+        order: nextOrder,
       },
     ];
     updateModel("drugs", update);
@@ -365,8 +368,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
           title: "Cancel Changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
-            console.log("wtf");
-            // edit(index);
+            edit(id);
           },
         },
       }),

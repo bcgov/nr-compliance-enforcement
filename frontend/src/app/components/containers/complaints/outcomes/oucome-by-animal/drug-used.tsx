@@ -28,6 +28,8 @@ type props = {
   injectionMethod: string;
   discardMethod: string;
 
+  order: number;
+
   remove: Function;
   update: Function;
 };
@@ -47,6 +49,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     remainingUse,
     injectionMethod,
     discardMethod,
+    order,
     remove,
     update,
   } = props;
@@ -131,6 +134,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
       remainingUse,
       injectionMethod,
       discardMethod,
+      order,
     };
     const updatedDrug = { ...source, [property]: value };
     update(updatedDrug, property);
