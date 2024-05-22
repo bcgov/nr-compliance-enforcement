@@ -126,7 +126,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
-          className={`comp-cell-width-95 sticky-col sticky-col--left indicent-col ${isExpandedClass}`}
+          className={`comp-cell-width-95 sticky-col sticky-col--left incident-col ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <Link
