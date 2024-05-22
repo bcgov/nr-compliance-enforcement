@@ -82,7 +82,14 @@ export class WebEOCComplaintsScheduler {
     const body = {
       customFilter: {
         boolean: "and",
-        items: [dateFilter],
+        items: [
+          dateFilter,
+          {
+            fieldname: "flag_COS",
+            operator: "Equals",
+            fieldvalue: "Yes",
+          },
+        ],
       },
     };
 
