@@ -91,7 +91,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     <div className="comp-page-container comp-page-container--noscroll">
       <div className="comp-page-header">
         <div className="comp-page-title-container">
-          <h1 className="mb-2">Complaints</h1>
+          <h1>Complaints</h1>
           <Button onClick={() => handleCreateClick()}>Create Complaint</Button>
         </div>
         {/* <!-- create list of complaint types --> */}
