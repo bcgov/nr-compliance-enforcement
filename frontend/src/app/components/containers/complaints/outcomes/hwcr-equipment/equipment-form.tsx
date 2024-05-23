@@ -334,14 +334,20 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   };
 
   return (
-    <div className="comp-outcome-report-complaint-assessment">
+    <div
+      className="comp-outcome-report-complaint-assessment"
+      id="equipment-form"
+    >
       <ToastContainer />
       <div
         className="equipment-form-edit-container"
         style={{ marginTop: "10px" }}
       >
         <div className="comp-details-edit-column">
-          <div className="equipment-form-label-input-pair">
+          <div
+            className="equipment-form-label-input-pair"
+            id="equipment-type-div"
+          >
             <label htmlFor="equipment-type-select">Equipment type</label>
             <CompSelect
               id="equipment-type-select"
@@ -360,7 +366,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
       <div className="equipment-form-edit-container">
-        <div className="comp-details-edit-column">
+        <div
+          className="comp-details-edit-column"
+          id="equipment-address-container"
+        >
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-address">Address</label>
             <div className="edit-input">
@@ -378,6 +387,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           {complaintData?.locationSummary && (
             <button
               className="button-text copy-text"
+              id="equipment-copy-address-button"
               onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
             >
               Copy location from complaint details
@@ -387,7 +397,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
       <div className="equipment-form-edit-container">
-        <div className="comp-details-edit-column">
+        <div
+          className="comp-details-edit-column"
+          id="equipment-x-coordinate-container"
+        >
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-x-coordinate">X Coordinate</label>
             <div className="edit-input">
@@ -405,6 +418,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           {hasCoordinates && (
             <button
               className="button-text copy-text"
+              id="equipment-copy-coordinates-button"
               onClick={() => {
                 const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? "";
                 const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? "";
@@ -417,7 +431,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             </button>
           )}
         </div>
-        <div className="comp-details-edit-column comp-details-right-column">
+        <div
+          className="comp-details-edit-column comp-details-right-column"
+          id="equipment-y-coordinate-container"
+        >
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-y-coordinate">Y Coordinate</label>
             <div className="edit-input">
@@ -438,7 +455,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column">
           <div
             className="equipment-form-label-input-pair"
-            id="reported-pair-id"
+            id="equipment-officer-set-div"
           >
             <label htmlFor="equipment-officer-set-select">Set by</label>
             <CompSelect
@@ -457,7 +474,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column comp-details-right-column">
           <div
             className="equipment-form-label-input-pair"
-            id="reported-pair-id"
+            id="equipment-date-set-div"
           >
             <label htmlFor="equipment-day-set">Set date</label>
             <ValidationDatePicker
@@ -478,7 +495,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           <div className="comp-details-edit-column">
             <div
               className="equipment-form-label-input-pair"
-              id="reported-pair-id"
+              id="equipment-officer-removed-div"
             >
               <label htmlFor="equipment-officer-removed-select">Removed by</label>
               <CompSelect
@@ -497,7 +514,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           <div className="comp-details-edit-column comp-details-right-column">
             <div
               className="equipment-form-label-input-pair"
-              id="reported-pair-id"
+              id="equipment-date-removed-div"
             >
               <label htmlFor="equipment-date-removed">Removed date</label>
               <ValidationDatePicker
