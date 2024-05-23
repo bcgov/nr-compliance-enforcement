@@ -136,7 +136,7 @@ export class ComplaintService {
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
           .addSelect(
-            "GREATEST(complaint.update_utc_timestamp, allegation.update_utc_timestamp)",
+            "GREATEST(complaint.update_utc_timestamp, allegation.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
             "_update_utc_timestamp",
           )
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
@@ -152,7 +152,7 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .addSelect(
-            "GREATEST(complaint.update_utc_timestamp,  wildlife.update_utc_timestamp)",
+            "GREATEST(complaint.update_utc_timestamp, wildlife.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
             "_update_utc_timestamp",
           )
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
@@ -835,7 +835,7 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      this.logger.log(error.response);
+      this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -929,7 +929,7 @@ export class ComplaintService {
       }
       return results;
     } catch (error) {
-      this.logger.log(error.response);
+      this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -951,15 +951,15 @@ export class ComplaintService {
         const complaint = await this.findById(id);
         return complaint as ComplaintDto;
       } else {
-        this.logger.log(`Unable to update complaint: ${id} complaint status to ${status}`);
+        this.logger.error(`Unable to update complaint: ${id} complaint status to ${status}`);
         throw new HttpException(
           `Unable to update complaint: ${id} complaint status to ${status}`,
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
     } catch (error) {
-      this.logger.log(`An Error occured trying to update complaint: ${id}, update status: ${status}`);
-      this.logger.log(error.response);
+      this.logger.error(`An Error occured trying to update complaint: ${id}, update status: ${status}`);
+      this.logger.error(error.response);
 
       throw new HttpException(
         `Unable to update complaint: ${id} complaint status to ${status}`,
@@ -1125,10 +1125,10 @@ export class ComplaintService {
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.log(
+      this.logger.error(
         `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`,
       );
-      this.logger.log(error.response);
+      this.logger.error(error.response);
 
       throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.BAD_REQUEST);
     } finally {
@@ -1274,12 +1274,12 @@ export class ComplaintService {
       return (await this.findById(complaintId, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.log(
+      this.logger.error(
         `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(
           model,
         )}`,
       );
-      this.logger.log(error.response);
+      this.logger.error(error.response);
       throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);
     } finally {
       await queryRunner.release();
