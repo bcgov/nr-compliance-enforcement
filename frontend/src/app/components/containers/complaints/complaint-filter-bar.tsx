@@ -1,4 +1,4 @@
-import { FC, useContext, useCallback } from "react";
+import { FC, MouseEventHandler, useContext, useCallback } from "react";
 import { FilterButton } from "../../common/filter-button";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { clearFilter } from "../../../store/reducers/complaint-filters";
@@ -13,8 +13,8 @@ type Props = {
   complaintType: string;
   searchQuery: string | undefined;
   applySearchQuery: Function;
-  toggleShowMobileFilters: any;
-  toggleShowDesktopFilters: any;
+  toggleShowMobileFilters: MouseEventHandler;
+  toggleShowDesktopFilters: MouseEventHandler;
 };
 
 export const ComplaintFilterBar: FC<Props> = ({
