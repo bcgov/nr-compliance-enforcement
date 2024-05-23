@@ -48,6 +48,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
       ],
       storage: StorageType.Memory,
+      max_age: 10 * 60 * 60 * 1e9, // 10 minutes in nanoseconds
       duplicateWindow: 10 * 60 * 1e9, // 10 minutes in nanoseconds
     };
 
