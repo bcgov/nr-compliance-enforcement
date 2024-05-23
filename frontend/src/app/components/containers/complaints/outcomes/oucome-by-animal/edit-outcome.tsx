@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from "react";
 import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
+import { useAppSelector } from "../../../../../hooks/hooks";
 import {
   selectSpeciesCodeDropdown,
   selectSexDropdown,
@@ -25,9 +25,8 @@ import { v4 as uuidv4 } from "uuid";
 import { DrugUsed } from "./drug-used";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
-import { openModal } from "../../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
+import { StandaloneConfirmCancelModal } from "../../../../modal/instances/standalone-cancel-confirm-modal";
 
 type props = {
   index: number;
@@ -35,8 +34,8 @@ type props = {
   outcome: AnimalOutcomeV2;
   assignedOfficer: string;
   agency: string;
-  edit: Function;
   update: Function;
+  toggle: Function;
 };
 
 const defaultAuthorization: DrugAuthorization = {
@@ -44,9 +43,7 @@ const defaultAuthorization: DrugAuthorization = {
   date: new Date(),
 };
 
-export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: officer, agency, edit, update }) => {
-  const dispatch = useAppDispatch();
-
+export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: officer, agency, update, toggle }) => {
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -55,6 +52,8 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+
+  const [showModal, setShowModal] = useState(false);
 
   //-- new input data
   const [data, applyData] = useState<AnimalOutcomeV2>({
@@ -361,260 +360,266 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   };
 
   const handleCancel = () => {
-    dispatch(
-      openModal({
-        modalSize: "md",
-        modalType: CANCEL_CONFIRM,
-        data: {
-          title: "Cancel Changes?",
-          description: "Your changes will be lost.",
-          cancelConfirmed: () => {
-            edit(id);
-          },
-        },
-      }),
-    );
+    setShowModal(true);
+  };
+  const close = () => {
+    setShowModal(false);
   };
 
+  const cancel = () => {
+    setShowModal(false);
+    toggle(id);
+  };
   return (
-    <div className="comp-outcome-report-complaint-assessment">
-      <div className="comp-animal-outcome-report">
-        <div className="equipment-item">
-          <div className="equipment-item-header">
-            <div className="title">
-              <h6>Animal {pad(animalNumber.toString(), 2)}</h6>
+    <>
+      <StandaloneConfirmCancelModal
+        title="Cancel Changes?"
+        description="Your changes will be lost."
+        show={showModal}
+        closeAndCancel={cancel}
+        close={close}
+      />
+      <div className="comp-outcome-report-complaint-assessment">
+        <div className="comp-animal-outcome-report">
+          <div className="equipment-item">
+            <div className="equipment-item-header">
+              <div className="title">
+                <h6>Animal {pad(animalNumber.toString(), 2)}</h6>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div id="comp-outcome-report-animal-information-heading">Animal information</div>
+          <div id="comp-outcome-report-animal-information-heading">Animal information</div>
 
-        <div className="comp-animal-outcome-report-inner-spacing">
-          <Row>
-            <Col>
-              <label
-                htmlFor="select-species"
-                className="label-margin-bottom"
-              >
-                Species
-              </label>
-              <CompSelect
-                id="select-species"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={speciesList}
-                enableValidation={true}
-                placeholder="Select"
-                onChange={handleSpeciesChange}
-                defaultOption={getValue("species")}
-                errorMessage={speciesError}
-              />
-            </Col>
-            <Col>
-              <label
-                htmlFor="select-sex"
-                className="label-margin-bottom"
-              >
-                Sex
-              </label>
-              <CompSelect
-                id="select-sex"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={sexes}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("sex", evt?.value);
-                }}
-                defaultOption={getValue("sex")}
-              />
-            </Col>
-            <Col>
-              <label
-                htmlFor="select-age"
-                className="label-margin-bottom"
-              >
-                Age
-              </label>
-              <CompSelect
-                id="select-age"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={ages}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("age", evt?.value);
-                }}
-                defaultOption={getValue("age")}
-              />
-            </Col>
-            <Col>
-              <label
-                htmlFor="select-category-level"
-                className="label-margin-bottom"
-              >
-                Category level
-              </label>
-              <CompSelect
-                id="select-category-level"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={threatLevels}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("threatLevel", evt?.value);
-                }}
-                defaultOption={getValue("threatLevel")}
-              />
-            </Col>
-            <Col>
-              <label
-                htmlFor="select-conflict-history"
-                className="label-margin-bottom"
-              >
-                Conflict history
-              </label>
-              <CompSelect
-                id="select-conflict-history"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={conflictHistories}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("conflictHistory", evt?.value);
-                }}
-                defaultOption={getValue("conflictHistory")}
-              />
-            </Col>
-          </Row>
-        </div>
-
-        {renderEarTags()}
-        {data.tags.length < 2 && (
-          <Button
-            className="comp-animal-outcome-add-button"
-            title="Add ear tag"
-            variant="link"
-            onClick={() => addEarTag()}
-          >
-            <BsPlusCircle size={16} />
-            <span> Add ear tag</span>
-          </Button>
-        )}
-
-        {renderDrugsUsed()}
-        <Button
-          className="comp-animal-outcome-add-button"
-          title="Add drug"
-          variant="link"
-          onClick={() => addDrugUsed()}
-        >
-          <BsPlusCircle size={16} />
-          <span> Add drug</span>
-        </Button>
-
-        <div
-          id="comp-outcome-report-outcome-heading"
-          className="comp-outcome-spacing"
-        >
-          Outcome
-        </div>
-        <div className="comp-animal-outcome-report-inner-spacing comp-margin-top-sm">
-          <Row>
-            <Col
-              className="mt-4 mb-3"
-              md={4}
-            >
-              <CompSelect
-                id="select-ears"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={outcomes}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("outcome", evt?.value);
-                }}
-                defaultOption={getValue("outcome")}
-              />
-            </Col>
-            <Col md={4}>
-              <div
-                className="animal-outcome-label-input-pair"
-                id="officer-assigned-pair-id"
-              >
+          <div className="comp-animal-outcome-report-inner-spacing">
+            <Row>
+              <Col>
                 <label
-                  id="officer-assigned-select-label-id"
-                  htmlFor="officer-assigned-select-id"
+                  htmlFor="select-species"
+                  className="label-margin-bottom"
                 >
-                  Officer
+                  Species
                 </label>
                 <CompSelect
-                  id="officer-assigned-select-id"
+                  id="select-species"
                   classNamePrefix="comp-select"
-                  className="animal-outcome-details-input"
-                  options={officers}
-                  placeholder="Select"
+                  className="comp-details-input"
+                  options={speciesList}
                   enableValidation={true}
-                  onChange={(evt) => {
-                    handleOfficerChange(evt);
-                  }}
-                  defaultOption={getValue("officer")}
-                  errorMessage={officerError}
+                  placeholder="Select"
+                  onChange={handleSpeciesChange}
+                  defaultOption={getValue("species")}
+                  errorMessage={speciesError}
                 />
-              </div>
-            </Col>
-
-            <Col>
-              <div
-                className="animal-outcome-label-input-pair"
-                id="officer-assigned-pair-id"
-              >
+              </Col>
+              <Col>
                 <label
-                  id="complaint-incident-time-label-id"
-                  htmlFor="complaint-incident-time"
+                  htmlFor="select-sex"
+                  className="label-margin-bottom"
                 >
-                  Date
+                  Sex
                 </label>
-                <ValidationDatePicker
-                  id="equipment-day-set"
-                  maxDate={new Date()}
-                  onChange={(input: Date) => {
-                    handleOutcomeDateChange(input);
-                  }}
-                  selectedDate={!data?.date ? new Date() : data.date}
-                  classNamePrefix="comp-details-edit-calendar-input"
-                  className={"animal-outcome-details-input"}
+                <CompSelect
+                  id="select-sex"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={sexes}
+                  enableValidation={false}
                   placeholder={"Select"}
-                  errMsg={outcomeDateError}
+                  onChange={(evt) => {
+                    updateModel("sex", evt?.value);
+                  }}
+                  defaultOption={getValue("sex")}
                 />
-              </div>
-            </Col>
-          </Row>
-        </div>
-        <div className="comp-outcome-report-actions">
+              </Col>
+              <Col>
+                <label
+                  htmlFor="select-age"
+                  className="label-margin-bottom"
+                >
+                  Age
+                </label>
+                <CompSelect
+                  id="select-age"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={ages}
+                  enableValidation={false}
+                  placeholder={"Select"}
+                  onChange={(evt) => {
+                    updateModel("age", evt?.value);
+                  }}
+                  defaultOption={getValue("age")}
+                />
+              </Col>
+              <Col>
+                <label
+                  htmlFor="select-category-level"
+                  className="label-margin-bottom"
+                >
+                  Category level
+                </label>
+                <CompSelect
+                  id="select-category-level"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={threatLevels}
+                  enableValidation={false}
+                  placeholder={"Select"}
+                  onChange={(evt) => {
+                    updateModel("threatLevel", evt?.value);
+                  }}
+                  defaultOption={getValue("threatLevel")}
+                />
+              </Col>
+              <Col>
+                <label
+                  htmlFor="select-conflict-history"
+                  className="label-margin-bottom"
+                >
+                  Conflict history
+                </label>
+                <CompSelect
+                  id="select-conflict-history"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={conflictHistories}
+                  enableValidation={false}
+                  placeholder={"Select"}
+                  onChange={(evt) => {
+                    updateModel("conflictHistory", evt?.value);
+                  }}
+                  defaultOption={getValue("conflictHistory")}
+                />
+              </Col>
+            </Row>
+          </div>
+
+          {renderEarTags()}
+          {data.tags.length < 2 && (
+            <Button
+              className="comp-animal-outcome-add-button"
+              title="Add ear tag"
+              variant="link"
+              onClick={() => addEarTag()}
+            >
+              <BsPlusCircle size={16} />
+              <span> Add ear tag</span>
+            </Button>
+          )}
+
+          {renderDrugsUsed()}
           <Button
-            id="equipment-cancel-button"
-            title="Cancel Outcome"
-            className="comp-outcome-cancel"
-            onClick={handleCancel}
+            className="comp-animal-outcome-add-button"
+            title="Add drug"
+            variant="link"
+            onClick={() => addDrugUsed()}
           >
-            Cancel
+            <BsPlusCircle size={16} />
+            <span> Add drug</span>
           </Button>
-          <Button
-            id="equipment-save-button"
-            title="Save Outcome"
-            className="comp-outcome-save"
-            onClick={handleUpdate}
+
+          <div
+            id="comp-outcome-report-outcome-heading"
+            className="comp-outcome-spacing"
           >
-            Save
-          </Button>
+            Outcome
+          </div>
+          <div className="comp-animal-outcome-report-inner-spacing comp-margin-top-sm">
+            <Row>
+              <Col
+                className="mt-4 mb-3"
+                md={4}
+              >
+                <CompSelect
+                  id="select-ears"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={outcomes}
+                  enableValidation={false}
+                  placeholder={"Select"}
+                  onChange={(evt) => {
+                    updateModel("outcome", evt?.value);
+                  }}
+                  defaultOption={getValue("outcome")}
+                />
+              </Col>
+              <Col md={4}>
+                <div
+                  className="animal-outcome-label-input-pair"
+                  id="officer-assigned-pair-id"
+                >
+                  <label
+                    id="officer-assigned-select-label-id"
+                    htmlFor="officer-assigned-select-id"
+                  >
+                    Officer
+                  </label>
+                  <CompSelect
+                    id="officer-assigned-select-id"
+                    classNamePrefix="comp-select"
+                    className="animal-outcome-details-input"
+                    options={officers}
+                    placeholder="Select"
+                    enableValidation={true}
+                    onChange={(evt) => {
+                      handleOfficerChange(evt);
+                    }}
+                    defaultOption={getValue("officer")}
+                    errorMessage={officerError}
+                  />
+                </div>
+              </Col>
+
+              <Col>
+                <div
+                  className="animal-outcome-label-input-pair"
+                  id="officer-assigned-pair-id"
+                >
+                  <label
+                    id="complaint-incident-time-label-id"
+                    htmlFor="complaint-incident-time"
+                  >
+                    Date
+                  </label>
+                  <ValidationDatePicker
+                    id="equipment-day-set"
+                    maxDate={new Date()}
+                    onChange={(input: Date) => {
+                      handleOutcomeDateChange(input);
+                    }}
+                    selectedDate={!data?.date ? new Date() : data.date}
+                    classNamePrefix="comp-details-edit-calendar-input"
+                    className={"animal-outcome-details-input"}
+                    placeholder={"Select"}
+                    errMsg={outcomeDateError}
+                  />
+                </div>
+              </Col>
+            </Row>
+          </div>
+          <div className="comp-outcome-report-actions">
+            <Button
+              id="equipment-cancel-button"
+              title="Cancel Outcome"
+              className="comp-outcome-cancel"
+              onClick={(evt) => {
+                handleCancel();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              id="equipment-save-button"
+              title="Save Outcome"
+              className="comp-outcome-save"
+              onClick={handleUpdate}
+            >
+              Save
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

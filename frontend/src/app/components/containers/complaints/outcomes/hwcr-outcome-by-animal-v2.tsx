@@ -33,7 +33,6 @@ export const getNextOrderNumber = <T extends { order: number }>(input: Array<T>)
   });
 
   let { order } = result || { order: 1 };
-  console.log("getNextOrderNumber: ", order + 1);
   return order + 1;
 };
 
@@ -114,7 +113,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
     setOutcomes(items);
   };
 
-  const handleCancelChanges = () => {
+  const handleCancelCreateOutcome = () => {
     dispatch(
       openModal({
         modalSize: "md",
@@ -168,8 +167,8 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
               outcome={item}
               agency={agency}
               assignedOfficer={assignedOfficer}
-              edit={handleEnableEdit}
               update={handleUpdate}
+              toggle={handleEnableEdit}
             />
           );
         }
@@ -213,7 +212,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             agency={agency}
             species={species}
             save={handleSave}
-            cancel={handleCancelChanges}
+            cancel={handleCancelCreateOutcome}
           />
         )}
       </div>

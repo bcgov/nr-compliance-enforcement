@@ -23,7 +23,6 @@ export const DeleteAnimalOutcomeModal: FC<props> = ({ close, submit }) => {
     if (caseFileId) {
       dispatch(deleteAnimalOutcome(outcomeId))
         .then((res) => {
-          console.log(res);
           if (res === "success") {
             dispatch(getCaseFile(caseFileId));
           }
