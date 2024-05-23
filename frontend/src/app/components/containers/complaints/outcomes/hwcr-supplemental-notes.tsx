@@ -60,7 +60,7 @@ export const HWCRSupplementalNotes: FC = () => {
             variant="primary"
             onClick={(e) => setShowInput(true)}
           >
-            <span>Add supporting notes</span>
+            <span>Add notes</span>
             <BsPlusCircle />
           </Button>
         </div>
@@ -81,7 +81,7 @@ export const HWCRSupplementalNotes: FC = () => {
 
   return (
     <div className="comp-outcome-report-block">
-      <h6>Supporting notes</h6>
+      <h6>Additional notes</h6>
       {renderNote}
     </div>
   );
