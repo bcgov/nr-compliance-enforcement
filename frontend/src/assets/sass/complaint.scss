@@ -39,24 +39,24 @@
 .comp-filter-bar {
   display: flex;
   flex-direction: column;
-
-  :has(button.comp-filter-btn) {
-    margin-top: 16px;
-  }
 }
 
 // FILTER PILLS
 .filter-pills-container {
   display: flex;
   align-items: center;
-  gap: 4px;
-  row-gap: 4px;
+  gap: 6px;
+  row-gap: 6px;
   margin-top: 16px;
 }
 
 // ADD FILTER BUTTON
-.btn.add-filter-btn {
+.btn.filter-btn {
   border-radius: 100px;
+}
+
+.filter-btn-desktop {
+  display: none;
 }
 
 // FILTER FORM CONTROLS - DESKTOP
@@ -78,14 +78,14 @@
 .comp-filter-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 
   + .comp-filter-container {
     margin-top: 8px;
   }
 
   label {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     font-size: 0.875rem;
   }
 
@@ -109,6 +109,13 @@
 .comp-data-filters {
   display: none;
   border-right: 1px solid $gray-300;
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    height: 100%;
+  }
 
   &-header {
     display: flex;
@@ -169,19 +176,18 @@
 
 // FILTER COMPONENT BREAKPOINTS
 @include media-breakpoint-up(xl) {
-  .filter-pills-container {
-    margin-top: 0;
+  .filter-btn-mobile {
+    display: none;
   }
 
-  .btn.add-filter-btn {
-    display: none;
+  .filter-btn-desktop {
+    display: inline-block;
   }
 
   .comp-data-filters {
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
-    width: 300px;
   }
 }
 

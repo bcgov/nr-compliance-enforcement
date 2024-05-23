@@ -1,7 +1,6 @@
 import { FC, useState, useContext, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Nav, Navbar, Offcanvas } from "react-bootstrap";
-import { useCollapse } from "react-collapsed";
+import { Button, Collapse, Nav, Offcanvas } from "react-bootstrap";
 import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
 import { useAppSelector } from "../../../hooks/hooks";
 import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
@@ -30,9 +29,6 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
 
   const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
-
-  const [isExpanded, setExpanded] = useState(true);
-  const { getToggleProps } = useCollapse({ isExpanded });
 
   const defaultZone = useAppSelector(selectDefaultZone);
 
@@ -85,9 +81,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   // Show/Hide Mobile Filters
   const [show, setShow] = useState(false);
-
   const hideFilters = () => setShow(false);
-  const toggleShowFilters = useCallback(() => setShow((prevShow) => !prevShow), []);
+  const toggleShowMobileFilters = useCallback(() => setShow((prevShow) => !prevShow), []);
+
+  const [open, setOpen] = useState(false);
+  const toggleShowDesktopFilters = useCallback(() => setOpen((prevShow) => !prevShow), []);
 
   return (
     <div className="comp-page-container">
@@ -123,7 +121,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintFilterBar
           viewType={viewType}
           toggleViewType={toggleViewType}
-          toggleShowFilters={toggleShowFilters}
+          toggleShowMobileFilters={toggleShowMobileFilters}
+          toggleShowDesktopFilters={toggleShowDesktopFilters}
           complaintType={complaintType}
           searchQuery={search}
           applySearchQuery={setSearch}
@@ -131,15 +130,19 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       </div>
 
       <div className="comp-data-container">
-        <div className="comp-data-filters">
-          <div className="comp-data-filters-header">Filter by</div>
-          <div className="comp-data-filters-body">
-            <ComplaintFilter
-              type={complaintType}
-              isOpen={isExpanded}
-            />
+        <Collapse
+          in={open}
+          dimension="width"
+        >
+          <div className="comp-data-filters">
+            <div className="comp-data-filters-inner">
+              <div className="comp-data-filters-header">Filter by</div>
+              <div className="comp-data-filters-body">
+                <ComplaintFilter type={complaintType} />
+              </div>
+            </div>
           </div>
-        </div>
+        </Collapse>
 
         <div className="comp-data-list-map">
           {viewType === "list" ? (
@@ -165,10 +168,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <Offcanvas.Title>Filters</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <ComplaintFilter
-            type={complaintType}
-            isOpen={isExpanded}
-          />
+          <ComplaintFilter type={complaintType} />
         </Offcanvas.Body>
       </Offcanvas>
     </div>

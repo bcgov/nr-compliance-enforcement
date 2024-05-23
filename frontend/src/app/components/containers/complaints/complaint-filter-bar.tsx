@@ -13,7 +13,8 @@ type Props = {
   complaintType: string;
   searchQuery: string | undefined;
   applySearchQuery: Function;
-  toggleShowFilters: any;
+  toggleShowMobileFilters: any;
+  toggleShowDesktopFilters: any;
 };
 
 export const ComplaintFilterBar: FC<Props> = ({
@@ -22,7 +23,8 @@ export const ComplaintFilterBar: FC<Props> = ({
   complaintType,
   searchQuery,
   applySearchQuery,
-  toggleShowFilters,
+  toggleShowMobileFilters,
+  toggleShowDesktopFilters,
 }) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
@@ -89,8 +91,19 @@ export const ComplaintFilterBar: FC<Props> = ({
         <Button
           variant="outline-primary"
           size="sm"
-          className="icon-start add-filter-btn"
-          onClick={toggleShowFilters}
+          className="icon-start filter-btn filter-btn-desktop"
+          id="comp-filter-btn"
+          onClick={toggleShowDesktopFilters}
+        >
+          <i className="bi bi-filter"></i>
+          <span>Filters</span>
+        </Button>
+
+        <Button
+          variant="outline-primary"
+          size="sm"
+          className="icon-start filter-btn filter-btn-mobile"
+          onClick={toggleShowMobileFilters}
         >
           <i className="bi bi-filter"></i>
           <span>Filters</span>
