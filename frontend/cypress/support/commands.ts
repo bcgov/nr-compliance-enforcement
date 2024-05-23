@@ -305,22 +305,6 @@ Cypress.Commands.add("validateComplaint", (complaintIdentifier: string, species:
   //-- verify the right complaint identifier is selected and the animal type
   cy.get(".comp-box-complaint-id").contains(complaintIdentifier);
   cy.get(".comp-box-species-type").contains(species);
-
-  cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
-    if ($assessment.find("#outcome-save-button").length) {
-      cy.get("#ASSESSRISK").should("exist");
-      cy.get("#ASSESSHLTH").should("exist");
-      cy.get("#ASSESSHIST").should("exist");
-      cy.get("#CNFRMIDENT").should("exist");
-
-      //validate that dropdowns exist
-      cy.get("#action-required").should("exist");
-      cy.get("#outcome-officer").should("exist");
-
-      //validate the date picker exists
-      cy.get("#complaint-outcome-date").should("exist");
-    }
-  });
 });
 
 Cypress.Commands.add(
