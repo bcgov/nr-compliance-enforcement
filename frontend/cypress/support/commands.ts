@@ -337,7 +337,7 @@ Cypress.Commands.add(
           });
         }
       }
-    } else {
+    } else if (checkboxes) {
       Cypress._.times(checkboxes.length, (index) => {
         cy.get(checkboxes[index]).check();
       });
@@ -394,7 +394,7 @@ Cypress.Commands.add(
           });
         }
       }
-    } else {
+    } else if (checkboxes) {
       Cypress._.times(checkboxes.length, (index) => {
         cy.get(checkboxDiv).should(($div) => {
           expect($div).to.contain.text(checkboxes[index]);
