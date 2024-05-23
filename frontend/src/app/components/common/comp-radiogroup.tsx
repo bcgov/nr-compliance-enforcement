@@ -42,7 +42,7 @@ export const CompRadioGroup: FC<Props> = ({
               value={item.value}
               onChange={(e: any) => onChange(e)}
               checked={item.value === value}
-              key={index}
+              key={item.value?.toLowerCase()}
               disabled={isDisabled}
             />
           );
