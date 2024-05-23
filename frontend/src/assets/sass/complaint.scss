@@ -53,6 +53,7 @@
 .filter-pills-container {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   row-gap: 6px;
   margin-top: 16px;
@@ -80,6 +81,7 @@
   color: white;
   border-radius: 100px;
   border-color: $bc-gov-neutral-500;
+  white-space: nowrap;
 }
 
 // FILTER CONTAINERS
