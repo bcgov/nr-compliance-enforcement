@@ -835,7 +835,7 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      this.logger.log(error.response);
+      this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -929,7 +929,7 @@ export class ComplaintService {
       }
       return results;
     } catch (error) {
-      this.logger.log(error.response);
+      this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -958,8 +958,8 @@ export class ComplaintService {
         );
       }
     } catch (error) {
-      this.logger.log(`An Error occured trying to update complaint: ${id}, update status: ${status}`);
-      this.logger.log(error.response);
+      this.logger.error(`An Error occured trying to update complaint: ${id}, update status: ${status}`);
+      this.logger.error(error.response);
 
       throw new HttpException(
         `Unable to update complaint: ${id} complaint status to ${status}`,
