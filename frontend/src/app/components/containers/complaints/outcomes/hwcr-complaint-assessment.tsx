@@ -33,6 +33,7 @@ import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 import "../../../../../assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "../../../../store/reducers/case-selectors";
 import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
+import { OptionLabels } from "../../../../constants/option-labels";
 
 export const HWCRComplaintAssessment: FC = () => {
   const dispatch = useAppDispatch();
@@ -229,12 +230,15 @@ export const HWCRComplaintAssessment: FC = () => {
           key: selectedJustification?.label,
           value: selectedJustification?.value,
         },
-        assessment_type: selectedAssessmentTypes?.map((item) => {
-          return {
-            key: item.label,
-            value: item.value,
-          };
-        }),
+        assessment_type:
+          selectedActionRequired?.label === OptionLabels.OPTION_NO
+            ? []
+            : selectedAssessmentTypes?.map((item) => {
+                return {
+                  key: item.label,
+                  value: item.value,
+                };
+              }),
       };
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
@@ -277,7 +281,10 @@ export const HWCRComplaintAssessment: FC = () => {
       hasErrors = true;
     }
 
-    if (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) {
+    if (
+      selectedActionRequired?.value === OptionLabels.OPTION_YES &&
+      (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0)
+    ) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
       hasErrors = true;
     }
@@ -290,46 +297,16 @@ export const HWCRComplaintAssessment: FC = () => {
     return hasErrors;
   };
 
+  const assessmentDivClass = `comp-details-label-checkbox-div-pair ${
+    selectedActionRequired?.value === "Yes" ? "" : "hidden"
+  }`;
+
   return (
     <div className="comp-outcome-report-block">
       <h6>Complaint assessment</h6>
       <div className="comp-outcome-report-complaint-assessment">
         <div className="comp-details-edit-container">
           <div className="assessment-details-edit-column">
-            <div className="comp-details-edit-container">
-              <div className="comp-details-edit-column">
-                <div
-                  id="assessment-checkbox-div"
-                  className="comp-details-label-checkbox-div-pair"
-                >
-                  <label
-                    htmlFor="checkbox-div"
-                    className="comp-details-inner-content-label checkbox-label-padding"
-                  >
-                    Assessment
-                  </label>
-                  {editable ? (
-                    <ValidationCheckboxGroup
-                      errMsg={assessmentRequiredErrorMessage}
-                      options={assessmentTypeList}
-                      onCheckboxChange={handleAssessmentTypesChange}
-                      checkedValues={selectedAssessmentTypes}
-                    ></ValidationCheckboxGroup>
-                  ) : (
-                    <div>
-                      {selectedAssessmentTypes.map((assesmentValue) => (
-                        <div
-                          className="checkbox-label-padding"
-                          key={assesmentValue.label}
-                        >
-                          {assesmentValue.label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
             <div className="comp-details-edit-container">
               <div className="comp-details-edit-column">
                 <div
@@ -379,6 +356,41 @@ export const HWCRComplaintAssessment: FC = () => {
                     />
                   ) : (
                     <span className={justificationEditClass}>{selectedJustification?.label || ""}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="comp-details-edit-container">
+              <div className="comp-details-edit-column">
+                {/* This is block that we will hide/show */}
+                <div
+                  id="assessment-checkbox-div"
+                  className={assessmentDivClass}
+                >
+                  <label
+                    htmlFor="checkbox-div"
+                    className="comp-details-inner-content-label checkbox-label-padding"
+                  >
+                    Assessment
+                  </label>
+                  {editable ? (
+                    <ValidationCheckboxGroup
+                      errMsg={assessmentRequiredErrorMessage}
+                      options={assessmentTypeList}
+                      onCheckboxChange={handleAssessmentTypesChange}
+                      checkedValues={selectedAssessmentTypes}
+                    ></ValidationCheckboxGroup>
+                  ) : (
+                    <div>
+                      {selectedAssessmentTypes?.map((assesmentValue) => (
+                        <div
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
