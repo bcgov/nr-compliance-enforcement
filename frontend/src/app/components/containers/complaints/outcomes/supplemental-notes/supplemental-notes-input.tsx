@@ -8,7 +8,6 @@ import { OfficerDto } from "../../../../../types/app/people/officer";
 import { useAppDispatch } from "../../../../../hooks/hooks";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { MAX_CHARACTERS } from "../../../../../constants/general";
 import { upsertNote, getCaseFile } from "../../../../../store/reducers/case-thunks";
 
 type props = {
