@@ -64,7 +64,6 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   };
 
   const handleSaveNotes = () => {
-    console.log(validateInput());
     if (validateInput()) {
       dispatch(upsertNote(id, currentNotes)).then((result) => {
         if (result === "success") {
@@ -80,7 +79,6 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   const validateInput = (): boolean => {
     return !!currentNotes;
   };
-  console.log(currentNotes);
 
   return (
     <div className="comp-outcome-supporting-notes">
