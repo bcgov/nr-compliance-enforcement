@@ -286,7 +286,9 @@ AS $function$
             ),
             4326
         );
-    END IF;
+    ELSE
+    	_location_geometry_point := ST_SetSRID(ST_MakePoint(0, 0), 4326);
+	END IF;
 
     _create_userid := substring(complaint_data ->> 'username' from 1 for 32);
     _update_userid := _create_userid;

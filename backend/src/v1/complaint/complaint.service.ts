@@ -951,7 +951,7 @@ export class ComplaintService {
         const complaint = await this.findById(id);
         return complaint as ComplaintDto;
       } else {
-        this.logger.log(`Unable to update complaint: ${id} complaint status to ${status}`);
+        this.logger.error(`Unable to update complaint: ${id} complaint status to ${status}`);
         throw new HttpException(
           `Unable to update complaint: ${id} complaint status to ${status}`,
           HttpStatus.UNPROCESSABLE_ENTITY,
@@ -1125,10 +1125,10 @@ export class ComplaintService {
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.log(
+      this.logger.error(
         `An Error occured trying to update ${complaintType} complaint: ${id}, update details: ${JSON.stringify(model)}`,
       );
-      this.logger.log(error.response);
+      this.logger.error(error.response);
 
       throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.BAD_REQUEST);
     } finally {
@@ -1274,12 +1274,12 @@ export class ComplaintService {
       return (await this.findById(complaintId, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.log(
+      this.logger.error(
         `An Error occured trying to update ${complaintType} complaint: ${complaintId}, update details: ${JSON.stringify(
           model,
         )}`,
       );
-      this.logger.log(error.response);
+      this.logger.error(error.response);
       throw new HttpException(`Unable to update complaint: ${complaintId}`, HttpStatus.BAD_REQUEST);
     } finally {
       await queryRunner.release();
