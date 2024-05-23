@@ -185,7 +185,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
           {data?.tags && from(data?.tags).any() && (
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
-                <label className="comp-details-inner-content-label top">Ear Tag{data?.tags.length > 1 && "s"}</label>
+                <label className="label top">Ear Tag{data?.tags.length > 1 && "s"}</label>
 
                 <div className="comp-animal-outcome-fill-space">
                   <ul className="comp-ear-tag-list">
@@ -203,7 +203,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
           {data?.drugs && from(data?.drugs).any() && (
             <div className="comp-details-edit-column">
               <div className="comp-details-label-input-pair">
-                <label className="comp-details-inner-content-label top">Drug{data?.drugs.length > 1 && "s"}</label>
+                <label className="label top">Drug{data?.drugs.length > 1 && "s"}</label>
                 <div className="comp-animal-outcome-fill-space">
                   {data.drugs.map((item) => {
                     const { officer, date } = data?.drugAuthorization || {};
@@ -223,8 +223,10 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
 
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair">
-              <label className="comp-details-inner-content-label center">Outcome</label>
-              <div>{data?.outcome ? animalOutcome : <span style={{ color: "red" }}>Outcome pending</span>}</div>
+              <label className="label center">Outcome</label>
+              <div>
+                {data?.outcome ? animalOutcome : <span className="comp-animal-outcome-pending">Outcome pending</span>}
+              </div>
             </div>
           </div>
 
@@ -250,7 +252,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
                     </span>
                   </div>
                 ) : (
-                  <span style={{ color: "red" }}>Officer pending</span>
+                  <span className="comp-animal-outcome-pending">Officer pending</span>
                 )}
               </div>
             </div>
@@ -269,7 +271,11 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
                   className="bi comp-margin-right-xxs comp-details-inner-content"
                   id="file-review-supporting-date"
                 >
-                  {data?.date ? formatDate(data?.date?.toString()) : <span style={{ color: "red" }}>Date pending</span>}
+                  {data?.date ? (
+                    formatDate(data?.date?.toString())
+                  ) : (
+                    <span className="comp-animal-outcome-pending">Date pending</span>
+                  )}
                 </div>
               </div>
             </div>
