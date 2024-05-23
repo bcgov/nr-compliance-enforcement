@@ -10,7 +10,6 @@ import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 import { getComplaintById, selectComplaint } from "../../../../store/reducers/complaints";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { createReview, updateReview } from "../../../../store/reducers/case-thunks";
-import ComplaintType from "../../../../constants/complaint-types";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 export const HWCRFileReview: FC = () => {
@@ -330,7 +329,6 @@ export const HWCRFileReview: FC = () => {
                 text="Edit"
                 icon={BsPencil}
                 click={(e) => handleStateChange(EDIT_STATE)}
-                isDisabled={reviewCompleted}
               />
             </div>
           </div>
