@@ -21,7 +21,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
     <div className="comp-outcome-supporting-notes">
       <div className="comp-details-edit-container">
         <div className="comp-details-edit-column">
-          <p>{notes}</p>
+          <p className="comp-paragraph-break-word">{notes}</p>
           <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
               <div className="comp-details-label-div-pair">

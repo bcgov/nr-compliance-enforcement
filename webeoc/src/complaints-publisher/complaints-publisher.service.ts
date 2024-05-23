@@ -1,7 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { connect, headers, JetStreamClient, JSONCodec } from "nats";
-import { NATS_NEW_COMPLAINTS_TOPIC_NAME, NEW_STAGING_COMPLAINTS_TOPIC_NAME } from "../common/constants";
-import { Complaint } from "src/types/Complaints";
+import {
+  NATS_NEW_COMPLAINTS_TOPIC_NAME,
+  NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
+  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
+  NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
+} from "../common/constants";
+import { Complaint } from "src/types/complaint-type";
+import { ComplaintUpdate } from "src/types/complaint-update-type";
 
 @Injectable()
 export class ComplaintsPublisherService {
@@ -43,10 +49,33 @@ export class ComplaintsPublisherService {
   }
 
   /**
+   * Publish message to JetStream to indicate that a complaint update is available from webeoc
+   * @param complaint
+   */
+  async publishComplaintUpdatesFromWebEOC(complaintUpdate: ComplaintUpdate): Promise<void> {
+    try {
+      const jsonData = JSON.stringify(complaintUpdate);
+      const incidentNumber = complaintUpdate.parent_incident_number;
+      const updateNumber = complaintUpdate.update_number;
+      const natsHeaders = headers(); // used to look for complaints that have already been submitted
+      natsHeaders.set("Nats-Msg-Id", `staged-update-${incidentNumber}-${updateNumber}`);
+      const ack = await this.jsClient.publish(NATS_UPDATED_COMPLAINTS_TOPIC_NAME, jsonData, { headers: natsHeaders });
+      if (!ack.duplicate) {
+        this.logger.debug(`Complaint update: ${incidentNumber} ${updateNumber}`);
+      } else {
+        this.logger.debug(`Complaint update already published: ${incidentNumber}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
    * Publish message to JetStream to indicate that a new complaint was added to the staging table
    * @param incident_number
    */
-  async publishStagingComplaintInserted(incident_number: string): Promise<void> {
+  async publishStagingComplaintInsertedMessage(incident_number: string): Promise<void> {
     try {
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
       natsHeaders.set("Nats-Msg-Id", `complaint-${incident_number}`);
@@ -61,6 +90,35 @@ export class ComplaintsPublisherService {
       }
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Publish message to JetStream to indicate that a new complaint update was added to the staging table
+   * @param incident_number
+   */
+  async publishStagingComplaintUpdateInsertedMessage(complaintUpdate: ComplaintUpdate): Promise<void> {
+    const jsonData = JSON.stringify(complaintUpdate);
+    const incidentNumber = complaintUpdate.parent_incident_number;
+    const updateNumber = complaintUpdate.update_number;
+
+    try {
+      const natsHeaders = headers(); // used to look for complaints that have already been submitted
+      natsHeaders.set("Nats-Msg-Id", `complaint-${incidentNumber}-update-${updateNumber}`);
+      const ack = await this.jsClient.publish(NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME, jsonData, {
+        headers: natsHeaders,
+      });
+
+      if (!ack?.duplicate) {
+        this.logger.debug(
+          `Complaint update ready to be moved to operational tables: ${incidentNumber} ${updateNumber}`,
+        );
+      } else {
+        this.logger.debug(`Complaint update already moved to operational: ${incidentNumber} ${updateNumber}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error saving complaint update to staging: ${error.message}`, error.stack);
       throw error;
     }
   }
