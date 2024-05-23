@@ -49,7 +49,6 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const removedEquipmentActor = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
   )?.actor;
-
   const setEquipmentDateString = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT,
   )?.date;
@@ -213,6 +212,30 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               </div>
             </Col>
           </Row>
+        )}
+        {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) ? (
+          <Row>
+            <Col
+              xs={12}
+              md={4}
+            >
+              <div className="equipment-item-content">
+                <div className="label">Was an animal Captured?</div>
+                <div className="comp-details-content">
+                  <div>
+                    <span
+                      id="comp-details-animal-captured-text-id"
+                      className="comp-padding-left-xs"
+                    >
+                      {equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        ) : (
+          ""
         )}
       </div>
     </>
