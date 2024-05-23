@@ -107,7 +107,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   const handleEnableEdit = (id: string) => {
     const items = outcomes.map((item) => {
-      return { ...item, editable: item.id === id && !item.editable ? true : false };
+      return { ...item, editable: !!(item.id === id && !item.editable) };
     });
 
     setOutcomes(items);
@@ -148,7 +148,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   }, [complaint]);
 
   useEffect(() => {
-    const items = subjects ? subjects : [];
+    const items = subjects || [];
     setOutcomes(items);
   }, [dispatch, subjects]);
 

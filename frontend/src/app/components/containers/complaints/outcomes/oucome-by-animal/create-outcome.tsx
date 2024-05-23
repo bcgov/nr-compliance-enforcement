@@ -367,7 +367,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   const handleSave = () => {
     if (isValid()) {
-      debugger;
       save(data);
     }
   };
