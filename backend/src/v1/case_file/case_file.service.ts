@@ -76,6 +76,7 @@ export class CaseFileService {
         actionCode
         date
       }
+      wasAnimalCaptured
     }
   }
   `;
