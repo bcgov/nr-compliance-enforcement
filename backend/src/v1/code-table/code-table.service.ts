@@ -112,13 +112,21 @@ export class CodeTableService {
       case "complaint-status": {
         const data = await this._complaintStatusRepository.find({ order: { display_order: "ASC" } });
         let results = data.map(
-          ({ complaint_status_code, short_description, long_description, display_order, active_ind }) => {
+          ({
+            complaint_status_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+            manually_assignable_ind,
+          }) => {
             let table: ComplaintStatus = {
               complaintStatus: complaint_status_code,
               shortDescription: short_description,
               longDescription: long_description,
               displayOrder: display_order,
               isActive: active_ind,
+              manuallyAssignableInd: manually_assignable_ind,
             };
             return table;
           },

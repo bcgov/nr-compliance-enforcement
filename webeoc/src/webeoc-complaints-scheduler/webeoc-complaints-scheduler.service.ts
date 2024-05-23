@@ -1,10 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CronExpression } from "@nestjs/schedule";
-import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service"; // The service to handle NATS publishing
-import { Complaint } from "src/types/Complaints";
+import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
+import { Complaint } from "src/types/complaint-type";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
 import { format } from "date-fns";
+import { WEBEOC_API_COMPLAINTS_LIST_PATH, WEBEOC_API_COMPLAINTS_UPDATE_PATH } from "src/common/constants";
+import { ComplaintUpdate } from "src/types/complaint-update-type";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {
@@ -15,14 +17,20 @@ export class WebEOCComplaintsScheduler {
   constructor(private complaintsPublisherService: ComplaintsPublisherService) {}
 
   onModuleInit() {
+    const FLAG_COS = "flag_COS"; // flag required for new complaints
+    const FLAG_UPD = "flag_UPD"; // flag required for complaint updates
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.fetchAndPublishComplaintsFromWebEOC();
+      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_LIST_PATH, FLAG_COS, this.publishComplaint.bind(this));
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_COMPLAINTS_UPDATE_PATH,
+        FLAG_UPD,
+        this.publishComplaintUpdate.bind(this),
+      );
     });
 
     this.cronJob.start();
   }
 
-  // Get the cron expression from the WEBEOC_CRON_EXPRESSION environment variable.  Detaults to 5 minutes if no schedule is found.
   private getCronExpression(): string {
     const defaultCron = CronExpression.EVERY_5_MINUTES;
     const envCronExpression = process.env.WEBEOC_CRON_EXPRESSION || defaultCron;
@@ -30,22 +38,26 @@ export class WebEOCComplaintsScheduler {
     return envCronExpression;
   }
 
-  // Grabs the complaints and publishes them to NATS
-  async fetchAndPublishComplaintsFromWebEOC() {
-    await this.authenticateWithWebEOC();
-    // Fetch complaints from WebEOC here
-    const complaints = await this.fetchComplaintsFromWebEOC();
+  private async fetchAndPublishComplaints(
+    urlPath: string,
+    flagName: string,
+    publishMethod: (data: any) => Promise<void>,
+  ) {
+    try {
+      await this.authenticateWithWebEOC();
+      const data = await this.fetchDataFromWebEOC(urlPath, flagName);
 
-    this.logger.debug(`Found ${complaints?.length} complaints from WebEOC`);
+      this.logger.debug(`Found ${data?.length} items from WebEOC`);
 
-    // Publish each complaint to NATS
-    for (const complaint of complaints) {
-      await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+      for (const item of data) {
+        await publishMethod(item);
+      }
+    } catch (error) {
+      this.logger.error(`Unable to fetch data from WebEOC`, error);
     }
   }
 
-  // WebEOC requires that a cookie be attached to each authenticated request.  This method grabs that cookie.
-  public async authenticateWithWebEOC(): Promise<string> {
+  private async authenticateWithWebEOC(): Promise<string> {
     const authUrl = `${process.env.WEBEOC_URL}/sessions`;
     const credentials = {
       username: process.env.WEBEOC_USERNAME,
@@ -60,35 +72,17 @@ export class WebEOCComplaintsScheduler {
 
     try {
       const response = await axios.post(authUrl, credentials, config);
-
-      // Extract the cookie from the response
-      const cookie = response.headers["set-cookie"][0];
-      this.cookie = cookie; // Store the cookie for future use
-
-      return cookie;
+      this.cookie = response.headers["set-cookie"][0];
+      return this.cookie;
     } catch (error) {
       this.logger.error("Error authenticating with WebEOC:", error);
       throw error;
     }
   }
 
-  // Grabs all complaints created within a certain period (defined by WEBEOC_COMPLAINT_HISTORY_DAYS)
-  public async fetchComplaintsFromWebEOC(): Promise<Complaint[]> {
-    const complaintsAsOfDate = new Date(); // Grab complaints that have been created on a date greater than or equal to this date
-    const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
-
-    if (isNaN(complaintHistoryDays)) {
-      throw new Error("WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number");
-    }
-    complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
-
-    const formattedDate = this.formatDate(complaintsAsOfDate);
-
-    if (!this.cookie) {
-      throw new Error("No authentication cookie available. Please authenticate first.");
-    }
-
-    // add the auth cookie to the header.  Note that WebEOC requires this format, which is why we're not using the encrypted authorization header.
+  private async fetchDataFromWebEOC(urlPath: string, flagName: string): Promise<any[]> {
+    const dateFilter = this.getDateFilter();
+    const url = `${process.env.WEBEOC_URL}/${urlPath}`;
     const config: AxiosRequestConfig = {
       headers: {
         Cookie: this.cookie,
@@ -99,27 +93,50 @@ export class WebEOCComplaintsScheduler {
       customFilter: {
         boolean: "and",
         items: [
+          dateFilter,
           {
-            fieldname: "incident_datetime",
-            operator: "GreaterThan",
-            fieldvalue: formattedDate,
+            fieldname: flagName,
+            operator: "Equals",
+            fieldvalue: "Yes",
           },
         ],
       },
     };
 
-    const url = `${process.env.WEBEOC_URL}/board/Conservation Officer Service/display/List - API COS Complaints Incidents`;
-
     try {
       const response = await axios.post(url, body, config);
       return response.data as Complaint[];
     } catch (error) {
-      this.logger.error("Error fetching complaints from WebEOC:", error);
+      this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
       throw error;
     }
   }
 
-  // Formats a date to be in a format required by WEBEOC.  Used to determine how far back in time to go to grab new complaints.
+  private getDateFilter() {
+    const complaintsAsOfDate = new Date();
+    const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
+
+    if (isNaN(complaintHistoryDays)) {
+      throw new Error("WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number");
+    }
+    complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
+
+    const formattedDate = this.formatDate(complaintsAsOfDate);
+    return {
+      fieldname: "entrydate",
+      operator: "GreaterThan",
+      fieldvalue: formattedDate,
+    };
+  }
+
+  private async publishComplaint(complaint: Complaint) {
+    await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+  }
+
+  private async publishComplaintUpdate(complaintUpdate: ComplaintUpdate) {
+    await this.complaintsPublisherService.publishComplaintUpdatesFromWebEOC(complaintUpdate);
+  }
+
   private formatDate(date: Date): string {
     return format(date, "yyyy-MM-dd HH:mm:ss");
   }
