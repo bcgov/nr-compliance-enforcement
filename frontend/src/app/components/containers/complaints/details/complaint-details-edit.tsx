@@ -894,7 +894,6 @@ export const ComplaintDetailsEdit: FC = () => {
                       rows={4}
                       errMsg={complaintDescriptionError}
                       onChange={handleComplaintDescChange}
-                      maxLength={4000}
                     />
                   </div>
                   <div

@@ -42,10 +42,8 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   }, [currentOfficer]);
 
   const handleNotesChange = (input: string) => {
-    if (input?.trim().length <= MAX_CHARACTERS) {
-      setNotesError("");
-      setCurrentNotes(input.trim());
-    }
+    setNotesError("");
+    setCurrentNotes(input.trim());
   };
 
   const handleCancelChanges = () => {
@@ -66,6 +64,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   };
 
   const handleSaveNotes = () => {
+    console.log(validateInput());
     if (validateInput()) {
       dispatch(upsertNote(id, currentNotes)).then((result) => {
         if (result === "success") {
@@ -81,6 +80,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   const validateInput = (): boolean => {
     return !!currentNotes;
   };
+  console.log(currentNotes);
 
   return (
     <div className="comp-outcome-supporting-notes">
@@ -93,11 +93,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
           rows={4}
           errMsg={notesError}
           onChange={handleNotesChange}
-          maxLength={MAX_CHARACTERS}
         />
-      </div>
-      <div className="right-float">
-        {currentNotes.length} / {MAX_CHARACTERS}
       </div>
       <div className="clear-right-float" />
       <div className="comp-details-edit-container">
