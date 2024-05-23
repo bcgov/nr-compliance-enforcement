@@ -334,8 +334,7 @@ Cypress.Commands.add(
       officerId = "outcome-officer";
       datePickerId = "complaint-outcome-date";
       saveButtonId = "#outcome-save-button";
-    }
-    if (section === "EQUIPMENT") {
+    } else if (section === "EQUIPMENT") {
       officerId = "equipment-officer-set-select";
       datePickerId = "equipment-day-set";
       saveButtonId = "#equipment-save-button";
@@ -345,20 +344,20 @@ Cypress.Commands.add(
       saveButtonId = "#outcome-save-prev-and-educ-button";
     }
 
-  if (section === "ASSESSMENT") {
-    if (actionRequired) {
-      cy.selectItemById("action-required", actionRequired);
-      if (actionRequired === "Yes") {
-        Cypress._.times(checkboxes.length, (index) => {
-          cy.get(checkboxes[index]).check();
-        });
+    if (section === "ASSESSMENT") {
+      if (actionRequired) {
+        cy.selectItemById("action-required", actionRequired);
+        if (actionRequired === "Yes") {
+          Cypress._.times(checkboxes.length, (index) => {
+            cy.get(checkboxes[index]).check();
+          });
+        }
       }
+    } else {
+      Cypress._.times(checkboxes.length, (index) => {
+        cy.get(checkboxes[index]).check();
+      });
     }
-  } else {
-    Cypress._.times(checkboxes.length, (index) => {
-      cy.get(checkboxes[index]).check();
-    });
-  }
 
     if (justification) {
       cy.selectItemById("justification", justification);
@@ -388,8 +387,7 @@ Cypress.Commands.add(
       checkboxDiv = "#assessment-checkbox-div";
       officerDiv = "#outcome-officer-div";
       dateDiv = "#complaint-outcome-date-div";
-    }
-    if (section === "EQUIPMENT") {
+    } else if (section === "EQUIPMENT") {
       officerDiv = "#equipment-officer-set-div";
       dateDiv = "#equipment-date-set-div";
     } else {
@@ -397,7 +395,6 @@ Cypress.Commands.add(
       officerDiv = "#prev-educ-outcome-officer-div";
       dateDiv = "#prev-educ-outcome-date-div";
     }
-
 
     if (section === "ASSESSMENT") {
       if (actionRequired) {
