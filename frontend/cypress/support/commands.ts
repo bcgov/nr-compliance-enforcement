@@ -345,15 +345,20 @@ Cypress.Commands.add(
       saveButtonId = "#outcome-save-prev-and-educ-button";
     }
 
-    if (checkboxes) {
-      Cypress._.times(checkboxes.length, (index) => {
-        cy.get(checkboxes[index]).check();
-      });
-    }
-
+  if (section === "ASSESSMENT") {
     if (actionRequired) {
       cy.selectItemById("action-required", actionRequired);
+      if (actionRequired === "Yes") {
+        Cypress._.times(checkboxes.length, (index) => {
+          cy.get(checkboxes[index]).check();
+        });
+      }
     }
+  } else {
+    Cypress._.times(checkboxes.length, (index) => {
+      cy.get(checkboxes[index]).check();
+    });
+  }
 
     if (justification) {
       cy.selectItemById("justification", justification);
@@ -393,18 +398,26 @@ Cypress.Commands.add(
       dateDiv = "#prev-educ-outcome-date-div";
     }
 
-    //Verify Fields exist
-    if (checkboxes) {
+
+    if (section === "ASSESSMENT") {
+      if (actionRequired) {
+        cy.get("#action-required-div").should(($div) => {
+          expect($div).to.contain.text(actionRequired);
+        });
+        if (actionRequired === "Yes") {
+          //Verify Fields exist
+          Cypress._.times(checkboxes.length, (index) => {
+            cy.get(checkboxDiv).should(($div) => {
+              expect($div).to.contain.text(checkboxes[index]);
+            });
+          });
+        }
+      }
+    } else {
       Cypress._.times(checkboxes.length, (index) => {
         cy.get(checkboxDiv).should(($div) => {
           expect($div).to.contain.text(checkboxes[index]);
         });
-      });
-    }
-
-    if (actionRequired) {
-      cy.get("#action-required-div").should(($div) => {
-        expect($div).to.contain.text(actionRequired);
       });
     }
 

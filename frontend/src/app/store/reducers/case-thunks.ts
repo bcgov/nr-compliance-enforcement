@@ -672,7 +672,7 @@ export const deleteEquipment =
       id: id,
       updateUserId: profile.idir_username,
     };
-    
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {
