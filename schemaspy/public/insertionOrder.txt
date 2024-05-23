@@ -16,6 +16,7 @@ geo_organization_unit_code
 complaint
 office
 hwcr_complaint
+complaint_update
 staging_metadata_mapping
 allegation_complaint
 attractant_hwcr_xref
@@ -27,6 +28,7 @@ allegation_complaint_h
 attractant_hwcr_xref_h
 complaint_h
 complaint_type_code
+complaint_update_h
 configuration
 configuration_h
 flyway_schema_history

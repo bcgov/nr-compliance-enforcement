@@ -7,6 +7,7 @@ geo_org_unit_structure_h
 flyway_schema_history
 configuration_h
 configuration
+complaint_update_h
 complaint_type_code
 complaint_h
 attractant_hwcr_xref_h
@@ -18,6 +19,7 @@ officer
 attractant_hwcr_xref
 allegation_complaint
 staging_metadata_mapping
+complaint_update
 hwcr_complaint
 office
 complaint
