@@ -79,6 +79,7 @@ export class CaseFileService {
         actionCode
         date
       }
+      wasAnimalCaptured
     },
     subject { 
       id

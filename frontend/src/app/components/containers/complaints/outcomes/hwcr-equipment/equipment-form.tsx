@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
-import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
+import { selectEquipmentDropdown, selectTrapEquipment } from "../../../../../store/reducers/code-table";
 import {
   getComplaintById,
   selectComplaint,
@@ -27,6 +27,7 @@ import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipme
 import { CaseActionDto } from "../../../../../types/app/case-files/case-action";
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
+import { CompRadioGroup } from "../../../../common/comp-radiogroup";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -55,6 +56,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
   const [actionSetGuid, setActionSetGuid] = useState<string>();
   const [actionRemovedGuid, setActionRemovedGuid] = useState<string>();
+  const [wasAnimalCaptured, setWasAnimalCaptured] = useState<string>("U");
+  const [wasAnimalCapturedErrorMsg, setWasAnimalCapturedErrorMsg] = useState<string>("");
 
   const dispatch = useAppDispatch();
   const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
@@ -62,6 +65,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
+  const trapEquipment = useAppSelector(selectTrapEquipment);
 
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
@@ -104,6 +108,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         setActionRemovedGuid(action.actionGuid);
       }
     });
+    setWasAnimalCaptured(equipment?.wasAnimalCaptured ?? "U");
   }, [equipment]);
 
   const handleCoordinateChange = (input: string, type: Coordinates) => {
@@ -165,6 +170,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setEquipmentAddressErrorMsg("");
     setOfficerRemovedErrorMsg("");
     setDateRemovedErrorMsg("");
+    setWasAnimalCapturedErrorMsg("");
   };
 
   // Helper function to check if coordinates or address are provided
@@ -221,6 +227,11 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       hasErrors = true;
     }
 
+    if (dateRemoved && trapEquipment.includes(type?.value ?? "") && !["Y", "N"].includes(wasAnimalCaptured ?? "U")) {
+      setWasAnimalCapturedErrorMsg("Required");
+      hasErrors = true;
+    }
+
     return hasErrors;
   };
 
@@ -261,6 +272,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         xCoordinate: xCoordinate,
         yCoordinate: yCoordinate,
         actions: actions,
+        wasAnimalCaptured: wasAnimalCaptured,
       } as EquipmentDetailsDto;
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
@@ -309,15 +321,33 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
   const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
 
+  const wasAnimalCapturedOptions: Option[] = [
+    { label: "Yes", value: "Y" },
+    { label: "No", value: "N" },
+  ];
+
+  const handleSetType = (type: any) => {
+    setType(type);
+    if (!trapEquipment.includes(type?.value ?? "")) {
+      setWasAnimalCaptured("U");
+    }
+  };
+
   return (
-    <div className="comp-outcome-report-complaint-assessment">
+    <div
+      className="comp-outcome-report-complaint-assessment"
+      id="equipment-form"
+    >
       <ToastContainer />
       <div
         className="equipment-form-edit-container"
         style={{ marginTop: "10px" }}
       >
         <div className="comp-details-edit-column">
-          <div className="equipment-form-label-input-pair">
+          <div
+            className="equipment-form-label-input-pair"
+            id="equipment-type-div"
+          >
             <label htmlFor="equipment-type-select">Equipment type</label>
             <CompSelect
               id="equipment-type-select"
@@ -327,7 +357,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               options={equipmentDropdownOptions}
               enableValidation={true}
               errorMessage={equipmentTypeErrorMsg}
-              onChange={(type: any) => setType(type)}
+              onChange={(type: any) => handleSetType(type)}
               defaultOption={type}
               value={type}
             />
@@ -336,7 +366,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
       <div className="equipment-form-edit-container">
-        <div className="comp-details-edit-column">
+        <div
+          className="comp-details-edit-column"
+          id="equipment-address-container"
+        >
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-address">Address</label>
             <div className="edit-input">
@@ -354,6 +387,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           {complaintData?.locationSummary && (
             <button
               className="button-text copy-text"
+              id="equipment-copy-address-button"
               onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
             >
               Copy location from complaint details
@@ -363,7 +397,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column comp-details-right-column"></div>
       </div>
       <div className="equipment-form-edit-container">
-        <div className="comp-details-edit-column">
+        <div
+          className="comp-details-edit-column"
+          id="equipment-x-coordinate-container"
+        >
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-x-coordinate">X Coordinate</label>
             <div className="edit-input">
@@ -381,6 +418,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           {hasCoordinates && (
             <button
               className="button-text copy-text"
+              id="equipment-copy-coordinates-button"
               onClick={() => {
                 const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? "";
                 const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? "";
@@ -393,7 +431,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             </button>
           )}
         </div>
-        <div className="comp-details-edit-column comp-details-right-column">
+        <div
+          className="comp-details-edit-column comp-details-right-column"
+          id="equipment-y-coordinate-container"
+        >
           <div className="equipment-form-label-input-pair">
             <label htmlFor="equipment-y-coordinate">Y Coordinate</label>
             <div className="edit-input">
@@ -414,7 +455,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column">
           <div
             className="equipment-form-label-input-pair"
-            id="reported-pair-id"
+            id="equipment-officer-set-div"
           >
             <label htmlFor="equipment-officer-set-select">Set by</label>
             <CompSelect
@@ -433,7 +474,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         <div className="comp-details-edit-column comp-details-right-column">
           <div
             className="equipment-form-label-input-pair"
-            id="reported-pair-id"
+            id="equipment-date-set-div"
           >
             <label htmlFor="equipment-day-set">Set date</label>
             <ValidationDatePicker
@@ -454,7 +495,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           <div className="comp-details-edit-column">
             <div
               className="equipment-form-label-input-pair"
-              id="reported-pair-id"
+              id="equipment-officer-removed-div"
             >
               <label htmlFor="equipment-officer-removed-select">Removed by</label>
               <CompSelect
@@ -473,7 +514,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
           <div className="comp-details-edit-column comp-details-right-column">
             <div
               className="equipment-form-label-input-pair"
-              id="reported-pair-id"
+              id="equipment-date-removed-div"
             >
               <label htmlFor="equipment-date-removed">Removed date</label>
               <ValidationDatePicker
@@ -487,6 +528,32 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 className="comp-details-edit-calendar-input"
                 classNamePrefix="comp-select"
               />
+            </div>
+          </div>
+        </div>
+      )}
+      {dateRemoved && trapEquipment.includes(type?.value ?? "") && (
+        <div className="equipment-form-edit-container">
+          <div className="comp-details-edit-column">
+            <div
+              className="equipment-form-label-input-pair"
+              id="reported-pair-id"
+            >
+              <label htmlFor="equipment-animal-captured-radiogroup-1">Was an animal captured?</label>
+              {
+                <CompRadioGroup
+                  id="equipment-animal-captured-radiogroup"
+                  options={wasAnimalCapturedOptions}
+                  enableValidation={true}
+                  errorMessage={wasAnimalCapturedErrorMsg}
+                  itemClassName="equipment-form-radiobutton"
+                  groupClassName="equipment-form-radiogroup"
+                  value={wasAnimalCaptured}
+                  onChange={(option: any) => setWasAnimalCaptured(option.target.value)}
+                  isDisabled={false}
+                  radioGroupName="equipment-animal-captured-radiogroup"
+                />
+              }
             </div>
           </div>
         </div>
