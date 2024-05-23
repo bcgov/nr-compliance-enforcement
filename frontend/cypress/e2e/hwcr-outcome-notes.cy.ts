@@ -36,7 +36,7 @@ describe("HWCR Outcome Notes", () => {
 
       //validate error message
       cy.get(".error-message").then(($error) => {
-        expect($error).to.contain.text("Supporting notes required");
+        expect($error).to.contain.text("Additional notes required");
       });
     });
   });
