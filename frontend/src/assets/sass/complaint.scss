@@ -169,6 +169,33 @@
     left: 0;
   }
 
+  .comp-map-unmapped-alert {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    position: absolute;
+    top: 11px;
+    left: 58px;
+    margin: 0;
+    margin-right: 11px;
+    z-index: 999;
+    font-size: 0.75rem;
+
+    svg {
+      flex: 0 0 auto;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    .comp-map-unmapped-alert {
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+  }
+
   .comp-table-container {
     display: flex;
     flex: 1 1 auto;
@@ -1397,7 +1424,6 @@ p {
   border-radius: 4px;
   background-color: $bc-gov-neutral-100;
   color: $black;
-  width: 1330px;
 }
 
 .comp-map-no-results-alert {
