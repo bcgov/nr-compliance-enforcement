@@ -42,6 +42,8 @@ export class CaseFileService {
       actor
       date
       actionCode
+      actionId
+      activeIndicator
     }
     preventionDetails {
       actions {

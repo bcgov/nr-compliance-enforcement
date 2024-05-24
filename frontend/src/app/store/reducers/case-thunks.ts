@@ -630,11 +630,11 @@ export const createReview =
   };
 
 export const updateReview =
-  (complaintId: string, isReviewRequired: boolean): AppThunk =>
+  (complaintId: string, isReviewRequired: boolean, reviewCompleteInput: ReviewCompleteAction | null): AppThunk =>
   async (dispatch, getState) => {
     const {
       app: { profile },
-      cases: { caseId },
+      cases: { caseId, reviewComplete },
     } = getState();
     let reviewInput = {
       reviewInput: {
@@ -646,10 +646,19 @@ export const updateReview =
         isReviewRequired,
       } as ReviewInput,
     };
+
+    if (reviewCompleteInput) {
+      reviewInput.reviewInput.reviewComplete = reviewCompleteInput;
+      reviewInput.reviewInput.reviewComplete.actionId = reviewComplete?.actionId;
+    }
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
       if (res) {
         dispatch(setIsReviewedRequired(res.isReviewRequired));
+        if (res.reviewComplete) {
+          dispatch(setReviewComplete(res.reviewComplete));
+        }
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");

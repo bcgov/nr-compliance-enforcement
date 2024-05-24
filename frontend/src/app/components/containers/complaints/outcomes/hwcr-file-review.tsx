@@ -73,13 +73,20 @@ export const HWCRFileReview: FC = () => {
         if (componentState === REQUEST_REVIEW_STATE) {
           dispatch(createReview(complaintData.id, reviewRequired, null));
         } else {
-          dispatch(updateReview(complaintData.id, reviewRequired));
+          const completeAction = {
+            actor: personGuid,
+            date: new Date(),
+            actionCode: "COMPLTREVW",
+            activeIndicator: reviewCompleted,
+          };
+          dispatch(updateReview(complaintData.id, reviewRequired, completeAction));
         }
       } else {
         const completeAction = {
           actor: personGuid,
           date: new Date(),
           actionCode: "COMPLTREVW",
+          activeIndicator: reviewCompleted,
         };
         dispatch(createReview(complaintData.id, reviewRequired, completeAction));
       }
