@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { AllegationComplaint } from "../../../../types/app/complaints/allegation-complaint";
-import { formatDateTime, truncateString } from "../../../../common/methods";
+import { applyStatusClass, formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -90,7 +90,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const location = getLocationName(locationCode);
 
-  const statusButtonClass = status === "CLOSED" ? "badge comp-status-badge-closed" : "badge comp-status-badge-open";
+  const statusButtonClass = `badge ${applyStatusClass(status)}`;
 
   const inProgressFlag = isInProgress ? "In Progress" : "";
 
