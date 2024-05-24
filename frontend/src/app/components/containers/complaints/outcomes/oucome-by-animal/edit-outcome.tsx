@@ -261,10 +261,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       items.length === 0
         ? []
         : from(items)
-            .orderBy((item) => item.id)
+            .orderBy((item) => item.order)
             .toArray()
-            .map((item) => {
-              return { ...item, id: uuidv4().toString() };
+            .map((item, idx) => {
+              return { ...item, id: uuidv4().toString(), order: idx + 1 };
             });
 
     if (update.length === 0 && data.drugAuthorization) {
