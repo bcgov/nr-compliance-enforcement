@@ -828,6 +828,9 @@ export const createAnimalOutcome =
     let result = await post<CaseFileDto>(dispatch, parameters);
 
     if (result) {
+      const { caseIdentifier } = result;
+      dispatch(setCaseId(caseIdentifier));
+
       ToggleSuccess("Animal outcome added");
       return "success";
     } else {
@@ -924,6 +927,9 @@ export const updateAnimalOutcome =
     let result = await patch<CaseFileDto>(dispatch, parameters);
 
     if (result) {
+      const { caseIdentifier } = result;
+      dispatch(setCaseId(caseIdentifier));
+
       ToggleSuccess("Animal outcome updated");
       return "success";
     } else {
@@ -965,6 +971,9 @@ export const deleteAnimalOutcome =
     const result = await dispatch(_deleteAnimalOutcome(id, officer ? officer.officer_guid : "", idir));
 
     if (result) {
+      const { caseIdentifier } = result;
+      dispatch(setCaseId(caseIdentifier));
+
       ToggleSuccess("Animal outcome deleted");
       return "success";
     } else {
