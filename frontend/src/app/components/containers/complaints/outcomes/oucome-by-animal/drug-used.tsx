@@ -136,7 +136,13 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
       discardMethod,
       order,
     };
-    const updatedDrug = { ...source, [property]: value };
+    let updatedDrug = { ...source, [property]: value };
+
+    //-- if the user selects DISC clear the method and amount discarded
+    if (property === "remainingUse" && (value === "STOR" || value === "RDIS")) {
+      updatedDrug = { ...updatedDrug, discardMethod: "", amountDiscarded: "" };
+    }
+
     update(updatedDrug, property);
   };
 
