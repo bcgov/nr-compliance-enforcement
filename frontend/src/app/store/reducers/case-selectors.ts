@@ -98,8 +98,8 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
       } = item;
 
       //-- map or emtpy out the drugs-used and ear-tags collections
-      const _tags = tags && from(tags).any() ? tags : [];
-      const _drugs = drugs && from(drugs).any() ? drugs : [];
+      const _tags = tags ?? [];
+      const _drugs = drugs ?? [];
 
       let record: AnimalOutcomeV2 = {
         id,
@@ -115,7 +115,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
       };
 
       //-- pull the drug-authroized-by and officer/date from the actions
-      if (actions && from(actions).any()) {
+      if (actions) {
         //-- drug-authorized-by
         if (from(actions).any((r) => r.actionCode === CASE_ACTION_CODE.ADMNSTRDRG)) {
           const item = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.ADMNSTRDRG);
