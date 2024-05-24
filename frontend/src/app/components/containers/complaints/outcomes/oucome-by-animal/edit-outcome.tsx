@@ -101,6 +101,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         return conflictHistories.find((item) => item.value === conflictHistory);
       }
 
+      case "officer":
       case "assigned": {
         const { officer } = data;
         return officers.find((item) => item.value === officer);
@@ -109,11 +110,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       case "outcome": {
         const { outcome } = data;
         return outcomes.find((item) => item.value === outcome);
-      }
-
-      case "officer": {
-        const { officer } = data;
-        return officers.find((item) => item.value === officer);
       }
     }
   };
@@ -136,9 +132,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         .orderBy((item) => item.order)
         .toArray()
         .map((item, idx) => {
+          const { id } = item;
           return (
             <EarTag
-              key={idx}
+              key={id}
               {...item}
               update={updateEarTag}
               remove={removeEarTag}
