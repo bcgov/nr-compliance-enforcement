@@ -5,6 +5,12 @@ services:
   database:
     build:
       context: database
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_cron"
+      - "-c"
+      - "cron.database_name=postgres"
     container_name: database
     environment:
       POSTGRES_USER: postgres
