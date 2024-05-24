@@ -148,16 +148,20 @@ export class CaseFileService {
     });
     const returnValue = await this.handleAPIResponse(result);
     const caseFileDTO = returnValue.createReview as CaseFileDto;
-    if (caseFileDTO.isReviewRequired) {
-      this.complaintService.updateComplaintStatusById(
-        caseFileDTO.leadIdentifier,
-        ComplaintStatusCodeEnum.PENDING_REVIEW,
-      );
+    try {
+      if (caseFileDTO.isReviewRequired) {
+        this.complaintService.updateComplaintStatusById(
+          caseFileDTO.leadIdentifier,
+          ComplaintStatusCodeEnum.PENDING_REVIEW,
+        );
+      }
+    } catch (error) {
+      this.logger.error(error);
     }
     return caseFileDTO;
   };
 
-  updateReview = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  updateReview = async (token: string, model: any): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation UpdateReview($reviewInput: ReviewInput!) {
         updateReview(reviewInput: $reviewInput) 
@@ -168,14 +172,19 @@ export class CaseFileService {
     const returnValue = await this.handleAPIResponse(result);
 
     const caseFileDTO = returnValue.updateReview as CaseFileDto;
-    if (caseFileDTO.isReviewRequired) {
-      this.complaintService.updateComplaintStatusById(
-        caseFileDTO.leadIdentifier,
-        ComplaintStatusCodeEnum.PENDING_REVIEW,
-      );
-    } else if (!caseFileDTO.isReviewRequired) {
-      this.complaintService.updateComplaintStatusById(caseFileDTO.leadIdentifier, ComplaintStatusCodeEnum.OPEN);
+    try {
+      if (model.reviewInput.isReviewRequired) {
+        this.complaintService.updateComplaintStatusById(
+          model.reviewInput.leadIdentifier,
+          ComplaintStatusCodeEnum.PENDING_REVIEW,
+        );
+      } else if (!model.reviewInput.isReviewRequired) {
+        this.complaintService.updateComplaintStatusById(model.reviewInput.leadIdentifier, ComplaintStatusCodeEnum.OPEN);
+      }
+    } catch (error) {
+      this.logger.error(error);
     }
+
     return caseFileDTO;
   };
 

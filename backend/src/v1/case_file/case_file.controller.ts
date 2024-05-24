@@ -9,6 +9,7 @@ import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { FileReviewInput } from "src/types/models/case-files/file-review-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -77,7 +78,7 @@ export class CaseFileController {
 
   @Patch("/review")
   @Roles(Role.COS_OFFICER)
-  async updateReview(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async updateReview(@Token() token, @Body() model: FileReviewInput): Promise<CaseFileDto> {
     return await this.service.updateReview(token, model);
   }
 

@@ -32,6 +32,8 @@ import { DeleteSupplementalNoteInput } from "../../types/app/case-files/suppleme
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
+import { getComplaintById } from "./complaints";
+import COMPLAINT_TYPES from "../../types/app/complaint-types";
 
 //-- general thunks
 export const findCase =
@@ -622,6 +624,7 @@ export const createReview =
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
         }
+        dispatch(getComplaintById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");
@@ -659,6 +662,7 @@ export const updateReview =
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
         }
+        dispatch(getComplaintById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");
