@@ -729,21 +729,6 @@ export const CreateComplaint: FC = () => {
                 />
               </div>
             )}
-            <div
-              className="comp-details-label-input-pair"
-              id="office-pair-id"
-            >
-              <label>Status</label>
-              <div className="comp-details-edit-input">
-                <input
-                  type="text"
-                  id="status-readonly-id"
-                  className="comp-form-control"
-                  disabled
-                  defaultValue="Open"
-                />
-              </div>
-            </div>
           </div>
         </div>
       </div>

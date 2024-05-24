@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { bcBoundaries, formatDate, formatTime, getSelectedOfficer } from "../../../../common/methods";
+import { applyStatusClass, bcBoundaries, formatDate, formatTime, getSelectedOfficer } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   setComplaint,
@@ -17,7 +17,6 @@ import { ComplaintDetails } from "../../../../types/complaints/details/complaint
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
-  selectComplaintStatusCodeDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
@@ -102,7 +101,7 @@ export const ComplaintDetailsEdit: FC = () => {
     createdBy,
     lastUpdated,
     personGuid,
-    statusCode,
+    status,
     natureOfComplaintCode,
     speciesCode,
     violationTypeCode,
@@ -112,7 +111,6 @@ export const ComplaintDetailsEdit: FC = () => {
     useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
-  const complaintStatusCodes = useSelector(selectComplaintStatusCodeDropdown) as Option[];
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
 
@@ -153,7 +151,6 @@ export const ComplaintDetailsEdit: FC = () => {
   const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
   const [natureOfComplaintError, setNatureOfComplaintError] = useState<string>("");
   const [speciesError, setSpeciesError] = useState<string>("");
-  const [statusError, setStatusError] = useState<string>("");
   const [complaintDescriptionError, setComplaintDescriptionError] = useState<string>("");
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityError, setCommunityError] = useState<string>("");
@@ -246,9 +243,7 @@ export const ComplaintDetailsEdit: FC = () => {
     setErrorNotificationClass("comp-complaint-error display-none");
     setNatureOfComplaintError("");
     setSpeciesError("");
-    setStatusError("");
     setComplaintDescriptionError("");
-
     setAttractantsErrorMsg("");
     setCommunityError("");
     setGeoPointXMsg("");
@@ -291,7 +286,6 @@ export const ComplaintDetailsEdit: FC = () => {
     if (
       natureOfComplaintError === "" &&
       speciesError === "" &&
-      statusError === "" &&
       complaintDescriptionError === "" &&
       attractantsErrorMsg === "" &&
       communityError === "" &&
@@ -313,7 +307,6 @@ export const ComplaintDetailsEdit: FC = () => {
   ];
 
   // Used to set selected values in the dropdowns
-  const selectedStatus = complaintStatusCodes.find((option) => option.value === statusCode);
   const selectedSpecies = speciesCodes.find((option) => option.value === speciesCode);
   const selectedNatureOfComplaint = hwcrNatureOfComplaintCodes.find((option) => option.value === natureOfComplaintCode);
   const selectedAreaCode = areaCodes.find((option) => option.label === area);
@@ -384,20 +377,6 @@ export const ComplaintDetailsEdit: FC = () => {
         setSpeciesError("");
 
         let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
-    }
-  };
-
-  const handleStatusChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-      if (!value) {
-        setStatusError("Required");
-      } else {
-        setStatusError("");
-
-        let updatedComplaint = { ...complaintUpdate, status: value } as WildlifeComplaintDto;
         applyComplaintUpdate(updatedComplaint);
       }
     }
@@ -805,19 +784,18 @@ export const ComplaintDetailsEdit: FC = () => {
                   className="comp-details-label-input-pair"
                   id="status-pair-id"
                 >
-                  <label id="status-label-id">
-                    Status<span className="required-ind">*</span>
+                  <label
+                    htmlFor="comp-details-status-text-id"
+                    id="status-label-id"
+                  >
+                    Status
                   </label>
-                  <ValidationSelect
-                    className="comp-details-input"
-                    options={complaintStatusCodes}
-                    defaultValue={selectedStatus}
-                    placeholder="Select"
-                    id="status-select-id"
-                    classNamePrefix="comp-select"
-                    onChange={(e) => handleStatusChange(e)}
-                    errMsg={statusError}
-                  />
+                  <div
+                    id="comp-details-status-text-id"
+                    className={`badge ${applyStatusClass(status)}`}
+                  >
+                    {status}
+                  </div>
                 </div>
                 <div
                   className="comp-details-label-input-pair"
