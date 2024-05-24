@@ -8,7 +8,6 @@ import { OfficerDto } from "../../../../../types/app/people/officer";
 import { useAppDispatch } from "../../../../../hooks/hooks";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { MAX_CHARACTERS } from "../../../../../constants/general";
 import { upsertNote, getCaseFile } from "../../../../../store/reducers/case-thunks";
 
 type props = {
@@ -42,10 +41,8 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   }, [currentOfficer]);
 
   const handleNotesChange = (input: string) => {
-    if (input?.trim().length <= MAX_CHARACTERS) {
-      setNotesError("");
-      setCurrentNotes(input.trim());
-    }
+    setNotesError("");
+    setCurrentNotes(input.trim());
   };
 
   const handleCancelChanges = () => {
@@ -98,11 +95,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
           rows={4}
           errMsg={notesError}
           onChange={handleNotesChange}
-          maxLength={MAX_CHARACTERS}
         />
-      </div>
-      <div className="right-float">
-        {currentNotes.length} / {MAX_CHARACTERS}
       </div>
       <div className="clear-right-float" />
       <div className="comp-details-edit-container">

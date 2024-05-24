@@ -7,7 +7,7 @@ interface ValidationTextAreaProps {
   onChange: Function;
   errMsg: string;
   rows: number;
-  maxLength: number;
+  maxLength?: number;
   placeholderText?: string;
 }
 
