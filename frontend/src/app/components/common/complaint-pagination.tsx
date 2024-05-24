@@ -142,6 +142,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
           <div className="pagination_controls_end">
             {/* Select total viewable records */}
             <Select
+              menuPlacement="top"
               id="resultsPerPageSelect"
               options={pageSizeOptions}
               classNamePrefix="comp-select"
