@@ -150,8 +150,9 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
             {/* Go to specific page */}
             <div className="pagination_specific_page">
-              <label>Go to</label>
+              <label htmlFor="pagination_page_input">Go to</label>
               <Form.Control
+                id="pagination_page-input"
                 type="number"
                 placeholder="Page"
                 value={specificPage}
