@@ -111,7 +111,7 @@
             <child column="complaint_identifier" foreignKey="FK_person_complaint_xref__complaint_identifier" implied="false" onDeleteCascade="false" schema="public" table="person_complaint_xref"/>
             <child column="complaint_identifier" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="staging_complaint"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="detail_text" nullable="true" remarks="Verbatim details of the complaint as recorded by the call centre or through the web form." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="detail_text" nullable="true" remarks="Verbatim details of the complaint as recorded by the call centre or through the web form." size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="caller_name" nullable="true" remarks="The name provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="caller_address" nullable="true" remarks="The address provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="caller_email" nullable="true" remarks="The email address provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
@@ -3210,14 +3210,6 @@ END;]]></definition>
     _report_type := complaint_data ->> 'report_type';
 
    -- Extract and prepare data for 'complaint' table
-    _detail_text := left( complaint_data ->> 'cos_call_details', 3980 )
-    ||
-    CASE
-    WHEN length( complaint_data ->> 'cos_call_details' ) > 3980 THEN
-      '… DATA TRUNCATED'
-    ELSE
-      ''
-    END;
     _caller_name := left( complaint_data ->> 'cos_caller_name', 100 )
     ||
     CASE
