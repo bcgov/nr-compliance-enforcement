@@ -777,7 +777,7 @@ export const createAnimalOutcome =
     if (outcome && date) {
       actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
     }
-    debugger;
+
     //-- add an action if there are any drugs used
     if (from(drugs).any() && drugAuthorization) {
       const { officer, date } = drugAuthorization;
@@ -824,11 +824,10 @@ export const createAnimalOutcome =
       },
     };
 
-    debugger;
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
     let result = await post<CaseFileDto>(dispatch, parameters);
 
-    if (result !== null) {
+    if (result) {
       ToggleSuccess("Animal outcome added");
       return "success";
     } else {
@@ -924,7 +923,7 @@ export const updateAnimalOutcome =
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
     let result = await patch<CaseFileDto>(dispatch, parameters);
 
-    if (result !== null) {
+    if (result) {
       ToggleSuccess("Animal outcome updated");
       return "success";
     } else {
@@ -965,7 +964,7 @@ export const deleteAnimalOutcome =
     const officer = officers.find((item) => item.user_id === idir);
     const result = await dispatch(_deleteAnimalOutcome(id, officer ? officer.officer_guid : "", idir));
 
-    if (result !== null) {
+    if (result) {
       ToggleSuccess("Animal outcome deleted");
       return "success";
     } else {
