@@ -13,7 +13,7 @@ CREATE TABLE
 		update_utc_timestamp timestamp NULL,
 		CONSTRAINT complaint_update_pk PRIMARY KEY (complaint_update_guid),
 		CONSTRAINT complaint_update_fk FOREIGN KEY (complaint_identifier) REFERENCES public.complaint (complaint_identifier)
-	);
+	); 
 
 COMMENT ON TABLE public.complaint_update IS 'Callers will sometimes call in with a COMPLAINT_UPDATE.   This table is used to track items that are considered to be amendments to the complaint information such as additional details, or location information.';
 
