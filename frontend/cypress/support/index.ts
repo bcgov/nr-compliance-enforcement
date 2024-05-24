@@ -3,12 +3,13 @@
 declare namespace Cypress {
   export interface HwcSection {
     section: string;
-    checkboxes: string[];
+    checkboxes?: string[];
     officer: string;
     date: string;
     actionRequired?: string;
     justification?: string;
     toastText?: string;
+    equipmentType?: string;
   }
 
   interface Chainable {

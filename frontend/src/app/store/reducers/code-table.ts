@@ -1168,4 +1168,17 @@ export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
+export const selectTrapEquipment = (state: RootState): Array<string> => {
+  const {
+    codeTables: { equipment: items },
+  } = state;
+  const data = items
+    .filter(({ isTrapIndicator: value }) => value)
+    .map(({ equipment: label }) => {
+      const item = label;
+      return item;
+    });
+
+  return data;
+};
 export default codeTableSlice.reducer;

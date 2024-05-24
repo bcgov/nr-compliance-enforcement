@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { formatDateTime, truncateString } from "../../../../common/methods";
+import { applyStatusClass, formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
 import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
@@ -98,7 +98,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const location = getLocationName(locationCode);
 
-  const statusButtonClass = status === "CLOSED" ? "badge comp-status-badge-closed" : "badge comp-status-badge-open";
+  const statusButtonClass = `badge ${applyStatusClass(status)}`;
 
   const toggleExpand = () => {
     if (isExpanded) {

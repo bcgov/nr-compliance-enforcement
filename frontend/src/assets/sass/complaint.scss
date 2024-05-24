@@ -531,6 +531,14 @@ p {
 }
 
 .comp-status-badge-closed {
+  background-color: $gray-700-10;
+  color: $gray-700;
+  line-height: normal;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.comp-status-badge-pending-review {
   background-color: $red-300-80;
   color: $red-300;
   line-height: normal;
@@ -682,6 +690,174 @@ p {
   .comp-attactant-badge {
     background-color: $gray-200;
     color: $black;
+  }
+
+  .comp-complaint-update-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $green-90;
+    background-color: $green-90-10;
+    border-radius: 4px;
+    padding: 24px;
+  }
+
+  .comp-complaint-update-item-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .first-row {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .first-row .update-number {
+    box-sizing: border-box;
+    color: $gray-600;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+  }
+
+  .first-row .received {
+    flex: 1;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+  }
+
+  .received span {
+    color: $gray-900;
+  }
+
+  .received .date-time-logged-label,
+  .received i {
+    color: $gray-600;
+    margin-right: 10px;
+  }
+
+  .complaint-description-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+  }
+
+  .complaint-description-label {
+    color: $gray-600;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  .complaint-description-text {
+    color: $gray-900;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    transition: max-height 0.3s ease;
+    position: relative;
+    max-height: 6em; /* Limit the height to approximately 4 lines */
+    white-space: pre-wrap;
+  }
+
+  .complaint-description-text.expanded {
+    max-height: none;
+    overflow: visible;
+    white-space: pre-wrap;
+  }
+
+  .complaint-description-text.needs-gradient::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1.5em; /* Adjust the height to cover the last line */
+    background: linear-gradient(to top, $green-90-10, rgba(255, 255, 255, 0));
+    pointer-events: none; /* Ensure the gradient doesn't block clicks */
+    display: block;
+  }
+
+  .complaint-description-text.expanded::after {
+    content: none;
+  }
+
+  .show-more-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%; /* Ensure it takes the full width of the parent */
+  }
+
+  .show-more-link {
+    color: $gray-80;
+    cursor: pointer;
+    text-decoration: underline;
+    text-align: right;
+    background: none;
+    padding: 0;
+    border: none;
+  }
+
+  .show-more-link:hover {
+    outline: none;
+    text-decoration: underline;
+  }
+
+  .complaint-location-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .complaint-location-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 280px;
+  }
+
+  .complaint-location-label-value-pair {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .complaint-location-label {
+    color: $gray-600;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+    margin-right: 10px;
+  }
+
+  .complaint-location-value {
+    color: $gray-900;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+  }
+
+  .coordinates-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
   }
 }
 

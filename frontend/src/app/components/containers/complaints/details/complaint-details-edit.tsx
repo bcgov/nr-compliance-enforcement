@@ -67,6 +67,7 @@ import { Button } from "react-bootstrap";
 import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
+import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
 
 export type ComplaintParams = {
   id: string;
@@ -699,6 +700,7 @@ export const ComplaintDetailsEdit: FC = () => {
       />
       {readOnly && <hr className="blue-seperator" />}
       {!readOnly && <div className="spacer-seperator" />}
+      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
       <div className="comp-details-subsection">
         <div className="comp-complaint-info">
           <div className="comp-sub-header comp-vertical-align-middle">Complaint details</div>
@@ -894,7 +896,6 @@ export const ComplaintDetailsEdit: FC = () => {
                       rows={4}
                       errMsg={complaintDescriptionError}
                       onChange={handleComplaintDescChange}
-                      maxLength={4000}
                     />
                   </div>
                   <div

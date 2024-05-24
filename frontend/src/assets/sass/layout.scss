@@ -587,6 +587,10 @@ p {
   }
 }
 
+.comp-paragraph-break-word {
+  word-break: break-word !important; //needs to be important to override the global 'break-all' style a few lines above this
+}
+
 // BUTTONS
 .btn {
   // Utility classes for icon placement in buttons with labels

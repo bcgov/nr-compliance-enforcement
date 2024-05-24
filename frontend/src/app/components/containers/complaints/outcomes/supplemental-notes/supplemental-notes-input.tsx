@@ -8,7 +8,6 @@ import { OfficerDto } from "../../../../../types/app/people/officer";
 import { useAppDispatch } from "../../../../../hooks/hooks";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { MAX_CHARACTERS } from "../../../../../constants/general";
 import { upsertNote, getCaseFile } from "../../../../../store/reducers/case-thunks";
 
 type props = {
@@ -42,10 +41,8 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   }, [currentOfficer]);
 
   const handleNotesChange = (input: string) => {
-    if (input?.trim().length <= MAX_CHARACTERS) {
-      setNotesError("");
-      setCurrentNotes(input.trim());
-    }
+    setNotesError("");
+    setCurrentNotes(input.trim());
   };
 
   const handleCancelChanges = () => {
@@ -74,7 +71,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
         }
       });
     } else {
-      setNotesError("Supporting notes required");
+      setNotesError("Additional notes required");
     }
   };
 
@@ -85,19 +82,20 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   return (
     <div className="comp-outcome-supporting-notes">
       <div>
+        <label
+          htmlFor="supporting-notes-textarea-id"
+          className="label-margin-bottom"
+        >
+          Use this field to add critical contextual information not reported in the form above
+        </label>
         <ValidationTextArea
           className="comp-form-control"
           id="supporting-notes-textarea-id"
           defaultValue={currentNotes}
-          placeholderText="Add supporting notes"
           rows={4}
           errMsg={notesError}
           onChange={handleNotesChange}
-          maxLength={MAX_CHARACTERS}
         />
-      </div>
-      <div className="right-float">
-        {currentNotes.length} / {MAX_CHARACTERS}
       </div>
       <div className="clear-right-float" />
       <div className="comp-details-edit-container">
@@ -145,7 +143,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
         <div className="comp-outcome-report-actions">
           <Button
             id="supporting-notes-cancel-button"
-            title="Cancel Supporting Notes"
+            title="Cancel Additional Notes"
             className="comp-outcome-cancel"
             onClick={handleCancelChanges}
           >
@@ -153,7 +151,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
           </Button>
           <Button
             id="supporting-notes-save-button"
-            title="Save Supporting Notes"
+            title="Save Additional Notes"
             className="comp-outcome-save"
             onClick={handleSaveNotes}
           >
