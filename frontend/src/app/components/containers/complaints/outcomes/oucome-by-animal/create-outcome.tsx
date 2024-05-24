@@ -276,43 +276,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     updateModel("drugs", update);
   };
 
-  // const removeDrugUsed = (id: string) => {
-  //   const { drugs } = data;
-  //   debugger;
-  //   const items = drugs.filter((drug) => id !== drug.id);
-
-  //   const refs = drugRefs.current.filter((r) => {
-  //     if (r) {
-  //       return r.id !== null && r.id !== id;
-  //     }
-
-  //     return false;
-  //   });
-
-  //   const update =
-  //     items.length === 0
-  //       ? []
-  //       : from(items)
-  //           .orderBy((item) => item.order)
-  //           .toArray()
-  //           .map((item, idx) => {
-  //             return { ...item, id: uuidv4().toString(), order: idx + 1 };
-  //           });
-
-  //   updateModel("drugs", update);
-
-  //   if (update.length === 0) {
-  //     if (data.drugAuthorization) {
-  //       updateModel("drugAuthorization", {
-  //         officer: "",
-  //         date: new Date(),
-  //       });
-  //     }
-  //   }
-
-  //   drugRefs.current = refs;
-  // };
-
   const removeDrugUsed = (id: string) => {
     const { drugs } = data;
 

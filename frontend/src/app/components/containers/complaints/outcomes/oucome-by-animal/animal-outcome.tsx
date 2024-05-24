@@ -147,12 +147,12 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
               <div className="comp-details-label-div-pair ">
                 <label
                   className="comp-details-inner-content-label"
-                  htmlFor="comp-review-required-officer"
+                  htmlFor="comp-animal-outcome-animal"
                 >
                   Animal
                 </label>
                 <div className="flex-container">
-                  <div>
+                  <div className="comp-animal-outcome-animal">
                     <b>{animal}</b>
                   </div>
                   {data?.sex && (
@@ -223,8 +223,13 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
 
           <div className="comp-details-edit-column">
             <div className="comp-details-label-input-pair">
-              <label className="label center">Outcome</label>
-              <div>
+              <label
+                htmlFor="comp-animal-outcome-result"
+                className="label center"
+              >
+                Outcome
+              </label>
+              <div id="comp-animal-outcome-result">
                 {data?.outcome ? animalOutcome : <span className="comp-animal-outcome-pending">Outcome pending</span>}
               </div>
             </div>
@@ -235,25 +240,27 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
               <div className="comp-details-label-div-pair">
                 <label
                   className="comp-details-inner-content-label center"
-                  htmlFor="comp-review-required-officer"
+                  htmlFor="comp-animal-outcome-officer"
                 >
                   Officer
                 </label>
-                {data?.officer ? (
-                  <div
-                    data-initials-sm={getAvatarInitials(outcomeOfficer)}
-                    className="comp-orange-avatar-sm comp-details-inner-content"
-                  >
-                    <span
-                      id="comp-review-required-officer"
-                      className="comp-padding-left-xs"
+                <div className="comp-animal-outcome-officer">
+                  {data?.officer ? (
+                    <div
+                      data-initials-sm={getAvatarInitials(outcomeOfficer)}
+                      className="comp-orange-avatar-sm comp-details-inner-content"
                     >
-                      {outcomeOfficer}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="comp-animal-outcome-pending">Officer pending</span>
-                )}
+                      <span
+                        id="comp-review-required-officer"
+                        className="comp-padding-left-xs"
+                      >
+                        {outcomeOfficer}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="comp-animal-outcome-pending">Officer pending</span>
+                  )}
+                </div>
               </div>
             </div>
             <div
@@ -263,13 +270,13 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
               <div className="comp-details-label-div-pair">
                 <label
                   className="comp-details-inner-content-label"
-                  htmlFor="file-review-supporting-date"
+                  htmlFor="comp-animal-outcome-date"
                 >
                   Date
                 </label>
                 <div
                   className="bi comp-margin-right-xxs comp-details-inner-content"
-                  id="file-review-supporting-date"
+                  id="comp-animal-outcome-date"
                 >
                   {data?.date ? (
                     formatDate(data?.date?.toString())
