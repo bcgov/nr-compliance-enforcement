@@ -88,9 +88,9 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
       return (
         <div
           id={`complaint-${bannerType}-notification`}
-          className={`comp-map-${bannerType}-alert`}
+          className={`comp-map-alert comp-map-${bannerType}-alert`}
         >
-          <BsInfoCircleFill size={18} />
+          <BsInfoCircleFill size={20} />
           {info}
         </div>
       );

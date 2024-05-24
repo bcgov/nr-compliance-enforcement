@@ -171,7 +171,7 @@
     left: 0;
   }
 
-  .comp-map-unmapped-alert {
+  .comp-map-alert {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -181,8 +181,13 @@
     left: 58px;
     margin: 0;
     margin-right: 11px;
+    padding: 16px;
     z-index: 999;
     font-size: 0.75rem;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    background-color: $bc-gov-neutral-100;
+    color: $black;
 
     svg {
       flex: 0 0 auto;
@@ -190,9 +195,10 @@
   }
 
   @include media-breakpoint-up(lg) {
-    .comp-map-unmapped-alert {
+    .comp-map-alert {
       left: 50%;
       transform: translateX(-50%);
+      margin-right: 0;
       font-size: 0.875rem;
       white-space: nowrap;
     }
@@ -1417,25 +1423,6 @@ p {
   border-radius: 3px;
   background-color: $bc-gov-danger-100;
   color: $bc-gov-danger;
-}
-
-.comp-map-unmapped-alert {
-  margin: 7px 0px;
-  padding: 16px;
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-  background-color: $bc-gov-neutral-100;
-  color: $black;
-}
-
-.comp-map-no-results-alert {
-  margin: 7px 0px;
-  padding: 16px;
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-  background-color: $bc-gov-neutral-100;
-  color: $black;
-  width: 1330px;
 }
 
 .display-none {
