@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
 import { Button, Modal } from "react-bootstrap";
 import { deleteAnimalOutcome, getCaseFile } from "../../../store/reducers/case-thunks";
-// import { selectCaseId } from "../../../store/reducers/case-selectors";
 
 type props = {
   close: () => void;
@@ -13,7 +12,6 @@ type props = {
 export const DeleteAnimalOutcomeModal: FC<props> = ({ close, submit }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  // const caseFileId = useAppSelector(selectCaseId);
 
   const { title, description, ok, cancel } = modalData;
 
