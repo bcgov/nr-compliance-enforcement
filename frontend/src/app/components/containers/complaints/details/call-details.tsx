@@ -42,7 +42,12 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
           >
             <div>
               <div className="comp-details-content-label">Complaint Description</div>
-              <p id="comp-details-description">{details}</p>
+              <p
+                className="comp-paragraph-break-word"
+                id="comp-details-description"
+              >
+                {details}
+              </p>
             </div>
             <div>
               <div className="comp-details-content-label ">Incident Time</div>

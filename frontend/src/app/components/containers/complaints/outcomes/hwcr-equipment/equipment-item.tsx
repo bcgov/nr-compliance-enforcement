@@ -44,15 +44,16 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
 
   const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
 
-  const setEquipmentActor = equipment.actions?.find((action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)
+  const setEquipmentActor = equipment.actions?.findLast((action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)
     ?.actor;
-  const removedEquipmentActor = equipment.actions?.find((action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT)
-    ?.actor;
-
-  const setEquipmentDateString = equipment.actions?.find((action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)
-    ?.date;
+  const removedEquipmentActor = equipment.actions?.findLast(
+    (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
+  )?.actor;
+  const setEquipmentDateString = equipment.actions?.findLast(
+    (action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT,
+  )?.date;
   const setEquipmentDate = setEquipmentDateString ? new Date(new Date(setEquipmentDateString)) : null;
-  const removedEquipmentDateString = equipment.actions?.find(
+  const removedEquipmentDateString = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
   )?.date;
   const removedEquipmentDate = removedEquipmentDateString ? new Date(new Date(removedEquipmentDateString)) : null;
@@ -83,13 +84,17 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
       <div className="comp-outcome-report-complaint-assessment equipment-item">
         {!removedEquipmentFullName && <div className="status-bar"></div>}
         <div className="equipment-item-header">
-          <div className="title">
+          <div
+            className="title"
+            id="equipment-type-title"
+          >
             <h6>{getValue("equipment")?.label}</h6>
             {!removedEquipmentFullName && <div className="badge">Active</div>}
           </div>
           <div>
             <CompTextIconButton
               buttonClasses="button-text"
+              id="equipment-delete-button"
               style={{ marginRight: "15px" }}
               text="Delete"
               icon={BsTrash3}
@@ -97,6 +102,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             />
             <CompTextIconButton
               buttonClasses="button-text"
+              id="equipment-edit-button"
               text="Edit"
               icon={BsPencil}
               isDisabled={isEditDisabled}
@@ -146,7 +152,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                   className="comp-pink-avatar-sm"
                 >
                   <span
-                    id="comp-details-assigned-officer-name-text-id"
+                    id="equipment-officer-set-div"
                     className="comp-padding-left-xs"
                   >
                     {setEquipmentFullName}
@@ -159,14 +165,12 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             xs={12}
             md={4}
           >
-            <div className="equipment-item-content">
+            <div
+              className="equipment-item-content"
+              id="equipment-date-set-div"
+            >
               <div className="label">Set date</div>
-              <div
-                className="value"
-                id=""
-              >
-                {formatDate(setEquipmentDate?.toString())}
-              </div>
+              <div className="value">{formatDate(setEquipmentDate?.toString())}</div>
             </div>
           </Col>
         </Row>
@@ -208,6 +212,30 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               </div>
             </Col>
           </Row>
+        )}
+        {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) ? (
+          <Row>
+            <Col
+              xs={12}
+              md={4}
+            >
+              <div className="equipment-item-content">
+                <div className="label">Was an animal Captured?</div>
+                <div className="comp-details-content">
+                  <div>
+                    <span
+                      id="comp-details-animal-captured-text-id"
+                      className="comp-padding-left-xs"
+                    >
+                      {equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        ) : (
+          ""
         )}
       </div>
     </>
