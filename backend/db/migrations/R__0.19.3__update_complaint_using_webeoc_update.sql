@@ -1,4 +1,3 @@
--- Given a complaint identifer and an incoming webeoc complaint update record, update the related complaint if necessary
 CREATE OR REPLACE FUNCTION public.update_complaint_using_webeoc_update(_complaint_identifier character varying, update_complaint_data jsonb)
  RETURNS void
  LANGUAGE plpgsql
@@ -97,74 +96,71 @@ BEGIN
    
    -- update the complaint data, if the incoming webeoc contains applicable updates
    
-   if ((_update_caller_name <> _original_caller_name) and (_update_caller_name <> current_complaint_record.caller_name)) then
-	update complaint
-	set caller_name = _update_caller_name
-	where complaint_identifier = _complaint_identifier;
+  if ((_update_caller_name IS DISTINCT FROM _original_caller_name) AND (_update_caller_name IS DISTINCT FROM current_complaint_record.caller_name)) THEN
+    UPDATE complaint
+    SET caller_name = _update_caller_name
+    WHERE complaint_identifier = _complaint_identifier;
 
-	update_edit_ind = true;
-   end if;
+    update_edit_ind = true;
+  end if;
   
-  if ((_update_caller_phone_1 <> _original_caller_phone_1) and (_update_caller_phone_1 <> current_complaint_record.caller_phone_1)) then
+  if ((_update_caller_phone_1 IS DISTINCT FROM _original_caller_phone_1) AND (_update_caller_phone_1 IS DISTINCT FROM current_complaint_record.caller_phone_1)) THEN
     _update_caller_phone_1 := format_phone_number(_update_caller_phone_1);
 
-  
-	update complaint
-	set caller_phone_1 = _update_caller_phone_1
-	where complaint_identifier = _complaint_identifier;
+    UPDATE complaint
+    SET caller_phone_1 = _update_caller_phone_1
+    WHERE complaint_identifier = _complaint_identifier;
 
-	update_edit_ind = true;
-   end if;
+    update_edit_ind = true;
+  end if;
   
-  if ((_update_caller_phone_2 <> _original_caller_phone_2) and (_update_caller_phone_2 <> current_complaint_record.caller_phone_2)) then
-  
+  if ((_update_caller_phone_2 IS DISTINCT FROM _original_caller_phone_2) AND (_update_caller_phone_2 IS DISTINCT FROM current_complaint_record.caller_phone_2)) THEN
     _update_caller_phone_2 := format_phone_number(_update_caller_phone_2);
 
-	update complaint
-	set caller_phone_2 = _update_caller_phone_2
-	where complaint_identifier = _complaint_identifier;
+    UPDATE complaint
+    SET caller_phone_2 = _update_caller_phone_2
+    WHERE complaint_identifier = _complaint_identifier;
 
-	update_edit_ind = true;
-   end if;
+    update_edit_ind = true;
+  end if;
   
-  if ((_update_caller_phone_3 <> _original_caller_phone_3) and (_update_caller_phone_3 <> current_complaint_record.caller_phone_3)) then
-  
-    _update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
+  if ((_update_caller_phone_3 IS DISTINCT FROM _original_caller_phone_3) AND (_update_caller_phone_3 IS DISTINCT FROM current_complaint_record.caller_phone_3)) THEN
+        _update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
 
-	update complaint
-	set caller_phone_3 = _update_caller_phone_3
-	where complaint_identifier = _complaint_identifier;
-	update_edit_ind = true;
-   end if;
+    UPDATE complaint
+    SET caller_phone_3 = _update_caller_phone_3
+    WHERE complaint_identifier = _complaint_identifier;
+    update_edit_ind = true;
+  end if;
   
-  if ((_update_caller_email <> _original_caller_email) and (_update_caller_email <> current_complaint_record.caller_email)) then
-	update complaint
-	set caller_email = _update_caller_email
-	where complaint_identifier = _complaint_identifier;
+  if ((_update_caller_email IS DISTINCT FROM _original_caller_email) AND (_update_caller_email IS DISTINCT FROM current_complaint_record.caller_email)) THEN
+	UPDATE complaint
+	SET caller_email = _update_caller_email
+	WHERE complaint_identifier = _complaint_identifier;
 	update_edit_ind = true;
-   end if;
+  end if;
   
-  if ((_update_caller_address <> _original_caller_address) and (_update_caller_address <> current_complaint_record.caller_address)) then
-	update complaint
-	set caller_address = _update_caller_address
-	where complaint_identifier = _complaint_identifier;
-	update_edit_ind = true;
-   end if;
+  if ((_update_caller_address IS DISTINCT FROM _original_caller_address) AND (_update_caller_address IS DISTINCT FROM current_complaint_record.caller_address)) THEN
+    UPDATE complaint
+    SET caller_address = _update_caller_address
+    WHERE complaint_identifier = _complaint_identifier;
+    update_edit_ind = true;
+  end if;
   
-  if ((_update_reported_by_code <> _original_reported_by_code) and (_update_reported_by_code <> current_complaint_record.reported_by_code)) then
-	update complaint
-	set reported_by_code = _update_reported_by_code
-	where complaint_identifier = _complaint_identifier;
-	update_edit_ind = true;
-   end if;
+  if ((_update_reported_by_code IS DISTINCT FROM _original_reported_by_code) AND (_update_reported_by_code IS DISTINCT FROM current_complaint_record.reported_by_code)) THEN
+    UPDATE complaint
+    SET reported_by_code = _update_reported_by_code
+    WHERE complaint_identifier = _complaint_identifier;
+    update_edit_ind = true;
+  end if;
   
-  if ((_update_reported_by_other_text <> _original_reported_by_other_text) and (_update_reported_by_other_text <> current_complaint_record.reported_by_other_text)) then
-	update complaint
-	set reported_by_other_text = _update_reported_by_other_text
-	where complaint_identifier = _complaint_identifier;
-	update_edit_ind = true;
-   end if;
-  
+  if ((_update_reported_by_other_text IS DISTINCT FROM _original_reported_by_other_text) AND (_update_reported_by_other_text IS DISTINCT FROM current_complaint_record.reported_by_other_text)) THEN
+    UPDATE complaint
+    SET reported_by_other_text = _update_reported_by_other_text
+    WHERE complaint_identifier = _complaint_identifier;
+    update_edit_ind = true;
+  end if;
+   
   -- the update caused an edit, set the audit fields
   if (update_edit_ind) then
 	update complaint
