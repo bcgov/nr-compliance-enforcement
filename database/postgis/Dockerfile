@@ -5,6 +5,13 @@ FROM postgis/postgis:15-master@sha256:11d424c70a9bfbec79fcfcd6fdacfefa9895c790c4
 RUN sed -i '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;' \ 
         /docker-entrypoint-initdb.d/10_postgis.sh 
 
+RUN apt-get --no-install-recommends update && apt-get --no-install-recommends install -y curl && apt-get clean
+
+RUN apt-get --no-install-recommends -y install postgresql-15-cron && apt-get clean
+
+RUN echo "shared_preload_libraries = 'pg_cron'" >> /var/lib/postgresql/data/postgresql.conf && \
+        echo "cron.database_name = 'nr-compliance-enforcement'" >> /var/lib/postgresql/data/postgresql.conf
+
 # Health check - recommended for local dev 
 HEALTHCHECK --interval=15s --timeout=5s --retries=3 CMD [ "pg_isready" ] 
 
