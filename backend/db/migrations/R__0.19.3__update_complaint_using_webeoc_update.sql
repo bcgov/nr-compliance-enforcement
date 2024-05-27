@@ -95,85 +95,74 @@ BEGIN
     _original_reported_by_other_text := original_complaint_record ->> 'referred_by_agency_other_text';
    
    -- update the complaint data, if the incoming webeoc contains applicable updates
-  if (_update_caller_name IS NOT NULL AND _update_caller_name <> '') then
-	  if ((_update_caller_name IS DISTINCT FROM _original_caller_name) AND (_update_caller_name IS DISTINCT FROM current_complaint_record.caller_name)) THEN
+   if ((COALESCE(_update_caller_name, '') <> COALESCE(_original_caller_name, '')) and 
+    (COALESCE(_update_caller_name, '') <> COALESCE(current_complaint_record.caller_name, ''))) then
 	    UPDATE complaint
 	    SET caller_name = _update_caller_name
 	    WHERE complaint_identifier = _complaint_identifier;
 	
 	    update_edit_ind = true;
-	  end if;
   end if;
   
-  if (_update_caller_phone_1 IS NOT NULL AND _update_caller_phone_1 <> '') then
-	  if ((_update_caller_phone_1 IS DISTINCT FROM _original_caller_phone_1) AND (_update_caller_phone_1 IS DISTINCT FROM current_complaint_record.caller_phone_1)) THEN
-	    _update_caller_phone_1 := format_phone_number(_update_caller_phone_1);
-	
+  if ((COALESCE(_update_caller_phone_1, '') <> COALESCE(_original_caller_phone_1, '')) and 
+    (COALESCE(_update_caller_phone_1, '') <> COALESCE(current_complaint_record.caller_phone_1, ''))) then
+        _update_caller_phone_1 := format_phone_number(_update_caller_phone_1);
 	    UPDATE complaint
 	    SET caller_phone_1 = _update_caller_phone_1
 	    WHERE complaint_identifier = _complaint_identifier;
 	
 	    update_edit_ind = true;
-	  end if;
   end if;
   
-  if (_update_caller_phone_2 IS NOT NULL AND _update_caller_phone_2 <> '') then
-	  if ((_update_caller_phone_2 IS DISTINCT FROM _original_caller_phone_2) AND (_update_caller_phone_2 IS DISTINCT FROM current_complaint_record.caller_phone_2)) THEN
-	    _update_caller_phone_2 := format_phone_number(_update_caller_phone_2);
-	
+  if ((COALESCE(_update_caller_phone_2, '') <> COALESCE(_original_caller_phone_2, '')) and 
+    (COALESCE(_update_caller_phone_2, '') <> COALESCE(current_complaint_record.caller_phone_2, ''))) then
+    	_update_caller_phone_2 := format_phone_number(_update_caller_phone_2);
 	    UPDATE complaint
 	    SET caller_phone_2 = _update_caller_phone_2
 	    WHERE complaint_identifier = _complaint_identifier;
 	
 	    update_edit_ind = true;
-	  end if;
   end if;
   
-  if (_update_caller_phone_3 IS NOT NULL AND _update_caller_phone_3 <> '') then
-	  if ((_update_caller_phone_3 IS DISTINCT FROM _original_caller_phone_3) AND (_update_caller_phone_3 IS DISTINCT FROM current_complaint_record.caller_phone_3)) THEN
-	        _update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
-	
+  if ((COALESCE(_update_caller_phone_3, '') <> COALESCE(_original_caller_phone_3, '')) and 
+    (COALESCE(_update_caller_phone_3, '') <> COALESCE(current_complaint_record.caller_phone_3, ''))) then
+    	_update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
 	    UPDATE complaint
 	    SET caller_phone_3 = _update_caller_phone_3
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
-	  end if;
   end if;
   
-  if (_update_caller_email IS NOT NULL AND _update_caller_email <> '') then
-	  if ((_update_caller_email IS DISTINCT FROM _original_caller_email) AND (_update_caller_email IS DISTINCT FROM current_complaint_record.caller_email)) THEN
+  if ((COALESCE(_update_caller_email, '') <> COALESCE(_original_caller_email, '')) and 
+    (COALESCE(_update_caller_email, '') <> COALESCE(current_complaint_record.caller_email, ''))) then 
 		UPDATE complaint
 		SET caller_email = _update_caller_email
 		WHERE complaint_identifier = _complaint_identifier;
 		update_edit_ind = true;
-	  end if;
   end if;
   
-  if (_update_caller_address IS NOT NULL AND _update_caller_address <> '') then
-	  if ((_update_caller_address IS DISTINCT FROM _original_caller_address) AND (_update_caller_address IS DISTINCT FROM current_complaint_record.caller_address)) THEN
+  if ((COALESCE(_update_caller_address, '') <> COALESCE(_original_caller_address, '')) and 
+    (COALESCE(_update_caller_address, '') <> COALESCE(current_complaint_record.caller_address, ''))) then 
 	    UPDATE complaint
 	    SET caller_address = _update_caller_address
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
-	  end if;
   end if;
   
-  if (_update_reported_by_code IS NOT NULL AND _update_reported_by_code <> '') then
-	  if ((_update_reported_by_code IS DISTINCT FROM _original_reported_by_code) AND (_update_reported_by_code IS DISTINCT FROM current_complaint_record.reported_by_code)) THEN
+  if ((COALESCE(_update_reported_by_code, '') <> COALESCE(_original_reported_by_code, '')) and 
+    (COALESCE(_update_reported_by_code, '') <> COALESCE(current_complaint_record.reported_by_code, ''))) then 
 	    UPDATE complaint
 	    SET reported_by_code = _update_reported_by_code
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
-	  end if;
   end if;
    
-  if (_update_reported_by_other_text IS NOT NULL AND _update_reported_by_other_text <> '') then
-	  if ((_update_reported_by_other_text IS DISTINCT FROM _original_reported_by_other_text) AND (_update_reported_by_other_text IS DISTINCT FROM current_complaint_record.reported_by_other_text)) THEN
+  if ((COALESCE(_update_reported_by_other_text, '') <> COALESCE(_original_reported_by_other_text, '')) and 
+    (COALESCE(_update_reported_by_other_text, '') <> COALESCE(current_complaint_record.reported_by_other_text, ''))) then 
 	    UPDATE complaint
 	    SET reported_by_other_text = _update_reported_by_other_text
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
-	  end if;
   end if;
    
   -- the update caused an edit, set the audit fields
