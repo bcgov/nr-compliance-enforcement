@@ -170,7 +170,6 @@ export class CaseFileService {
       variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
-
     const caseFileDTO = returnValue.updateReview as CaseFileDto;
     try {
       if (model.reviewInput.isReviewRequired) {
