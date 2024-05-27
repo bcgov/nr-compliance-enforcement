@@ -48,6 +48,6 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
 
     cy.waitForSpinner();
 
-    cy.get("#root > div > div.comp-main-content > div.comp-sub-header").contains("Complaints");
+    cy.get(".comp-page-header").contains("Complaints");
   });
 });

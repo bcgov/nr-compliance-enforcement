@@ -23,7 +23,7 @@ describe("COMPENF-259 Zone at a Glance - View Complaint Stats", () => {
 
     cy.waitForSpinner();
 
-    cy.get("#root > div > div.comp-main-content > div.comp-sub-header").contains("Complaints");
+    cy.get(".comp-page-header").contains("Complaints");
   });
 
   it("it has correct banner image", () => {

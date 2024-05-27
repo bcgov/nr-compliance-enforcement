@@ -91,7 +91,10 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           aria-label="Update status"
           onClick={openStatusChangeModal}
         >
-          <i className="bi bi-arrow-repeat"></i>
+          <i
+            className="bi bi-arrow-repeat"
+            id="update-status-icon"
+          ></i>
         </Button>
       </OverlayTrigger>
       {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
