@@ -221,6 +221,14 @@ AS $function$
     _report_type := complaint_data ->> 'report_type';
 
    -- Extract and prepare data for 'complaint' table
+   _detail_text := left( complaint_data ->> 'cos_call_details', 3980 )
+    ||
+    CASE
+   	  WHEN length( complaint_data ->> 'cos_call_details' ) > 3980 THEN
+      '… DATA TRUNCATED'
+    ELSE
+      ''
+    END;
     _caller_name := left( complaint_data ->> 'cos_caller_name', 100 )
     ||
     CASE
