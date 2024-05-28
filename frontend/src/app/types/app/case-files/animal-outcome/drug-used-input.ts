@@ -21,7 +21,7 @@ export interface DrugUsedInputV2 {
   injectionMethod: string;
   reactions: string;
 
-  remainingUse: string;
+  remainingUse: string | null;
   amountDiscarded: string;
   discardMethod: string;
 }

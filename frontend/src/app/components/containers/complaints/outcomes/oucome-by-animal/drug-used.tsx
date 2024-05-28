@@ -23,7 +23,7 @@ type props = {
   amountDiscarded: string;
 
   reactions: string;
-  remainingUse: string;
+  remainingUse: string | null;
 
   injectionMethod: string;
   discardMethod: string;
