@@ -11,9 +11,15 @@ export class ComplaintSequenceResetScheduler {
   constructor(private schedulerRegistry: SchedulerRegistry, private dataSource: DataSource) {}
 
   onModuleInit() {
-    this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.resetComplaintSequence();
-    });
+    this.cronJob = new CronJob(
+      this.getCronExpression(),
+      async () => {
+        await this.resetComplaintSequence();
+      },
+      null, // onComplete
+      false, // start
+      "UTC-8", // timezone
+    );
 
     this.schedulerRegistry.addCronJob("complaint-reset-sequence", this.cronJob);
     this.cronJob.start();
