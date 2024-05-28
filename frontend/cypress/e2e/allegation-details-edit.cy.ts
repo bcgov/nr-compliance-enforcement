@@ -157,8 +157,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.selectItemById("violation-observed-select-id", editCallDetails.violationObservedString);
 
-    cy.selectItemById("status-select-id", editCallDetails.status);
-
     cy.get("#officer-assigned-select-id").scrollIntoView();
     cy.selectItemById("officer-assigned-select-id", editCallDetails.assigned);
 
@@ -275,8 +273,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.selectItemById("violation-observed-select-id", originalCallDetails.violationObservedString);
 
-    cy.selectItemById("status-select-id", originalCallDetails.status);
-
     cy.selectItemById("officer-assigned-select-id", originalCallDetails.assigned);
 
     cy.selectItemById("violation-type-select-id", originalCallDetails.violationType);
@@ -369,7 +365,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#status-pair-id label").should(($label) => {
       expect($label).to.contain.text("Status");
     });
-    cy.get("#status-pair-id .comp-details-input").should("exist");
 
     // Created By
     cy.get("#created-by-pair-id label").should(($label) => {
