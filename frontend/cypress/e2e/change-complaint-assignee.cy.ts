@@ -27,7 +27,7 @@ describe("Complaint Assign Popover spec", { scrollBehavior: false }, () => {
 
       cy.get("td").first().click({ force: true });
 
-      cy.get(".tt-assign-span").filter(":visible").click({ force: true });
+      cy.get("#update-assignee-icon").filter(":visible").click({ force: true });
 
       // self assign the complaint
       cy.get("#self_assign_button").click();
