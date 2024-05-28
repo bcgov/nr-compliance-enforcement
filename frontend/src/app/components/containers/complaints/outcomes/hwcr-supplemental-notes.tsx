@@ -77,6 +77,7 @@ export const HWCRSupplementalNotes: FC = () => {
         />
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showInput, id, officer, supplementalNote]);
 
   return (
