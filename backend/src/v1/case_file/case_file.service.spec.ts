@@ -4,13 +4,15 @@ import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
 import { CaseFileService } from "./case_file.service";
+import { ComplaintModule } from "../complaint/complaint.module";
+import { ComplaintService } from "../complaint/complaint.service";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AutomapperModule],
+      imports: [AutomapperModule, ComplaintModule],
       providers: [
         AutomapperModule,
         {
@@ -25,6 +27,10 @@ describe("Testing: Case File Service", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: ComplaintService,
+          useValue: {},
         },
       ],
     }).compile();
