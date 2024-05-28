@@ -9,7 +9,7 @@ type Props = {
 
 export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sortDirection }) => {
   return (
-    <thead className="fixed-table-header">
+    <thead className="sticky-table-header">
       <tr>
         <SortableHeader
           title="Incident#"
@@ -17,7 +17,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="complaint_identifier"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-left-radius "
+          className="comp-cell-width-110 sticky-col sticky-col--left"
         />
 
         <SortableHeader
@@ -27,7 +27,6 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-95 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -36,7 +35,6 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="violation_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-305 comp-header-horizontal-border "
         />
 
         <SortableHeader
@@ -45,7 +43,6 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="in_progress_ind"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-155 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -54,9 +51,8 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="geo_organization_unit_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-165 comp-header-horizontal-border"
         />
-        <th className="comp-cell-width-170 comp-header-horizontal-border comp-header-vertical-border-left unsortable">
+        <th className="unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
 
@@ -66,7 +62,6 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="complaint_status_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-75 comp-header-horizontal-border comp-header-vertical-border"
         />
 
         <SortableHeader
@@ -75,7 +70,6 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="last_name"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-130 comp-header-horizontal-border"
         />
 
         <SortableHeader
@@ -84,9 +78,12 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 comp-header-horizontal-border comp-header-right-radius"
           id="update-date-column"
         />
+
+        <th className="comp-cell-width-100 unsortable sticky-col sticky-col--right actions-col">
+          <div className="header-label">Actions</div>
+        </th>
       </tr>
     </thead>
   );

@@ -1,7 +1,248 @@
-// COMPLAINT DETAILS START
-.comp-complaint-details {
-  margin: -24px;
+// COMPLAINTS PAGE CONTAINER
+.comp-page-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  padding: 1.5rem;
 
+  &--noscroll {
+    overflow: hidden;
+  }
+}
+
+// PAGE HEADER/TITLE CONTAINER
+.comp-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 16px;
+}
+
+.comp-page-title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .btn {
+    margin: -0.5rem 0;
+    font-size: 0.875rem;
+  }
+}
+
+// SEARCH BAR
+.search-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+// FILTER BAR
+.comp-filter-bar {
+  display: flex;
+  flex-direction: column;
+}
+
+// FILTER PILLS
+.filter-pills-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  row-gap: 6px;
+  margin-top: 16px;
+}
+
+// ADD FILTER BUTTON
+.btn.filter-btn {
+  border-radius: 100px;
+}
+
+.filter-btn-desktop {
+  display: none;
+}
+
+// FILTER FORM CONTROLS - DESKTOP
+.comp-filter-btn {
+  width: auto;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 5px 4px 10px;
+  background-color: $bc-gov-neutral-500;
+  color: white;
+  border-radius: 100px;
+  border-color: $bc-gov-neutral-500;
+  white-space: nowrap;
+}
+
+// FILTER CONTAINERS
+.comp-filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  + .comp-filter-container {
+    margin-top: 8px;
+  }
+
+  label {
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+  }
+
+  .comp-select__control {
+    font-size: 0.875rem;
+  }
+}
+
+// DATA CONTAINER
+.comp-data-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+}
+
+// DESKTOP FILTER
+.comp-data-filters {
+  display: none;
+  border-right: 1px solid $gray-300;
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    height: 100%;
+  }
+
+  &-header {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding: 0 16px;
+    height: 44px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border-bottom: 1px solid $gray-300;
+  }
+
+  &-body {
+    flex: 1 1 auto;
+    padding: 16px;
+    overflow-y: auto;
+  }
+}
+
+// Fixing width of datepicker in this container
+.react-datepicker {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.comp-data-list-map {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+
+  .map-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .comp-map-alert {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    position: absolute;
+    top: 11px;
+    left: 58px;
+    margin: 0;
+    margin-right: 11px;
+    padding: 16px;
+    z-index: 999;
+    font-size: 0.75rem;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    background-color: $bc-gov-neutral-100;
+    color: $black;
+
+    svg {
+      flex: 0 0 auto;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    .comp-map-alert {
+      left: 50%;
+      transform: translateX(-50%);
+      margin-right: 0;
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+  }
+
+  .comp-table-container {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .comp-table-scroll-container {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+}
+
+// FILTER COMPONENT BREAKPOINTS
+@include media-breakpoint-up(xl) {
+  .filter-btn-mobile {
+    display: none;
+  }
+
+  .filter-btn-desktop {
+    display: inline-block;
+  }
+
+  .comp-data-filters {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+  }
+}
+
+// COMPLAINT DETAILS/EDIT
+.comp-details-header,
+.comp-create-header {
+  position: sticky;
+  top: 0;
+  z-index: 8000;
+}
+
+.comp-complaint-details {
   .comp-details-content-label {
     color: $gray-500;
   }
@@ -134,16 +375,6 @@ p {
 
 .comp-nature-complaint-cell {
   width: 329px;
-}
-
-.comp-header-label {
-  float: left;
-  margin-top: 1px;
-}
-
-.comp-header-caret {
-  float: right;
-  cursor: pointer;
 }
 
 .comp-top-right {
@@ -858,23 +1089,6 @@ p {
   flex: 1;
 }
 
-.comp-filter-btn {
-  width: auto;
-
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-
-  display: flex;
-  flex-direction: row;
-  padding: 4px 5px 4px 10px;
-
-  background-color: $bc-gov-neutral-500;
-  color: white;
-  border-radius: 100px;
-  border-color: $bc-gov-neutral-500;
-}
-
 .btn-close {
   box-sizing: content-box;
   width: 0.15em;
@@ -889,33 +1103,11 @@ p {
 // COMPLAINT DETAILS END
 
 #complaint-list {
-  width: 1330px;
   border-collapse: initial;
   border-spacing: 0px;
-
   font-style: normal;
-  font-size: 12px;
-
-  thead {
-    font-weight: 600;
-    cursor: pointer;
-    height: 38px;
-    text-align: left;
-
-    th {
-      background: $gray-400;
-      background-color: #e4e4e4;
-      border-color: $gray-400;
-    }
-
-    th.unsortable {
-      cursor: default;
-    }
-  }
 
   tbody {
-    font-weight: normal;
-
     tr {
       cursor: pointer;
     }
@@ -945,7 +1137,7 @@ p {
     }
 
     td {
-      border-color: $gray-300;
+      white-space: nowrap;
     }
 
     .comp-table-icon-weighted:hover {
@@ -979,26 +1171,6 @@ p {
   }
 
   .comp-header-right-border {
-    border-right-width: 1px;
-  }
-
-  .comp-header-left-radius {
-    border-top-left-radius: 4px !important;
-    border-width: 1px 0px 1px 1px;
-  }
-
-  .comp-header-right-radius {
-    border-top-right-radius: 4px !important;
-    border-width: 1px;
-  }
-
-  .comp-header-horizontal-border {
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-  }
-
-  .comp-header-vertical-border {
-    border-left-width: 1px;
     border-right-width: 1px;
   }
 
@@ -1082,45 +1254,9 @@ p {
   flex-grow: 0;
 }
 
-.comp-filter-label {
-  padding: 0px 0px 8px;
-  gap: 4px;
-  width: 298px;
-  height: 32px;
-}
-
-.comp-filter-pill-container {
-  display: flex;
-  align-items: center;
-  /* Vertically center items */
-  height: 46px;
-  /* Set the container's height */
-  width: 1330px;
-  margin: 7px 0px;
-}
-
 .comp-filter-left {
   float: left;
   width: 298px;
-}
-
-.comp-filter {
-  float: left;
-  width: 298px;
-  margin: 0px 0px 0px 43px;
-}
-
-.comp-filter-pills {
-  align-items: center;
-  display: flex;
-  margin-left: auto;
-}
-
-.comp-filter-pill {
-  padding-left: 10px;
-  padding-right: 5px;
-  margin-left: 4px;
-  margin-right: 4px;
 }
 
 .comp-box-footer {
@@ -1170,7 +1306,7 @@ p {
 }
 
 .comp-cell-child-expanded {
-  border-top: none !important;
+  padding-top: 0 !important;
 }
 
 .comp-cell-left {
@@ -1198,15 +1334,6 @@ p {
 
 .comp-location-cell {
   width: 170px;
-}
-
-//override for horizontal dual month display
-.react-datepicker__month-container {
-  float: left;
-}
-
-.collapsible .content {
-  padding: 6px;
 }
 
 .collapsible .header {
@@ -1242,6 +1369,7 @@ p {
 .react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle {
   top: 0;
   margin-top: -7px;
+  background: #fff;
 }
 
 .no-bullets {
@@ -1415,10 +1543,6 @@ p {
   cursor: pointer;
 }
 
-.filter-container {
-  margin: 0px 0px 10px 0px;
-}
-
 .filter-select-padding {
   padding: 6px, 12px, 6px, 12px;
 }
@@ -1437,10 +1561,6 @@ p {
 
 .clear-right-float {
   clear: right;
-}
-
-.complaint-tab-container-width {
-  width: 1330px;
 }
 
 .complaint-filter-image-container {
@@ -1478,26 +1598,6 @@ p {
   border-radius: 3px;
   background-color: $bc-gov-danger-100;
   color: $bc-gov-danger;
-}
-
-.comp-map-unmapped-alert {
-  margin: 7px 0px;
-  padding: 16px;
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-  background-color: $bc-gov-neutral-100;
-  color: $black;
-  width: 1330px;
-}
-
-.comp-map-no-results-alert {
-  margin: 7px 0px;
-  padding: 16px;
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-  background-color: $bc-gov-neutral-100;
-  color: $black;
-  width: 1330px;
 }
 
 .display-none {
@@ -1539,6 +1639,7 @@ p {
   border-color: $gray-300 !important;
   border-radius: 8px;
   z-index: 0 !important;
+  white-space: nowrap;
 }
 
 .toggle-button.active {
@@ -1630,4 +1731,55 @@ p {
 .form-check-input:disabled {
   cursor: not-allowed;
   pointer-events: all;
+}
+
+// COMPLAINT TABLE CUSTOMIZATION
+th,
+td {
+  white-space: nowrap;
+}
+
+td {
+  vertical-align: middle;
+}
+
+td.incident-col {
+  text-align: center;
+}
+
+.actions-col {
+  text-align: center;
+}
+
+.hwc-table-dl {
+  margin: 0;
+
+  + dl {
+    margin-top: 16px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  dt {
+    width: 40ch;
+    font-weight: 400;
+    color: $gray-500;
+  }
+
+  dd {
+    margin: 0;
+    white-space: normal;
+    max-width: 92ch;
+  }
+}
+
+.bg-species-badge {
+  font-size: 0.75rem;
+  line-height: normal;
+  background-color: #e4e4e4;
+  color: #313132;
 }

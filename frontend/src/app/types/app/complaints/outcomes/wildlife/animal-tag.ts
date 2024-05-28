@@ -4,3 +4,10 @@ export interface AnimalTag {
   number: string;
   numberErrorMessage: string;
 }
+
+export interface AnimalTagV2 {
+  id: string;
+  ear: string;
+  identifier: string;
+  order: number;
+}

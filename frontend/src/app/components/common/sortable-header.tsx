@@ -14,17 +14,19 @@ type Props = {
 export const SortableHeader: FC<Props> = ({ title, sortFnc, sortKey, currentSort, sortDirection, className, id }) => {
   return (
     <th
-      className={["sortableHeader", className].join(" ")}
+      className={["sortable-header", className].join(" ")}
       id={id}
       onClick={() => sortFnc(sortKey)}
     >
-      <div className="comp-header-label">{title}</div>
-      <div className="comp-header-caret">
-        <SortArrow
-          sortKey={sortKey}
-          current={currentSort}
-          direction={sortDirection}
-        />
+      <div className="sortable-header-inner">
+        <div className="header-label">{title}</div>
+        <div className="header-caret">
+          <SortArrow
+            sortKey={sortKey}
+            current={currentSort}
+            direction={sortDirection}
+          />
+        </div>
       </div>
     </th>
   );

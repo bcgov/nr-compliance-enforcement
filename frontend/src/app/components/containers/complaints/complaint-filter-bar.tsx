@@ -1,10 +1,11 @@
-import { FC, useContext, useCallback } from "react";
+import { FC, MouseEventHandler, useContext, useCallback } from "react";
 import { FilterButton } from "../../common/filter-button";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { clearFilter } from "../../../store/reducers/complaint-filters";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import MapListToggle from "../../common/map-list-toggle";
 import SearchInput from "../../common/search-input";
+import { Button } from "react-bootstrap";
 
 type Props = {
   toggleViewType: (view: "map" | "list") => void;
@@ -12,6 +13,8 @@ type Props = {
   complaintType: string;
   searchQuery: string | undefined;
   applySearchQuery: Function;
+  toggleShowMobileFilters: MouseEventHandler;
+  toggleShowDesktopFilters: MouseEventHandler;
 };
 
 export const ComplaintFilterBar: FC<Props> = ({
@@ -20,6 +23,8 @@ export const ComplaintFilterBar: FC<Props> = ({
   complaintType,
   searchQuery,
   applySearchQuery,
+  toggleShowMobileFilters,
+  toggleShowDesktopFilters,
 }) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
@@ -67,13 +72,43 @@ export const ComplaintFilterBar: FC<Props> = ({
   );
 
   return (
-    <div className="fixed-filter-header comp-filter-pill-container">
-      <MapListToggle
-        onToggle={toggleViewType}
-        activeView={viewType}
-        className="map-list-toggle"
-      />
-      <div className="comp-filter-pills">
+    <div className="comp-filter-bar">
+      <div className="search-bar">
+        <SearchInput
+          viewType={viewType}
+          complaintType={complaintType}
+          searchQuery={searchQuery}
+          applySearchQuery={applySearchQuery}
+        />
+        <MapListToggle
+          onToggle={toggleViewType}
+          activeView={viewType}
+          className="map-list-toggle"
+        />
+      </div>
+
+      <div className="filter-pills-container">
+        <Button
+          variant="outline-primary"
+          size="sm"
+          className="icon-start filter-btn filter-btn-desktop"
+          id="comp-filter-btn"
+          onClick={toggleShowDesktopFilters}
+        >
+          <i className="bi bi-filter"></i>
+          <span>Filters</span>
+        </Button>
+
+        <Button
+          variant="outline-primary"
+          size="sm"
+          className="icon-start filter-btn filter-btn-mobile"
+          onClick={toggleShowMobileFilters}
+        >
+          <i className="bi bi-filter"></i>
+          <span>Filters</span>
+        </Button>
+
         {hasFilter("status") && (
           <FilterButton
             id="comp-status-filter"
@@ -154,15 +189,6 @@ export const ComplaintFilterBar: FC<Props> = ({
             clear={removeFilter}
           />
         )}
-
-        <div className="comp-filter-search">
-          <SearchInput
-            viewType={viewType}
-            complaintType={complaintType}
-            searchQuery={searchQuery}
-            applySearchQuery={applySearchQuery}
-          />
-        </div>
       </div>
     </div>
   );

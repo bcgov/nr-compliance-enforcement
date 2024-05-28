@@ -33,8 +33,8 @@ describe("Complaint List Functionality", () => {
       cy.get("#comp-status-filter").click({ force: true });
       cy.get("#comp-zone-filter").click({ force: true });
 
-      cy.get(".comp-nav-item-name-underline > a").should("have.css", "text-decoration").should("include", "underline");
-      cy.get(".comp-nav-item-name-underline > a").should("have.css", "color").should("include", "rgb(26, 90, 150)");
+      cy.get(".incident-col > a").should("have.css", "text-decoration").should("include", "underline");
+      cy.get(".incident-col > a").should("have.css", "color").should("include", "rgb(26, 90, 150)");
     });
   });
 });

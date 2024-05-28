@@ -217,7 +217,7 @@
 
 .react-datepicker__input-container input {
   padding: 6px 10px 5px 10px;
-  width: 298px;
+  width: 100%;
   background-color: hsl(0, 0%, 95%);
   border-color: hwb(0 90% 10%);
   color: hsl(0, 0%, 60%);
@@ -229,7 +229,7 @@
 
 .react-datepicker__view-calendar-icon input {
   padding: 6px 10px 5px 32px;
-  width: 298px;
+  width: 100%;
   background-color: hsl(0, 0%, 100%);
   border-color: hsl(0, 0%, 80%);
   color: black;
@@ -274,6 +274,7 @@
 }
 
 .comp-tooltip {
+  position: fixed;
   z-index: 9000 !important;
 }
 

@@ -34,6 +34,15 @@ import { CreateEquipmentInput } from "../../types/app/case-files/equipment-input
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 import { getComplaintById } from "./complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
+import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
+import { CASE_ACTION_CODE } from "../../constants/case_actions";
+import { from } from "linq-to-typescript";
+import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
+import { DrugUsedInputV2 } from "../../types/app/case-files/animal-outcome/drug-used-input";
+import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
+import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
+import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -670,6 +679,7 @@ export const updateReview =
     });
   };
 
+//-- equipment thunks
 export const deleteEquipment =
   (id: string): AppThunk =>
   async (dispatch, getState) => {
@@ -756,5 +766,231 @@ export const upsertEquipment =
           ToggleError(`Unable to update equipment`);
         }
       });
+    }
+  };
+
+//-- animal outcome thunks
+export const createAnimalOutcome =
+  (
+    id: string,
+    animalOutcome: AnimalOutcomeV2,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+    } = getState();
+
+    const { species, sex, age, conflictHistory, outcome, threatLevel, officer, date, tags, drugs, drugAuthorization } =
+      animalOutcome;
+    let actions: Array<AnimalOutcomeActionInput> = [];
+
+    //-- add an action if there is an outcome with officer
+    if (outcome && date) {
+      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
+    }
+
+    //-- add an action if there are any drugs used
+    if (from(drugs).any() && drugAuthorization) {
+      const { officer, date } = drugAuthorization;
+      actions = [...actions, { action: CASE_ACTION_CODE.ADMNSTRDRG, actor: officer, date }];
+    }
+
+    //-- convert eartags and drugs to input types
+    const earTags = tags.map(({ ear, identifier }) => {
+      let record: EarTagInput = { ear, identifier };
+      return record;
+    });
+
+    const drugsUsed = drugs.map((item) => {
+      const { vial, drug, amountUsed, amountDiscarded, injectionMethod, discardMethod, reactions, remainingUse } = item;
+      const record: DrugUsedInputV2 = {
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        injectionMethod,
+        discardMethod,
+        reactions,
+        remainingUse,
+      };
+
+      return record;
+    });
+
+    const input: CreateAnimalOutcomeInput = {
+      leadIdentifier: id,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      createUserId: idir,
+      wildlife: {
+        species,
+        sex,
+        age,
+        categoryLevel: threatLevel,
+        conflictHistory,
+        outcome,
+        tags: earTags,
+        drugs: drugsUsed,
+        actions: from(actions).any() ? actions : undefined,
+      },
+    };
+
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
+    let result = await post<CaseFileDto>(dispatch, parameters);
+
+    if (result) {
+      const { caseIdentifier } = result;
+      dispatch(setCaseId(caseIdentifier));
+
+      ToggleSuccess("Animal outcome added");
+      return "success";
+    } else {
+      ToggleError("Error, unable to add animal outcome");
+      return "error";
+    }
+  };
+
+export const updateAnimalOutcome =
+  (
+    id: UUID,
+    animalOutcome: AnimalOutcomeV2,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+    } = getState();
+
+    const {
+      id: wildlifeId,
+      species,
+      sex,
+      age,
+      conflictHistory,
+      outcome,
+      threatLevel,
+      officer,
+      date,
+      tags,
+      drugs,
+      drugAuthorization,
+    } = animalOutcome;
+    let actions: Array<AnimalOutcomeActionInput> = [];
+
+    //-- add an action if there is an outcome with officer
+    if (outcome && date) {
+      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
+    }
+
+    //-- add an action if there are any drugs used
+    if (from(drugs).any() && drugAuthorization) {
+      const { officer, date } = drugAuthorization;
+      actions = [...actions, { action: CASE_ACTION_CODE.ADMNSTRDRG, actor: officer, date }];
+    }
+
+    //-- convert eartags and drugs to input types
+    const drugsUsed = drugs.map((item) => {
+      const {
+        id: drugId,
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        injectionMethod,
+        discardMethod,
+        reactions,
+        remainingUse,
+      } = item;
+      const record: DrugUsedInputV2 = {
+        id: drugId,
+        vial,
+        drug,
+        amountUsed,
+        amountDiscarded,
+        injectionMethod,
+        discardMethod,
+        reactions,
+        remainingUse,
+      };
+
+      return record;
+    });
+
+    const input: UpdateAnimalOutcomeInput = {
+      caseIdentifier: id,
+      updateUserId: idir,
+      wildlife: {
+        id: wildlifeId,
+        species,
+        sex,
+        age,
+        categoryLevel: threatLevel,
+        conflictHistory,
+        outcome,
+        tags,
+        drugs: drugsUsed,
+        actions: from(actions).any() ? actions : undefined,
+      },
+    };
+
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
+    let result = await patch<CaseFileDto>(dispatch, parameters);
+
+    if (result) {
+      const { caseIdentifier } = result;
+      dispatch(setCaseId(caseIdentifier));
+
+      ToggleSuccess("Animal outcome updated");
+      return "success";
+    } else {
+      ToggleError("Error, unable to update animal outcome");
+      return "error";
+    }
+  };
+
+export const deleteAnimalOutcome =
+  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      officers: { officers },
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { caseId },
+    } = getState();
+
+    const _deleteAnimalOutcome =
+      (
+        outcomeId: string,
+        actor: string,
+        userId: string,
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: DeleteAnimalOutcomeInput = {
+          caseIdentifier: caseId as UUID,
+          actor,
+          updateUserId: userId,
+          outcomeId,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
+        return await deleteMethod<CaseFileDto>(dispatch, parameters);
+      };
+
+    const officer = officers.find((item) => item.user_id === idir);
+    const result = await dispatch(_deleteAnimalOutcome(id, officer ? officer.officer_guid : "", idir));
+
+    if (result) {
+      const { caseIdentifier } = result;
+      dispatch(setCaseId(caseIdentifier));
+
+      ToggleSuccess("Animal outcome deleted");
+      return "success";
+    } else {
+      ToggleError("Error, unable to delete animal outcome");
+      return "error";
     }
   };

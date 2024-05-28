@@ -1,33 +1,52 @@
-import { FC } from "react";
-import { Col, Row } from "react-bootstrap";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { Row, Col } from "react-bootstrap";
+import { BsXCircle, BsFillXCircleFill } from "react-icons/bs";
+import { CompIconButton } from "../../../../common/comp-icon-button";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectEarDropdown } from "../../../../../store/reducers/code-table";
-import { BsXCircle, BsFillXCircleFill } from "react-icons/bs";
-import { CompIconButton } from "../../../../common/comp-icon-button";
+import { REQUIRED } from "../../../../../constants/general";
 
 type props = {
-  id: number;
+  id: string;
   ear: string;
-  number: string;
-  numberErrorMessage: string;
+  identifier: string;
+  order: number;
   update: Function;
   remove: Function;
 };
 
-export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, update, remove }) => {
+export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   const ears = useAppSelector(selectEarDropdown);
+
+  const { id, ear, identifier, order, update, remove } = props;
+
+  const [error, setError] = useState("");
+
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
   let selectedEar = ear === "L" ? leftEar : rightEar;
 
   const updateModel = (property: string, value: string | undefined) => {
-    const source = { id, ear, number };
+    const source = { id, ear, identifier, order };
     const updatedTag = { ...source, [property]: value };
     update(updatedTag, property);
   };
+
+  const isValid = (): boolean => {
+    let error = !identifier ? REQUIRED : "";
+    setError(error);
+
+    return identifier !== "";
+  };
+  useImperativeHandle(ref, () => {
+    return {
+      id,
+      isValid,
+    };
+  });
 
   return (
     <div className="comp-animal-outcome-report-inner-spacing comp-padding-top-2">
@@ -45,8 +64,8 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
             type="input"
             placeholder="Enter number"
             inputClass="comp-form-control"
-            value={number}
-            error={numberErrorMessage}
+            value={identifier}
+            error={error}
             maxLength={7}
             onChange={(evt: any) => {
               const {
@@ -54,7 +73,7 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
               } = evt;
 
               if (value.length <= 6) {
-                updateModel("number", value);
+                updateModel("identifier", value);
               }
             }}
           />
@@ -96,4 +115,5 @@ export const AddEarTag: FC<props> = ({ id, ear, number, numberErrorMessage, upda
       </Row>
     </div>
   );
-};
+});
+EarTag.displayName = "EarTag";

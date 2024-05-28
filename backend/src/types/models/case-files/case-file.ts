@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 import { AssessmentDetailsDto } from "./assessment-details";
-import { EquipmentDetailsDto } from "./supplemental-notes/equipment/equipment-details";
+import { EquipmentDetailsDto } from "./equipment/equipment-details";
 import { Note } from "./supplemental-notes/note";
 import { PreventionDetailsDto } from "./prevention-details";
 import { FileReviewActionDto } from "./file-review-action";
