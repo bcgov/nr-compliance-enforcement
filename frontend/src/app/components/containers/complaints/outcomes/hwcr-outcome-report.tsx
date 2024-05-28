@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
 import { HWCREquipment } from "./hwcr-equipment";
-import { HWCROutcomeByAnimal } from "./hwcr-outcome-by-animal";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { HWCRSupplementalNotes } from "./hwcr-supplemental-notes";
 import { HWCRFileAttachments } from "./hwcr-file-attachments";
@@ -10,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { getCaseFile } from "../../../../store/reducers/case-thunks";
+import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 
 export const HWCROutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -27,7 +27,7 @@ export const HWCROutcomeReport: FC = () => {
       <HWCRComplaintAssessment />
       <HWCRComplaintPrevention />
       <HWCREquipment />
-      <HWCROutcomeByAnimal />
+      <HWCROutcomeByAnimalv2 />
       <HWCRSupplementalNotes />
       <HWCRFileAttachments />
       <HWCRFileReview />
