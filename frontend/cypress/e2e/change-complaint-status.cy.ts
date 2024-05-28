@@ -34,7 +34,7 @@ describe("Complaint Assign and Status Popover spec", { scrollBehavior: false }, 
       // Click the complaint
       cy.get("@openRows").get("td").first().click({ force: true });
 
-      cy.get("svg.tt-status-icon").filter(":visible").click({ force: true });
+      cy.get("#update-status-icon").filter(":visible").click({ force: true });
 
       cy.get("#complaint_status_dropdown").click();
 

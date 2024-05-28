@@ -28,8 +28,10 @@ export const ZoneAtAGlance: FC = () => {
   const bannerSource = `/images/zone-at-a-glance/zones/${currentZone}.svg`;
 
   return (
-    <>
-      <div className="comp-sub-header">Zone At a Glance</div>
+    <div className="comp-page-container">
+      <div className="comp-page-title-container">
+        <h1 className="mb-4">Zone At a Glance</h1>
+      </div>
       <div className="comp-zag-container">
         <div className="comp-zag-banner">
           <img
@@ -74,6 +76,6 @@ export const ZoneAtAGlance: FC = () => {
           allegationOpenComplaintsOfficeStats={allegationOpenComplaints.offices}
         />
       </div>
-    </>
+    </div>
   );
 };

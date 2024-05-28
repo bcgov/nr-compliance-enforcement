@@ -6,10 +6,7 @@ import Layout from "../containers/layout";
 export const ProtectedRoutes: FC<{ roles: Array<Roles> }> = () => {
   let auth = { token: true };
   return auth.token ? (
-    <Layout
-      fixedHeader
-      fixedSidebar
-    >
+    <Layout>
       <Outlet />
     </Layout>
   ) : (

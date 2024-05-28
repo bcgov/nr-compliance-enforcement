@@ -9,6 +9,9 @@ import { Token } from "src/auth/decorators/token.decorator";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -116,5 +119,36 @@ export class CaseFileController {
     };
 
     return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);
+  }
+
+  @Post("/wildlife")
+  @Roles(Role.COS_OFFICER)
+  async createWildlife(@Token() token, @Body() model: CreateWildlifeInput): Promise<CaseFileDto> {
+    return await this.service.createWildlife(token, model);
+  }
+
+  @Patch("/wildlife")
+  @Roles(Role.COS_OFFICER)
+  async updateWildlife(@Token() token, @Body() model: UpdateWildlifeInput): Promise<CaseFileDto> {
+    return await this.service.updateWildlife(token, model);
+  }
+
+  @Delete("/wildlife")
+  @Roles(Role.COS_OFFICER)
+  async deleteWildlife(
+    @Token() token,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("actor") actor: string,
+    @Query("updateUserId") updateUserId: string,
+    @Query("outcomeId") outcomeId: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      caseIdentifier,
+      actor,
+      updateUserId,
+      wildlifeId: outcomeId,
+    };
+
+    return await this.service.deleteWildlife(token, input as DeleteWildlifeInput);
   }
 }

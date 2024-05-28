@@ -68,32 +68,36 @@ BEGIN
     END IF;
 
     -- Compare update_complaint_data against current_complaint_record and prev_complaint_update_record
-    IF (_upd_detail_text IS DISTINCT FROM prev_complaint_update_record.upd_detail_text
-        AND _upd_detail_text IS DISTINCT FROM current_complaint_record.detail_text) THEN
+    IF (_upd_detail_text IS NOT NULL AND _upd_detail_text <> '' AND
+        (_upd_detail_text IS DISTINCT FROM prev_complaint_update_record.upd_detail_text OR prev_complaint_update_record.upd_detail_text IS NULL) AND
+        (_upd_detail_text IS DISTINCT FROM current_complaint_record.detail_text OR current_complaint_record.detail_text IS NULL)) THEN
         insert_upd_detail_text := _upd_detail_text;
         has_difference := TRUE;
     ELSE
         insert_upd_detail_text := NULL;
     END IF;
 
-    IF (_upd_location_summary_text IS DISTINCT FROM prev_complaint_update_record.upd_location_summary_text
-        AND _upd_location_summary_text IS DISTINCT FROM current_complaint_record.location_summary_text) THEN
+    IF (_upd_location_summary_text IS NOT NULL AND _upd_location_summary_text <> '' AND
+        (_upd_location_summary_text IS DISTINCT FROM prev_complaint_update_record.upd_location_summary_text OR prev_complaint_update_record.upd_location_summary_text IS NULL) AND
+        (_upd_location_summary_text IS DISTINCT FROM current_complaint_record.location_summary_text OR current_complaint_record.location_summary_text IS NULL)) THEN
         insert_upd_location_summary_text := _upd_location_summary_text;
         has_difference := TRUE;
     ELSE
         insert_upd_location_summary_text := NULL;
     END IF;
 
-    IF (_upd_location_detailed_text IS DISTINCT FROM prev_complaint_update_record.upd_location_detailed_text
-        AND _upd_location_detailed_text IS DISTINCT FROM current_complaint_record.location_detailed_text) THEN
+    IF (_upd_location_detailed_text IS NOT NULL AND _upd_location_detailed_text <> '' AND
+        (_upd_location_detailed_text IS DISTINCT FROM prev_complaint_update_record.upd_location_detailed_text OR prev_complaint_update_record.upd_location_detailed_text IS NULL) AND
+        (_upd_location_detailed_text IS DISTINCT FROM current_complaint_record.location_detailed_text OR current_complaint_record.location_detailed_text IS NULL)) THEN
         insert_upd_location_detailed_text := _upd_location_detailed_text;
         has_difference := TRUE;
     ELSE
         insert_upd_location_detailed_text := NULL;
     END IF;
 
-    IF (_upd_location_geometry_point IS DISTINCT FROM prev_complaint_update_record.upd_location_geometry_point
-        AND _upd_location_geometry_point IS DISTINCT FROM current_complaint_record.location_geometry_point) THEN
+    IF (_upd_location_geometry_point IS NOT NULL AND
+        (_upd_location_geometry_point IS DISTINCT FROM prev_complaint_update_record.upd_location_geometry_point OR prev_complaint_update_record.upd_location_geometry_point IS NULL) AND
+        (_upd_location_geometry_point IS DISTINCT FROM current_complaint_record.location_geometry_point OR current_complaint_record.location_geometry_point IS NULL)) THEN
         insert_upd_location_geometry_point := _upd_location_geometry_point;
         has_difference := TRUE;
     ELSE
@@ -127,5 +131,4 @@ BEGIN
         );
     END IF;
 END;
-$function$
-;
+$function$;

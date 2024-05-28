@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { BsPersonPlus, BsSend, BsArrowRepeat } from "react-icons/bs";
+import { BsSend } from "react-icons/bs";
 import { useAppDispatch } from "../../../../hooks/hooks";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import config from "../../../../../config";
 
 type Props = {
@@ -64,13 +64,17 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           </Tooltip>
         }
       >
-        <span
-          className="tt-assign-span"
+        <Button
+          variant="light"
+          className="icon-btn"
+          aria-label="Assign complaint"
           onClick={openAsignOfficerModal}
-          onKeyUp={openAsignOfficerModal}
         >
-          <BsPersonPlus className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-        </span>
+          <i
+            className="bi bi-person-up"
+            id="update-assignee-icon"
+          ></i>
+        </Button>
       </OverlayTrigger>
       <OverlayTrigger
         placement="top"
@@ -84,12 +88,17 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           </Tooltip>
         }
       >
-        <span>
-          <BsArrowRepeat
-            onClick={openStatusChangeModal}
-            className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted tt-status-icon"
-          />
-        </span>
+        <Button
+          variant="light"
+          className="icon-btn"
+          aria-label="Update status"
+          onClick={openStatusChangeModal}
+        >
+          <i
+            className="bi bi-arrow-repeat"
+            id="update-status-icon"
+          ></i>
+        </Button>
       </OverlayTrigger>
       {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
         <OverlayTrigger

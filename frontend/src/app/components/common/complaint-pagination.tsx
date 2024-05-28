@@ -119,10 +119,13 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
       id="complaint_pagination_container_id"
       className="pagination_container"
     >
+      {/* Total count */}
       <div className="pagination_total">Total {totalItems} items</div>
+
       {totalItems > resultsPerPage && (
-        <>
-          <div>
+        <div className="pagination_controls">
+          {/* Paging buttons */}
+          <div className="pagination_paging-btns">
             <Pagination>
               <Pagination.Prev
                 onClick={() => onPageChange(currentPage - 1)}
@@ -135,27 +138,31 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
               />
             </Pagination>
           </div>
-          <div>
+
+          <div className="pagination_controls_end">
+            {/* Select total viewable records */}
             <Select
+              menuPlacement="top"
               id="resultsPerPageSelect"
               options={pageSizeOptions}
               classNamePrefix="comp-select"
               defaultValue={defaultOption}
             />
+
+            {/* Go to specific page */}
+            <div className="pagination_specific_page">
+              <label htmlFor="pagination_page_input">Go to</label>
+              <Form.Control
+                id="pagination_page-input"
+                type="number"
+                placeholder="Page"
+                value={specificPage}
+                onKeyDown={handleEnterKeyPress}
+                onChange={(e) => setSpecificPage(e.target.value)}
+              />
+            </div>
           </div>
-          <div>
-            <Form.Label>Go to</Form.Label>
-          </div>
-          <div className="pagination_specific_page">
-            <Form.Control
-              type="number"
-              placeholder="Page"
-              value={specificPage}
-              onKeyPress={handleEnterKeyPress}
-              onChange={(e) => setSpecificPage(e.target.value)}
-            />
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

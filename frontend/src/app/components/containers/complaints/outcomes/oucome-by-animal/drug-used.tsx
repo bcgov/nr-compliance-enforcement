@@ -1,74 +1,110 @@
-import { FC, useState } from "react";
-import { Row, Col } from "react-bootstrap";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { useAppSelector } from "../../../../../hooks/hooks";
+import { Col, Row } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
-import { BsFillXCircleFill, BsXCircle } from "react-icons/bs";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import { selectDrugUseMethods, selectDrugs, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { CompIconButton } from "../../../../common/comp-icon-button";
+import { BsFillXCircleFill, BsXCircle } from "react-icons/bs";
+import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import Option from "../../../../../types/app/option";
+import { isPositiveNum } from "../../../../../common/methods";
+import { REQUIRED } from "../../../../../constants/general";
+
+type refProps = {
+  isValid: Function;
+};
 
 type props = {
-  id: number;
+  id: string;
 
   vial: string;
-  vialErrorMessage: string;
   drug: string;
-  drugErrorMessage: string;
   amountUsed: string;
-  amountUsedErrorMessage: string;
   amountDiscarded: string;
-  amountDiscardedErrorMessage: string;
 
   reactions: string;
   remainingUse: string;
 
   injectionMethod: string;
-  injectionMethodErrorMessage: string;
   discardMethod: string;
+
+  order: number;
 
   remove: Function;
   update: Function;
 };
 
-export const AddDrug: FC<props> = ({
-  id,
-  vial,
-  vialErrorMessage,
-  drug,
-  drugErrorMessage,
-  amountUsed,
-  amountUsedErrorMessage,
-  injectionMethod,
-  injectionMethodErrorMessage,
-  discardMethod,
-  amountDiscarded,
-  amountDiscardedErrorMessage,
-  reactions,
-  remainingUse,
-  remove,
-  update,
-}) => {
+export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const drugs = useAppSelector(selectDrugs);
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
+  const {
+    id,
+    vial,
+    drug,
+    amountUsed,
+    amountDiscarded,
+    reactions,
+    remainingUse,
+    injectionMethod,
+    discardMethod,
+    order,
+    remove,
+    update,
+  } = props;
+
   const [showDiscarded, setShowDiscarded] = useState(remainingUse === "DISC");
 
-  const updateModel = (property: string, value: string | Date | number | null | undefined) => {
-    const source = {
-      id,
-      vial,
-      drug,
-      amountUsed,
-      amountDiscarded,
-      reactions,
-      remainingUse,
-      injectionMethod,
-      discardMethod,
+  //-- error messages //
+  const [vialError, setVialError] = useState("");
+  const [drugError, setDrugError] = useState("");
+  const [amountDiscardedError, setAmountDiscardedError] = useState("");
+  const [amountUsedError, setAmountUsedError] = useState("");
+  const [injectionMethodError, setInjectionMethodError] = useState("");
+
+  //-- this allows the developers to consume functions within the
+  //-- drug-used component in a parent component
+  useImperativeHandle(ref, () => {
+    return {
+      isValid,
     };
-    const updatedDrug = { ...source, [property]: value };
-    update(updatedDrug, property);
+  });
+
+  //-- use to validate the drug-used component inputs
+  const isValid = (): boolean => {
+    let result = true;
+
+    //-- validate that amount used is a positive number
+    if (amountUsed && !isPositiveNum(amountUsed)) {
+      setAmountUsedError("Must be a positive number");
+      result = false;
+    } else if (!amountUsed) {
+      setAmountUsedError(REQUIRED);
+      result = false;
+    }
+
+    if (amountDiscarded && !isPositiveNum(amountDiscarded)) {
+      setAmountDiscardedError("Must be a positive number");
+      result = false;
+    }
+
+    if (!vial) {
+      setVialError(REQUIRED);
+      result = false;
+    }
+
+    if (!drug) {
+      setDrugError(REQUIRED);
+      result = false;
+    }
+
+    if (!injectionMethod) {
+      setInjectionMethodError(REQUIRED);
+      result = false;
+    }
+
+    return result;
   };
 
   const getValue = (property: string): Option | undefined => {
@@ -87,12 +123,60 @@ export const AddDrug: FC<props> = ({
     }
   };
 
-  const handleAmountUsed = (input: string) => {
-    updateModel("amountUsed", input);
+  const updateModel = (property: string, value: string | Date | number | null | undefined) => {
+    const source = {
+      id,
+      vial,
+      drug,
+      amountUsed,
+      amountDiscarded,
+      reactions,
+      remainingUse,
+      injectionMethod,
+      discardMethod,
+      order,
+    };
+    let updatedDrug = { ...source, [property]: value };
+
+    //-- if the user selects DISC clear the method and amount discarded
+    if (property === "remainingUse" && (value === "STOR" || value === "RDIS")) {
+      updatedDrug = { ...updatedDrug, discardMethod: "", amountDiscarded: "" };
+    }
+
+    update(updatedDrug, property);
   };
 
-  const handleAmountDiscarded = (input: string) => {
-    updateModel("amountDiscarded", input);
+  //-- event handlers
+  const handleVialNumberChange = (input: string | null) => {
+    updateModel("vial", input);
+
+    if (vialError && input) {
+      setVialError("");
+    }
+  };
+
+  const handleDrugNameChange = (input: Option | null) => {
+    updateModel("drug", input?.value);
+
+    if (drugError && input?.value) {
+      setDrugError("");
+    }
+  };
+
+  const handleAmountUsedChange = (input: string | null) => {
+    updateModel("amountUsed", input);
+
+    if (amountUsedError && input) {
+      setAmountUsedError("");
+    }
+  };
+
+  const handleInjectionMethodChange = (input: Option | null) => {
+    updateModel("injectionMethod", input?.value);
+
+    if (injectionMethodError && input?.value) {
+      setInjectionMethodError("");
+    }
   };
 
   const handleRemainingUsed = (input: string) => {
@@ -117,12 +201,12 @@ export const AddDrug: FC<props> = ({
             placeholder="Example"
             inputClass="comp-form-control"
             value={vial}
-            error={vialErrorMessage}
+            error={vialError}
             onChange={(evt: any) => {
               const {
                 target: { value },
               } = evt;
-              updateModel("vial", value);
+              handleVialNumberChange(value);
             }}
           />
         </Col>
@@ -140,9 +224,9 @@ export const AddDrug: FC<props> = ({
             options={drugs}
             enableValidation={true}
             placeholder={"Select"}
-            errorMessage={drugErrorMessage}
+            errorMessage={drugError}
             onChange={(evt) => {
-              updateModel("drug", evt?.value);
+              handleDrugNameChange(evt);
             }}
             value={getValue("drug")}
           />
@@ -161,12 +245,12 @@ export const AddDrug: FC<props> = ({
             placeholder="Example"
             inputClass="comp-form-control"
             value={amountUsed}
-            error={amountUsedErrorMessage}
+            error={amountUsedError}
             onChange={(evt: any) => {
               const {
                 target: { value },
               } = evt;
-              handleAmountUsed(value);
+              handleAmountUsedChange(value ?? "");
             }}
           />
         </Col>
@@ -184,9 +268,9 @@ export const AddDrug: FC<props> = ({
             options={drugUseMethods}
             enableValidation={true}
             placeholder={"Select"}
-            errorMessage={injectionMethodErrorMessage}
+            errorMessage={injectionMethodError}
             onChange={(evt) => {
-              updateModel("injectionMethod", evt?.value);
+              handleInjectionMethodChange(evt);
             }}
             value={getValue("injection-method")}
           />
@@ -214,7 +298,11 @@ export const AddDrug: FC<props> = ({
           />
         </Col>
         <Col className="mt-delete-button mb-2">
-          <CompIconButton onClick={() => remove(id)}>
+          <CompIconButton
+            onClick={() => {
+              remove(id);
+            }}
+          >
             <BsXCircle
               size={24}
               className="comp-outcome-remove-botton"
@@ -250,7 +338,6 @@ export const AddDrug: FC<props> = ({
         <Col>
           {showDiscarded && (
             <>
-              {" "}
               <label
                 htmlFor={`amount-discarded-${id}`}
                 className="comp-margin-bottom-8"
@@ -264,12 +351,12 @@ export const AddDrug: FC<props> = ({
                 placeholder="Example"
                 inputClass="comp-form-control"
                 value={amountDiscarded}
-                error={amountDiscardedErrorMessage}
+                error={amountDiscardedError}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
                   } = evt;
-                  handleAmountDiscarded(value);
+                  updateModel("amountDiscarded", value);
                 }}
               />
             </>
@@ -307,4 +394,6 @@ export const AddDrug: FC<props> = ({
       <hr className="comp-outcome-animal-seperator" />
     </div>
   );
-};
+});
+
+DrugUsed.displayName = "DrugUsed";

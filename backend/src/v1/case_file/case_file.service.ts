@@ -8,7 +8,10 @@ import { AxiosResponse, AxiosError } from "axios";
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
-import { DeleteEquipmentDto } from "src/types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
+import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete-equipment-dto";
+import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -77,6 +80,44 @@ export class CaseFileService {
         date
       }
       wasAnimalCaptured
+    },
+    subject { 
+      id
+      species
+      sex
+      age
+      categoryLevel
+      conflictHistory
+      outcome
+      tags { 
+        id
+        ear
+        identifier
+
+        order
+      }
+      drugs { 
+        id
+
+        vial
+        drug
+        amountUsed
+        injectionMethod
+        reactions
+      
+        remainingUse
+        amountDiscarded
+        discardMethod
+
+        order
+      }
+      actions { 
+        actionId
+        actor
+        actionCode
+        date
+      }
+      order
     }
   }
   `;
@@ -278,5 +319,47 @@ export class CaseFileService {
 
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.deleteNote;
+  };
+
+  createWildlife = async (token: any, model: CreateWildlifeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation createWildlife($input: CreateWildlifeInput!) {
+        createWildlife(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createWildlife;
+  };
+
+  updateWildlife = async (token: any, model: UpdateWildlifeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateWildlife($input: UpdateWildlifeInput!) {
+        updateWildlife(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateWildlife;
+  };
+
+  deleteWildlife = async (token: any, model: DeleteWildlifeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation DeleteWildlife($input: DeleteWildlifeInput!) {
+        deleteWildlife(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.deleteWildlife;
   };
 }

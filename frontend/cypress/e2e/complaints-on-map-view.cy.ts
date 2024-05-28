@@ -45,7 +45,7 @@ describe("Complaints on map tests", () => {
       // find how many markers there are, we'll compare this to the count after another filter is applied
       cy.get(".leaflet-marker-icon").its("length").as("complaintCountWithoutFilters");
 
-      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.get("#comp-filter-btn").click({ force: true });
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         // add the hwcr filters
@@ -103,7 +103,7 @@ describe("Complaints on map tests", () => {
       // wait for the map to load
       cy.waitForSpinner();
 
-      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.get("#comp-filter-btn").click({ force: true });
       cy.selectItemById("community-select-id", "Kelowna");
 
       // wait for the map to load

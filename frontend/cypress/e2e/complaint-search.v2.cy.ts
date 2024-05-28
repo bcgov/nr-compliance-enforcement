@@ -17,14 +17,14 @@ describe("Complaint Search Functionality", () => {
     cy.navigateToTab(complaintTypes[0], true);
 
     //-- open the filter tab
-    cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-filter-btn").click({ force: true });
 
     //-- select 70 mile house community
     cy.selectItemById("community-select-id", "70 Mile House");
     cy.get("#comp-community-filter").should("exist");
 
     //-- close the filter
-    cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-filter-btn").click({ force: true });
 
     //-- there should be 3 complaints
     cy.get("#complaint-list tbody").find("tr").should("have.length", 3);
@@ -70,7 +70,7 @@ describe("Complaint Search Functionality", () => {
     cy.navigateToTab(complaintTypes[0], true);
 
     //-- open the filter tab
-    cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-filter-btn").click({ force: true });
 
     //-- select 70 mile house community
     cy.selectItemById("community-select-id", "70 Mile House");
@@ -78,7 +78,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#comp-community-filter").should("exist");
 
     //-- close the filter
-    cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-filter-btn").click({ force: true });
 
     //-- search for sibling and verify there's one complaint
     cy.get("#complaint-search").click({ force: true });
@@ -124,13 +124,13 @@ describe("Complaint Search Functionality", () => {
     cy.get("#comp-zone-filter").should("not.exist");
 
     //-- open the filter tab
-    cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-filter-btn").click({ force: true });
 
     //-- select east kootenay zone
     cy.selectItemById("zone-select-id", "East Kootenay");
     cy.get("#comp-zone-filter").should("exist");
 
-    cy.get("#complaint-filter-image-id").click({ force: true });
+    cy.get("#comp-filter-btn").click({ force: true });
 
     //-- search for fire and verify there's multiple complaints
     cy.get("#complaint-search").click({ force: true });
