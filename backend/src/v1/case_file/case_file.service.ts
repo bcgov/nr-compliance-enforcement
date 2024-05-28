@@ -5,6 +5,7 @@ import { get, post } from "../../external_api/case_management";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
+<<<<<<< Updated upstream
 import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
 import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
@@ -14,6 +15,14 @@ import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete
 import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
+=======
+import { CreateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/create-supplemental-notes-input";
+import { UpdateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { DeleteEquipmentDto } from "../../types/models/case-files/supplemental-notes/equipment/delete-equipment-dto";
+import { ComplaintService } from "../complaint/complaint.service";
+import { ComplaintStatusCodeEnum } from "../../enum/complaint_status_code.enum";
+>>>>>>> Stashed changes
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
