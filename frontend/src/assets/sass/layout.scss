@@ -277,12 +277,38 @@ a {
   height: 32px;
 }
 
+.status-change-subtext {
+  color: $red-300;
+  margin-bottom: 10px;
+  font-weight: 400 !important;
+}
+
+.status-change-subtext .change_status_modal_icon {
+  padding-left: 12px;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 div.modal-footer {
   padding: 12px 12px 12px 0px;
 }
 
 button.modal-buttons {
   margin-right: 8px !important;
+}
+
+.inactive-button {
+  background-color: $gray-200;
+  color: $gray-600;
+  cursor: not-allowed;
+  border-color: $gray-600;
+}
+
+.inactive-button:hover {
+  background-color: $gray-200;
+  color: $gray-600;
+  cursor: not-allowed;
 }
 
 .selected {
