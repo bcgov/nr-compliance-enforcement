@@ -191,7 +191,7 @@ export class CaseFileService {
     const caseFileDTO = returnValue.createReview as CaseFileDto;
     try {
       if (caseFileDTO.isReviewRequired) {
-        this.complaintService.updateComplaintStatusById(
+        await this.complaintService.updateComplaintStatusById(
           caseFileDTO.leadIdentifier,
           ComplaintStatusCodeEnum.PENDING_REVIEW,
         );
@@ -214,12 +214,15 @@ export class CaseFileService {
     const caseFileDTO = returnValue.updateReview as CaseFileDto;
     try {
       if (model.reviewInput.isReviewRequired) {
-        this.complaintService.updateComplaintStatusById(
+        await this.complaintService.updateComplaintStatusById(
           model.reviewInput.leadIdentifier,
           ComplaintStatusCodeEnum.PENDING_REVIEW,
         );
       } else if (!model.reviewInput.isReviewRequired) {
-        this.complaintService.updateComplaintStatusById(model.reviewInput.leadIdentifier, ComplaintStatusCodeEnum.OPEN);
+        await this.complaintService.updateComplaintStatusById(
+          model.reviewInput.leadIdentifier,
+          ComplaintStatusCodeEnum.OPEN,
+        );
       }
     } catch (error) {
       this.logger.error(error);

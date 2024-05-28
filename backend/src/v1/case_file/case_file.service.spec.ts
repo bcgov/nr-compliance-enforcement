@@ -6,9 +6,6 @@ import { pojos } from "@automapper/pojos";
 import { CaseFileService } from "./case_file.service";
 import { ComplaintModule } from "../complaint/complaint.module";
 import { ComplaintService } from "../complaint/complaint.service";
-import { MockComplaintsRepositoryV2 } from "../../../test/mocks/mock-complaints-repositories";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { Complaint } from "../complaint/entities/complaint.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -23,10 +20,6 @@ describe("Testing: Case File Service", () => {
           useValue: createMapper({
             strategyInitializer: pojos(),
           }),
-        },
-        {
-          provide: getRepositoryToken(Complaint),
-          useFactory: MockComplaintsRepositoryV2,
         },
         CaseFileService,
         {
