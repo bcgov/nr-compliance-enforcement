@@ -7,7 +7,7 @@ export interface ComplaintHeader {
   violationType?: string;
   violationTypeCode?: string;
   species?: string;
-  statusCode?: string;
+  statusCode: string;
   natureOfComplaintCode?: string;
   speciesCode?: string;
   zone?: string;
