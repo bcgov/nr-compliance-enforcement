@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CronExpression, SchedulerRegistry } from "@nestjs/schedule";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { CronJob } from "cron";
 import { DataSource } from "typeorm";
 
@@ -19,23 +19,28 @@ export class ComplaintSequenceResetScheduler {
     this.cronJob.start();
   }
 
-  private resetComplaintSequence() {
+  private async resetComplaintSequence() {
     try {
-      this.logger.debug("Resetting Complaint Sequence as per cron schedule");
+      const defaultSequence = "900000";
+      const sequence = process.env.SEQ_RESET_VALUE || defaultSequence;
+
+      this.logger.debug(`Resetting Complaint Sequence to ${sequence} as per cron schedule`);
       const queryRunner = this.dataSource.createQueryRunner();
-      queryRunner.connect();
-      queryRunner.startTransaction();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-      queryRunner.query("ALTER SEQUENCE complaint_sequence RESTART WITH 900000;");
+      await queryRunner.query(`ALTER SEQUENCE complaint_sequence RESTART WITH ${sequence};`);
 
-      queryRunner.release();
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
     } catch (Exception) {
       this.logger.error("Error resetting complaint sequence");
     }
   }
 
   private getCronExpression(): string {
-    const defaultCron = CronExpression.EVERY_YEAR;
+    // Note nest CronExpression.EVERY_YEAR is bugged! See https://github.com/nestjs/schedule/issues/1159
+    const defaultCron = "0 0 1 1 *";
     const envCronExpression = process.env.SEQ_RESET_CRON_EXPRESSION || defaultCron;
     this.logger.debug(`Setting Complaint Sequence reset job as per cron schedule ${envCronExpression}`);
     return envCronExpression;

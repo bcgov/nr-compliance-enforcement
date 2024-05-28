@@ -41,6 +41,7 @@ import { RequestTokenMiddleware } from "./middleware/req.token";
 import { CaseFileModule } from "./v1/case_file/case_file.module";
 import { ComplaintUpdatesModule } from "./v1/complaint_updates/complaint_updates.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { ComplaintSequenceResetScheduler } from "./v1/complaint/complaint-sequence-reset.service";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -107,7 +108,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ComplaintSequenceResetScheduler],
 })
 export class AppModule {
   // let's add a middleware on all routes
