@@ -3,6 +3,7 @@ import { AssessmentDetailsDto } from "./assessment-details";
 import { ReviewCompleteAction } from "./review-complete-action";
 import { PreventionDetailsDto } from "./prevention/prevention-details";
 import { EquipmentDetailsDto } from "./equipment-details";
+import { Subject } from "../../state/cases-state";
 
 export interface CaseFileDto {
   caseIdentifier: UUID;
@@ -16,4 +17,5 @@ export interface CaseFileDto {
   isReviewRequired: boolean;
   reviewComplete?: ReviewCompleteAction;
   equipment: EquipmentDetailsDto[];
+  subject: Array<Subject>;
 }
