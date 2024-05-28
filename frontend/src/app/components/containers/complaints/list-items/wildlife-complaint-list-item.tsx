@@ -6,6 +6,7 @@ import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-com
 import { useAppSelector } from "../../../../hooks/hooks";
 import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
 import { selectCodeTable } from "../../../../store/reducers/code-table";
+import { Badge } from "react-bootstrap";
 
 type Props = {
   type: string;
@@ -125,7 +126,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
-          className={`comp-cell-width-95 comp-nav-item-name-underline ${isExpandedClass}`}
+          className={`comp-cell-width-95 sticky-col sticky-col--left incident-col ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <Link
@@ -151,12 +152,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`comp-cell-width-130 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <button
-            type="button"
-            className="btn btn-primary comp-species-btn"
-          >
-            {species}
-          </button>
+          <Badge bg="species-badge">{species}</Badge>
         </td>
         <td
           className={`comp-cell-width-165 ${isExpandedClass}`}
@@ -186,19 +182,14 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           ></div>
           {getOfficerAssigned()}
         </td>
-        <td className={`comp-cell-width-110 ${isExpandedClass}`}>
-          {!isExpanded && (
-            <div className="comp-table-icons">
-              <ComplaintActionItems
-                complaint_identifier={id}
-                complaint_type={type}
-                zone={zone ?? ""}
-                agency_code={ownedBy}
-              />
-              <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
-            </div>
-          )}
-          <span className={!isExpanded ? "comp-table-update-date" : ""}>{updatedOnDateTime}</span>
+        <td className={`comp-cell-width-110 ${isExpandedClass}`}>{updatedOnDateTime}</td>
+        <td className={`comp-cell-width-110 sticky-col sticky-col--right actions-col ${isExpandedClass}`}>
+          <ComplaintActionItems
+            complaint_identifier={id}
+            complaint_type={type}
+            zone={zone ?? ""}
+            agency_code={ownedBy}
+          />
         </td>
       </tr>
       {isExpanded && (
@@ -206,51 +197,31 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           onMouseEnter={() => toggleHoverState(true)}
           onMouseLeave={() => toggleHoverState(false)}
         >
+          <td className="comp-cell-width-110 comp-cell-child-expanded sticky-col sticky-col--left"></td>
           <td
             onClick={toggleExpand}
-            colSpan={2}
+            colSpan={8}
             className="comp-cell-child-expanded"
-          ></td>
-          <td
-            onClick={toggleExpand}
-            className="comp-cell-width-330 comp-cell-expanded-truncated comp-cell-child-expanded"
           >
-            {truncatedComplaintDetailText}
+            <dl className="hwc-table-dl">
+              <div>
+                <dt>Complaint Description</dt>
+                <dd>{truncatedComplaintDetailText}</dd>
+              </div>
+            </dl>
+
+            <dl className="hwc-table-dl">
+              <div>
+                <dt>Location Description</dt>
+                {truncatedLocationDetailedText ? (
+                  <dd>{truncatedLocationDetailedText}</dd>
+                ) : (
+                  <dd>No location description provided</dd>
+                )}
+              </div>
+            </dl>
           </td>
-          <td
-            onClick={toggleExpand}
-            className="comp-cell-child-expanded"
-          />
-          <td
-            onClick={toggleExpand}
-            className="comp-cell-expanded-truncated comp-cell-child-expanded"
-            colSpan={2}
-          >
-            {truncatedLocationDetailedText}
-          </td>
-          <td
-            onClick={toggleExpand}
-            className="comp-cell-child-expanded"
-          />
-          <td
-            colSpan={2}
-            className="comp-cell-child-expanded comp-cell-child-actions"
-          >
-            <div className="comp-cell-action-icon comp-view-complaint-details-button">
-              <Link
-                to={`/complaint/HWCR/${id}`}
-                id={id}
-              >
-                <span className="badge comp-view-complaint-badge">View Details</span>
-              </Link>
-              <ComplaintActionItems
-                complaint_identifier={id}
-                complaint_type={type}
-                zone={zone ?? ""}
-                agency_code={ownedBy}
-              />
-            </div>
-          </td>
+          <td className={`comp-cell-width-110 comp-cell-child-expanded sticky-col sticky-col--right actions-col`}></td>
         </tr>
       )}
     </>

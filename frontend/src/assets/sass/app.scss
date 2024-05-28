@@ -3,13 +3,6 @@
 @import "./colours.scss";
 @import "./typography.scss";
 
-// <!-- add new scss files here  -->
-@import "./modals.scss";
-
-@import "./layout.scss";
-@import "./misc.scss";
-// <!-- add new scss files here  -->
-
 @import "./mixins.scss";
 
 @import "../../../node_modules/bootstrap/scss/buttons";
@@ -30,3 +23,9 @@
 @import "./form.scss";
 @import "./errors.scss";
 
+// <!-- add new scss files here  -->
+@import "./modals.scss";
+
+@import "./layout.scss";
+@import "./misc.scss";
+// <!-- add new scss files here  -->

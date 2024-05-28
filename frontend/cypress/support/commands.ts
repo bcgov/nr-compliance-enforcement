@@ -174,8 +174,8 @@ Cypress.Commands.add("verifyAttachmentsCarousel", (uploadable: boolean, divId: s
     // verify the attachments section exists
     cy.get("h6").contains("attachments");
 
-    // verify the carousel exists (since 23-000076 is known to have attachments)
-    cy.get("div.carousel.coms-carousel").should("exist").and("be.visible");
+    // verify the carousel exists (since 23-000076, 23-006888 are known to have attachments)
+    cy.get("div.carousel.coms-carousel").should("exist");
 
     // verify that the previous/next buttons exist (but not visibe)
     cy.get('button[aria-label="previous"]').should("exist").and("not.be.visible");

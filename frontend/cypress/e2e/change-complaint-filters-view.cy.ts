@@ -24,7 +24,7 @@ describe("Complaint Change Status spec - Details View", () => {
           expect(length, "rows N").to.be.gt(0);
         });
 
-      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.get("#comp-filter-btn").click({ force: true });
 
       cy.get("#comp-filter-region-id").should("exist");
       cy.get("#comp-filter-zone-id").should("exist");
@@ -48,7 +48,7 @@ describe("Complaint Change Status spec - Details View", () => {
       cy.get("#comp-zone-filter").contains("Cariboo Thompson"); //assumes cypress user's office roles up to Cariboo Thompson zone
       cy.get("#comp-status-filter").contains("Open");
 
-      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.get("#comp-filter-btn").click({ force: true });
     });
 
     it("Can filter on Unassigned", () => {
@@ -64,7 +64,7 @@ describe("Complaint Change Status spec - Details View", () => {
           expect(length, "rows N").to.be.gt(0);
         });
 
-      cy.get("#complaint-filter-image-id").click({ force: true });
+      cy.get("#comp-filter-btn").click({ force: true });
       cy.selectItemById("officer-select-id", "Unassigned");
       cy.get("#comp-officer-filter").should("exist");
       cy.get("#comp-officer-filter").contains("Unassigned");
