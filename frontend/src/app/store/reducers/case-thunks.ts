@@ -32,7 +32,7 @@ import { DeleteSupplementalNoteInput } from "../../types/app/case-files/suppleme
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
-import { getComplaintById } from "./complaints";
+import { getComplaintStatusById } from "./complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
@@ -633,7 +633,7 @@ export const createReview =
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
         }
-        dispatch(getComplaintById(complaintId, COMPLAINT_TYPES.HWCR));
+        dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");
@@ -671,7 +671,7 @@ export const updateReview =
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
         }
-        dispatch(getComplaintById(complaintId, COMPLAINT_TYPES.HWCR));
+        dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");
