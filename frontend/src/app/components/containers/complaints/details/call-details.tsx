@@ -50,7 +50,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               </p>
             </div>
             <div>
-              <div className="comp-details-content-label ">Incident Time</div>
+              <div className="comp-details-content-label ">Incident Date/Time</div>
               <div
                 className="comp-details-content"
                 id="complaint-incident-date-time"
@@ -125,20 +125,20 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               <p id="comp-details-location-description">{locationDescription}</p>
             </div>
             <div>
-              <div className="comp-details-content-label ">X Coordinate</div>
-              <div
-                className="comp-details-content comp-padding-right-25"
-                id="call-details-x-coordinate-div"
-              >
-                {renderCoordinates(coordinates, Coordinates.Longitude)}
-              </div>
-
-              <div className="comp-details-content-label ">Y Coordinate</div>
+              <div className="comp-details-content-label ">Latitude</div>
               <div
                 className="comp-details-content"
                 id="call-details-y-coordinate-div"
               >
                 {renderCoordinates(coordinates, Coordinates.Latitude)}
+              </div>
+
+              <div className="comp-details-content-label ">Longitude</div>
+              <div
+                className="comp-details-content comp-padding-right-25"
+                id="call-details-x-coordinate-div"
+              >
+                {renderCoordinates(coordinates, Coordinates.Longitude)}
               </div>
             </div>
             <div>
