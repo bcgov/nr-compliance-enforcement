@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
 import { Button } from "react-bootstrap";
-import { BsPersonPlus, BsArrowRepeat } from "react-icons/bs";
+import { BsPersonPlus, BsArrowRepeat, BsFileEarmarkPdf } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import config from "../../../../../config";
@@ -77,6 +77,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
+  const exportComplaintToPdf = () => {
+    console.log("export complaint");
+  };
+
   return (
     <>
       <div className="comp-details-header">
@@ -137,6 +141,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 >
                   <span>Update Status</span>
                   <BsArrowRepeat />
+                </Button>
+                <Button
+                  id="details-screen-update-status-button"
+                  title="Update Status"
+                  variant="outline-primary"
+                  onClick={exportComplaintToPdf}
+                >
+                  <span>Export</span>
+                  <BsFileEarmarkPdf />
                 </Button>
               </div>
             )}
