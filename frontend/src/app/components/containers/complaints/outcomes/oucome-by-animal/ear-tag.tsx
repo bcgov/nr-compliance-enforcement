@@ -62,7 +62,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
             id={`comp-ear-tag-value-${id}`}
             divid="comp-details-edit-y-coordinate-div"
             type="input"
-            placeholder="Enter number"
+            placeholder=""
             inputClass="comp-form-control"
             value={identifier}
             error={error}
