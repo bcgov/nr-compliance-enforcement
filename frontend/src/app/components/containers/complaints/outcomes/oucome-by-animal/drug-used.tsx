@@ -198,7 +198,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             id={`vial-number-${id}`}
             divid={`vial-number-${id}-div`}
             type="input"
-            placeholder="Example"
+            placeholder=""
             inputClass="comp-form-control"
             value={vial}
             error={vialError}
@@ -242,7 +242,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             id={`amount-used-${id}`}
             divid={`amount-used-${id}-div`}
             type="input"
-            placeholder="Example"
+            placeholder=""
             inputClass="comp-form-control"
             value={amountUsed}
             error={amountUsedError}
@@ -286,7 +286,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             id={`adverse-reactions-${id}`}
             divid={`adverse-reactions-${id}-div`}
             type="input"
-            placeholder="Example"
+            placeholder=""
             inputClass="comp-form-control"
             value={reactions}
             onChange={(evt: any) => {
@@ -348,7 +348,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 id={`amount-discarded-${id}`}
                 divid={`amount-discarded-${id}-div`}
                 type="input"
-                placeholder="Example"
+                placeholder=""
                 inputClass="comp-form-control"
                 value={amountDiscarded}
                 error={amountDiscardedError}
@@ -375,7 +375,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 id={`discard-method-${id}`}
                 divid={`discard-method-${id}-div`}
                 type="input"
-                placeholder="Example"
+                placeholder=""
                 inputClass="comp-form-control"
                 value={discardMethod}
                 onChange={(evt: any) => {

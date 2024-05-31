@@ -269,7 +269,7 @@ export const getComplaintTypeFromUrl = (): number => {
 export const renderCoordinates = (coordinates: Coordinate, coordinateType: Coordinates): JSX.Element => {
   const result = parseCoordinates(coordinates, coordinateType);
 
-  return result === 0 ? <>{"Not Provided"}</> : <>{result}</>;
+  return result === 0 ? <>{""}</> : <>{result}</>;
 };
 
 export const applyStatusClass = (state: string): string => {

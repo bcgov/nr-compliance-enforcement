@@ -34,7 +34,7 @@ export const CallerInformation: FC = () => {
               </div>
             </div>
             <div>
-              <div className="comp-details-content-label">Alternate 1 Phone</div>
+              <div className="comp-details-content-label">Alternate Phone 1</div>
               <div
                 className="comp-details-content"
                 id="comp-details-phone-2"
@@ -43,7 +43,7 @@ export const CallerInformation: FC = () => {
               </div>
             </div>
             <div>
-              <div className="comp-details-content-label">Alternate 2 Phone</div>
+              <div className="comp-details-content-label">Alternate Phone 2</div>
               <div
                 className="comp-details-content"
                 id="comp-details-phone-3"
@@ -72,7 +72,7 @@ export const CallerInformation: FC = () => {
               </div>
             </div>
             <div>
-              <div className="comp-details-content-label">Reported By</div>
+              <div className="comp-details-content-label">Organization reporting the complaint</div>
               <div
                 className="comp-details-content"
                 id="comp-details-reported"

@@ -181,8 +181,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
     if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
       setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
-      if (isXCoordinateEmpty) setXCoordinateErrorMsg("X Coordinate is required if address is not provided.");
-      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Y Coordinate is required if address is not provided.");
+      if (isXCoordinateEmpty) setXCoordinateErrorMsg("Longitude is required if address is not provided.");
+      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Latitude is required if address is not provided.");
       return true; // Errors found
     }
     return false; // No errors
@@ -399,22 +399,22 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       <div className="equipment-form-edit-container">
         <div
           className="comp-details-edit-column"
-          id="equipment-x-coordinate-container"
+          id="equipment-y-coordinate-container"
         >
           <div className="equipment-form-label-input-pair">
-            <label htmlFor="equipment-x-coordinate">X Coordinate</label>
+            <label htmlFor="equipment-y-coordinate">Latitude</label>
             <div className="edit-input">
               <input
                 type="text"
-                id="equipment-x-coordinate"
-                className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-                value={xCoordinate ?? ""}
+                id="equipment-y-coordinate"
+                className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+                value={yCoordinate ?? ""}
                 maxLength={120}
               />
             </div>
           </div>
-          <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
+          <div className="equipment-form-error-msg">{yCoordinateErrorMsg}</div>
           {hasCoordinates && (
             <button
               className="button-text copy-text"
@@ -433,22 +433,22 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         </div>
         <div
           className="comp-details-edit-column comp-details-right-column"
-          id="equipment-y-coordinate-container"
+          id="equipment-x-coordinate-container"
         >
           <div className="equipment-form-label-input-pair">
-            <label htmlFor="equipment-y-coordinate">Y Coordinate</label>
+            <label htmlFor="equipment-x-coordinate">Longitude</label>
             <div className="edit-input">
               <input
                 type="text"
-                id="equipment-y-coordinate"
-                className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-                value={yCoordinate ?? ""}
+                id="equipment-x-coordinate"
+                className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+                value={xCoordinate ?? ""}
                 maxLength={120}
               />
             </div>
           </div>
-          <div className="equipment-form-error-msg">{yCoordinateErrorMsg}</div>
+          <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
         </div>
       </div>
       <div className="equipment-form-edit-container">
