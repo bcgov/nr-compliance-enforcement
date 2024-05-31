@@ -762,7 +762,7 @@ export const CreateComplaint: FC = () => {
                 className="comp-details-label-input-pair comp-margin-top-30"
                 id="incident-time-pair-id"
               >
-                <label>Incident Date/Time</label>
+                <label htmlFor="complaint-incident-time">Incident Date/Time</label>
                 <DatePicker
                   showTimeInput
                   id="complaint-incident-time"
@@ -1097,7 +1097,7 @@ export const CreateComplaint: FC = () => {
                 className="comp-details-label-input-pair"
                 id="reported-pair-id"
               >
-                <label>Organization reporting the complaint</label>
+                <label htmlFor="reported-select-id">Organization reporting the complaint</label>
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="reported-select-id"
