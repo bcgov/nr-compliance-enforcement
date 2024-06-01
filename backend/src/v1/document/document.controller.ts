@@ -12,9 +12,12 @@ import { Token } from "src/auth/decorators/token.decorator";
 export class DocumentController {
   constructor(private readonly service: DocumentService) {}
 
+  //--
+  //-- exports a complaint to pdf
+  //--
   @Get("/export-complaint/:type")
   @Roles(Role.COS_OFFICER)
   async exportComplaint(@Param("type") type: string, @Query("id") id: string, @Token() token): Promise<any> {
-    return Promise.resolve({ type, id });
+    return this.service.exportComplaint(id, type);
   }
 }

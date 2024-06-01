@@ -9,6 +9,7 @@ import { BsPersonPlus, BsArrowRepeat, BsFileEarmarkPdf } from "react-icons/bs";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import config from "../../../../../config";
+import { exportComplaint } from "../../../../store/reducers/documents-thunks";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -78,7 +79,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const exportComplaintToPdf = () => {
-    console.log("export complaint");
+    dispatch(exportComplaint(complaintType, id));
   };
 
   return (
