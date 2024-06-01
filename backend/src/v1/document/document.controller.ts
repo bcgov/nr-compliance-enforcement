@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { DocumentService } from "./document.service";
 import { JwtRoleGuard } from "src/auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
@@ -14,7 +14,7 @@ export class DocumentController {
 
   @Get("/export-complaint/:type")
   @Roles(Role.COS_OFFICER)
-  async exportComplaint(@Param("type") type: string, @Token() token): Promise<any> {
-    return Promise.resolve(type);
+  async exportComplaint(@Param("type") type: string, @Query("id") id: string, @Token() token): Promise<any> {
+    return Promise.resolve({ type, id });
   }
 }
