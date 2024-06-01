@@ -35,7 +35,7 @@ export class ComplaintsPublisherService {
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}`);
+      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.created_by_datetime}`);
       const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`New complaint: ${complaint.incident_number}`);
@@ -58,7 +58,10 @@ export class ComplaintsPublisherService {
       const incidentNumber = complaintUpdate.parent_incident_number;
       const updateNumber = complaintUpdate.update_number;
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-update-${incidentNumber}-${updateNumber}`);
+      natsHeaders.set(
+        "Nats-Msg-Id",
+        `staged-update-${incidentNumber}-${updateNumber}-${complaintUpdate.update_created_by_datetime}`,
+      );
       const ack = await this.jsClient.publish(NATS_UPDATED_COMPLAINTS_TOPIC_NAME, jsonData, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`Complaint update: ${incidentNumber} ${updateNumber}`);
