@@ -129,6 +129,53 @@
   margin-right: 8px;
 }
 
+// Refactor Avatar Styling
+.comp-avatar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+
+  &::before {
+    flex: 0 0 auto;
+    display: inline-block;
+    text-align: center;
+    border-radius: 50%;
+    content: attr(data-initials-sm);
+  }
+
+  // Sizing
+  &-sm::before {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.875rem;
+    line-height: 2rem;
+  }
+
+  span {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Color Variations
+  &-orange::before {
+    color: $orange-600;
+    background: $orange-200;
+  }
+
+  &-blue::before {
+    color: $blue-600;
+    background: $blue-200;
+  }
+
+  &-pink::before {
+    color: $bc-standard-12-600;
+    background: $bc-standard-12-200;
+  }
+}
+
 .comp-orange-avatar-sm::before {
   color: $orange-600;
   background: $orange-200;

@@ -4,8 +4,7 @@ import COMPLAINT_TYPES, { complaintTypeToName } from "../../../../types/app/comp
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
-import { Button } from "react-bootstrap";
-import { BsPersonPlus, BsArrowRepeat } from "react-icons/bs";
+import { Badge, Button, Dropdown } from "react-bootstrap";
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import config from "../../../../../config";
@@ -104,149 +103,165 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         {/* <!-- breadcrumb end --> */}
 
         {/* <!-- complaint info start --> */}
-        <div className="comp-details-subheader">
-          <div className="comp-complaint-info">
-            <div className="comp-box-complaint-id">Complaint #{id}</div>
-            <div
-              className={`comp-box-conflict-type ${
-                complaintType !== COMPLAINT_TYPES.ERS ? "hwcr-conflict-type" : "allegation-conflict-type"
-              }`}
-            >
-              {complaintTypeToName(complaintType, true)}
-            </div>
-            {readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
-              <div className="comp-box-species-type">{species}</div>
-            )}
-            {readOnly && (
-              <div className="comp-box-actions">
+        <div className="comp-details-title-container">
+          <div className="comp-details-title-info">
+            <h1 className="comp-box-complaint-id">
+              <span>Complaint </span>#{id}
+            </h1>
+          </div>
+
+          {/* Badges */}
+          <div className="comp-details-badge-container">
+            {readOnly && <Badge className={`badge ${applyStatusClass(status)}`}>{status}</Badge>}
+          </div>
+
+          {/* Action Buttons */}
+          {readOnly && (
+            <div className="comp-header-actions">
+              <div className="comp-header-actions-mobile">
+                <Dropdown>
+                  <Dropdown.Toggle
+                    aria-label="Actions Menu"
+                    variant="outline-primary"
+                    className="icon-btn"
+                    id="dropdown-basic"
+                  >
+                    <i className="bi bi-three-dots-vertical"></i>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu align="end">
+                    <Dropdown.Item
+                      as="button"
+                      onClick={openAsignOfficerModal}
+                    >
+                      <i className="bi bi-person-plus"></i>
+                      <span>{assignText}</span>
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      as="button"
+                      onClick={openStatusChangeModal}
+                    >
+                      <i className="bi bi-arrow-repeat"></i>
+                      <span>Update Status</span>
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+              <div className="comp-header-actions-desktop">
                 <Button
                   id="details-screen-assign-button"
                   title="Assign to Officer"
-                  variant="outline-primary"
+                  variant="outline-light"
                   onClick={openAsignOfficerModal}
-                  className=""
                 >
+                  <i className="bi bi-person-plus"></i>
                   <span>{assignText}</span>
-                  <BsPersonPlus />
                 </Button>
                 <Button
                   id="details-screen-update-status-button"
                   title="Update Status"
-                  variant="outline-primary"
+                  variant="outline-light"
                   onClick={openStatusChangeModal}
                 >
+                  <i className="bi bi-arrow-repeat"></i>
                   <span>Update Status</span>
-                  <BsArrowRepeat />
                 </Button>
               </div>
-            )}
-            {!readOnly && (
-              <div className="comp-box-actions">
-                <Button
-                  id="details-screen-cancel-edit-button-top"
-                  title="Cancel Edit Complaint"
-                  variant="outline-primary"
-                  onClick={cancelButtonClick}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  id="details-screen-cancel-save-button-top"
-                  title="Save Complaint"
-                  variant="outline-primary"
-                  onClick={saveButtonClick}
-                >
-                  Save Changes
-                </Button>
-              </div>
-            )}
-          </div>
-          {readOnly && (
-            <div
-              className="comp-nature-of-complaint"
-              id="comp-nature-of-complaint"
-            >
-              {complaintType !== COMPLAINT_TYPES.ERS ? natureOfComplaint : violationType}
+            </div>
+          )}
+          {!readOnly && (
+            <div className="comp-header-actions">
+              <Button
+                id="details-screen-cancel-edit-button-top"
+                title="Cancel Edit Complaint"
+                variant="outline-light"
+                onClick={cancelButtonClick}
+              >
+                Cancel
+              </Button>
+              <Button
+                id="details-screen-cancel-save-button-top"
+                title="Save Complaint"
+                variant="outline-light"
+                onClick={saveButtonClick}
+              >
+                Save Changes
+              </Button>
             </div>
           )}
         </div>
-        {/* <!-- complaint info end --> */}
+
+        {/* Nature of Complaint Details */}
+        <div
+          className="comp-nature-of-complaint"
+          id="comp-nature-of-complaint"
+        >
+          {readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (
+            <span className="comp-box-species-type">{species}&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+          )}
+          {readOnly && <span>{complaintType !== COMPLAINT_TYPES.ERS ? natureOfComplaint : violationType}</span>}
+        </div>
       </div>
+
       {/* <!-- complaint status details start --> */}
       {readOnly && (
-        <div className="comp-details-status">
-          <div className="comp-details-header-column comp-details-status-width">
-            <div>
-              <div className="comp-details-content-label">Status</div>
-              <div
-                id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(status)}`}
-              >
-                {status}
-              </div>
-            </div>
-          </div>
+        <div className="comp-header-status-container">
+          <div className="comp-details-status">
+            <dl className="comp-details-date-logged">
+              <dt>Date Logged</dt>
+              <dd className="comp-date-time-value">
+                <div>
+                  <i className="bi bi-calendar"></i>
+                  {formatDate(loggedDate)}
+                </div>
+                <div>
+                  <i className="bi bi-clock"></i>
+                  {formatTime(loggedDate)}
+                </div>
+              </dd>
+            </dl>
 
-          <div className="comp-details-header-column">
-            <div className="comp-complaint-created-width">
-              <div className="comp-details-content-label">Date / Time Logged</div>
-              <div className="comp-details-content">
-                <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                {formatDate(loggedDate)}
-                <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(loggedDate)}
-              </div>
-            </div>
-          </div>
-
-          <div className="comp-details-header-column">
-            <div className="comp-complaint-last-updated-width">
-              <div className="comp-details-content-label">Last Updated</div>
-              <div className="comp-details-content">
+            <dl className="comp-details-date-assigned">
+              <dt>Last Updated</dt>
+              <dd className="comp-date-time-value">
                 {lastUpdated && (
                   <>
-                    <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                    {formatDate(lastUpdated)}
-                    <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                    {formatTime(lastUpdated)}
+                    <div>
+                      <i className="bi bi-calendar"></i>
+                      {formatDate(lastUpdated)}
+                    </div>
+                    <div>
+                      <i className="bi bi-clock"></i>
+                      {formatTime(lastUpdated)}
+                    </div>
                   </>
                 )}
                 {!lastUpdated && <>Not Available</>}
-              </div>
-            </div>
-          </div>
+              </dd>
+            </dl>
 
-          <div className="comp-details-header-column">
-            <div className="comp-complaint-assigned-width">
-              <div className="comp-details-content-label">Officer Assigned</div>
-              <div className="comp-details-content">
+            <dl>
+              <dt>Officer Assigned</dt>
+              <dd>
                 <div
                   data-initials-sm={getAvatarInitials(officerAssigned)}
-                  className="comp-orange-avatar-sm"
+                  className="comp-avatar comp-avatar-sm comp-avatar-orange"
                 >
-                  <span
-                    id="comp-details-assigned-officer-name-text-id"
-                    className="comp-padding-left-xs"
-                  >
-                    {officerAssigned}
-                  </span>
+                  <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
                 </div>
-              </div>
-            </div>
-          </div>
+              </dd>
+            </dl>
 
-          <div className="comp-details-header-column">
-            <div className="comp-complaint-created-by-width">
-              <div className="comp-details-content-label">Created By</div>
-              <div>
+            <dl>
+              <dt>Created By</dt>
+              <dd>
                 <div
                   data-initials-sm={getAvatarInitials(createdBy)}
-                  className="comp-blue-avatar-sm"
+                  className="comp-avatar comp-avatar-sm comp-avatar-blue"
                 >
-                  <span className="comp-padding-left-xs">{createdBy}</span>
+                  <span>{createdBy}</span>
                 </div>
-              </div>
-            </div>
+              </dd>
+            </dl>
           </div>
         </div>
       )}

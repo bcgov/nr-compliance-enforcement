@@ -182,7 +182,6 @@ a {
 
   a:hover {
     color: $white;
-    font-weight: bold;
   }
 }
 
@@ -591,27 +590,65 @@ p {
   word-break: break-word !important; //needs to be important to override the global 'break-all' style a few lines above this
 }
 
+// BREADCRUMBS
+.comp-complaint-breadcrumb {
+  color: $white;
+  margin-top: -8px;
+  font-size: 0.875rem;
+}
+
 // BUTTONS
 .btn {
-  // Utility classes for icon placement in buttons with labels
-  &.icon-start i {
-    margin-right: 4px;
-  }
-
-  &.icon-end i {
-    margin-left: 4px;
-  }
+  // Buttons with Icons
 
   // Icon only
   &.icon-btn {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     padding: 0;
+    border-color: transparent;
 
     i {
-      font-size: 1.5rem;
-      color: #003366;
+      font-size: 1.25rem;
+      color: inherit;
     }
+  }
+
+  // Icon and label visible
+  &:not(.icon-btn) {
+    i {
+      margin-right: 8px;
+      font-size: 1rem;
+    }
+  }
+}
+
+// DROPDOWN MENU
+.icon-btn.dropdown-toggle {
+  &::after {
+    display: none;
+  }
+}
+.dropdown-item {
+  i {
+    margin-right: 8px;
+    font-size: 1rem;
+  }
+}
+
+// TOGGLE BUTTON
+.toggle-button {
+  border-color: $gray-300;
+  white-space: nowrap;
+
+  span {
+    margin-left: 8px;
+  }
+}
+
+@include media-breakpoint-down(xl) {
+  .toggle-button span {
+    display: none;
   }
 }
 
