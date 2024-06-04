@@ -14,8 +14,8 @@ INSERT INTO
   )
 VALUES
   (
-    'HWCRTMPLATE',
-    NULL,
+    'HWCTMPLATE',
+    '',
     'CDOGS Hash for HWCR Template',
     true,
     CURRENT_USER,
@@ -38,7 +38,7 @@ INSERT INTO
 VALUES
   (
     'ERSTMPLATE',
-    NULL,
+    '',
     'CDOGS Hash for ERS Template',
     true,
     CURRENT_USER,

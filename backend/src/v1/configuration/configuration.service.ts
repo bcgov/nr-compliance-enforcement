@@ -22,4 +22,8 @@ export class ConfigurationService {
   update(id: number, updateConfigurationDto: UpdateConfigurationDto) {
     return `This action updates a #${id} configuration`;
   }
+
+  findByCode = async (code: string): Promise<Configuration> => {
+    return this.configurationRepository.findOneBy({ configurationCode: code });
+  };
 }

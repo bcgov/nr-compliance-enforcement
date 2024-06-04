@@ -1,54 +1,107 @@
-import { Injectable } from "@nestjs/common";
-import axios from "axios";
-import qs from "qs";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigurationService } from "../configuration/configuration.service";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+// import FormData from "form-data";
+// import fs from "fs";
+import { join } from "path";
+import FormData = require("form-data");
+import fs = require("fs");
 
 @Injectable()
 export class DocumentService {
-  //--
-  //-- request authorization token for use in common api services
-  //-- this should be refactored if multiple api's are going to be used
-  private apiAuthorization = async () => {
-    const payload = {
-      grant_type: "client_credentials",
-      client_id: process.env.CDOGS_CLIENT_ID,
-      client_secret: process.env.CDOGS_CLIENT_SECRET,
-    };
-    console.log(payload);
+  @Inject(ConfigurationService)
+  private readonly configurationService: ConfigurationService;
 
-    // const data = JSON.stringify(payload);
-    let url = process.env.COMS_JWT_AUTH_URI;
+  private _getCDOGsApiToken = async (): Promise<string> => {
+    console.log("GET TOKEN");
+    try {
+      const response: AxiosResponse = await axios.post(
+        process.env.COMS_JWT_AUTH_URI,
+        {
+          client_id: process.env.CDOGS_CLIENT_ID,
+          client_secret: process.env.CDOGS_CLIENT_SECRET,
+          grant_type: "client_credentials",
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Cache-Control": "no-cache",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        },
+      );
 
-    console.log(qs.stringify(payload));
-
-    // const options = {
-    //   method: "POST",
-    //   headers: { "content-type": "application/x-www-form-urlencoded" },
-    //   data: qs.stringify(payload),
-    //   url,
-    // };
-
-    // const result = axios(options);
-    // console.log(result);
+      return response?.data?.access_token;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  exportComplaint(id: string, type: string): any {
-    this.apiAuthorization();
+  /*  private getCDOGsApiToken() {
+    return async () => {
+      try {
+        const response: AxiosResponse = await axios.post(
+          process.env.COMS_JWT_AUTH_URI,
+          qs.stringify({
+            client_id: process.env.CDOGS_CLIENT_ID,
+            client_secret: process.env.CDOGS_CLIENT_SECRET,
+            grant_type: "client_credentials",
+          }),
+          {
+            headers: {
+              Accept: "application/json",
+              "Cache-Control": "no-cache",
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          },
+        );
 
-    return "test";
-  }
+        console.log(response);
+
+        return "token";
+      } catch (error) {}
+    };
+  }*/
+
+  uploadTemplate = async (path: string, token: string): Promise<string> => {
+    const bodyFormData = new FormData();
+    bodyFormData.append("template", fs.createReadStream(path));
+    const headers: any = {
+      ...bodyFormData.getHeaders(),
+    };
+    let url = `${process.env.CDOGS_URI}/template`;
+
+    const uploadResponse: AxiosResponse = await this._post(token, url, bodyFormData, headers);
+    return uploadResponse?.headers["x-template-hash"];
+  };
+
+  private _post = async (apiToken: string, url: string, data: any, headers?: any): Promise<AxiosResponse> => {
+    const config: AxiosRequestConfig = {
+      timeout: 30000,
+    };
+    if (!!headers) {
+      config.headers = headers;
+      config.headers.Authorization = `Bearer ${apiToken}`;
+    } else {
+      config.headers = {
+        Authorization: `Bearer ${apiToken}`,
+      };
+    }
+    return axios.post(url, data, config);
+  };
+
+  exportComplaint = async (id: string, type: string): Promise<any> => {
+    try {
+      let token = await this._getCDOGsApiToken();
+      const path = join(process.cwd(), "templates/complaint/CDOGS-ERS-COMPLAINT-TEMPLATE-v1.docx");
+
+      let result = await this.uploadTemplate(path, token);
+      console.log(result);
+
+      return token;
+    } catch (error) {
+      console.log("exception: export document", error);
+      throw new Error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
+    }
+  };
 }
-
-// deleteNote = async (token: any, model: DeleteSupplementalNotesInput): Promise<CaseFileDto> => {
-//   const result = await post(token, {
-//     query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
-//       deleteNote(input: $input) {
-//         caseIdentifier
-//         note { note, action { actor,date,actionCode, actionId } }
-//       }
-//     }`,
-//     variables: { input: model },
-//   });
-
-//   const returnValue = await this.handleAPIResponse(result);
-//   return returnValue?.deleteNote;
-// };
