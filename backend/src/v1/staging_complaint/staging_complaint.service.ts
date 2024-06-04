@@ -112,11 +112,35 @@ export class StagingComplaintService {
     return isEqual(complaint1Filtered, complaint2Filtered);
   };
 
+  // Given two StagingComplaint objects, compare them and return true if they're the same.  This function
+  // ignores some attributes (specifically the back_number_of* attributes)
+  _compareWebEOCComplaintUpdates = (complaint1: WebEOCComplaintUpdate, complaint2: WebEOCComplaintUpdate): boolean => {
+    // Attributes to ignore
+    const attributesToIgnore = ["back_number_of_days", "back_number_of_hours", "back_number_of_minutes"];
+
+    // Omit the attributes to ignore
+    const complaint1Filtered = omit(complaint1, attributesToIgnore);
+    const complaint2Filtered = omit(complaint2, attributesToIgnore);
+
+    // If both are null or undefined, return true
+    if (!complaint1 && !complaint2) {
+      return true;
+    }
+
+    // If one is null or undefined, return false
+    if (!complaint1 || !complaint2) {
+      return false;
+    }
+
+    // Perform deep comparison
+    return isEqual(complaint1Filtered, complaint2Filtered);
+  };
+
   // Creates a Complaint Update in the staging table.  Used when WebEOC creates a complaint update.
   async stageUpdateComplaint(stagingComplaint: WebEOCComplaintUpdate): Promise<StagingComplaint> {
     const currentDate = new Date();
     // ignore existing updates of the same incident number and update number, they already exist in the staging table
-    const existingStagingComplaint = await this.stagingComplaintRepository
+    const previousUpdate = await this.stagingComplaintRepository
       .createQueryBuilder("stagingComplaint")
       .leftJoinAndSelect("stagingComplaint.stagingActivityCode", "stagingActivityCode")
       .where("stagingComplaint.complaintIdentifer = :complaintIdentifier", {
@@ -130,10 +154,13 @@ export class StagingComplaintService {
           }).orWhere("stagingComplaint.complaint_jsonb IS NULL");
         }),
       )
+      .orderBy("stagingComplaint.update_utc_timestamp", "DESC")
       .getOne();
 
+    const previousUpdateJSON = previousUpdate.complaintJsonb as WebEOCComplaintUpdate;
+
     // ignore duplicates
-    if (existingStagingComplaint) {
+    if (this._compareWebEOCComplaintUpdates(previousUpdateJSON, stagingComplaint)) {
       return;
     }
 
