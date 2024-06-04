@@ -39,7 +39,7 @@ export class StagingComplaintService {
       .getOne();
 
     // the incoming complaint may be an edit, let's check for that.  If it is an edit, we need to create this as an edit record in the staging table
-    const existingComplaintJson = existingStagingComplaint.complaintJsonb as WebEOCComplaint;
+    const existingComplaintJson = existingStagingComplaint?.complaintJsonb as WebEOCComplaint;
 
     // ignore non HWCR/ERS complaints
     if (
@@ -155,6 +155,9 @@ export class StagingComplaintService {
 
   async processWebEOCComplaint(complaintIdentifier: string): Promise<any> {
     await this.stagingComplaintRepository.manager.query("SELECT public.insert_complaint_from_staging($1)", [
+      complaintIdentifier,
+    ]);
+    await this.stagingComplaintRepository.manager.query("SELECT public.edit_complaint_using_webeoc_complaint($1)", [
       complaintIdentifier,
     ]);
   }
