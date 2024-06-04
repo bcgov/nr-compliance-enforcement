@@ -11,6 +11,7 @@ declare
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
    
 	current_complaint_record PUBLIC.complaint; -- record being edited
+	allegation_complaint_record PUBLIC.allegation_complaint;
 	edit_complaint_data JSONB; -- the complaint data containing the edits from webeoc
     original_complaint_record JSONB; -- the complaint data before the edits, used to determine i
    
@@ -56,7 +57,8 @@ declare
     _violation_code            VARCHAR(10);
     -- used to generate a uuid.  We use this to create the PK in hwcr_complaint, but
     -- we need to also use it when creating the attractants
-    generated_uuid uuid;
+    hwcr_uuid uuid;
+    enforcement_uuid uuid;
     -- parsed attractants from the jsonb object
     attractants_array text[];
     attractant_item text;
@@ -253,10 +255,49 @@ BEGIN
 	update complaint
 	set update_user_id = _update_userid, update_utc_timestamp = _update_utc_timestamp
 	where complaint_identifier = _complaint_identifier;
-  
   end if;
   
   if (_report_type = 'HWCR') then
+      update_edit_ind = false;
+	  select hc.hwcr_complaint_guid 
+	  into hwcr_uuid
+	  from hwcr_complaint hc where complaint_identifier  = _complaint_identifier;
+	 
+	  update attractant_hwcr_xref
+	  set active_ind = false
+	  where hwcr_complaint_guid = hwcr_uuid;
+	 
+      -- Convert the comma-separated list into an array
+      attractants_array := string_to_array( edit_complaint_data ->> 'attractants_list', ',' );
+      -- Iterate over the array
+      foreach attractant_item IN ARRAY attractants_array
+      LOOP                                                -- Trim whitespace and check if the item is 'Not Applicable'
+        IF trim(attractant_item) <> 'Not Applicable' THEN -- Your insertion logic here
+          SELECT *
+          FROM   PUBLIC.insert_and_return_code( trim(attractant_item), 'atractntcd' )
+          INTO   _attractant_code;
+          
+          INSERT INTO PUBLIC.attractant_hwcr_xref
+                      (
+                                  attractant_code,
+                                  hwcr_complaint_guid,
+                                  create_user_id,
+                                  create_utc_timestamp,
+                                  update_user_id,
+                                  update_utc_timestamp
+                      )
+                      VALUES
+                      (
+                                  _attractant_code,
+                                  hwcr_uuid,
+                                  WEBEOC_USER_ID,
+                                  _create_utc_timestamp,
+                                  WEBEOC_USER_ID,
+                                  _update_utc_timestamp
+                      );
+        
+        END IF;
+      END LOOP;
     -- get the code based on the update from WebEOC
     SELECT *
     INTO   _species_code
@@ -274,12 +315,67 @@ BEGIN
     	set species_code = _species_code
     	where complaint_identifier = _complaint_identifier;
     end if;
+   
+    -- the update caused an edit, set the audit fields
+    if (update_edit_ind) then
+		update hwcr_complaint 
+		set update_user_id = _update_userid, update_utc_timestamp = _update_utc_timestamp
+		where complaint_identifier = _complaint_identifier;
+    end if;
 
   end if;
  
   if (_report_type = 'ERS') then
+	  update_edit_ind = false;
+  	
+  
+      _in_progress_ind := (edit_complaint_data->>'violation_in_progress');
+      _observed_ind := (edit_complaint_data->>'observe_violation');
+      _suspect_witnesss_dtl_text := edit_complaint_data->>'suspect_details';
+
+      IF _in_progress_ind = 'Yes' THEN
+        _in_progress_ind_bool := TRUE;
+      ELSE
+        _in_progress_ind_bool := FALSE;
+      END IF; 
+      IF _observed_ind = 'Yes' THEN
+        _observed_ind_bool := TRUE;
+      ELSE
+        _observed_ind_bool := FALSE;
+      END IF;
+     
+     -- Get the current state of the complaint
+     SELECT *
+     INTO   allegation_complaint_record
+     FROM   PUBLIC.allegation_complaint ac
+     WHERE  complaint_identifier = _complaint_identifier;
+
+   
+
+     if (_observed_ind_bool != allegation_complaint_record.observed_ind) then 
+	    UPDATE allegation_complaint
+	    SET observed_ind  = _observed_ind_bool
+	    WHERE complaint_identifier = _complaint_identifier;
+	    update_edit_ind = true;
+	 end if;
+	
+     if (_in_progress_ind_bool != allegation_complaint_record.in_progress_ind) then 
+	    UPDATE allegation_complaint
+	    SET in_progress_ind  = _in_progress_ind_bool
+	    WHERE complaint_identifier = _complaint_identifier;
+	    update_edit_ind = true;
+	 end if;
+	
+     if (_suspect_witnesss_dtl_text <> allegation_complaint_record.suspect_witnesss_dtl_text) then 
+	    UPDATE allegation_complaint
+	    SET suspect_witnesss_dtl_text  = _suspect_witnesss_dtl_text
+	    WHERE complaint_identifier = _complaint_identifier;
+	    update_edit_ind = true;
+	 end if;
+
+  
 	 SELECT *
-	 FROM   PUBLIC.insert_and_return_code( edit_complaint_data->>'update_violation_type', 'violatncd' )
+	 FROM   PUBLIC.insert_and_return_code( edit_complaint_data->>'violation_type', 'violatncd' )
 	 INTO   _violation_code;
 	 
      select ac.violation_code
@@ -292,7 +388,14 @@ BEGIN
     	update allegation_complaint
     	set violation_code  = _violation_code
     	where complaint_identifier = _complaint_identifier;
-     end if;		    
+	    update_edit_ind = true;
+     end if;	
+    -- the update caused an edit, set the audit fields
+    if (update_edit_ind) then
+		update hwcr_complaint 
+		set update_user_id = _update_userid, update_utc_timestamp = _update_utc_timestamp
+		where complaint_identifier = _complaint_identifier;
+    end if;
   end if;
  
     -- Update staging_complaint to mark the process as successful
