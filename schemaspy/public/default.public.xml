@@ -3152,7 +3152,7 @@ END;]]></definition>
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
     _report_type            VARCHAR(120);
-    _detail_text            VARCHAR(4000);
+    _detail_text            TEXT;
     _caller_name            VARCHAR(120);
     _caller_address         VARCHAR(120);
     _caller_email           VARCHAR(120);
@@ -3210,14 +3210,6 @@ END;]]></definition>
     _report_type := complaint_data ->> 'report_type';
 
    -- Extract and prepare data for 'complaint' table
-   _detail_text := left( complaint_data ->> 'cos_call_details', 3980 )
-    ||
-    CASE
-   	  WHEN length( complaint_data ->> 'cos_call_details' ) > 3980 THEN
-      '… DATA TRUNCATED'
-    ELSE
-      ''
-    END;
     _caller_name := left( complaint_data ->> 'cos_caller_name', 100 )
     ||
     CASE
@@ -3242,6 +3234,8 @@ END;]]></definition>
     ELSE
       ''
     END;
+
+    _detail_text := complaint_data ->> 'cos_call_details';
 	
     -- phone numbers must be formatted as +1##########.  
     -- If the numbers from webeoc contain non-numeric characters, strip those and 
