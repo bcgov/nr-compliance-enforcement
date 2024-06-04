@@ -23,7 +23,7 @@ type props = {
   amountDiscarded: string;
 
   reactions: string;
-  remainingUse: string;
+  remainingUse: string | null;
 
   injectionMethod: string;
   discardMethod: string;
@@ -62,6 +62,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const [amountDiscardedError, setAmountDiscardedError] = useState("");
   const [amountUsedError, setAmountUsedError] = useState("");
   const [injectionMethodError, setInjectionMethodError] = useState("");
+  const [discardMethodError, setDiscardMethodError] = useState("");
 
   //-- this allows the developers to consume functions within the
   //-- drug-used component in a parent component
@@ -102,6 +103,21 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     if (!injectionMethod) {
       setInjectionMethodError(REQUIRED);
       result = false;
+    }
+
+    //-- edge case
+    //-- if the user selects DISC from remainingUse then check to
+    //-- make sure that the user also provides a discard amount and method
+    if (remainingUse === "DISC") {
+      if (!amountDiscarded) {
+        setAmountDiscardedError(REQUIRED);
+        result = false;
+      }
+
+      if (!discardMethod) {
+        setDiscardMethodError(REQUIRED);
+        result = false;
+      }
     }
 
     return result;
@@ -184,6 +200,16 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     updateModel("remainingUse", input);
   };
 
+  const handleAmountDiscardedChange = (input: string) => {
+    updateModel("amountDiscarded", input);
+    setAmountDiscardedError("");
+  };
+
+  const handleDiscardMethodChange = (input: string) => {
+    updateModel("discardMethod", input);
+    setDiscardMethodError("");
+  };
+
   return (
     <div className="comp-animal-outcome-report-inner-spacing">
       <Row>
@@ -198,7 +224,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             id={`vial-number-${id}`}
             divid={`vial-number-${id}-div`}
             type="input"
-            placeholder="Example"
+            placeholder=""
             inputClass="comp-form-control"
             value={vial}
             error={vialError}
@@ -242,7 +268,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             id={`amount-used-${id}`}
             divid={`amount-used-${id}-div`}
             type="input"
-            placeholder="Example"
+            placeholder=""
             inputClass="comp-form-control"
             value={amountUsed}
             error={amountUsedError}
@@ -286,7 +312,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             id={`adverse-reactions-${id}`}
             divid={`adverse-reactions-${id}-div`}
             type="input"
-            placeholder="Example"
+            placeholder=""
             inputClass="comp-form-control"
             value={reactions}
             onChange={(evt: any) => {
@@ -348,7 +374,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 id={`amount-discarded-${id}`}
                 divid={`amount-discarded-${id}-div`}
                 type="input"
-                placeholder="Example"
+                placeholder=""
                 inputClass="comp-form-control"
                 value={amountDiscarded}
                 error={amountDiscardedError}
@@ -356,7 +382,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                   const {
                     target: { value },
                   } = evt;
-                  updateModel("amountDiscarded", value);
+                  handleAmountDiscardedChange(value ?? "");
                 }}
               />
             </>
@@ -375,14 +401,15 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 id={`discard-method-${id}`}
                 divid={`discard-method-${id}-div`}
                 type="input"
-                placeholder="Example"
+                placeholder=""
                 inputClass="comp-form-control"
                 value={discardMethod}
+                error={discardMethodError}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
                   } = evt;
-                  updateModel("discardMethod", value);
+                  handleDiscardMethodChange(value ?? "");
                 }}
               />
             </>

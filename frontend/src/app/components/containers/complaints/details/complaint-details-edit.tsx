@@ -321,8 +321,8 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, complaintUpdate);
 
-  const selectedAttractants = attractantCodes.filter(
-    (option) => attractants?.some((attractant) => attractant.code === option.value),
+  const selectedAttractants = attractantCodes.filter((option) =>
+    attractants?.some((attractant) => attractant.code === option.value),
   );
   const selectedViolationTypeCode = violationTypeCodes.find((option) => option.value === violationTypeCode);
   const selectedViolationInProgress = yesNoOptions.find(
@@ -880,7 +880,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     className="comp-details-label-input-pair comp-margin-top-30"
                     id="incident-time-pair-id"
                   >
-                    <label>Incident Time</label>
+                    <label>Incident Date/Time</label>
                     <DatePicker
                       id="complaint-incident-time"
                       showIcon
@@ -983,23 +983,10 @@ export const ComplaintDetailsEdit: FC = () => {
                     />
                   </div>
                   <CompInput
-                    id="comp-details-edit-x-coordinate-input"
-                    divid="comp-details-edit-x-coordinate-input-div"
-                    type="input"
-                    label="X Coordinate"
-                    containerClass="comp-details-edit-input"
-                    formClass="comp-details-label-input-pair comp-margin-top-30"
-                    inputClass="comp-form-control"
-                    value={longitude}
-                    error={geoPointXMsg}
-                    step="any"
-                    onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-                  />
-                  <CompInput
                     id="comp-details-edit-y-coordinate-input"
                     divid="comp-details-edit-y-coordinate-input-div"
                     type="input"
-                    label="Y Coordinate"
+                    label="Latitude"
                     containerClass="comp-details-edit-input"
                     formClass="comp-details-label-input-pair"
                     inputClass="comp-form-control"
@@ -1007,6 +994,20 @@ export const ComplaintDetailsEdit: FC = () => {
                     error={geoPointYMsg}
                     step="any"
                     onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+                  />
+
+                  <CompInput
+                    id="comp-details-edit-x-coordinate-input"
+                    divid="comp-details-edit-x-coordinate-input-div"
+                    type="input"
+                    label="Longitude"
+                    containerClass="comp-details-edit-input"
+                    formClass="comp-details-label-input-pair comp-margin-top-30"
+                    inputClass="comp-form-control"
+                    value={longitude}
+                    error={geoPointXMsg}
+                    step="any"
+                    onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
                   />
                   <div
                     className="comp-details-label-input-pair"
@@ -1137,7 +1138,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       className="col-auto"
                       htmlFor="caller-info-secondary-phone-id"
                     >
-                      Alternate 1 Phone
+                      Alternate Phone 1
                     </label>
                     <div className="comp-details-edit-input">
                       <ValidationPhoneInput
@@ -1160,7 +1161,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       className="col-auto"
                       htmlFor="caller-info-alternate-phone-id"
                     >
-                      Alternate 2 Phone
+                      Alternate Phone 2
                     </label>
                     <div className="comp-details-edit-input">
                       <ValidationPhoneInput
@@ -1214,7 +1215,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     className="comp-details-label-input-pair"
                     id="reported-pair-id"
                   >
-                    <label htmlFor="reported-select-id">Reported By</label>
+                    <label htmlFor="reported-select-id">Organization reporting the complaint</label>
                     <CompSelect
                       id="reported-select-id"
                       classNamePrefix="comp-select"
