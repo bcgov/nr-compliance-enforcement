@@ -245,6 +245,8 @@ AS $function$
     ELSE
       ''
     END;
+
+    _detail_text := complaint_data ->> 'cos_call_details'
 	
     -- phone numbers must be formatted as +1##########.  
     -- If the numbers from webeoc contain non-numeric characters, strip those and 
