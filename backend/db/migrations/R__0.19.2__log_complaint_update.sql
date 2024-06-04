@@ -147,6 +147,11 @@ BEGIN
 	            _update_utc_timestamp
 	        );
        end if;
+       
+       -- Update timestamp to latest
+       UPDATE PUBLIC.complaint
+       SET    update_utc_timestamp = _update_utc_timestamp, update_user_id = _update_userid
+       WHERE  complaint_identifier = _complaint_identifier;
     END IF;
 END;
 $function$

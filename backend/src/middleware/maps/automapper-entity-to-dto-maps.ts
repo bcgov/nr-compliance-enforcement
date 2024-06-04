@@ -567,7 +567,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => source.update_utc_timestamp),
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.createdBy,
