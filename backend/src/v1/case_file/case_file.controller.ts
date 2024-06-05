@@ -4,14 +4,15 @@ import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { CaseFileDto } from "src/types/models/case-files/case-file";
-import { Token } from "src/auth/decorators/token.decorator";
-import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
-import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
-import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
-import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
-import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
-import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
+import { CaseFileDto } from "../../types/models/case-files/case-file";
+import { Token } from "../../auth/decorators/token.decorator";
+import { CreateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/create-supplemental-notes-input";
+import { UpdateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { FileReviewInput } from "../../types/models/case-files/file-review-input";
+import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -80,7 +81,7 @@ export class CaseFileController {
 
   @Patch("/review")
   @Roles(Role.COS_OFFICER)
-  async updateReview(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async updateReview(@Token() token, @Body() model: FileReviewInput): Promise<CaseFileDto> {
     return await this.service.updateReview(token, model);
   }
 

@@ -50,5 +50,6 @@ import { AutomapperModule } from "@automapper/nestjs";
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],
+  exports: [ComplaintService],
 })
 export class ComplaintModule {}
