@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { applyStatusClass, bcBoundaries, formatDate, formatTime, getSelectedOfficer } from "../../../../common/methods";
+import { bcBoundaries, getSelectedOfficer } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   setComplaint,
@@ -63,7 +63,6 @@ import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 import { Button } from "react-bootstrap";
-import { BsPencil } from "react-icons/bs";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
@@ -96,16 +95,9 @@ export const ComplaintDetailsEdit: FC = () => {
     violationObserved,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
-  const {
-    loggedDate,
-    createdBy,
-    lastUpdated,
-    personGuid,
-    status,
-    natureOfComplaintCode,
-    speciesCode,
-    violationTypeCode,
-  } = useAppSelector(selectComplaintHeader(complaintType));
+  const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
+    selectComplaintHeader(complaintType),
+  );
 
   const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
     useAppSelector(selectComplaintCallerInformation);
@@ -677,80 +669,119 @@ export const ComplaintDetailsEdit: FC = () => {
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
       />
-      {readOnly && <hr className="blue-seperator" />}
-      {!readOnly && <div className="spacer-seperator" />}
+
       {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
-      <div className="comp-details-subsection">
-        <div className="comp-complaint-info">
-          <div className="comp-sub-header comp-vertical-align-middle">Complaint details</div>
+
+      <section className="comp-details-body comp-details-container">
+        <div className="comp-details-section-header">
+          <h2>Complaint Details</h2>
           {readOnly && (
-            <div className="comp-box-actions-non-header">
+            <div className="comp-details-section-header-actions">
               <Button
                 id="details-screen-edit-button"
                 title="Edit Complaint"
                 variant="outline-primary"
                 onClick={editButtonClick}
               >
-                <span>Edit complaint</span>
-                <BsPencil />
+                <i className="bi bi-pencil"></i>
+                <span>Edit Complaint</span>
               </Button>
             </div>
           )}
-          <div className="clear-left-float clear-right-float"></div>
         </div>
-      </div>
-      {readOnly && <CallDetails complaintType={complaintType} />}
-      {readOnly && <CallerInformation />}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
-      {!readOnly && (
-        <>
-          {/* edit header block */}
-          <div
-            id="complaint-error-notification"
-            className={errorNotificationClass}
-          >
-            <img
-              src={notificationInvalid}
-              alt="error"
-              className="filter-image-spacing"
+
+        {/* Complaints Details (View) */}
+        <div className="comp-details-view">
+          {/* Call Details */}
+          {readOnly && <CallDetails complaintType={complaintType} />}
+
+          {/* Suspect / Witness Details */}
+          {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
+
+          {/* Caller Information */}
+          {readOnly && <CallerInformation />}
+
+          {/* Attachments */}
+          {readOnly && (
+            <section id="complaint_attachments_div_id">
+              <h3>Complainant attachments ({complaintAttachmentCount})</h3>
+              <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
+                <AttachmentsCarousel
+                  attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+                  complaintIdentifier={id}
+                  onSlideCountChange={handleSlideCountChange}
+                />
+              </div>
+            </section>
+          )}
+
+          {/* Map */}
+          {readOnly && (
+            <ComplaintLocation
+              parentCoordinates={{ lat: +latitude, lng: +longitude }}
+              complaintType={complaintType}
+              draggable={false}
+              hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
+              editComponent={true}
             />
-            {/*
-             */}
-            Errors in form
-          </div>
-          <div className="comp-complaint-header-edit-block">
-            <div className="comp-details-edit-container">
-              <div className="comp-details-edit-column">
-                {complaintType === COMPLAINT_TYPES.HWCR && (
+          )}
+
+          {/* HWCR Outcome Report */}
+          {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
+        </div>
+
+        {/* Complaint Details (Edit) */}
+        {!readOnly && (
+          <div className="comp-details-form">
+            {/* edit header block */}
+            <div
+              id="complaint-error-notification"
+              className={errorNotificationClass}
+            >
+              <img
+                src={notificationInvalid}
+                alt="error"
+                className="filter-image-spacing"
+              />
+              {/*
+               */}
+              Errors in form
+            </div>
+
+            {/* Admnistrative */}
+            <fieldset>
+              <div
+                className="comp-details-form-row"
+                id="officer-assigned-pair-id"
+              >
+                <label id="officer-assigned-select-label-id">Officer Assigned</label>
+                <CompSelect
+                  id="officer-assigned-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handleAssignedOfficerChange(e)}
+                  className="comp-details-input full-width"
+                  options={assignableOfficers}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={hasAssignedOfficer() ? selectedAssignedOfficer : { value: "Unassigned", label: "None" }}
+                />
+              </div>
+            </fieldset>
+
+            {/* Call Details */}
+            <fieldset>
+              <legend>Call Details</legend>
+              {complaintType === COMPLAINT_TYPES.HWCR && (
+                <>
                   <div
-                    className="comp-details-label-input-pair"
-                    id="nature-of-complaint-pair-id"
-                  >
-                    <label id="nature-of-complaint-label-id">
-                      Nature of Complaint<span className="required-ind">*</span>
-                    </label>
-                    <ValidationSelect
-                      id="nature-of-complaint-select-id"
-                      options={hwcrNatureOfComplaintCodes}
-                      placeholder="Select"
-                      className="comp-details-input"
-                      classNamePrefix="comp-select"
-                      defaultValue={selectedNatureOfComplaint}
-                      onChange={(e) => handleNatureOfComplaintChange(e)}
-                      errMsg={natureOfComplaintError}
-                    />
-                  </div>
-                )}
-                {complaintType === COMPLAINT_TYPES.HWCR && (
-                  <div
-                    className="comp-details-label-input-pair"
+                    className="comp-details-form-row"
                     id="species-pair-id"
                   >
                     <label id="species-label-id">
                       Species<span className="required-ind">*</span>
                     </label>
                     <ValidationSelect
-                      className="comp-details-input"
+                      className="comp-details-input full-width"
                       options={speciesCodes}
                       defaultValue={selectedSpecies}
                       placeholder="Select"
@@ -760,558 +791,497 @@ export const ComplaintDetailsEdit: FC = () => {
                       errMsg={speciesError}
                     />
                   </div>
-                )}
-                {complaintType === COMPLAINT_TYPES.ERS && (
                   <div
-                    className="comp-details-label-input-pair"
-                    id="violation-type-pair-id"
+                    className="comp-details-form-row"
+                    id="nature-of-complaint-pair-id"
                   >
-                    <label id="violation-label-id">
-                      Violation Type<span className="required-ind">*</span>
+                    <label id="nature-of-complaint-label-id">
+                      Nature of Complaint<span className="required-ind">*</span>
                     </label>
-                    <Select
-                      className="comp-details-input"
-                      options={violationTypeCodes}
-                      defaultValue={selectedViolationTypeCode}
+                    <ValidationSelect
+                      id="nature-of-complaint-select-id"
+                      options={hwcrNatureOfComplaintCodes}
                       placeholder="Select"
-                      id="violation-type-select-id"
-                      onChange={(e) => handleViolationTypeChange(e)}
+                      className="comp-details-input full-width"
                       classNamePrefix="comp-select"
+                      defaultValue={selectedNatureOfComplaint}
+                      onChange={(e) => handleNatureOfComplaintChange(e)}
+                      errMsg={natureOfComplaintError}
                     />
                   </div>
-                )}
-                <div
-                  className="comp-details-label-input-pair"
-                  id="status-pair-id"
-                >
-                  <label
-                    htmlFor="comp-details-status-text-id"
-                    id="status-label-id"
-                  >
-                    Status
-                  </label>
-                  <div
-                    id="comp-details-status-text-id"
-                    className={`badge ${applyStatusClass(status)}`}
-                  >
-                    {status}
-                  </div>
-                </div>
-                <div
-                  className="comp-details-label-input-pair"
-                  id="officer-assigned-pair-id"
-                >
-                  <label id="officer-assigned-select-label-id">Officer Assigned</label>
-                  <CompSelect
-                    id="officer-assigned-select-id"
-                    classNamePrefix="comp-select"
-                    onChange={(e) => handleAssignedOfficerChange(e)}
-                    className="comp-details-input"
-                    options={assignableOfficers}
-                    placeholder="Select"
-                    enableValidation={false}
-                    value={hasAssignedOfficer() ? selectedAssignedOfficer : { value: "Unassigned", label: "None" }}
-                  />
-                </div>
-              </div>
-              <div className="comp-details-edit-column comp-details-right-column">
-                <div
-                  className="comp-details-label-input-pair"
-                  id="date-time-pair-id"
-                >
-                  <label id="date-time-logged-label-id">Date / Time Logged</label>
-                  <div className="comp-details-input">
-                    <i className="bi bi-calendar comp-margin-right-xs"></i>
-                    {formatDate(loggedDate)}
-                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
-                    {formatTime(loggedDate)}
-                  </div>
-                </div>
-                <div
-                  className="comp-details-label-input-pair"
-                  id="last-updated-pair-id"
-                >
-                  <label id="last-updated-label-id">Last Updated</label>
-                  <div className="comp-details-input">
-                    <i className="bi bi-calendar comp-margin-right-xs"></i>
-                    {formatDate(lastUpdated)}
-                    <i className="bi bi-clock comp-margin-left-xs comp-margin-right-xs"></i>
-                    {formatTime(lastUpdated)}
-                  </div>
-                </div>
-                <div
-                  className="comp-details-label-input-pair"
-                  id="created-by-pair-id"
-                >
-                  <label id="created-by-label-id">Created By</label>
-                  <div className="comp-padding-left-xs comp-padding-top-xs">{createdBy}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* edit details block */}
-          <div className="comp-complaint-details-block">
-            <h6>Call Details</h6>
-            <div className="comp-complaint-call-information">
-              <div className="comp-details-edit-container">
-                <div className="comp-details-edit-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="complaint-description-pair-id"
-                  >
-                    <label
-                      id="complaint-description-edit-label-id"
-                      className="col-auto"
-                      htmlFor="complaint-description-textarea-id"
-                    >
-                      Complaint Description
-                      <span className="required-ind">*</span>
-                    </label>
-                    <ValidationTextArea
-                      className="comp-form-control"
-                      id="complaint-description-textarea-id"
-                      defaultValue={details !== undefined ? details : ""}
-                      rows={4}
-                      errMsg={complaintDescriptionError}
-                      onChange={handleComplaintDescChange}
-                    />
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair comp-margin-top-30"
-                    id="incident-time-pair-id"
-                  >
-                    <label>Incident Date/Time</label>
-                    <DatePicker
-                      id="complaint-incident-time"
-                      showIcon
-                      timeInputLabel="Time:"
-                      onChange={handleIncidentDateTimeChange}
-                      selected={selectedIncidentDateTime}
-                      showTimeInput
-                      dateFormat="yyyy-MM-dd HH:mm"
-                      timeFormat="HH:mm"
-                      wrapperClassName="comp-details-edit-calendar-input"
-                      maxDate={maxDate}
-                    />
-                  </div>
-                  {complaintType === COMPLAINT_TYPES.HWCR && (
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="attractants-pair-id"
-                    >
-                      <label>Attractants</label>
-                      <div className="comp-details-edit-input">
-                        <ValidationMultiSelect
-                          className="comp-details-input"
-                          options={attractantCodes}
-                          defaultValue={selectedAttractants}
-                          placeholder="Select"
-                          id="attractants-select-id"
-                          classNamePrefix="comp-select"
-                          onChange={handleAttractantsChange}
-                          errMsg={attractantsErrorMsg}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {complaintType === COMPLAINT_TYPES.ERS && (
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="violation-in-progress-pair-id"
-                    >
-                      <label>Violation in Progress</label>
-                      <div className="comp-details-edit-input">
-                        <Select
-                          options={yesNoOptions}
-                          defaultValue={selectedViolationInProgress}
-                          placeholder="Select"
-                          id="violation-in-progress-select-id"
-                          classNamePrefix="comp-select"
-                          onChange={(e) => handleViolationInProgessChange(e)}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {complaintType === COMPLAINT_TYPES.ERS && (
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="violation-observed-pair-id"
-                    >
-                      <label>Violation Observed</label>
-                      <div className="comp-details-edit-input">
-                        <Select
-                          options={yesNoOptions}
-                          defaultValue={selectedViolationObserved}
-                          placeholder="Select"
-                          id="violation-observed-select-id"
-                          classNamePrefix="comp-select"
-                          onChange={(e) => handleViolationObservedChange(e)}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="comp-details-edit-column comp-details-right-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="complaint-location-pair-id"
-                  >
-                    <label id="complaint-location-label-id">Complaint Location</label>
-                    <div className="comp-details-edit-input">
-                      <input
-                        type="text"
-                        id="location-edit-id"
-                        className="comp-form-control"
-                        defaultValue={location}
-                        onChange={(e) => handleLocationChange(e.target.value)}
-                        maxLength={120}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="location-description-pair-id"
-                  >
-                    <label>Location Description</label>
-                    <textarea
-                      className="comp-form-control"
-                      id="complaint-location-description-textarea-id"
-                      defaultValue={locationDescription}
-                      rows={4}
-                      onChange={(e) => handleLocationDescriptionChange(e.target.value)}
-                      maxLength={4000}
-                    />
-                  </div>
-                  <CompInput
-                    id="comp-details-edit-y-coordinate-input"
-                    divid="comp-details-edit-y-coordinate-input-div"
-                    type="input"
-                    label="Latitude"
-                    containerClass="comp-details-edit-input"
-                    formClass="comp-details-label-input-pair"
-                    inputClass="comp-form-control"
-                    value={latitude}
-                    error={geoPointYMsg}
-                    step="any"
-                    onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-                  />
+                </>
+              )}
 
-                  <CompInput
-                    id="comp-details-edit-x-coordinate-input"
-                    divid="comp-details-edit-x-coordinate-input-div"
-                    type="input"
-                    label="Longitude"
-                    containerClass="comp-details-edit-input"
-                    formClass="comp-details-label-input-pair comp-margin-top-30"
-                    inputClass="comp-form-control"
-                    value={longitude}
-                    error={geoPointXMsg}
-                    step="any"
-                    onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+              {complaintType === COMPLAINT_TYPES.ERS && (
+                <div
+                  className="comp-details-form-row"
+                  id="violation-type-pair-id"
+                >
+                  <label id="violation-label-id">
+                    Violation Type<span className="required-ind">*</span>
+                  </label>
+                  <Select
+                    className="comp-details-input full-width"
+                    options={violationTypeCodes}
+                    defaultValue={selectedViolationTypeCode}
+                    placeholder="Select"
+                    id="violation-type-select-id"
+                    onChange={(e) => handleViolationTypeChange(e)}
+                    classNamePrefix="comp-select"
                   />
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="area-community-pair-id"
-                  >
-                    <label>
-                      Community<span className="required-ind">*</span>
-                    </label>
-                    <div className="comp-details-edit-input">
-                      <ValidationSelect
-                        className="comp-details-input"
-                        options={areaCodes}
-                        defaultValue={selectedAreaCode}
-                        placeholder="Select"
-                        id="community-select-id"
-                        classNamePrefix="comp-select"
-                        onChange={(e) => handleCommunityChange(e)}
-                        errMsg={communityError}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="office-pair-id"
-                  >
-                    <label>Office</label>
-                    <div className="comp-details-edit-input">
-                      <input
-                        type="text"
-                        id="office-edit-readonly-id"
-                        className="comp-form-control"
-                        disabled
-                        defaultValue={office}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="zone-pair-id"
-                  >
-                    <label>Zone</label>
-                    <div className="comp-details-edit-input">
-                      <input
-                        type="text"
-                        id="zone-edit-readonly-id"
-                        className="comp-form-control"
-                        disabled
-                        defaultValue={zone}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="region-pair-id"
-                  >
-                    <label>Region</label>
-                    <div className="comp-details-edit-input">
-                      <input
-                        type="text"
-                        id="region-edit-readonly-id"
-                        className="comp-form-control"
-                        disabled
-                        defaultValue={region}
-                      />
-                    </div>
-                  </div>
+                </div>
+              )}
+              <div
+                className="comp-details-form-row"
+                id="complaint-description-pair-id"
+              >
+                <label
+                  id="complaint-description-edit-label-id"
+                  htmlFor="complaint-description-textarea-id"
+                >
+                  Complaint Description
+                  <span className="required-ind">*</span>
+                </label>
+                <div className="comp-details-edit-input">
+                  <ValidationTextArea
+                    className="comp-form-control"
+                    id="complaint-description-textarea-id"
+                    defaultValue={details !== undefined ? details : ""}
+                    rows={4}
+                    errMsg={complaintDescriptionError}
+                    onChange={handleComplaintDescChange}
+                  />
                 </div>
               </div>
-            </div>
-          </div>
-          {/* edit caller info block */}
-          <div className="comp-complaint-details-block">
-            <h6>Caller Information</h6>
-            <div className="comp-complaint-call-information">
-              <div className="comp-details-edit-container">
-                <div className="comp-details-edit-column">
+              <div
+                className="comp-details-form-row"
+                id="incident-time-pair-id"
+              >
+                <label>Incident Date/Time</label>
+                <div className="comp-details-edit-input">
+                  <DatePicker
+                    id="complaint-incident-time"
+                    showIcon
+                    timeInputLabel="Time:"
+                    onChange={handleIncidentDateTimeChange}
+                    selected={selectedIncidentDateTime}
+                    showTimeInput
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    timeFormat="HH:mm"
+                    wrapperClassName="comp-details-edit-calendar-input"
+                    maxDate={maxDate}
+                  />
+                </div>
+              </div>
+              {complaintType === COMPLAINT_TYPES.HWCR && (
+                <div
+                  className="comp-details-form-row"
+                  id="attractants-pair-id"
+                >
+                  <label>Attractants</label>
+                  <div className="comp-details-edit-input">
+                    <ValidationMultiSelect
+                      className="comp-details-input"
+                      options={attractantCodes}
+                      defaultValue={selectedAttractants}
+                      placeholder="Select"
+                      id="attractants-select-id"
+                      classNamePrefix="comp-select"
+                      onChange={handleAttractantsChange}
+                      errMsg={attractantsErrorMsg}
+                    />
+                  </div>
+                </div>
+              )}
+              {complaintType === COMPLAINT_TYPES.ERS && (
+                <>
                   <div
-                    className="comp-details-label-input-pair"
-                    id="name-pair-id"
+                    className="comp-details-form-row"
+                    id="violation-in-progress-pair-id"
+                  >
+                    <label>Violation in Progress</label>
+                    <div className="comp-details-edit-input">
+                      <Select
+                        options={yesNoOptions}
+                        defaultValue={selectedViolationInProgress}
+                        placeholder="Select"
+                        id="violation-in-progress-select-id"
+                        classNamePrefix="comp-select"
+                        onChange={(e) => handleViolationInProgessChange(e)}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="comp-details-form-row"
+                    id="violation-observed-pair-id"
+                  >
+                    <label>Violation Observed</label>
+                    <div className="comp-details-edit-input">
+                      <Select
+                        options={yesNoOptions}
+                        defaultValue={selectedViolationObserved}
+                        placeholder="Select"
+                        id="violation-observed-select-id"
+                        classNamePrefix="comp-select"
+                        onChange={(e) => handleViolationObservedChange(e)}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="comp-details-form-row"
+                    id="subject-of-complaint-pair-id"
                   >
                     <label
                       id="complaint-caller-info-name-label-id"
                       className="col-auto"
-                      htmlFor="caller-name-id"
+                      htmlFor="complaint-witness-details-textarea-id"
                     >
-                      Name
+                      Subject of Complaint / Witness Details
                     </label>
-                    <div className="comp-details-edit-input">
-                      <input
-                        type="text"
-                        className="comp-form-control"
-                        defaultValue={name}
-                        id="caller-name-id"
-                        onChange={(e) => handleNameChange(e.target.value)}
-                        maxLength={120}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="primary-phone-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-primary-phone-label-id"
-                      className="col-auto"
-                      htmlFor="caller-primary-phone-id"
-                    >
-                      Primary Phone
-                    </label>
-                    <div className="comp-details-edit-input">
-                      <ValidationPhoneInput
-                        className="comp-details-input"
-                        defaultValue={primaryPhone}
-                        onChange={handlePrimaryPhoneChange}
-                        maxLength={14}
-                        international={false}
-                        id="caller-primary-phone-id"
-                        errMsg={primaryPhoneMsg}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="secondary-phone-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-secondary-phone-label-id"
-                      className="col-auto"
-                      htmlFor="caller-info-secondary-phone-id"
-                    >
-                      Alternate Phone 1
-                    </label>
-                    <div className="comp-details-edit-input">
-                      <ValidationPhoneInput
-                        className="comp-details-input"
-                        defaultValue={secondaryPhone}
-                        onChange={handleSecondaryPhoneChange}
-                        maxLength={14}
-                        international={false}
-                        id="caller-info-secondary-phone-id"
-                        errMsg={secondaryPhoneMsg}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="alternate-phone-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-alternate-phone-label-id"
-                      className="col-auto"
-                      htmlFor="caller-info-alternate-phone-id"
-                    >
-                      Alternate Phone 2
-                    </label>
-                    <div className="comp-details-edit-input">
-                      <ValidationPhoneInput
-                        className="comp-details-input"
-                        defaultValue={alternatePhone}
-                        onChange={handleAlternatePhoneChange}
-                        maxLength={14}
-                        international={false}
-                        id="caller-info-alternate-phone-id"
-                        errMsg={alternatePhoneMsg}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="comp-details-edit-column comp-details-right-column">
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="address-pair-id"
-                  >
-                    <label>Address</label>
-                    <div className="comp-details-edit-input">
-                      <input
-                        type="text"
-                        className="comp-form-control"
-                        defaultValue={address}
-                        id="complaint-address-id"
-                        onChange={(e) => handleAddressChange(e.target.value)}
-                        maxLength={120}
-                      />
-                    </div>
-                  </div>
-
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="email-pair-id"
-                  >
-                    <label>Email</label>
-                    <div className="comp-details-edit-input">
-                      <ValidationInput
-                        type="text"
-                        className="comp-form-control"
-                        defaultValue={email !== undefined ? email : ""}
-                        id="complaint-email-id"
-                        onChange={handleEmailChange}
-                        errMsg={emailMsg}
-                        maxLength={120}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className="comp-details-label-input-pair"
-                    id="reported-pair-id"
-                  >
-                    <label htmlFor="reported-select-id">Organization reporting the complaint</label>
-                    <CompSelect
-                      id="reported-select-id"
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      defaultOption={selectedReportedByCode}
-                      placeholder="Select"
-                      options={reportedByCodes}
-                      enableValidation={false}
-                      onChange={(e) => handleReportedByChange(e)}
+                    <textarea
+                      className="comp-form-control"
+                      id="complaint-witness-details-textarea-id"
+                      defaultValue={complaint_witness_details}
+                      rows={4}
+                      onChange={(e) => handleSuspectDetailsChange(e.target.value)}
+                      maxLength={4000}
+                      placeholder="Enter details (e.g. vehicle, license plate, features, clothing, weapons, name, address)"
                     />
                   </div>
+                </>
+              )}
+              <div
+                className="comp-details-form-row"
+                id="complaint-location-pair-id"
+              >
+                <label id="complaint-location-label-id">Complaint Location</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    id="location-edit-id"
+                    className="comp-form-control"
+                    defaultValue={location}
+                    onChange={(e) => handleLocationChange(e.target.value)}
+                    maxLength={120}
+                  />
                 </div>
               </div>
-            </div>
-          </div>
-          {complaintType === COMPLAINT_TYPES.ERS && (
-            <div className="comp-complaint-details-block">
-              <h6>Subject of Complaint/Witness Details</h6>
-              <div className="comp-complaint-call-information">
-                <div className="comp-suspect-witness-edit-container">
-                  <div className="comp-details-edit-column comp-details-right-column">
-                    <div
-                      className="comp-details-label-input-pair"
-                      id="subject-of-complaint-pair-id"
-                    >
-                      <label
-                        id="complaint-caller-info-name-label-id"
-                        className="col-auto"
-                        htmlFor="complaint-witness-details-textarea-id"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        className="comp-form-control"
-                        id="complaint-witness-details-textarea-id"
-                        defaultValue={complaint_witness_details}
-                        rows={4}
-                        onChange={(e) => handleSuspectDetailsChange(e.target.value)}
-                        maxLength={4000}
-                      />
-                    </div>
-                  </div>
-                  <div className="comp-details-edit-column" />
-                </div>
+              <div
+                className="comp-details-form-row"
+                id="location-description-pair-id"
+              >
+                <label>Location Description</label>
+                <textarea
+                  className="comp-form-control"
+                  id="complaint-location-description-textarea-id"
+                  defaultValue={locationDescription}
+                  rows={4}
+                  onChange={(e) => handleLocationDescriptionChange(e.target.value)}
+                  maxLength={4000}
+                />
               </div>
-            </div>
-          )}
-          <div className="comp-complaint-details-block">
-            <h6>Complainant attachments ({complaintAttachmentCount})</h6>
-            <div className="comp-attachments">
-              <AttachmentsCarousel
-                attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                complaintIdentifier={id}
-                allowUpload={true}
-                allowDelete={true}
-                onFilesSelected={onHandleAddAttachments}
-                onFileDeleted={onHandleDeleteAttachment}
-                onSlideCountChange={handleSlideCountChange}
+
+              {/* Latitude / Longitude */}
+              <CompInput
+                id="comp-details-edit-y-coordinate-input"
+                divid="comp-details-edit-y-coordinate-input-div"
+                type="input"
+                label="Latitude"
+                containerClass="comp-details-edit-input"
+                formClass="comp-details-form-row"
+                inputClass="comp-form-control"
+                value={latitude}
+                error={geoPointYMsg}
+                step="any"
+                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
               />
-            </div>
-          </div>
-          <ComplaintLocation
-            parentCoordinates={{ lat: +latitude, lng: +longitude }}
-            complaintType={complaintType}
-            draggable={true}
-            onMarkerMove={handleMarkerMove}
-            hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
-            editComponent={true}
-          />
-        </>
-      )}
-      {readOnly && (
-        <div
-          className="comp-complaint-details-block"
-          id="complaint_attachments_div_id"
-        >
-          <h6>Complainant attachments ({complaintAttachmentCount})</h6>
-          <div className={complaintAttachmentCount > 0 ? "comp-attachments" : ""}>
-            <AttachmentsCarousel
-              attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-              complaintIdentifier={id}
-              onSlideCountChange={handleSlideCountChange}
+              <CompInput
+                id="comp-details-edit-x-coordinate-input"
+                divid="comp-details-edit-x-coordinate-input-div"
+                type="input"
+                label="Longitude"
+                containerClass="comp-details-edit-input"
+                formClass="comp-details-form-row"
+                inputClass="comp-form-control"
+                value={longitude}
+                error={geoPointXMsg}
+                step="any"
+                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+              />
+
+              <div
+                className="comp-details-form-row"
+                id="area-community-pair-id"
+              >
+                <label>
+                  Community<span className="required-ind">*</span>
+                </label>
+                <div className="comp-details-edit-input">
+                  <ValidationSelect
+                    className="comp-details-input"
+                    options={areaCodes}
+                    defaultValue={selectedAreaCode}
+                    placeholder="Select"
+                    id="community-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handleCommunityChange(e)}
+                    errMsg={communityError}
+                  />
+                </div>
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="office-pair-id"
+              >
+                <label>Office</label>
+                <input
+                  type="text"
+                  id="office-edit-readonly-id"
+                  className="comp-form-control"
+                  disabled
+                  defaultValue={office}
+                />
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="zone-pair-id"
+              >
+                <label>Zone</label>
+                <input
+                  type="text"
+                  id="zone-edit-readonly-id"
+                  className="comp-form-control"
+                  disabled
+                  defaultValue={zone}
+                />
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="region-pair-id"
+              >
+                <label>Region</label>
+                <input
+                  type="text"
+                  id="region-edit-readonly-id"
+                  className="comp-form-control"
+                  disabled
+                  defaultValue={region}
+                />
+              </div>
+            </fieldset>
+
+            {/* Call Information */}
+            <fieldset>
+              <legend>Caller Information</legend>
+
+              <div
+                className="comp-details-form-row"
+                id="name-pair-id"
+              >
+                <label
+                  id="complaint-caller-info-name-label-id"
+                  className="col-auto"
+                  htmlFor="caller-name-id"
+                >
+                  Name
+                </label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    className="comp-form-control"
+                    defaultValue={name}
+                    id="caller-name-id"
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    maxLength={120}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="comp-details-form-row"
+                id="reported-pair-id"
+              >
+                <label htmlFor="reported-select-id">Reporting Organization</label>
+                <div className="comp-details-edit-input">
+                  <CompSelect
+                    id="reported-select-id"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    defaultOption={selectedReportedByCode}
+                    placeholder="Select"
+                    options={reportedByCodes}
+                    enableValidation={false}
+                    onChange={(e) => handleReportedByChange(e)}
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div
+                className="comp-details-form-row"
+                id="address-pair-id"
+              >
+                <label>Address</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    className="comp-form-control"
+                    defaultValue={address}
+                    id="complaint-address-id"
+                    onChange={(e) => handleAddressChange(e.target.value)}
+                    maxLength={120}
+                  />
+                </div>
+              </div>
+
+              {/* Email Address */}
+              <div
+                className="comp-details-form-row"
+                id="email-pair-id"
+              >
+                <label>Email</label>
+                <div className="comp-details-edit-input">
+                  <ValidationInput
+                    type="text"
+                    className="comp-form-control"
+                    defaultValue={email !== undefined ? email : ""}
+                    id="complaint-email-id"
+                    onChange={handleEmailChange}
+                    errMsg={emailMsg}
+                    maxLength={120}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="comp-details-form-row"
+                id="primary-phone-pair-id"
+              >
+                <label
+                  id="complaint-caller-info-primary-phone-label-id"
+                  className="col-auto"
+                  htmlFor="caller-primary-phone-id"
+                >
+                  Primary Phone
+                </label>
+                <div className="comp-details-edit-input">
+                  <ValidationPhoneInput
+                    className="comp-details-input"
+                    defaultValue={primaryPhone}
+                    onChange={handlePrimaryPhoneChange}
+                    maxLength={14}
+                    international={false}
+                    id="caller-primary-phone-id"
+                    errMsg={primaryPhoneMsg}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="comp-details-form-row"
+                id="secondary-phone-pair-id"
+              >
+                <label
+                  id="complaint-caller-info-secondary-phone-label-id"
+                  className="col-auto"
+                  htmlFor="caller-info-secondary-phone-id"
+                >
+                  Alternate Phone 1
+                </label>
+                <div className="comp-details-edit-input">
+                  <ValidationPhoneInput
+                    className="comp-details-input"
+                    defaultValue={secondaryPhone}
+                    onChange={handleSecondaryPhoneChange}
+                    maxLength={14}
+                    international={false}
+                    id="caller-info-secondary-phone-id"
+                    errMsg={secondaryPhoneMsg}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="comp-details-form-row"
+                id="alternate-phone-pair-id"
+              >
+                <label
+                  id="complaint-caller-info-alternate-phone-label-id"
+                  className="col-auto"
+                  htmlFor="caller-info-alternate-phone-id"
+                >
+                  Alternate Phone 2
+                </label>
+                <div className="comp-details-edit-input">
+                  <ValidationPhoneInput
+                    className="comp-details-input"
+                    defaultValue={alternatePhone}
+                    onChange={handleAlternatePhoneChange}
+                    maxLength={14}
+                    international={false}
+                    id="caller-info-alternate-phone-id"
+                    errMsg={alternatePhoneMsg}
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            {/* ERS - Subject of Complaint */}
+            {complaintType === COMPLAINT_TYPES.ERS && (
+              <fieldset>
+                <legend>Subject of Complaint/Witness Details</legend>
+                <div
+                  className="comp-details-form-row"
+                  id="subject-of-complaint-pair-id"
+                >
+                  <label
+                    id="complaint-caller-info-name-label-id"
+                    className="col-auto"
+                    htmlFor="complaint-witness-details-textarea-id"
+                  >
+                    Details
+                  </label>
+                  <textarea
+                    className="comp-form-control"
+                    id="complaint-witness-details-textarea-id"
+                    defaultValue={complaint_witness_details}
+                    rows={4}
+                    onChange={(e) => handleSuspectDetailsChange(e.target.value)}
+                    maxLength={4000}
+                    placeholder="Enter details (e.g. vehicle, license plate, features, clothing, weapons, name, address)"
+                  />
+                </div>
+              </fieldset>
+            )}
+
+            {/* Attachments */}
+            <fieldset>
+              <legend>Complainant attachments ({complaintAttachmentCount})</legend>
+              <div className="comp-details-attachments">
+                <AttachmentsCarousel
+                  attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+                  complaintIdentifier={id}
+                  allowUpload={true}
+                  allowDelete={true}
+                  onFilesSelected={onHandleAddAttachments}
+                  onFileDeleted={onHandleDeleteAttachment}
+                  onSlideCountChange={handleSlideCountChange}
+                />
+              </div>
+            </fieldset>
+
+            {/* Location Map */}
+            <ComplaintLocation
+              parentCoordinates={{ lat: +latitude, lng: +longitude }}
+              complaintType={complaintType}
+              draggable={true}
+              onMarkerMove={handleMarkerMove}
+              hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
+              editComponent={true}
             />
           </div>
-        </div>
-      )}
-      {readOnly && (
-        <ComplaintLocation
-          parentCoordinates={{ lat: +latitude, lng: +longitude }}
-          complaintType={complaintType}
-          draggable={false}
-          hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
-          editComponent={true}
-        />
-      )}
-      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
+        )}
+      </section>
     </div>
   );
 };

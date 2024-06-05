@@ -571,8 +571,7 @@ button.modal-buttons {
   background-color: $bc-brand-blue;
   color: $bc-brand-blue;
   opacity: 100 !important;
-  margin-left: 24px;
-  margin-right: 24px;
+  margin: 0 24px;
 }
 
 p {
@@ -593,8 +592,7 @@ p {
 // BREADCRUMBS
 .comp-complaint-breadcrumb {
   color: $white;
-  margin-top: -8px;
-  font-size: 0.875rem;
+  margin-top: -4px;
 }
 
 // BUTTONS
