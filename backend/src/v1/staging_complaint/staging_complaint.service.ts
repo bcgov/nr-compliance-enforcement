@@ -92,7 +92,7 @@ export class StagingComplaintService {
   // ignores some attributes (specifically the back_number_of* attributes)
   _compareWebEOCComplaints = (complaint1: WebEOCComplaint, complaint2: WebEOCComplaint): boolean => {
     // Attributes to ignore
-    const attributesToIgnore = ["back_number_of_days", "back_number_of_hours", "back_number_of_minutes"];
+    const attributesToIgnore = ["back_number_of_days", "back_number_of_hours", "back_number_of_minutes", "entrydate"];
 
     // Omit the attributes to ignore
     const complaint1Filtered = omit(complaint1, attributesToIgnore);
@@ -157,7 +157,7 @@ export class StagingComplaintService {
       .orderBy("stagingComplaint.update_utc_timestamp", "DESC")
       .getOne();
 
-    const previousUpdateJSON = previousUpdate.complaintJsonb as WebEOCComplaintUpdate;
+    const previousUpdateJSON = previousUpdate?.complaintJsonb as WebEOCComplaintUpdate;
 
     // ignore duplicates
     if (this._compareWebEOCComplaintUpdates(previousUpdateJSON, stagingComplaint)) {
