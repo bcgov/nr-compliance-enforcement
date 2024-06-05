@@ -7,7 +7,7 @@ import { openModal, profileDisplayName, profileInitials } from "../../../../stor
 import { formatDate } from "../../../../common/methods";
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
-import { getComplaintById, getComplaintStatusById, selectComplaint } from "../../../../store/reducers/complaints";
+import { getComplaintStatusById, selectComplaint } from "../../../../store/reducers/complaints";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { createReview, updateReview } from "../../../../store/reducers/case-thunks";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
