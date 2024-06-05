@@ -167,6 +167,16 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-case-management
                       key: case-management-api-url
+                - name: SEQ_RESET_VALUE
+                  valueFrom:
+                    secretKeyRef:
+                      name: sequence-reset-cron
+                      key: seq-reset-value
+                - name: SEQ_RESET_CRON_EXPRESSION
+                  valueFrom:
+                    secretKeyRef:
+                      name: sequence-reset-cron
+                      key: seq-reset-cron-expression
               ports:
                 - containerPort: 3000
                   protocol: TCP

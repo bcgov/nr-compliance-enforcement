@@ -17,7 +17,7 @@ type props = {
   discardMethod: string;
 
   reactions: string;
-  remainingUse: string;
+  remainingUse: string | null;
 
   officer?: string;
   date?: Date;

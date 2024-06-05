@@ -3,6 +3,7 @@ import { AssessmentDetailsDto } from "./assessment-details";
 import { EquipmentDetailsDto } from "./equipment/equipment-details";
 import { Note } from "./supplemental-notes/note";
 import { PreventionDetailsDto } from "./prevention-details";
+import { FileReviewActionDto } from "./file-review-action";
 
 export interface CaseFileDto {
   caseIdentifier: UUID;
@@ -15,5 +16,6 @@ export interface CaseFileDto {
   equipment: Array<EquipmentDetailsDto>;
   updateUserId: string;
   isReviewRequired: boolean;
+  reviewComplete: FileReviewActionDto;
   note?: Note;
 }

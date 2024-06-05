@@ -387,7 +387,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Incident Time
     cy.get("#incident-time-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Incident Time");
+      expect($label).to.contain.text("Incident Date/Time");
     });
     cy.get("#incident-time-pair-id input").should("exist");
 
@@ -414,13 +414,13 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // X Coordinate
     cy.get('[for="comp-details-edit-x-coordinate-input"]').should(($label) => {
-      expect($label).to.contain.text("X Coordinate");
+      expect($label).to.contain.text("Longitude");
     });
     cy.get("#comp-details-edit-x-coordinate-input-div").should("exist");
 
     // Y Coordinate
     cy.get('[for="comp-details-edit-y-coordinate-input"]').should(($label) => {
-      expect($label).to.contain.text("Y Coordinate");
+      expect($label).to.contain.text("Latitude");
     });
     cy.get("#comp-details-edit-y-coordinate-input-div").should("exist");
 
@@ -469,13 +469,13 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Alternative 1 Phone
     cy.get("#secondary-phone-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Alternate 1 Phone");
+      expect($label).to.contain.text("Alternate Phone 1");
     });
     cy.get("#secondary-phone-pair-id input").should("exist");
 
     // Alternative 2 Phone
     cy.get("#alternate-phone-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Alternate 2 Phone");
+      expect($label).to.contain.text("Alternate Phone 2");
     });
     cy.get("#alternate-phone-pair-id input").should("exist");
 
@@ -493,7 +493,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Reffered by / Complaint Agency
     cy.get("#reported-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Reported By");
+      expect($label).to.contain.text("Organization reporting the complaint");
     });
     cy.get("#reported-pair-id input").should("exist");
 
