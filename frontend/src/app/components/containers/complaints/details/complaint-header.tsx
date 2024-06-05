@@ -79,7 +79,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   return (
     <>
       <div className="comp-details-header">
-        <div className="comp-details-container">
+        <div className="comp-container">
           {/* <!-- breadcrumb start --> */}
           <div className="comp-complaint-breadcrumb">
             <nav aria-label="breadcrumb">
@@ -185,7 +185,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   variant="outline-light"
                   onClick={saveButtonClick}
                 >
-                  Save Changes
+                  Save Complaint
                 </Button>
               </div>
             )}
@@ -206,7 +206,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
       {/* <!-- complaint status details start --> */}
       {readOnly && (
-        <div className="comp-details-container">
+        <div className="comp-container">
           <div className="comp-header-status-container">
             <div className="comp-details-status">
               <dl className="comp-details-date-logged">

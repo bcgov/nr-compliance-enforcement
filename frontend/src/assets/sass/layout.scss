@@ -1,5 +1,5 @@
 // LAYOUT
-.comp-container {
+.comp-app-container {
   display: flex;
   height: 100vh;
   height: 100svh; // iOS devices
@@ -19,6 +19,12 @@
   flex-direction: column;
   flex: 1 1 auto;
   overflow-x: hidden;
+}
+
+.comp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
 .fixed-header .comp-header {

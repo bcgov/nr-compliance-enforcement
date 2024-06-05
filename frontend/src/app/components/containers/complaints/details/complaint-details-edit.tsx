@@ -672,7 +672,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
       {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
 
-      <section className="comp-details-body comp-details-container">
+      <section className="comp-details-body comp-container">
         <div className="comp-details-section-header">
           <h2>Complaint Details</h2>
           {readOnly && (

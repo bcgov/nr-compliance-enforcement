@@ -10,7 +10,7 @@
   }
 }
 
-// PAGE HEADER/TITLE CONTAINER
+// COMPLAINTS LIST/MAP PAGE HEADER
 .comp-page-header {
   display: flex;
   flex-direction: column;
@@ -236,16 +236,8 @@
 }
 
 // COMPLAINT DETAILS AND EDIT PAGES
-// Set max-width for large viewport
-.comp-details-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
 // COMPLAINT HEADER COMPONENT
-.comp-details-header,
-.comp-create-header {
+.comp-details-header {
   position: sticky;
   top: 0;
   z-index: 8000;
@@ -456,7 +448,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 
   h2 {
     margin: 0;
@@ -580,8 +572,14 @@
     border-top: 1px solid $gray-300;
   }
 
+  fieldset + section {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid $gray-300;
+  }
+
   legend {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     font-size: 1rem;
     font-weight: 700;
   }

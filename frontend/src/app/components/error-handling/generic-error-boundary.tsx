@@ -13,7 +13,7 @@ const GenericErrorBoundary: FC<props> = ({ children }) => {
 
   if (error) {
     return (
-      <div className="comp-container fixed-header">
+      <div className="comp-app-container fixed-header">
         {/* <!-- --> */}
 
         <div className="comp-header">
