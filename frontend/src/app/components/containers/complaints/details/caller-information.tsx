@@ -26,7 +26,7 @@ export const CallerInformation: FC = () => {
         </div>
         <div>
           <dt>Alternative Phone 2</dt>
-          <dd id="comp-details-phone-3">{formatPhoneNumber(alternatePhone !== undefined ? alternatePhone : "")}</dd>
+          <dd id="comp-details-phone-2">{formatPhoneNumber(alternatePhone !== undefined ? alternatePhone : "")}</dd>
         </div>
         <div>
           <dt>Address</dt>

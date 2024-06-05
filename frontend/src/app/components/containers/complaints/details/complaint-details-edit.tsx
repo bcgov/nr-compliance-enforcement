@@ -927,27 +927,6 @@ export const ComplaintDetailsEdit: FC = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="comp-details-form-row"
-                    id="subject-of-complaint-pair-id"
-                  >
-                    <label
-                      id="complaint-caller-info-name-label-id"
-                      className="col-auto"
-                      htmlFor="complaint-witness-details-textarea-id"
-                    >
-                      Subject of Complaint / Witness Details
-                    </label>
-                    <textarea
-                      className="comp-form-control"
-                      id="complaint-witness-details-textarea-id"
-                      defaultValue={complaint_witness_details}
-                      rows={4}
-                      onChange={(e) => handleSuspectDetailsChange(e.target.value)}
-                      maxLength={4000}
-                      placeholder="Enter details (e.g. vehicle, license plate, features, clothing, weapons, name, address)"
-                    />
-                  </div>
                 </>
               )}
               <div
@@ -1235,11 +1214,10 @@ export const ComplaintDetailsEdit: FC = () => {
                   id="subject-of-complaint-pair-id"
                 >
                   <label
-                    id="complaint-caller-info-name-label-id"
                     className="col-auto"
                     htmlFor="complaint-witness-details-textarea-id"
                   >
-                    Details
+                    Description
                   </label>
                   <textarea
                     className="comp-form-control"

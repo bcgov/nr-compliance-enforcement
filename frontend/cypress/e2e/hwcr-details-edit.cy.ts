@@ -166,34 +166,34 @@ describe("Complaint Edit Page spec - Edit View", () => {
     //start checking edit changes saved
     cy.waitForSpinner();
 
-    cy.get('div[id="comp-details-name"]').contains(editCallerInformation.name);
-    cy.get('div[id="comp-details-address"]').contains(editCallerInformation.address);
-    cy.get('div[id="comp-details-email"]').contains(editCallerInformation.email);
-    cy.get('div[id="comp-details-phone"]').contains(editCallerInformation.phone);
-    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
+    cy.get('dd[id="comp-details-name"]').contains(editCallerInformation.name);
+    cy.get('dd[id="comp-details-address"]').contains(editCallerInformation.address);
+    cy.get('dd[id="comp-details-email"]').contains(editCallerInformation.email);
+    cy.get('dd[id="comp-details-phone"]').contains(editCallerInformation.phone);
+    cy.get('dd[id="comp-details-phone-1"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.secondary);
     });
-    cy.get('div[id="comp-details-phone-3"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
-    cy.get('div[id="comp-details-reported"]').contains(editCallerInformation.reported);
-    cy.get('div[id="comp-details-email"]').contains(editCallerInformation.email);
-    cy.get('div[id="comp-details-location"]').contains(editCallDetails.location);
-    cy.get('p[id="comp-details-location-description"]').contains(editCallDetails.locationDescription);
+    cy.get('dd[id="comp-details-reported"]').contains(editCallerInformation.reported);
+    cy.get('dd[id="comp-details-email"]').contains(editCallerInformation.email);
+    cy.get('dd[id="comp-details-location"]').contains(editCallDetails.location);
+    cy.get('dd[id="comp-details-location-description"]').contains(editCallDetails.locationDescription);
 
-    cy.get('div[id="complaint-incident-date-time"]').contains(editCallDetails.incidentDateDay);
+    cy.get('dd[id="complaint-incident-date-time"]').contains(editCallDetails.incidentDateDay);
 
-    cy.get('p[id="comp-details-description"]').contains(editCallDetails.description);
+    cy.get('pre[id="comp-details-description"]').contains(editCallDetails.description);
 
-    cy.get('span[id="comp-details-community"]').contains(editCallDetails.community);
+    cy.get('dd[id="comp-details-community"]').contains(editCallDetails.community);
 
-    cy.get('span[id="comp-details-office"]').contains(editCallDetails.office);
+    cy.get('dd[id="comp-details-office"]').contains(editCallDetails.office);
 
-    cy.get('span[id="comp-details-zone"]').contains(editCallDetails.zone);
+    cy.get('dd[id="comp-details-zone"]').contains(editCallDetails.zone);
 
-    cy.get('span[id="comp-details-region"]').contains(editCallDetails.region);
+    cy.get('dd[id="comp-details-region"]').contains(editCallDetails.region);
 
-    cy.get(".comp-attactant-badge").then(function ($defaultValue) {
+    cy.get(".comp-attractant-badge").then(function ($defaultValue) {
       expect($defaultValue).to.contain("Livestock");
       expect($defaultValue).to.contain("BBQ");
       expect($defaultValue).to.contain("Beehive");
@@ -257,36 +257,36 @@ describe("Complaint Edit Page spec - Edit View", () => {
     //start verifying changes are reverted
     cy.waitForSpinner();
 
-    cy.get('div[id="comp-details-name"]').contains(originalCallerInformation.name);
-    cy.get('div[id="comp-details-address"]').contains(originalCallerInformation.address);
-    cy.get('div[id="comp-details-email"]').contains(originalCallerInformation.email);
+    cy.get('dd[id="comp-details-name"]').contains(originalCallerInformation.name);
+    cy.get('dd[id="comp-details-address"]').contains(originalCallerInformation.address);
+    cy.get('dd[id="comp-details-email"]').contains(originalCallerInformation.email);
 
-    cy.get('div[id="comp-details-phone"]').contains(originalCallerInformation.phone);
-    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone"]').contains(originalCallerInformation.phone);
+    cy.get('dd[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.secondary);
     });
-    cy.get('div[id="comp-details-phone-3"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-reported"]').contains(originalCallerInformation.reported);
+    cy.get('dd[id="comp-details-reported"]').contains(originalCallerInformation.reported);
 
-    cy.get('div[id="comp-details-location"]').contains(originalCallDetails.location);
-    cy.get('p[id="comp-details-location-description"]').should("have.value", originalCallDetails.locationDescription);
+    cy.get('dd[id="comp-details-location"]').contains(originalCallDetails.location);
+    cy.get('dd[id="comp-details-location-description"]').should("have.value", originalCallDetails.locationDescription);
 
-    cy.get('div[id="complaint-incident-date-time"]').contains(originalCallDetails.incidentDateDay);
+    cy.get('dd[id="complaint-incident-date-time"]').contains(originalCallDetails.incidentDateDay);
 
-    cy.get('p[id="comp-details-description"]').contains(originalCallDetails.description);
+    cy.get('pre[id="comp-details-description"]').contains(originalCallDetails.description);
 
-    cy.get('span[id="comp-details-community"]').contains(originalCallDetails.community);
+    cy.get('dd[id="comp-details-community"]').contains(originalCallDetails.community);
 
-    cy.get('span[id="comp-details-office"]').contains(originalCallDetails.office);
+    cy.get('dd[id="comp-details-office"]').contains(originalCallDetails.office);
 
-    cy.get('span[id="comp-details-zone"]').contains(originalCallDetails.zone);
+    cy.get('dd[id="comp-details-zone"]').contains(originalCallDetails.zone);
 
-    cy.get('span[id="comp-details-region"]').contains(originalCallDetails.region);
+    cy.get('dd[id="comp-details-region"]').contains(originalCallDetails.region);
 
-    cy.get(".comp-attactant-badge").then(function ($defaultValue) {
+    cy.get(".comp-attractant-badge").then(function ($defaultValue) {
       expect($defaultValue).to.contain("Garbage");
       expect($defaultValue).to.contain("Freezer");
       expect($defaultValue).to.contain("Compost");
@@ -305,34 +305,11 @@ describe("Complaint Edit Page spec - Edit View", () => {
     });
     cy.get("#nature-of-complaint-pair-id .comp-details-input").should("exist");
 
-    // Date / Time Logged
-    cy.get("#date-time-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Date / Time Logged");
-    });
-    cy.get("#date-time-pair-id .comp-details-input").should("exist");
-
     // Species
     cy.get("#species-pair-id label").should(($label) => {
       expect($label).to.contain.text("Species");
     });
     cy.get("#species-pair-id .comp-details-input").should("exist");
-
-    // Last Updated
-    cy.get("#last-updated-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Last Updated");
-    });
-    cy.get("#last-updated-pair-id .comp-details-input").should("exist");
-
-    // Status
-    cy.get("#status-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Status");
-    });
-
-    // Created By
-    cy.get("#created-by-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Created By");
-    });
-    cy.get("#created-by-pair-id div").should("exist");
 
     // Officer Assigned
     cy.get("#officer-assigned-pair-id label").should(($label) => {
@@ -446,7 +423,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     // Reffered by / Complaint Agency
     cy.get("#reported-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Organization reporting the complaint");
+      expect($label).to.contain.text("Reporting Organization");
     });
     cy.get("#reported-pair-id input").should("exist");
   });

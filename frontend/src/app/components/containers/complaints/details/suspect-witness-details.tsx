@@ -13,7 +13,7 @@ export const SuspectWitnessDetails: FC = () => {
         <div>
           <dt>Description</dt>
           <dd>
-            <pre>{details}</pre>
+            <pre id="comp-details-witness-details">{details}</pre>
           </dd>
         </div>
       </dl>

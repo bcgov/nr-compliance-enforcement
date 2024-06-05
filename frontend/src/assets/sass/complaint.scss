@@ -478,8 +478,8 @@
 
     div {
       display: flex;
-      flex-direction: row;
-      gap: 16px;
+      flex-direction: column;
+      gap: 4px;
     }
 
     + dl {
@@ -489,13 +489,12 @@
 
   dt {
     flex: 0 0 auto;
-    width: 15rem;
     font-weight: 400;
     color: $gray-500;
   }
 
   dd {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     margin: 0;
   }
 
@@ -504,6 +503,38 @@
     font-family: "BC Sans";
     font-size: 1rem;
     white-space: pre-wrap;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .comp-details-section {
+    dl {
+      div {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+      }
+    }
+
+    dt {
+      width: 12rem;
+    }
+
+    dd {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .comp-details-section {
+    dt {
+      width: 18rem;
+    }
+
+    dd {
+      flex: 1 1 auto;
+    }
   }
 }
 
@@ -566,17 +597,23 @@
 
 .comp-details-form-row {
   display: flex;
-  flex-direction: row;
-  gap: 16px;
-
-  label {
-    flex: 0 0 auto;
-    margin-top: 6px;
-    width: 15rem;
-  }
+  flex-direction: column;
+  gap: 4px;
 
   + .comp-details-form-row {
     margin-top: 24px;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .comp-details-form-row {
+    flex-direction: row;
+
+    label {
+      flex: 0 0 auto;
+      margin-top: 6px;
+      width: 18rem;
+    }
   }
 }
 
