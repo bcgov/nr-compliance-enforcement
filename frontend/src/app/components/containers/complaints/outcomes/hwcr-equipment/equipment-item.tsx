@@ -44,8 +44,9 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
 
   const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
 
-  const setEquipmentActor = equipment.actions?.findLast((action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT)
-    ?.actor;
+  const setEquipmentActor = equipment.actions?.findLast(
+    (action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT,
+  )?.actor;
   const removedEquipmentActor = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
   )?.actor;
@@ -120,8 +121,8 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             md={4}
           >
             <div className="equipment-item-content">
-              <div className="label">X Coordinate</div>
-              <div className="value">{equipment.xCoordinate}</div>
+              <div className="label">Latitude</div>
+              <div className="value">{equipment.yCoordinate}</div>
             </div>
           </Col>
           <Col
@@ -129,12 +130,12 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             md={4}
           >
             <div className="equipment-item-content">
-              <div className="label">Y Coordinate</div>
+              <div className="label">Longitude</div>
               <div
                 className="value"
                 id=""
               >
-                {equipment.yCoordinate}
+                {equipment.xCoordinate}
               </div>
             </div>
           </Col>

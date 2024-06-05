@@ -45,10 +45,15 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const [outcomeOfficer, setOutcomeOfficer] = useState("");
 
   //-- misc
-  const [animalNumber] = useState(index);
+  const [animalNumber, setAnimalNumber] = useState(index);
 
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
+
+  //-- listen for changes to the animal number
+  useEffect(() => {
+    setAnimalNumber(index);
+  }, [index]);
 
   //-- get all of the values for the animal outcome and apply them
   useEffect(() => {
