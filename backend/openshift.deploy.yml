@@ -223,6 +223,9 @@ objects:
                       key: database-password
                 - name: FLYWAY_BASELINE_ON_MIGRATE
                   value: "true"
+                - name: FLYWAY_LOCATIONS
+                  value: >
+                    $(if [[ ${ZONE} == "prod" ]]; then echo "filesystem:./sql"; else echo "filesystem:./sql, filesystem:./sql-test"; fi)
                 - name: FLYWAY_DEFAULT_SCHEMA
                   value: "public"
               resources:
