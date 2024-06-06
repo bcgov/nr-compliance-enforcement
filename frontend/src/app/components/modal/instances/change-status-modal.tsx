@@ -5,7 +5,6 @@ import { selectModalData } from "../../../store/reducers/app";
 import ComplaintStatusSelect from "../../codes/complaint-status-select";
 import {
   getComplaintById,
-  selectComplaintHeader,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
 } from "../../../store/reducers/complaints";
