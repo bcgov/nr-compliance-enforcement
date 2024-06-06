@@ -221,6 +221,7 @@ AS $function$
     _report_type := complaint_data ->> 'report_type';
 
    -- Extract and prepare data for 'complaint' table
+   _detail_text := complaint_data ->> 'cos_call_details';
     _caller_name := left( complaint_data ->> 'cos_caller_name', 100 )
     ||
     CASE

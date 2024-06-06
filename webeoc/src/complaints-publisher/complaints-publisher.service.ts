@@ -35,7 +35,7 @@ export class ComplaintsPublisherService {
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}`);
+      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.created_by_datetime}`);
       const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`New complaint: ${complaint.incident_number}`);
@@ -58,7 +58,10 @@ export class ComplaintsPublisherService {
       const incidentNumber = complaintUpdate.parent_incident_number;
       const updateNumber = complaintUpdate.update_number;
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-update-${incidentNumber}-${updateNumber}`);
+      natsHeaders.set(
+        "Nats-Msg-Id",
+        `staged-update-${incidentNumber}-${updateNumber}-${complaintUpdate.back_number_of_days}-${complaintUpdate.back_number_of_hours}-${complaintUpdate.back_number_of_minutes}`,
+      );
       const ack = await this.jsClient.publish(NATS_UPDATED_COMPLAINTS_TOPIC_NAME, jsonData, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`Complaint update: ${incidentNumber} ${updateNumber}`);
@@ -102,10 +105,16 @@ export class ComplaintsPublisherService {
     const jsonData = JSON.stringify(complaintUpdate);
     const incidentNumber = complaintUpdate.parent_incident_number;
     const updateNumber = complaintUpdate.update_number;
+    const backNumberOfDays = complaintUpdate.back_number_of_days;
+    const backNumberOfHours = complaintUpdate.back_number_of_hours;
+    const backNumberOfMinutes = complaintUpdate.back_number_of_minutes;
 
     try {
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `complaint-${incidentNumber}-update-${updateNumber}`);
+      natsHeaders.set(
+        "Nats-Msg-Id",
+        `complaint-${incidentNumber}-update-${updateNumber}-${backNumberOfDays}-${backNumberOfHours}-${backNumberOfMinutes}`,
+      );
       const ack = await this.jsClient.publish(NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME, jsonData, {
         headers: natsHeaders,
       });
