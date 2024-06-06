@@ -32,7 +32,7 @@ export const Header: FC = () => {
     );
   };
 
-  const environmentName = process.env.REACT_APP_ENVIRONMENT_NAME || "production";
+  const environmentName = config.ENVIRONMENT_NAME || "production";
 
   return (
     <div>
