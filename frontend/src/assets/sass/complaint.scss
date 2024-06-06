@@ -645,29 +645,6 @@ p {
   color: $gray-500;
 }
 
-.comp-details-status {
-  .comp-details-header-column {
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-
-    .comp-details-content-label + div {
-      margin-top: 10px;
-    }
-
-    i:first-child {
-      padding-right: 5px;
-    }
-
-    i:last-child {
-      padding-left: 5px;
-      padding-right: 5px;
-    }
-  }
-}
-
 .comp-box-actions {
   padding: 8px 24px 0px;
   background: $bc-gov-primary-400;
