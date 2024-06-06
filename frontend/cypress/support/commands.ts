@@ -172,7 +172,7 @@ Cypress.Commands.add(
 Cypress.Commands.add("verifyAttachmentsCarousel", (uploadable: boolean, divId: string) => {
   cy.get(`#${divId}`).within(() => {
     // verify the attachments section exists
-    cy.get("h6").contains("attachments");
+    cy.get("h3").contains("attachments");
 
     // verify the carousel exists (since 23-000076, 23-006888 are known to have attachments)
     cy.get("div.carousel.coms-carousel").should("exist");

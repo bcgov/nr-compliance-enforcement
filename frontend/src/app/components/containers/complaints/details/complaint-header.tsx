@@ -113,7 +113,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
             {/* Badges */}
             <div className="comp-details-badge-container">
-              <Badge className={`badge ${applyStatusClass(status)}`}>{status}</Badge>
+              <Badge
+                id="comp-details-status-text-id"
+                className={`badge ${applyStatusClass(status)}`}
+              >
+                {status}
+              </Badge>
             </div>
 
             {/* Action Buttons */}

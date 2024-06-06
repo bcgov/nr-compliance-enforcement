@@ -187,7 +187,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get('dd[id="comp-details-reported"]').contains(editCallerInformation.reported);
     cy.get('dd[id="comp-details-email"]').contains(editCallerInformation.email);
 
-    cy.get('dd[id="comp-details-witness-details"]').should(($el) => {
+    cy.get('pre[id="comp-details-witness-details"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.witnessDetails);
     });
 
