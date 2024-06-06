@@ -55,6 +55,7 @@ parameters:
     value: "false"
   - name: ENVIRONMENT_NAME
     description: Used to show a banner in the dev and test environments
+    value: "production"
 objects:
   - apiVersion: v1
     kind: ImageStream
