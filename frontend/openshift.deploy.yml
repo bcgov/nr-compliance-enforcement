@@ -53,6 +53,8 @@ parameters:
   - name: SHOW_EXPERIMENTAL_FEATURES
     description: Hides or shows experimental SHOW_EXPERIMENTAL_FEATURES
     value: "false"
+  - name: ENVIRONMENT_NAME
+    description: Used to show a banner in the dev and test environments
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -119,6 +121,8 @@ objects:
                   value: ${LOG_LEVEL}
                 - name: SHOW_EXPERIMENTAL_FEATURES
                   value: ${SHOW_EXPERIMENTAL_FEATURES}
+                - name: ENVIRONMENT_NAME
+                  value: ${ENVIRONMENT_NAME}
               ports:
                 - containerPort: 3000
                   protocol: TCP
