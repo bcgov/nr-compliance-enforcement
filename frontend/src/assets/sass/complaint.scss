@@ -492,9 +492,22 @@
 
   pre {
     margin-bottom: 0;
-    font-family: "BC Sans";
+    font-family: inherit;
     font-size: 1rem;
     white-space: pre-wrap;
+  }
+
+  .comp-lat-long {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    & span:first-of-type {
+      &::after {
+        content: ",";
+        display: inline-block;
+      }
+    }
   }
 }
 
@@ -552,10 +565,9 @@
 }
 
 .comp-details-attractants {
-  align-items: flex-start;
+  align-items: center;
 
   .badge {
-    vertical-align: top;
     background-color: #ccc !important;
   }
 
