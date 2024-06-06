@@ -904,6 +904,68 @@ export const CreateComplaint: FC = () => {
             step="any"
             onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
           />
+
+          <div
+            className="comp-details-form-row"
+            id="area-community-pair-id"
+          >
+            <label>
+              Community<span className="required-ind">*</span>
+            </label>
+            <div className="comp-details-edit-input">
+              <ValidationSelect
+                className="comp-details-input"
+                options={areaCodes}
+                placeholder="Select"
+                id="community-select-id"
+                classNamePrefix="comp-select"
+                onChange={(e) => handleCommunityChange(e)}
+                errMsg={communityErrorMsg}
+              />
+            </div>
+          </div>
+          <div
+            className="comp-details-form-row"
+            id="office-pair-id"
+          >
+            <label>Office</label>
+            <div className="comp-details-edit-input">
+              <input
+                type="text"
+                id="office-edit-readonly-id"
+                className="comp-form-control"
+                disabled
+              />
+            </div>
+          </div>
+          <div
+            className="comp-details-form-row"
+            id="zone-pair-id"
+          >
+            <label>Zone</label>
+            <div className="comp-details-edit-input">
+              <input
+                type="text"
+                id="zone-edit-readonly-id"
+                className="comp-form-control"
+                disabled
+              />
+            </div>
+          </div>
+          <div
+            className="comp-details-form-row"
+            id="region-pair-id"
+          >
+            <label>Region</label>
+            <div className="comp-details-edit-input">
+              <input
+                type="text"
+                id="region-edit-readonly-id"
+                className="comp-form-control"
+                disabled
+              />
+            </div>
+          </div>
         </fieldset>
 
         <fieldset>
@@ -1077,7 +1139,7 @@ export const CreateComplaint: FC = () => {
         )}
 
         <fieldset>
-          <legend>Attachments</legend>
+          <legend>Complainant attachments ({complaintAttachmentCount})</legend>
           <AttachmentsCarousel
             attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
             allowUpload={true}
