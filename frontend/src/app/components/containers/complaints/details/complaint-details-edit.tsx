@@ -733,7 +733,7 @@ export const ComplaintDetailsEdit: FC = () => {
         {/* Complaint Details (Edit) */}
         {!readOnly && (
           <div className="comp-details-form">
-            {/* edit header block */}
+            {/* Error Alert */}
             <div
               id="complaint-error-notification"
               className={errorNotificationClass}

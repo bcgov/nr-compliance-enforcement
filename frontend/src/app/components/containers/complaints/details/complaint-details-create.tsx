@@ -606,7 +606,11 @@ export const CreateComplaint: FC = () => {
       />
 
       <section className="comp-details-body comp-details-form comp-container">
-        {/* edit header block */}
+        <div className="comp-details-section-header">
+          <h2>Complaint Details</h2>
+        </div>
+
+        {/* Error Alert */}
         <div
           id="complaint-error-notification"
           className={errorNotificationClass}
@@ -619,10 +623,6 @@ export const CreateComplaint: FC = () => {
           {/*
            */}
           Errors in form
-        </div>
-
-        <div className="comp-details-section-header">
-          <h2>Complaint Details</h2>
         </div>
 
         <fieldset>

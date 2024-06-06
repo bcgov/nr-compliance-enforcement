@@ -591,6 +591,10 @@
       flex: 1 1 auto;
     }
   }
+
+  div + .error-message {
+    margin-top: 4px;
+  }
 }
 
 .comp-details-form-row {
@@ -1799,8 +1803,8 @@ p {
 }
 
 .comp-complaint-error {
-  margin: 24px 24px;
-  padding: 24px;
+  margin-bottom: 20px;
+  padding: 16px 24px;
   border: 1px solid #eea8ab;
   border-radius: 3px;
   background-color: $bc-gov-danger-100;
