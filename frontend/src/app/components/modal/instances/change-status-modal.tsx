@@ -24,15 +24,15 @@ type ChangeStatusModalProps = {
   startDateFilter: Date | undefined;
   endDateFilter: Date | undefined;
   complaintStatusFilter: Option | null;
+  complaint_status: string;
 };
 
 /**
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
   const modalData = useAppSelector(selectModalData);
-  const { statusCode } = useAppSelector(selectComplaintHeader(COMPLAINT_TYPES.HWCR));
   const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
   const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
@@ -49,8 +49,8 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   });
 
   useEffect(() => {
-    setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && statusCode === "PENDREV");
-  }, [isReviewRequired, reviewCompleteAction, statusCode]);
+    setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && complaint_status === "PENDREV");
+  }, [isReviewRequired, reviewCompleteAction, complaint_status]);
 
   // Since there are different reducers for updating the state of complaints for tables and details, we need to handle both
   // This will ensure that both are triggered, sequentially.
