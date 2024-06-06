@@ -1,104 +1,102 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ConfigurationService } from "../configuration/configuration.service";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-// import FormData from "form-data";
-// import fs from "fs";
-import { join } from "path";
-import FormData = require("form-data");
-import fs = require("fs");
+import { CdogsService } from "src/external_api/cdogs/cdogs.service";
+import { ComplaintService } from "../complaint/complaint.service";
+import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
+import { ComplaintDto } from "src/types/models/complaints/complaint";
+import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
+import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
+import { formatDateTime } from "src/common/methods";
 
 @Injectable()
 export class DocumentService {
-  @Inject(ConfigurationService)
-  private readonly configurationService: ConfigurationService;
+  @Inject(CdogsService)
+  private readonly cdogs: CdogsService;
 
-  private _getCDOGsApiToken = async (): Promise<string> => {
-    console.log("GET TOKEN");
-    try {
-      const response: AxiosResponse = await axios.post(
-        process.env.COMS_JWT_AUTH_URI,
-        {
-          client_id: process.env.CDOGS_CLIENT_ID,
-          client_secret: process.env.CDOGS_CLIENT_SECRET,
-          grant_type: "client_credentials",
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Cache-Control": "no-cache",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        },
-      );
+  @Inject(ComplaintService)
+  private readonly ceds: ComplaintService;
 
-      return response?.data?.access_token;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //--
+  //-- using the cdogs api generate a new document from the specified
+  //-- complaint-id and complaint type
+  //--
+  exportComplaint = async (id: string, type: COMPLAINT_TYPE): Promise<any> => {
+    const _formatData = (data: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto, type: string) => {
+      const {
+        id,
+        reportedOn,
+        updatedOn,
+        createdBy,
+        delegates,
+        status,
+        incidentDateTime,
+        locationSummary,
+        location,
+        organization,
+        locationDetail,
+        details,
+      } = data;
 
-  /*  private getCDOGsApiToken() {
-    return async () => {
-      try {
-        const response: AxiosResponse = await axios.post(
-          process.env.COMS_JWT_AUTH_URI,
-          qs.stringify({
-            client_id: process.env.CDOGS_CLIENT_ID,
-            client_secret: process.env.CDOGS_CLIENT_SECRET,
-            grant_type: "client_credentials",
-          }),
-          {
-            headers: {
-              Accept: "application/json",
-              "Cache-Control": "no-cache",
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          },
-        );
+      const { coordinates } = location;
+      const { area, zone, officeLocation, region } = organization;
 
-        console.log(response);
+      //-- caller details
+      const { name, address, email, phone1, phone2, phone3, reportedBy } = data;
 
-        return "token";
-      } catch (error) {}
-    };
-  }*/
+      //-- hwcr
+      const { natureOfComplaint, species, attractants } = data as WildlifeComplaintDto;
 
-  uploadTemplate = async (path: string, token: string): Promise<string> => {
-    const bodyFormData = new FormData();
-    bodyFormData.append("template", fs.createReadStream(path));
-    const headers: any = {
-      ...bodyFormData.getHeaders(),
-    };
-    let url = `${process.env.CDOGS_URI}/template`;
+      //-- convert the officer from guid to name
 
-    const uploadResponse: AxiosResponse = await this._post(token, url, bodyFormData, headers);
-    return uploadResponse?.headers["x-template-hash"];
-  };
+      let result = {
+        id,
+        reportedOn: formatDateTime(reportedOn.toDateString()),
+        updatedOn: formatDateTime(updatedOn.toDateString()),
+        createdBy,
+        officerAssigned: "pending",
+        status,
+        incidentDateTime: formatDateTime(incidentDateTime.toDateString()),
+        location: locationSummary,
+        latitude: coordinates ? coordinates[0] : "",
+        longitude: coordinates ? coordinates[1] : "",
+        community: area, //--lookup
+        office: officeLocation, //-- lookup
+        zone, //-- lookup
+        region, //-- lookup
+        locationDescription: locationDetail,
+        description: details,
 
-  private _post = async (apiToken: string, url: string, data: any, headers?: any): Promise<AxiosResponse> => {
-    const config: AxiosRequestConfig = {
-      timeout: 30000,
-    };
-    if (!!headers) {
-      config.headers = headers;
-      config.headers.Authorization = `Bearer ${apiToken}`;
-    } else {
-      config.headers = {
-        Authorization: `Bearer ${apiToken}`,
+        //-- hwcr
+        natureOfComplaint, //-- lookup
+        species, //--lookup
+        attractants, //-- lookup convert list to string
+
+        //-- ers
+
+        //-- caller information
+        name,
+        phone1,
+        phone2,
+        phone3,
+        email,
+        address,
+        reportedBy, //-- lookup
       };
-    }
-    return axios.post(url, data, config);
-  };
 
-  exportComplaint = async (id: string, type: string): Promise<any> => {
+      return result;
+    };
+
     try {
-      let token = await this._getCDOGsApiToken();
-      const path = join(process.cwd(), "templates/complaint/CDOGS-ERS-COMPLAINT-TEMPLATE-v1.docx");
+      //-- get the complaint from the system, but do not include anything other
+      //-- than the base complaint. no maps, no attachments, no outcome data
+      const data = await this.ceds.findById(id, type);
 
-      let result = await this.uploadTemplate(path, token);
-      console.log(result);
+      //-- format the data so that it can be used in the cdogs service
+      const formated = _formatData(data, type);
 
-      return token;
+      const documentName = `${type}-${data.id}-${new Date()}.pdf`;
+      const doc = await this.cdogs.generate(documentName, formated, type);
+      doc.request.sen;
+      return;
     } catch (error) {
       console.log("exception: export document", error);
       throw new Error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
