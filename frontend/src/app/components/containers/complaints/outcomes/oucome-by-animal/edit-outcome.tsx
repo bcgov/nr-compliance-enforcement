@@ -239,7 +239,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         amountUsed: "",
         amountDiscarded: "",
         reactions: "",
-        remainingUse: "",
+        remainingUse: null,
         injectionMethod: "",
         discardMethod: "",
         officer: officer ?? "",

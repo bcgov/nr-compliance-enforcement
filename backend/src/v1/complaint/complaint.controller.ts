@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post, Logger } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -19,6 +19,7 @@ import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_
 })
 export class ComplaintController {
   constructor(private readonly service: ComplaintService) {}
+  private readonly logger = new Logger(ComplaintController.name);
 
   @Get(":complaintType")
   @Roles(Role.COS_OFFICER)
@@ -44,7 +45,11 @@ export class ComplaintController {
   @Roles(Role.COS_OFFICER)
   async updateComplaintStatusById(@Param("id") id: string, @Body() model: any): Promise<ComplaintDto> {
     const { status } = model;
-    return await this.service.updateComplaintStatusById(id, status);
+    try {
+      return await this.service.updateComplaintStatusById(id, status);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   @Patch("/update-by-id/:complaintType/:id")
