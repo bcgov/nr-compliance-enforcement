@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param, Query, StreamableFile, UseGuards } from "@nestjs/common";
+import { Controller, Get, Header, Param, Query, Res, UseGuards } from "@nestjs/common";
 import { DocumentService } from "./document.service";
 import { JwtRoleGuard } from "src/auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
@@ -6,7 +6,9 @@ import { Role } from "src/enum/role.enum";
 import { Roles } from "src/auth/decorators/roles.decorator";
 import { Token } from "src/auth/decorators/token.decorator";
 import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
-import { createReadStream } from "fs";
+import { response, Response } from "express";
+import { Readable } from "stream";
+import fs, { createReadStream } from "fs";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -23,21 +25,66 @@ export class DocumentController {
   //   return this.service.exportComplaint(id, type);
   // }
 
+  // @Get("/export-complaint/:type")
+  // @Roles(Role.COS_OFFICER)
+  // @Header("Content-Type", "application/json")
+  // @Header("Content-Disposition", 'attachment; filename="package.json"')
+  // async exportComplaint(
+  //   @Param("type") type: COMPLAINT_TYPE,
+  //   @Query("id") id: string,
+  //   @Token() token,
+  // ): Promise<StreamableFile> {
+  //   const data = await this.service.exportComplaint(id, type);
+  //   // const file = createReadStream(data);
+  //   return data;
+  // }
+
+  // @Get("/export-complaint/:type")
+  // @Roles(Role.COS_OFFICER)
+  // @Header("Content-Type", "application/json")
+  // @Header("Content-Disposition", 'attachment; filename="package.json"')
+  // async exportComplaint(
+  //   @Param("type") type: COMPLAINT_TYPE,
+  //   @Query("id") id: string,
+  //   @Token() token,
+  //   @Res() res: Response,
+  // ): Promise<any> {
+  //   try {
+  //     const result = await this.service.exportComplaint(id, type);
+
+  //     let buffer = Buffer.from(result, "base64");
+  //     // let stream = new Readable();
+  //     // stream.push(buffer);
+  //     // stream.pipe(fs.createWriteStream("test.pdf"));
+  //     // let derp = "";
+
+  //     // stream.pipe(res);
+  //     res.send(buffer);
+  //     return Promise.resolve("test");
+  //   } catch (error) {
+  //     console.log("Error generating complaint:", error);
+  //   }
+
+  //   return "";
+  // }
+
   @Get("/export-complaint/:type")
   @Roles(Role.COS_OFFICER)
-  @Header("Content-Type", "application/json")
-  @Header("Content-Disposition", 'attachment; filename="package.json"')
   async exportComplaint(
     @Param("type") type: COMPLAINT_TYPE,
     @Query("id") id: string,
     @Token() token,
-  ): Promise<StreamableFile> {
-    const data = await this.service.exportComplaint(id, type);
-    const file = createReadStream(data);
-    return new StreamableFile(file);
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    try {
+      return this.service.exportComplaint2(res, id, type);
+
+      // res.contentType("application/pdf");
+      // res.attachment();
+
+      // res.send(result?.data);
+    } catch (error) {
+      console.log("Error generating complaint:", error);
+    }
   }
-  // getStaticFile(): StreamableFile {
-  //   const file = createReadStream(join(process.cwd(), 'package.json'));
-  //   return new StreamableFile(file);
-  // }
 }
