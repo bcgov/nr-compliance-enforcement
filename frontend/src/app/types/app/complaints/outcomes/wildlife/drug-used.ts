@@ -31,7 +31,7 @@ export interface DrugUsedV2 {
   discardMethod: string;
 
   reactions: string;
-  remainingUse: string;
+  remainingUse: string | null;
 
   order: number;
 }

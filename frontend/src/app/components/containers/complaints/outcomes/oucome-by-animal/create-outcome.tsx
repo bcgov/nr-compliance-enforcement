@@ -266,7 +266,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
         amountUsed: "",
         amountDiscarded: "",
         reactions: "",
-        remainingUse: "",
+        remainingUse: null,
         injectionMethod: "",
         discardMethod: "",
         officer: officer ?? "",

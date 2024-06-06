@@ -23,7 +23,7 @@ type props = {
   amountDiscarded: string;
 
   reactions: string;
-  remainingUse: string;
+  remainingUse: string | null;
 
   injectionMethod: string;
   discardMethod: string;
@@ -62,6 +62,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const [amountDiscardedError, setAmountDiscardedError] = useState("");
   const [amountUsedError, setAmountUsedError] = useState("");
   const [injectionMethodError, setInjectionMethodError] = useState("");
+  const [discardMethodError, setDiscardMethodError] = useState("");
 
   //-- this allows the developers to consume functions within the
   //-- drug-used component in a parent component
@@ -102,6 +103,21 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     if (!injectionMethod) {
       setInjectionMethodError(REQUIRED);
       result = false;
+    }
+
+    //-- edge case
+    //-- if the user selects DISC from remainingUse then check to
+    //-- make sure that the user also provides a discard amount and method
+    if (remainingUse === "DISC") {
+      if (!amountDiscarded) {
+        setAmountDiscardedError(REQUIRED);
+        result = false;
+      }
+
+      if (!discardMethod) {
+        setDiscardMethodError(REQUIRED);
+        result = false;
+      }
     }
 
     return result;
@@ -182,6 +198,16 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const handleRemainingUsed = (input: string) => {
     setShowDiscarded(input === "DISC");
     updateModel("remainingUse", input);
+  };
+
+  const handleAmountDiscardedChange = (input: string) => {
+    updateModel("amountDiscarded", input);
+    setAmountDiscardedError("");
+  };
+
+  const handleDiscardMethodChange = (input: string) => {
+    updateModel("discardMethod", input);
+    setDiscardMethodError("");
   };
 
   return (
@@ -356,7 +382,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                   const {
                     target: { value },
                   } = evt;
-                  updateModel("amountDiscarded", value);
+                  handleAmountDiscardedChange(value ?? "");
                 }}
               />
             </>
@@ -378,11 +404,12 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 placeholder=""
                 inputClass="comp-form-control"
                 value={discardMethod}
+                error={discardMethodError}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
                   } = evt;
-                  updateModel("discardMethod", value);
+                  handleDiscardMethodChange(value ?? "");
                 }}
               />
             </>

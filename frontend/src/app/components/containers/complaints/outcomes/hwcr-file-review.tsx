@@ -7,9 +7,10 @@ import { openModal, profileDisplayName, profileInitials } from "../../../../stor
 import { formatDate } from "../../../../common/methods";
 import { BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
-import { selectComplaint } from "../../../../store/reducers/complaints";
+import { getComplaintStatusById, selectComplaint } from "../../../../store/reducers/complaints";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { createReview, updateReview } from "../../../../store/reducers/case-thunks";
+import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 
 export const HWCRFileReview: FC = () => {
   const REQUEST_REVIEW_STATE = 0;
@@ -72,16 +73,25 @@ export const HWCRFileReview: FC = () => {
         if (componentState === REQUEST_REVIEW_STATE) {
           dispatch(createReview(complaintData.id, reviewRequired, null));
         } else {
-          dispatch(updateReview(complaintData.id, reviewRequired));
+          const completeAction = {
+            actor: personGuid,
+            date: new Date(),
+            actionCode: "COMPLTREVW",
+            activeIndicator: reviewCompleted,
+          };
+          dispatch(updateReview(complaintData.id, reviewRequired, completeAction));
         }
       } else {
         const completeAction = {
           actor: personGuid,
           date: new Date(),
           actionCode: "COMPLTREVW",
+          activeIndicator: reviewCompleted,
         };
         dispatch(createReview(complaintData.id, reviewRequired, completeAction));
       }
+
+      dispatch(getComplaintStatusById(complaintData.id, COMPLAINT_TYPES.HWCR));
     }
     if (componentState === EDIT_STATE && (reviewRequired || reviewCompleted)) setComponentState(DISPLAY_STATE);
   };
@@ -326,7 +336,6 @@ export const HWCRFileReview: FC = () => {
                 text="Edit"
                 icon={BsPencil}
                 click={(e) => handleStateChange(EDIT_STATE)}
-                isDisabled={reviewCompleted}
               />
             </div>
           </div>
