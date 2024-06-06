@@ -224,8 +224,7 @@ objects:
                 - name: FLYWAY_BASELINE_ON_MIGRATE
                   value: "true"
                 - name: FLYWAY_LOCATIONS
-                  value: >
-                    $(if [[ ${ZONE} == "prod" ]]; then echo "filesystem:./sql"; else echo "filesystem:./sql, filesystem:./sql-test"; fi)
+                  description: Location of flyway scripts, useful when there's a need to run flyway scripts differently in each environment
                 - name: FLYWAY_DEFAULT_SCHEMA
                   value: "public"
               resources:

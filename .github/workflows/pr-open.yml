@@ -120,6 +120,7 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
+            parameters: p- FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
