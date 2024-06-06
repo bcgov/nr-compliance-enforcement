@@ -111,8 +111,8 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
         <div>
           <dt>Latitude/Longitude</dt>
           <dd className="comp-lat-long">
-            <span id="call-details-x-coordinate-div">{renderCoordinates(coordinates, Coordinates.Latitude)}</span>
-            <span id="call-details-y-coordinate-div">{renderCoordinates(coordinates, Coordinates.Longitude)}</span>
+            <span id="call-details-y-coordinate">{renderCoordinates(coordinates, Coordinates.Latitude)}</span>
+            <span id="call-details-x-coordinate">{renderCoordinates(coordinates, Coordinates.Longitude)}</span>
           </dd>
         </div>
       </dl>

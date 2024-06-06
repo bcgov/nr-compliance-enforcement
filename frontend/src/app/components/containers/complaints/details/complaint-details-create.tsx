@@ -997,7 +997,6 @@ export const CreateComplaint: FC = () => {
           >
             <label
               id="complaint-caller-info-primary-phone-label-id"
-              className="col-auto"
               htmlFor="caller-primary-phone-id"
             >
               Primary Phone
@@ -1020,7 +1019,6 @@ export const CreateComplaint: FC = () => {
           >
             <label
               id="complaint-caller-info-secondary-phone-label-id"
-              className="col-auto"
               htmlFor="caller-info-secondary-phone-id"
             >
               Alternate Phone 1
@@ -1043,7 +1041,6 @@ export const CreateComplaint: FC = () => {
           >
             <label
               id="complaint-caller-info-alternate-phone-label-id"
-              className="col-auto"
               htmlFor="caller-info-alternate-phone-id"
             >
               Alternate Phone 2
