@@ -93,6 +93,7 @@ jobs:
               -p CPU_LIMIT=80m
               -p MEMORY_REQUEST=100Mi
               -p MEMORY_LIMIT=200Mi
+              -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
           - name: webeoc
             file: webeoc/openshift.deploy.yml
             overwrite: true
@@ -120,7 +121,6 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-            parameters: -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:

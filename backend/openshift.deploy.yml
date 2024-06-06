@@ -46,7 +46,6 @@ parameters:
     value: database-migrations
   - name: FLYWAY_LOCATIONS
     description: Location of flyway scripts, useful when there's a need to run flyway scripts differently in each environment
-    value: "filesystem:./sql"
 
 objects:
   - apiVersion: v1
