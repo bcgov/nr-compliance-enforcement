@@ -32,6 +32,8 @@ import { DeleteSupplementalNoteInput } from "../../types/app/case-files/suppleme
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
+import { getComplaintStatusById } from "./complaints";
+import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
@@ -631,6 +633,7 @@ export const createReview =
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
         }
+        dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");
@@ -639,11 +642,11 @@ export const createReview =
   };
 
 export const updateReview =
-  (complaintId: string, isReviewRequired: boolean): AppThunk =>
+  (complaintId: string, isReviewRequired: boolean, reviewCompleteInput: ReviewCompleteAction | null): AppThunk =>
   async (dispatch, getState) => {
     const {
       app: { profile },
-      cases: { caseId },
+      cases: { caseId, reviewComplete },
     } = getState();
     let reviewInput = {
       reviewInput: {
@@ -655,10 +658,20 @@ export const updateReview =
         isReviewRequired,
       } as ReviewInput,
     };
+
+    if (reviewCompleteInput) {
+      reviewInput.reviewInput.reviewComplete = reviewCompleteInput;
+      reviewInput.reviewInput.reviewComplete.actionId = reviewComplete?.actionId;
+    }
+
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
       if (res) {
         dispatch(setIsReviewedRequired(res.isReviewRequired));
+        if (res.reviewComplete) {
+          dispatch(setReviewComplete(res.reviewComplete));
+        }
+        dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
         ToggleError("Unable to update file review");

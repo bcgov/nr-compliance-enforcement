@@ -5,13 +5,15 @@ import { get, post } from "../../external_api/case_management";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
-import { CreateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/create-supplemental-notes-input";
-import { UpdateSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/update-supplemental-note-input";
-import { DeleteSupplementalNotesInput } from "src/types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
-import { DeleteEquipmentDto } from "src/types/models/case-files/equipment/delete-equipment-dto";
-import { CreateWildlifeInput } from "src/types/models/case-files/wildlife/create-wildlife-input";
-import { DeleteWildlifeInput } from "src/types/models/case-files/wildlife/delete-wildlife-outcome";
-import { UpdateWildlifeInput } from "src/types/models/case-files/wildlife/update-wildlife-input";
+import { CreateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/create-supplemental-notes-input";
+import { UpdateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/update-supplemental-note-input";
+import { DeleteSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { ComplaintService } from "../complaint/complaint.service";
+import { ComplaintStatusCodeEnum } from "../../enum/complaint_status_code.enum";
+import { DeleteEquipmentDto } from "../../types/models/case-files/equipment/delete-equipment-dto";
+import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -43,6 +45,8 @@ export class CaseFileService {
       actor
       date
       actionCode
+      actionId
+      activeIndicator
     }
     preventionDetails {
       actions {
@@ -122,7 +126,11 @@ export class CaseFileService {
   }
   `;
 
-  constructor(@Inject(REQUEST) private request: Request, @InjectMapper() mapper) {
+  constructor(
+    @Inject(REQUEST) private request: Request,
+    @InjectMapper() mapper,
+    private readonly complaintService: ComplaintService,
+  ) {
     this.mapper = mapper;
   }
 
@@ -180,10 +188,21 @@ export class CaseFileService {
       variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createReview;
+    const caseFileDTO = returnValue.createReview as CaseFileDto;
+    try {
+      if (caseFileDTO.isReviewRequired) {
+        await this.complaintService.updateComplaintStatusById(
+          caseFileDTO.leadIdentifier,
+          ComplaintStatusCodeEnum.PENDING_REVIEW,
+        );
+      }
+    } catch (error) {
+      this.logger.error(error);
+    }
+    return caseFileDTO;
   };
 
-  updateReview = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  updateReview = async (token: string, model: any): Promise<CaseFileDto> => {
     const result = await post(token, {
       query: `mutation UpdateReview($reviewInput: ReviewInput!) {
         updateReview(reviewInput: $reviewInput) 
@@ -192,7 +211,24 @@ export class CaseFileService {
       variables: model,
     });
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.updateReview;
+    const caseFileDTO = returnValue.updateReview as CaseFileDto;
+    try {
+      if (model.reviewInput.isReviewRequired) {
+        await this.complaintService.updateComplaintStatusById(
+          model.reviewInput.leadIdentifier,
+          ComplaintStatusCodeEnum.PENDING_REVIEW,
+        );
+      } else if (!model.reviewInput.isReviewRequired) {
+        await this.complaintService.updateComplaintStatusById(
+          model.reviewInput.leadIdentifier,
+          ComplaintStatusCodeEnum.OPEN,
+        );
+      }
+    } catch (error) {
+      this.logger.error(error);
+    }
+
+    return caseFileDTO;
   };
 
   createPrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {

@@ -160,6 +160,11 @@ export const complaintSlice = createSlice({
     setWebEOCUpdates: (state, action: PayloadAction<WebEOCComplaintUpdateDTO[]>) => {
       state.webeocUpdates = action.payload;
     },
+    setComplaintStatus: (state, action) => {
+      if (state.complaint) {
+        state.complaint.status = action.payload;
+      }
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -178,6 +183,7 @@ export const {
   updateAllegationComplaintByRow,
   setMappedComplaints,
   setWebEOCUpdates,
+  setComplaintStatus,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -425,6 +431,23 @@ export const getComplaintById =
       const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
 
       dispatch(setComplaint({ ...response }));
+    } catch (error) {
+      //-- handle the error
+    }
+  };
+
+export const getComplaintStatusById =
+  (id: string, complaintType: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
+      );
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+
+      if (response.status) {
+        dispatch(setComplaintStatus(response.status));
+      }
     } catch (error) {
       //-- handle the error
     }
