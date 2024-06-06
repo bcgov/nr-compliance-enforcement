@@ -44,6 +44,10 @@ parameters:
   - name: COMPONENT_DB_MIGRATION
     description: Component name for database migrations
     value: database-migrations
+  - name: FLYWAY_LOCATIONS
+    description: Location of flyway scripts, useful when there's a need to run flyway scripts differently in each environment
+    value: "filesystem:./sql, filesystem:./sql-test"
+
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -224,7 +228,7 @@ objects:
                 - name: FLYWAY_BASELINE_ON_MIGRATE
                   value: "true"
                 - name: FLYWAY_LOCATIONS
-                  description: Location of flyway scripts, useful when there's a need to run flyway scripts differently in each environment
+                  value: ${FLYWAY_LOCATIONS}
                 - name: FLYWAY_DEFAULT_SCHEMA
                   value: "public"
               resources:
