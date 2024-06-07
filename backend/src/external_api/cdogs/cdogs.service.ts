@@ -184,6 +184,7 @@ export class CdogsService implements ExternalApiService {
       };
 
       const documentData = await this._applyData(data, documentName);
+      console.log("DATA: ", documentData);
 
       return await post(apiToken, url, documentData, config);
     } catch (error) {

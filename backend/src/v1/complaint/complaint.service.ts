@@ -9,6 +9,8 @@ import {
   applyAllegationComplaintMap,
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
+  mapWildlifeReport,
+  WildlifeReportData,
 } from "../../middleware/maps/automapper-entity-to-dto-maps";
 
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
@@ -51,6 +53,7 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 import { format } from "date-fns";
+import { formatDateTime } from "src/common/methods";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -93,6 +96,8 @@ export class ComplaintService {
     mapComplaintDtoToComplaintTable(mapper);
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
+
+    mapWildlifeReport(mapper);
   }
 
   private _getAgencyByUser = async (): Promise<AgencyCode> => {
@@ -1297,5 +1302,62 @@ export class ComplaintService {
 
     results = { ...results, total, assigned, unassigned, offices };
     return results;
+  };
+
+  getReportData = async (id: string, complaintType: COMPLAINT_TYPE) => {
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
+
+    try {
+      if (complaintType) {
+        builder = this._generateQueryBuilder(complaintType);
+      } else {
+        builder = this.complaintsRepository
+          .createQueryBuilder("complaint")
+          .leftJoin("complaint.complaint_status_code", "complaint_status")
+          .addSelect([
+            "complaint_status.complaint_status_code",
+            "complaint_status.short_description",
+            "complaint_status.long_description",
+          ])
+          .leftJoin("complaint.reported_by_code", "reported_by")
+          .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
+          .leftJoin("complaint.owned_by_agency_code", "owned_by")
+          .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
+          .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
+          .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
+          .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
+          .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
+          .addSelect([
+            "person.person_guid",
+            "person.first_name",
+            "person.middle_name_1",
+            "person.middle_name_2",
+            "person.last_name",
+          ]);
+      }
+
+      builder.where("complaint.complaint_identifier = :id", { id });
+      const raw = await builder.getOne();
+
+      switch (complaintType) {
+        case "ERS": {
+          // return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
+          //   raw as AllegationComplaint,
+          //   "AllegationComplaint",
+          //   "AllegationComplaintDto",
+          // );
+        }
+        case "HWCR": {
+          const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
+            raw as HwcrComplaint,
+            "HwcrComplaint",
+            "WildlifeReportData",
+          );
+          return hwcr;
+        }
+      }
+    } catch (error) {
+      this.logger.error(error);
+    }
   };
 }

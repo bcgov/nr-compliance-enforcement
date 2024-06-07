@@ -859,4 +859,242 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     ),
   );
 };
+
+//-- reporting data maps
+export const mapWildlifeReport = (mapper: Mapper) => {
+  speciesCodeToSpeciesDtoMap(mapper);
+  natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
+  attractantCodeToAttractantDtoMap(mapper);
+  attractantXrefToAttractantXrefDto(mapper);
+  agencyCodeToAgencyDto(mapper);
+  cosGeoOrgUnitToOrganizationDtoMap(mapper);
+  personComplaintToDelegateDtoMap(mapper);
+  reportedByCodeToReportedByDto(mapper);
+
+  createMap<HwcrComplaint, WildlifeReportData>(
+    mapper,
+    "HwcrComplaint",
+    "WildlifeReportData",
+    forMember(
+      (destination) => destination.id,
+      mapFrom((source) => source.complaint_identifier.complaint_identifier),
+    ),
+    forMember(
+      (destination) => destination.reportedOn,
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
+    ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
+    ),
+    //-- officer-assigned
+    forMember(
+      (destination) => destination.status,
+      mapFrom((source) => {
+        return source.complaint_identifier.complaint_status_code.short_description;
+      }),
+    ),
+    forMember(
+      (destination) => destination.incidentDateTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+    ),
+    forMember(
+      (destination) => destination.location,
+      mapFrom((source) => source.complaint_identifier.location_summary_text),
+    ),
+    forMember(
+      (destination) => destination.latitude,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { type: locationType, coordinates },
+          },
+        } = source;
+        return coordinates[0].toString();
+      }),
+    ),
+    forMember(
+      (destination) => destination.longitude,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { type: locationType, coordinates },
+          },
+        } = source;
+        return coordinates[1].toString();
+      }),
+    ),
+
+    forMember(
+      (destination) => destination.community,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.area_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.office,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.office_location_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.zone,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.zone_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.region,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.region_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.locationDescription,
+      mapFrom((source) => source.complaint_identifier.location_detailed_text),
+    ),
+    forMember(
+      (destination) => destination.description,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.detail_text !== null ? complaint.detail_text : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.name,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_name !== null ? complaint.caller_name : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone1,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone2,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone3,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.email,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_email !== null ? complaint.caller_email : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.address,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_address !== null ? complaint.caller_address : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.reportedBy,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { reported_by_code: reported_by },
+        } = source;
+        if (reported_by) {
+          const code = mapper.map<ReportedByCode, ReportedBy>(reported_by, "ReportedByCode", "ReportedByCodeDto");
+          return code.longDescription;
+        }
+
+        return "";
+      }),
+    ),
+
+    //--
+    forMember(
+      (destination) => destination.species,
+      mapFrom((src) => {
+        const item = mapper.map<SpeciesCode, Species>(src.species_code, "SpeciesCode", "SpeciesDto");
+        if (item !== null) {
+          return item.longDescription;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.natureOfComplaint,
+      mapFrom((src) => {
+        const item = mapper.map<HwcrComplaintNatureCode, NatureOfComplaint>(
+          src.hwcr_complaint_nature_code,
+          "NatureOfComplaintCode",
+          "NatureOfComplaintDto",
+        );
+        if (item !== null) {
+          return item.longDescription;
+        }
+
+        return "";
+      }),
+    ),
+  );
+};
 // @SONAR_START@
+
+export interface ComplaintReportData {
+  id: string;
+  reportedOn: Date;
+  updatedOn: Date;
+  createdBy: string;
+  officerAssigned: string;
+  status: string;
+  incidentDateTime: Date;
+  location: string;
+  latitude: string;
+  longitude: string;
+  community: string;
+  office: string;
+  zone: string;
+  region: string;
+  locationDescription: string;
+  description: string;
+
+  //-- caller information
+  name: string;
+  phone1: string;
+  phone2: string;
+  phone3: string;
+  email: string;
+  address: string;
+  reportedBy: string;
+}
+
+export interface WildlifeReportData extends ComplaintReportData {
+  //-- hwcr
+  natureOfComplaint: string;
+  species: string;
+  attractants: string;
+}
