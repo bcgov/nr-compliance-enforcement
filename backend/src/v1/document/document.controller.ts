@@ -59,23 +59,32 @@ export class DocumentController {
   @Get("/export-complaint/:type")
   @Roles(Role.COS_OFFICER)
   async exportComplaint(
-    @Res() res: Response,
     @Param("type") type: COMPLAINT_TYPE,
     @Query("id") id: string,
     @Token() token,
-  ) {
-    const reportData = await this.ceds.getReportData(id, type);
-    const response = await this.cdogsService.generate("derp", reportData, type);
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      const response = await this.service.exportComplaint(id, type);
 
-    ["Content-Disposition", "Content-Type", "Content-Length", "Content-Transfer-Encoding", "X-Report-Name"].forEach(
-      (h) => {
-        console.log(response.headers[h.toLowerCase()]);
-        res.setHeader(h, response.headers[h.toLowerCase()]);
-      },
-    );
+      if (!response || !response.data) {
+        res.status(500).send("Error generating complaint");
+        return;
+      }
 
-    res.send(response.data);
-    return;
+      const buffer = Buffer.from(response.data, "binary");
+
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename=${type}-${id}.pdf`,
+        "Content-Length": buffer.length,
+      });
+
+      res.end(buffer);
+    } catch (error) {
+      console.log("Error generating complaint:", error);
+      res.status(500).send("Error generating complaint");
+    }
   }
 
   ///      const data = await this.ceds.getReportData(id, type);

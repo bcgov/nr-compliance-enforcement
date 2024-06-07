@@ -96,9 +96,9 @@ export class DocumentService {
 
       const documentName = `${type}-${data.id}-${new Date()}.pdf`;
       const response = await this.cdogs.generate(documentName, formated, type);
-      const buffer64 = Buffer.from(response.data, "binary").toString("base64");
+      //const buffer64 = Buffer.from(response.data, "binary").toString("base64");
 
-      return buffer64;
+      return response;
     } catch (error) {
       console.log("exception: export document", error);
       throw new Error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
