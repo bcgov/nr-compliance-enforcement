@@ -104,9 +104,10 @@ BEGIN
 	    update_edit_ind = true;
   end if;
   
+  _update_caller_phone_1 := format_phone_number(_update_caller_phone_1);
   if ((COALESCE(_update_caller_phone_1, '') <> COALESCE(_original_caller_phone_1, '')) and 
     (COALESCE(_update_caller_phone_1, '') <> COALESCE(current_complaint_record.caller_phone_1, ''))) then
-        _update_caller_phone_1 := format_phone_number(_update_caller_phone_1);
+        
 	    UPDATE complaint
 	    SET caller_phone_1 = _update_caller_phone_1
 	    WHERE complaint_identifier = _complaint_identifier;
@@ -114,9 +115,10 @@ BEGIN
 	    update_edit_ind = true;
   end if;
   
+  _update_caller_phone_2 := format_phone_number(_update_caller_phone_2);
   if ((COALESCE(_update_caller_phone_2, '') <> COALESCE(_original_caller_phone_2, '')) and 
     (COALESCE(_update_caller_phone_2, '') <> COALESCE(current_complaint_record.caller_phone_2, ''))) then
-    	_update_caller_phone_2 := format_phone_number(_update_caller_phone_2);
+    	
 	    UPDATE complaint
 	    SET caller_phone_2 = _update_caller_phone_2
 	    WHERE complaint_identifier = _complaint_identifier;
@@ -124,9 +126,10 @@ BEGIN
 	    update_edit_ind = true;
   end if;
   
+  _update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
   if ((COALESCE(_update_caller_phone_3, '') <> COALESCE(_original_caller_phone_3, '')) and 
     (COALESCE(_update_caller_phone_3, '') <> COALESCE(current_complaint_record.caller_phone_3, ''))) then
-    	_update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
+    	
 	    UPDATE complaint
 	    SET caller_phone_3 = _update_caller_phone_3
 	    WHERE complaint_identifier = _complaint_identifier;
