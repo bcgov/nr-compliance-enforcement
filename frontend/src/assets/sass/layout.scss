@@ -778,3 +778,14 @@ td.sticky-col {
 .modal-body {
   padding: 0;
 }
+
+.environment-banner {
+  display: flex;
+  background-color: #eac448;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  height: 36px;
+  color: $bc-gov-primary-700;
+}
