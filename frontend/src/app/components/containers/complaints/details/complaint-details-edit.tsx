@@ -681,6 +681,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 id="details-screen-edit-button"
                 title="Edit Complaint"
                 variant="outline-primary"
+                size="sm"
                 onClick={editButtonClick}
               >
                 <i className="bi bi-pencil"></i>
@@ -1258,10 +1259,8 @@ export const ComplaintDetailsEdit: FC = () => {
         )}
       </section>
 
-      <section className="comp-details-body comp-container">
-        {/* HWCR Outcome Report */}
-        {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
-      </section>
+      {/* HWCR Outcome Report */}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
     </div>
   );
 };

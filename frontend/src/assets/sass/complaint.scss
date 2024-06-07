@@ -374,52 +374,6 @@
   }
 }
 
-// BADGE CUSTOMIZATION
-.comp-status-badge-open {
-  background-color: $green-100-80 !important;
-  color: $green-100;
-}
-
-.comp-status-badge-closed {
-  background-color: $gray-100 !important;
-  color: $gray-700;
-}
-
-.comp-status-badge-pending-review {
-  background-color: $red-300-80;
-  color: $red-300;
-}
-
-.comp-status-badge-threat-level {
-  background-color: $red-300-80;
-  color: $red-300;
-}
-
-.comp-status-badge-conflict-history {
-  background-color: $blue-400;
-  color: $bc-gov-primary-700;
-}
-
-.comp-violation-in-progress {
-  background-color: $red-300-80;
-  color: $red-300;
-}
-
-// DATE/TIME VALUE DISPLAY
-.comp-date-time-value {
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-  white-space: nowrap;
-  div {
-    display: flex;
-    gap: 8px;
-  }
-  div + div {
-    margin-left: 8px;
-  }
-}
-
 // COMPLAINT DETAILS BODY
 .comp-details-body {
   padding: 24px;
@@ -436,39 +390,27 @@
     font-weight: 700;
   }
 
-  section + section {
-    margin-top: 32px;
-    padding-top: 32px;
-    border-top: 1px solid #ccc;
+  .comp-details-section {
+    + section {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid $gray-300;
+    }
   }
 }
 
-.comp-details-section-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  .btn {
-    font-size: 0.875rem;
-  }
-}
+$comp-details-dl-gap: 16px;
+$comp-details-form-gap: 16px;
 
 // CALL DETAILS SECTION
 .comp-details-section {
   dl {
+    margin: 0;
     display: flex;
     flex-direction: column;
     row-gap: 16px;
 
-    div {
+    > div {
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -488,6 +430,11 @@
   dd {
     flex: 0 0 auto;
     margin: 0;
+
+    ul {
+      margin-bottom: 0;
+      padding-left: 1.25rem;
+    }
   }
 
   pre {
@@ -515,7 +462,7 @@
 @include media-breakpoint-up(lg) {
   .comp-details-section {
     dl {
-      div {
+      > div {
         display: flex;
         flex-direction: row;
         gap: 16px;
@@ -544,23 +491,53 @@
   }
 }
 
-.comp-complaint-details {
-  .comp-details-content-label {
-    color: $gray-500;
+// SECTION HEADER
+.comp-details-section-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
   }
 
-  .comp-details-content {
-    color: $gray-900;
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
 
-    i.bi {
-      color: $gray-500;
-    }
+  .btn {
+    font-size: 0.875rem;
+  }
+
+  + .comp-details-form {
+    margin-top: -6px;
   }
 }
 
 .comp-details-section-header-actions {
   margin: -0.5rem 0;
   button + button {
+    margin-left: 8px;
+  }
+}
+
+// COMPLAINT DETAILS CUSTOM COMPONENTS
+.comp-date-time-value {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  white-space: nowrap;
+  div {
+    display: flex;
+    gap: 8px;
+  }
+  div + div {
     margin-left: 8px;
   }
 }
@@ -597,6 +574,11 @@
     font-weight: 700;
   }
 
+  .comp-details-form-desc {
+    margin-bottom: 1.5rem;
+    color: $gray-500;
+  }
+
   .comp-details-input {
     flex: 0 auto;
 
@@ -610,33 +592,62 @@
   }
 }
 
+.comp-details-form-group {
+  + .comp-details-form-row {
+    margin-top: 24px;
+  }
+}
+
 .comp-details-form-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+
+  > label {
+    margin: 6px 0;
+    color: $gray-500;
+  }
+
+  .comp-details-form-row-input {
+    flex: 1 1 auto;
+  }
 
   + .comp-details-form-row {
-    margin-top: 24px;
+    margin-top: 16px;
   }
 }
 
 @include media-breakpoint-up(lg) {
   .comp-details-form-row {
     flex-direction: row;
+    gap: 16px;
 
-    label {
+    > label {
       flex: 0 0 auto;
-      margin-top: 6px;
+      width: 12rem;
+    }
+
+    + .comp-details-form-row {
+      margin-top: 24px;
+    }
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .comp-details-form-row {
+    > label {
       width: 18rem;
     }
   }
 }
 
-@include media-breakpoint-up(lg) {
-  .comp-details-form-row {
-    label {
-      width: 18rem;
-    }
+.comp-details-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  .btn {
+    min-width: 5rem;
+    font-size: 0.875rem;
   }
 }
 
@@ -663,15 +674,6 @@ p {
   background: $bc-gov-primary-400;
 
   color: $bc-gov-primary-400;
-  flex: 1;
-}
-
-.comp-details-create-header {
-  padding: 8px 34px 0px;
-  height: 60px;
-  background: $bc-gov-primary-400;
-
-  color: $white;
   flex: 1;
 }
 
@@ -1922,14 +1924,6 @@ p {
 
 .button-text:disabled {
   color: $gray-500;
-  cursor: not-allowed;
-  pointer-events: all;
-}
-
-.form-check-input {
-  cursor: pointer;
-}
-.form-check-input:disabled {
   cursor: not-allowed;
   pointer-events: all;
 }

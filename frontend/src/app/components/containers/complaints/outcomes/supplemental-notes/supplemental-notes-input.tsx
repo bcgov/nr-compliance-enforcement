@@ -80,36 +80,42 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   };
 
   return (
-    <div className="comp-outcome-supporting-notes">
-      <div>
-        <label
-          htmlFor="supporting-notes-textarea-id"
-          className="label-margin-bottom"
-        >
-          Use this field to add critical contextual information not reported in the form above
-        </label>
-        <ValidationTextArea
-          className="comp-form-control"
-          id="supporting-notes-textarea-id"
-          defaultValue={currentNotes}
-          rows={4}
-          errMsg={notesError}
-          onChange={handleNotesChange}
-        />
+    <section className="comp-details-section">
+      <div className="comp-details-section-header">
+        <h3>Additional notes</h3>
       </div>
-      <div className="clear-right-float" />
-      <div className="comp-details-edit-container">
-        <div className="comp-details-edit-column">
-          <div
-            className="comp-details-label-input-pair"
-            id="officer-supporting-notes-pair-id"
+      <div className="comp-details-form">
+        <p className="comp-details-form-desc">
+          Use this field to add critical contextual information not reported in the form above.
+        </p>
+        <div className="comp-details-form-row">
+          <label
+            htmlFor="supporting-notes-textarea-id"
+            hidden
           >
-            <label
-              id="officer-supporting-notes-pair-id"
-              htmlFor="officer-supporting-notes-select-id"
-            >
-              Officer
-            </label>
+            Notes
+          </label>
+          <ValidationTextArea
+            className="comp-form-control"
+            id="supporting-notes-textarea-id"
+            aria-label="Additional notes"
+            defaultValue={currentNotes}
+            rows={4}
+            errMsg={notesError}
+            onChange={handleNotesChange}
+          />
+        </div>
+        <div
+          className="comp-details-form-row"
+          id="officer-supporting-notes-pair-id"
+        >
+          <label
+            id="officer-supporting-notes-pair-id"
+            htmlFor="officer-supporting-notes-select-id"
+          >
+            Officer
+          </label>
+          <div className="comp-details-input full-width">
             <CompSelect
               id="officer-supporting-notes-select-id"
               classNamePrefix="comp-select"
@@ -120,12 +126,13 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
             />
           </div>
         </div>
-        <div className="comp-details-edit-column comp-details-right-column">
-          <div
-            className="comp-details-label-input-pair"
-            id="supporting-notes-time-pair-id"
-          >
-            <label htmlFor="supporting-notes-time-pair-id">Date</label>
+
+        <div
+          className="comp-details-form-row"
+          id="supporting-notes-time-pair-id"
+        >
+          <label htmlFor="supporting-notes-time-pair-id">Date</label>
+          <div className="comp-details-input full-width">
             <DatePicker
               id="supporting-notes-time-pair-id"
               selected={currentDate}
@@ -138,27 +145,26 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
             />
           </div>
         </div>
-      </div>
-      <div className="comp-outcome-report-container">
-        <div className="comp-outcome-report-actions">
+
+        <div className="comp-details-form-buttons">
           <Button
+            variant="outline-primary"
             id="supporting-notes-cancel-button"
             title="Cancel Additional Notes"
-            className="comp-outcome-cancel"
             onClick={handleCancelChanges}
           >
             Cancel
           </Button>
           <Button
+            variant="primary"
             id="supporting-notes-save-button"
             title="Save Additional Notes"
-            className="comp-outcome-save"
             onClick={handleSaveNotes}
           >
             {mode === "create" ? "Add" : "Update"}
           </Button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

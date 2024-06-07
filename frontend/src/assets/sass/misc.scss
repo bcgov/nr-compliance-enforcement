@@ -33,6 +33,37 @@
   left: -4px;
 }
 
+// BADGE CUSTOMIZATION
+.comp-status-badge-open {
+  background-color: $green-100-80 !important;
+  color: $green-100;
+}
+
+.comp-status-badge-closed {
+  background-color: $gray-100 !important;
+  color: $gray-700;
+}
+
+.comp-status-badge-pending-review {
+  background-color: $red-300-80;
+  color: $red-300;
+}
+
+.comp-status-badge-threat-level {
+  background-color: $red-300-80;
+  color: $red-300;
+}
+
+.comp-status-badge-conflict-history {
+  background-color: $blue-400;
+  color: $bc-gov-primary-700;
+}
+
+.comp-violation-in-progress {
+  background-color: $red-300-80;
+  color: $red-300;
+}
+
 [data-initials]:before {
   background: $bc-gov-info;
   color: $black;

@@ -39,11 +39,11 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   return (
     <div
       id="checkbox-div"
-      className="checkbox-left-padding"
+      className="comp-checkbox-group"
     >
       {options.map((option, index) => (
         <div
-          className="form-check check-spacing"
+          className="comp-checkbox"
           key={option.value}
         >
           <input
@@ -65,7 +65,12 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
           </label>
         </div>
       ))}
-      <div className="error-message">{errMsg}</div>
+      {errMsg && (
+        <div className="comp-form-error-msg error-message">
+          <i className="bi bi-exclamation-circle-fill"></i>
+          {errMsg}
+        </div>
+      )}
     </div>
   );
 };

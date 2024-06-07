@@ -20,3 +20,44 @@
   max-width: inherit;
   color: $gray-500;
 }
+
+// CHECKBOX
+.form-check-input {
+  cursor: pointer;
+}
+.form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: all;
+}
+
+.comp-checkbox-group {
+  margin: -4px 0;
+  padding-left: 8px;
+}
+
+.comp-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+
+  .form-check-input {
+    flex: 0 0 auto;
+  }
+
+  .form-check-input:not(:disabled) + label {
+    cursor: pointer;
+  }
+}
+
+// CUSTOM ERROR MESSAGE
+.comp-form-error-msg {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 12px;
+
+  i {
+    margin-left: 1px;
+    margin-right: 6px;
+  }
+}
