@@ -725,9 +725,6 @@ export const ComplaintDetailsEdit: FC = () => {
               editComponent={true}
             />
           )}
-
-          {/* HWCR Outcome Report */}
-          {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
         </div>
 
         {/* Complaint Details (Edit) */}
@@ -1259,6 +1256,11 @@ export const ComplaintDetailsEdit: FC = () => {
             />
           </div>
         )}
+      </section>
+
+      <section className="comp-details-body comp-container">
+        {/* HWCR Outcome Report */}
+        {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
       </section>
     </div>
   );
