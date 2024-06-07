@@ -189,6 +189,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
             complaint_type={type}
             zone={zone ?? ""}
             agency_code={ownedBy}
+            complaint_status={status}
           />
         </td>
       </tr>

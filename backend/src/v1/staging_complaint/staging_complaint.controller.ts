@@ -18,13 +18,13 @@ export class StagingComplaintController {
   @Post("/webeoc-complaint")
   @UseGuards(ApiKeyGuard)
   createNewComplaint(@Body() createStagingComplaint: WebEOCComplaint) {
-    return this.stagingComplaintService.createNewComplaint(createStagingComplaint);
+    return this.stagingComplaintService.stageNewComplaint(createStagingComplaint);
   }
 
   @Post("/webeoc-complaint-update")
   @UseGuards(ApiKeyGuard)
   createComplaintUpdate(@Body() createStagingComplaint: WebEOCComplaintUpdate) {
-    return this.stagingComplaintService.createComplaintUpdate(createStagingComplaint);
+    return this.stagingComplaintService.stageUpdateComplaint(createStagingComplaint);
   }
 
   @Post("/process/:complaintIdentifier")

@@ -578,7 +578,25 @@ export const selectReportedByDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
+// This returns the complaint status codes, without the pending status.
 export const selectComplaintStatusCodeDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "complaint-status": complaintStatus },
+  } = state;
+
+  // Filter out items where complaintStatus is "PENDREV" since it should only appear on the filter screen.
+  const filteredStatus = complaintStatus.filter((status) => status.complaintStatus !== "PENDREV");
+
+  const data = filteredStatus.map(({ complaintStatus, longDescription }) => {
+    const item: Option = { label: longDescription, value: complaintStatus };
+    return item;
+  });
+
+  return data;
+};
+
+// This returns the complaint status codes, with the pending status.
+export const selectComplaintStatusWithPendingCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "complaint-status": complaintStatus },
   } = state;

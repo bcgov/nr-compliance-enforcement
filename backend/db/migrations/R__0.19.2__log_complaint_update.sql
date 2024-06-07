@@ -1,4 +1,3 @@
--- Given a complaint identifier and an update record from WebEOC, create a complaint_update record
 CREATE OR REPLACE FUNCTION public.log_complaint_update(_complaint_identifier character varying, update_complaint_data jsonb)
  RETURNS void
  LANGUAGE plpgsql
@@ -20,6 +19,7 @@ DECLARE
     _create_userid VARCHAR(200);
     _update_userid VARCHAR(200);
     _update_number INT4 = (update_complaint_data ->> 'update_number') ::INT;
+    _update_number_exists BOOLEAN:= false; -- is this an update for a complaint with an update_number that already exists?  if so, edit it
     
     -- Variables for storing the changes to be inserted
     insert_upd_detail_text TEXT;
@@ -45,6 +45,12 @@ BEGIN
     WHERE complaint_identifier = _complaint_identifier
     ORDER BY update_seq_number DESC
     LIMIT 1;
+   
+   select exists (
+     select 1
+     from PUBLIC.complaint_update cu
+	 where complaint_identifier = _complaint_identifier and update_seq_number = _update_number
+   ) into _update_number_exists;
 
     -- Extract and prepare data for 'complaint_update' table
     _upd_detail_text := update_complaint_data ->> 'update_call_details';
@@ -104,36 +110,49 @@ BEGIN
         insert_upd_location_geometry_point := NULL;
     END IF;
 
-    -- Insert the record if there are any differences
-    IF has_difference THEN
-        INSERT INTO PUBLIC.complaint_update (
-            complaint_identifier,
-            update_seq_number,
-            upd_detail_text,
-            upd_location_summary_text,
-            upd_location_detailed_text,
-            upd_location_geometry_point,
-            create_user_id,
-            create_utc_timestamp,
-            update_user_id,
-            update_utc_timestamp
-        ) VALUES (
-            _complaint_identifier,
-            _update_number,
-            insert_upd_detail_text,
-            insert_upd_location_summary_text,
-            insert_upd_location_detailed_text,
-            insert_upd_location_geometry_point,
-            _create_userid,
-            _create_utc_timestamp,
-            _update_userid,
-            _update_utc_timestamp
-        );
-
-        -- Update timestamp to latest
-        UPDATE PUBLIC.complaint
-        SET    update_utc_timestamp = _update_utc_timestamp, update_user_id = _update_userid
-        WHERE  complaint_identifier = _complaint_identifier;
+    -- Insert the record if there are any differences, either log the complaint or update the previously existing complaint
+    IF has_difference then
+    	if _update_number_exists then
+	    	UPDATE PUBLIC.complaint_update 
+	    		set upd_detail_text = insert_upd_detail_text,
+		            upd_location_summary_text = insert_upd_location_summary_text,
+		            upd_location_detailed_text = insert_upd_location_detailed_text,
+		            upd_location_geometry_point = insert_upd_location_geometry_point,
+		            update_user_id = _update_userid,
+		            update_utc_timestamp = _update_utc_timestamp
+		   where complaint_identifier = _complaint_identifier and update_seq_number = _update_number;
+    	else
+    	
+	        INSERT INTO PUBLIC.complaint_update (
+	            complaint_identifier,
+	            update_seq_number,
+	            upd_detail_text,
+	            upd_location_summary_text,
+	            upd_location_detailed_text,
+	            upd_location_geometry_point,
+	            create_user_id,
+	            create_utc_timestamp,
+	            update_user_id,
+	            update_utc_timestamp
+	        ) VALUES (
+	            _complaint_identifier,
+	            _update_number,
+	            insert_upd_detail_text,
+	            insert_upd_location_summary_text,
+	            insert_upd_location_detailed_text,
+	            insert_upd_location_geometry_point,
+	            _create_userid,
+	            _create_utc_timestamp,
+	            _update_userid,
+	            _update_utc_timestamp
+	        );
+       end if;
+       
+       -- Update timestamp to latest
+       UPDATE PUBLIC.complaint
+       SET    update_utc_timestamp = _update_utc_timestamp, update_user_id = _update_userid
+       WHERE  complaint_identifier = _complaint_identifier;
     END IF;
 END;
-$function$;
+$function$
+;

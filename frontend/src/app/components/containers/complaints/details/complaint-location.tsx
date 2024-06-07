@@ -74,8 +74,8 @@ export const ComplaintLocation: FC<Props> = ({
   const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";
 
   return (
-    <div className={calculatedClass}>
-      <h6>Complaint Location</h6>
+    <section className={"comp-details-section" + calculatedClass}>
+      <h3>Complaint Location</h3>
       <div className="comp-complaint-location">
         <LeafletMapWithPoint
           coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
@@ -84,6 +84,6 @@ export const ComplaintLocation: FC<Props> = ({
           hideMarker={hideMarker}
         />
       </div>
-    </div>
+    </section>
   );
 };
