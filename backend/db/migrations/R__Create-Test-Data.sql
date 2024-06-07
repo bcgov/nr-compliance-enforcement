@@ -293,7 +293,7 @@ UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' W
 -- insert COSHQ and move project team into it
 
 insert into geo_organization_unit_code(geo_organization_unit_code, short_description, long_description, effective_date, expiry_date, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_org_unit_type_code)
-values ('COSHQ','COS HQ','COS Headquarters', now(), null, user, now(), user, now(), 'OFFLOC');
+values ('COSHQ','COS HQ','COS Headquarters', now(), null, user, now(), user, now(), 'OFFLOC') ON CONFLICT DO NOTHING;
 
 INSERT INTO public.office
 (office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
@@ -301,7 +301,7 @@ VALUES('c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, 'nr-compliance-enforcement'
 ON CONFLICT DO NOTHING;
 
 insert into geo_org_unit_structure (effective_date, expiry_date, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, agency_code, parent_geo_org_unit_code, child_geo_org_unit_code)
-values (now(), null, user, now(), user, now(), 'COS','SISL','COSHQ');
+values (now(), null, user, now(), user, now(), 'COS','SISL','COSHQ') ON CONFLICT DO NOTHING;;
 
 UPDATE public.officer SET office_guid = 'c3d8519c-73cb-48a1-8058-358883d5ef4f' where USER_ID IN ('M2SEARS', 'BFALK', 'SKOT', 'NBASKERV', 'AWILCOX', 'STRUONG', 'DKORIN', 'ADLAI');
 
