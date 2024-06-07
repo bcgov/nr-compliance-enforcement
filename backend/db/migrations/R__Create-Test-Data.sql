@@ -298,7 +298,6 @@ UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' W
 UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE office_guid = '4b3a8974-1975-4aaf-9e0a-2d3f5d217805';
 
 
-
 -- Fixing spelling issue
 UPDATE public.attractant_code SET long_description = 'Barbeque' WHERE short_description = 'BBQ' AND attractant_code = 'BBQ';
 UPDATE public.attractant_code SET short_description = 'Fruit/Berries' WHERE long_description = 'Residential Fruit/Berries' AND attractant_code = 'RESFRUIT';
