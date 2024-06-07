@@ -392,6 +392,17 @@ values
         CURRENT_TIMESTAMP,
         'FLYWAY',
         CURRENT_TIMESTAMP
+    ),
+    (
+        'EDIT',
+        'Edit',
+        'A Record has been edited by the source system',
+        3,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
     ) on conflict do nothing;
 
 --------------------------
