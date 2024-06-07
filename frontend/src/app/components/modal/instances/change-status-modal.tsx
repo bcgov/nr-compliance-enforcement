@@ -23,14 +23,19 @@ type ChangeStatusModalProps = {
   startDateFilter: Date | undefined;
   endDateFilter: Date | undefined;
   complaintStatusFilter: Option | null;
+  complaint_status: string;
 };
 
 /**
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
   const modalData = useAppSelector(selectModalData);
+  const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
+  const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
+  const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState("");
   let selectedStatus = "";
@@ -41,6 +46,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       submit();
     }
   });
+
+  useEffect(() => {
+    setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && complaint_status === "PENDREV");
+  }, [isReviewRequired, reviewCompleteAction, complaint_status]);
 
   // Since there are different reducers for updating the state of complaints for tables and details, we need to handle both
   // This will ensure that both are triggered, sequentially.
@@ -81,6 +90,20 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       )}
       <Modal.Body>
         <div className="change_status_modal">
+          {statusChangeDisabledInd && (
+            <Row className="status-change-subtext">
+              <Col
+                xs="auto"
+                className="change_status_modal_icon"
+              >
+                <i className="bi bi-exclamation-circle"></i>
+              </Col>
+              <Col>
+                <div>Complaint is pending review.</div>
+                <div>Complete or cancel review before updating status.</div>
+              </Col>
+            </Row>
+          )}
           <Row>
             <Col>
               <label className="modal_description_label">{description}</label>
@@ -88,7 +111,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
           </Row>
           <Row>
             <Col>
-              <ComplaintStatusSelect onSelectChange={handleSelectChange} />
+              <ComplaintStatusSelect
+                isDisabled={statusChangeDisabledInd}
+                onSelectChange={handleSelectChange}
+              />
             </Col>
           </Row>
         </div>
@@ -101,8 +127,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
           Cancel
         </Button>
         <Button
+          active={!statusChangeDisabledInd}
           id="update_complaint_status_button"
           onClick={handleSubmit}
+          className={!statusChangeDisabledInd ? "" : "inactive-button"}
         >
           Update
         </Button>
