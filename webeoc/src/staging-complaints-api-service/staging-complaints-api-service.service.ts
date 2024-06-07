@@ -34,7 +34,7 @@ export class StagingComplaintsApiService {
 
       await axios.post(apiUrl, complaintData, this._apiConfig);
     } catch (error) {
-      this.logger.error("Error calling Staging Complaint API:", error);
+      this.logger.error("Error calling Staging Complaint Update API:", error);
       throw error;
     }
   }

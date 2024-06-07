@@ -5,11 +5,11 @@ import { useAppSelector } from "../../../hooks/hooks";
 import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
-  selectComplaintStatusCodeDropdown,
   selectViolationCodeDropdown,
   selectCascadedRegion,
   selectCascadedZone,
   selectCascadedCommunity,
+  selectComplaintStatusWithPendingCodeDropdown,
 } from "../../../store/reducers/code-table";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -35,7 +35,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   }
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
-  const statusTypes = useAppSelector(selectComplaintStatusCodeDropdown);
+  const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));

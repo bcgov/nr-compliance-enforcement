@@ -1,5 +1,5 @@
 // LAYOUT
-.comp-container {
+.comp-app-container {
   display: flex;
   height: 100vh;
   height: 100svh; // iOS devices
@@ -19,6 +19,12 @@
   flex-direction: column;
   flex: 1 1 auto;
   overflow-x: hidden;
+}
+
+.comp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
 .fixed-header .comp-header {
@@ -182,7 +188,6 @@ a {
 
   a:hover {
     color: $white;
-    font-weight: bold;
   }
 }
 
@@ -277,12 +282,38 @@ a {
   height: 32px;
 }
 
+.status-change-subtext {
+  color: $red-300;
+  margin-bottom: 10px;
+  font-weight: 400 !important;
+}
+
+.status-change-subtext .change_status_modal_icon {
+  padding-left: 12px;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 div.modal-footer {
   padding: 12px 12px 12px 0px;
 }
 
 button.modal-buttons {
   margin-right: 8px !important;
+}
+
+.inactive-button {
+  background-color: $gray-200;
+  color: $gray-600;
+  cursor: not-allowed;
+  border-color: $gray-600;
+}
+
+.inactive-button:hover {
+  background-color: $gray-200;
+  color: $gray-600;
+  cursor: not-allowed;
 }
 
 .selected {
@@ -572,8 +603,8 @@ button.modal-buttons {
   background-color: $bc-brand-blue;
   color: $bc-brand-blue;
   opacity: 100 !important;
-  margin-left: 24px;
-  margin-right: 24px;
+  margin: 0 24px;
+  margin-bottom: 24px;
 }
 
 p {
@@ -591,27 +622,64 @@ p {
   word-break: break-word !important; //needs to be important to override the global 'break-all' style a few lines above this
 }
 
+// BREADCRUMBS
+.comp-complaint-breadcrumb {
+  color: $white;
+  margin-top: -4px;
+}
+
 // BUTTONS
 .btn {
-  // Utility classes for icon placement in buttons with labels
-  &.icon-start i {
-    margin-right: 4px;
-  }
-
-  &.icon-end i {
-    margin-left: 4px;
-  }
+  // Buttons with Icons
 
   // Icon only
   &.icon-btn {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     padding: 0;
+    border-color: transparent;
 
     i {
-      font-size: 1.5rem;
-      color: #003366;
+      font-size: 1.25rem;
+      color: inherit;
     }
+  }
+
+  // Icon and label visible
+  &:not(.icon-btn) {
+    i {
+      margin-right: 8px;
+      font-size: 1rem;
+    }
+  }
+}
+
+// DROPDOWN MENU
+.icon-btn.dropdown-toggle {
+  &::after {
+    display: none;
+  }
+}
+.dropdown-item {
+  i {
+    margin-right: 8px;
+    font-size: 1rem;
+  }
+}
+
+// TOGGLE BUTTON
+.toggle-button {
+  border-color: $gray-300;
+  white-space: nowrap;
+
+  span {
+    margin-left: 8px;
+  }
+}
+
+@include media-breakpoint-down(xl) {
+  .toggle-button span {
+    display: none;
   }
 }
 
@@ -736,4 +804,15 @@ td.sticky-col {
 // OVERRIDES
 .modal-body {
   padding: 0;
+}
+
+.environment-banner {
+  display: flex;
+  background-color: #eac448;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  height: 36px;
+  color: $bc-gov-primary-700;
 }
