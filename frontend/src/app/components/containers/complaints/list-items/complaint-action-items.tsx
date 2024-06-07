@@ -42,9 +42,9 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
-  const openStatusChangeModal = () => {
+  const openStatusChangeModal = async () => {
     document.body.click();
-    dispatch(getAssessment(complaint_identifier));
+    await dispatch(getAssessment(complaint_identifier));
     dispatch(
       openModal({
         modalSize: "md",
