@@ -10,13 +10,13 @@ type Props = {
 export const Layout: FC<Props> = ({ fixedSidebar, fixedHeader, children }) => {
   const generateContainerClasses = () => {
     if (fixedHeader && !fixedSidebar) {
-      return "comp-container fixed-header";
+      return "comp-app-container fixed-header";
     } else if (!fixedHeader && fixedSidebar) {
-      return "comp-container fixed-sidebar";
+      return "comp-app-container fixed-sidebar";
     } else if (fixedHeader && fixedSidebar) {
-      return "comp-container fixed-header fixed-sidebar";
+      return "comp-app-container fixed-header fixed-sidebar";
     } else {
-      return "comp-container";
+      return "comp-app-container";
     }
   };
 

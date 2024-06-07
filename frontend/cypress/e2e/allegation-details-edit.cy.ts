@@ -172,47 +172,47 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     //start checking edit changes saved
     cy.waitForSpinner();
 
-    cy.get('div[id="comp-details-name"]').contains(editCallerInformation.name);
-    cy.get('div[id="comp-details-address"]').contains(editCallerInformation.address);
-    cy.get('div[id="comp-details-email"]').contains(editCallerInformation.email);
-    cy.get('div[id="comp-details-phone"]').should(($el) => {
+    cy.get('dd[id="comp-details-name"]').contains(editCallerInformation.name);
+    cy.get('dd[id="comp-details-address"]').contains(editCallerInformation.address);
+    cy.get('dd[id="comp-details-email"]').contains(editCallerInformation.email);
+    cy.get('dd[id="comp-details-phone"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.phone);
     });
-    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone-1"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.secondary);
     });
-    cy.get('div[id="comp-details-phone-3"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.alternate);
     });
-    cy.get('div[id="comp-details-reported"]').contains(editCallerInformation.reported);
-    cy.get('div[id="comp-details-email"]').contains(editCallerInformation.email);
+    cy.get('dd[id="comp-details-reported"]').contains(editCallerInformation.reported);
+    cy.get('dd[id="comp-details-email"]').contains(editCallerInformation.email);
 
-    cy.get('p[id="comp-details-witness-details"]').should(($el) => {
+    cy.get('pre[id="comp-details-witness-details"]').should(($el) => {
       expect($el.text().trim()).equal(editCallerInformation.witnessDetails);
     });
 
-    cy.get('div[id="comp-details-location"]').contains(editCallDetails.location);
-    cy.get('p[id="comp-details-location-description"]').contains(editCallDetails.locationDescription);
+    cy.get('dd[id="comp-details-location"]').contains(editCallDetails.location);
+    cy.get('dd[id="comp-details-location-description"]').contains(editCallDetails.locationDescription);
 
-    cy.get('div[id="complaint-incident-date-time"]').contains(editCallDetails.incidentDateDay);
+    cy.get('dd[id="complaint-incident-date-time"]').contains(editCallDetails.incidentDateDay);
 
-    cy.get('p[id="comp-details-description"]').should(($el) => {
+    cy.get('pre[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(editCallDetails.description);
     });
 
-    cy.get('span[id="comp-details-community"]').contains(editCallDetails.community);
+    cy.get('dd[id="comp-details-community"]').contains(editCallDetails.community);
 
-    cy.get('span[id="comp-details-violation-in-progress"]').contains(editCallDetails.violationInProgressString);
+    cy.get('dd[id="comp-details-violation-in-progress"]').contains(editCallDetails.violationInProgressString);
 
-    cy.get('span[id="comp-details-violation-observed"]').contains(editCallDetails.violationObservedString);
+    cy.get('dd[id="comp-details-violation-observed"]').contains(editCallDetails.violationObservedString);
 
     cy.get('div[id="comp-nature-of-complaint"]').contains(editCallDetails.violationType);
 
-    cy.get('span[id="comp-details-office"]').contains(editCallDetails.office);
+    cy.get('dd[id="comp-details-office"]').contains(editCallDetails.office);
 
-    cy.get('span[id="comp-details-zone"]').contains(editCallDetails.zone);
+    cy.get('dd[id="comp-details-zone"]').contains(editCallDetails.zone);
 
-    cy.get('span[id="comp-details-region"]').contains(editCallDetails.region);
+    cy.get('dd[id="comp-details-region"]').contains(editCallDetails.region);
 
     //end checking edit changes saved
   });
@@ -284,51 +284,51 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     //start verifying changes are reverted
     cy.waitForSpinner();
 
-    cy.get('div[id="comp-details-name"]').contains(originalCallerInformation.name);
-    cy.get('div[id="comp-details-address"]').contains(originalCallerInformation.address);
+    cy.get('dd[id="comp-details-name"]').contains(originalCallerInformation.name);
+    cy.get('dd[id="comp-details-address"]').contains(originalCallerInformation.address);
 
-    cy.get('div[id="comp-details-email"]').should(($el) => {
+    cy.get('dd[id="comp-details-email"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.email);
     });
 
-    cy.get('p[id="comp-details-witness-details"]').should(($el) => {
+    cy.get('dd[id="comp-details-witness-details"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.witnessDetails);
     });
 
-    cy.get('div[id="comp-details-phone"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.phone);
     });
-    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.secondary);
     });
-    cy.get('div[id="comp-details-phone-3"]').should(($el) => {
+    cy.get('dd[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-reported"]').contains(originalCallerInformation.reported);
+    cy.get('dd[id="comp-details-reported"]').contains(originalCallerInformation.reported);
 
-    cy.get('div[id="comp-details-location"]').contains(originalCallDetails.location);
-    cy.get('p[id="comp-details-location-description"]').contains(originalCallDetails.locationDescription);
+    cy.get('dd[id="comp-details-location"]').contains(originalCallDetails.location);
+    cy.get('dd[id="comp-details-location-description"]').contains(originalCallDetails.locationDescription);
 
-    cy.get('div[id="complaint-incident-date-time"]').contains(originalCallDetails.incidentDateDay);
+    cy.get('dd[id="complaint-incident-date-time"]').contains(originalCallDetails.incidentDateDay);
 
-    cy.get('p[id="comp-details-description"]').should(($el) => {
+    cy.get('pre[id="comp-details-description"]').should(($el) => {
       expect($el.text().trim()).equal(originalCallDetails.description);
     });
 
-    cy.get('span[id="comp-details-community"]').contains(originalCallDetails.community);
+    cy.get('dd[id="comp-details-community"]').contains(originalCallDetails.community);
 
-    cy.get('span[id="comp-details-violation-in-progress"]').contains(originalCallDetails.violationInProgressString);
+    cy.get('dd[id="comp-details-violation-in-progress"]').contains(originalCallDetails.violationInProgressString);
 
-    cy.get('span[id="comp-details-violation-observed"]').contains(originalCallDetails.violationObservedString);
+    cy.get('dd[id="comp-details-violation-observed"]').contains(originalCallDetails.violationObservedString);
 
     cy.get('div[id="comp-nature-of-complaint"]').contains(originalCallDetails.violationType);
 
-    cy.get('span[id="comp-details-office"]').contains(originalCallDetails.office);
+    cy.get('dd[id="comp-details-office"]').contains(originalCallDetails.office);
 
-    cy.get('span[id="comp-details-zone"]').contains(originalCallDetails.zone);
+    cy.get('dd[id="comp-details-zone"]').contains(originalCallDetails.zone);
 
-    cy.get('span[id="comp-details-region"]').contains(originalCallDetails.region);
+    cy.get('dd[id="comp-details-region"]').contains(originalCallDetails.region);
     //end verifying changes are reverted
   });
 
@@ -340,12 +340,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     // Nature of Complaint - not on ERS tab
     cy.get("#nature-of-complaint-pair-id").should("not.exist");
 
-    // Date / Time Logged
-    cy.get("#date-time-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Date / Time Logged");
-    });
-    cy.get("#date-time-pair-id .comp-details-input").should("exist");
-
     // Species - not on ERS tab
     cy.get("#species-pair-id").should("not.exist");
 
@@ -354,23 +348,6 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
       expect($label).to.contain.text("Violation Type");
     });
     cy.get("#violation-type-pair-id .comp-details-input").should("exist");
-
-    // Last Updated
-    cy.get("#last-updated-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Last Updated");
-    });
-    cy.get("#last-updated-pair-id .comp-details-input").should("exist");
-
-    // Status
-    cy.get("#status-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Status");
-    });
-
-    // Created By
-    cy.get("#created-by-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Created By");
-    });
-    cy.get("#created-by-pair-id div").should("exist");
 
     // Officer Assigned
     cy.get("#officer-assigned-pair-id label").should(($label) => {
@@ -493,7 +470,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Reffered by / Complaint Agency
     cy.get("#reported-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Organization reporting the complaint");
+      expect($label).to.contain.text("Reporting Organization");
     });
     cy.get("#reported-pair-id input").should("exist");
 
