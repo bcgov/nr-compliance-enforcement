@@ -32,6 +32,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     lastUpdated,
     officerAssigned,
     status,
+    statusCode,
     zone,
     natureOfComplaint,
     violationType,
@@ -53,6 +54,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           description: "Status",
           complaint_identifier: id,
           complaint_type: complaintType,
+          complaint_status: statusCode,
         },
       }),
     );
