@@ -7,11 +7,11 @@ export const exportComplaint =
   (type: string, id: string): ThunkAction<Promise<void>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
     try {
-      const config2: AxiosRequestConfig = {
+      const cdogsRequestConfig: AxiosRequestConfig = {
         responseType: "arraybuffer", // Specify response type as arraybuffer
       };
       const url = `${config.API_BASE_URL}/v1/document/export-complaint/${type}?id=${id}`;
-      const response = await axios.get(url, config2);
+      const response = await axios.get(url, cdogsRequestConfig);
 
       // found this on stackoverflow, it appears to work, but it's not pretty.
       // Basically, behind the scenes, create a link, click it, and hide the link.  This triggers the download of the file.
