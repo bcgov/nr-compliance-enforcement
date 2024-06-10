@@ -69,7 +69,7 @@ export const getAssessment =
       officers: { officers },
     } = getState();
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    return await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       dispatch(setCaseId(res.caseIdentifier));
       dispatch(setAssessment({ assessment: updatedAssessmentData }));
