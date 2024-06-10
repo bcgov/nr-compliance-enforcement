@@ -119,6 +119,7 @@ jobs:
               -p COMS_URL=${{ vars.COMS_URL_TEST }}
               -p COMS_BUCKET=${{ vars.COMS_BUCKET_TEST }}
               -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_TEST }}
+              -p ENVIRONMENT_NAME=${{ vars.ENVIRONMENT_NAME_TEST }}
             overwrite: true
           - name: init
             file: common/openshift.init.yml

@@ -117,6 +117,7 @@ jobs:
               -p CPU_LIMIT=50m
               -p MEMORY_REQUEST=40Mi
               -p MEMORY_LIMIT=80Mi
+              -p ENVIRONMENT_NAME=${{ vars.ENVIRONMENT_NAME_DEV }}
           - name: init
             file: common/openshift.init.yml
             overwrite: false

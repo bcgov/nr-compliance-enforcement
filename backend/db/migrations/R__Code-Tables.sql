@@ -82,6 +82,42 @@ values
     ) on conflict (staging_status_code) do nothing;
 
 insert into
+    public.staging_activity_code (
+        staging_activity_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'EDIT',
+        'Edit',
+        'A Record has been edited by the source system',
+        3,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'UPDATE',
+        'Update',
+        'A Record has been updated by the source system',
+        2,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) on conflict do nothing;
+
+insert into
     public.entity_code (
         entity_code,
         short_description,
