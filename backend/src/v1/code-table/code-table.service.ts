@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import { Code, Repository, SelectQueryBuilder } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -597,6 +597,7 @@ export class CodeTableService {
     const data = await this._cosOrganizationUnitRepository
       .createQueryBuilder("cos_geo_org_unit")
       .select(["area_name", "area_code", "zone_code", "region_code"])
+      .where("area_code IS NOT NULL") //added to exclude office locations that don't have areas/communities e.g. COSHQ
       .distinct(true)
       .orderBy("cos_geo_org_unit.area_name", "ASC")
       .getRawMany();
