@@ -1,8 +1,9 @@
 import { FC, ReactNode } from "react";
 import { useErrorBoundary } from "../../hooks/error-boundary";
-import logo from "../../../assets/images/branding/CE-Temp-Logo.svg";
+import logoLg from "../../../assets/images/branding/BCgov-lg.png";
 import { Footer } from "../containers/layout";
 import { TbFaceIdError } from "react-icons/tb";
+import { Link } from "react-router-dom";
 
 type props = {
   children?: ReactNode;
@@ -17,13 +18,19 @@ const GenericErrorBoundary: FC<props> = ({ children }) => {
         {/* <!-- --> */}
 
         <div className="comp-header">
-          <div className="comp-header-logo comp-nav-item-icon-inverted">
-            <img
-              className="logo-src"
-              src={logo}
-              alt="logo"
-            />
-          </div>
+          <Link
+            className="comp-header-logo"
+            to="/"
+          >
+            <picture>
+              <source srcSet={logoLg}></source>
+              <img
+                src={logoLg}
+                alt={"Government of British Columbia"}
+              />
+            </picture>
+            NatComplaints
+          </Link>
 
           <div className="comp-header-content">
             <div className="comp-header-left">{/* <!-- future left hand content --> */}</div>
