@@ -27,6 +27,7 @@
   padding: 24px;
 }
 
+// APPLICATION HEADER
 .fixed-header .comp-header {
   position: fixed;
   width: 100%;
@@ -36,53 +37,38 @@
 
 .comp-header {
   height: 72px;
-  padding: 0 0 0 12px;
   display: flex;
   align-items: center;
-  align-content: center;
   position: relative;
-  z-index: 10;
-  transition: all 0.2s;
+  padding: 0 24px;
   color: $white;
   background: $bc-gov-primary;
 
   .comp-header-logo {
-    padding: 0 0;
-    height: 72px;
-    width: 200px;
     display: flex;
     align-items: center;
-    transition: width 0.2s;
-
-    .logo-src {
-      height: 41px;
-      width: 166px;
-    }
+    gap: 12px;
+    margin-left: -12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $white;
+    text-decoration: none;
   }
 
   .comp-header-content {
     display: flex;
     align-items: center;
-    align-content: center;
     flex: 1;
-    padding: 0 0 0 15px;
-    height: 72px;
 
     .comp-header-left {
       display: flex;
       align-items: center;
     }
 
-    .header-btn-lg {
-      margin-left: 0.5rem;
-      padding: 0 0.5rem;
-    }
-
     .comp-header-right {
       align-items: center;
       display: flex;
       margin-left: auto;
-      height: 72px;
     }
   }
 }
