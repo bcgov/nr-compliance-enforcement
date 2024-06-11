@@ -106,6 +106,7 @@ jobs:
           - name: backend
             file: backend/openshift.deploy.yml
             parameters: -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
+              -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
             overwrite: true
           - name: webeoc
             file: webeoc/openshift.deploy.yml
@@ -138,6 +139,7 @@ jobs:
           - name: backend
             file: backend/openshift.deploy.yml
             parameters: -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
+              -p FLYWAY_LOCATIONS="filesystem:./sql"
             overwrite: true
           - name: database
             file: database/openshift.deploy.yml
