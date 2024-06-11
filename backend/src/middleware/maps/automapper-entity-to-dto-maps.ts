@@ -29,6 +29,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { format } from "date-fns";
 
 // @SONAR_STOP@
 
@@ -862,6 +863,8 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 
 //-- reporting data maps
 export const mapWildlifeReport = (mapper: Mapper) => {
+  const reportGeneratedOn: Date = new Date();
+
   speciesCodeToSpeciesDtoMap(mapper);
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
@@ -875,19 +878,57 @@ export const mapWildlifeReport = (mapper: Mapper) => {
     mapper,
     "HwcrComplaint",
     "WildlifeReportData",
+
+    forMember(
+      (destination) => destination.reportDate,
+      mapFrom(() => format(reportGeneratedOn, "yyyy-MM-dd")),
+    ),
+    forMember(
+      (destination) => destination.reportTime,
+      mapFrom(() => format(reportGeneratedOn, "HH:mm")),
+    ),
+
     forMember(
       (destination) => destination.id,
       mapFrom((source) => source.complaint_identifier.complaint_identifier),
     ),
     forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id),
+    ),
+    forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
+      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd")),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
+      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd")),
     ),
-    //-- officer-assigned
+    forMember(
+      (destination) => destination.officerAssigned,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { person_complaint_xref: people },
+        } = source;
+
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+
+        if (delegates.length === 0) {
+          return "Not Assigned";
+        } else {
+          const assignee = delegates.find((item) => item.type === "ASSIGNEE");
+          if (!assignee) {
+            return "Not Assigned";
+          } else {
+            const {
+              person: { firstName, lastName },
+            } = assignee;
+            return `${firstName} ${lastName}`;
+          }
+        }
+      }),
+    ),
+
     forMember(
       (destination) => destination.status,
       mapFrom((source) => {
@@ -896,7 +937,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd")),
     ),
     forMember(
       (destination) => destination.location,
@@ -1060,18 +1101,275 @@ export const mapWildlifeReport = (mapper: Mapper) => {
         return "";
       }),
     ),
+    forMember(
+      (destination) => destination.attractants,
+      mapFrom((src) => {
+        if (src.attractant_hwcr_xref !== null) {
+          const attractants = mapper.mapArray<AttractantHwcrXref, AttractantXrefDto>(
+            src.attractant_hwcr_xref,
+            "AttractantXref",
+            "AttractantXrefDto",
+          );
+
+          console.log(attractants.map((item) => item.attractant).join());
+          return attractants.map((item) => item.attractant).join();
+        }
+
+        return "";
+      }),
+    ),
   );
 };
+
+export const mapAllegationReport = (mapper: Mapper) => {
+  const reportGeneratedOn: Date = new Date();
+
+  violationCodeToViolationDto(mapper);
+  agencyCodeToAgencyDto(mapper);
+  cosGeoOrgUnitToOrganizationDtoMap(mapper);
+  personComplaintToDelegateDtoMap(mapper);
+  reportedByCodeToReportedByDto(mapper);
+
+  createMap<AllegationComplaint, AllegationReportData>(
+    mapper,
+    "AllegationComplaint",
+    "AllegationReportData",
+
+    forMember(
+      (destination) => destination.reportDate,
+      mapFrom(() => format(reportGeneratedOn, "yyyy-MM-dd")),
+    ),
+    forMember(
+      (destination) => destination.reportTime,
+      mapFrom(() => format(reportGeneratedOn, "HH:mm")),
+    ),
+
+    forMember(
+      (destination) => destination.id,
+      mapFrom((source) => source.complaint_identifier.complaint_identifier),
+    ),
+    forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id),
+    ),
+    forMember(
+      (destination) => destination.reportedOn,
+      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd")),
+    ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd")),
+    ),
+    forMember(
+      (destination) => destination.officerAssigned,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { person_complaint_xref: people },
+        } = source;
+
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+
+        if (delegates.length === 0) {
+          return "Not Assigned";
+        } else {
+          const assignee = delegates.find((item) => item.type === "ASSIGNEE");
+          if (!assignee) {
+            return "Not Assigned";
+          } else {
+            const {
+              person: { firstName, lastName },
+            } = assignee;
+            return `${firstName} ${lastName}`;
+          }
+        }
+      }),
+    ),
+
+    forMember(
+      (destination) => destination.status,
+      mapFrom((source) => {
+        return source.complaint_identifier.complaint_status_code.short_description;
+      }),
+    ),
+    forMember(
+      (destination) => destination.incidentDateTime,
+      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd")),
+    ),
+    forMember(
+      (destination) => destination.location,
+      mapFrom((source) => source.complaint_identifier.location_summary_text),
+    ),
+    forMember(
+      (destination) => destination.latitude,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { type: locationType, coordinates },
+          },
+        } = source;
+        return coordinates[0].toString();
+      }),
+    ),
+    forMember(
+      (destination) => destination.longitude,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { type: locationType, coordinates },
+          },
+        } = source;
+        return coordinates[1].toString();
+      }),
+    ),
+
+    forMember(
+      (destination) => destination.community,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.area_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.office,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.office_location_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.zone,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.zone_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.region,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.region_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.locationDescription,
+      mapFrom((source) => source.complaint_identifier.location_detailed_text),
+    ),
+    forMember(
+      (destination) => destination.description,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.detail_text !== null ? complaint.detail_text : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.name,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_name !== null ? complaint.caller_name : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone1,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone2,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone3,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.email,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_email !== null ? complaint.caller_email : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.address,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_address !== null ? complaint.caller_address : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.reportedBy,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { reported_by_code: reported_by },
+        } = source;
+        if (reported_by) {
+          const code = mapper.map<ReportedByCode, ReportedBy>(reported_by, "ReportedByCode", "ReportedByCodeDto");
+          return code.longDescription;
+        }
+
+        return "";
+      }),
+    ),
+
+    //--
+    forMember(
+      (destination) => destination.violationType,
+      mapFrom((src) => {
+        const item = mapper.map<ViolationCode, Violation>(src.violation_code, "ViolationCode", "ViolationCodeDto");
+        if (item !== null) {
+          return item.violation;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.inProgress,
+      mapFrom((src) => (src.in_progress_ind ? "Yes" : "No")),
+    ),
+    forMember(
+      (destination) => destination.wasObserved,
+      mapFrom((src) => (src.observed_ind ? "Yes" : "No")),
+    ),
+    forMember(
+      (destination) => destination.details,
+      mapFrom((src) => src.suspect_witnesss_dtl_text),
+    ),
+  );
+};
+
 // @SONAR_START@
 
 export interface ComplaintReportData {
+  reportDate: string;
+  reportTime: string;
+
   id: string;
-  reportedOn: Date;
-  updatedOn: Date;
+  reportedOn: string;
+  updatedOn: string;
   createdBy: string;
   officerAssigned: string;
   status: string;
-  incidentDateTime: Date;
+  incidentDateTime: string;
   location: string;
   latitude: string;
   longitude: string;
@@ -1097,4 +1395,12 @@ export interface WildlifeReportData extends ComplaintReportData {
   natureOfComplaint: string;
   species: string;
   attractants: string;
+}
+
+export interface AllegationReportData extends ComplaintReportData {
+  //-- ers
+  violationType: string;
+  inProgress: string;
+  wasObserved: string;
+  details: string;
 }

@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
 
-import { BsPersonPlus, BsArrowRepeat, BsFileEarmarkPdf } from "react-icons/bs";
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
 import { openModal } from "../../../../store/reducers/app";
@@ -133,7 +132,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
             {/* Action Buttons */}
             {readOnly && (
-
               <div className="comp-header-actions">
                 <div className="comp-header-actions-mobile">
                   <Dropdown>
@@ -160,6 +158,13 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
+                      <Dropdown.Item
+                        as="button"
+                        onClick={() => exportComplaintToPdf()}
+                      >
+                        <i className="bi bi-file-earmark-pdf"></i>
+                        <span>Export</span>
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -181,6 +186,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   >
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update Status</span>
+                  </Button>
+                  <Button
+                    id="details-screen-export-complaint-button"
+                    title="Export"
+                    variant="outline-light"
+                    onClick={() => exportComplaintToPdf()}
+                  >
+                    <i className="bi bi-file-earmark-pdf"></i>
+                    <span>Export</span>
                   </Button>
                 </div>
               </div>

@@ -6,9 +6,11 @@ import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 
 import {
+  AllegationReportData,
   applyAllegationComplaintMap,
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
+  mapAllegationReport,
   mapWildlifeReport,
   WildlifeReportData,
 } from "../../middleware/maps/automapper-entity-to-dto-maps";
@@ -98,6 +100,7 @@ export class ComplaintService {
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
 
     mapWildlifeReport(mapper);
+    mapAllegationReport(mapper);
   }
 
   private _getAgencyByUser = async (): Promise<AgencyCode> => {
@@ -1337,27 +1340,37 @@ export class ComplaintService {
       }
 
       builder.where("complaint.complaint_identifier = :id", { id });
-      const raw = await builder.getOne();
+      const result = await builder.getOne();
+      console.log("ERS DATA");
+      console.log("complaintType", complaintType);
 
       switch (complaintType) {
-        case "ERS": {
-          // return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
-          //   raw as AllegationComplaint,
-          //   "AllegationComplaint",
-          //   "AllegationComplaintDto",
-          // );
-        }
-        case "HWCR": {
+        case "HWCR":
           const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
-            raw as HwcrComplaint,
+            result as HwcrComplaint,
             "HwcrComplaint",
             "WildlifeReportData",
           );
           return hwcr;
-        }
+        case "ERS":
+          const ers = this.mapper.map<AllegationComplaint, AllegationReportData>(
+            result as AllegationComplaint,
+            "AllegationComplaint",
+            "AllegationReportData",
+          );
+
+          return ers;
       }
     } catch (error) {
       this.logger.error(error);
     }
   };
 }
+// case "HWCR": {
+//   const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
+//     raw as HwcrComplaint,
+//     "HwcrComplaint",
+//     "WildlifeReportData",
+//   );
+//   return hwcr;
+// }

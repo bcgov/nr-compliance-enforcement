@@ -184,11 +184,12 @@ export class CdogsService implements ExternalApiService {
       };
 
       const documentData = await this._applyData(data, documentName);
-      console.log("DATA: ", documentData);
 
-      return await post(apiToken, url, documentData, config);
+      const response = await axios.post(url, documentData, config);
+      return response;
     } catch (error) {
-      console.log("ERROR: ", error);
+      console.log(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
+      throw new Error(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
     }
   };
 }
