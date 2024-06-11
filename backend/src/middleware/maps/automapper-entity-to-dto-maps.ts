@@ -898,11 +898,11 @@ export const mapWildlifeReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd")),
+      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd HH:mm")),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd")),
+      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd HH:mm")),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -937,7 +937,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd")),
+      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd HH:mm")),
     ),
     forMember(
       (destination) => destination.location,
@@ -1154,11 +1154,11 @@ export const mapAllegationReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd")),
+      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd HH:mm")),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd")),
+      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd HH:mm")),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -1193,7 +1193,7 @@ export const mapAllegationReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd")),
+      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd HH:mm")),
     ),
     forMember(
       (destination) => destination.location,
