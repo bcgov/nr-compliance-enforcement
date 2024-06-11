@@ -24,7 +24,7 @@ export class DocumentController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}-.pdf`;
+      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       const response = await this.service.exportComplaint(id, type, fileName);
 
       if (!response || !response.data) {

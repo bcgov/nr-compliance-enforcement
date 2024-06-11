@@ -12,7 +12,7 @@ export const exportComplaint =
   (type: string, id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
     try {
-      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}-.pdf`;
+      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       const axiosConfig: AxiosRequestConfig = {
         responseType: "arraybuffer", // Specify response type as arraybuffer
       };
