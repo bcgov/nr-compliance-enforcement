@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CdogsService } from "src/external_api/cdogs/cdogs.service";
+import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
-import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
+import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 
 @Injectable()
 export class DocumentService {

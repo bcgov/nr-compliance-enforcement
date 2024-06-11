@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { get, post } from "src/helpers/axios-api";
-import { ConfigurationService } from "src/v1/configuration/configuration.service";
-import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
-import { CONFIGURATION_CODES } from "src/types/configuration-codes";
+import { get, post } from "../../helpers/axios-api";
+import { ConfigurationService } from "../../v1/configuration/configuration.service";
+import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
+import { CONFIGURATION_CODES } from "../../types/configuration-codes";
 import { constants } from "http2";
 import FormData = require("form-data");
 import fs = require("fs");

@@ -1,12 +1,12 @@
 import { Controller, Get, Param, Query, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { DocumentService } from "./document.service";
-import { JwtRoleGuard } from "src/auth/jwtrole.guard";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { Role } from "src/enum/role.enum";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { Token } from "src/auth/decorators/token.decorator";
-import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
+import { Role } from "../../enum/role.enum";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { Token } from "../../auth/decorators/token.decorator";
+import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { format } from "date-fns";
 
 @UseGuards(JwtRoleGuard)

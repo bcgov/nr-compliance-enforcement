@@ -4,7 +4,7 @@ import { Configuration } from "./entities/configuration.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { REQUEST } from "@nestjs/core";
-import { getIdirFromRequest } from "src/common/get-idir-from-request";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 
 @Injectable()
 export class ConfigurationService {
