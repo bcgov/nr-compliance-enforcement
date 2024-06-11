@@ -1,7 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
-import { ComplaintDto } from "src/types/models/complaints/complaint";
-import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
 import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { get, post } from "src/helpers/axios-api";
@@ -40,7 +37,7 @@ export class CdogsService implements ExternalApiService {
 
     try {
       const response: AxiosResponse = await get(apiToken, url, headers);
-      const { status, data } = response;
+      const { status } = response;
       if (status === constants.HTTP_STATUS_OK) {
         return true;
       }

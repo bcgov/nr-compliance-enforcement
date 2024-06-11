@@ -55,7 +55,6 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 import { format } from "date-fns";
-import { formatDateTime } from "src/common/methods";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1341,18 +1340,17 @@ export class ComplaintService {
 
       builder.where("complaint.complaint_identifier = :id", { id });
       const result = await builder.getOne();
-      console.log("ERS DATA");
-      console.log("complaintType", complaintType);
 
       switch (complaintType) {
-        case "HWCR":
+        case "HWCR": {
           const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
             result as HwcrComplaint,
             "HwcrComplaint",
             "WildlifeReportData",
           );
           return hwcr;
-        case "ERS":
+        }
+        case "ERS": {
           const ers = this.mapper.map<AllegationComplaint, AllegationReportData>(
             result as AllegationComplaint,
             "AllegationComplaint",
@@ -1360,17 +1358,10 @@ export class ComplaintService {
           );
 
           return ers;
+        }
       }
     } catch (error) {
       this.logger.error(error);
     }
   };
 }
-// case "HWCR": {
-//   const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
-//     raw as HwcrComplaint,
-//     "HwcrComplaint",
-//     "WildlifeReportData",
-//   );
-//   return hwcr;
-// }

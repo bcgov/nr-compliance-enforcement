@@ -2,11 +2,6 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CdogsService } from "src/external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
 import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
-import { ComplaintDto } from "src/types/models/complaints/complaint";
-import { AllegationComplaintDto } from "src/types/models/complaints/allegation-complaint";
-import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
-import { formatDateTime } from "src/common/methods";
-import { Response } from "express";
 
 @Injectable()
 export class DocumentService {

@@ -948,7 +948,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
       mapFrom((source) => {
         const {
           complaint_identifier: {
-            location_geometry_point: { type: locationType, coordinates },
+            location_geometry_point: { coordinates },
           },
         } = source;
         return coordinates[0].toString();
@@ -959,7 +959,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
       mapFrom((source) => {
         const {
           complaint_identifier: {
-            location_geometry_point: { type: locationType, coordinates },
+            location_geometry_point: { coordinates },
           },
         } = source;
         return coordinates[1].toString();
@@ -1204,7 +1204,7 @@ export const mapAllegationReport = (mapper: Mapper) => {
       mapFrom((source) => {
         const {
           complaint_identifier: {
-            location_geometry_point: { type: locationType, coordinates },
+            location_geometry_point: { coordinates },
           },
         } = source;
         return coordinates[0].toString();
@@ -1215,7 +1215,7 @@ export const mapAllegationReport = (mapper: Mapper) => {
       mapFrom((source) => {
         const {
           complaint_identifier: {
-            location_geometry_point: { type: locationType, coordinates },
+            location_geometry_point: { coordinates },
           },
         } = source;
         return coordinates[1].toString();
