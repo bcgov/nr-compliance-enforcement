@@ -125,7 +125,7 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-            parameters: p- FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
+            parameters: -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
 
   deploys-prod:
     name: PROD Deployments
