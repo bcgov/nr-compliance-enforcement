@@ -23,10 +23,12 @@ export class DocumentService {
       //-- than the base complaint. no maps, no attachments, no outcome data
       const data = await this.ceds.getReportData(id, type);
 
+      this.logger.debug(`COMPLAINT-DATA: ${data}`);
+
       //--
       return await this.cdogs.generate(name, data, type);
     } catch (error) {
-      this.logger.log(`exception: unable to export document for complaint: ${id} - error: ${error}`);
+      this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
       throw new Error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
     }
   };

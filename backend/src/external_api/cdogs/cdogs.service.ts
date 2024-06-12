@@ -171,12 +171,18 @@ export class CdogsService implements ExternalApiService {
     try {
       const apiToken = await this.authenticate();
 
+      this.logger.debug(`API-TOKEN: ${apiToken}`);
+
       if (!(await this.isTemplateCached(apiToken, templateCode))) {
+        this.logger.debug(`UPLOAD-TEMPLATE: ${templateCode}`);
         await this.upload(apiToken, type, templateCode);
       }
 
       const uid = await this._getTemplateId(templateCode);
       const url = `${this.baseUri}/api/v2/template/${uid}/render`;
+
+      this.logger.debug(`TEMPLATE-HASH: ${uid}`);
+      this.logger.debug(`RENDER URL: ${url}`);
 
       const config: AxiosRequestConfig = {
         responseType: "arraybuffer",
@@ -187,11 +193,14 @@ export class CdogsService implements ExternalApiService {
       };
 
       const documentData = await this._applyData(data, documentName);
+      this.logger.debug(`FORMATED-DATA: ${documentData}`);
 
       const response = await axios.post(url, documentData, config);
+      this.logger.debug(`DOCUMENT: ${response}`);
+
       return response;
     } catch (error) {
-      this.logger.log(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
+      this.logger.error(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
       throw new Error(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
     }
   };
