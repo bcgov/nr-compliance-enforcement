@@ -263,19 +263,19 @@ VALUES('65dbad8b-790a-43cb-b394-c8019f4c86e2'::uuid, 'M2SEARS', 'FLYWAY', '2023-
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('54892583-7013-48f5-87c8-90c19f95b395'::uuid, 'BFALK', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '659f8758-1b64-4d23-b371-d4c4333c2787'::uuid, '313f4ec3-e88a-41c2-9956-78c7b18cb71d'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+VALUES('54892583-7013-48f5-87c8-90c19f95b395'::uuid, 'BFALK', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '659f8758-1b64-4d23-b371-d4c4333c2787'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, '6def8986-1b18-4205-8283-d6fd633b3eee'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('b762fbc2-344f-4c53-a8c2-6b0b9f605d4b'::uuid, 'SKOT', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '5169b4e9-4d93-42bf-b7f4-70f329bfd22c'::uuid, 'b494082e-35a3-468f-8955-4aa002066b36'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+VALUES('b762fbc2-344f-4c53-a8c2-6b0b9f605d4b'::uuid, 'SKOT', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '5169b4e9-4d93-42bf-b7f4-70f329bfd22c'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, '98b121c7-873a-45bf-b465-749870896eb9'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('efcbaae4-505b-4db3-b036-7ec8b8dd8c6d'::uuid, 'NBASKERV', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '6fd73cad-cbc7-49f1-888a-b24dc8abd824'::uuid, 'c8aeb3d9-3718-49d9-b8b5-6c84671546eb'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+VALUES('efcbaae4-505b-4db3-b036-7ec8b8dd8c6d'::uuid, 'NBASKERV', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '6fd73cad-cbc7-49f1-888a-b24dc8abd824'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, 'ef0bc810-58a7-4080-ad7a-b5bbdd0d2efe'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('9d171865-aab6-43d1-bbf2-93b4d4c5ba02'::uuid, 'AWILCOX', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid, '9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+VALUES('9d171865-aab6-43d1-bbf2-93b4d4c5ba02'::uuid, 'AWILCOX', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, '287d4e72-8409-4dd1-991a-8b1117b8eb2a'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
