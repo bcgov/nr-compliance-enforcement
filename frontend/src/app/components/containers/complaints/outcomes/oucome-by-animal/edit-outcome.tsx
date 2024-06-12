@@ -368,7 +368,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   const cancel = () => {
     setShowModal(false);
-    // toggle(id);
     toggle("");
   };
 

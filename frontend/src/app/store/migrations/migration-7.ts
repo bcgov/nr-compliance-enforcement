@@ -1,4 +1,4 @@
-//Add personGuid in app and isReviewRequired,reviewComplete in cases
+//Add isInEdit in cases
 export const AddIsInEdit = {
   7: (state: any) => {
     return {
