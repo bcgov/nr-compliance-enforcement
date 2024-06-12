@@ -23,7 +23,7 @@ export class DocumentService {
       //-- than the base complaint. no maps, no attachments, no outcome data
       const data = await this.ceds.getReportData(id, type);
 
-      this.logger.debug(`COMPLAINT-DATA: ${data}`);
+      this.logger.debug(`COMPLAINT-DATA: ${JSON.stringify(data)}`);
 
       //--
       return await this.cdogs.generate(name, data, type);
