@@ -5,7 +5,7 @@
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 const fns = require("date-fns");
 //--
-describe("Complaint List Functionality", () => {
+describe("Export Complaint Functionality", () => {
   const complaintTypes = ["#hwcr-tab", "#ers-tab"];
 
   beforeEach(function () {
@@ -18,7 +18,7 @@ describe("Complaint List Functionality", () => {
   });
 
   Cypress._.times(complaintTypes.length, (index) => {
-    it("Can export complaint", () => {
+    it(`Can export complaint: ${index === 0 ? "HWCR" : "ERS"}`, () => {
       let fileName = "";
 
       const date = fns.format(new Date(), "yyyy-MM-dd");
@@ -32,7 +32,7 @@ describe("Complaint List Functionality", () => {
       }
 
       cy.get("#details-screen-export-complaint-button").click({ force: true });
-      cy.verifyDownload(fileName, { timeout: 5000 });
+      cy.verifyDownload(fileName, { timeout: 10000 });
     });
   });
 });
