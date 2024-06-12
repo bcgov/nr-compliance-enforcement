@@ -57,7 +57,7 @@ export class CdogsService implements ExternalApiService {
         return config.configurationValue;
       }
     } catch (error) {
-      this.logger.log(`Unable to retrieve template ${code} hash`);
+      this.logger.error(`Unable to retrieve template ${code} hash`);
       throw Error(`Unable to retrieve template ${code} hash`);
     }
   };
@@ -129,6 +129,8 @@ export class CdogsService implements ExternalApiService {
         : "templates/complaint/CDOGS-ERS-COMPLAINT-TEMPLATE-v1.docx";
     const path = join(process.cwd(), template);
 
+    this.logger.debug("TEMPLATE-PATH: ", path);
+
     try {
       const bodyFormData = new FormData();
       bodyFormData.append("template", fs.createReadStream(path));
@@ -156,7 +158,7 @@ export class CdogsService implements ExternalApiService {
         this.configService.updateByCode(templateCode, hash);
       } else {
         //-- valid error
-        this.logger.log(`exception: unable to upload template: ${template} - error: ${error}`);
+        this.logger.error(`exception: unable to upload template: ${template} - error: ${error}`);
         throw new Error(`exception: unable to upload template: ${template} - error: ${error}`);
       }
     }
