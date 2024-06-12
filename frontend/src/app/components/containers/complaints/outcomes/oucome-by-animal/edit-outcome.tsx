@@ -12,7 +12,7 @@ import {
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { Button, Col, Row } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
-import { BsPlusCircle } from "react-icons/bs";
+import { BsExclamationCircleFill, BsPlusCircle } from "react-icons/bs";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import { pad } from "../../../../../common/methods";
 import Option from "../../../../../types/app/option";
@@ -52,6 +52,8 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const showSectionErrors = isInEdit.showSectionErrors;
 
   const [showModal, setShowModal] = useState(false);
 
@@ -354,6 +356,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     if (isValid()) {
       update(data);
     }
+    toggle("");
   };
 
   const handleCancel = () => {
@@ -365,8 +368,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   const cancel = () => {
     setShowModal(false);
-    toggle(id);
+    // toggle(id);
+    toggle("");
   };
+
   return (
     <>
       <StandaloneConfirmCancelModal
@@ -376,7 +381,13 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         closeAndCancel={cancel}
         close={close}
       />
-      <div className="comp-outcome-report-complaint-assessment">
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Save section before closing the complaint.</span>
+        </div>
+      )}
+      <div className={`comp-outcome-report-complaint-assessment ${showSectionErrors && "section-error"}`}>
         <div className="comp-animal-outcome-report">
           <div className="equipment-item">
             <div className="equipment-item-header">

@@ -16,6 +16,7 @@ import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
+import { setIsInEdit } from "../../../../store/reducers/cases";
 
 type props = {};
 
@@ -55,6 +56,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- if there's an assigned officer pull them off
   //-- the complaint and pass as a kvp to the input
   const [assignedOfficer, setAssignedOfficer] = useState("");
+  const [editId, setEditId] = useState<string>("");
 
   //-- outcomes is a collection of all of the animal outcomes
   //-- for the selected complaint
@@ -106,11 +108,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   };
 
   const handleEnableEdit = (id: string) => {
-    const items = outcomes.map((item) => {
-      return { ...item, editable: !!(item.id === id && !item.editable) };
-    });
-
-    setOutcomes(items);
+    setEditId(id);
   };
 
   const handleCancelCreateOutcome = () => {
@@ -152,13 +150,16 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
     setOutcomes(items);
   }, [dispatch, subjects]);
 
+  useEffect(() => {
+    dispatch(setIsInEdit({ animal: showForm || editId.length > 0 }));
+  }, [showForm, editId]);
+
   //-- render a list of outcomes
   const renderOutcomeList = () => {
     if (outcomes && from(outcomes).any()) {
       return outcomes.map((item) => {
-        const { id, editable, order } = item;
-
-        if (editable) {
+        const { id, order } = item;
+        if (editId === id) {
           return (
             <EditOutcome
               key={id}

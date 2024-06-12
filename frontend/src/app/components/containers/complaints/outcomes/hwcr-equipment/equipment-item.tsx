@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { Row, Col } from "react-bootstrap";
-import { BsPencil, BsTrash3 } from "react-icons/bs";
+import { BsExclamationCircleFill, BsPencil, BsTrash3 } from "react-icons/bs";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
@@ -69,6 +69,13 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     ? `${removedEquipmentOfficer.person_guid.first_name} ${removedEquipmentOfficer.person_guid.last_name}`
     : null;
 
+  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const showSectionErrors =
+    !removedEquipmentDate &&
+    getValue("equipment")?.value !== "SIGNG" &&
+    getValue("equipment")?.value !== "TRCAM" &&
+    isInEdit.showSectionErrors;
+
   return (
     <>
       <DeleteConfirmModal
@@ -82,7 +89,15 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         }}
         confirmText="Yes, delete equipment"
       />
-      <div className="comp-outcome-report-complaint-assessment equipment-item">
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Provide date equipment was removed before closing the complaint.</span>
+        </div>
+      )}
+      <div
+        className={`comp-outcome-report-complaint-assessment equipment-item ${showSectionErrors && "section-error"}`}
+      >
         {!removedEquipmentFullName && <div className="status-bar"></div>}
         <div className="equipment-item-header">
           <div

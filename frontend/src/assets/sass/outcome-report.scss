@@ -15,6 +15,7 @@
   h6 {
     padding-top: 0px;
     font-weight: 700;
+    margin-bottom: 8px;
   }
 
   label {
@@ -95,7 +96,7 @@
   }
 
   .comp-outcome-report-button {
-    margin-top: 24px;
+    // margin-top: 24px;
     margin-bottom: 24px;
   }
 
@@ -111,7 +112,7 @@
 
   .comp-outcome-report-complaint-prev-and-educ,
   .comp-outcome-report-complaint-assessment {
-    margin-top: 24px;
+    // margin-top: 24px;
     margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
@@ -119,7 +120,7 @@
   }
 
   .comp-outcome-report-complaint-attachments {
-    margin-top: 24px;
+    // margin-top: 24px;
     margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
@@ -131,7 +132,7 @@
   }
 
   .comp-outcome-supporting-notes {
-    margin-top: 24px;
+    // margin-top: 24px;
     margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
@@ -272,7 +273,7 @@
   }
 
   .comp-animal-outcome {
-    margin-top: 24px;
+    // margin-top: 24px;
     margin-bottom: 24px;
     border: 1px solid $gray-300;
     border-radius: 3px;
@@ -348,5 +349,48 @@
     .comp-animal-outcome-pending {
       color: $bc-gov-danger;
     }
+  }
+
+  .comp-outcome-report-file-review {
+    // margin-top: 24px;
+    margin-bottom: 24px;
+    border: 1px solid $gray-300;
+    border-radius: 3px;
+    padding: 24px;
+  }
+
+  .comp-outcome-report-file-review > .comp-details-content-label {
+    padding-right: 25px;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  .comp-outcome-report-file-review > .comp-details-content {
+    margin-bottom: 16px;
+    display: inline-block;
+
+    i:first-child {
+      padding-right: 5px;
+    }
+
+    i:last-child {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+}
+
+.section-error {
+  border: 3px solid $bc-gov-danger !important;
+  border-radius: 4px !important;
+}
+
+.section-error-message {
+  color: $bc-gov-danger;
+  svg {
+    margin-top: -2px;
+  }
+  span {
+    margin-left: 5px;
   }
 }

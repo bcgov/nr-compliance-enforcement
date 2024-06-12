@@ -22,6 +22,16 @@ const initialState: CasesState = {
   },
   equipment: [],
   subject: [],
+  isInEdit: {
+    assessment: false,
+    prevention: false,
+    equipment: false,
+    animal: false,
+    note: false,
+    attachments: false,
+    fileReview: false,
+    showSectionErrors: false,
+  },
 };
 
 export const casesSlice = createSlice({
@@ -68,6 +78,10 @@ export const casesSlice = createSlice({
       //-- each individual state. Add assessment, prevention, equipment here
       return { ...state, note, equipment, subject, reviewComplete };
     },
+    setIsInEdit: (state, action) => {
+      const { payload } = action;
+      return { ...state, isInEdit: { ...state.isInEdit, ...payload } };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -87,6 +101,7 @@ export const {
   setIsReviewedRequired,
   setReviewComplete,
   setCaseFile,
+  setIsInEdit,
   clearAssessment,
   clearPrevention,
 } = casesSlice.actions;

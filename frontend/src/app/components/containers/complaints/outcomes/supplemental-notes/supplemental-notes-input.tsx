@@ -5,10 +5,11 @@ import { CompSelect } from "../../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import Option from "../../../../../types/app/option";
 import { OfficerDto } from "../../../../../types/app/people/officer";
-import { useAppDispatch } from "../../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import { upsertNote, getCaseFile } from "../../../../../store/reducers/case-thunks";
+import { BsExclamationCircleFill } from "react-icons/bs";
 
 type props = {
   id: string;
@@ -23,8 +24,10 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
 
   const dispatch = useAppDispatch();
 
-  const [defaultOfficer, setDefaultOfficer] = useState<Option>();
+  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const showSectionErrors = isInEdit.showSectionErrors;
 
+  const [defaultOfficer, setDefaultOfficer] = useState<Option>();
   const [currentNotes, setCurrentNotes] = useState(notes);
   const [notesError, setNotesError] = useState("");
 
@@ -80,85 +83,93 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
   };
 
   return (
-    <div className="comp-outcome-supporting-notes">
-      <div>
-        <label
-          htmlFor="supporting-notes-textarea-id"
-          className="label-margin-bottom"
-        >
-          Use this field to add critical contextual information not reported in the form above
-        </label>
-        <ValidationTextArea
-          className="comp-form-control"
-          id="supporting-notes-textarea-id"
-          defaultValue={currentNotes}
-          rows={4}
-          errMsg={notesError}
-          onChange={handleNotesChange}
-        />
-      </div>
-      <div className="clear-right-float" />
-      <div className="comp-details-edit-container">
-        <div className="comp-details-edit-column">
-          <div
-            className="comp-details-label-input-pair"
-            id="officer-supporting-notes-pair-id"
+    <>
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Save section before closing the complaint.</span>
+        </div>
+      )}
+      <div className={`comp-outcome-supporting-notes ${showSectionErrors && "section-error"}`}>
+        <div>
+          <label
+            htmlFor="supporting-notes-textarea-id"
+            className="label-margin-bottom"
           >
-            <label
+            Use this field to add critical contextual information not reported in the form above
+          </label>
+          <ValidationTextArea
+            className="comp-form-control"
+            id="supporting-notes-textarea-id"
+            defaultValue={currentNotes}
+            rows={4}
+            errMsg={notesError}
+            onChange={handleNotesChange}
+          />
+        </div>
+        <div className="clear-right-float" />
+        <div className="comp-details-edit-container">
+          <div className="comp-details-edit-column">
+            <div
+              className="comp-details-label-input-pair"
               id="officer-supporting-notes-pair-id"
-              htmlFor="officer-supporting-notes-select-id"
             >
-              Officer
-            </label>
-            <CompSelect
-              id="officer-supporting-notes-select-id"
-              classNamePrefix="comp-select"
-              className="comp-details-input"
-              isDisabled={true}
-              enableValidation={false}
-              value={defaultOfficer}
-            />
+              <label
+                id="officer-supporting-notes-pair-id"
+                htmlFor="officer-supporting-notes-select-id"
+              >
+                Officer
+              </label>
+              <CompSelect
+                id="officer-supporting-notes-select-id"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                isDisabled={true}
+                enableValidation={false}
+                value={defaultOfficer}
+              />
+            </div>
           </div>
-        </div>
-        <div className="comp-details-edit-column comp-details-right-column">
-          <div
-            className="comp-details-label-input-pair"
-            id="supporting-notes-time-pair-id"
-          >
-            <label htmlFor="supporting-notes-time-pair-id">Date</label>
-            <DatePicker
+          <div className="comp-details-edit-column comp-details-right-column">
+            <div
+              className="comp-details-label-input-pair"
               id="supporting-notes-time-pair-id"
-              selected={currentDate}
-              onChange={(e) => e}
-              dateFormat="yyyy-MM-dd"
-              wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
-              readOnly
-              disabled
-              showIcon
-            />
+            >
+              <label htmlFor="supporting-notes-time-pair-id">Date</label>
+              <DatePicker
+                id="supporting-notes-time-pair-id"
+                selected={currentDate}
+                onChange={(e) => e}
+                dateFormat="yyyy-MM-dd"
+                wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
+                readOnly
+                disabled
+                showIcon
+              />
+            </div>
+          </div>
+        </div>
+        <div className="comp-outcome-report-container">
+          <div className="comp-outcome-report-actions">
+            <Button
+              id="supporting-notes-cancel-button"
+              title="Cancel Additional Notes"
+              className="comp-outcome-cancel"
+              onClick={handleCancelChanges}
+            >
+              Cancel
+            </Button>
+            <Button
+              id="supporting-notes-save-button"
+              title="Save Additional Notes"
+              className="comp-outcome-save"
+              onClick={handleSaveNotes}
+            >
+              {mode === "create" ? "Add" : "Update"}
+            </Button>
           </div>
         </div>
       </div>
-      <div className="comp-outcome-report-container">
-        <div className="comp-outcome-report-actions">
-          <Button
-            id="supporting-notes-cancel-button"
-            title="Cancel Additional Notes"
-            className="comp-outcome-cancel"
-            onClick={handleCancelChanges}
-          >
-            Cancel
-          </Button>
-          <Button
-            id="supporting-notes-save-button"
-            title="Save Additional Notes"
-            className="comp-outcome-save"
-            onClick={handleSaveNotes}
-          >
-            {mode === "create" ? "Add" : "Update"}
-          </Button>
-        </div>
-      </div>
-    </div>
+    </>
   );
 };

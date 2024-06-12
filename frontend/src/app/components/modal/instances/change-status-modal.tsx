@@ -10,6 +10,9 @@ import {
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import Option from "../../../types/app/option";
+import { setIsInEdit } from "../../../store/reducers/cases";
+import { EquipmentDetailsDto } from "../../../types/app/case-files/equipment-details";
+import { AnimalOutcomeSubject } from "../../../types/state/cases-state";
 
 type ChangeStatusModalProps = {
   close: () => void;
@@ -31,6 +34,8 @@ type ChangeStatusModalProps = {
  */
 export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
   const modalData = useAppSelector(selectModalData);
+  const cases = useAppSelector((state) => state.cases);
+
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState("");
   let selectedStatus = "";
@@ -65,8 +70,57 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
     selectedStatus = selectedValue;
   };
 
+  const validateCloseStatus = () => {
+    const { assessment, prevention, equipment, animal, note, attachments, fileReview } = cases.isInEdit;
+    const noEditSections = !assessment && !prevention && !equipment && !animal && !note && !attachments && !fileReview;
+
+    //check Assessment section must be filled out
+    const assessmentCriteria = Object.keys(cases.assessment).length !== 0;
+
+    //check Prevention must be filled out if action required is Yes
+    const preventionCriteria =
+      cases.assessment.action_required === "Yes" ? Object.keys(cases.prevention).length !== 0 : true;
+
+    //check Equipment must have removed date, except for Signage and Trail
+    const equipmentCriteria =
+      cases.equipment?.find(
+        (item: EquipmentDetailsDto) =>
+          item.wasAnimalCaptured === "U" && item.typeCode !== "SIGNG" && item.typeCode !== "TRCAM",
+      ) === undefined;
+
+    //check Animal has outcome, officer and date
+    const animalCriteria =
+      //@ts-ignore
+      cases.subject?.find((item: AnimalOutcomeSubject) => !item.outcome && !item.actions) === undefined;
+
+    //check if file review is required, review must be completed
+    const fileReviewCriteria =
+      (cases.isReviewRequired && cases.reviewComplete !== null) ||
+      (!cases.isReviewRequired && cases.reviewComplete === null);
+
+    if (
+      noEditSections &&
+      assessmentCriteria &&
+      preventionCriteria &&
+      equipmentCriteria &&
+      animalCriteria &&
+      fileReviewCriteria
+    ) {
+      setStatus(selectedStatus);
+      dispatch(setIsInEdit({ showSectionErrors: false }));
+    } else {
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+      close();
+    }
+  };
+
   const handleSubmit = () => {
-    setStatus(selectedStatus);
+    if (selectedStatus === "CLOSED") {
+      validateCloseStatus();
+    } else {
+      setStatus(selectedStatus);
+      dispatch(setIsInEdit({ showSectionErrors: false }));
+    }
   };
 
   return (

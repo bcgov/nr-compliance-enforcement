@@ -15,7 +15,8 @@ import { Button } from "react-bootstrap";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 import { clearAttachments, getAttachments, selectAttachments } from "../../../../store/reducers/attachments";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
-import { BsPencil } from "react-icons/bs";
+import { BsExclamationCircleFill, BsPencil } from "react-icons/bs";
+import { setIsInEdit } from "../../../../store/reducers/cases";
 
 export const HWCRFileAttachments: FC = () => {
   type ComplaintParams = {
@@ -30,6 +31,7 @@ export const HWCRFileAttachments: FC = () => {
 
   const dispatch = useAppDispatch();
   const carouselData = useAppSelector(selectAttachments(AttachmentEnum.OUTCOME_ATTACHMENT));
+  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
@@ -38,6 +40,19 @@ export const HWCRFileAttachments: FC = () => {
   const [outcomeAttachmentCount, setOutcomeAttachmentCount] = useState<number>(0);
   const [componentState, setComponentState] = useState<number>(DISPLAY_STATE);
   const [cancelPendingUpload, setCancelPendingUpload] = useState<boolean>(false);
+
+  const showSectionErrors =
+    componentState === EDIT_STATE &&
+    (outcomeAttachmentCount > 0 || carouselData.length > 0) &&
+    isInEdit.showSectionErrors;
+
+  useEffect(() => {
+    if (componentState === DISPLAY_STATE) {
+      dispatch(setIsInEdit({ attachments: false }));
+    } else if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
+      dispatch(setIsInEdit({ attachments: false }));
+    } else dispatch(setIsInEdit({ attachments: true }));
+  }, [componentState, carouselData, outcomeAttachmentCount]);
 
   useEffect(() => {
     if (carouselData.length > 0) {
@@ -68,7 +83,9 @@ export const HWCRFileAttachments: FC = () => {
       );
       if (outcomeAttachmentCount === 0) {
         setComponentState(EDIT_STATE);
-      } else setComponentState(DISPLAY_STATE);
+      } else {
+        setComponentState(DISPLAY_STATE);
+      }
     } else {
       ToggleError("Errors in form");
     }
@@ -129,7 +146,13 @@ export const HWCRFileAttachments: FC = () => {
       id="outcome_attachments_div_id"
     >
       <h6>Outcome attachments ({outcomeAttachmentCount})</h6>
-      <div className="comp-outcome-report-complaint-attachments">
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Save section before closing the complaint.</span>
+        </div>
+      )}
+      <div className={`comp-outcome-report-complaint-attachments ${showSectionErrors && "section-error"}`}>
         <div className="comp-details-edit-container">
           <div
             className="comp-details-edit-column"
@@ -156,7 +179,9 @@ export const HWCRFileAttachments: FC = () => {
                 buttonClasses="button-text"
                 text="Edit"
                 icon={BsPencil}
-                click={(e) => setComponentState(EDIT_STATE)}
+                click={(e) => {
+                  setComponentState(EDIT_STATE);
+                }}
               />
             </div>
           )}
