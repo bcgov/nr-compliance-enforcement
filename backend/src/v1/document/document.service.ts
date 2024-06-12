@@ -1,10 +1,12 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 
 @Injectable()
 export class DocumentService {
+  private readonly logger = new Logger(DocumentService.name);
+
   @Inject(CdogsService)
   private readonly cdogs: CdogsService;
 
@@ -24,7 +26,7 @@ export class DocumentService {
       //--
       return await this.cdogs.generate(name, data, type);
     } catch (error) {
-      console.log(`exception: unable to export document for complaint: ${id} - error: ${error}`);
+      this.logger.log(`exception: unable to export document for complaint: ${id} - error: ${error}`);
       throw new Error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
     }
   };

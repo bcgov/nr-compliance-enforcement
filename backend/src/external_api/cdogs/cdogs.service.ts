@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { get, post } from "../../helpers/axios-api";
@@ -12,6 +12,8 @@ import { join } from "path";
 
 @Injectable()
 export class CdogsService implements ExternalApiService {
+  private readonly logger = new Logger(CdogsService.name);
+
   readonly authApi: string;
   readonly baseUri: string;
   readonly clientId: string;
@@ -42,6 +44,7 @@ export class CdogsService implements ExternalApiService {
         return true;
       }
     } catch (error) {
+      this.logger.log(`Template not cached: ${error}`);
       return false;
     }
   };
@@ -54,6 +57,7 @@ export class CdogsService implements ExternalApiService {
         return config.configurationValue;
       }
     } catch (error) {
+      this.logger.log(`Unable to retrieve template ${code} hash`);
       throw Error(`Unable to retrieve template ${code} hash`);
     }
   };
@@ -152,6 +156,8 @@ export class CdogsService implements ExternalApiService {
         this.configService.updateByCode(templateCode, hash);
       } else {
         //-- valid error
+        this.logger.log(`exception: unable to upload template: ${template} - error: ${error}`);
+        throw new Error(`exception: unable to upload template: ${template} - error: ${error}`);
       }
     }
   };
@@ -185,7 +191,7 @@ export class CdogsService implements ExternalApiService {
       const response = await axios.post(url, documentData, config);
       return response;
     } catch (error) {
-      console.log(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
+      this.logger.log(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
       throw new Error(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
     }
   };

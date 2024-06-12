@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Logger, Param, Query, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { DocumentService } from "./document.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -13,6 +13,8 @@ import { format } from "date-fns";
 @ApiTags("document")
 @Controller({ path: "document", version: "1" })
 export class DocumentController {
+  private readonly logger = new Logger(DocumentController.name);
+
   constructor(private readonly service: DocumentService) {}
 
   @Get("/export-complaint/:type")
@@ -41,7 +43,7 @@ export class DocumentController {
 
       res.end(buffer);
     } catch (error) {
-      console.log(`exception: unable to export document for complaint: ${id} - error: ${error}`);
+      this.logger.log(`exception: unable to export document for complaint: ${id} - error: ${error}`);
       res.status(500).send(`exception: unable to export document for complaint: ${id} - error: ${error}`);
     }
   }
