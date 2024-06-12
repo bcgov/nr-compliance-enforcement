@@ -30,7 +30,7 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder ./template /app/template 
+COPY --from=builder /app/template /template
 
 # Port and health check
 EXPOSE 3000
