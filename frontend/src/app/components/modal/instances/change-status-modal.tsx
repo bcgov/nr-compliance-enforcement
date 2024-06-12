@@ -96,7 +96,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
     //check Animal has outcome, officer and date
     const animalCriteria =
       //@ts-ignore
-      cases.subject?.find((item: AnimalOutcomeSubject) => !item.outcome && !item.actions) === undefined;
+      cases.subject?.find((item: AnimalOutcomeSubject) => !item.outcome) === undefined;
     //check if file review is required, review must be completed
     const fileReviewCriteria = (cases.isReviewRequired && cases.reviewComplete !== null) || !cases.isReviewRequired;
 

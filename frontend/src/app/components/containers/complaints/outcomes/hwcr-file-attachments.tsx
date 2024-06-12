@@ -146,7 +146,13 @@ export const HWCRFileAttachments: FC = () => {
       id="outcome-attachments"
     >
       <h3>Outcome attachments ({outcomeAttachmentCount})</h3>
-      <div className="comp-outcome-report-complaint-attachments">
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Save section before closing the complaint.</span>
+        </div>
+      )}
+      <div className={`comp-outcome-report-complaint-attachments ${showSectionErrors ? "section-error" : ""}`}>
         <div className="comp-details-edit-container">
           <div
             className="comp-details-edit-column"
