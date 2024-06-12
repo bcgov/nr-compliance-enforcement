@@ -26,15 +26,19 @@ type ChangeStatusModalProps = {
   startDateFilter: Date | undefined;
   endDateFilter: Date | undefined;
   complaintStatusFilter: Option | null;
+  complaint_status: string;
 };
 
 /**
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
   const modalData = useAppSelector(selectModalData);
   const cases = useAppSelector((state) => state.cases);
+  const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
+  const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
+  const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState("");
@@ -46,6 +50,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       submit();
     }
   });
+
+  useEffect(() => {
+    setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && complaint_status === "PENDREV");
+  }, [isReviewRequired, reviewCompleteAction, complaint_status]);
 
   // Since there are different reducers for updating the state of complaints for tables and details, we need to handle both
   // This will ensure that both are triggered, sequentially.
@@ -76,27 +84,21 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
 
     //check Assessment section must be filled out
     const assessmentCriteria = Object.keys(cases.assessment).length !== 0;
-
     //check Prevention must be filled out if action required is Yes
     const preventionCriteria =
       cases.assessment.action_required === "Yes" ? Object.keys(cases.prevention).length !== 0 : true;
-
     //check Equipment must have removed date, except for Signage and Trail
     const equipmentCriteria =
       cases.equipment?.find(
         (item: EquipmentDetailsDto) =>
           item.wasAnimalCaptured === "U" && item.typeCode !== "SIGNG" && item.typeCode !== "TRCAM",
       ) === undefined;
-
     //check Animal has outcome, officer and date
     const animalCriteria =
       //@ts-ignore
       cases.subject?.find((item: AnimalOutcomeSubject) => !item.outcome && !item.actions) === undefined;
-
     //check if file review is required, review must be completed
-    const fileReviewCriteria =
-      (cases.isReviewRequired && cases.reviewComplete !== null) ||
-      (!cases.isReviewRequired && cases.reviewComplete === null);
+    const fileReviewCriteria = (cases.isReviewRequired && cases.reviewComplete !== null) || !cases.isReviewRequired;
 
     if (
       noEditSections &&
@@ -109,6 +111,22 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       setStatus(selectedStatus);
       dispatch(setIsInEdit({ showSectionErrors: false }));
     } else {
+      //scroll to error sections
+      if (!assessmentCriteria || assessment) {
+        document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
+      } else if (!preventionCriteria || prevention) {
+        document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
+      } else if (!equipmentCriteria || equipment) {
+        document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
+      } else if (!animalCriteria || animal) {
+        document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
+      } else if (note) {
+        document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
+      } else if (attachments) {
+        document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
+      } else if (!fileReviewCriteria || fileReview) {
+        document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
+      }
       dispatch(setIsInEdit({ showSectionErrors: true }));
       close();
     }
@@ -135,6 +153,20 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       )}
       <Modal.Body>
         <div className="change_status_modal">
+          {statusChangeDisabledInd && (
+            <Row className="status-change-subtext">
+              <Col
+                xs="auto"
+                className="change_status_modal_icon"
+              >
+                <i className="bi bi-exclamation-circle"></i>
+              </Col>
+              <Col>
+                <div>Complaint is pending review.</div>
+                <div>Complete or cancel review before updating status.</div>
+              </Col>
+            </Row>
+          )}
           <Row>
             <Col>
               <label className="modal_description_label">{description}</label>
@@ -142,7 +174,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
           </Row>
           <Row>
             <Col>
-              <ComplaintStatusSelect onSelectChange={handleSelectChange} />
+              <ComplaintStatusSelect
+                isDisabled={statusChangeDisabledInd}
+                onSelectChange={handleSelectChange}
+              />
             </Col>
           </Row>
         </div>
@@ -155,8 +190,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
           Cancel
         </Button>
         <Button
+          active={!statusChangeDisabledInd}
           id="update_complaint_status_button"
           onClick={handleSubmit}
+          className={!statusChangeDisabledInd ? "" : "inactive-button"}
         >
           Update
         </Button>

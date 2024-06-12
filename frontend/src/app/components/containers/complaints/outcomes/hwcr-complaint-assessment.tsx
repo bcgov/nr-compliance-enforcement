@@ -312,7 +312,10 @@ export const HWCRComplaintAssessment: FC = () => {
   }`;
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-assessment"
+    >
       <h6>Complaint assessment</h6>
       {showSectionErrors && (
         <div className="section-error-message">
@@ -324,7 +327,7 @@ export const HWCRComplaintAssessment: FC = () => {
           )}
         </div>
       )}
-      <div className={`comp-outcome-report-complaint-assessment ${showSectionErrors && "section-error"}`}>
+      <div className={`comp-outcome-report-complaint-assessment ${showSectionErrors ? "section-error" : ""}`}>
         <div className="comp-details-edit-container">
           <div className="assessment-details-edit-column">
             <div className="comp-details-edit-container">

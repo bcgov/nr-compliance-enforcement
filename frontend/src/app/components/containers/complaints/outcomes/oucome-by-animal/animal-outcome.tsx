@@ -131,7 +131,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
           <span>Complete or delete section before closing the complaint.</span>
         </div>
       )}
-      <div className={`comp-animal-outcome ${showSectionErrors && "section-error"}`}>
+      <div className={`comp-animal-outcome ${showSectionErrors ? "section-error" : ""}`}>
         <div className="equipment-item">
           <div className="equipment-item-header">
             <div className="title">

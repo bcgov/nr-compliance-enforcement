@@ -346,7 +346,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         </div>
       )}
       <div
-        className={`comp-outcome-report-complaint-assessment ${showSectionErrors && "section-error"}`}
+        className={`comp-outcome-report-complaint-assessment ${showSectionErrors ? "section-error" : ""}`}
         id="equipment-form"
       >
         <ToastContainer />

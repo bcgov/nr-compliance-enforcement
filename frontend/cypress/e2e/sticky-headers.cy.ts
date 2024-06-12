@@ -19,7 +19,7 @@ describe("Sticky Headers", () => {
     cy.get(".comp-main-content").scrollTo("bottom"); // Scroll 'sidebar' to its bottom
 
     cy.get(".comp-header").isInViewport();
-    cy.get(".comp-create-header").isInViewport();
+    cy.get(".comp-details-header").isInViewport();
   });
 
   it("Verifies that the Details Header is sticky", { scrollBehavior: false }, () => {

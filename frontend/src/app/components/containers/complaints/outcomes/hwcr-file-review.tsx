@@ -137,7 +137,10 @@ export const HWCRFileReview: FC = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-file-review"
+    >
       <h6>File review</h6>
       {showSectionErrors && (
         <div className="section-error-message">
@@ -149,7 +152,7 @@ export const HWCRFileReview: FC = () => {
           )}
         </div>
       )}
-      <div className={`comp-outcome-report-file-review ${showSectionErrors && "section-error"}`}>
+      <div className={`comp-outcome-report-file-review ${showSectionErrors ? "section-error" : ""}`}>
         {(componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE) && (
           <div className="comp-details-edit-container">
             <div

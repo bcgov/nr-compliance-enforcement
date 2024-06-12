@@ -90,7 +90,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
           <span>Save section before closing the complaint.</span>
         </div>
       )}
-      <div className={`comp-outcome-supporting-notes ${showSectionErrors && "section-error"}`}>
+      <div className={`comp-outcome-supporting-notes ${showSectionErrors ? "section-error" : ""}`}>
         <div>
           <label
             htmlFor="supporting-notes-textarea-id"

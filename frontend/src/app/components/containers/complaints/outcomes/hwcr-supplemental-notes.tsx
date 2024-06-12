@@ -86,7 +86,10 @@ export const HWCRSupplementalNotes: FC = () => {
   }, [showInput, id, officer, supplementalNote]);
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-note"
+    >
       <h6>Additional notes</h6>
       {renderNote}
     </div>

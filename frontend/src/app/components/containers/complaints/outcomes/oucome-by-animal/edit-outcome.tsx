@@ -387,7 +387,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
           <span>Save section before closing the complaint.</span>
         </div>
       )}
-      <div className={`comp-outcome-report-complaint-assessment ${showSectionErrors && "section-error"}`}>
+      <div className={`comp-outcome-report-complaint-assessment ${showSectionErrors ? "section-error" : ""}`}>
         <div className="comp-animal-outcome-report">
           <div className="equipment-item">
             <div className="equipment-item-header">

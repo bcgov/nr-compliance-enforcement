@@ -37,7 +37,10 @@ export const HWCREquipment: FC = memo(() => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-equipment"
+    >
       <h6>Equipment</h6>
       {equipmentList && equipmentList.length > 0
         ? equipmentList.map((equipment) =>

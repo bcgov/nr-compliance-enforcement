@@ -10,7 +10,7 @@
   }
 }
 
-// PAGE HEADER/TITLE CONTAINER
+// COMPLAINTS LIST/MAP PAGE HEADER
 .comp-page-header {
   display: flex;
   flex-direction: column;
@@ -104,7 +104,8 @@
   }
 }
 
-// DATA CONTAINER
+// COMPLAINTS DATA CONTAINER
+// Contains list and map interfaces
 .comp-data-container {
   position: relative;
   display: flex;
@@ -234,12 +235,313 @@
   }
 }
 
-// COMPLAINT DETAILS/EDIT
-.comp-details-header,
-.comp-create-header {
+// COMPLAINT DETAILS AND EDIT PAGES
+// COMPLAINT HEADER COMPONENT
+.comp-details-header {
   position: sticky;
   top: 0;
   z-index: 8000;
+  color: $white;
+  background: $bc-gov-primary-400;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+.comp-details-title-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  row-gap: 4px;
+}
+
+.comp-details-title-info {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  row-gap: 8px;
+  order: 0;
+}
+
+.comp-details-badge-container {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+
+  .hwcr-conflict-type-badge {
+    background-color: $bc-standard-03 !important;
+  }
+}
+
+.comp-nature-of-complaint {
+  margin-top: 4px;
+  max-width: 48ch;
+}
+
+// HEADER ACTIONS
+.comp-header-actions {
+  justify-self: flex-end;
+  margin-left: auto;
+  white-space: nowrap;
+
+  .btn {
+    min-height: 38px;
+    font-size: 0.875rem;
+
+    + .btn {
+      margin-left: 8px;
+    }
+
+    &.icon-btn {
+      color: inherit;
+      border-color: $white;
+    }
+  }
+}
+
+.comp-header-actions-desktop {
+  display: none;
+}
+
+@include media-breakpoint-up(lg) {
+  .comp-header-actions-desktop {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .comp-header-actions-mobile {
+    display: none;
+  }
+}
+
+// SPACER AT BOTTOM OF HEADER - READ-ONLY MODE
+.comp-header-spacer {
+  height: 2px;
+  margin-top: 24px;
+  margin-bottom: -16px;
+  color: $gray-500;
+  border: 1px solid $gray-500;
+}
+
+// HEADER STATUS CONTAINER
+.comp-header-status-container {
+  container-type: inline-size;
+  container-name: detail-container;
+}
+
+.comp-details-status {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  row-gap: 6px;
+  margin: -0.5rem;
+  dl {
+    margin-bottom: 0;
+    padding: 0.5rem;
+  }
+
+  dt {
+    margin-bottom: 4px;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  dd {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    height: 32px;
+    white-space: nowrap;
+  }
+}
+
+@container detail-container (min-width: 600px) {
+  .comp-details-status {
+    grid-template-columns: 50% 50%;
+  }
+}
+
+@container detail-container (min-width: 900px) {
+  .comp-details-status {
+    grid-template-columns: auto auto auto auto;
+  }
+}
+
+// BADGE CUSTOMIZATION
+.comp-status-badge-open {
+  background-color: $green-100-80 !important;
+  color: $green-100;
+}
+
+.comp-status-badge-closed {
+  background-color: $gray-100 !important;
+  color: $gray-700;
+}
+
+.comp-status-badge-pending-review {
+  background-color: $red-300-80;
+  color: $red-300;
+}
+
+.comp-status-badge-threat-level {
+  background-color: $red-300-80;
+  color: $red-300;
+}
+
+.comp-status-badge-conflict-history {
+  background-color: $blue-400;
+  color: $bc-gov-primary-700;
+}
+
+.comp-violation-in-progress {
+  background-color: $red-300-80;
+  color: $red-300;
+}
+
+// DATE/TIME VALUE DISPLAY
+.comp-date-time-value {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  white-space: nowrap;
+  div {
+    display: flex;
+    gap: 8px;
+  }
+  div + div {
+    margin-left: 8px;
+  }
+}
+
+// COMPLAINT DETAILS BODY
+.comp-details-body {
+  padding: 24px;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  section + section {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid #ccc;
+  }
+}
+
+.comp-details-section-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .btn {
+    font-size: 0.875rem;
+  }
+}
+
+// CALL DETAILS SECTION
+.comp-details-section {
+  dl {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    + dl {
+      margin-top: 16px;
+    }
+  }
+
+  dt {
+    flex: 0 0 auto;
+    font-weight: 400;
+    color: $gray-500;
+  }
+
+  dd {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  pre {
+    margin-bottom: 0;
+    font-family: inherit;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .comp-lat-long {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    & span:first-of-type {
+      &::after {
+        content: ",";
+        display: inline-block;
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .comp-details-section {
+    dl {
+      div {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+      }
+    }
+
+    dt {
+      width: 12rem;
+    }
+
+    dd {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .comp-details-section {
+    dt {
+      width: 18rem;
+    }
+
+    dd {
+      flex: 1 1 auto;
+    }
+  }
 }
 
 .comp-complaint-details {
@@ -256,16 +558,96 @@
   }
 }
 
-p {
-  white-space: pre-wrap;
+.comp-details-section-header-actions {
+  margin: -0.5rem 0;
+  button + button {
+    margin-left: 8px;
+  }
 }
 
-.comp-complaint-breadcrumb {
-  background-color: $bc-gov-primary-400;
-  color: $white;
+.comp-details-attractants {
+  align-items: center;
 
-  height: 43px;
-  padding: 8px 37px 8px 24px;
+  .badge {
+    background-color: #ccc !important;
+  }
+
+  .badge + .badge {
+    margin-left: 4px;
+  }
+}
+
+// COMPLAINT FORMS
+.comp-details-form {
+  fieldset + fieldset {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid $gray-300;
+  }
+
+  fieldset + section {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid $gray-300;
+  }
+
+  legend {
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .comp-details-input {
+    flex: 0 auto;
+
+    &.full-width {
+      flex: 1 1 auto;
+    }
+  }
+
+  div + .error-message {
+    margin-top: 4px;
+  }
+}
+
+.comp-details-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  + .comp-details-form-row {
+    margin-top: 24px;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .comp-details-form-row {
+    flex-direction: row;
+
+    label {
+      flex: 0 0 auto;
+      margin-top: 6px;
+      width: 18rem;
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .comp-details-form-row {
+    label {
+      width: 18rem;
+    }
+  }
+}
+
+.comp-details-input-container {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+p {
+  white-space: pre-wrap;
 }
 
 .comp-table tbody div:last-child .comp-cell:last-of-type {
@@ -274,70 +656,6 @@ p {
 
 .comp-complaint-label {
   color: $gray-500;
-}
-
-.comp-details-status {
-  display: flex;
-  justify-content: space-between;
-  margin: 24px;
-
-  .comp-details-header-column {
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-
-    .comp-details-content-label + div {
-      margin-top: 10px;
-    }
-
-    i:first-child {
-      padding-right: 5px;
-    }
-
-    i:last-child {
-      padding-left: 5px;
-      padding-right: 5px;
-    }
-  }
-
-  .comp-details-status-width {
-    width: 190px;
-  }
-
-  .comp-complaint-created-width {
-    width: 250px;
-  }
-
-  .comp-complaint-last-updated-width {
-    width: 250px;
-  }
-
-  .comp-complaint-assigned-width {
-    width: 250px;
-  }
-
-  .comp-complaint-created-by-width {
-    width: 250px;
-  }
-}
-
-.comp-details-subheader {
-  padding: 0px 0px 0px 24px;
-  height: 80px;
-  background: $bc-gov-primary-400;
-
-  color: $white;
-  flex: 1;
-}
-
-.comp-details-subsection {
-  padding: 12px 24px 0px 24px;
-  background: $white;
-
-  color: $bc-gov-primary-400;
-  flex: 1;
 }
 
 .comp-box-actions {
@@ -355,26 +673,6 @@ p {
 
   color: $white;
   flex: 1;
-}
-
-.comp-violation-cell {
-  width: 306px;
-}
-
-.comp-in-progress-cell {
-  width: 153px;
-}
-
-.comp-status-cell {
-  width: 75px;
-}
-
-.comp-last-updated-cell {
-  width: 110px;
-}
-
-.comp-nature-complaint-cell {
-  width: 329px;
 }
 
 .comp-top-right {
@@ -408,31 +706,6 @@ p {
     font-size: 24px;
   }
 
-  .comp-box-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 8px;
-    flex: 1 0 0;
-  }
-
-  .comp-box-actions button {
-    border-radius: 4px;
-    border-color: $white;
-    color: $white;
-    font-size: 14px;
-  }
-
-  .comp-box-actions button span {
-    padding-right: 8px;
-  }
-
-  .comp-box-actions button svg {
-    font-size: 16px;
-    vertical-align: text-top;
-    margin-top: 1px;
-  }
-
   .comp-box-actions-non-header {
     display: flex;
     justify-content: flex-end;
@@ -463,9 +736,7 @@ p {
   }
 
   .comp-box-conflict-type {
-    margin: 0px 12px;
     padding: 4px 12px;
-
     border-radius: 60px;
     font-size: 12px;
     font-weight: bold;
@@ -486,23 +757,6 @@ p {
     margin-right: 5px;
     margin-left: -5px;
   }
-
-  .comp-box-species-type {
-    padding: 4px 12px;
-    background: $gray-300;
-    border-radius: 60px;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 16px;
-    display: flex;
-    color: $black;
-  }
-
-  .comp-nature-of-complaint {
-    font-size: 16px;
-    font-weight: 700;
-    margin-top: 10px;
-  }
 }
 
 .comp-view-complaint-badge {
@@ -520,52 +774,6 @@ p {
 .comp-view-complaint-details-button span.comp-view-complaint-badge:hover {
   color: $white;
   background-color: $bc-gov-primary;
-}
-
-.comp-status-badge-open {
-  background-color: $green-100-80;
-  color: $green-100;
-  line-height: normal;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.comp-status-badge-closed {
-  background-color: $gray-700-10;
-  color: $gray-700;
-  line-height: normal;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.comp-status-badge-pending-review {
-  background-color: $red-300-80;
-  color: $red-300;
-  line-height: normal;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.comp-status-badge-threat-level {
-  background-color: $red-300-80;
-  color: $red-300;
-  line-height: normal;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.comp-status-badge-conflict-history {
-  background-color: $blue-400;
-  color: $bc-gov-primary-700;
-  line-height: normal;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.comp-violation-in-progress {
-  background-color: $red-300-80;
-  color: $red-300;
-  line-height: normal;
 }
 
 .comp-complaint-details-alert {
@@ -658,13 +866,6 @@ p {
     border: 1px solid $gray-300;
     border-radius: 3px;
     padding: 24px;
-  }
-
-  .comp-attachments {
-    margin-top: 24px;
-    margin-bottom: 24px;
-    border: 1px solid $gray-300;
-    border-radius: 3px;
   }
 
   .comp-details-content-label {
@@ -1592,8 +1793,8 @@ p {
 }
 
 .comp-complaint-error {
-  margin: 24px 24px;
-  padding: 24px;
+  margin-bottom: 20px;
+  padding: 16px 24px;
   border: 1px solid #eea8ab;
   border-radius: 3px;
   background-color: $bc-gov-danger-100;

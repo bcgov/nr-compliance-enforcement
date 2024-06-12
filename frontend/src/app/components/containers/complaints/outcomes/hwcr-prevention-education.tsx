@@ -232,7 +232,10 @@ export const HWCRComplaintPrevention: FC = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-prevention-education"
+    >
       <h6>Prevention and education</h6>
       {cases.isInEdit.showSectionErrors &&
         Object.keys(cases.prevention).length === 0 &&
@@ -267,7 +270,7 @@ export const HWCRComplaintPrevention: FC = () => {
               <span>Save section before closing the complaint.</span>
             </div>
           )}
-          <div className={`comp-outcome-report-complaint-prev-and-educ ${showSectionErrors && "section-error"}`}>
+          <div className={`comp-outcome-report-complaint-prev-and-educ ${showSectionErrors ? "section-error" : ""}`}>
             <div className="comp-details-edit-container">
               <div className="assessment-details-edit-column">
                 <div className="comp-details-edit-container">

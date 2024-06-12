@@ -96,7 +96,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         </div>
       )}
       <div
-        className={`comp-outcome-report-complaint-assessment equipment-item ${showSectionErrors && "section-error"}`}
+        className={`comp-outcome-report-complaint-assessment equipment-item ${showSectionErrors ? "section-error" : ""}`}
       >
         {!removedEquipmentFullName && <div className="status-bar"></div>}
         <div className="equipment-item-header">

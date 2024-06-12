@@ -10,9 +10,10 @@ interface Option {
 
 type Props = {
   onSelectChange: (selectedValue: string) => void;
+  isDisabled?: boolean;
 };
 
-const ComplaintStatusSelect: React.FC<Props> = ({ onSelectChange }) => {
+const ComplaintStatusSelect: React.FC<Props> = ({ onSelectChange, isDisabled = false }) => {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
   const options = useAppSelector(selectComplaintStatusCodeDropdown);
@@ -31,6 +32,7 @@ const ComplaintStatusSelect: React.FC<Props> = ({ onSelectChange }) => {
         onChange={handleChange}
         classNamePrefix="comp-select"
         placeholder="Select"
+        isDisabled={isDisabled}
       />
     </div>
   );

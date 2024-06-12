@@ -3,7 +3,7 @@ import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 describe("COMPENF-37 Display ECR Details", () => {
   const callDetails = {
     description:
-      "Caller advised dealing with on going coyote problem from last year. Caller believes someone is feeding the coyotes again. *** Caller is requesting a CO callback ***",
+      "Caller advised dealing with on going coyote problem from last year. Caller believes someone is feeding the coyotes again.  *** Caller is requesting a CO callback ***",
     location: "Turnoff to Underwood Rd",
     locationDescription: "tester call description 10",
     incidentTime: "2023-04-13T07:24:00.000Z",
@@ -48,15 +48,15 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-007890", true);
 
     //-- verify the call details block
-    cy.get('p[id="comp-details-description"]').contains(callDetails.description);
-    cy.get('div[id="comp-details-location"]').contains(callDetails.location);
-    cy.get('p[id="comp-details-location-description"]').contains(callDetails.locationDescription);
-    cy.get('span[id="comp-details-community"]').contains(callDetails.community);
-    cy.get('span[id="comp-details-violation-in-progress"]').contains(callDetails.violationInProgress ? "Yes" : "No");
-    cy.get('span[id="comp-details-office"]').contains(callDetails.office);
-    cy.get('span[id="comp-details-violation-observed"]').contains(callDetails.violationObserved ? "Yes" : "No");
-    cy.get('span[id="comp-details-zone"]').contains(callDetails.zone);
-    cy.get('span[id="comp-details-region"]').contains(callDetails.region);
+    cy.get('pre[id="comp-details-description"]').contains(callDetails.description);
+    cy.get('dd[id="comp-details-location"]').contains(callDetails.location);
+    cy.get('dd[id="comp-details-location-description"]').contains(callDetails.locationDescription);
+    cy.get('dd[id="comp-details-community"]').contains(callDetails.community);
+    cy.get('dd[id="comp-details-violation-in-progress"]').contains(callDetails.violationInProgress ? "Yes" : "No");
+    cy.get('dd[id="comp-details-office"]').contains(callDetails.office);
+    cy.get('dd[id="comp-details-violation-observed"]').contains(callDetails.violationObserved ? "Yes" : "No");
+    cy.get('dd[id="comp-details-zone"]').contains(callDetails.zone);
+    cy.get('dd[id="comp-details-region"]').contains(callDetails.region);
   });
 
   it("it has a map on screen with no marker", function () {

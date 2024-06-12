@@ -5,15 +5,23 @@ import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import config from "../../../../../config";
+import { getAssessment } from "../../../../store/reducers/case-thunks";
 
 type Props = {
   complaint_identifier: string;
   complaint_type: string;
   zone: string;
   agency_code: string;
+  complaint_status: string;
 };
 
-export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complaint_type, zone, agency_code }) => {
+export const ComplaintActionItems: FC<Props> = ({
+  complaint_identifier,
+  complaint_type,
+  zone,
+  agency_code,
+  complaint_status,
+}) => {
   const dispatch = useAppDispatch();
 
   const openAsignOfficerModal = () => {
@@ -34,8 +42,9 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
     );
   };
 
-  const openStatusChangeModal = () => {
+  const openStatusChangeModal = async () => {
     document.body.click();
+    await dispatch(getAssessment(complaint_identifier));
     dispatch(
       openModal({
         modalSize: "md",
@@ -45,6 +54,7 @@ export const ComplaintActionItems: FC<Props> = ({ complaint_identifier, complain
           description: "Status",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
+          complaint_status: complaint_status,
         },
       }),
     );

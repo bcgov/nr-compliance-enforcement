@@ -58,19 +58,13 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
     //-- verify the call details block
-    cy.get('p[id="comp-details-description"]').contains(callDetails.description);
-    cy.get('div[id="comp-details-location"]').contains(callDetails.location);
-
-    //-- verify that the conflict type is singular, not plural
-    cy.get("div.hwcr-conflict-type").should("exist");
-    cy.get("div.hwcr-conflict-type").should("have.text", "Human Wildlife Conflict");
-    cy.get("div.hwcr-conflict-type").should("not.have.text", "Human Wildlife Conflicts");
-
-    cy.get('p[id="comp-details-location-description"]').should("have.value", "");
-    cy.get('span[id="comp-details-community"]').contains(callDetails.community);
-    cy.get('span[id="comp-details-office"]').contains(callDetails.office);
-    cy.get('span[id="comp-details-zone"]').contains(callDetails.zone);
-    cy.get('span[id="comp-details-region"]').contains(callDetails.region);
+    cy.get('pre[id="comp-details-description"]').contains(callDetails.description);
+    cy.get('dd[id="comp-details-location"]').contains(callDetails.location);
+    cy.get('dd[id="comp-details-location-description"]').should("have.value", "");
+    cy.get('dd[id="comp-details-community"]').contains(callDetails.community);
+    cy.get('dd[id="comp-details-office"]').contains(callDetails.office);
+    cy.get('dd[id="comp-details-zone"]').contains(callDetails.zone);
+    cy.get('dd[id="comp-details-region"]').contains(callDetails.region);
   });
 
   it("it has correct call information details", () => {
@@ -78,18 +72,18 @@ describe("COMPENF-35 Display HWCR Details", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
     //-- verify the call details block
-    cy.get('div[id="comp-details-name"]').contains(callerInformation.name);
-    cy.get('div[id="comp-details-phone"]').contains(callerInformation.phone);
-    cy.get('div[id="comp-details-phone-2"]').should(($el) => {
+    cy.get('dd[id="comp-details-name"]').contains(callerInformation.name);
+    cy.get('dd[id="comp-details-phone"]').contains(callerInformation.phone);
+    cy.get('dd[id="comp-details-phone-2"]').should(($el) => {
       expect($el.text().trim()).equal(callerInformation.secondary);
     });
     cy.get('div[id="comp-details-phone-3"]').should(($el) => {
       expect($el.text().trim()).equal(callerInformation.alternate);
     });
 
-    cy.get('div[id="comp-details-address"]').contains(callerInformation.address);
-    cy.get('div[id="comp-details-email"]').contains(callerInformation.email);
-    cy.get('div[id="comp-details-reported"]').contains(callerInformation.reported);
+    cy.get('dd[id="comp-details-address"]').contains(callerInformation.address);
+    cy.get('dd[id="comp-details-email"]').contains(callerInformation.email);
+    cy.get('dd[id="comp-details-reported"]').contains(callerInformation.reported);
   });
 
   it("it has a map on screen with a marker at the correct location", function () {
