@@ -37,15 +37,11 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  deploys-test:
-    name: TEST Deployments
-    needs:
-      - codeql
+  deploys-test-nats:
+    name: Deploy NATS to TEST
     environment: test
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-
       - name: Set up OpenShift CLI
         uses: redhat-actions/oc-login@v1
         with:
@@ -86,6 +82,69 @@ jobs:
             --set reloader.enabled=false \
             --set replicaCount=1
 
+  deploys-test-database:
+    name: Deploy Database to TEST
+    needs: codeql
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up OpenShift CLI
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ vars.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ vars.OC_NAMESPACE }}
+
+      - name: Deploy Database
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters: -p ZONE=test
+          penetration_test: false
+
+  deploys-test-backend:
+    name: Deploy Backend to TEST
+    needs:
+      - deploys-test-database
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          parameters: -p ZONE=test -p PROMOTE=${{ github.repository }}/backend:test
+            -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
+            -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
+          penetration_test: false
+
+  deploys-test:
+    name: TEST Deployments
+    needs:
+      - codeql
+      - deploys-test-nats
+      - deploys-test-backend
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up OpenShift CLI
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ vars.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ vars.OC_NAMESPACE }}
+
       - name: Deploy Components
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
@@ -99,19 +158,11 @@ jobs:
           penetration_test: false
     strategy:
       matrix:
-        name: [backend, database, frontend, init, webeoc]
+        name: [frontend, init, webeoc]
         include:
-          - name: backend
-            file: backend/openshift.deploy.yml
-            parameters: -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
-              -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
-            overwrite: true
           - name: webeoc
             file: webeoc/openshift.deploy.yml
             overwrite: true
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST }}
@@ -131,8 +182,6 @@ jobs:
     environment: prod
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-
       - name: Set up OpenShift CLI
         uses: redhat-actions/oc-login@v1
         with:
@@ -173,10 +222,36 @@ jobs:
             --set reloader.enabled=false \
             --set replicaCount=1
 
+  deploys-prod-database:
+    name: Deploy Database to PROD
+    needs: deploys-test
+    environment: prod
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up OpenShift CLI
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ vars.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ vars.OC_NAMESPACE }}
+
+      - name: Deploy Database
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters: -p ZONE=prod
+          penetration_test: false
+
   deploys-prod-backend:
     name: Deploy Backend to PROD
     needs:
-      - deploys-prod-nats
+      - deploys-prod-database
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -188,29 +263,25 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
           parameters: -p ZONE=prod -p PROMOTE=${{ github.repository }}/backend:test
-            -p NAME=${{ github.event.repository.name }} -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
+            -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
+            -p FLYWAY_LOCATIONS="filesystem:./sql"
           penetration_test: false
 
   deploys-prod:
     name: Deploy Other Components to PROD
     needs:
+      - deploys-prod-nats
       - deploys-prod-backend
     environment: prod
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [database, frontend, init, webeoc]
+        name: [frontend, init, webeoc]
         include:
           - name: webeoc
             file: webeoc/openshift.deploy.yml
-          - name: backend
-            file: backend/openshift.deploy.yml
-            parameters: -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
-              -p FLYWAY_LOCATIONS="filesystem:./sql"
             overwrite: true
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD }}
