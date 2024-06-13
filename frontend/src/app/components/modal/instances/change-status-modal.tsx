@@ -111,24 +111,40 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       setStatus(selectedStatus);
       dispatch(setIsInEdit({ showSectionErrors: false }));
     } else {
-      //scroll to error sections
-      if (!assessmentCriteria || assessment) {
-        document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
-      } else if (!preventionCriteria || prevention) {
-        document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
-      } else if (!equipmentCriteria || equipment) {
-        document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
-      } else if (!animalCriteria || animal) {
-        document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
-      } else if (note) {
-        document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
-      } else if (attachments) {
-        document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
-      } else if (!fileReviewCriteria || fileReview) {
-        document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
-      }
+      scrollToErrorSection(
+        assessmentCriteria,
+        preventionCriteria,
+        equipmentCriteria,
+        animalCriteria,
+        fileReviewCriteria,
+      );
       dispatch(setIsInEdit({ showSectionErrors: true }));
       close();
+    }
+  };
+
+  const scrollToErrorSection = (
+    assessmentCriteria: boolean,
+    preventionCriteria: boolean,
+    equipmentCriteria: boolean,
+    animalCriteria: boolean,
+    fileReviewCriteria: boolean,
+  ) => {
+    const { assessment, prevention, equipment, animal, note, attachments, fileReview } = cases.isInEdit;
+    if (!assessmentCriteria || assessment) {
+      document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
+    } else if (!preventionCriteria || prevention) {
+      document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
+    } else if (!equipmentCriteria || equipment) {
+      document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
+    } else if (!animalCriteria || animal) {
+      document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
+    } else if (note) {
+      document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
+    } else if (attachments) {
+      document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
+    } else if (!fileReviewCriteria || fileReview) {
+      document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
     }
   };
 
