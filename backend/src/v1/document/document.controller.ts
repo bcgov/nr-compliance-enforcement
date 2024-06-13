@@ -43,7 +43,7 @@ export class DocumentController {
 
       res.end(buffer);
     } catch (error) {
-      this.logger.log(`exception: unable to export document for complaint: ${id} - error: ${error}`);
+      this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
       res.status(500).send(`exception: unable to export document for complaint: ${id} - error: ${error}`);
     }
   }
