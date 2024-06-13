@@ -188,8 +188,10 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
-      <h6>Outcome by animal</h6>
+    <section className="comp-details-section comp-outcome-report-block">
+      <div className="comp-details-section-header">
+        <h3>Outcome by animal</h3>
+      </div>
       {renderOutcomeList()}
 
       <div className="comp-outcome-report-button">
@@ -216,6 +218,6 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
           />
         )}
       </div>
-    </div>
+    </section>
   );
 };

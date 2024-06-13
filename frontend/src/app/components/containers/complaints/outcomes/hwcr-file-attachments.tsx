@@ -124,8 +124,8 @@ export const HWCRFileAttachments: FC = () => {
   };
 
   return (
-    <div
-      className="comp-outcome-report-block"
+    <section
+      className="comp-details-section comp-outcome-report-block"
       id="outcome_attachments_div_id"
     >
       <h3>Outcome attachments ({outcomeAttachmentCount})</h3>
@@ -187,6 +187,6 @@ export const HWCRFileAttachments: FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };

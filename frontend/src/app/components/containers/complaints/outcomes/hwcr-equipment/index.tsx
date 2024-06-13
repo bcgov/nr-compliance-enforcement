@@ -31,8 +31,10 @@ export const HWCREquipment: FC = memo(() => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
-      <h6>Equipment</h6>
+    <section className="comp-details-section comp-outcome-report-block">
+      <div className="comp-details-section-header">
+        <h3>Equipment</h3>
+      </div>
       {equipmentList && equipmentList.length > 0
         ? equipmentList.map((equipment) =>
             editingGuid === equipment.id ? (
@@ -73,6 +75,6 @@ export const HWCREquipment: FC = memo(() => {
           </Button>
         </div>
       )}
-    </div>
+    </section>
   );
 });

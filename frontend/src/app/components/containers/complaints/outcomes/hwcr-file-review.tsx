@@ -125,8 +125,10 @@ export const HWCRFileReview: FC = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
-      <h6>File review</h6>
+    <section className="comp-details-section comp-outcome-report-block">
+      <div className="comp-details-section-header">
+        <h3>File review</h3>
+      </div>
       <div className="comp-outcome-report-file-review">
         {(componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE) && (
           <div className="comp-details-edit-container">
@@ -341,6 +343,6 @@ export const HWCRFileReview: FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
