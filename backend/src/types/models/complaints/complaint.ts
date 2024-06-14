@@ -26,6 +26,7 @@ export interface ComplaintDto {
     area: string;
     zone: string;
     region: string;
+    officeLocation?: string;
   };
   delegates: Array<DelegateDto>;
 }
