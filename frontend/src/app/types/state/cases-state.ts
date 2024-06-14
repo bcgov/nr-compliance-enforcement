@@ -15,8 +15,19 @@ export interface CasesState {
   reviewComplete?: Review | null;
   equipment: EquipmentDetailsDto[];
   subject: Array<Subject>;
+  isInEdit: IsInEdit;
 }
 
+export interface IsInEdit {
+  assessment: boolean;
+  prevention: boolean;
+  equipment: boolean;
+  animal: boolean;
+  note: boolean;
+  attachments: boolean;
+  fileReview: boolean;
+  showSectionErrors: boolean;
+}
 export interface Review {
   actor: string;
   date: Date;

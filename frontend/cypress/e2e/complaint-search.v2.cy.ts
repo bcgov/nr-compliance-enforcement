@@ -142,7 +142,6 @@ describe("Complaint Search Functionality", () => {
     cy.get("#multi-point-map")
       .find("div.leaflet-marker-icon")
       .should(({ length }) => {
-        console.log(length);
         expect(length).to.eq(5);
       });
   });
