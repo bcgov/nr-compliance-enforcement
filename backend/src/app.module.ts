@@ -42,6 +42,8 @@ import { CaseFileModule } from "./v1/case_file/case_file.module";
 import { ComplaintUpdatesModule } from "./v1/complaint_updates/complaint_updates.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ComplaintSequenceResetScheduler } from "./v1/complaint/complaint-sequence-reset.service";
+import { DocumentModule } from "./v1/document/document.module";
+import { CdogsModule } from "./external_api/cdogs/cdogs.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -106,6 +108,8 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     CaseFileModule,
     ComplaintUpdatesModule,
     ScheduleModule.forRoot(),
+    DocumentModule,
+    CdogsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],

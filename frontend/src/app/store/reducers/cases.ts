@@ -22,6 +22,16 @@ const initialState: CasesState = {
   },
   equipment: [],
   subject: [],
+  isInEdit: {
+    assessment: false,
+    prevention: false,
+    equipment: false,
+    animal: false,
+    note: false,
+    attachments: false,
+    fileReview: false,
+    showSectionErrors: false,
+  },
 };
 
 export const casesSlice = createSlice({
@@ -63,10 +73,15 @@ export const casesSlice = createSlice({
       const {
         payload: { note, equipment, subject, reviewComplete },
       } = action;
+
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
       return { ...state, note, equipment, subject, reviewComplete };
+    },
+    setIsInEdit: (state, action) => {
+      const { payload } = action;
+      return { ...state, isInEdit: { ...state.isInEdit, ...payload } };
     },
   },
 
@@ -87,6 +102,7 @@ export const {
   setIsReviewedRequired,
   setReviewComplete,
   setCaseFile,
+  setIsInEdit,
   clearAssessment,
   clearPrevention,
 } = casesSlice.actions;

@@ -20,14 +20,14 @@ import { useParams } from "react-router-dom";
 import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment } from "../../../../store/reducers/cases";
+import { resetAssessment, setIsInEdit } from "../../../../store/reducers/cases";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { Assessment } from "../../../../types/outcomes/assessment";
 import { ValidationDatePicker } from "../../../../common/validation-date-picker";
-import { BsPencil } from "react-icons/bs";
+import { BsPencil, BsExclamationCircleFill } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 
 import "../../../../../assets/sass/hwcr-assessment.scss";
@@ -63,6 +63,16 @@ export const HWCRComplaintAssessment: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const cases = useAppSelector((state) => state.cases);
+
+  const hasAssessment = Object.keys(cases.assessment).length > 0;
+  const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
+
+  useEffect(() => {
+    if (!hasAssessment && editable) {
+      dispatch(setIsInEdit({ assessment: false }));
+    } else dispatch(setIsInEdit({ assessment: editable }));
+  }, [editable, hasAssessment]);
 
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
@@ -302,9 +312,22 @@ export const HWCRComplaintAssessment: FC = () => {
   }`;
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-assessment"
+    >
       <h6>Complaint assessment</h6>
-      <div className="comp-outcome-report-complaint-assessment">
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          {hasAssessment ? (
+            <span>Save section before closing the complaint.</span>
+          ) : (
+            <span>Complete section before closing the complaint.</span>
+          )}
+        </div>
+      )}
+      <div className={`comp-outcome-report-complaint-assessment ${showSectionErrors ? "section-error" : ""}`}>
         <div className="comp-details-edit-container">
           <div className="assessment-details-edit-column">
             <div className="comp-details-edit-container">

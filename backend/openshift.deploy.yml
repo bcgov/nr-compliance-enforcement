@@ -180,6 +180,26 @@ objects:
                     secretKeyRef:
                       name: sequence-reset-cron
                       key: seq-reset-cron-expression
+                - name: COMS_JWT_AUTH_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: cdogs
+                      key: coms-jwt-auth-uri
+                - name: CDOGS_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: cdogs
+                      key: cdogs-uri
+                - name: CDOGS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: cdogs
+                      key: cdogs-client-id
+                - name: CDOGS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: cdogs
+                      key: cdogs-client-secret
               ports:
                 - containerPort: 3000
                   protocol: TCP
