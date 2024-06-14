@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import logoLg from "../../../../assets/images/branding/BCgov-lg.png";
-import { Footer } from "../../containers/layout";
+import { Footer, Header } from "../../containers/layout";
 import { BsPersonFillSlash } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
@@ -13,21 +13,7 @@ const NotAuthorized: FC<props> = () => {
     <div className="comp-app-container fixed-header">
       {/* <!-- --> */}
 
-      <div className="comp-header">
-        <Link
-          className="comp-header-logo"
-          to="/"
-        >
-          <picture>
-            <source srcSet={logoLg}></source>
-            <img
-              src={logoLg}
-              alt={"Government of British Columbia"}
-            />
-          </picture>
-          NatComplaints
-        </Link>
-      </div>
+      <Header />
 
       <div className="error-container">
         <div className="message">
