@@ -18,7 +18,7 @@ const getAuthToken = (): string | null => {
 };
 
 const hasRequiredRole = (userRoles: Array<Roles>, requiredRoles: Array<Roles>): boolean => {
-  return requiredRoles.some((role) => userRoles.includes(role));
+  return requiredRoles.some((role) => userRoles?.includes(role));
 };
 
 export const ProtectedRoutes: FC<ProtectedRoutesProps> = ({ roles }) => {
