@@ -60,7 +60,7 @@ const App: FC = () => {
               element={<CreateComplaint />}
             />
           </Route>
-          <Route element={<ProtectedRoutes roles={[Roles.COS_ADMINISTRATOR]} />}>
+          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
             <Route
               path="/admin/user"
               element={<UserManagement />}
