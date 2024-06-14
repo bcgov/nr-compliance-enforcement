@@ -106,6 +106,8 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           parameters: -p ZONE=test
+            -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:test
           penetration_test: false
 
   deploys-test-backend:
@@ -246,6 +248,8 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           parameters: -p ZONE=prod
+            -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:test
           penetration_test: false
 
   deploys-prod-backend:
