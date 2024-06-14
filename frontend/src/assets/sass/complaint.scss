@@ -1585,7 +1585,7 @@ p {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .comp-cell-bottom {

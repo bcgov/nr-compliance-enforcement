@@ -194,9 +194,8 @@ export const HWCRComplaintAssessment: FC = () => {
     }
   };
 
-  const justificationLabelClass = selectedActionRequired?.value === "No" ? "" : "comp-outcome-hide";
-  const justificationEditClass =
-    selectedActionRequired?.value === "No" ? "comp-details-input" : "comp-details-input comp-outcome-hide";
+  const justificationLabelClass = selectedActionRequired?.value === "No" ? "" : "hidden";
+  const justificationEditClass = selectedActionRequired?.value === "No" ? "comp-details-input" : "hidden";
 
   const cancelConfirmed = () => {
     populateAssessmentUI();
@@ -356,20 +355,15 @@ export const HWCRComplaintAssessment: FC = () => {
               </div>
             </div>
           </div>
+
           <div
             id="justification-div"
-            className="comp-details-form-row"
+            className={`comp-details-form-row ${justificationEditClass}`}
           >
-            <label
-              className={justificationLabelClass}
-              htmlFor="justification"
-            >
-              Justification
-            </label>
+            <label htmlFor="justification">Justification</label>
             <div className="comp-details-input full-width">
               <CompSelect
                 id="justification"
-                className={justificationEditClass}
                 classNamePrefix="comp-select"
                 options={justificationList}
                 enableValidation={true}
@@ -442,7 +436,7 @@ export const HWCRComplaintAssessment: FC = () => {
             <dd>{selectedActionRequired?.value}</dd>
           </div>
           {selectedAssessmentTypes && (
-            <div>
+            <div className={assessmentDivClass}>
               <dt>Actions</dt>
               <dd>
                 <ul>
@@ -454,10 +448,13 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
           )}
 
-          <div id="justification-div">
+          <div
+            id="justification-div"
+            className={justificationLabelClass}
+          >
             <dt>Justification</dt>
             <dd>
-              <span className={justificationEditClass}>{selectedJustification?.label || ""}</span>
+              <span>{selectedJustification?.label || ""}</span>
             </dd>
           </div>
 
