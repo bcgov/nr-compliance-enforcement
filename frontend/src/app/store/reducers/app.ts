@@ -19,6 +19,7 @@ import { NotificationState } from "../../types/state/notification-state";
 import { ToggleError } from "../../common/toast";
 import { CodeTableVersionState } from "../../types/state/code-table-version-state";
 import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
+import { Action, ThunkAction } from "@reduxjs/toolkit";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -381,6 +382,12 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
     ToggleError("Unable to get codeTableVersion");
   }
 };
+
+export const validateComsAccess =
+  (token: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async () => {
+    return "";
+  };
 
 //-- reducer
 const initialState: AppState = {
