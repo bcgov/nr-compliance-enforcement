@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, redirect, useLocation } from "react-router-dom";
 import logoLg from "../../../../assets/images/branding/BCgov-lg.png";
 import { Footer } from "../layout";
 import { TbFaceId, TbFaceIdError, TbLockAccess } from "react-icons/tb";
@@ -8,6 +8,7 @@ import { useAppDispatch } from "../../../hooks/hooks";
 import { validateComsAccess } from "../../../store/reducers/app";
 import config from "../../../../config";
 import EnvironmentBanner from "../layout/environment-banner";
+import { IconType } from "react-icons/lib";
 
 type Props = {};
 
@@ -30,15 +31,60 @@ export const VerifyAccess: FC<Props> = () => {
     if (token && uuidValidate(token)) {
       dispatch(validateComsAccess(token)).then((res) => {
         const { status } = res;
-        console.log(res);
         if (status !== "success") {
           setIsValid(false);
+        }
+
+        if (status === "success") {
+          //-- wait a couple secods for the ux to catchup and respond
+          //-- then redirect the user to the list-view
+          setTimeout(() => {
+            return redirect("/complaints");
+          }, 10000);
         }
       });
       setIsValid(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
+
+  const renderResult = () => {
+    if (isValid === undefined) {
+      return (
+        <Message
+          icon={TbLockAccess}
+          header="Verifying access"
+        >
+          Your access is being verified. You will be redirected to the application once verified. <br />
+          If you have any problems, please contact the Compliance and Enforcement Digital Service team at{" "}
+          <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
+        </Message>
+      );
+    } else if (isValid) {
+      return (
+        <Message
+          icon={TbFaceId}
+          header="Access granted"
+        >
+          Your access has been verified. You will be redirected to the application shortly. <br />
+          If you have any problems, please contact the Compliance and Enforcement Digital Service team at{" "}
+          <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
+        </Message>
+      );
+    } else {
+      return (
+        <Message
+          icon={TbFaceIdError}
+          header="Access denied"
+        >
+          {" "}
+          Your access link has expired or is incorrect. <br />
+          Please contact the Compliance and Enforcement Digital Services team at{" "}
+          <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a> to request a new link to get access.
+        </Message>
+      );
+    }
+  };
 
   return (
     <>
@@ -82,9 +128,7 @@ export const VerifyAccess: FC<Props> = () => {
         </div>
         {/* <!-- --> */}
 
-        <div className="error-container">
-          {isValid === undefined ? <Verifying /> : isValid ? <Succcess /> : <Error />}
-        </div>
+        <div className="error-container">{renderResult()}</div>
 
         <Footer />
       </div>
@@ -92,38 +136,20 @@ export const VerifyAccess: FC<Props> = () => {
   );
 };
 
-const Verifying = () => {
-  return (
-    <div className="message">
-      <TbLockAccess />
-      <h1 className="comp-padding-top-25">Verifying access</h1>
-      Your access is being verified. You will be redirected to the application once verified. <br />
-      If you have any problems, please contact the Compliance and Enforcement Digital Service team at{" "}
-      <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
-    </div>
-  );
+type props = {
+  icon: IconType;
+  header: string;
+  children: React.ReactNode;
 };
 
-const Succcess = () => {
-  return (
-    <div className="message">
-      <TbFaceId />
-      <h1 className="comp-padding-top-25">Access granted</h1>
-      Your access has been verified. You will be redirected to the application shortly. <br />
-      If you have any problems, please contact the Compliance and Enforcement Digital Service team at{" "}
-      <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
-    </div>
-  );
-};
+const Message: FC<props> = ({ icon, header, children }) => {
+  const Icon = icon;
 
-const Error = () => {
   return (
     <div className="message">
-      <TbFaceIdError />
-      <h1 className="comp-padding-top-25">Access denied</h1>
-      Your access link has expired or is incorrect. <br />
-      Please contact the Compliance and Enforcement Digital Services team at{" "}
-      <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a> to request a new link to get access.
+      <Icon />
+      <h1 className="comp-padding-top-25">{header}</h1>
+      {children}
     </div>
   );
 };
