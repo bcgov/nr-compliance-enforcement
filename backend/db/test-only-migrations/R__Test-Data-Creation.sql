@@ -449,13 +449,13 @@ ON CONFLICT DO NOTHING;
 UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='ENCETST1';
 UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='ADLAI';
 UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='DKORIN';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='STRUONG';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='AWILCOX';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='NBASKERV';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='SKOT';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='BFALK';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='TSPRADO';
-UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='M2SEARS';
+UPDATE public.officer SET office_guid = '3f474308-68da-450a-b1ab-fb8a5b7a27ce' WHERE user_id='STRUONG';
+UPDATE public.officer SET office_guid = '9fc7327b-b206-4a5c-88f1-2875a456eb49' WHERE user_id='AWILCOX';
+UPDATE public.officer SET office_guid = 'c8aeb3d9-3718-49d9-b8b5-6c84671546eb' WHERE user_id='NBASKERV';
+UPDATE public.officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE user_id='SKOT';
+UPDATE public.officer SET office_guid = '313f4ec3-e88a-41c2-9956-78c7b18cb71d' WHERE user_id='BFALK';
+UPDATE public.officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' WHERE user_id='TSPRADO';
+UPDATE public.officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' WHERE user_id='M2SEARS';
 
 -------------------------
 -- INSERT COMPLAINT RECORDS
