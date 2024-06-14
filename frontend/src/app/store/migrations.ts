@@ -4,6 +4,7 @@ import { Migration3 } from "./migrations/migration-3";
 import { AddOutcomeNote } from "./migrations/migration-4";
 import { AddPersonGuidAndOutcomeReview } from "./migrations/migration-5";
 import { AddEquipment } from "./migrations/migration-6";
+import { AddIsInEdit } from "./migrations/migration-7";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -22,6 +23,7 @@ migration = {
   ...AddOutcomeNote,
   ...AddPersonGuidAndOutcomeReview,
   ...AddEquipment,
+  ...AddIsInEdit,
 };
 
 export default migration;
