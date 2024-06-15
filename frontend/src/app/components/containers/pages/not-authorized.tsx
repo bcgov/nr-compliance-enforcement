@@ -10,7 +10,7 @@ type props = {
 
 const NotAuthorized: FC<props> = () => {
   return (
-    <div className="comp-app-container fixed-header">
+    <div className="comp-app-container">
       {/* <!-- --> */}
 
       <Header />
