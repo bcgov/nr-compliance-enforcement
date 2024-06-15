@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import Option from "../../../../types/app/option";
-import { Button } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
@@ -22,8 +22,7 @@ import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { ValidationDatePicker } from "../../../../common/validation-date-picker";
-import { BsExclamationCircleFill, BsPencil, BsPlusCircle } from "react-icons/bs";
-import { CompTextIconButton } from "../../../common/comp-text-icon-button";
+import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "../../../../../assets/sass/hwcr-assessment.scss";
 import { Prevention } from "../../../../types/outcomes/prevention";
@@ -236,11 +235,26 @@ export const HWCRComplaintPrevention: FC = () => {
   };
 
   return (
-    <div
-      className="comp-outcome-report-block"
+    <section
+      className="comp-details-section comp-outcome-report-complaint-prev-and-educ"
       id="outcome-prevention-education"
     >
-      <h6>Prevention and education</h6>
+      <div className="comp-details-section-header">
+        <h3>Prevention and education</h3>
+        {!editable && (
+          <div className="comp-details-section-header-actions">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="prevention-edit-button"
+              onClick={toggleEdit}
+            >
+              <i className="bi bi-pencil"></i>
+              Edit
+            </Button>
+          </div>
+        )}
+      </div>
       {assessmentRelatedError && (
         <div
           className="section-error-message"
@@ -256,154 +270,133 @@ export const HWCRComplaintPrevention: FC = () => {
             id="outcome-report-add-prevention-outcome"
             title="Add Prevention and education"
             variant="primary"
+            size="sm"
             onClick={() => {
               setShowContent(true);
             }}
           >
+            <i className="bi bi-plus-circle"></i>
             <span>Add actions</span>
-            <BsPlusCircle />
           </Button>
         </div>
       ) : (
-        <>
-          {showSectionErrors && !assessmentRelatedError && (
-            <div className="section-error-message">
-              <BsExclamationCircleFill />
-              <span>Save section before closing the complaint.</span>
-            </div>
-          )}
-          <div className={`comp-outcome-report-complaint-prev-and-educ ${showSectionErrors ? "section-error" : ""}`}>
-            <div className="comp-details-edit-container">
-              <div className="assessment-details-edit-column">
-                <div className="comp-details-edit-container">
-                  <div className="comp-details-edit-column">
-                    <div
-                      id="prev-educ-checkbox-div"
-                      className="comp-details-label-checkbox-div-pair"
-                    >
-                      <label
-                        htmlFor="checkbox-div"
-                        className="comp-details-inner-content-label checkbox-label-padding"
-                      >
-                        Prevention and Education
-                      </label>
-                      {editable ? (
-                        <ValidationCheckboxGroup
-                          errMsg={preventionRequiredErrorMessage}
-                          options={preventionTypeList}
-                          onCheckboxChange={handlePreventionTypesChange}
-                          checkedValues={selectedPreventionTypes}
-                        ></ValidationCheckboxGroup>
-                      ) : (
-                        <div>
-                          {selectedPreventionTypes.map((preventionValue) => (
-                            <div
-                              className="checkbox-label-padding"
-                              key={preventionValue.label}
-                            >
-                              {preventionValue.label}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="comp-details-edit-container">
-                  <div className="comp-details-edit-column">
-                    <div
-                      id="prev-educ-outcome-officer-div"
-                      className="assessment-details-label-input-pair"
-                    >
-                      <label htmlFor="prev-educ-outcome-officer">Officer</label>
-                      {editable ? (
-                        <CompSelect
-                          id="prev-educ-outcome-officer"
-                          className="comp-details-input"
-                          classNamePrefix="comp-select"
-                          options={assignableOfficers}
-                          enableValidation={true}
-                          errorMessage={officerErrorMessage}
-                          value={selectedOfficer}
-                          placeholder="Select "
-                          onChange={(officer: any) => setSelectedOfficer(officer)}
-                        />
-                      ) : (
-                        <div
-                          data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
-                          className="comp-orange-avatar-sm comp-details-inner-content"
-                        >
-                          <span
-                            id="comp-review-required-officer"
-                            className="comp-padding-left-xs"
-                          >
-                            {selectedOfficer?.label ?? ""}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="comp-details-edit-column comp-details-right-column">
-                    <div
-                      id="prev-educ-outcome-date-div"
-                      className="assessment-details-label-input-pair"
-                    >
-                      <label htmlFor="prev-educ-outcome-date">Date</label>
-                      {editable ? (
-                        <ValidationDatePicker
-                          id="prev-educ-outcome-date"
-                          selectedDate={selectedDate}
-                          onChange={handleDateChange}
-                          placeholder="Select date"
-                          className="comp-details-edit-calendar-input" // Adjust class as needed
-                          classNamePrefix="comp-select" // Adjust class as needed
-                          errMsg={preventionDateErrorMessage} // Pass error message if any
-                          maxDate={currentDate}
-                        />
-                      ) : (
-                        formatDate(`${selectedDate}`)
-                      )}
-                    </div>
-                  </div>
-                </div>
+        <Card border={showSectionErrors ? "danger" : "default"}>
+          <Card.Body>
+            {showSectionErrors && !assessmentRelatedError && (
+              <div className="section-error-message">
+                <BsExclamationCircleFill />
+                <span>Save section before closing the complaint.</span>
               </div>
-              {!editable && (
-                <div className="comp-details-right-column">
-                  <CompTextIconButton
-                    id="prevention-edit-button"
-                    buttonClasses="button-text"
-                    text="Edit"
-                    icon={BsPencil}
-                    click={toggleEdit}
-                  />
+            )}
+
+            {editable ? (
+              <div className="comp-details-form">
+                <div
+                  className="comp-details-form-row"
+                  id="prev-educ-checkbox-div"
+                >
+                  <label htmlFor="checkbox-div">Actions</label>
+                  <div className="comp-details-input full-width">
+                    <ValidationCheckboxGroup
+                      errMsg={preventionRequiredErrorMessage}
+                      options={preventionTypeList}
+                      onCheckboxChange={handlePreventionTypesChange}
+                      checkedValues={selectedPreventionTypes}
+                    ></ValidationCheckboxGroup>
+                  </div>
                 </div>
-              )}
-            </div>
-            {editable && (
-              <div className="comp-outcome-report-container">
-                <div className="comp-outcome-report-actions">
+                <div
+                  className="comp-details-form-row"
+                  id="prev-educ-outcome-officer-div"
+                >
+                  <label htmlFor="prev-educ-outcome-officer">Officer</label>
+                  <div className="comp-details-input full-width">
+                    <CompSelect
+                      id="prev-educ-outcome-officer"
+                      classNamePrefix="comp-select"
+                      options={assignableOfficers}
+                      enableValidation={true}
+                      errorMessage={officerErrorMessage}
+                      value={selectedOfficer}
+                      placeholder="Select "
+                      onChange={(officer: any) => setSelectedOfficer(officer)}
+                    />
+                  </div>
+                </div>
+                <div
+                  className="comp-details-form-row"
+                  id="prev-educ-outcome-date-div"
+                >
+                  <label htmlFor="prev-educ-outcome-date">Date</label>
+                  <div className="comp-details-input">
+                    <ValidationDatePicker
+                      id="prev-educ-outcome-date"
+                      selectedDate={selectedDate}
+                      onChange={handleDateChange}
+                      placeholder="Select date"
+                      className="comp-details-edit-calendar-input" // Adjust class as needed
+                      classNamePrefix="comp-select" // Adjust class as needed
+                      errMsg={preventionDateErrorMessage} // Pass error message if any
+                      maxDate={currentDate}
+                    />
+                  </div>
+                </div>
+                <div className="comp-details-form-buttons">
                   <Button
+                    variant="outline-primary"
                     id="prev-educ-outcome-cancel-button"
                     title="Cancel Outcome"
-                    className="comp-outcome-cancel"
                     onClick={cancelButtonClick}
                   >
                     Cancel
                   </Button>
                   <Button
+                    variant="primary"
                     id="outcome-save-prev-and-educ-button"
                     title="Save Outcome"
-                    className="comp-outcome-save"
                     onClick={saveButtonClick}
                   >
                     Save
                   </Button>
                 </div>
               </div>
+            ) : (
+              <dl>
+                <div>
+                  <dt>Actions</dt>
+                  <dd>
+                    <ul id="prev-educ-checkbox-div">
+                      {selectedPreventionTypes.map((preventionValue) => (
+                        <li
+                          className="checkbox-label-padding"
+                          key={preventionValue.label}
+                        >
+                          {preventionValue.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+                <div id="prev-educ-outcome-officer-div">
+                  <dt>Officer</dt>
+                  <dd>
+                    <div
+                      data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
+                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                    >
+                      <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
+                    </div>
+                  </dd>
+                </div>
+                <div id="prev-educ-outcome-date-div">
+                  <dt>Date</dt>
+                  <dd>{formatDate(`${selectedDate}`)}</dd>
+                </div>
+              </dl>
             )}
-          </div>
-        </>
+          </Card.Body>
+        </Card>
       )}
-    </div>
+    </section>
   );
 };

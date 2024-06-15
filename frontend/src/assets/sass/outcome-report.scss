@@ -371,11 +371,6 @@
   }
 }
 
-// ASSESSMENT
-.comp-outcome-report-complaint-assessment {
-  margin-bottom: 24px;
-}
-
 .section-error {
   border: 3px solid $bc-gov-danger !important;
   border-radius: 4px !important;
@@ -389,4 +384,9 @@
   span {
     margin-left: 8px;
   }
+}
+
+// LAYOUT
+.comp-outcome-report-complaint-prev-and-educ {
+  margin-bottom: 24px;
 }

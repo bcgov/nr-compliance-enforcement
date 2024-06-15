@@ -21,7 +21,7 @@ export const HWCROutcomeReport: FC = () => {
   }, [id]);
 
   return (
-    <section className="comp-hwcr-outcome-report">
+    <section className="comp-details-body comp-container comp-hwcr-outcome-report">
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
