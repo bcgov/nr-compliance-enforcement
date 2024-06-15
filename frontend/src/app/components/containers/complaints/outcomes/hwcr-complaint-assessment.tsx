@@ -309,196 +309,198 @@ export const HWCRComplaintAssessment: FC = () => {
   const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "visible" : "hidden"}`;
 
   return (
-    <Card
-      as="section"
-      className="comp-details-section comp-outcome-report-complaint-assessment"
-      id="outcome-assessment"
-      border={showSectionErrors ? "danger" : "default"}
-    >
-      <Card.Body>
-        <div className="comp-details-section-header">
-          <h3>Complaint assessment</h3>
-          {!editable && (
-            <div className="comp-details-section-header-actions">
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={toggleEdit}
-              >
-                <i className="bi bi-pencil"></i>
-                Edit
-              </Button>
+    <div className="comp-details-section">
+      <div className="comp-details-section-header">
+        <h3>Complaint assessment</h3>
+        {!editable && (
+          <div className="comp-details-section-header-actions">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={toggleEdit}
+            >
+              <i className="bi bi-pencil"></i>
+              Edit
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Card
+        as="section"
+        className="comp-details-section comp-outcome-report-complaint-assessment"
+        id="outcome-assessment"
+        border={showSectionErrors ? "danger" : "default"}
+      >
+        <Card.Body>
+          {showSectionErrors && (
+            <div className="section-error-message">
+              <BsExclamationCircleFill />
+              {hasAssessment ? (
+                <span>Save section before closing the complaint.</span>
+              ) : (
+                <span>Complete section before closing the complaint.</span>
+              )}
             </div>
           )}
-        </div>
 
-        {showSectionErrors && (
-          <div className="section-error-message">
-            <BsExclamationCircleFill />
-            {hasAssessment ? (
-              <span>Save section before closing the complaint.</span>
-            ) : (
-              <span>Complete section before closing the complaint.</span>
-            )}
-          </div>
-        )}
-
-        {editable ? (
-          <div className="comp-details-form">
-            <div
-              className="comp-details-form-row"
-              id="action-required-div"
-            >
-              <label htmlFor="action-required">Action required?</label>
-              <div className="comp-details-input full-width">
-                <CompSelect
-                  id="action-required"
-                  className="comp-details-input"
-                  classNamePrefix="comp-select"
-                  options={actionRequiredList}
-                  enableValidation={true}
-                  errorMessage={actionRequiredErrorMessage}
-                  value={selectedActionRequired}
-                  placeholder="Select"
-                  onChange={(e) => handleActionRequiredChange(e)}
-                />
-              </div>
-            </div>
-            <div
-              className={`comp-details-form-row ${justificationEditClass}`}
-              id="justification-div"
-            >
-              <label htmlFor="justification">Justification</label>
-              <div className="comp-details-input full-width">
-                <CompSelect
-                  id="justification"
-                  classNamePrefix="comp-select"
-                  options={justificationList}
-                  enableValidation={true}
-                  errorMessage={justificationRequiredErrorMessage}
-                  value={selectedJustification}
-                  placeholder="Select"
-                  onChange={(e) => handleJustificationChange(e)}
-                />
-              </div>
-            </div>
-            <div
-              className={assessmentDivClass}
-              id="assessment-checkbox-div"
-            >
-              <label htmlFor="checkbox-div">Assessment</label>
-              <div className="comp-details-input full-width">
-                <ValidationCheckboxGroup
-                  errMsg={assessmentRequiredErrorMessage}
-                  options={assessmentTypeList}
-                  onCheckboxChange={handleAssessmentTypesChange}
-                  checkedValues={selectedAssessmentTypes}
-                ></ValidationCheckboxGroup>
-              </div>
-            </div>
-            <div
-              className="comp-details-form-row"
-              id="outcome-officer-div"
-            >
-              <label htmlFor="outcome-officer">Officer</label>
-              <div className="comp-details-input full-width">
-                <CompSelect
-                  id="outcome-officer"
-                  className="comp-details-input"
-                  classNamePrefix="comp-select"
-                  options={assignableOfficers}
-                  enableValidation={true}
-                  errorMessage={officerErrorMessage}
-                  value={selectedOfficer}
-                  placeholder="Select "
-                  onChange={(officer: any) => setSelectedOfficer(officer)}
-                />
-              </div>
-            </div>
-            <div
-              className="comp-details-form-row"
-              id="complaint-outcome-date-div"
-            >
-              <label htmlFor="complaint-outcome-date">Date</label>
-              <div className="comp-details-input">
-                <ValidationDatePicker
-                  id="complaint-outcome-date"
-                  selectedDate={selectedDate}
-                  onChange={handleDateChange}
-                  placeholder="Select date"
-                  className="comp-details-edit-calendar-input" // Adjust class as needed
-                  classNamePrefix="comp-select" // Adjust class as needed
-                  errMsg={assessmentDateErrorMessage} // Pass error message if any
-                  maxDate={new Date()}
-                />
-              </div>
-            </div>
-            <div className="comp-details-form-buttons">
-              <Button
-                variant="outline-primary"
-                id="outcome-cancel-button"
-                title="Cancel Outcome"
-                onClick={cancelButtonClick}
+          {editable ? (
+            <div className="comp-details-form">
+              <div
+                className="comp-details-form-row"
+                id="action-required-div"
               >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                id="outcome-save-button"
-                title="Save Outcome"
-                onClick={saveButtonClick}
+                <label htmlFor="action-required">Action required?</label>
+                <div className="comp-details-input full-width">
+                  <CompSelect
+                    id="action-required"
+                    className="comp-details-input"
+                    classNamePrefix="comp-select"
+                    options={actionRequiredList}
+                    enableValidation={true}
+                    errorMessage={actionRequiredErrorMessage}
+                    value={selectedActionRequired}
+                    placeholder="Select"
+                    onChange={(e) => handleActionRequiredChange(e)}
+                  />
+                </div>
+              </div>
+              <div
+                className={`comp-details-form-row ${justificationEditClass}`}
+                id="justification-div"
               >
-                Save
-              </Button>
+                <label htmlFor="justification">Justification</label>
+                <div className="comp-details-input full-width">
+                  <CompSelect
+                    id="justification"
+                    classNamePrefix="comp-select"
+                    options={justificationList}
+                    enableValidation={true}
+                    errorMessage={justificationRequiredErrorMessage}
+                    value={selectedJustification}
+                    placeholder="Select"
+                    onChange={(e) => handleJustificationChange(e)}
+                  />
+                </div>
+              </div>
+              <div
+                className={assessmentDivClass}
+                id="assessment-checkbox-div"
+              >
+                <label htmlFor="checkbox-div">Assessment</label>
+                <div className="comp-details-input full-width">
+                  <ValidationCheckboxGroup
+                    errMsg={assessmentRequiredErrorMessage}
+                    options={assessmentTypeList}
+                    onCheckboxChange={handleAssessmentTypesChange}
+                    checkedValues={selectedAssessmentTypes}
+                  ></ValidationCheckboxGroup>
+                </div>
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="outcome-officer-div"
+              >
+                <label htmlFor="outcome-officer">Officer</label>
+                <div className="comp-details-input full-width">
+                  <CompSelect
+                    id="outcome-officer"
+                    className="comp-details-input"
+                    classNamePrefix="comp-select"
+                    options={assignableOfficers}
+                    enableValidation={true}
+                    errorMessage={officerErrorMessage}
+                    value={selectedOfficer}
+                    placeholder="Select "
+                    onChange={(officer: any) => setSelectedOfficer(officer)}
+                  />
+                </div>
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="complaint-outcome-date-div"
+              >
+                <label htmlFor="complaint-outcome-date">Date</label>
+                <div className="comp-details-input">
+                  <ValidationDatePicker
+                    id="complaint-outcome-date"
+                    selectedDate={selectedDate}
+                    onChange={handleDateChange}
+                    placeholder="Select date"
+                    className="comp-details-edit-calendar-input" // Adjust class as needed
+                    classNamePrefix="comp-select" // Adjust class as needed
+                    errMsg={assessmentDateErrorMessage} // Pass error message if any
+                    maxDate={new Date()}
+                  />
+                </div>
+              </div>
+              <div className="comp-details-form-buttons">
+                <Button
+                  variant="outline-primary"
+                  id="outcome-cancel-button"
+                  title="Cancel Outcome"
+                  onClick={cancelButtonClick}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  id="outcome-save-button"
+                  title="Save Outcome"
+                  onClick={saveButtonClick}
+                >
+                  Save
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="comp-details-section">
-            <dl>
-              <div>
-                <dt>Action Required</dt>
-                <dd>{selectedActionRequired?.value}</dd>
-              </div>
-              <div className={justificationLabelClass}>
-                <dt>Justification</dt>
-                <dd>
-                  <span>{selectedJustification?.label || ""}</span>
-                </dd>
-              </div>
-              <div className={assessmentDivClass}>
-                <dt>Actions</dt>
-                <dd>
-                  <ul>
-                    {selectedAssessmentTypes?.map((assesmentValue) => (
-                      <li
-                        className="checkbox-label-padding"
-                        key={assesmentValue.label}
-                      >
-                        {assesmentValue.label}
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
-              <div>
-                <dt>Officer</dt>
-                <dd>
-                  <div
-                    data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
-                    className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                  >
-                    <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
-                  </div>
-                </dd>
-              </div>
-              <div>
-                <dt>Date</dt>
-                <dd>{formatDate(`${selectedDate}`)}</dd>
-              </div>
-            </dl>
-          </div>
-        )}
-      </Card.Body>
-    </Card>
+          ) : (
+            <div className="comp-details-section">
+              <dl>
+                <div>
+                  <dt>Action Required</dt>
+                  <dd>{selectedActionRequired?.value}</dd>
+                </div>
+                <div className={justificationLabelClass}>
+                  <dt>Justification</dt>
+                  <dd>
+                    <span>{selectedJustification?.label || ""}</span>
+                  </dd>
+                </div>
+                <div className={assessmentDivClass}>
+                  <dt>Actions</dt>
+                  <dd>
+                    <ul>
+                      {selectedAssessmentTypes?.map((assesmentValue) => (
+                        <li
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Officer</dt>
+                  <dd>
+                    <div
+                      data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
+                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                    >
+                      <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
+                    </div>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Date</dt>
+                  <dd>{formatDate(`${selectedDate}`)}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
+        </Card.Body>
+      </Card>
+    </div>
   );
 };

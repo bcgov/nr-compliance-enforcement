@@ -463,10 +463,6 @@
   .btn {
     font-size: 0.875rem;
   }
-
-  + .section-error-message {
-    margin-bottom: 1.25rem;
-  }
 }
 
 // CALL DETAILS SECTION
@@ -522,6 +518,10 @@
         display: inline-block;
       }
     }
+  }
+
+  .section-error-message {
+    margin-bottom: 1.25rem;
   }
 
   &.border-danger {
@@ -638,6 +638,7 @@
 
   > label {
     width: 12rem;
+    color: $gray-500;
   }
 
   + .comp-details-form-row {
