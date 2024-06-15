@@ -308,7 +308,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "visible" : "hidden"}`;
 
   return (
-    <div className="comp-details-section">
+    <section className="comp-details-section comp-outcome-report-complaint-assessment">
       <div className="comp-details-section-header">
         <h3>Complaint assessment</h3>
         {!editable && (
@@ -326,8 +326,6 @@ export const HWCRComplaintAssessment: FC = () => {
       </div>
 
       <Card
-        as="section"
-        className="comp-details-section comp-outcome-report-complaint-assessment"
         id="outcome-assessment"
         border={showSectionErrors ? "danger" : "default"}
       >
@@ -453,53 +451,51 @@ export const HWCRComplaintAssessment: FC = () => {
               </div>
             </div>
           ) : (
-            <div className="comp-details-section">
-              <dl>
-                <div>
-                  <dt>Action Required</dt>
-                  <dd>{selectedActionRequired?.value}</dd>
-                </div>
-                <div className={justificationLabelClass}>
-                  <dt>Justification</dt>
-                  <dd>
-                    <span>{selectedJustification?.label || ""}</span>
-                  </dd>
-                </div>
-                <div className={assessmentDivClass}>
-                  <dt>Actions</dt>
-                  <dd>
-                    <ul>
-                      {selectedAssessmentTypes?.map((assesmentValue) => (
-                        <li
-                          className="checkbox-label-padding"
-                          key={assesmentValue.label}
-                        >
-                          {assesmentValue.label}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Officer</dt>
-                  <dd>
-                    <div
-                      data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
-                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                    >
-                      <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
-                    </div>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Date</dt>
-                  <dd>{formatDate(`${selectedDate}`)}</dd>
-                </div>
-              </dl>
-            </div>
+            <dl>
+              <div>
+                <dt>Action Required</dt>
+                <dd>{selectedActionRequired?.value}</dd>
+              </div>
+              <div className={justificationLabelClass}>
+                <dt>Justification</dt>
+                <dd>
+                  <span>{selectedJustification?.label || ""}</span>
+                </dd>
+              </div>
+              <div className={assessmentDivClass}>
+                <dt>Actions</dt>
+                <dd>
+                  <ul>
+                    {selectedAssessmentTypes?.map((assesmentValue) => (
+                      <li
+                        className="checkbox-label-padding"
+                        key={assesmentValue.label}
+                      >
+                        {assesmentValue.label}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+              <div>
+                <dt>Officer</dt>
+                <dd>
+                  <div
+                    data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
+                    className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                  >
+                    <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt>Date</dt>
+                <dd>{formatDate(`${selectedDate}`)}</dd>
+              </div>
+            </dl>
           )}
         </Card.Body>
       </Card>
-    </div>
+    </section>
   );
 };
