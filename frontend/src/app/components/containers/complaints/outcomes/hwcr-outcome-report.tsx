@@ -21,9 +21,10 @@ export const HWCROutcomeReport: FC = () => {
   }, [id]);
 
   return (
-    <div className="comp-hwcr-outcome-report">
-      <hr className="blue-seperator" />
-      <div className="comp-sub-header">Outcome report</div>
+    <section className="comp-hwcr-outcome-report">
+      <div className="comp-details-section-header">
+        <h2>Outcome report</h2>
+      </div>
       <HWCRComplaintAssessment />
       <HWCRComplaintPrevention />
       <HWCREquipment />
@@ -31,6 +32,6 @@ export const HWCROutcomeReport: FC = () => {
       <HWCRSupplementalNotes />
       <HWCRFileAttachments />
       <HWCRFileReview />
-    </div>
+    </section>
   );
 };

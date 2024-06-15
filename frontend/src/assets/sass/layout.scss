@@ -640,6 +640,11 @@ p {
   }
 }
 
+// CARD
+.card-body {
+  padding: 24px;
+}
+
 // DROPDOWN MENU
 .icon-btn.dropdown-toggle {
   &::after {
