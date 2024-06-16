@@ -5,12 +5,13 @@ import DatePicker from "react-datepicker";
 import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
 import { openModal, profileDisplayName, profileInitials } from "../../../../store/reducers/app";
 import { formatDate } from "../../../../common/methods";
-import { BsPencil } from "react-icons/bs";
+import { BsExclamationCircleFill, BsPencil } from "react-icons/bs";
 import { CompTextIconButton } from "../../../common/comp-text-icon-button";
 import { getComplaintStatusById, selectComplaint } from "../../../../store/reducers/complaints";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { createReview, updateReview } from "../../../../store/reducers/case-thunks";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
+import { setIsInEdit } from "../../../../store/reducers/cases";
 
 export const HWCRFileReview: FC = () => {
   const REQUEST_REVIEW_STATE = 0;
@@ -24,6 +25,7 @@ export const HWCRFileReview: FC = () => {
   const { officers } = useAppSelector((state) => state.officers);
   const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
+  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
 
   const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
   const [reviewRequired, setReviewRequired] = useState<boolean>(false);
@@ -31,6 +33,14 @@ export const HWCRFileReview: FC = () => {
   const [officerInitials, setOfficerInitials] = useState<string>(initials);
   const [officerName, setOfficerName] = useState<string>(displayName);
   const [reviewCompleteDate, setReviewCompleteDate] = useState<Date>(new Date());
+  const showSectionErrors =
+    (componentState === EDIT_STATE || (reviewRequired && !reviewCompleted)) && isInEdit.showSectionErrors;
+
+  useEffect(() => {
+    if (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) {
+      dispatch(setIsInEdit({ fileReview: true }));
+    } else dispatch(setIsInEdit({ fileReview: false }));
+  }, [componentState, reviewRequired]);
 
   useEffect(() => {
     setReviewRequired(isReviewRequired);
@@ -80,6 +90,7 @@ export const HWCRFileReview: FC = () => {
             activeIndicator: reviewCompleted,
           };
           dispatch(updateReview(complaintData.id, reviewRequired, completeAction));
+          setComponentState(REQUEST_REVIEW_STATE);
         }
       } else {
         const completeAction = {
@@ -90,10 +101,11 @@ export const HWCRFileReview: FC = () => {
         };
         dispatch(createReview(complaintData.id, reviewRequired, completeAction));
       }
-
       dispatch(getComplaintStatusById(complaintData.id, COMPLAINT_TYPES.HWCR));
     }
-    if (componentState === EDIT_STATE && (reviewRequired || reviewCompleted)) setComponentState(DISPLAY_STATE);
+    if (componentState === EDIT_STATE && (reviewRequired || reviewCompleted)) {
+      setComponentState(DISPLAY_STATE);
+    }
   };
 
   const handleFileReviewCancel = () => {
@@ -125,9 +137,22 @@ export const HWCRFileReview: FC = () => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-file-review"
+    >
       <h6>File review</h6>
-      <div className="comp-outcome-report-file-review">
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          {componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE ? (
+            <span>Save section before closing the complaint.</span>
+          ) : (
+            <span>File must be reviewed before closing the complaint.</span>
+          )}
+        </div>
+      )}
+      <div className={`comp-outcome-report-file-review ${showSectionErrors ? "section-error" : ""}`}>
         {(componentState === REQUEST_REVIEW_STATE || componentState === EDIT_STATE) && (
           <div className="comp-details-edit-container">
             <div
@@ -335,7 +360,9 @@ export const HWCRFileReview: FC = () => {
                 buttonClasses="button-text"
                 text="Edit"
                 icon={BsPencil}
-                click={(e) => handleStateChange(EDIT_STATE)}
+                click={(e) => {
+                  handleStateChange(EDIT_STATE);
+                }}
               />
             </div>
           </div>

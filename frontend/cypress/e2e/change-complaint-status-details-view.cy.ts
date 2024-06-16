@@ -13,7 +13,7 @@ describe("Complaint Change Status spec - Details View", () => {
   });
 
   Cypress._.times(complaintTypes.length, (index) => {
-    it("Changes status of complaint to open, closed, and back to open", () => {
+    it("Changes status of closeable complaint to open, closed, and back to open", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
       } else {
@@ -45,6 +45,25 @@ describe("Complaint Change Status spec - Details View", () => {
       cy.waitForSpinner();
 
       cy.get("#comp-details-status-text-id").contains("Open").should("exist");
+    });
+  });
+
+  it("Changes status of unclosable hwcr complaint from open to closed", () => {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000078", true);
+
+    cy.get("#details-screen-update-status-button").click({ force: true });
+
+    cy.get("#complaint_status_dropdown").click();
+
+    // Select the option with value "Closed"
+    cy.get(".comp-select__option").contains("Closed").click();
+
+    cy.get("#update_complaint_status_button").click();
+
+    //validate error message
+    cy.get("#outcome-assessment").find(".section-error-message").should("exist");
+    cy.get(".section-error-message").should(($error) => {
+      expect($error).to.contain.text("Complete section before closing the complaint.");
     });
   });
 });

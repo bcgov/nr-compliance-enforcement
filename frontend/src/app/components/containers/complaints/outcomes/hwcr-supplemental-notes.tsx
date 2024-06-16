@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { SupplementalNotesInput } from "./supplemental-notes/supplemental-notes-input";
@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { selectSupplementalNote } from "../../../../store/reducers/case-selectors";
 import { openModal } from "../../../../store/reducers/app";
 import { DELETE_NOTE } from "../../../../types/modal/modal-types";
+import { setIsInEdit } from "../../../../store/reducers/cases";
 
 type ComplaintParams = {
   id: string;
@@ -22,6 +23,10 @@ export const HWCRSupplementalNotes: FC = () => {
   const supplementalNote = useAppSelector(selectSupplementalNote);
 
   const [showInput, setShowInput] = useState(false);
+
+  useEffect(() => {
+    dispatch(setIsInEdit({ note: showInput }));
+  }, [showInput]);
 
   const openDeleteSupplementalNoteModal = () => {
     document.body.click();
@@ -81,7 +86,10 @@ export const HWCRSupplementalNotes: FC = () => {
   }, [showInput, id, officer, supplementalNote]);
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-note"
+    >
       <h6>Additional notes</h6>
       {renderNote}
     </div>
