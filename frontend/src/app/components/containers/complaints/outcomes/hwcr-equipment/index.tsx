@@ -1,20 +1,26 @@
-import { FC, useState, memo } from "react";
+import { FC, useState, memo, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { selectEquipment } from "../../../../../store/reducers/case-selectors";
 import { selectComplaintAssignedBy } from "../../../../../store/reducers/complaints";
 import "../../../../../../assets/sass/hwcr-equipment.scss";
+import { setIsInEdit } from "../../../../../store/reducers/cases";
 
 export const HWCREquipment: FC = memo(() => {
-  const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
   const assigned = useAppSelector(selectComplaintAssignedBy);
   // used to indicate which equipment's guid is in edit mode (only one can be edited at a time
   const equipmentList = useAppSelector(selectEquipment);
 
+  const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
   const [editingGuid, setEditingGuid] = useState<string>("");
+
+  useEffect(() => {
+    dispatch(setIsInEdit({ equipment: showEquipmentForm || editingGuid.length > 0 }));
+  }, [showEquipmentForm, editingGuid]);
 
   const handleEdit = (guid: string) => {
     setEditingGuid(guid);
@@ -31,7 +37,10 @@ export const HWCREquipment: FC = memo(() => {
   };
 
   return (
-    <div className="comp-outcome-report-block">
+    <div
+      className="comp-outcome-report-block"
+      id="outcome-equipment"
+    >
       <h6>Equipment</h6>
       {equipmentList && equipmentList.length > 0
         ? equipmentList.map((equipment) =>

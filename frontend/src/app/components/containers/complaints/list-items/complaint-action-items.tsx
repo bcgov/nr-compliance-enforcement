@@ -86,47 +86,49 @@ export const ComplaintActionItems: FC<Props> = ({
           ></i>
         </Button>
       </OverlayTrigger>
-      <OverlayTrigger
-        placement="top"
-        key={`tt-update-${complaint_identifier}`}
-        overlay={
-          <Tooltip
-            id={`tt-update-${complaint_identifier}`}
-            className="comp-tooltip"
-          >
-            Update Status
-          </Tooltip>
-        }
-      >
-        <Button
-          variant="light"
-          className="icon-btn"
-          aria-label="Update status"
-          onClick={openStatusChangeModal}
-        >
-          <i
-            className="bi bi-arrow-repeat"
-            id="update-status-icon"
-          ></i>
-        </Button>
-      </OverlayTrigger>
       {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
-        <OverlayTrigger
-          placement="top"
-          key={`tt-refer-${complaint_identifier}`}
-          overlay={
-            <Tooltip
-              id="tt-refer"
-              className="comp-tooltip"
+        <>
+          <OverlayTrigger
+            placement="top"
+            key={`tt-update-${complaint_identifier}`}
+            overlay={
+              <Tooltip
+                id={`tt-update-${complaint_identifier}`}
+                className="comp-tooltip"
+              >
+                Update Status
+              </Tooltip>
+            }
+          >
+            <Button
+              variant="light"
+              className="icon-btn"
+              aria-label="Update status"
+              onClick={openStatusChangeModal}
             >
-              Refer
-            </Tooltip>
-          }
-        >
-          <span>
-            <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-          </span>
-        </OverlayTrigger>
+              <i
+                className="bi bi-arrow-repeat"
+                id="update-status-icon"
+              ></i>
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="top"
+            key={`tt-refer-${complaint_identifier}`}
+            overlay={
+              <Tooltip
+                id="tt-refer"
+                className="comp-tooltip"
+              >
+                Refer
+              </Tooltip>
+            }
+          >
+            <span>
+              <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
+            </span>
+          </OverlayTrigger>
+        </>
       )}
     </>
   );
