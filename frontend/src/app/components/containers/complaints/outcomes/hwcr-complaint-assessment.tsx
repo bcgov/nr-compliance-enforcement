@@ -27,8 +27,7 @@ import { ToggleError } from "../../../../common/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { Assessment } from "../../../../types/outcomes/assessment";
 import { ValidationDatePicker } from "../../../../common/validation-date-picker";
-import { BsPencil, BsExclamationCircleFill } from "react-icons/bs";
-import { CompTextIconButton } from "../../../common/comp-text-icon-button";
+import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "../../../../../assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "../../../../store/reducers/case-selectors";
@@ -320,7 +319,7 @@ export const HWCRComplaintAssessment: FC = () => {
               onClick={toggleEdit}
             >
               <i className="bi bi-pencil"></i>
-              Edit
+              <span>Edit</span>
             </Button>
           </div>
         )}
