@@ -498,6 +498,10 @@
       margin: 0;
       padding-left: 1.5rem;
     }
+
+    .comp-avatar {
+      margin: -0.25rem;
+    }
   }
 
   pre {
@@ -522,7 +526,7 @@
   }
 
   .section-error-message {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
   }
 
   .card.border-danger {
@@ -626,10 +630,6 @@
       flex: 1 1 auto;
     }
   }
-
-  div + .error-message {
-    margin-top: 4px;
-  }
 }
 
 .comp-details-form-row {
@@ -639,6 +639,12 @@
 
   > label {
     width: 12rem;
+    color: $gray-500;
+  }
+
+  > legend {
+    width: 12rem;
+    font-weight: 400;
     color: $gray-500;
   }
 
@@ -652,7 +658,8 @@
     flex-direction: row;
     gap: 16px;
 
-    > label {
+    > label,
+    > legend {
       flex: 0 0 auto;
       margin-top: 6px;
       width: 16rem;
@@ -662,7 +669,8 @@
 
 @include media-breakpoint-up(xl) {
   .comp-details-form-row {
-    > label {
+    > label,
+    > legend {
       width: 18rem;
     }
   }
@@ -1816,10 +1824,6 @@ p {
 
 .input-field-select__option {
   min-height: 35px;
-}
-
-.error-message {
-  color: $bc-gov-danger;
 }
 
 .error-border {
