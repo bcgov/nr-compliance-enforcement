@@ -1,8 +1,6 @@
 import { FC, ReactNode } from "react";
-import logoLg from "../../../../assets/images/branding/BCgov-lg.png";
 import { Footer, Header } from "../../containers/layout";
 import { BsPersonFillSlash } from "react-icons/bs";
-import { Link } from "react-router-dom";
 
 type props = {
   children?: ReactNode;
