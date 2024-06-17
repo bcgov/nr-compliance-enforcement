@@ -92,7 +92,6 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         className={`comp-equipment-card ${!removedEquipmentFullName ? "active" : "inactive"}`}
         border={showSectionErrors ? "danger" : "default"}
       >
-        {/* {!removedEquipmentFullName && <div className="badge">Active</div>} */}
         <Card.Body>
           {showSectionErrors && (
             <div className="section-error-message">
