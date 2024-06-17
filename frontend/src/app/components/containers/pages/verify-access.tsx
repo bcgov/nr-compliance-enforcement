@@ -1,10 +1,10 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Link, redirect, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logoLg from "../../../../assets/images/branding/BCgov-lg.png";
 import { Footer } from "../layout";
 import { TbFaceId, TbFaceIdError, TbLockAccess } from "react-icons/tb";
 import { validate as uuidValidate } from "uuid";
-import { useAppDispatch } from "../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { validateComsAccess } from "../../../store/reducers/app";
 import config from "../../../../config";
 import EnvironmentBanner from "../layout/environment-banner";
@@ -22,31 +22,31 @@ export const VerifyAccess: FC<Props> = () => {
   const query = useQuery();
 
   const [isValid, setIsValid] = useState<boolean | undefined>();
+  const [wasRun, setWasRun] = useState(false);
 
   const environmentName = config.ENVIRONMENT_NAME || "production";
+  const isLoading = useAppSelector((state) => state?.app?.loading?.isLoading);
 
   useEffect(() => {
     const token = query.get("token");
 
-    if (token && uuidValidate(token)) {
-      dispatch(validateComsAccess(token)).then((res) => {
-        const { status } = res;
-        if (status !== "success") {
-          setIsValid(false);
-        }
-
-        if (status === "success") {
-          //-- wait a couple secods for the ux to catchup and respond
-          //-- then redirect the user to the list-view
-          setTimeout(() => {
-            return redirect("/complaints");
-          }, 10000);
-        }
-      });
-      setIsValid(true);
+    if (!isLoading && !wasRun) {
+      if (token && uuidValidate(token) && !wasRun) {
+        dispatch(validateComsAccess(token)).then((res) => {
+          const { status } = res;
+          if (status !== "success") {
+            setIsValid(false);
+          }
+          if (status === "success") {
+            setIsValid(true);
+            setWasRun(true);
+            window.location.href = "/complaints";
+          }
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [query, isLoading, wasRun]);
 
   const renderResult = () => {
     if (isValid === undefined) {
@@ -67,6 +67,7 @@ export const VerifyAccess: FC<Props> = () => {
           header="Access granted"
         >
           Your access has been verified. You will be redirected to the application shortly. <br />
+          If you are not redirected in 5 seconds click the link to continue: <Link to="/" /> <br />
           If you have any problems, please contact the Compliance and Enforcement Digital Service team at{" "}
           <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
         </Message>
