@@ -456,6 +456,10 @@
     font-weight: 700;
   }
 
+  h3 {
+    margin: 0;
+  }
+
   .btn {
     font-size: 0.875rem;
   }
@@ -468,7 +472,7 @@
     flex-direction: column;
     row-gap: 16px;
 
-    div {
+    > div {
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -488,6 +492,11 @@
   dd {
     flex: 0 0 auto;
     margin: 0;
+
+    ul {
+      margin: 0;
+      padding-left: 1.5rem;
+    }
   }
 
   pre {
@@ -510,12 +519,24 @@
       }
     }
   }
+
+  .section-error-message {
+    margin-bottom: 1.25rem;
+  }
+
+  &.border-danger {
+    border-width: 3px;
+
+    .card-body {
+      padding: 21px; //offset border-width so padding aligns
+    }
+  }
 }
 
 @include media-breakpoint-up(lg) {
   .comp-details-section {
     dl {
-      div {
+      > div {
         display: flex;
         flex-direction: row;
         gap: 16px;
@@ -523,7 +544,7 @@
     }
 
     dt {
-      width: 12rem;
+      width: 16rem;
     }
 
     dd {
@@ -615,6 +636,11 @@
   flex-direction: column;
   gap: 4px;
 
+  > label {
+    width: 12rem;
+    color: $gray-500;
+  }
+
   + .comp-details-form-row {
     margin-top: 24px;
   }
@@ -623,20 +649,33 @@
 @include media-breakpoint-up(lg) {
   .comp-details-form-row {
     flex-direction: row;
+    gap: 16px;
 
-    label {
+    > label {
       flex: 0 0 auto;
       margin-top: 6px;
+      width: 16rem;
+    }
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .comp-details-form-row {
+    > label {
       width: 18rem;
     }
   }
 }
 
-@include media-breakpoint-up(lg) {
-  .comp-details-form-row {
-    label {
-      width: 18rem;
-    }
+.comp-details-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+
+  .btn {
+    min-width: 5rem;
+    font-size: 0.875rem;
   }
 }
 
@@ -1583,7 +1622,7 @@ p {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .comp-cell-bottom {
