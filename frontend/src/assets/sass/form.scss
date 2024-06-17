@@ -20,3 +20,35 @@
   max-width: inherit;
   color: $gray-500;
 }
+
+//CHECKBOX
+.comp-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 34px;
+  padding: 6px 0;
+
+  .form-check-input {
+    flex: 0 0 auto;
+    margin-left: 8px;
+  }
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+.form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: all;
+}
+
+// VALIDATION
+.error-message {
+  margin-top: 4px;
+  color: $bc-gov-danger;
+}
+
+.error-message:empty {
+  display: none;
+}
