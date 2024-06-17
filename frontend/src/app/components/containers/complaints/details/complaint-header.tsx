@@ -4,10 +4,13 @@ import COMPLAINT_TYPES, { complaintTypeToName } from "../../../../types/app/comp
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintHeader } from "../../../../store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
+
 import { Badge, Button, Dropdown } from "react-bootstrap";
+
 import { openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import config from "../../../../../config";
+import { exportComplaint } from "../../../../store/reducers/documents-thunks";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -76,6 +79,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         },
       }),
     );
+  };
+
+  const exportComplaintToPdf = () => {
+    dispatch(exportComplaint(complaintType, id));
   };
 
   return (
@@ -151,6 +158,13 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
+                      <Dropdown.Item
+                        as="button"
+                        onClick={() => exportComplaintToPdf()}
+                      >
+                        <i className="bi bi-file-earmark-pdf"></i>
+                        <span>Export</span>
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -172,6 +186,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   >
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update Status</span>
+                  </Button>
+                  <Button
+                    id="details-screen-export-complaint-button"
+                    title="Export"
+                    variant="outline-light"
+                    onClick={() => exportComplaintToPdf()}
+                  >
+                    <i className="bi bi-file-earmark-pdf"></i>
+                    <span>Export</span>
                   </Button>
                 </div>
               </div>

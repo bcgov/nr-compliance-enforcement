@@ -11,7 +11,8 @@ describe("Complaint Assign and Status Popover spec", { scrollBehavior: false }, 
   });
 
   Cypress._.times(complaintTypes.length, (index) => {
-    it("Changes status of open complaint to closed and back to open", () => {
+    //Skip this test as users are not allowed to close complaints from the list view for now
+    it.skip("Changes status of open complaint to closed and back to open", () => {
       cy.visit("/");
 
       //Need to make sure the filters are loaded before switching tabs.

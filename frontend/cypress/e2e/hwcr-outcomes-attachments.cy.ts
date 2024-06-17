@@ -9,6 +9,6 @@ describe("Display HWCR Outcome Attachments", () => {
   it("outcomes attachments is displayed", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
 
-    cy.verifyAttachmentsCarousel(true, "outcome_attachments_div_id");
+    cy.verifyAttachmentsCarousel(true, "outcome-attachments");
   });
 });

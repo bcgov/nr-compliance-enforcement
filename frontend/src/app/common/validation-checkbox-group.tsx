@@ -37,13 +37,10 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   }, [checkedValues.length]);
 
   return (
-    <div
-      id="checkbox-div"
-      className="checkbox-left-padding"
-    >
+    <div id="checkbox-div">
       {options.map((option, index) => (
         <div
-          className="form-check check-spacing"
+          className="comp-checkbox"
           key={option.value}
         >
           <input

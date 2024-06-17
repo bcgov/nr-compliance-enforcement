@@ -2,6 +2,9 @@ import { defineConfig } from "cypress";
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 
+const { isFileExist } = require("cy-verify-downloads");
+const { removeDirectory } = require("cypress-delete-downloads-folder");
+
 export default defineConfig({
   defaultCommandTimeout: 20000,
   e2e: {
@@ -16,6 +19,9 @@ export default defineConfig({
           return null;
         },
       });
+
+      on("task", { isFileExist });
+      on("task", { removeDirectory });
     },
     experimentalWebKitSupport: true,
     env: {

@@ -5,6 +5,9 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 
+require("cy-verify-downloads").addCustomCommand();
+require("cypress-delete-downloads-folder").addCustomCommand();
+
 const base64url = (source) => {
   // Encode the input string as base64.
   let encodedSource = btoa(source);
