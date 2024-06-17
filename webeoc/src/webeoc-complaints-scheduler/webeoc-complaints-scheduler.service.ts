@@ -114,12 +114,12 @@ export class WebEOCComplaintsScheduler {
 
   private getDateFilter() {
     const complaintsAsOfDate = new Date();
-    const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
+    const complaintHistorySeconds = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_SECONDS || "600"); // default to 10 minutes (600 seconds)
 
-    if (isNaN(complaintHistoryDays)) {
-      throw new Error("WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number");
+    if (isNaN(complaintHistorySeconds)) {
+      throw new Error("WEBEOC_COMPLAINT_HISTORY_SECONDS is not a valid number");
     }
-    complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
+    complaintsAsOfDate.setSeconds(complaintsAsOfDate.getSeconds() - complaintHistorySeconds);
 
     const formattedDate = this.formatDate(complaintsAsOfDate);
     return {
