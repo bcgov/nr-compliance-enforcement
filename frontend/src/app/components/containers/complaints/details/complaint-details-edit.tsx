@@ -1258,10 +1258,8 @@ export const ComplaintDetailsEdit: FC = () => {
         )}
       </section>
 
-      <section className="comp-details-body comp-container">
-        {/* HWCR Outcome Report */}
-        {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
-      </section>
+      {/* HWCR Outcome Report */}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
     </div>
   );
 };
