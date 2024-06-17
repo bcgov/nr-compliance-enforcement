@@ -250,7 +250,7 @@ export const HWCRComplaintPrevention: FC = () => {
               onClick={toggleEdit}
             >
               <i className="bi bi-pencil"></i>
-              Edit
+              <span>Edit</span>
             </Button>
           </div>
         )}
