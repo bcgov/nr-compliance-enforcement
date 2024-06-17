@@ -182,6 +182,7 @@ AS $function$
     _address_coordinates_lat VARCHAR(200);
     _address_coordinates_long VARCHAR(200);
     _location_geometry_point GEOMETRY;
+    _complaint_status_code VARCHAR(10);
 
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
@@ -256,6 +257,7 @@ AS $function$
 	_caller_phone_1 := format_phone_number(complaint_data ->> jsonb_cos_primary_phone);
 	_caller_phone_2 := format_phone_number(complaint_data ->> jsonb_cos_alt_phone);
 	_caller_phone_3 := format_phone_number(complaint_data ->> jsonb_cos_alt_phone_2);
+  _complaint_status_code := UPPER(complaint_data ->> 'status');
 	   
     _location_summary_text := left(complaint_data ->> 'address', 100)
     ||
@@ -343,7 +345,7 @@ AS $function$
                             _update_userid,
                             _update_utc_timestamp,
                             'COS',
-                            'OPEN',
+                            _complaint_status_code,
                             _geo_organization_unit_code,
                             _location_geometry_point,
                             _cos_reffered_by_lst,
@@ -444,6 +446,13 @@ AS $function$
       ELSE
         _observed_ind_bool := FALSE;
       END IF;
+
+      IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
+        UPDATE PUBLIC.complaint
+        SET    owned_by_agency_code = 'EPO'
+        WHERE  complaint_identifier = _complaint_identifier;
+      END IF;
+
       -- Insert data into 'allegation_complaint' table
       INSERT INTO PUBLIC.allegation_complaint
                   (
