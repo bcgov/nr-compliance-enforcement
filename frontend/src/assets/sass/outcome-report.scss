@@ -9,9 +9,6 @@
 }
 
 .comp-outcome-report-block {
-  margin-left: 24px;
-  margin-right: 24px;
-
   h6 {
     padding-top: 0px;
     font-weight: 700;
@@ -385,6 +382,11 @@
     margin-top: -2px;
   }
   span {
-    margin-left: 5px;
+    margin-left: 8px;
   }
+}
+
+// LAYOUT
+.comp-outcome-report-complaint-prev-and-educ {
+  margin-bottom: 24px;
 }
