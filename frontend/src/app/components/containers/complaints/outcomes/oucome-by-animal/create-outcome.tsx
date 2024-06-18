@@ -48,7 +48,7 @@ const defaultOutcome: AnimalOutcomeV2 = {
   drugs: [],
   outcome: "",
   officer: "",
-  date: new Date(),
+  date: undefined,
   order: 0,
 };
 
@@ -79,7 +79,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   //-- new input data
   // eslint-disable-line no-console, max-len
-  const [data, applyData] = useState<AnimalOutcomeV2>({ ...defaultOutcome, species, officer });
+  const [data, applyData] = useState<AnimalOutcomeV2>({ ...defaultOutcome, species });
 
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
@@ -596,7 +596,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                     onChange={(input: Date) => {
                       handleOutcomeDateChange(input);
                     }}
-                    selectedDate={!data?.date ? new Date() : data.date}
+                    selectedDate={data?.date}
                     classNamePrefix="comp-details-edit-calendar-input"
                     className={"animal-outcome-details-input"}
                     placeholder={"Select"}
