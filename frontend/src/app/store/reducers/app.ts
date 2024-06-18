@@ -19,6 +19,9 @@ import { NotificationState } from "../../types/state/notification-state";
 import { ToggleError } from "../../common/toast";
 import { CodeTableVersionState } from "../../types/state/code-table-version-state";
 import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
+import { Action, ThunkAction } from "@reduxjs/toolkit";
+import { ComsInviteResponse } from "../../types/app/coms-invite-response";
+import { AxiosError } from "axios";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -381,6 +384,20 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
     ToggleError("Unable to get codeTableVersion");
   }
 };
+
+export const validateComsAccess =
+  (token: string): ThunkAction<Promise<ComsInviteResponse>, RootState, unknown, Action<ComsInviteResponse>> =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(`${config.COMS_URL}/permission/invite/${token}`);
+      const response = await get(dispatch, parameters);
+      console.log(response);
+      return { status: "success" };
+    } catch (error) {
+      const { response } = error as AxiosError;
+      return { status: "error", code: response?.status.toString() };
+    }
+  };
 
 //-- reducer
 const initialState: AppState = {

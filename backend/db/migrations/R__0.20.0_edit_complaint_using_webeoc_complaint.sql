@@ -37,6 +37,7 @@ declare
     _edit_address_coordinates_lat VARCHAR(200);
     _edit_address_coordinates_long VARCHAR(200);
     _edit_location_geometry_point GEOMETRY;
+    _edit_complaint_status_code VARCHAR(10);
 
     -- Variables for 'hwcr_complaint' table
     _edit_webeoc_species                    VARCHAR(200);
@@ -105,6 +106,7 @@ BEGIN
     _edit_webeoc_species := edit_complaint_data ->> 'species';
     _edit_report_type := edit_complaint_data ->> 'report_type';
     _edit_update_userid := substring(edit_complaint_data ->> USERNAME_TXT from 1 for 32);
+    _edit_complaint_status_code := UPPER(edit_complaint_data ->> 'status');
    
     _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
     _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
@@ -242,10 +244,17 @@ BEGIN
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
- 
-  if (_edit_location_geometry_point <> current_complaint_record.location_geometry_point) then 
+
+  if NOT ST_Equals(_edit_location_geometry_point, current_complaint_record.location_geometry_point) then
 	    UPDATE complaint
 	    SET location_geometry_point  = _edit_location_geometry_point
+	    WHERE complaint_identifier = _complaint_identifier;
+	    update_edit_ind = true;
+  end if;
+
+  if (_edit_complaint_status_code <> current_complaint_record.complaint_status_code) then 
+	    UPDATE complaint
+	    SET complaint_status_code  = _edit_complaint_status_code
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
@@ -382,14 +391,24 @@ BEGIN
      into _current_violation_type_code
      from allegation_complaint ac
      where ac.complaint_identifier = _complaint_identifier;
-    
-    
-     if (_edit_violation_code <> _current_violation_type_code) then 
-    	update allegation_complaint
-    	set violation_code  = _edit_violation_code
-    	where complaint_identifier = _complaint_identifier;
-	    update_edit_ind = true;
-     end if;	
+
+    if (_edit_violation_code <> _current_violation_type_code) then
+	    if _edit_violation_code = 'WASTE' OR _edit_violation_code = 'PESTICDE' then
+        UPDATE PUBLIC.complaint
+        SET    owned_by_agency_code = 'EPO'
+        WHERE  complaint_identifier = _complaint_identifier;
+      else
+        UPDATE PUBLIC.complaint
+        SET    owned_by_agency_code = 'COS'
+        WHERE  complaint_identifier = _complaint_identifier;
+      end if;  
+	    
+      update allegation_complaint
+      set violation_code  = _edit_violation_code
+      where complaint_identifier = _complaint_identifier;
+      update_edit_ind = true;
+    end if;
+
     -- the update caused an edit, set the audit fields
     if (update_edit_ind) then
 		update hwcr_complaint 
