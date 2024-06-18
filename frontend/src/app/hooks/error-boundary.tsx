@@ -30,6 +30,8 @@ class ErrorBoundary extends Component<PropsWithChildren<ErrorBoundaryProps>> {
     // In that method, return a state update to display an error message or fallback UI
     this.setState({});
     this.props.onError(...args);
+
+    console.log("componentDidCatch: ", args);
   }
 
   render() {
