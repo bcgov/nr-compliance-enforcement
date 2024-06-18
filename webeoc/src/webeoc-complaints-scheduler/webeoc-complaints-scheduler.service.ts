@@ -124,7 +124,10 @@ export class WebEOCComplaintsScheduler {
     if (isNaN(complaintHistorySeconds)) {
       throw new Error("WEBEOC_COMPLAINT_HISTORY_SECONDS is not a valid number");
     }
+    this.logger.debug(`Finding complaints less than ${complaintHistorySeconds} seconds old`);
+
     complaintsAsOfDate.setSeconds(complaintsAsOfDate.getSeconds() - complaintHistorySeconds);
+    this.logger.debug(`Finding complaints greater than ${complaintsAsOfDate.toISOString()}`);
 
     const formattedDate = this.formatDate(complaintsAsOfDate);
     return {
