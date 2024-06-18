@@ -5,24 +5,20 @@ import Roles from "../../types/app/roles";
 import Layout from "../containers/layout";
 import { AUTH_TOKEN } from "../../service/user-service";
 
-interface ProtectedRoutesProps {
+type Props = {
   roles: Array<Roles>;
-}
+};
 
 interface DecodedToken {
   client_roles: Array<Roles>;
 }
 
-const getAuthToken = (): string | null => {
-  return localStorage.getItem(AUTH_TOKEN);
-};
+export const ProtectedRoutes: FC<Props> = ({ roles }) => {
+  const hasRequiredRole = (userRoles: Array<Roles>, requiredRoles: Array<Roles>): boolean => {
+    return requiredRoles.some((role) => userRoles?.includes(role));
+  };
 
-const hasRequiredRole = (userRoles: Array<Roles>, requiredRoles: Array<Roles>): boolean => {
-  return requiredRoles.some((role) => userRoles?.includes(role));
-};
-
-export const ProtectedRoutes: FC<ProtectedRoutesProps> = ({ roles }) => {
-  const token = getAuthToken();
+  const token = localStorage.getItem(AUTH_TOKEN);
   if (!token) {
     return <Navigate to="/not-authorized" />;
   }

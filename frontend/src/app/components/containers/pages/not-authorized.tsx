@@ -1,16 +1,10 @@
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import { Footer, Header } from "../../containers/layout";
 import { BsPersonFillSlash } from "react-icons/bs";
 
-type props = {
-  children?: ReactNode;
-};
-
-const NotAuthorized: FC<props> = () => {
+const NotAuthorized: FC = () => {
   return (
     <div className="comp-app-container">
-      {/* <!-- --> */}
-
       <Header />
 
       <div className="error-container">
