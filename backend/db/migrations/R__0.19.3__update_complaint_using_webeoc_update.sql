@@ -221,6 +221,16 @@ BEGIN
      and ach.operation_type = 'I';
     
      if ((_update_violation_code <> _original_violation_type_code) and (_update_violation_code <> _current_violation_type_code)) then 
+	    if _update_violation_code = 'WASTE' OR _update_violation_code = 'PESTICDE' then
+        UPDATE PUBLIC.complaint
+        SET    owned_by_agency_code = 'EPO'
+        WHERE  complaint_identifier = _complaint_identifier;
+      else
+        UPDATE PUBLIC.complaint
+        SET    owned_by_agency_code = 'COS'
+        WHERE  complaint_identifier = _complaint_identifier;
+      end if;
+
     	update allegation_complaint
     	set violation_code  = _update_violation_code
     	where complaint_identifier = _complaint_identifier;
