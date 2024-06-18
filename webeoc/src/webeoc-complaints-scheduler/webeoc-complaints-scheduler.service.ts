@@ -4,9 +4,9 @@ import { ComplaintsPublisherService } from "../complaints-publisher/complaints-p
 import { Complaint } from "src/types/complaint-type";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
-import { format } from "date-fns";
 import { WEBEOC_API_COMPLAINTS_LIST_PATH, WEBEOC_API_COMPLAINTS_UPDATE_PATH } from "src/common/constants";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
+import { toZonedTime, format } from "date-fns-tz";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {
@@ -113,13 +113,21 @@ export class WebEOCComplaintsScheduler {
   }
 
   private getDateFilter() {
-    const complaintsAsOfDate = new Date();
-    const complaintHistoryDays = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_DAYS || "1", 10);
+    const timeZone = "America/Los_Angeles"; // This timezone automatically handles PDT/PST
 
-    if (isNaN(complaintHistoryDays)) {
-      throw new Error("WEBEOC_COMPLAINT_HISTORY_DAYS is not a valid number");
+    // Get the current date in UTC
+    const currentUtcDate = new Date();
+    // Convert the current date in UTC to the appropriate Pacific Time (PDT/PST)
+    const complaintsAsOfDate = toZonedTime(currentUtcDate, timeZone);
+    const complaintHistorySeconds = parseInt(process.env.WEBEOC_COMPLAINT_HISTORY_SECONDS || "600"); // default to 10 minutes (600 seconds)
+
+    if (isNaN(complaintHistorySeconds)) {
+      throw new Error("WEBEOC_COMPLAINT_HISTORY_SECONDS is not a valid number");
     }
-    complaintsAsOfDate.setDate(complaintsAsOfDate.getDate() - complaintHistoryDays);
+    this.logger.debug(`Finding complaints less than ${complaintHistorySeconds} seconds old`);
+
+    complaintsAsOfDate.setSeconds(complaintsAsOfDate.getSeconds() - complaintHistorySeconds);
+    this.logger.debug(`Finding complaints greater than ${complaintsAsOfDate.toISOString()}`);
 
     const formattedDate = this.formatDate(complaintsAsOfDate);
     return {
