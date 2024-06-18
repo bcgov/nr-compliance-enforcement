@@ -386,7 +386,7 @@
 }
 
 .comp-status-badge-pending-review {
-  background-color: $red-300-80;
+  background-color: $red-300-80 !important;
   color: $red-300;
 }
 
@@ -471,6 +471,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 16px;
+    margin-bottom: 0;
 
     > div {
       display: flex;
@@ -524,7 +525,7 @@
     margin-bottom: 1.25rem;
   }
 
-  &.border-danger {
+  .card.border-danger {
     border-width: 3px;
 
     .card-body {
