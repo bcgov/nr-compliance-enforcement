@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Card, Row, Col, Button, Badge } from "react-bootstrap";
+import { Card, Button, Badge } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
