@@ -124,11 +124,11 @@ objects:
                     secretKeyRef:
                       name: webeoc
                       key: webeoc-url
-                - name: WEBEOC_COMPLAINT_HISTORY_DAYS
+                - name: WEBEOC_COMPLAINT_HISTORY_SECONDS
                   valueFrom:
                     secretKeyRef:
                       name: webeoc
-                      key: webeoc-complaint-history-days
+                      key: webeoc-complaint-history-seconds
                 - name: WEBEOC_CRON_EXPRESSION
                   valueFrom:
                     secretKeyRef:
