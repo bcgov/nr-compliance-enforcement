@@ -58,10 +58,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const [showModal, setShowModal] = useState(false);
 
   //-- new input data
-  const [data, applyData] = useState<AnimalOutcomeV2>({
-    ...outcome,
-    officer: !outcome.officer ? officer : outcome.officer,
-  });
+  const [data, applyData] = useState<AnimalOutcomeV2>({ ...outcome });
 
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
@@ -326,7 +323,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     if (authorizationRef.current && !authorizationRef.current.isValid()) {
       _isValid = false;
     }
-
     return _isValid;
   };
 
@@ -355,8 +351,8 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const handleUpdate = () => {
     if (isValid()) {
       update(data);
+      toggle("");
     }
-    toggle("");
   };
 
   const handleCancel = () => {
@@ -595,7 +591,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     onChange={(input: Date) => {
                       handleOutcomeDateChange(input);
                     }}
-                    selectedDate={!data?.date ? new Date() : data.date}
+                    selectedDate={data?.date}
                     classNamePrefix="comp-details-edit-calendar-input"
                     className={"animal-outcome-details-input"}
                     placeholder={"Select"}
