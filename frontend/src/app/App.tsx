@@ -19,6 +19,7 @@ import { getCodeTableVersion, getConfigurations, getOfficerDefaultZone } from ".
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "./components/containers/admin/user-management";
 import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
+import { VerifyAccess } from "./components/containers/pages/verify-access";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -66,6 +67,10 @@ const App: FC = () => {
               element={<UserManagement />}
             />
           </Route>
+          <Route
+            path="/verification"
+            element={<VerifyAccess />}
+          />
           <Route
             path="/not-authorized"
             element={<NotAuthorized />}
