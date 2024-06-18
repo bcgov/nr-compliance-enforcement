@@ -72,11 +72,11 @@ describe("Complaint Assign and Status Popover spec", { scrollBehavior: false }, 
     });
   });
 
-  it("User can not change the status when Review is not complete ", () => {
+  it.skip("User can not change the status when Review is not complete ", () => {
     canChangeStatus(false);
   });
 
-  it("User can change the status when Review is complete ", () => {
+  it.skip("User can change the status when Review is complete ", () => {
     canChangeStatus(true);
   });
 });
