@@ -174,145 +174,15 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                   <dt>Removal date</dt>
                   <dd id="equipment-removal-date">{formatDate(removedEquipmentDate?.toString())}</dd>
                 </div>
-                <div>
-                  <dt>Was animal captured?</dt>
-                  <dd id="comp-details-animal-captured-text-id">
-                    {equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}
-                  </dd>
-                </div>
               </>
             )}
+            {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) && (
+              <div>
+                <dt>Was animal captured?</dt>
+                <dd id="comp-details-animal-captured-text-id">{equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}</dd>
+              </div>
+            )}
           </dl>
-
-          <div hidden>
-            <div className="equipment-item-content">
-              <div className="label">Address</div>
-              <div className="value">{equipment.address}</div>
-            </div>
-            <Row>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <div className="equipment-item-content">
-                  <div className="label">Latitude</div>
-                  <div className="value">{equipment.yCoordinate}</div>
-                </div>
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <div className="equipment-item-content">
-                  <div className="label">Longitude</div>
-                  <div
-                    className="value"
-                    id=""
-                  >
-                    {equipment.xCoordinate}
-                  </div>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <div className="equipment-item-content">
-                  <div className="label">Set by</div>
-                  <div className="comp-details-content">
-                    <div
-                      data-initials-sm={getAvatarInitials(`${setEquipmentFullName}`)}
-                      className="comp-pink-avatar-sm"
-                    >
-                      <span
-                        id="equipment-officer-set-div"
-                        className="comp-padding-left-xs"
-                      >
-                        {setEquipmentFullName}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <div
-                  className="equipment-item-content"
-                  id="equipment-date-set-div"
-                >
-                  <div className="label">Set date</div>
-                  <div className="value">{formatDate(setEquipmentDate?.toString())}</div>
-                </div>
-              </Col>
-            </Row>
-            {equipment.id && removedEquipmentActor && (
-              <Row>
-                <Col
-                  xs={12}
-                  md={4}
-                >
-                  <div className="equipment-item-content">
-                    <div className="label">Removed by</div>
-                    <div className="comp-details-content">
-                      <div
-                        data-initials-sm={getAvatarInitials(removedEquipmentFullName ?? "")}
-                        className="comp-pink-avatar-sm"
-                      >
-                        <span
-                          id="comp-details-assigned-officer-name-text-id"
-                          className="comp-padding-left-xs"
-                        >
-                          {removedEquipmentFullName}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-                <Col
-                  xs={12}
-                  md={4}
-                >
-                  <div className="equipment-item-content">
-                    <div className="label">Removed date</div>
-                    <div
-                      className="value"
-                      id=""
-                    >
-                      {formatDate(removedEquipmentDate?.toString())}
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            )}
-            {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) ? (
-              <Row>
-                <Col
-                  xs={12}
-                  md={4}
-                >
-                  <div className="equipment-item-content">
-                    <div className="label">Was an animal Captured?</div>
-                    <div className="comp-details-content">
-                      <div>
-                        <span
-                          id="comp-details-animal-captured-text-id"
-                          className="comp-padding-left-xs"
-                        >
-                          {equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            ) : (
-              ""
-            )}
-          </div>
         </Card.Body>
       </Card>
     </>
