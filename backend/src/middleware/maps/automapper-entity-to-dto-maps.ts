@@ -1111,14 +1111,9 @@ export const mapWildlifeReport = (mapper: Mapper, offset: number = 0) => {
       (destination) => destination.attractants,
       mapFrom((src) => {
         if (src.attractant_hwcr_xref !== null) {
-          const attractants = mapper.mapArray<AttractantHwcrXref, AttractantXrefDto>(
-            src.attractant_hwcr_xref,
-            "AttractantXref",
-            "AttractantXrefDto",
-          );
+          const attractants = src.attractant_hwcr_xref.map((item) => item.attractant_code.short_description);
 
-          console.log(attractants.map((item) => item.attractant).join());
-          return attractants.map((item) => item.attractant).join();
+          return attractants.map((item) => item).join();
         }
 
         return "";
@@ -1346,9 +1341,8 @@ export const mapAllegationReport = (mapper: Mapper, offset: number = 0) => {
     forMember(
       (destination) => destination.violationType,
       mapFrom((src) => {
-        const item = mapper.map<ViolationCode, Violation>(src.violation_code, "ViolationCode", "ViolationCodeDto");
-        if (item !== null) {
-          return item.violation;
+        if (src.violation_code) {
+          return src.violation_code.long_description;
         }
 
         return "";
