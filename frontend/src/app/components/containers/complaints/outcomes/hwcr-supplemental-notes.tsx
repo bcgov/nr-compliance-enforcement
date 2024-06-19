@@ -58,17 +58,20 @@ export const HWCRSupplementalNotes: FC = () => {
       );
     } else if (!showInput) {
       return (
-        <div className="comp-outcome-report-button">
+        <>
+          <div className="comp-details-section-header">
+            <h3>Additional notes</h3>
+          </div>
           <Button
-            id="outcome-report-add-note"
-            title="Add outcome"
             variant="primary"
+            id="outcome-report-add-note"
+            title="Add additional notes"
             onClick={(e) => setShowInput(true)}
           >
+            <i className="bi bi-plus-circle"></i>
             <span>Add notes</span>
-            <BsPlusCircle />
           </Button>
-        </div>
+        </>
       );
     } else {
       const { note } = supplementalNote;
@@ -86,12 +89,11 @@ export const HWCRSupplementalNotes: FC = () => {
   }, [showInput, id, officer, supplementalNote]);
 
   return (
-    <div
-      className="comp-outcome-report-block"
+    <section
       id="outcome-note"
+      className="mb-4"
     >
-      <h6>Additional notes</h6>
       {renderNote}
-    </div>
+    </section>
   );
 };
