@@ -386,7 +386,82 @@
   }
 }
 
-// LAYOUT
+// PREVENTION AND EDUCATION COMPNENT
 .comp-outcome-report-complaint-prev-and-educ {
   margin-bottom: 24px;
+}
+
+// EQUIPMENT COMPONENT
+.comp-outcome-equipment {
+  margin-bottom: 24px;
+}
+
+.comp-equipment-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comp-equipment-form-radio-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.comp-equipment-card {
+  position: relative;
+
+  &::before {
+    content: " ";
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    width: 6px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  &.active::before {
+    background-color: $green-90;
+  }
+
+  &.active.border-danger::before {
+    background-color: $bc-gov-danger-300;
+    width: 4px;
+  }
+
+  &.inactive::before {
+    background-color: $gray-300;
+    opacity: 0.25;
+  }
+}
+
+.comp-equipment-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  h4 {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+.comp-equipment-item-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .badge {
+    margin-top: 2px;
+  }
+}
+
+.comp-equipment-item-header-actions {
+  display: flex;
+  gap: 8px;
+  margin: -4px 0;
 }

@@ -43,12 +43,32 @@
   pointer-events: all;
 }
 
+// RADIO GROUPS
+.comp-radio-btn {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  input {
+    margin-top: 0;
+    margin-right: 0.5rem;
+  }
+}
+
 // VALIDATION
 .error-message {
   margin-top: 4px;
+  font-size: 0.875rem;
   color: $bc-gov-danger;
 }
 
 .error-message:empty {
   display: none;
+}
+
+//LAT/LONG INPUTS
+.comp-lat-long-input {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px;
+  max-width: 500px;
 }
