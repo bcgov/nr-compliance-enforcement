@@ -34,7 +34,8 @@ export const HWCRFileReview: FC = () => {
   const [officerName, setOfficerName] = useState<string>(displayName);
   const [reviewCompleteDate, setReviewCompleteDate] = useState<Date>(new Date());
   const showSectionErrors =
-    (componentState === EDIT_STATE || (reviewRequired && !reviewCompleted)) && isInEdit.showSectionErrors;
+    (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) &&
+    isInEdit.showSectionErrors;
 
   useEffect(() => {
     if (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) {
@@ -135,6 +136,8 @@ export const HWCRFileReview: FC = () => {
   const handleReviewCompleteClick = () => {
     setReviewCompleted(!reviewCompleted);
   };
+
+  console.log(componentState);
 
   return (
     <div
