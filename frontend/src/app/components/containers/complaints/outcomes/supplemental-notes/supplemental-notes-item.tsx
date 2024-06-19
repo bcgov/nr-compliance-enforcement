@@ -1,6 +1,4 @@
 import { FC } from "react";
-import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
-import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { formatDate } from "../../../../../common/methods";
 

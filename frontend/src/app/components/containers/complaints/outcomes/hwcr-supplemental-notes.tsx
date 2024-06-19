@@ -1,6 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
-import { BsPlusCircle } from "react-icons/bs";
 import { SupplementalNotesInput } from "./supplemental-notes/supplemental-notes-input";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectCurrentOfficer } from "../../../../store/reducers/officer";
