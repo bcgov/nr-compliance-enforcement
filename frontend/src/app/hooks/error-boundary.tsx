@@ -68,6 +68,7 @@ export function ErrorBoundaryContext({ children }: { children?: ReactNode }) {
     }),
     [error, errorInfo],
   );
+
   return (
     <errorBoundaryContext.Provider value={ctx}>
       <ErrorBoundary

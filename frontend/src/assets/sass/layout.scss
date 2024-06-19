@@ -616,7 +616,7 @@ p {
 
 // BUTTONS
 .btn {
-  // Buttons with Icons
+  font-size: 0.875rem;
 
   // Icon only
   &.icon-btn {
@@ -637,6 +637,16 @@ p {
       margin-right: 8px;
       font-size: 1rem;
     }
+  }
+
+  &-txt {
+    border-color: transparent;
+  }
+
+  &.svg-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 }
 
