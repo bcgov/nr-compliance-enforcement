@@ -18,20 +18,19 @@ const GenericErrorBoundary: FC<props> = ({ children }) => {
         {/* <!-- --> */}
 
         <div className="comp-header">
-          <Link
+          {/* <Link
             className="comp-header-logo"
             to="/"
-          >
-            <picture>
-              <source srcSet={logoLg}></source>
-              <img
-                src={logoLg}
-                alt={"Government of British Columbia"}
-              />
-            </picture>
-            NatComplaints
-          </Link>
-
+          > */}
+          <picture>
+            <source srcSet={logoLg}></source>
+            <img
+              src={logoLg}
+              alt={"Government of British Columbia"}
+            />
+          </picture>
+          NatComplaints
+          {/* </Link> */}
           <div className="comp-header-content">
             <div className="comp-header-left">{/* <!-- future left hand content --> */}</div>
             <div className="comp-header-right">
