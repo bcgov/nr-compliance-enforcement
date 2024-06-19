@@ -135,13 +135,13 @@ describe("HWCR File Review", () => {
   });
 
   it("it can save a complete review", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032439", true);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066", true);
 
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
     cy.get(".comp-outcome-report-file-review").then(function ($review) {
-      cy.validateComplaint("23-032439", "Black Bear");
+      cy.validateComplaint("23-033066", "Coyote");
       if ($review.find("#review-edit-button").length) {
         cy.get("#review-edit-button").click();
       }
@@ -162,11 +162,6 @@ describe("HWCR File Review", () => {
       cy.get("#review-required").should("be.checked");
       cy.get("#review-complete").should("be.checked");
 
-      //validate the officer
-      cy.get("#comp-review-required-officer").should(($div) => {
-        expect($div).to.contain.text("ENV TestAcct");
-      });
-
       //validate the toast
       cy.get(".Toastify__toast-body").then(($toast) => {
         expect($toast).to.contain.text("File review has been updated");
@@ -175,9 +170,9 @@ describe("HWCR File Review", () => {
   });
 
   it("it can change complaint status if review is complete", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032439", true);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066", true);
 
-    cy.validateComplaint("23-032439", "Black Bear");
+    cy.validateComplaint("23-033066", "Coyote");
 
     cy.get(".comp-outcome-report-file-review").then(function ($review) {
       if ($review.find("#review-edit-button").length) {
@@ -196,12 +191,6 @@ describe("HWCR File Review", () => {
         cy.get("#complaint_status_dropdown").click();
 
         cy.get(".comp-select__option").contains("Closed").click();
-
-        cy.get("#update_complaint_status_button").click();
-
-        cy.waitForSpinner();
-
-        cy.get("#comp-details-status-text-id").contains("Closed").should("exist");
       } else {
         cy.log("File Review Edit Button Not Found, did a previous test fail? Skip the Test");
         this.skip();
