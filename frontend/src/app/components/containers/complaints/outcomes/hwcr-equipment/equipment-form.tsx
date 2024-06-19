@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
@@ -338,52 +338,46 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   };
 
   return (
-    <>
-      {showSectionErrors && (
-        <div className="section-error-message">
-          <BsExclamationCircleFill />
-          <span>Save section before closing the complaint.</span>
-        </div>
-      )}
-      <div
-        className={`comp-outcome-report-complaint-assessment ${showSectionErrors ? "section-error" : ""}`}
-        id="equipment-form"
-      >
-        <ToastContainer />
-        <div
-          className="equipment-form-edit-container"
-          style={{ marginTop: "10px" }}
-        >
-          <div className="comp-details-edit-column">
+    <div>
+      <ToastContainer />
+      <Card border={showSectionErrors ? "danger" : "default"}>
+        <Card.Body>
+          {showSectionErrors && (
+            <div className="section-error-message">
+              <BsExclamationCircleFill />
+              <span>Save section before closing the complaint.</span>
+            </div>
+          )}
+          <div
+            className="comp-details-form"
+            id="equipment-form"
+          >
+            {/* EQUIPMENT TYPE */}
             <div
-              className="equipment-form-label-input-pair"
+              className="comp-details-form-row"
               id="equipment-type-div"
             >
               <label htmlFor="equipment-type-select">Equipment type</label>
-              <CompSelect
-                id="equipment-type-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                placeholder="Select"
-                options={equipmentDropdownOptions}
-                enableValidation={true}
-                errorMessage={equipmentTypeErrorMsg}
-                onChange={(type: any) => handleSetType(type)}
-                defaultOption={type}
-                value={type}
-              />
+              <div className="comp-details-input full-width">
+                <CompSelect
+                  id="equipment-type-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  placeholder="Select"
+                  options={equipmentDropdownOptions}
+                  enableValidation={true}
+                  errorMessage={equipmentTypeErrorMsg}
+                  onChange={(type: any) => handleSetType(type)}
+                  defaultOption={type}
+                  value={type}
+                />
+              </div>
             </div>
-          </div>
-          <div className="comp-details-edit-column comp-details-right-column"></div>
-        </div>
-        <div className="equipment-form-edit-container">
-          <div
-            className="comp-details-edit-column"
-            id="equipment-address-container"
-          >
-            <div className="equipment-form-label-input-pair">
+
+            {/* ADDRESS */}
+            <div className="comp-details-form-row">
               <label htmlFor="equipment-address">Address</label>
-              <div className="edit-input">
+              <div className="comp-details-input full-width">
                 <input
                   type="text"
                   id="equipment-address"
@@ -392,202 +386,244 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   maxLength={120}
                   value={address}
                 />
+                <div className="error-message">{equipmentAddressErrorMsg}</div>
+                {complaintData?.locationSummary && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="btn-txt svg-icon mt-2"
+                    id="equipment-copy-address-button"
+                    onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-copy"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
+                      />
+                    </svg>
+                    <span>Copy location from complaint details</span>
+                  </Button>
+                )}
               </div>
             </div>
-            <div className="equipment-form-error-msg">{equipmentAddressErrorMsg}</div>
-            {complaintData?.locationSummary && (
-              <button
-                className="button-text copy-text"
-                id="equipment-copy-address-button"
-                onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
-              >
-                Copy location from complaint details
-              </button>
-            )}
-          </div>
-          <div className="comp-details-edit-column comp-details-right-column"></div>
-        </div>
-        <div className="equipment-form-edit-container">
-          <div
-            className="comp-details-edit-column"
-            id="equipment-y-coordinate-container"
-          >
-            <div className="equipment-form-label-input-pair">
-              <label htmlFor="equipment-y-coordinate">Latitude</label>
-              <div className="edit-input">
-                <input
-                  type="text"
-                  id="equipment-y-coordinate"
-                  className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                  onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-                  value={yCoordinate ?? ""}
-                  maxLength={120}
-                />
+
+            {/* COORDINATES */}
+            <fieldset className="comp-details-form-row">
+              <legend>Latitude / Longitude</legend>
+              <div className="comp-details-input full-width">
+                <div className="comp-lat-long-input">
+                  <div>
+                    <input
+                      placeholder="Latitude"
+                      aria-label="Latitude"
+                      type="text"
+                      id="equipment-y-coordinate"
+                      className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                      onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+                      value={yCoordinate ?? ""}
+                      maxLength={120}
+                    />
+                    <label
+                      className="comp-form-label-below"
+                      htmlFor="equipment-y-coordinate"
+                      hidden
+                    >
+                      Latitude
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      placeholder="Longitude"
+                      aria-label="Longitude"
+                      type="text"
+                      id="equipment-x-coordinate"
+                      className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                      onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+                      value={xCoordinate ?? ""}
+                      maxLength={120}
+                    />
+                    <label
+                      className="comp-form-label-below"
+                      htmlFor="equipment-x-coordinate"
+                      hidden
+                    >
+                      Longitude
+                    </label>
+                  </div>
+                </div>
+                <div className="error-message">{yCoordinateErrorMsg}</div>
+                <div className="error-message">{xCoordinateErrorMsg}</div>
+                {hasCoordinates && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="btn-txt svg-icon mt-2"
+                    id="equipment-copy-coordinates-button"
+                    onClick={() => {
+                      const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? "";
+                      const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? "";
+                      setXCoordinate(xCoordinate);
+                      setYCoordinate(yCoordinate);
+                      handleGeoPointChange(yCoordinate, xCoordinate);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-copy"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
+                      />
+                    </svg>
+                    <span>Copy coordinates from complaint details</span>
+                  </Button>
+                )}
               </div>
-            </div>
-            <div className="equipment-form-error-msg">{yCoordinateErrorMsg}</div>
-            {hasCoordinates && (
-              <button
-                className="button-text copy-text"
-                id="equipment-copy-coordinates-button"
-                onClick={() => {
-                  const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? "";
-                  const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? "";
-                  setXCoordinate(xCoordinate);
-                  setYCoordinate(yCoordinate);
-                  handleGeoPointChange(yCoordinate, xCoordinate);
-                }}
-              >
-                Copy location from complaint details
-              </button>
-            )}
-          </div>
-          <div
-            className="comp-details-edit-column comp-details-right-column"
-            id="equipment-x-coordinate-container"
-          >
-            <div className="equipment-form-label-input-pair">
-              <label htmlFor="equipment-x-coordinate">Longitude</label>
-              <div className="edit-input">
-                <input
-                  type="text"
-                  id="equipment-x-coordinate"
-                  className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                  onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-                  value={xCoordinate ?? ""}
-                  maxLength={120}
-                />
-              </div>
-            </div>
-            <div className="equipment-form-error-msg">{xCoordinateErrorMsg}</div>
-          </div>
-        </div>
-        <div className="equipment-form-edit-container">
-          <div className="comp-details-edit-column">
+            </fieldset>
+
+            {/* SET BY */}
             <div
-              className="equipment-form-label-input-pair"
+              className="comp-details-form-row"
               id="equipment-officer-set-div"
             >
               <label htmlFor="equipment-officer-set-select">Set by</label>
-              <CompSelect
-                id="equipment-officer-set-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                placeholder="Select"
-                options={assignableOfficers}
-                value={officerSet}
-                enableValidation={true}
-                errorMessage={officerSetErrorMsg}
-                onChange={(officer: any) => setOfficerSet(officer)}
-              />
-            </div>
-          </div>
-          <div className="comp-details-edit-column comp-details-right-column">
-            <div
-              className="equipment-form-label-input-pair"
-              id="equipment-date-set-div"
-            >
-              <label htmlFor="equipment-day-set">Set date</label>
-              <ValidationDatePicker
-                id="equipment-day-set"
-                maxDate={dateRemoved ?? new Date()}
-                onChange={(date: Date | null) => date && setDateSet(date)}
-                errMsg={dateSetErrorMsg}
-                selectedDate={dateSet}
-                placeholder="Select Date"
-                className="comp-details-edit-calendar-input"
-                classNamePrefix="comp-select"
-              />
-            </div>
-          </div>
-        </div>
-        {officerSet && dateSet && (
-          <div className="equipment-form-edit-container">
-            <div className="comp-details-edit-column">
-              <div
-                className="equipment-form-label-input-pair"
-                id="equipment-officer-removed-div"
-              >
-                <label htmlFor="equipment-officer-removed-select">Removed by</label>
+              <div className="comp-details-input full-width">
                 <CompSelect
-                  id="equipment-officer-removed-select"
+                  id="equipment-officer-set-select"
                   classNamePrefix="comp-select"
-                  className="comp-details-input"
                   placeholder="Select"
                   options={assignableOfficers}
-                  value={officerRemoved}
+                  value={officerSet}
                   enableValidation={true}
-                  errorMessage={officerRemovedErrorMsg}
-                  onChange={(officer: any) => setOfficerRemoved(officer)}
+                  errorMessage={officerSetErrorMsg}
+                  onChange={(officer: any) => setOfficerSet(officer)}
                 />
               </div>
             </div>
-            <div className="comp-details-edit-column comp-details-right-column">
-              <div
-                className="equipment-form-label-input-pair"
-                id="equipment-date-removed-div"
-              >
-                <label htmlFor="equipment-date-removed">Removed date</label>
+
+            {/* SET DATE */}
+            <div
+              className="comp-details-form-row"
+              id="equipment-date-set-div"
+            >
+              <label htmlFor="equipment-day-set">Set date</label>
+              <div className="comp-details-input">
                 <ValidationDatePicker
-                  id="equipment-date-removed"
-                  maxDate={new Date()}
-                  minDate={dateSet ?? null}
-                  onChange={(date: Date) => setDateRemoved(date)}
-                  errMsg={dateRemovedErrorMsg}
-                  selectedDate={dateRemoved}
+                  id="equipment-day-set"
+                  maxDate={dateRemoved ?? new Date()}
+                  onChange={(date: Date | null) => date && setDateSet(date)}
+                  errMsg={dateSetErrorMsg}
+                  selectedDate={dateSet}
                   placeholder="Select Date"
                   className="comp-details-edit-calendar-input"
                   classNamePrefix="comp-select"
                 />
               </div>
             </div>
-          </div>
-        )}
-        {dateRemoved && trapEquipment.includes(type?.value ?? "") && (
-          <div className="equipment-form-edit-container">
-            <div className="comp-details-edit-column">
+
+            {/* REMOVED BY */}
+            {officerSet && dateSet && (
+              <>
+                <div
+                  className="comp-details-form-row"
+                  id="equipment-officer-removed-div"
+                >
+                  <label htmlFor="equipment-officer-removed-select">Removed by</label>
+                  <div className="comp-details-input full-width">
+                    <CompSelect
+                      id="equipment-officer-removed-select"
+                      classNamePrefix="comp-select"
+                      placeholder="Select"
+                      options={assignableOfficers}
+                      value={officerRemoved}
+                      enableValidation={true}
+                      errorMessage={officerRemovedErrorMsg}
+                      onChange={(officer: any) => setOfficerRemoved(officer)}
+                    />
+                  </div>
+                </div>
+                <div
+                  className="comp-details-form-row"
+                  id="equipment-date-removed-div"
+                >
+                  <label htmlFor="equipment-date-removed">Removed date</label>
+                  <div className="comp-details-input">
+                    <ValidationDatePicker
+                      id="equipment-date-removed"
+                      maxDate={new Date()}
+                      minDate={dateSet ?? null}
+                      onChange={(date: Date) => setDateRemoved(date)}
+                      errMsg={dateRemovedErrorMsg}
+                      selectedDate={dateRemoved}
+                      placeholder="Select Date"
+                      className="comp-details-edit-calendar-input"
+                      classNamePrefix="comp-select"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* CAPTURE INFORMATION */}
+            {dateRemoved && trapEquipment.includes(type?.value ?? "") && (
               <div
-                className="equipment-form-label-input-pair"
+                className="comp-details-form-row"
                 id="reported-pair-id"
               >
                 <label htmlFor="equipment-animal-captured-radiogroup-1">Was an animal captured?</label>
-                {
-                  <CompRadioGroup
-                    id="equipment-animal-captured-radiogroup"
-                    options={wasAnimalCapturedOptions}
-                    enableValidation={true}
-                    errorMessage={wasAnimalCapturedErrorMsg}
-                    itemClassName="equipment-form-radiobutton"
-                    groupClassName="equipment-form-radiogroup"
-                    value={wasAnimalCaptured}
-                    onChange={(option: any) => setWasAnimalCaptured(option.target.value)}
-                    isDisabled={false}
-                    radioGroupName="equipment-animal-captured-radiogroup"
-                  />
-                }
+                <div className="comp-details-input full-width">
+                  {
+                    <CompRadioGroup
+                      id="equipment-animal-captured-radiogroup"
+                      options={wasAnimalCapturedOptions}
+                      enableValidation={true}
+                      errorMessage={wasAnimalCapturedErrorMsg}
+                      itemClassName="comp-radio-btn"
+                      groupClassName="comp-equipment-form-radio-group"
+                      value={wasAnimalCaptured}
+                      onChange={(option: any) => setWasAnimalCaptured(option.target.value)}
+                      isDisabled={false}
+                      radioGroupName="equipment-animal-captured-radiogroup"
+                    />
+                  }
+                </div>
               </div>
+            )}
+
+            {/* FORM BUTTONS */}
+            <div className="comp-details-form-buttons">
+              <Button
+                variant="outline-primary"
+                id="equipment-cancel-button"
+                title="Cancel Outcome"
+                onClick={cancelButtonClick}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                id="equipment-save-button"
+                title="Save Outcome"
+                onClick={handleSaveEquipment}
+              >
+                Save
+              </Button>
             </div>
           </div>
-        )}
-        <div className="comp-outcome-report-actions">
-          <Button
-            id="equipment-cancel-button"
-            title="Cancel Outcome"
-            className="comp-outcome-cancel"
-            onClick={cancelButtonClick}
-          >
-            Cancel
-          </Button>
-          <Button
-            id="equipment-save-button"
-            title="Save Outcome"
-            className="comp-outcome-save"
-            onClick={handleSaveEquipment}
-          >
-            Save
-          </Button>
-        </div>
-      </div>
-    </>
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
