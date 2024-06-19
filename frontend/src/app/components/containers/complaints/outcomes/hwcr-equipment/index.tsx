@@ -1,6 +1,5 @@
 import { FC, useState, memo, useEffect } from "react";
 import { Button } from "react-bootstrap";
-import { BsPlusCircle } from "react-icons/bs";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
@@ -37,51 +36,55 @@ export const HWCREquipment: FC = memo(() => {
   };
 
   return (
-    <div
-      className="comp-outcome-report-block"
+    <section
+      className="comp-details-section comp-outcome-equipment"
       id="outcome-equipment"
     >
-      <h6>Equipment</h6>
-      {equipmentList && equipmentList.length > 0
-        ? equipmentList.map((equipment) =>
-            editingGuid === equipment.id ? (
-              <EquipmentForm
-                key={equipment.id}
-                equipment={equipment}
-                onSave={handleSave}
-                onCancel={handleCancel}
-              />
-            ) : (
-              <EquipmentItem
-                key={equipment.id}
-                equipment={equipment}
-                onEdit={handleEdit}
-                isEditDisabled={!!editingGuid && editingGuid !== equipment.id}
-              />
-            ),
-          )
-        : null}
+      <div className="comp-details-section-header">
+        <h3>Equipment</h3>
+      </div>
+      <div className="comp-equipment-items">
+        {equipmentList && equipmentList.length > 0
+          ? equipmentList.map((equipment) =>
+              editingGuid === equipment.id ? (
+                <EquipmentForm
+                  key={equipment.id}
+                  equipment={equipment}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                />
+              ) : (
+                <EquipmentItem
+                  key={equipment.id}
+                  equipment={equipment}
+                  onEdit={handleEdit}
+                  isEditDisabled={!!editingGuid && editingGuid !== equipment.id}
+                />
+              ),
+            )
+          : null}
 
-      {/* Add Equipment Form */}
-      {showEquipmentForm ? (
-        <EquipmentForm
-          onSave={handleSave}
-          onCancel={handleCancel}
-          assignedOfficer={assigned}
-        />
-      ) : (
-        <div className="comp-outcome-report-button">
-          <Button
-            id="outcome-report-add-equipment"
-            title="Add equipment"
-            variant="primary"
-            onClick={() => setShowEquipmentForm(true)}
-          >
-            <span>Add equipment</span>
-            <BsPlusCircle />
-          </Button>
-        </div>
-      )}
-    </div>
+        {/* Add Equipment Form */}
+        {showEquipmentForm ? (
+          <EquipmentForm
+            onSave={handleSave}
+            onCancel={handleCancel}
+            assignedOfficer={assigned}
+          />
+        ) : (
+          <div className="comp-outcome-report-button">
+            <Button
+              variant="primary"
+              id="outcome-report-add-equipment"
+              title="Add equipment"
+              onClick={() => setShowEquipmentForm(true)}
+            >
+              <i className="bi bi-plus-circle"></i>
+              <span>Add equipment</span>
+            </Button>
+          </div>
+        )}
+      </div>
+    </section>
   );
 });

@@ -1,9 +1,8 @@
 import { FC, useState } from "react";
-import { Row, Col } from "react-bootstrap";
-import { BsExclamationCircleFill, BsPencil, BsTrash3 } from "react-icons/bs";
+import { Card, Button, Badge } from "react-bootstrap";
+import { BsExclamationCircleFill } from "react-icons/bs";
 import { formatDate, getAvatarInitials } from "../../../../../common/methods";
 
-import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
 import { selectOfficerByPersonGuid } from "../../../../../store/reducers/officer";
@@ -89,171 +88,103 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         }}
         confirmText="Yes, delete equipment"
       />
-      {showSectionErrors && (
-        <div className="section-error-message">
-          <BsExclamationCircleFill />
-          <span>Provide date equipment was removed before closing the complaint.</span>
-        </div>
-      )}
-      <div
-        className={`comp-outcome-report-complaint-assessment equipment-item ${showSectionErrors ? "section-error" : ""}`}
+      <Card
+        className={`comp-equipment-card ${!removedEquipmentFullName ? "active" : "inactive"}`}
+        border={showSectionErrors ? "danger" : "default"}
       >
-        {!removedEquipmentFullName && <div className="status-bar"></div>}
-        <div className="equipment-item-header">
-          <div
-            className="title"
-            id="equipment-type-title"
-          >
-            <h6>{getValue("equipment")?.label}</h6>
-            {!removedEquipmentFullName && <div className="badge">Active</div>}
-          </div>
-          <div>
-            <CompTextIconButton
-              buttonClasses="button-text"
-              id="equipment-delete-button"
-              style={{ marginRight: "15px" }}
-              text="Delete"
-              icon={BsTrash3}
-              click={() => setShowModal(true)}
-            />
-            <CompTextIconButton
-              buttonClasses="button-text"
-              id="equipment-edit-button"
-              text="Edit"
-              icon={BsPencil}
-              isDisabled={isEditDisabled}
-              click={() => handleEdit(equipment)}
-            />
-          </div>
-        </div>
-        <div className="equipment-item-content">
-          <div className="label">Address</div>
-          <div className="value">{equipment.address}</div>
-        </div>
-        <Row>
-          <Col
-            xs={12}
-            md={4}
-          >
-            <div className="equipment-item-content">
-              <div className="label">Latitude</div>
-              <div className="value">{equipment.yCoordinate}</div>
+        <Card.Body>
+          {showSectionErrors && (
+            <div className="section-error-message">
+              <BsExclamationCircleFill />
+              <span>Provide date equipment was removed before closing the complaint.</span>
             </div>
-          </Col>
-          <Col
-            xs={12}
-            md={4}
-          >
-            <div className="equipment-item-content">
-              <div className="label">Longitude</div>
-              <div
-                className="value"
-                id=""
+          )}
+
+          {/* EQUIPMENT ITEM HEADER */}
+          <div className="comp-equipment-item-header">
+            <div className="comp-equipment-item-header-title">
+              <h4 id="equipment-type-title">{getValue("equipment")?.label}</h4>
+              {!removedEquipmentFullName && <Badge bg="success">Active</Badge>}
+            </div>
+            <div className="comp-equipment-item-header-actions">
+              <Button
+                variant="outline-primary"
+                size="sm"
+                title="Edit equipment details"
+                id="equipment-edit-button"
+                onClick={() => handleEdit(equipment)}
               >
-                {equipment.xCoordinate}
-              </div>
+                <i className="bi bi-pencil"></i>
+                <span>Edit</span>
+              </Button>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                title="Delete equipment"
+                id="equipment-delete-button"
+                onClick={() => setShowModal(true)}
+              >
+                <i className="bi bi-trash3"></i>
+                <span>Delete</span>
+              </Button>
             </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col
-            xs={12}
-            md={4}
-          >
-            <div className="equipment-item-content">
-              <div className="label">Set by</div>
-              <div className="comp-details-content">
+          </div>
+
+          {/* EQUIPMENT META */}
+          <dl>
+            <div>
+              <dt>Address</dt>
+              <dd>{equipment.address}</dd>
+            </div>
+            <div>
+              <dt>Latitude/Longitude</dt>
+              <dd>
+                {equipment.yCoordinate} {equipment.xCoordinate}
+              </dd>
+            </div>
+            <div>
+              <dt>Set by</dt>
+              <dd>
                 <div
+                  className="comp-avatar comp-avatar-sm comp-avatar-orange"
                   data-initials-sm={getAvatarInitials(`${setEquipmentFullName}`)}
-                  className="comp-pink-avatar-sm"
                 >
-                  <span
-                    id="equipment-officer-set-div"
-                    className="comp-padding-left-xs"
-                  >
-                    {setEquipmentFullName}
-                  </span>
+                  <span id="equipment-officer-set-div">{setEquipmentFullName}</span>
                 </div>
-              </div>
+              </dd>
             </div>
-          </Col>
-          <Col
-            xs={12}
-            md={4}
-          >
-            <div
-              className="equipment-item-content"
-              id="equipment-date-set-div"
-            >
-              <div className="label">Set date</div>
-              <div className="value">{formatDate(setEquipmentDate?.toString())}</div>
+            <div>
+              <dt>Date set</dt>
+              <dd id="equipment-date-set-div">{formatDate(setEquipmentDate?.toString())}</dd>
             </div>
-          </Col>
-        </Row>
-        {equipment.id && removedEquipmentActor && (
-          <Row>
-            <Col
-              xs={12}
-              md={4}
-            >
-              <div className="equipment-item-content">
-                <div className="label">Removed by</div>
-                <div className="comp-details-content">
-                  <div
-                    data-initials-sm={getAvatarInitials(removedEquipmentFullName ?? "")}
-                    className="comp-pink-avatar-sm"
-                  >
-                    <span
-                      id="comp-details-assigned-officer-name-text-id"
-                      className="comp-padding-left-xs"
+            {equipment.id && removedEquipmentActor && (
+              <>
+                <div>
+                  <dt>Removed by</dt>
+                  <dd>
+                    <div
+                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                      data-initials-sm={getAvatarInitials(removedEquipmentFullName ?? "")}
                     >
-                      {removedEquipmentFullName}
-                    </span>
-                  </div>
+                      <span id="comp-details-assigned-officer-name-text-id">{removedEquipmentFullName}</span>
+                    </div>
+                  </dd>
                 </div>
-              </div>
-            </Col>
-            <Col
-              xs={12}
-              md={4}
-            >
-              <div className="equipment-item-content">
-                <div className="label">Removed date</div>
-                <div
-                  className="value"
-                  id=""
-                >
-                  {formatDate(removedEquipmentDate?.toString())}
+                <div>
+                  <dt>Removal date</dt>
+                  <dd id="equipment-removal-date">{formatDate(removedEquipmentDate?.toString())}</dd>
                 </div>
+              </>
+            )}
+            {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) && (
+              <div>
+                <dt>Was animal captured?</dt>
+                <dd id="comp-details-animal-captured-text-id">{equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}</dd>
               </div>
-            </Col>
-          </Row>
-        )}
-        {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) ? (
-          <Row>
-            <Col
-              xs={12}
-              md={4}
-            >
-              <div className="equipment-item-content">
-                <div className="label">Was an animal Captured?</div>
-                <div className="comp-details-content">
-                  <div>
-                    <span
-                      id="comp-details-animal-captured-text-id"
-                      className="comp-padding-left-xs"
-                    >
-                      {equipment?.wasAnimalCaptured === "Y" ? "Yes" : "No"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        ) : (
-          ""
-        )}
-      </div>
+            )}
+          </dl>
+        </Card.Body>
+      </Card>
     </>
   );
 };
