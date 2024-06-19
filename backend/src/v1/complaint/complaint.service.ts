@@ -98,8 +98,8 @@ export class ComplaintService {
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
 
-    mapWildlifeReport(mapper);
-    mapAllegationReport(mapper);
+    // mapWildlifeReport(mapper);
+    // mapAllegationReport(mapper);
   }
 
   private _getAgencyByUser = async (): Promise<AgencyCode> => {
@@ -1306,7 +1306,10 @@ export class ComplaintService {
     return results;
   };
 
-  getReportData = async (id: string, complaintType: COMPLAINT_TYPE) => {
+  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, offset: number) => {
+    mapWildlifeReport(this.mapper, offset);
+    mapAllegationReport(this.mapper);
+
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
     try {
