@@ -2,6 +2,7 @@
 Test to verify that the status and assignment popover displays when clicking the vertical ellipsis on both the
 HWLC and Enforcement list screens
 */
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 describe("Complaint Assign and Status Popover spec", { scrollBehavior: false }, () => {
   const complaintTypes = ["#hwcr-tab", "#ers-tab"];
 
@@ -70,4 +71,62 @@ describe("Complaint Assign and Status Popover spec", { scrollBehavior: false }, 
       //  .should("have.length.at.least", 1);
     });
   });
+
+  it.skip("User can not change the status when Review is not complete ", () => {
+    canChangeStatus(false);
+  });
+
+  it.skip("User can change the status when Review is complete ", () => {
+    canChangeStatus(true);
+  });
 });
+
+const canChangeStatus = (reviewComplete: boolean) => {
+  cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032441", true);
+
+  cy.get(".comp-outcome-report-file-review").then(function ($review) {
+    if ($review.find("#review-edit-button").length) {
+      cy.get("#review-edit-button").click({ force: true });
+    }
+    cy.validateComplaint("23-032441", "Black Bear");
+
+    cy.get("#review-required")
+      .check({ force: true })
+      .then(() => {
+        reviewComplete
+          ? cy.get("#review-complete").check({ force: true })
+          : cy.get("#review-complete").uncheck({ force: true });
+      });
+
+    cy.get("#file-review-save-button").click({ force: true });
+  });
+
+  cy.visit("/");
+
+  cy.waitForSpinner();
+
+  cy.get("#hwcr-tab").click({ force: true });
+
+  cy.waitForSpinner();
+
+  cy.get(".popover").should("not.exist");
+
+  cy.get("#comp-zone-filter").click({ force: true });
+
+  cy.waitForSpinner();
+
+  cy.get("#comp-status-filter").click({ force: true });
+
+  cy.get("#complaint-search").click({ force: true });
+
+  cy.get("#complaint-search").clear().type("23-032441{enter}");
+
+  cy.waitForSpinner();
+
+  cy.get("#update-status-icon").filter(":visible").click({ force: true });
+
+  cy.get(".change_status_modal")
+    .should("contain", reviewComplete ? "" : "Complaint is pending review.")
+    .find("#complaint_status_dropdown input")
+    .should(reviewComplete ? "be.enabled" : "be.disabled");
+};
