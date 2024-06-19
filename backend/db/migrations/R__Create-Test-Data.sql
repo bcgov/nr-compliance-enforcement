@@ -204,6 +204,7 @@ ON CONFLICT DO NOTHING;
 -- Insert PERSON records
 -------------------------
 
+-- COS HQ / Application Team --
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('6fd73cad-cbc7-49f1-888a-b24dc8abd824'::uuid, 'Neil', NULL, NULL, 'Baskerville-Bridges', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
@@ -244,6 +245,65 @@ INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('b48487c2-055a-4711-bba8-282a28e52e69'::uuid, 'Greg', NULL, NULL, 'Lavery', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('73e2a6f1-f438-495f-a5e7-12e850a5e4e3'::uuid, 'Miwa', NULL, NULL, 'Ito', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+-- Peace Pilot Users: Fort St. John --
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('87035f8e-d01a-4c8e-80ec-868fd386605d'::uuid, 'Jacob', NULL, NULL, 'Clausen', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('d6d2021f-8c9e-4086-b915-068e935a7fac'::uuid, 'Mitchell', NULL, NULL, 'Chayer', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('2bc18e7f-1f9a-4c8f-a47c-85399294e172'::uuid, 'Ellen', NULL, NULL, 'Pedersen', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('02cae56f-21e6-4c64-9a9f-d8e77ca1f77c'::uuid, 'Blake', NULL, NULL, 'Parker', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('52f69f9b-8766-4fe7-9fa3-844808d78bd5'::uuid, 'Anthony', NULL, NULL, 'Eagles', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('d19893fa-0af9-4646-9def-1312e8d67202'::uuid, 'Darryl', NULL, NULL, 'Struthers', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('1c64cc35-f5f7-4cf5-84b3-4e4233f9c6a1'::uuid, 'Breanna', NULL, NULL, 'Caruth', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+-- Peace Pilot Users: Fort Nelson --
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('1db006c7-221e-47fa-a795-c5529258d090'::uuid, 'Jeff', NULL, NULL, 'Clancy', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('b08e0fe2-f829-4ea1-a7e6-070a2ebc968c'::uuid, 'Erich', NULL, NULL, 'Harbich', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING; 
+-- Peace Pilot Users: Dawson Creek --
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('644be5aa-993b-4e77-a4f4-ab3087c34fb7'::uuid, 'Juliana', NULL, NULL, 'Damert', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING; 
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('5e75ed5a-5c40-45ea-b28e-383a56c5ec0a'::uuid, 'Rob', NULL, NULL, 'Groeger', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('b136509d-0e1c-4c81-99b5-2ca3236f6f54'::uuid, 'Kevin', NULL, NULL, 'Mayowski', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('2eaffabd-720d-48ed-aa82-b31f828487c4'::uuid, 'Brad', NULL, NULL, 'Lacey', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING; 
 
 -------------------------
 -- INSERT OFFICER RECORDS
@@ -261,6 +321,7 @@ ON CONFLICT DO NOTHING;
 insert into geo_org_unit_structure (effective_date, expiry_date, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, agency_code, parent_geo_org_unit_code, child_geo_org_unit_code)
 values (now(), null, user, now(), user, now(), 'COS','SISL','COSHQ') ON CONFLICT DO NOTHING;
 
+-- COS HQ / Application Team --
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('65dbad8b-790a-43cb-b394-c8019f4c86e2'::uuid, 'M2SEARS', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '5b9bcbf6-73b4-4b56-8fc3-d979bb3c1ff7'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, NULL)
@@ -296,6 +357,65 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
 VALUES('880e237a-a422-4443-a58d-22e5380be86a'::uuid, 'GRLAVERY', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'b48487c2-055a-4711-bba8-282a28e52e69'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('d6a7dd4f-3b5a-41bd-aef5-d47a0510f3c7'::uuid, 'MITO', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '73e2a6f1-f438-495f-a5e7-12e850a5e4e3'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+ON CONFLICT DO NOTHING;
+-- Peace Pilot Users: Fort St. John --
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('d2551008-e00a-4187-80b0-5657d0b5da46'::uuid, 'JCLAUSEN', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '87035f8e-d01a-4c8e-80ec-868fd386605d'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('3af641d9-9218-49ba-8b83-543a98522eec'::uuid, 'MCHAYER', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'd6d2021f-8c9e-4086-b915-068e935a7fac'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('164d289f-06d9-42c8-98c0-5383d9697612'::uuid, 'ELPEDERS', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '2bc18e7f-1f9a-4c8f-a47c-85399294e172'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('f824bcf0-3762-4f81-b5f3-347b2f1b2117'::uuid, 'BEPARKER', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '02cae56f-21e6-4c64-9a9f-d8e77ca1f77c'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('b9d95788-f62b-4408-b865-3de86a5b049b'::uuid, 'AEAGLES', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '52f69f9b-8766-4fe7-9fa3-844808d78bd5'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('8d4316b8-b690-493e-bebb-0f4205e48a8b'::uuid, 'DJSTRUTH', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'd19893fa-0af9-4646-9def-1312e8d67202'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('a2b20131-5f9e-455e-87fb-acadfce83e54'::uuid, 'BCARUTH', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '1c64cc35-f5f7-4cf5-84b3-4e4233f9c6a1'::uuid, 'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid)
+ON CONFLICT DO NOTHING;
+-- Peace Pilot Users: Fort Nelson --
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('33e113c0-a199-4bb4-b6c4-6b3ceb52b04c'::uuid, 'JCLANCY', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '1db006c7-221e-47fa-a795-c5529258d090'::uuid, 'edd4b298-ced7-4b10-9232-87512ec640b3'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('b31620b8-e8d0-4a62-aba9-5ace33e89a28'::uuid, 'EHARBICH', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'b08e0fe2-f829-4ea1-a7e6-070a2ebc968c'::uuid, 'edd4b298-ced7-4b10-9232-87512ec640b3'::uuid)
+ON CONFLICT DO NOTHING;
+-- Peace Pilot Users: Dawson Creek --
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('40643de5-e6f3-46aa-915e-ede5d2cfcf9d'::uuid, 'JDAMERT', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '644be5aa-993b-4e77-a4f4-ab3087c34fb7'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('5887b91a-daa1-4473-89bb-841f097f825d'::uuid, 'RGROEGER', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '5e75ed5a-5c40-45ea-b28e-383a56c5ec0a'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('8117a02b-a032-42fe-b5b0-16c68c1e44c4'::uuid, 'KMAYOWSK', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'b136509d-0e1c-4c81-99b5-2ca3236f6f54'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('9989f64b-27ee-49bb-9a90-35546223f87f'::uuid, 'BALACEY', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '2eaffabd-720d-48ed-aa82-b31f828487c4'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid)
 ON CONFLICT DO NOTHING;
 
 -- Reset offices to nr-compliance-enforcement values

@@ -316,6 +316,10 @@ INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('b48487c2-055a-4711-bba8-282a28e52e69'::uuid, 'Greg', NULL, NULL, 'Lavery', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('17439e37-ca97-4031-a009-b23ca58c21e1'::uuid, 'Jeremy', NULL, NULL, 'Dunsdon', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
 
 
 -------------------------
@@ -445,6 +449,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
 VALUES('880e237a-a422-4443-a58d-22e5380be86a'::uuid, 'GRLAVERY', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'b48487c2-055a-4711-bba8-282a28e52e69'::uuid, 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
+VALUES('623fbd02-dff5-4d45-9ab3-f0acbe8d83ed'::uuid, 'JXDUNSDO', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '17439e37-ca97-4031-a009-b23ca58c21e1'::uuid, '5128179c-f622-499b-b8e5-b39199081f22'::uuid)
 ON CONFLICT DO NOTHING;
 --------------------------------
 ---  Scatter our team throughout the province for testing
@@ -1414,16 +1422,3 @@ values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now())
 UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
 UPDATE species_code SET display_order = 3 where species_code = 'BOBCAT';
 
--- Insert JXDUNSDO as user
-WITH inserted AS (
-  INSERT INTO public.person
-  (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-  VALUES(gen_random_uuid(), 'Jeremy', NULL, NULL, 'Dunsdon', 'FLYWAY', now(), 'FLYWAY', now())
-  ON CONFLICT DO NOTHING
-  RETURNING person_guid
-)
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
-SELECT gen_random_uuid(), 'JXDUNSDO', 'FLYWAY', now(), 'FLYWAY', now(), person_guid, '45abdc96-1b07-4b9c-8b05-e2b0c46c1d1d'::uuid
-FROM inserted
-ON CONFLICT DO NOTHING;
