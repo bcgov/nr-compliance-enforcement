@@ -137,8 +137,6 @@ export const HWCRFileReview: FC = () => {
     setReviewCompleted(!reviewCompleted);
   };
 
-  console.log(componentState);
-
   return (
     <div
       className="comp-outcome-report-block"
