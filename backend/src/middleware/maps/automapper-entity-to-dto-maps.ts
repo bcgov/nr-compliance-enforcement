@@ -1139,7 +1139,14 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
 
     forMember(
       (destination) => destination.reportDate,
-      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd")),
+      mapFrom(() => {
+        console.log("TIMEZONE: ", tz);
+        console.log("REPORT GENERATED ON: ", reportGeneratedOn);
+        console.log("TO ZONED TIME: ", toZonedTime(reportGeneratedOn, tz));
+        console.log("FORMATTED: ", format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd"));
+
+        return format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd");
+      }),
     ),
     forMember(
       (destination) => destination.reportTime,

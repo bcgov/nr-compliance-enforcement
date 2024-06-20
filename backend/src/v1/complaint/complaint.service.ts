@@ -1305,7 +1305,7 @@ export class ComplaintService {
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
     mapWildlifeReport(this.mapper, tz);
-    mapAllegationReport(this.mapper);
+    mapAllegationReport(this.mapper, tz);
 
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
