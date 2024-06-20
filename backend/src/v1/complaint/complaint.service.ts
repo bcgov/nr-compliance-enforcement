@@ -651,7 +651,6 @@ export class ComplaintService {
     const officeQuery = await this._cosOrganizationUnitRepository
       .createQueryBuilder("cos_geo_org_unit")
       .where("cos_geo_org_unit.zone_code = :zone", { zone })
-      .andWhere("cos_geo_org_unit.administrative_office_ind = :value", { value: false })
       .distinctOn(["cos_geo_org_unit.offloc_code"])
       .orderBy("cos_geo_org_unit.offloc_code");
 
@@ -1301,7 +1300,9 @@ export class ComplaintService {
     const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone);
     const unassigned = total - assigned;
 
-    const offices = await this._getComplaintsByOffice(complaintType, zone);
+    const offices = (await this._getComplaintsByOffice(complaintType, zone)).filter((office) => {
+      return office.name !== "COS HQ";
+    });
 
     results = { ...results, total, assigned, unassigned, offices };
     return results;

@@ -897,6 +897,11 @@ UPDATE agency_code SET display_order = 7 WHERE agency_code = 'CEB';
 UPDATE agency_code SET display_order = 8 WHERE agency_code = 'LE';
 UPDATE agency_code SET display_order = 9 WHERE agency_code = 'OTHER';
 
+------------------------------
+-- Update Administrative Office Indicator for COS HQ office
+------------------------------
+update  public.geo_organization_unit_code set administrative_office_ind = true where geo_organization_unit_code='COSHQ';
+
 --------------------------
 -- New Changes above this line
 -------------------------

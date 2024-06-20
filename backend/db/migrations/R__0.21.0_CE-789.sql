@@ -1,1 +1,0 @@
-update  public.geo_organization_unit_code set administrative_office_ind = true where geo_organization_unit_code='COSHQ';
