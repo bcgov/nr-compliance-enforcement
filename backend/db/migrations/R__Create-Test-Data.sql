@@ -310,8 +310,8 @@ ON CONFLICT DO NOTHING;
 -------------------------
 -- insert COSHQ and move project team into it
 
-insert into geo_organization_unit_code(geo_organization_unit_code, short_description, long_description, effective_date, expiry_date, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_org_unit_type_code)
-values ('COSHQ','COS HQ','COS Headquarters', now(), null, user, now(), user, now(), 'OFFLOC') ON CONFLICT DO NOTHING;
+insert into geo_organization_unit_code(geo_organization_unit_code, short_description, long_description, effective_date, expiry_date, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_org_unit_type_code, administrative_office_ind)
+values ('COSHQ','COS HQ','COS Headquarters', now(), null, user, now(), user, now(), 'OFFLOC', true) ON CONFLICT DO NOTHING;
 
 INSERT INTO public.office
 (office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
