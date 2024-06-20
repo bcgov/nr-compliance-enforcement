@@ -30,6 +30,7 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { addMinutes, format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 // @SONAR_STOP@
 
@@ -862,7 +863,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 };
 
 //-- reporting data maps
-export const mapWildlifeReport = (mapper: Mapper, offset: number = 0) => {
+export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   speciesCodeToSpeciesDtoMap(mapper);
@@ -881,11 +882,11 @@ export const mapWildlifeReport = (mapper: Mapper, offset: number = 0) => {
 
     forMember(
       (destination) => destination.reportDate,
-      mapFrom(() => format(addMinutes(reportGeneratedOn, -offset), "yyyy-MM-dd")),
+      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd")),
     ),
     forMember(
       (destination) => destination.reportTime,
-      mapFrom(() => format(addMinutes(reportGeneratedOn, -offset), "HH:mm")),
+      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "HH:mm")),
     ),
 
     forMember(
@@ -899,13 +900,13 @@ export const mapWildlifeReport = (mapper: Mapper, offset: number = 0) => {
     forMember(
       (destination) => destination.reportedOn,
       mapFrom((source) =>
-        format(addMinutes(source.complaint_identifier.incident_reported_utc_timestmp, -offset), "yyyy-MM-dd HH:mm"),
+        format(toZonedTime(source.complaint_identifier.incident_reported_utc_timestmp, tz), "yyyy-MM-dd HH:mm"),
       ),
     ),
     forMember(
       (destination) => destination.updatedOn,
       mapFrom((source) =>
-        format(addMinutes(source.complaint_identifier.update_utc_timestamp, -offset), "yyyy-MM-dd HH:mm"),
+        format(toZonedTime(source.complaint_identifier.update_utc_timestamp, tz), "yyyy-MM-dd HH:mm"),
       ),
     ),
     forMember(
@@ -942,7 +943,7 @@ export const mapWildlifeReport = (mapper: Mapper, offset: number = 0) => {
     forMember(
       (destination) => destination.incidentDateTime,
       mapFrom((source) =>
-        format(addMinutes(source.complaint_identifier.incident_utc_datetime, -offset), "yyyy-MM-dd HH:mm"),
+        format(toZonedTime(source.complaint_identifier.incident_utc_datetime, tz), "yyyy-MM-dd HH:mm"),
       ),
     ),
     forMember(
@@ -1122,7 +1123,7 @@ export const mapWildlifeReport = (mapper: Mapper, offset: number = 0) => {
   );
 };
 
-export const mapAllegationReport = (mapper: Mapper, offset: number = 0) => {
+export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   violationCodeToViolationDto(mapper);
@@ -1138,11 +1139,11 @@ export const mapAllegationReport = (mapper: Mapper, offset: number = 0) => {
 
     forMember(
       (destination) => destination.reportDate,
-      mapFrom(() => format(addMinutes(reportGeneratedOn, -offset), "yyyy-MM-dd")),
+      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd")),
     ),
     forMember(
       (destination) => destination.reportTime,
-      mapFrom(() => format(addMinutes(reportGeneratedOn, -offset), "HH:mm")),
+      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "HH:mm")),
     ),
 
     forMember(
@@ -1156,13 +1157,13 @@ export const mapAllegationReport = (mapper: Mapper, offset: number = 0) => {
     forMember(
       (destination) => destination.reportedOn,
       mapFrom((source) =>
-        format(addMinutes(source.complaint_identifier.incident_reported_utc_timestmp, -offset), "yyyy-MM-dd HH:mm"),
+        format(toZonedTime(source.complaint_identifier.incident_reported_utc_timestmp, tz), "yyyy-MM-dd HH:mm"),
       ),
     ),
     forMember(
       (destination) => destination.updatedOn,
       mapFrom((source) =>
-        format(addMinutes(source.complaint_identifier.update_utc_timestamp, -offset), "yyyy-MM-dd HH:mm"),
+        format(toZonedTime(source.complaint_identifier.update_utc_timestamp, tz), "yyyy-MM-dd HH:mm"),
       ),
     ),
     forMember(
@@ -1199,7 +1200,7 @@ export const mapAllegationReport = (mapper: Mapper, offset: number = 0) => {
     forMember(
       (destination) => destination.incidentDateTime,
       mapFrom((source) =>
-        format(addMinutes(source.complaint_identifier.incident_utc_datetime, -offset), "yyyy-MM-dd HH:mm"),
+        format(toZonedTime(source.complaint_identifier.incident_utc_datetime, tz), "yyyy-MM-dd HH:mm"),
       ),
     ),
     forMember(

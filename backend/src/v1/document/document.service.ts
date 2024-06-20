@@ -17,11 +17,11 @@ export class DocumentService {
   //-- using the cdogs api generate a new document from the specified
   //-- complaint-id and complaint type
   //--
-  exportComplaint = async (id: string, type: COMPLAINT_TYPE, name: string, offset: number) => {
+  exportComplaint = async (id: string, type: COMPLAINT_TYPE, name: string, tz: string) => {
     try {
       //-- get the complaint from the system, but do not include anything other
       //-- than the base complaint. no maps, no attachments, no outcome data
-      const data = await this.ceds.getReportData(id, type, offset);
+      const data = await this.ceds.getReportData(id, type, tz);
 
       //--
       return await this.cdogs.generate(name, data, type);

@@ -13,7 +13,7 @@ export const exportComplaint =
   async (dispatch) => {
     try {
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const offset = new Date().getTimezoneOffset();
+      const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       const axiosConfig: AxiosRequestConfig = {
         responseType: "arraybuffer", // Specify response type as arraybuffer
@@ -21,7 +21,7 @@ export const exportComplaint =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const url = `${config.API_BASE_URL}/v1/document/export-complaint/${type}?id=${id}&offset=${offset}`;
+      const url = `${config.API_BASE_URL}/v1/document/export-complaint/${type}?id=${id}&tz=${tz}`;
 
       //-- this should not work as there's no authentication token passed to the server,
       const response = await axios.get(url, axiosConfig);
