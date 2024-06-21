@@ -864,7 +864,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 };
 
 //-- reporting data maps
-export const mapWildlifeReport = (mapper: Mapper, logger: any, tz: string = "America/Vancouver") => {
+export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   speciesCodeToSpeciesDtoMap(mapper);
@@ -884,16 +884,6 @@ export const mapWildlifeReport = (mapper: Mapper, logger: any, tz: string = "Ame
     forMember(
       (destination) => destination.reportDate,
       mapFrom(() => {
-        console.log("TIMEZONE: ", tz);
-        console.log("REPORT GENERATED ON: ", reportGeneratedOn);
-        console.log("TO ZONED TIME: ", toZonedTime(reportGeneratedOn, tz));
-        console.log("FORMATTED: ", format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd"));
-
-        logger.debug("TIMEZONE: ", tz);
-        logger.debug("REPORT GENERATED ON: ", reportGeneratedOn);
-        logger.debug("TO ZONED TIME: ", toZonedTime(reportGeneratedOn, tz));
-        logger.debug("FORMATTED: ", format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd"));
-
         return format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd");
       }),
     ),
@@ -1153,11 +1143,6 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.reportDate,
       mapFrom(() => {
-        console.log("TIMEZONE: ", tz);
-        console.log("REPORT GENERATED ON: ", reportGeneratedOn);
-        console.log("TO ZONED TIME: ", toZonedTime(reportGeneratedOn, tz));
-        console.log("FORMATTED: ", format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd"));
-
         return format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd");
       }),
     ),
