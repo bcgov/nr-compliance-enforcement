@@ -30,7 +30,7 @@ export class DocumentController {
       this.logger.debug("TIMEZONE: ", tz);
 
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const response = await this.service.exportComplaint(id, type, fileName, tz, this.logger);
+      const response = await this.service.exportComplaint(id, type, fileName, tz);
 
       if (!response || !response.data) {
         throw Error(`exception: unable to export document for complaint: ${id}`);
