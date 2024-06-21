@@ -29,7 +29,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  let officers = useAppSelector(selectOfficersDropdown);
+  let officers = useAppSelector(selectOfficersDropdown(false));
   if (officers && officers[0]?.value !== "Unassigned") {
     officers.unshift({ value: "Unassigned", label: "Unassigned" });
   }

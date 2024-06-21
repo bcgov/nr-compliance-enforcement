@@ -11,7 +11,7 @@ import { clearNotification, selectNotification } from "../../../store/reducers/a
 
 export const UserManagement: FC = () => {
   const dispatch = useAppDispatch();
-  const officers = useAppSelector(selectOfficersDropdown);
+  const officers = useAppSelector(selectOfficersDropdown(true));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
   const notification = useAppSelector(selectNotification);
 
