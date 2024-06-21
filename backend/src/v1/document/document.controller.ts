@@ -27,6 +27,8 @@ export class DocumentController {
     @Res() res: Response,
   ): Promise<void> {
     try {
+      this.logger.debug("TIMEZONE: ", tz);
+
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       const response = await this.service.exportComplaint(id, type, fileName, tz);
 

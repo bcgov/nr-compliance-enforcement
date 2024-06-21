@@ -31,6 +31,7 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { addMinutes, format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
+import { Logger } from "winston";
 
 // @SONAR_STOP@
 
@@ -863,7 +864,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 };
 
 //-- reporting data maps
-export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
+export const mapWildlifeReport = (mapper: Mapper, logger: any, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   speciesCodeToSpeciesDtoMap(mapper);
@@ -882,7 +883,19 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
 
     forMember(
       (destination) => destination.reportDate,
-      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd")),
+      mapFrom(() => {
+        console.log("TIMEZONE: ", tz);
+        console.log("REPORT GENERATED ON: ", reportGeneratedOn);
+        console.log("TO ZONED TIME: ", toZonedTime(reportGeneratedOn, tz));
+        console.log("FORMATTED: ", format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd"));
+
+        logger.debug("TIMEZONE: ", tz);
+        logger.debug("REPORT GENERATED ON: ", reportGeneratedOn);
+        logger.debug("TO ZONED TIME: ", toZonedTime(reportGeneratedOn, tz));
+        logger.debug("FORMATTED: ", format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd"));
+
+        return format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd");
+      }),
     ),
     forMember(
       (destination) => destination.reportTime,
