@@ -148,6 +148,7 @@ export const HWCRFileReview: FC = () => {
             <Button
               variant="outline-primary"
               size="sm"
+              id="review-edit-button"
               onClick={(e) => {
                 handleStateChange(EDIT_STATE);
               }}
