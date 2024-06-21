@@ -46,4 +46,5 @@ export interface CosGeoOrgUnit {
   office_location_name: string;
   area_code: string;
   area_name: string;
+  administrative_office_ind: boolean;
 }
