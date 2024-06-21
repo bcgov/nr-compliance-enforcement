@@ -29,9 +29,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { addMinutes, format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
-import { Logger } from "winston";
+import { format, toDate, toZonedTime } from "date-fns-tz";
 
 // @SONAR_STOP@
 
@@ -864,7 +862,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 };
 
 //-- reporting data maps
-export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
+export const mapWildlifeReport = (mapper: Mapper, logger: any, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   speciesCodeToSpeciesDtoMap(mapper);
@@ -884,12 +882,30 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     forMember(
       (destination) => destination.reportDate,
       mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        const formatted = format(zonedDate, "dd-MM-yyyy HH:mm:ss z", { timeZone: tz });
+
+        logger.log("UTC-DATE: ", utcDate);
+        logger.log("ZONED: ", zonedDate);
+        logger.log("FORMATTED: ", formatted);
+
         return format(toZonedTime(reportGeneratedOn, tz), "yyyy-MM-dd");
       }),
     ),
     forMember(
       (destination) => destination.reportTime,
-      mapFrom(() => format(toZonedTime(reportGeneratedOn, tz), "HH:mm")),
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        const formatted = format(zonedDate, "dd-MM-yyyy HH:mm:ss z", { timeZone: tz });
+
+        logger.log("UTC-DATE: ", utcDate);
+        logger.log("ZONED: ", zonedDate);
+        logger.log("FORMATTED: ", formatted);
+
+        return format(toZonedTime(reportGeneratedOn, tz), "HH:mm");
+      }),
     ),
 
     forMember(

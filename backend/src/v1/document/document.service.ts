@@ -17,13 +17,13 @@ export class DocumentService {
   //-- using the cdogs api generate a new document from the specified
   //-- complaint-id and complaint type
   //--
-  exportComplaint = async (id: string, type: COMPLAINT_TYPE, name: string, tz: string) => {
+  exportComplaint = async (id: string, type: COMPLAINT_TYPE, name: string, tz: string, logger: any) => {
     try {
       this.logger.debug("TIMEZONE: ", tz);
 
       //-- get the complaint from the system, but do not include anything other
       //-- than the base complaint. no maps, no attachments, no outcome data
-      const data = await this.ceds.getReportData(id, type, tz);
+      const data = await this.ceds.getReportData(id, type, tz, logger);
 
       //--
       return await this.cdogs.generate(name, data, type);

@@ -1303,8 +1303,8 @@ export class ComplaintService {
     return results;
   };
 
-  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
-    mapWildlifeReport(this.mapper, tz);
+  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string, logger: any) => {
+    mapWildlifeReport(this.mapper, logger, tz);
     mapAllegationReport(this.mapper, tz);
 
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
