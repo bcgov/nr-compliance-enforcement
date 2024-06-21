@@ -140,7 +140,7 @@ export const HWCRFileAttachments: FC = () => {
   };
 
   return (
-    <div
+    <section
       className="comp-details-section"
       id="outcome-attachments"
     >
@@ -204,6 +204,6 @@ export const HWCRFileAttachments: FC = () => {
           )}
         </Card.Body>
       </Card>
-    </div>
+    </section>
   );
 };
