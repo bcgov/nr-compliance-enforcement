@@ -93,7 +93,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
       >
         <Card.Body>
           {showSectionErrors && (
-            <div className="section-error-message">
+            <div className="section-error-message mb-4">
               <BsExclamationCircleFill />
               <span>Save section before closing the complaint.</span>
             </div>
