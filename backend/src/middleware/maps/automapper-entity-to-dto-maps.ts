@@ -29,9 +29,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { addMinutes, format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
-import { Logger } from "winston";
+import { toZonedTime, format } from "date-fns-tz";
 
 // @SONAR_STOP@
 
