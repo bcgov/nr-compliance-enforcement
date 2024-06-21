@@ -157,7 +157,7 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 };
 
 export const searchOfficers =
-  (input: string, zone: string) =>
+  (input: string) =>
   (state: RootState): Array<Officer> => {
     const {
       officers: { officers: items },
@@ -177,35 +177,37 @@ export const searchOfficers =
 
         const nameMatch =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
-        return zone === "SISL" ? fromAdminOffice && nameMatch : !fromAdminOffice && nameMatch;
+        return !fromAdminOffice && nameMatch;
       });
     }
 
     return results;
   };
 
-export const selectOfficersDropdown = (state: RootState): Array<Option> => {
-  const { officers: officerRoot } = state;
-  const { officers } = officerRoot;
+export const selectOfficersDropdown =
+  (includeAdminOffice: boolean) =>
+  (state: RootState): Array<Option> => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
 
-  const results = officers
-    ?.filter((officer) => {
-      const {
-        office_guid: {
-          cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-        },
-      } = officer;
-      return !fromAdminOffice;
-    })
-    .map((item) => {
-      const {
-        person_guid: { person_guid: id, first_name, last_name },
-      } = item;
-      return { value: id, label: `${first_name.substring(0, 1)} ${last_name}` };
-    });
+    const results = officers
+      ?.filter((officer) => {
+        const {
+          office_guid: {
+            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
+          },
+        } = officer;
+        return includeAdminOffice ? true : !fromAdminOffice;
+      })
+      .map((item) => {
+        const {
+          person_guid: { person_guid: id, first_name, last_name },
+        } = item;
+        return { value: id, label: `${first_name.substring(0, 1)} ${last_name}` };
+      });
 
-  return results;
-};
+    return results;
+  };
 
 // find officers that have an office in the given zone
 export const selectOfficersByZone =
@@ -289,7 +291,7 @@ export const selectOfficersByZoneAndAgency =
         const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
         const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
         const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
-        const result = zone === "SISL" ? fromAdminOffice && zoneAgencyMatch : !fromAdminOffice && zoneAgencyMatch;
+        const result = !fromAdminOffice && zoneAgencyMatch;
         return result;
       });
     }
