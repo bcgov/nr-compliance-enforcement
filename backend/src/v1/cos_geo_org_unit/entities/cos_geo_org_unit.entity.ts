@@ -47,6 +47,13 @@ export class CosGeoOrgUnit {
   @Column("character varying", { name: "area_name", length: 50 })
   area_name: string;
 
+  @ApiProperty({
+    example: "True",
+    description: "Indicates if the unit is a COSHQ Office.",
+  })
+  @Column("boolean", { name: "administrative_office_ind" })
+  administrative_office_ind: boolean;
+
   constructor(zone_code: string) {
     this.zone_code = zone_code;
   }

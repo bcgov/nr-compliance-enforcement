@@ -90,7 +90,7 @@ export const HWCRSupplementalNotes: FC = () => {
   return (
     <section
       id="outcome-note"
-      className="mb-4"
+      className="comp-details-section mb-4"
     >
       {renderNote}
     </section>

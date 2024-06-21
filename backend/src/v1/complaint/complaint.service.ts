@@ -1297,7 +1297,9 @@ export class ComplaintService {
     const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone);
     const unassigned = total - assigned;
 
-    const offices = await this._getComplaintsByOffice(complaintType, zone);
+    const offices = (await this._getComplaintsByOffice(complaintType, zone)).filter((office) => {
+      return office.name !== "COS HQ";
+    });
 
     results = { ...results, total, assigned, unassigned, offices };
     return results;
