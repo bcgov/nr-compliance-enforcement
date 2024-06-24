@@ -54,8 +54,9 @@ import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xr
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
-import { format } from "date-fns";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
+import { toDate, toZonedTime, format } from "date-fns-tz";
+import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1309,6 +1310,8 @@ export class ComplaintService {
   };
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
+    let data;
+
     mapWildlifeReport(this.mapper, tz);
     mapAllegationReport(this.mapper, tz);
 
@@ -1328,18 +1331,31 @@ export class ComplaintService {
 
       const result = await builder.getMany();
 
-      return result?.map((item) => {
-        const record = {
+      const test = result?.map((item) => {
+        const utcDate = toDate(item.createUtcTimestamp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        let updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
+
+        const latitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[1] : null;
+        const longitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[0] : null;
+
+        let record: ComplaintUpdateDto = {
           description: item.updDetailText,
-          updatedOn: "2024-06-04T18:51:28.738Z",
+          updatedOn: updatedOn,
+          updatedAt: updatedAt,
           location: {
-            summary: "",
-            details: "",
-            "latitude:": 0,
-            longitude: 0,
+            summary: item?.updLocationSummaryText,
+            details: item.updLocationDetailedText,
+            latitude,
+            longitude,
           },
         };
+
+        return record;
       });
+
+      return test;
     };
 
     try {
@@ -1374,28 +1390,37 @@ export class ComplaintService {
       builder.where("complaint.complaint_identifier = :id", { id });
       const result = await builder.getOne();
 
-      //-- get any updates a complaint may have
-      const updates = await _getUpdates(id);
-
       switch (complaintType) {
         case "HWCR": {
-          const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
+          data = this.mapper.map<HwcrComplaint, WildlifeReportData>(
             result as HwcrComplaint,
             "HwcrComplaint",
             "WildlifeReportData",
           );
-          return hwcr;
+
+          break;
         }
         case "ERS": {
-          const ers = this.mapper.map<AllegationComplaint, AllegationReportData>(
+          data = this.mapper.map<AllegationComplaint, AllegationReportData>(
             result as AllegationComplaint,
             "AllegationComplaint",
             "AllegationReportData",
           );
 
-          return ers;
+          break;
         }
       }
+
+      //-- get any updates a complaint may have
+      data.updates = await _getUpdates(id);
+
+      //-- set the report run date/time
+      const utcDate = toDate(new Date(), { timeZone: "UTC" });
+      const zonedDate = toZonedTime(utcDate, tz);
+      data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
+      data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
+
+      return data;
     } catch (error) {
       this.logger.error(error);
     }
