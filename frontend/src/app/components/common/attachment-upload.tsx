@@ -37,7 +37,7 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect }) => {
         style={{ display: "none" }}
       />
       <button
-        className="coms-carousel-upload-container"
+        className="comp-attachment-upload-btn"
         tabIndex={0}
         onClick={handleDivClick}
       >
