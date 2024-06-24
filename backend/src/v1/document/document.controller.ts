@@ -22,12 +22,15 @@ export class DocumentController {
   async exportComplaint(
     @Param("type") type: COMPLAINT_TYPE,
     @Query("id") id: string,
+    @Query("tz") tz: string,
     @Token() token,
     @Res() res: Response,
   ): Promise<void> {
     try {
+      this.logger.debug("TIMEZONE: ", tz);
+
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const response = await this.service.exportComplaint(id, type, fileName);
+      const response = await this.service.exportComplaint(id, type, fileName, tz);
 
       if (!response || !response.data) {
         throw Error(`exception: unable to export document for complaint: ${id}`);

@@ -29,7 +29,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { format } from "date-fns";
+import { format, toDate, toZonedTime } from "date-fns-tz";
 
 // @SONAR_STOP@
 
@@ -862,7 +862,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 };
 
 //-- reporting data maps
-export const mapWildlifeReport = (mapper: Mapper) => {
+export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   speciesCodeToSpeciesDtoMap(mapper);
@@ -881,11 +881,19 @@ export const mapWildlifeReport = (mapper: Mapper) => {
 
     forMember(
       (destination) => destination.reportDate,
-      mapFrom(() => format(reportGeneratedOn, "yyyy-MM-dd")),
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.reportTime,
-      mapFrom(() => format(reportGeneratedOn, "HH:mm")),
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "HH:mm", { timeZone: tz });
+      }),
     ),
 
     forMember(
@@ -898,11 +906,19 @@ export const mapWildlifeReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd HH:mm")),
+      mapFrom((source) => {
+        const utcDate = toDate(source.complaint_identifier.incident_reported_utc_timestmp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd HH:mm")),
+      mapFrom((source) => {
+        const utcDate = toDate(source.complaint_identifier.update_utc_timestamp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -937,7 +953,11 @@ export const mapWildlifeReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd HH:mm")),
+      mapFrom((source) => {
+        const utcDate = toDate(source.complaint_identifier.incident_utc_datetime, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.location,
@@ -951,7 +971,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[0].toString();
+        return coordinates[1].toString();
       }),
     ),
     forMember(
@@ -962,7 +982,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[1].toString();
+        return coordinates[0].toString();
       }),
     ),
 
@@ -1105,14 +1125,9 @@ export const mapWildlifeReport = (mapper: Mapper) => {
       (destination) => destination.attractants,
       mapFrom((src) => {
         if (src.attractant_hwcr_xref !== null) {
-          const attractants = mapper.mapArray<AttractantHwcrXref, AttractantXrefDto>(
-            src.attractant_hwcr_xref,
-            "AttractantXref",
-            "AttractantXrefDto",
-          );
+          const attractants = src.attractant_hwcr_xref.map((item) => item.attractant_code.short_description);
 
-          console.log(attractants.map((item) => item.attractant).join());
-          return attractants.map((item) => item.attractant).join();
+          return attractants.map((item) => item).join();
         }
 
         return "";
@@ -1121,7 +1136,7 @@ export const mapWildlifeReport = (mapper: Mapper) => {
   );
 };
 
-export const mapAllegationReport = (mapper: Mapper) => {
+export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
   violationCodeToViolationDto(mapper);
@@ -1137,11 +1152,19 @@ export const mapAllegationReport = (mapper: Mapper) => {
 
     forMember(
       (destination) => destination.reportDate,
-      mapFrom(() => format(reportGeneratedOn, "yyyy-MM-dd")),
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.reportTime,
-      mapFrom(() => format(reportGeneratedOn, "HH:mm")),
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "HH:mm", { timeZone: tz });
+      }),
     ),
 
     forMember(
@@ -1154,11 +1177,19 @@ export const mapAllegationReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => format(source.complaint_identifier.incident_reported_utc_timestmp, "yyyy-MM-dd HH:mm")),
+      mapFrom((source) => {
+        const utcDate = toDate(source.complaint_identifier.incident_reported_utc_timestmp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => format(source.complaint_identifier.update_utc_timestamp, "yyyy-MM-dd HH:mm")),
+      mapFrom((source) => {
+        const utcDate = toDate(source.complaint_identifier.update_utc_timestamp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -1193,7 +1224,11 @@ export const mapAllegationReport = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => format(source.complaint_identifier.incident_utc_datetime, "yyyy-MM-dd HH:mm")),
+      mapFrom((source) => {
+        const utcDate = toDate(source.complaint_identifier.incident_utc_datetime, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }),
     ),
     forMember(
       (destination) => destination.location,
@@ -1207,7 +1242,7 @@ export const mapAllegationReport = (mapper: Mapper) => {
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[0].toString();
+        return coordinates[1].toString();
       }),
     ),
     forMember(
@@ -1218,7 +1253,7 @@ export const mapAllegationReport = (mapper: Mapper) => {
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[1].toString();
+        return coordinates[0].toString();
       }),
     ),
 
@@ -1334,9 +1369,8 @@ export const mapAllegationReport = (mapper: Mapper) => {
     forMember(
       (destination) => destination.violationType,
       mapFrom((src) => {
-        const item = mapper.map<ViolationCode, Violation>(src.violation_code, "ViolationCode", "ViolationCodeDto");
-        if (item !== null) {
-          return item.violation;
+        if (src.violation_code) {
+          return src.violation_code.long_description;
         }
 
         return "";
