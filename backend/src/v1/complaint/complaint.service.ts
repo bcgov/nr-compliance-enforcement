@@ -55,6 +55,7 @@ import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 import { format } from "date-fns";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -67,6 +68,8 @@ export class ComplaintService {
   private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
+  @InjectRepository(ComplaintUpdate)
+  private _complaintUpdateRepository: Repository<ComplaintUpdate>;
 
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
@@ -1309,6 +1312,34 @@ export class ComplaintService {
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE) => {
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
+    const _getUpdates = async (id: string) => {
+      const builder = this._complaintUpdateRepository
+        .createQueryBuilder("updates")
+        .where({
+          complaintIdentifier: {
+            complaint_identifier: id,
+          },
+        })
+        .orderBy({
+          update_seq_number: "DESC",
+        });
+
+      const result = await builder.getMany();
+
+      return result?.map((item) => {
+        const record = {
+          description: item.updDetailText,
+          updatedOn: "2024-06-04T18:51:28.738Z",
+          location: {
+            summary: "",
+            details: "",
+            "latitude:": 0,
+            longitude: 0,
+          },
+        };
+      });
+    };
+
     try {
       if (complaintType) {
         builder = this._generateQueryBuilder(complaintType);
@@ -1340,6 +1371,9 @@ export class ComplaintService {
 
       builder.where("complaint.complaint_identifier = :id", { id });
       const result = await builder.getOne();
+
+      //-- get any updates a complaint may have
+      const updates = await _getUpdates(id);
 
       switch (complaintType) {
         case "HWCR": {
