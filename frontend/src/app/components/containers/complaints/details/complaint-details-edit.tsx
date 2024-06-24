@@ -1232,7 +1232,7 @@ export const ComplaintDetailsEdit: FC = () => {
             {/* Attachments */}
             <fieldset>
               <legend>Complainant attachments ({complaintAttachmentCount})</legend>
-              <div className="comp-details-attachments">
+              <div>
                 <AttachmentsCarousel
                   attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
                   complaintIdentifier={id}
