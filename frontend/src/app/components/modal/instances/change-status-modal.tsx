@@ -103,7 +103,9 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
     if (
       noEditSections &&
       assessmentCriteria &&
-      preventionCriteria &&
+      //The code line below commented becasue according to CE-835
+      //users can close a complaint when Action required is Yes and the Prevention and education section is not completed.
+      //preventionCriteria &&
       equipmentCriteria &&
       animalCriteria &&
       fileReviewCriteria
