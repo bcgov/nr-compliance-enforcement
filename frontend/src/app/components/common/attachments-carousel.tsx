@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef } from "react";
-import { CarouselProvider, Slider, ButtonBack, ButtonNext } from "pure-react-carousel";
+import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
