@@ -971,7 +971,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[0].toString();
+        return coordinates[1].toString();
       }),
     ),
     forMember(
@@ -982,7 +982,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[1].toString();
+        return coordinates[0].toString();
       }),
     ),
 
@@ -1242,7 +1242,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[0].toString();
+        return coordinates[1].toString();
       }),
     ),
     forMember(
@@ -1253,7 +1253,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
             location_geometry_point: { coordinates },
           },
         } = source;
-        return coordinates[1].toString();
+        return coordinates[0].toString();
       }),
     ),
 
