@@ -29,7 +29,7 @@ export const CompRadioGroup: FC<Props> = ({
 }) => {
   return (
     <div>
-      <div className={errorMessage ? `${groupClassName} equipment-form-radiogroup-error ` : groupClassName}>
+      <div className={errorMessage ? `${groupClassName} comp-radio-group` : groupClassName}>
         {options.map((item, index) => {
           return (
             <Form.Check

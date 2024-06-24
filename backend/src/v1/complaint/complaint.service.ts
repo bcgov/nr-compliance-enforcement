@@ -100,9 +100,6 @@ export class ComplaintService {
     mapComplaintDtoToComplaintTable(mapper);
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
-
-    mapWildlifeReport(mapper);
-    mapAllegationReport(mapper);
   }
 
   private _getAgencyByUser = async (): Promise<AgencyCode> => {
@@ -1303,13 +1300,18 @@ export class ComplaintService {
     const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone);
     const unassigned = total - assigned;
 
-    const offices = await this._getComplaintsByOffice(complaintType, zone);
+    const offices = (await this._getComplaintsByOffice(complaintType, zone)).filter((office) => {
+      return office.name !== "COS HQ";
+    });
 
     results = { ...results, total, assigned, unassigned, offices };
     return results;
   };
 
-  getReportData = async (id: string, complaintType: COMPLAINT_TYPE) => {
+  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
+    mapWildlifeReport(this.mapper, tz);
+    mapAllegationReport(this.mapper, tz);
+
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
     const _getUpdates = async (id: string) => {

@@ -4,10 +4,10 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch } from "../../hooks/hooks";
 import { generateApiParameters, get } from "../../common/api";
 import { formatDateTime } from "../../common/methods";
-import { BsCloudDownload, BsTrash } from "react-icons/bs";
 import { COMSObject } from "../../types/coms/object";
 import config from "../../../config";
 import AttachmentIcon from "./attachment-icon";
+import { Button } from "react-bootstrap";
 
 type Props = {
   index: number;
@@ -38,9 +38,9 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
     let className = "";
 
     if (attachment.errorMesage) {
-      className = "error-slide";
+      className = "comp-attachment-slide-error";
     } else if (attachment.pendingUpload) {
-      className = "pending-slide";
+      className = "comp-attachment-slide-pending";
     }
 
     return className;
@@ -51,35 +51,41 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
       index={index}
       key={index}
     >
-      <div className={`coms-carousel-slide ${getSlideClass()}`}>
-        <div className="coms-carousel-actions">
+      <div className={`comp-attachment-slide ${getSlideClass()}`}>
+        <div className="comp-attachment-slide-actions">
           {!attachment.pendingUpload && (
-            <BsCloudDownload
+            <Button
+              variant="light"
+              className="icon-btn comp-slide-download-btn"
               tabIndex={index}
-              className="download-icon"
               onClick={() => handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)}
-            />
+            >
+              <i className="bi bi-cloud-arrow-down"></i>
+            </Button>
           )}
           {allowDelete && (
-            <BsTrash
-              className="delete-icon"
+            <Button
+              variant="light"
+              className="icon-btn"
               tabIndex={index}
               onClick={() => onFileRemove(attachment)}
-            />
+            >
+              <i className="bi bi-trash3"></i>
+            </Button>
           )}
         </div>
-        <div className="top-section">
+        <div className="comp-attachment-slide-top">
           <AttachmentIcon
             filename={attachment.name}
             imageIconString={attachment.imageIconString}
           />
         </div>
-        <div className="bottom-section">
-          <div className="slide_text slide_file_name">{decodeURIComponent(attachment.name)}</div>
+        <div className="comp-attachment-slide-bottom">
+          <div className="comp-attachment-slide-name">{decodeURIComponent(attachment.name)}</div>
           {attachment?.pendingUpload && attachment?.errorMesage ? (
-            <div>{attachment?.errorMesage}</div>
+            <div className="comp-attachment-slide-meta">{attachment?.errorMesage}</div>
           ) : (
-            <div className="slide_text">
+            <div className="comp-attachment-slide-meta">
               {attachment?.pendingUpload
                 ? "Save to upload attachment(s)"
                 : formatDateTime(attachment.createdAt?.toString())}

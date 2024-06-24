@@ -178,20 +178,15 @@ Cypress.Commands.add("verifyAttachmentsCarousel", (uploadable: boolean, divId: s
     cy.get("h3").contains("attachments");
 
     // verify the carousel exists (since 23-000076, 23-006888 are known to have attachments)
-    cy.get("div.carousel.coms-carousel").should("exist");
-
-    // verify that the previous/next buttons exist (but not visibe)
-    cy.get('button[aria-label="previous"]').should("exist").and("not.be.visible");
-
-    cy.get('button[aria-label="next"]').should("exist").and("not.be.visible");
+    cy.get("div.comp-carousel").should("exist");
 
     if (!uploadable) {
-      cy.get("button.coms-carousel-upload-container").should("not.exist");
+      cy.get("button.comp-attachment-upload-btn").should("not.exist");
 
-      cy.get(".coms-carousel-actions").first().invoke("attr", "style", "display: block");
+      cy.get(".comp-attachment-slide-actions").first().invoke("attr", "style", "display: block");
 
       // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
-      cy.get(".download-icon").should("exist");
+      cy.get(".comp-slide-download-btn").should("exist");
     }
   });
 });

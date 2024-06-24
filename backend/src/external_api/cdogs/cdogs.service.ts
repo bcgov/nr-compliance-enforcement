@@ -140,7 +140,7 @@ export class CdogsService implements ExternalApiService {
 
       //-- update the system with the hash provided by the CDGOS api
       const { data: hash } = response;
-      this.configService.updateByCode(templateCode, hash);
+      await this.configService.updateByCode(templateCode, hash);
     } catch (error) {
       //-- if CDOGS already has a template cached the api will throw an error
       //-- with the existing template hash, this will need to be saved for
@@ -153,7 +153,7 @@ export class CdogsService implements ExternalApiService {
 
       if (status === constants.HTTP_STATUS_METHOD_NOT_ALLOWED) {
         //-- existing template
-        this.configService.updateByCode(templateCode, hash);
+        await this.configService.updateByCode(templateCode, hash);
       } else {
         //-- valid error
         this.logger.error(`exception: unable to upload template: ${template} - error: ${error}`);

@@ -170,36 +170,44 @@ export const searchOfficers =
       results = items.filter((officer) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
+          office_guid: {
+            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
+          },
         } = officer;
 
-        if (firstName.toLocaleLowerCase().includes(searchInput)) {
-          return true;
-        }
-
-        if (lastName.toLocaleLowerCase().includes(searchInput)) {
-          return true;
-        }
-
-        return false;
+        const nameMatch =
+          firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
+        return !fromAdminOffice && nameMatch;
       });
     }
 
     return results;
   };
 
-export const selectOfficersDropdown = (state: RootState): Array<Option> => {
-  const { officers: officerRoot } = state;
-  const { officers } = officerRoot;
+export const selectOfficersDropdown =
+  (includeAdminOffice: boolean) =>
+  (state: RootState): Array<Option> => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
 
-  const results = officers?.map((item) => {
-    const {
-      person_guid: { person_guid: id, first_name, last_name },
-    } = item;
-    return { value: id, label: `${first_name.substring(0, 1)} ${last_name}` };
-  });
+    const results = officers
+      ?.filter((officer) => {
+        const {
+          office_guid: {
+            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
+          },
+        } = officer;
+        return includeAdminOffice ? true : !fromAdminOffice;
+      })
+      .map((item) => {
+        const {
+          person_guid: { person_guid: id, first_name, last_name },
+        } = item;
+        return { value: id, label: `${first_name.substring(0, 1)} ${last_name}` };
+      });
 
-  return results;
-};
+    return results;
+  };
 
 // find officers that have an office in the given zone
 export const selectOfficersByZone =
@@ -227,9 +235,14 @@ export const selectOfficersByAgency =
     const { officers } = officerRoot;
 
     return officers.filter((officer) => {
+      const {
+        office_guid: {
+          cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
+        },
+      } = officer;
       // check for nulls
       const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-      return agency === agencyCode;
+      return agency === agencyCode && !fromAdminOffice;
     });
   };
 
@@ -276,7 +289,10 @@ export const selectOfficersByZoneAndAgency =
         // check for nulls
         const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
         const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-        return zone === zoneCode && (agency === agencyCode || !agency);
+        const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
+        const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
+        const result = !fromAdminOffice && zoneAgencyMatch;
+        return result;
       });
     }
 

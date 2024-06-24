@@ -1,18 +1,181 @@
-.coms-carousel {
-  min-height: 230px;
-  max-height: 230px;
+// OVERRIDES
+.carousel__slider-tray {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100% !important;
+  transform: none !important;
 }
 
+@include media-breakpoint-up(md) {
+  .carousel__slider-tray {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .carousel__slider-tray {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.carousel__slide {
+  width: 100% !important;
+  height: 100% !important;
+  padding-bottom: 0 !important;
+}
+
+div[class^="slideInner"] {
+  position: relative;
+}
+
+.comp-attachment-upload-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: 1px dotted $gray-400;
+  border-radius: 6px;
+  background-color: $gray-110;
+  color: $gray-400;
+  cursor: pointer;
+}
+
+.comp-attachment-upload-btn,
+.comp-attachment-slide {
+  height: 100%;
+  min-height: 150px;
+}
+
+.comp-attachment-slide {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  height: 100%;
+
+  &-pending {
+    .comp-attachment-slide-top {
+      img,
+      svg {
+        opacity: 0.25;
+      }
+    }
+  }
+
+  &-error {
+    &::before {
+      content: " ";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      outline: 3px solid red;
+      outline-offset: -2px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+  }
+}
+
+@media screen and (max-device-width: 768px) and (orientation: portrait) {
+  .carousel__slider-tray {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .comp-attachment-upload-btn,
+  .comp-attachment-slide {
+    min-height: 150px;
+  }
+}
+
+@media screen and (max-device-width: 1024px) and (orientation: landscape) {
+  .carousel__slider-tray {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .comp-attachment-upload-btn,
+  .comp-attachment-slide {
+    min-height: 180px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .carousel__slider-tray {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .comp-attachment-upload-btn,
+  .comp-attachment-slide {
+    min-height: 200px;
+  }
+}
+
+.comp-attachment-slide-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  position: relative;
+  background: $gray-200;
+  overflow: hidden;
+
+  img {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  svg {
+    font-size: 2rem;
+  }
+}
+
+.comp-attachment-slide-bottom {
+  flex: 0 0 auto;
+  padding: 8px;
+  padding-top: 6px;
+  height: 55px;
+  font-size: 0.8375rem;
+  background: $white;
+}
+
+.comp-attachment-slide-name,
+.comp-attachment-slide-meta {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.comp-attachment-slide-name {
+  font-weight: 700;
+}
+
+.comp-attachment-slide-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 4px;
+}
+
+// LEGACY
 .coms-carousel-slide {
   position: relative;
-  width: 289px;
-  height: 200px;
   display: flex;
   flex-direction: column;
   border: 1px solid $gray-400;
   border-radius: 3px;
   text-align: center;
-  gap: 10px;
+  overflow: hidden;
 }
 
 .coms-carousel:hover .back-icon,
@@ -54,45 +217,10 @@
   visibility: hidden;
 }
 
-.coms-slider {
-  margin-right: 10px;
-  height: 200px;
-}
-
-.carousel-save-buttons {
-  clear: both;
-  float: right;
-}
-
-.delete-icon,
-.download-icon {
-  font-size: 24px;
-  background-color: $gray-300;
-  width: 40px;
-  height: 40px;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-.delete-icon:hover,
-.download-icon:hover {
-  background-color: $gray-200;
-  cursor: pointer;
-}
-
 .coms-carousel-slide:hover .coms-carousel-actions {
   display: flex;
   gap: 10px;
   z-index: 1; //sit above the preview
-}
-
-.coms-carousel-slide .top-section {
-  height: 140px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: $gray-300;
-  font-size: 32px;
 }
 
 .coms-carousel-slide:hover .top-section {
@@ -104,59 +232,13 @@
   height: 50px; /* Adjust the size as needed */
 }
 
-.coms-carousel-slide .bottom-section {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  align-items: flex-start;
-  padding-left: 16px;
-  font-size: 16px;
-  background-color: white;
-  height: 60px;
-}
-
-.coms-carousel-slide .slide_text {
-  font-size: 16px;
-  margin-bottom: 5px;
-  text-align: left;
-}
-
-.coms-carousel-slide .slide_file_name {
-  font-weight: bold;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 250px;
-}
-
-.error-slide {
-  border-color: $bc-gov-danger;
-}
-
-.pending-slide .top-section {
-  color: $gray-500;
-  background-color: $gray-200;
-}
-
-.pending-slide:hover .top-section {
-  color: black;
-}
-
-.error-slide .top-section,
-.error-slide .bottom-section {
-  color: $bc-gov-danger;
-}
-
 .coms-carousel-upload-container {
-  float: left;
-  margin-right: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 289px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   border: 1px dotted $gray-400;
   border-radius: 3px;
   background-color: $gray-110;
@@ -174,13 +256,6 @@
 
 .upload-text {
   font-size: 16px;
-}
-
-.coms-carousel-actions {
-  display: none;
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
 
 .coms-carousel-error {

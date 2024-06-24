@@ -424,16 +424,24 @@
 .comp-details-body {
   padding: 24px;
 
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+  }
+
   h2 {
     font-size: 1.5rem;
-    font-weight: 700;
     line-height: normal;
   }
 
   h3 {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    font-weight: 700;
+    margin-bottom: 1.25rem;
+    font-size: 1.24rem;
+  }
+
+  h4 {
+    font-size: 1.125rem;
   }
 
   section + section {
@@ -448,12 +456,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 
   h2 {
     margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
   }
 
   h3 {
@@ -498,6 +504,10 @@
       margin: 0;
       padding-left: 1.5rem;
     }
+
+    .comp-avatar {
+      margin: -0.25rem;
+    }
   }
 
   pre {
@@ -522,7 +532,7 @@
   }
 
   .section-error-message {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
   }
 
   .card.border-danger {
@@ -626,10 +636,6 @@
       flex: 1 1 auto;
     }
   }
-
-  div + .error-message {
-    margin-top: 4px;
-  }
 }
 
 .comp-details-form-row {
@@ -639,6 +645,12 @@
 
   > label {
     width: 12rem;
+    color: $gray-500;
+  }
+
+  > legend {
+    width: 12rem;
+    font-weight: 400;
     color: $gray-500;
   }
 
@@ -652,7 +664,8 @@
     flex-direction: row;
     gap: 16px;
 
-    > label {
+    > label,
+    > legend {
       flex: 0 0 auto;
       margin-top: 6px;
       width: 16rem;
@@ -662,7 +675,8 @@
 
 @include media-breakpoint-up(xl) {
   .comp-details-form-row {
-    > label {
+    > label,
+    > legend {
       width: 18rem;
     }
   }
@@ -1816,10 +1830,6 @@ p {
 
 .input-field-select__option {
   min-height: 35px;
-}
-
-.error-message {
-  color: $bc-gov-danger;
 }
 
 .error-border {
