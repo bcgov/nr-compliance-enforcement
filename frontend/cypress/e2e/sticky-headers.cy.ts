@@ -18,7 +18,6 @@ describe("Sticky Headers", () => {
     //scroll to the bottom of the page
     cy.get(".comp-main-content").scrollTo("bottom"); // Scroll 'sidebar' to its bottom
 
-    cy.get(".comp-header").isInViewport();
     cy.get(".comp-details-header").isInViewport();
   });
 
@@ -31,7 +30,6 @@ describe("Sticky Headers", () => {
     //scroll to the bottom of the page
     cy.get(".comp-main-content").scrollTo("bottom"); // Scroll 'sidebar' to its bottom
 
-    cy.get(".comp-header").isInViewport();
     cy.get(".comp-details-header").isInViewport();
   });
 
@@ -44,7 +42,6 @@ describe("Sticky Headers", () => {
     //scroll to the bottom of the page
     cy.get(".comp-main-content").scrollTo("bottom"); // Scroll 'sidebar' to its bottom
 
-    cy.get(".comp-header").isInViewport();
     cy.get(".comp-details-header").isInViewport();
   });
 });

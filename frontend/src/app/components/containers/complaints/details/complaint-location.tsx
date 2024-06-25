@@ -76,14 +76,12 @@ export const ComplaintLocation: FC<Props> = ({
   return (
     <section className={"comp-details-section" + calculatedClass}>
       <h3>Complaint Location</h3>
-      <div className="comp-complaint-location">
-        <LeafletMapWithPoint
-          coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
-          draggable={draggable}
-          onMarkerMove={onMarkerMove}
-          hideMarker={hideMarker}
-        />
-      </div>
+      <LeafletMapWithPoint
+        coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
+        draggable={draggable}
+        onMarkerMove={onMarkerMove}
+        hideMarker={hideMarker}
+      />
     </section>
   );
 };
