@@ -14,7 +14,7 @@ type props = {
 };
 
 export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode, deleteNote }) => {
-  const { initials, displayName } = useAppSelector(selectNotesOfficer);
+  const { displayName } = useAppSelector(selectNotesOfficer);
 
   return (
     <>
@@ -23,6 +23,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
         <div className="comp-details-section-header-actions">
           <Button
             variant="outline-primary"
+            size="sm"
             id="notes-edit-button"
             onClick={(e) => enableEditMode(true)}
           >
@@ -30,6 +31,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
             <span>Edit</span>
           </Button>
           <Button
+            size="sm"
             variant="outline-primary"
             id="notes-delete-button"
             onClick={() => deleteNote()}
@@ -52,12 +54,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
               <div>
                 <dt>Officer</dt>
                 <dd>
-                  <div
-                    className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                    data-initials-sm={initials}
-                  >
-                    <span id="comp-notes-officer">{displayName}</span>
-                  </div>
+                  <span id="comp-notes-officer">{displayName}</span>
                 </dd>
               </div>
               <div>
