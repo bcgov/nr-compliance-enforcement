@@ -30,7 +30,6 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { format, toDate, toZonedTime } from "date-fns-tz";
-import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 
 import parsePhoneNumber from "libphonenumber-js";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
@@ -879,29 +878,10 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
-  console.log("RAWR!!");
-
   createMap<HwcrComplaint, WildlifeReportData>(
     mapper,
     "HwcrComplaint",
     "WildlifeReportData",
-
-    forMember(
-      (destination) => destination.reportDate,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-      }),
-    ),
-    forMember(
-      (destination) => destination.reportTime,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "HH:mm", { timeZone: tz });
-      }),
-    ),
 
     forMember(
       (destination) => destination.id,
@@ -1170,23 +1150,6 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     mapper,
     "AllegationComplaint",
     "AllegationReportData",
-
-    forMember(
-      (destination) => destination.reportDate,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-      }),
-    ),
-    forMember(
-      (destination) => destination.reportTime,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "HH:mm", { timeZone: tz });
-      }),
-    ),
 
     forMember(
       (destination) => destination.id,
