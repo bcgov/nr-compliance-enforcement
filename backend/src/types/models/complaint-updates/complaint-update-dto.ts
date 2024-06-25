@@ -1,4 +1,5 @@
 export interface ComplaintUpdateDto {
+  sequenceId: number;
   description: string;
   updatedOn: string;
   updatedAt: string;

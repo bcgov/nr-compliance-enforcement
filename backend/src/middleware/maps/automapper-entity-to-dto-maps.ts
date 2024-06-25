@@ -864,7 +864,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 
 //-- reporting data maps
 export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
-  // const reportGeneratedOn: Date = new Date();
+  const reportGeneratedOn: Date = new Date();
 
   speciesCodeToSpeciesDtoMap(mapper);
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
@@ -880,22 +880,22 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     "HwcrComplaint",
     "WildlifeReportData",
 
-    // forMember(
-    //   (destination) => destination.reportDate,
-    //   mapFrom(() => {
-    //     const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-    //     const zonedDate = toZonedTime(utcDate, tz);
-    //     return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-    //   }),
-    // ),
-    // forMember(
-    //   (destination) => destination.reportTime,
-    //   mapFrom(() => {
-    //     const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-    //     const zonedDate = toZonedTime(utcDate, tz);
-    //     return format(zonedDate, "HH:mm", { timeZone: tz });
-    //   }),
-    // ),
+    forMember(
+      (destination) => destination.reportDate,
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+      }),
+    ),
+    forMember(
+      (destination) => destination.reportTime,
+      mapFrom(() => {
+        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        return format(zonedDate, "HH:mm", { timeZone: tz });
+      }),
+    ),
 
     forMember(
       (destination) => destination.id,

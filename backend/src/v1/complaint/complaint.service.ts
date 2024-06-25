@@ -1331,7 +1331,7 @@ export class ComplaintService {
 
       const result = await builder.getMany();
 
-      const test = result?.map((item) => {
+      const updates = result?.map((item) => {
         const utcDate = toDate(item.createUtcTimestamp, { timeZone: "UTC" });
         const zonedDate = toZonedTime(utcDate, tz);
         let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
@@ -1341,6 +1341,7 @@ export class ComplaintService {
         const longitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[0] : null;
 
         let record: ComplaintUpdateDto = {
+          sequenceId: item.updateSeqNumber,
           description: item.updDetailText,
           updatedOn: updatedOn,
           updatedAt: updatedAt,
@@ -1351,11 +1352,10 @@ export class ComplaintService {
             longitude,
           },
         };
-
         return record;
       });
 
-      return test;
+      return updates;
     };
 
     try {
@@ -1415,10 +1415,11 @@ export class ComplaintService {
       data.updates = await _getUpdates(id);
 
       //-- set the report run date/time
-      const utcDate = toDate(new Date(), { timeZone: "UTC" });
-      const zonedDate = toZonedTime(utcDate, tz);
-      data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
-      data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
+      //-- use this in CE-828
+      // const utcDate = toDate(new Date(), { timeZone: "UTC" });
+      // const zonedDate = toZonedTime(utcDate, tz);
+      // data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
+      // data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
 
       return data;
     } catch (error) {
