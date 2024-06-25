@@ -378,7 +378,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       />
 
       <Card
-        className="comp-animal-card"
+        className="comp-animal-card comp-outcome-report-block"
         border={showSectionErrors ? "danger" : "default"}
       >
         <Card.Body>

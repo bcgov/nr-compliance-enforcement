@@ -386,7 +386,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   return (
     <Card
-      className="comp-animal-card"
+      className="comp-animal-card comp-outcome-report-block"
       border={showSectionErrors ? "danger" : "default"}
     >
       <Card.Body>
