@@ -254,9 +254,14 @@ export const selectOfficersByAgencyDropdown =
 
     const data = officers
       .filter((officer) => {
+        const {
+          office_guid: {
+            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
+          },
+        } = officer;
         // check for nulls
         const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-        return agency === agencyCode;
+        return agency === agencyCode && !fromAdminOffice;
       })
       .map((officer: Officer) => ({
         value: officer.person_guid.person_guid,
