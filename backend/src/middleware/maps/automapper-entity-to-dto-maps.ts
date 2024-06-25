@@ -1039,8 +1039,8 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         console.log("WILDLIFE PHONE1: ", phone);
 
         if (phone) {
-          console.log("WILDLIFE SANITIZE: ", phone.replace(/\D/g, ''))
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ''));
+          console.log("WILDLIFE SANITIZE: ", phone.replace(/\D/g, ""));
+          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""));
           return phoneNumber.formatNational();
         }
 
@@ -1318,8 +1318,8 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         console.log("ALLEGATION PHONE1: ", phone);
 
         if (phone) {
-          console.log("ALLEGATION SANITIZE: ", phone.replace(/\D/g, ''))
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, '');
+          console.log("ALLEGATION SANITIZE: ", phone.replace(/\D/g, ""));
+          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""));
           return phoneNumber.formatNational();
         }
 
