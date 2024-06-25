@@ -59,7 +59,6 @@ export const HWCRFileReview: FC = () => {
           } = officer[0];
           initials = `${givenName?.substring(0, 1)}${surName?.substring(0, 1)}`;
           displayName = `${givenName} ${surName}`;
-          setOfficerInitials(initials);
           setOfficerName(displayName);
           setReviewCompleteDate(reviewCompleteAction.date);
         }
