@@ -52,11 +52,13 @@ import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xr
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
+
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
+
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1311,7 +1313,6 @@ export class ComplaintService {
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
     let data;
-
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
     const _getUpdates = async (id: string) => {
@@ -1390,16 +1391,17 @@ export class ComplaintService {
       switch (complaintType) {
         case "HWCR": {
           mapWildlifeReport(this.mapper, tz);
+
           data = this.mapper.map<HwcrComplaint, WildlifeReportData>(
             result as HwcrComplaint,
             "HwcrComplaint",
             "WildlifeReportData",
           );
-
           break;
         }
         case "ERS": {
           mapAllegationReport(this.mapper, tz);
+
           data = this.mapper.map<AllegationComplaint, AllegationReportData>(
             result as AllegationComplaint,
             "AllegationComplaint",
@@ -1414,11 +1416,10 @@ export class ComplaintService {
       data.updates = await _getUpdates(id);
 
       //-- set the report run date/time
-      //-- use this in CE-828
-      // const utcDate = toDate(new Date(), { timeZone: "UTC" });
-      // const zonedDate = toZonedTime(utcDate, tz);
-      // data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
-      // data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
+      const utcDate = toDate(new Date(), { timeZone: "UTC" });
+      const zonedDate = toZonedTime(utcDate, tz);
+      data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
+      data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
 
       return data;
     } catch (error) {
