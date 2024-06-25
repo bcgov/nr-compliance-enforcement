@@ -19,6 +19,8 @@ export class DocumentService {
   //--
   exportComplaint = async (id: string, type: COMPLAINT_TYPE, name: string, tz: string) => {
     try {
+      this.logger.debug("TIMEZONE: ", tz);
+
       //-- get the complaint from the system, but do not include anything other
       //-- than the base complaint. no maps, no attachments, no outcome data
       const data = await this.ceds.getReportData(id, type, tz);

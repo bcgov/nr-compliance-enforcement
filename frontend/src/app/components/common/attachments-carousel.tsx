@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef } from "react";
-import { CarouselProvider, Slider, ButtonBack, ButtonNext } from "pure-react-carousel";
+import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
@@ -8,7 +8,6 @@ import {
   setAttachments,
   setOutcomeAttachments,
 } from "../../store/reducers/attachments";
-import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "../../types/coms/object";
@@ -203,26 +202,17 @@ export const AttachmentsCarousel: FC<Props> = ({
   }, [allowUpload]);
 
   return (
-    <div
-      className="comp-complaint-details-block"
-      ref={carouselContainerRef}
-    >
+    <div ref={carouselContainerRef}>
       {(allowUpload || (slides && slides?.length > 0)) && (
         <CarouselProvider
           naturalSlideWidth={SLIDE_WIDTH}
           naturalSlideHeight={SLIDE_HEIGHT}
           totalSlides={slides ? slides.length : 0}
           visibleSlides={visibleSlides}
-          className="coms-carousel"
+          className="comp-carousel"
         >
-          <ButtonBack className="back-icon">
-            <BsArrowLeftShort />
-          </ButtonBack>
-          <ButtonNext className="next-icon">
-            <BsArrowRightShort />
-          </ButtonNext>
-          {allowUpload && <AttachmentUpload onFileSelect={onFileSelect} />}
           <Slider className="coms-slider">
+            {allowUpload && <AttachmentUpload onFileSelect={onFileSelect} />}
             {slides?.map((item, index) => (
               <AttachmentSlide
                 key={item.name}
