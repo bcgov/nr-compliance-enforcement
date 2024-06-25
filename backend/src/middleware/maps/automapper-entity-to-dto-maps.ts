@@ -1035,35 +1035,42 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
+        const { caller_phone_1: phone } = complaint;
 
-        const phoneNumber = parsePhoneNumber(
-          complaint.caller_phone_1 !== undefined || complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "",
-        );
+        if (phone) {
+          const phoneNumber = parsePhoneNumber(phone);
+          return phoneNumber.formatNational();
+        }
 
-        return phoneNumber ? phoneNumber.formatNational() : "";
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
+        const { caller_phone_2: phone } = complaint;
 
-        const phoneNumber = parsePhoneNumber(
-          complaint.caller_phone_2 !== undefined || complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "",
-        );
+        if (phone) {
+          const phoneNumber = parsePhoneNumber(phone);
+          return phoneNumber.formatNational();
+        }
 
-        return phoneNumber ? phoneNumber.formatNational() : "";
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        const phoneNumber = parsePhoneNumber(
-          complaint.caller_phone_3 !== undefined || complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "",
-        );
+        const { caller_phone_3: phone } = complaint;
 
-        return phoneNumber ? phoneNumber.formatNational() : "";
+        if (phone) {
+          const phoneNumber = parsePhoneNumber(phone);
+          return phoneNumber.formatNational();
+        }
+
+        return "";
       }),
     ),
     forMember(
@@ -1303,35 +1310,42 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
+        const { caller_phone_1: phone } = complaint;
 
-        const phoneNumber = parsePhoneNumber(
-          complaint.caller_phone_1 !== undefined || complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "",
-        );
+        if (phone) {
+          const phoneNumber = parsePhoneNumber(phone);
+          return phoneNumber.formatNational();
+        }
 
-        return phoneNumber ? phoneNumber.formatNational() : "";
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
+        const { caller_phone_2: phone } = complaint;
 
-        const phoneNumber = parsePhoneNumber(
-          complaint.caller_phone_2 !== undefined || complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "",
-        );
+        if (phone) {
+          const phoneNumber = parsePhoneNumber(phone);
+          return phoneNumber.formatNational();
+        }
 
-        return phoneNumber ? phoneNumber.formatNational() : "";
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        const phoneNumber = parsePhoneNumber(
-          complaint.caller_phone_3 !== undefined || complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "",
-        );
+        const { caller_phone_3: phone } = complaint;
 
-        return phoneNumber ? phoneNumber.formatNational() : "";
+        if (phone) {
+          const phoneNumber = parsePhoneNumber(phone);
+          return phoneNumber.formatNational();
+        }
+
+        return "";
       }),
     ),
     forMember(
