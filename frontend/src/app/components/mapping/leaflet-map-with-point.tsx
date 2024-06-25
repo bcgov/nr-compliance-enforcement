@@ -9,6 +9,7 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet from "leaflet";
 import NonDismissibleAlert from "../common/non-dismissible-alert";
 import { MapGestureHandler } from "./map-gesture-handler";
+import { Card } from "react-bootstrap";
 
 type Props = {
   coordinates?: { lat: number; lng: number };
@@ -70,26 +71,28 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
   return (
     <>
       {hideMarker && <NonDismissibleAlert />}
-      <MapContainer
-        id="map"
-        center={markerPosition}
-        zoom={12}
-        style={{ height: "400px", width: "100%" }}
-        className="map-container"
-      >
-        <MapGestureHandler />
-        <Centerer />
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {!hideMarker && (
-          <Marker
-            data-testid="complaint-location-marker"
-            position={markerPosition}
-            icon={customMarkerIcon}
-            draggable={draggable}
-            eventHandlers={{ dragend: handleMarkerDragEnd }}
-          ></Marker>
-        )}
-      </MapContainer>
+      <Card>
+        <MapContainer
+          id="map"
+          center={markerPosition}
+          zoom={12}
+          style={{ height: "400px", width: "100%" }}
+          className="map-container"
+        >
+          <MapGestureHandler />
+          <Centerer />
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          {!hideMarker && (
+            <Marker
+              data-testid="complaint-location-marker"
+              position={markerPosition}
+              icon={customMarkerIcon}
+              draggable={draggable}
+              eventHandlers={{ dragend: handleMarkerDragEnd }}
+            ></Marker>
+          )}
+        </MapContainer>
+      </Card>
     </>
   );
 };

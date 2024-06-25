@@ -62,7 +62,7 @@ import { AllegationComplaint as AllegationComplaintDto } from "../../../../types
 import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
-import { Button } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
@@ -673,14 +673,15 @@ export const ComplaintDetailsEdit: FC = () => {
       {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
 
       <section className="comp-details-body comp-container">
+        <hr className="comp-details-body-spacer"></hr>
         <div className="comp-details-section-header">
           <h2>Complaint Details</h2>
           {readOnly && (
             <div className="comp-details-section-header-actions">
               <Button
-                id="details-screen-edit-button"
-                title="Edit Complaint"
                 variant="outline-primary"
+                size="sm"
+                id="details-screen-edit-button"
                 onClick={editButtonClick}
               >
                 <i className="bi bi-pencil"></i>
@@ -705,13 +706,17 @@ export const ComplaintDetailsEdit: FC = () => {
           {readOnly && (
             <section id="complaint_attachments_div_id">
               <h3>Complainant attachments ({complaintAttachmentCount})</h3>
-              <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
-                <AttachmentsCarousel
-                  attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                  complaintIdentifier={id}
-                  onSlideCountChange={handleSlideCountChange}
-                />
-              </div>
+              <Card>
+                <Card.Body>
+                  <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
+                    <AttachmentsCarousel
+                      attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+                      complaintIdentifier={id}
+                      onSlideCountChange={handleSlideCountChange}
+                    />
+                  </div>
+                </Card.Body>
+              </Card>
             </section>
           )}
 
