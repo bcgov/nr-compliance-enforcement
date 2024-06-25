@@ -54,7 +54,7 @@ import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xr
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
-import { format } from "date-fns";
+import { format, toDate, toZonedTime } from "date-fns-tz";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1306,6 +1306,8 @@ export class ComplaintService {
   };
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
+    let data;
+
     mapWildlifeReport(this.mapper, tz);
     mapAllegationReport(this.mapper, tz);
 
@@ -1345,23 +1347,32 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "HWCR": {
-          const hwcr = this.mapper.map<HwcrComplaint, WildlifeReportData>(
+          data = this.mapper.map<HwcrComplaint, WildlifeReportData>(
             result as HwcrComplaint,
             "HwcrComplaint",
             "WildlifeReportData",
           );
-          return hwcr;
+          break;
         }
         case "ERS": {
-          const ers = this.mapper.map<AllegationComplaint, AllegationReportData>(
+          data = this.mapper.map<AllegationComplaint, AllegationReportData>(
             result as AllegationComplaint,
             "AllegationComplaint",
             "AllegationReportData",
           );
 
-          return ers;
+          break;
         }
       }
+
+      //-- set the report run date/time
+      //-- use this in CE-828
+      const utcDate = toDate(new Date(), { timeZone: "UTC" });
+      const zonedDate = toZonedTime(utcDate, tz);
+      data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
+      data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
+
+      return data;
     } catch (error) {
       this.logger.error(error);
     }
