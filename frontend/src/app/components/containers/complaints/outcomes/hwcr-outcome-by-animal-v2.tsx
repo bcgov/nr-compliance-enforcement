@@ -189,23 +189,23 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   };
 
   return (
-    <div
-      className="comp-outcome-report-block"
+    <section
+      className="comp-details-section"
       id="outcome-animal"
     >
-      <h6>Outcome by animal</h6>
+      <h3>Outcome by animal</h3>
       {renderOutcomeList()}
 
       <div className="comp-outcome-report-button">
         {!showForm && (
           <Button
-            id="outcome-report-add-animal"
-            title="Add animal"
             variant="primary"
+            title="Add animal"
+            id="outcome-report-add-animal"
             onClick={() => setShowForm(true)}
           >
+            <i className="bi bi-plus-circle"></i>
             <span>Add animal</span>
-            <BsPlusCircle />
           </Button>
         )}
 
@@ -220,6 +220,6 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
           />
         )}
       </div>
-    </div>
+    </section>
   );
 };

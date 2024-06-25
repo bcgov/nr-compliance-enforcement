@@ -270,7 +270,6 @@ export const HWCRComplaintPrevention: FC = () => {
             id="outcome-report-add-prevention-outcome"
             title="Add Prevention and education"
             variant="primary"
-            size="sm"
             onClick={() => {
               setShowContent(true);
             }}
@@ -380,12 +379,7 @@ export const HWCRComplaintPrevention: FC = () => {
                 <div id="prev-educ-outcome-officer-div">
                   <dt>Officer</dt>
                   <dd>
-                    <div
-                      data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
-                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                    >
-                      <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
-                    </div>
+                    <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
                   </dd>
                 </div>
                 <div id="prev-educ-outcome-date-div">

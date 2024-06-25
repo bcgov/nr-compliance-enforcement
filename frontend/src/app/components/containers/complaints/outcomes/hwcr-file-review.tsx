@@ -320,12 +320,7 @@ export const HWCRFileReview: FC = () => {
                     <div id="file-review-officer-id">
                       <dt>Officer</dt>
                       <dd>
-                        <div
-                          className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                          data-initials-sm={officerInitials}
-                        >
-                          <span id="comp-review-required-officer">{officerName}</span>
-                        </div>
+                        <span id="comp-review-required-officer">{officerName}</span>
                       </dd>
                     </div>
 

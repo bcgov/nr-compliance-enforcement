@@ -9,6 +9,7 @@ import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { isWithinBC } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
+import { Card } from "react-bootstrap";
 
 type Props = {
   parentCoordinates?: { lat: number; lng: number };
@@ -76,14 +77,14 @@ export const ComplaintLocation: FC<Props> = ({
   return (
     <section className={"comp-details-section" + calculatedClass}>
       <h3>Complaint Location</h3>
-      <div className="comp-complaint-location">
+      <Card className="comp-complaint-location">
         <LeafletMapWithPoint
           coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
           draggable={draggable}
           onMarkerMove={onMarkerMove}
           hideMarker={hideMarker}
         />
-      </div>
+      </Card>
     </section>
   );
 };
