@@ -251,7 +251,6 @@ export const HWCRComplaintAssessment: FC = () => {
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
-      dispatch(setIsInEdit({ showSectionErrors: false }));
     } else {
       handleFormErrors();
     }
