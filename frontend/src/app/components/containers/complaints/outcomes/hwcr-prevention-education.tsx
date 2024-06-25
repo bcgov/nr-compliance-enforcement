@@ -75,10 +75,6 @@ export const HWCRComplaintPrevention: FC = () => {
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const cases = useAppSelector((state) => state.cases);
-  const assessmentRelatedError =
-    Object.keys(cases.prevention).length === 0 &&
-    cases.assessment.action_required === "Yes" &&
-    cases.isInEdit.showSectionErrors;
   const showSectionErrors = (editable || !showContent) && cases.isInEdit.showSectionErrors;
 
   useEffect(() => {
@@ -255,15 +251,6 @@ export const HWCRComplaintPrevention: FC = () => {
           </div>
         )}
       </div>
-      {assessmentRelatedError && (
-        <div
-          className="section-error-message"
-          style={{ marginBottom: "8px" }}
-        >
-          <BsExclamationCircleFill />
-          <span>Complete section before closing the complaint.</span>
-        </div>
-      )}
       {!showContent ? (
         <div className="comp-outcome-report-button">
           <Button
@@ -281,7 +268,7 @@ export const HWCRComplaintPrevention: FC = () => {
       ) : (
         <Card border={showSectionErrors ? "danger" : "default"}>
           <Card.Body>
-            {showSectionErrors && !assessmentRelatedError && (
+            {showSectionErrors && (
               <div className="section-error-message">
                 <BsExclamationCircleFill />
                 <span>Save section before closing the complaint.</span>
