@@ -6,13 +6,11 @@ import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 
 import {
-  AllegationReportData,
   applyAllegationComplaintMap,
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
   mapAllegationReport,
   mapWildlifeReport,
-  WildlifeReportData,
 } from "../../middleware/maps/automapper-entity-to-dto-maps";
 
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
@@ -57,6 +55,8 @@ import { UUID, randomUUID } from "crypto";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
+import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
+import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1312,9 +1312,6 @@ export class ComplaintService {
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
     let data;
 
-    mapWildlifeReport(this.mapper, tz);
-    mapAllegationReport(this.mapper, tz);
-
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
 
     const _getUpdates = async (id: string) => {
@@ -1392,6 +1389,7 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "HWCR": {
+          mapWildlifeReport(this.mapper, tz);
           data = this.mapper.map<HwcrComplaint, WildlifeReportData>(
             result as HwcrComplaint,
             "HwcrComplaint",
@@ -1401,6 +1399,7 @@ export class ComplaintService {
           break;
         }
         case "ERS": {
+          mapAllegationReport(this.mapper, tz);
           data = this.mapper.map<AllegationComplaint, AllegationReportData>(
             result as AllegationComplaint,
             "AllegationComplaint",

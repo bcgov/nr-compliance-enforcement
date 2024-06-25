@@ -32,6 +32,10 @@ import { AllegationComplaintDto } from "../../types/models/complaints/allegation
 import { format, toDate, toZonedTime } from "date-fns-tz";
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 
+import parsePhoneNumber from "libphonenumber-js";
+import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
+import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
+
 // @SONAR_STOP@
 
 //-- define entity -> model mapping
@@ -875,6 +879,8 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
+  console.log("RAWR!!");
+
   createMap<HwcrComplaint, WildlifeReportData>(
     mapper,
     "HwcrComplaint",
@@ -1049,21 +1055,35 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+
+        const phoneNumber = parsePhoneNumber(
+          complaint.caller_phone_1 !== undefined || complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "",
+        );
+
+        return phoneNumber ? phoneNumber.formatNational() : "";
       }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+
+        const phoneNumber = parsePhoneNumber(
+          complaint.caller_phone_2 !== undefined || complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "",
+        );
+
+        return phoneNumber ? phoneNumber.formatNational() : "";
       }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+        const phoneNumber = parsePhoneNumber(
+          complaint.caller_phone_3 !== undefined || complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "",
+        );
+
+        return phoneNumber ? phoneNumber.formatNational() : "";
       }),
     ),
     forMember(
@@ -1320,21 +1340,35 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+
+        const phoneNumber = parsePhoneNumber(
+          complaint.caller_phone_1 !== undefined || complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "",
+        );
+
+        return phoneNumber ? phoneNumber.formatNational() : "";
       }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+
+        const phoneNumber = parsePhoneNumber(
+          complaint.caller_phone_2 !== undefined || complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "",
+        );
+
+        return phoneNumber ? phoneNumber.formatNational() : "";
       }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+        const phoneNumber = parsePhoneNumber(
+          complaint.caller_phone_3 !== undefined || complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "",
+        );
+
+        return phoneNumber ? phoneNumber.formatNational() : "";
       }),
     ),
     forMember(
@@ -1393,51 +1427,3 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
 };
 
 // @SONAR_START@
-
-export interface ComplaintReportData {
-  reportDate: string;
-  reportTime: string;
-
-  id: string;
-  reportedOn: string;
-  updatedOn: string;
-  createdBy: string;
-  officerAssigned: string;
-  status: string;
-  incidentDateTime: string;
-  location: string;
-  latitude: string;
-  longitude: string;
-  community: string;
-  office: string;
-  zone: string;
-  region: string;
-  locationDescription: string;
-  description: string;
-
-  //-- caller information
-  name: string;
-  phone1: string;
-  phone2: string;
-  phone3: string;
-  email: string;
-  address: string;
-  reportedBy: string;
-
-  updates: Array<ComplaintUpdateDto>;
-}
-
-export interface WildlifeReportData extends ComplaintReportData {
-  //-- hwcr
-  natureOfComplaint: string;
-  species: string;
-  attractants: string;
-}
-
-export interface AllegationReportData extends ComplaintReportData {
-  //-- ers
-  violationType: string;
-  inProgress: string;
-  wasObserved: string;
-  details: string;
-}
