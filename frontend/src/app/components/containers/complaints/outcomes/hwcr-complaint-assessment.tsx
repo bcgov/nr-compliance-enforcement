@@ -17,7 +17,7 @@ import {
   selectYesNoCodeDropdown,
 } from "../../../../store/reducers/code-table";
 import { useParams } from "react-router-dom";
-import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
+import { formatDate, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
 import { resetAssessment, setIsInEdit } from "../../../../store/reducers/cases";
@@ -480,12 +480,7 @@ export const HWCRComplaintAssessment: FC = () => {
               <div>
                 <dt>Officer</dt>
                 <dd>
-                  <div
-                    data-initials-sm={getAvatarInitials(selectedOfficer?.label ?? "")}
-                    className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                  >
-                    <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
-                  </div>
+                  <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
                 </dd>
               </div>
               <div>

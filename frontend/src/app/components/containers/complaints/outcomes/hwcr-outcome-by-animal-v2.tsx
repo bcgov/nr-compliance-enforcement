@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaint } from "../../../../store/reducers/complaints";
 import { Button } from "react-bootstrap";
-import { BsPlusCircle } from "react-icons/bs";
 import { AnimalOutcomeV2 } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { from } from "linq-to-typescript";
 import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
@@ -189,23 +188,23 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   };
 
   return (
-    <div
-      className="comp-outcome-report-block"
+    <section
+      className="comp-details-section"
       id="outcome-animal"
     >
-      <h6>Outcome by animal</h6>
+      <h3>Outcome by animal</h3>
       {renderOutcomeList()}
 
       <div className="comp-outcome-report-button">
         {!showForm && (
           <Button
-            id="outcome-report-add-animal"
-            title="Add animal"
             variant="primary"
+            title="Add animal"
+            id="outcome-report-add-animal"
             onClick={() => setShowForm(true)}
           >
+            <i className="bi bi-plus-circle"></i>
             <span>Add animal</span>
-            <BsPlusCircle />
           </Button>
         )}
 
@@ -220,6 +219,6 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
           />
         )}
       </div>
-    </div>
+    </section>
   );
 };

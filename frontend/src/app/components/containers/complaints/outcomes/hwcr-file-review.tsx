@@ -3,7 +3,7 @@ import { Button, Card } from "react-bootstrap";
 import { CompSelect } from "../../../common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
-import { openModal, profileDisplayName, profileInitials } from "../../../../store/reducers/app";
+import { openModal, profileDisplayName } from "../../../../store/reducers/app";
 import { formatDate } from "../../../../common/methods";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { getComplaintStatusById, selectComplaint } from "../../../../store/reducers/complaints";
@@ -22,14 +22,12 @@ export const HWCRFileReview: FC = () => {
   const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
   const { officers } = useAppSelector((state) => state.officers);
-  const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
 
   const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
   const [reviewRequired, setReviewRequired] = useState<boolean>(false);
   const [reviewCompleted, setReviewCompleted] = useState<boolean>(false);
-  const [officerInitials, setOfficerInitials] = useState<string>(initials);
   const [officerName, setOfficerName] = useState<string>(displayName);
   const [reviewCompleteDate, setReviewCompleteDate] = useState<Date>(new Date());
   const showSectionErrors =
@@ -49,7 +47,6 @@ export const HWCRFileReview: FC = () => {
 
   useEffect(() => {
     if (reviewCompleteAction) {
-      let initials = "UN";
       let displayName = "Unknown";
       if (officers) {
         const officer = officers.filter((person) => person.person_guid.person_guid === reviewCompleteAction.actor);
@@ -57,9 +54,7 @@ export const HWCRFileReview: FC = () => {
           const {
             person_guid: { first_name: givenName, last_name: surName },
           } = officer[0];
-          initials = `${givenName?.substring(0, 1)}${surName?.substring(0, 1)}`;
           displayName = `${givenName} ${surName}`;
-          setOfficerInitials(initials);
           setOfficerName(displayName);
           setReviewCompleteDate(reviewCompleteAction.date);
         }
@@ -320,12 +315,7 @@ export const HWCRFileReview: FC = () => {
                     <div id="file-review-officer-id">
                       <dt>Officer</dt>
                       <dd>
-                        <div
-                          className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                          data-initials-sm={officerInitials}
-                        >
-                          <span id="comp-review-required-officer">{officerName}</span>
-                        </div>
+                        <span id="comp-review-required-officer">{officerName}</span>
                       </dd>
                     </div>
 

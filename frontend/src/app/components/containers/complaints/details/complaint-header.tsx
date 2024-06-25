@@ -236,7 +236,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
       {/* <!-- complaint status details start --> */}
       {readOnly && (
-        <div className="comp-container">
+        <section className="comp-details-body comp-container">
           <div className="comp-header-status-container">
             <div className="comp-details-status">
               <dl className="comp-details-date-logged">
@@ -297,8 +297,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
             </div>
           </div>
-          <hr className="comp-header-spacer"></hr>
-        </div>
+        </section>
       )}
       {/* <!-- complaint status details end --> */}
     </>

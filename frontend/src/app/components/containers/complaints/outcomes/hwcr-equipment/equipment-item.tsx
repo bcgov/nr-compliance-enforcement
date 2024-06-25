@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { Card, Button, Badge } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate, getAvatarInitials } from "../../../../../common/methods";
+import { formatDate } from "../../../../../common/methods";
 
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
@@ -145,12 +145,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             <div>
               <dt>Set by</dt>
               <dd>
-                <div
-                  className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                  data-initials-sm={getAvatarInitials(`${setEquipmentFullName}`)}
-                >
-                  <span id="equipment-officer-set-div">{setEquipmentFullName}</span>
-                </div>
+                <span id="equipment-officer-set-div">{setEquipmentFullName}</span>
               </dd>
             </div>
             <div>
@@ -162,12 +157,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                 <div>
                   <dt>Removed by</dt>
                   <dd>
-                    <div
-                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                      data-initials-sm={getAvatarInitials(removedEquipmentFullName ?? "")}
-                    >
-                      <span id="comp-details-assigned-officer-name-text-id">{removedEquipmentFullName}</span>
-                    </div>
+                    <span id="comp-details-assigned-officer-name-text-id">{removedEquipmentFullName}</span>
                   </dd>
                 </div>
                 <div>
