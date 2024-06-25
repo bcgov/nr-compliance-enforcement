@@ -13,7 +13,7 @@ import {
 } from "../../../../store/reducers/complaints";
 import { selectPreventionTypeCodeDropdown } from "../../../../store/reducers/code-table";
 import { useParams } from "react-router-dom";
-import { formatDate, getAvatarInitials, getSelectedOfficer } from "../../../../common/methods";
+import { formatDate, getSelectedOfficer } from "../../../../common/methods";
 import { CompSelect } from "../../../common/comp-select";
 import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
 import { resetPrevention, setIsInEdit } from "../../../../store/reducers/cases";

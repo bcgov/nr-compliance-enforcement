@@ -14,7 +14,7 @@ type props = {
 };
 
 export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode, deleteNote }) => {
-  const { initials, displayName } = useAppSelector(selectNotesOfficer);
+  const { displayName } = useAppSelector(selectNotesOfficer);
 
   return (
     <>

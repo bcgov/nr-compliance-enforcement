@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaint } from "../../../../store/reducers/complaints";
 import { Button } from "react-bootstrap";
-import { BsPlusCircle } from "react-icons/bs";
 import { AnimalOutcomeV2 } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { from } from "linq-to-typescript";
 import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
