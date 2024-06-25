@@ -1036,6 +1036,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         const { caller_phone_1: phone } = complaint;
+        console.log("WILDLIFE PHONE1: ", phone);
 
         if (phone) {
           const phoneNumber = parsePhoneNumber(phone);
@@ -1050,6 +1051,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         const { caller_phone_2: phone } = complaint;
+        console.log("WILDLIFE PHONE2: ", phone);
 
         if (phone) {
           const phoneNumber = parsePhoneNumber(phone);
@@ -1064,6 +1066,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         const { caller_phone_3: phone } = complaint;
+        console.log("WILDLIFE PHONE3: ", phone);
 
         if (phone) {
           const phoneNumber = parsePhoneNumber(phone);
@@ -1311,6 +1314,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         const { caller_phone_1: phone } = complaint;
+        console.log("ALLEGATION PHONE1: ", phone);
 
         if (phone) {
           const phoneNumber = parsePhoneNumber(phone);
@@ -1325,6 +1329,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         const { caller_phone_2: phone } = complaint;
+        console.log("ALLEGATION PHONE2: ", phone);
 
         if (phone) {
           const phoneNumber = parsePhoneNumber(phone);
@@ -1339,6 +1344,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
         const { caller_phone_3: phone } = complaint;
+        console.log("ALLEGATION PHONE3: ", phone);
 
         if (phone) {
           const phoneNumber = parsePhoneNumber(phone);
