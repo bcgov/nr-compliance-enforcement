@@ -16,6 +16,7 @@ import { getAvatarInitials, formatDate, pad } from "../../../../../common/method
 import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { DrugItem } from "./drug-item";
+import { Card } from "react-bootstrap";
 
 type props = {
   index: number;
@@ -124,187 +125,196 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   };
 
   return (
-    <>
-      {showSectionErrors && (
-        <div className="section-error-message">
-          <BsExclamationCircleFill />
-          <span>Complete or delete section before closing the complaint.</span>
-        </div>
-      )}
-      <div className={`comp-animal-outcome ${showSectionErrors ? "section-error" : ""}`}>
-        <div className="equipment-item">
-          <div className="equipment-item-header">
-            <div className="title">
-              <h6>Animal {pad(animalNumber.toString(), 2)}</h6>
-            </div>
-            <div>
-              <CompTextIconButton
-                buttonClasses="button-text"
-                style={{ marginRight: "15px" }}
-                text="Delete"
-                icon={BsTrash3}
-                click={() => handleDeleteItem()}
-              />
-              <CompTextIconButton
-                buttonClasses="button-text"
-                text="Edit"
-                icon={BsPencil}
-                click={() => hendleEnableEditMode()}
-              />
+    <Card
+      className="comp-animal-card comp-outcome-report-block"
+      border={showSectionErrors ? "danger" : "default"}
+    >
+      <Card.Body>
+        {showSectionErrors && (
+          <div className="section-error-message">
+            <BsExclamationCircleFill />
+            <span>Complete or delete section before closing the complaint.</span>
+          </div>
+        )}
+        <div>
+          <div className="equipment-item">
+            <div className="equipment-item-header">
+              <div className="title">
+                <h6>Animal {pad(animalNumber.toString(), 2)}</h6>
+              </div>
+              <div>
+                <CompTextIconButton
+                  buttonClasses="button-text"
+                  style={{ marginRight: "15px" }}
+                  text="Delete"
+                  icon={BsTrash3}
+                  click={() => handleDeleteItem()}
+                />
+                <CompTextIconButton
+                  buttonClasses="button-text"
+                  text="Edit"
+                  icon={BsPencil}
+                  click={() => hendleEnableEditMode()}
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <div className="comp-details-edit-container">
-          <div className="comp-details-edit-column">
-            <div className="comp-details-edit-container comp-details-nmargin-right-xxl">
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-div-pair ">
-                  <label
-                    className="comp-details-inner-content-label"
-                    htmlFor="comp-animal-outcome-animal"
-                  >
-                    Animal
-                  </label>
-                  <div className="flex-container">
-                    <div className="comp-animal-outcome-animal">
-                      <b>{animal}</b>
-                    </div>
-                    {data?.sex && (
-                      <>
-                        <div className="comp-margin-right-xs">,</div>
-                        <div>{animalSex}</div>
-                      </>
-                    )}
-                    {data?.age && (
-                      <>
-                        <div className="comp-margin-right-xs">,</div>
-                        <div className="comp-margin-right-xs">{animalAge}</div>
-                      </>
-                    )}
-                    {data?.threatLevel && (
-                      <div className="badge comp-status-badge-threat-level comp-margin-right-xs">
-                        Category level: {animalThreatLevel}
-                      </div>
-                    )}
-                    {data?.conflictHistory && (
-                      <div className="badge comp-status-badge-conflict-history comp-margin-right-xs">
-                        Conflict history: {animalHistory}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {data?.tags && from(data?.tags).any() && (
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-input-pair">
-                  <label className="label top">Ear Tag{data?.tags.length > 1 && "s"}</label>
-
-                  <div className="comp-animal-outcome-fill-space">
-                    <ul className="comp-ear-tag-list">
-                      {data?.tags.map(({ id, identifier, ear }) => (
-                        <li key={id}>
-                          {identifier} {ear === "L" ? leftEar?.label : rightEar?.label} side
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {data?.drugs && from(data?.drugs).any() && (
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-input-pair">
-                  <label className="label top">Drug{data?.drugs.length > 1 && "s"}</label>
-                  <div className="comp-animal-outcome-fill-space">
-                    {data.drugs.map((item) => {
-                      const { officer, date } = data?.drugAuthorization || {};
-                      return (
-                        <DrugItem
-                          {...item}
-                          officer={officer}
-                          date={date}
-                          key={item.id}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-
+          <div className="comp-details-edit-container">
             <div className="comp-details-edit-column">
-              <div className="comp-details-label-input-pair">
-                <label
-                  htmlFor="comp-animal-outcome-result"
-                  className="label center"
-                >
-                  Outcome
-                </label>
-                <div id="comp-animal-outcome-result">
-                  {data?.outcome ? animalOutcome : <span className="comp-animal-outcome-pending">Outcome pending</span>}
-                </div>
-              </div>
-            </div>
-
-            <div className="comp-details-edit-container">
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-div-pair">
-                  <label
-                    className="comp-details-inner-content-label center"
-                    htmlFor="comp-animal-outcome-officer"
-                  >
-                    Officer
-                  </label>
-                  <div className="comp-animal-outcome-officer">
-                    {data?.officer ? (
-                      <div
-                        data-initials-sm={getAvatarInitials(outcomeOfficer)}
-                        className="comp-orange-avatar-sm comp-details-inner-content"
-                      >
-                        <span
-                          id="comp-review-required-officer"
-                          className="comp-padding-left-xs"
-                        >
-                          {outcomeOfficer}
-                        </span>
+              <div className="comp-details-edit-container comp-details-nmargin-right-xxl">
+                <div className="comp-details-edit-column">
+                  <div className="comp-details-label-div-pair ">
+                    <label
+                      className="comp-details-inner-content-label"
+                      htmlFor="comp-animal-outcome-animal"
+                    >
+                      Animal
+                    </label>
+                    <div className="flex-container">
+                      <div className="comp-animal-outcome-animal">
+                        <b>{animal}</b>
                       </div>
-                    ) : (
-                      <span className="comp-animal-outcome-pending">Officer pending</span>
-                    )}
+                      {data?.sex && (
+                        <>
+                          <div className="comp-margin-right-xs">,</div>
+                          <div>{animalSex}</div>
+                        </>
+                      )}
+                      {data?.age && (
+                        <>
+                          <div className="comp-margin-right-xs">,</div>
+                          <div className="comp-margin-right-xs">{animalAge}</div>
+                        </>
+                      )}
+                      {data?.threatLevel && (
+                        <div className="badge comp-status-badge-threat-level comp-margin-right-xs">
+                          Category level: {animalThreatLevel}
+                        </div>
+                      )}
+                      {data?.conflictHistory && (
+                        <div className="badge comp-status-badge-conflict-history comp-margin-right-xs">
+                          Conflict history: {animalHistory}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div
-                className="comp-details-edit-column"
-                id="complaint-supporting-date-div"
-              >
-                <div className="comp-details-label-div-pair">
+
+              {data?.tags && from(data?.tags).any() && (
+                <div className="comp-details-edit-column">
+                  <div className="comp-details-label-input-pair">
+                    <label className="label top">Ear Tag{data?.tags.length > 1 && "s"}</label>
+
+                    <div className="comp-animal-outcome-fill-space">
+                      <ul className="comp-ear-tag-list">
+                        {data?.tags.map(({ id, identifier, ear }) => (
+                          <li key={id}>
+                            {identifier} {ear === "L" ? leftEar?.label : rightEar?.label} side
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {data?.drugs && from(data?.drugs).any() && (
+                <div className="comp-details-edit-column">
+                  <div className="comp-details-label-input-pair">
+                    <label className="label top">Drug{data?.drugs.length > 1 && "s"}</label>
+                    <div className="comp-animal-outcome-fill-space">
+                      {data.drugs.map((item) => {
+                        const { officer, date } = data?.drugAuthorization || {};
+                        return (
+                          <DrugItem
+                            {...item}
+                            officer={officer}
+                            date={date}
+                            key={item.id}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="comp-details-edit-column">
+                <div className="comp-details-label-input-pair">
                   <label
-                    className="comp-details-inner-content-label"
-                    htmlFor="comp-animal-outcome-date"
+                    htmlFor="comp-animal-outcome-result"
+                    className="label center"
                   >
-                    Date
+                    Outcome
                   </label>
-                  <div
-                    className="bi comp-margin-right-xxs comp-details-inner-content"
-                    id="comp-animal-outcome-date"
-                  >
-                    {data?.date ? (
-                      formatDate(data?.date?.toString())
+                  <div id="comp-animal-outcome-result">
+                    {data?.outcome ? (
+                      animalOutcome
                     ) : (
-                      <span className="comp-animal-outcome-pending">Date pending</span>
+                      <span className="comp-animal-outcome-pending">Outcome pending</span>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="supporting-width"></div>
+
+              <div className="comp-details-edit-container">
+                <div className="comp-details-edit-column">
+                  <div className="comp-details-label-div-pair">
+                    <label
+                      className="comp-details-inner-content-label center"
+                      htmlFor="comp-animal-outcome-officer"
+                    >
+                      Officer
+                    </label>
+                    <div className="comp-animal-outcome-officer">
+                      {data?.officer ? (
+                        <div
+                          data-initials-sm={getAvatarInitials(outcomeOfficer)}
+                          className="comp-orange-avatar-sm comp-details-inner-content"
+                        >
+                          <span
+                            id="comp-review-required-officer"
+                            className="comp-padding-left-xs"
+                          >
+                            {outcomeOfficer}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="comp-animal-outcome-pending">Officer pending</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="comp-details-edit-column"
+                  id="complaint-supporting-date-div"
+                >
+                  <div className="comp-details-label-div-pair">
+                    <label
+                      className="comp-details-inner-content-label"
+                      htmlFor="comp-animal-outcome-date"
+                    >
+                      Date
+                    </label>
+                    <div
+                      className="bi comp-margin-right-xxs comp-details-inner-content"
+                      id="comp-animal-outcome-date"
+                    >
+                      {data?.date ? (
+                        formatDate(data?.date?.toString())
+                      ) : (
+                        <span className="comp-animal-outcome-pending">Date pending</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="supporting-width"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </Card.Body>
+    </Card>
   );
 };
