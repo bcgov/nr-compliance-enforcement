@@ -31,9 +31,11 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { format, toDate, toZonedTime } from "date-fns-tz";
 
-import parsePhoneNumber from "libphonenumber-js";
+import parsePhoneNumber, { parsePhoneNumberWithError } from "libphonenumber-js";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
+import { formatPhoneNumber } from "react-phone-number-input/input";
+import { formatPhonenumber } from "src/common/methods";
 
 // @SONAR_STOP@
 
@@ -1037,9 +1039,12 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         const { complaint_identifier: complaint } = source;
         const { caller_phone_1: phone } = complaint;
 
-        if (phone) {
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""), "CA");
-          return phoneNumber ? phoneNumber.formatNational() : "";
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
         }
 
         return "";
@@ -1051,9 +1056,12 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         const { complaint_identifier: complaint } = source;
         const { caller_phone_2: phone } = complaint;
 
-        if (phone) {
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""), "CA");
-          return phoneNumber ? phoneNumber.formatNational() : "";
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
         }
 
         return "";
@@ -1065,11 +1073,13 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         const { complaint_identifier: complaint } = source;
         const { caller_phone_3: phone } = complaint;
 
-        if (phone) {
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""), "CA");
-          return phoneNumber ? phoneNumber.formatNational() : "";
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
         }
-
         return "";
       }),
     ),
@@ -1312,9 +1322,12 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         const { complaint_identifier: complaint } = source;
         const { caller_phone_1: phone } = complaint;
 
-        if (phone) {
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, "CA"));
-          return phoneNumber ? phoneNumber.formatNational() : "";
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
         }
 
         return "";
@@ -1326,9 +1339,12 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         const { complaint_identifier: complaint } = source;
         const { caller_phone_2: phone } = complaint;
 
-        if (phone) {
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""), "CA");
-          return phoneNumber ? phoneNumber.formatNational() : "";
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
         }
 
         return "";
@@ -1340,10 +1356,12 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         const { complaint_identifier: complaint } = source;
         const { caller_phone_3: phone } = complaint;
 
-        if (phone) {
-          const phoneNumber = parsePhoneNumber(phone.replace(/\D/g, ""), "CA");
-
-          return phoneNumber ? phoneNumber.formatNational() : "";
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
         }
 
         return "";
