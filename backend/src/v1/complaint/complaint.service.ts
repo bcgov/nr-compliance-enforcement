@@ -1342,6 +1342,7 @@ export class ComplaintService {
           description: item.updDetailText,
           updatedOn: updatedOn,
           updatedAt: updatedAt,
+          updateOn: `${updatedOn} ${updatedAt}`,
           location: {
             summary: item?.updLocationSummaryText,
             details: item.updLocationDetailedText,
@@ -1434,6 +1435,7 @@ export class ComplaintService {
       const current = new Date();
       data.reportDate = _applyTimezone(current, tz, "date");
       data.reportTime = _applyTimezone(current, tz, "time");
+      data.generatedOn = `${data.reportDate} at ${data.reportTime}`;
 
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");

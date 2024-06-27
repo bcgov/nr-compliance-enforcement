@@ -3,6 +3,7 @@ export interface ComplaintUpdateDto {
   description: string;
   updatedOn: string;
   updatedAt: string;
+  updateOn: string;
   location: ComplaintUpdateLocation;
 }
 
