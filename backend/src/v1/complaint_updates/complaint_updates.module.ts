@@ -8,6 +8,6 @@ import { ComplaintUpdate } from "./entities/complaint_updates.entity";
   imports: [TypeOrmModule.forFeature([ComplaintUpdate])],
   controllers: [ComplaintUpdatesController],
   providers: [ComplaintUpdatesService],
-  exports: [ComplaintUpdate, ComplaintUpdatesService, ComplaintUpdatesModule],
+  exports: [ComplaintUpdatesService],
 })
 export class ComplaintUpdatesModule {}
