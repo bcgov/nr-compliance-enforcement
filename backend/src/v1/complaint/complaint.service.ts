@@ -6,13 +6,11 @@ import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 
 import {
-  AllegationReportData,
   applyAllegationComplaintMap,
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
   mapAllegationReport,
   mapWildlifeReport,
-  WildlifeReportData,
 } from "../../middleware/maps/automapper-entity-to-dto-maps";
 
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
@@ -54,7 +52,12 @@ import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xr
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
-import { format, toDate, toZonedTime } from "date-fns-tz";
+
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
+import { toDate, toZonedTime, format } from "date-fns-tz";
+import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
+import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
+import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -67,6 +70,8 @@ export class ComplaintService {
   private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
+  @InjectRepository(ComplaintUpdate)
+  private _complaintUpdateRepository: Repository<ComplaintUpdate>;
 
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
@@ -1307,11 +1312,64 @@ export class ComplaintService {
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
     let data;
-
-    mapWildlifeReport(this.mapper, tz);
-    mapAllegationReport(this.mapper, tz);
-
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
+
+    const _getUpdates = async (id: string) => {
+      const builder = this._complaintUpdateRepository
+        .createQueryBuilder("updates")
+        .where({
+          complaintIdentifier: {
+            complaint_identifier: id,
+          },
+        })
+        .orderBy({
+          update_seq_number: "DESC",
+        });
+
+      const result = await builder.getMany();
+
+      const updates = result?.map((item) => {
+        const utcDate = toDate(item.createUtcTimestamp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        let updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
+
+        const latitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[1] : null;
+        const longitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[0] : null;
+
+        let record: ComplaintUpdateDto = {
+          sequenceId: item.updateSeqNumber,
+          description: item.updDetailText,
+          updatedOn: updatedOn,
+          updatedAt: updatedAt,
+          updateOn: `${updatedOn} ${updatedAt}`,
+          location: {
+            summary: item?.updLocationSummaryText,
+            details: item.updLocationDetailedText,
+            latitude,
+            longitude,
+          },
+        };
+        return record;
+      });
+
+      return updates;
+    };
+
+    const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
+      const utcDate = toDate(input, { timeZone: "UTC" });
+      const zonedDate = toZonedTime(utcDate, tz);
+
+      switch (output) {
+        case "date":
+          return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        case "time":
+          return format(zonedDate, "HH:mm", { timeZone: tz });
+        case "datetime":
+        default:
+          return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }
+    };
 
     try {
       if (complaintType) {
@@ -1347,6 +1405,8 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "HWCR": {
+          mapWildlifeReport(this.mapper, tz);
+
           data = this.mapper.map<HwcrComplaint, WildlifeReportData>(
             result as HwcrComplaint,
             "HwcrComplaint",
@@ -1355,6 +1415,8 @@ export class ComplaintService {
           break;
         }
         case "ERS": {
+          mapAllegationReport(this.mapper, tz);
+
           data = this.mapper.map<AllegationComplaint, AllegationReportData>(
             result as AllegationComplaint,
             "AllegationComplaint",
@@ -1365,12 +1427,21 @@ export class ComplaintService {
         }
       }
 
-      //-- set the report run date/time
-      //-- use this in CE-828
-      const utcDate = toDate(new Date(), { timeZone: "UTC" });
-      const zonedDate = toZonedTime(utcDate, tz);
-      data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
-      data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
+      //-- get any updates a complaint may have
+      data.updates = await _getUpdates(id);
+
+      //-- problems in the automapper mean dates need to be handled
+      //-- seperatly
+      const current = new Date();
+      data.reportDate = _applyTimezone(current, tz, "date");
+      data.reportTime = _applyTimezone(current, tz, "time");
+      data.generatedOn = `${data.reportDate} at ${data.reportTime}`;
+
+      data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
+      data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
+      if (data?.incidentDateTime) {
+        data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
+      }
 
       return data;
     } catch (error) {

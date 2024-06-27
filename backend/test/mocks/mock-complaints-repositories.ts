@@ -775,4 +775,18 @@ export const MockUpdateComplaintsRepository = () => ({
     getOne: jest.fn().mockResolvedValue(complaints[3]),
   })),
 });
+
+export const MockComplaintUpdatesRepository = () => ({
+  createQueryBuilder: jest.fn(() => ({
+    update: jest.fn(() => ({
+      set: jest.fn(() => ({
+        where: jest.fn(() => ({
+          execute: jest.fn().mockResolvedValue({ affected: 1 }),
+        })),
+      })),
+    })),
+    where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+  })),
+});
 // @SONAR_START@

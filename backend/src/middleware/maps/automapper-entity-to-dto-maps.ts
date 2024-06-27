@@ -30,7 +30,9 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { format, toDate, toZonedTime } from "date-fns-tz";
-
+import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
+import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
+import { formatPhonenumber } from "../../common/methods";
 // @SONAR_STOP@
 
 //-- define entity -> model mapping
@@ -880,23 +882,6 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     "WildlifeReportData",
 
     forMember(
-      (destination) => destination.reportDate,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-      }),
-    ),
-    forMember(
-      (destination) => destination.reportTime,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "HH:mm", { timeZone: tz });
-      }),
-    ),
-
-    forMember(
       (destination) => destination.id,
       mapFrom((source) => source.complaint_identifier.complaint_identifier),
     ),
@@ -906,19 +891,11 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_reported_utc_timestmp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.update_utc_timestamp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -953,11 +930,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_utc_datetime, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.location,
@@ -1048,21 +1021,50 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+        const { caller_phone_1: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+        const { caller_phone_2: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+        const { caller_phone_3: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+        return "";
       }),
     ),
     forMember(
@@ -1151,23 +1153,6 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     "AllegationReportData",
 
     forMember(
-      (destination) => destination.reportDate,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-      }),
-    ),
-    forMember(
-      (destination) => destination.reportTime,
-      mapFrom(() => {
-        const utcDate = toDate(reportGeneratedOn, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "HH:mm", { timeZone: tz });
-      }),
-    ),
-
-    forMember(
       (destination) => destination.id,
       mapFrom((source) => source.complaint_identifier.complaint_identifier),
     ),
@@ -1177,19 +1162,11 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_reported_utc_timestmp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.update_utc_timestamp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -1224,11 +1201,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_utc_datetime, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.location,
@@ -1319,21 +1292,51 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       (destination) => destination.phone1,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+        const { caller_phone_1: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone2,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+        const { caller_phone_2: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.phone3,
       mapFrom((source) => {
         const { complaint_identifier: complaint } = source;
-        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+        const { caller_phone_3: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
       }),
     ),
     forMember(
@@ -1392,49 +1395,3 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
 };
 
 // @SONAR_START@
-
-export interface ComplaintReportData {
-  reportDate: string;
-  reportTime: string;
-
-  id: string;
-  reportedOn: string;
-  updatedOn: string;
-  createdBy: string;
-  officerAssigned: string;
-  status: string;
-  incidentDateTime: string;
-  location: string;
-  latitude: string;
-  longitude: string;
-  community: string;
-  office: string;
-  zone: string;
-  region: string;
-  locationDescription: string;
-  description: string;
-
-  //-- caller information
-  name: string;
-  phone1: string;
-  phone2: string;
-  phone3: string;
-  email: string;
-  address: string;
-  reportedBy: string;
-}
-
-export interface WildlifeReportData extends ComplaintReportData {
-  //-- hwcr
-  natureOfComplaint: string;
-  species: string;
-  attractants: string;
-}
-
-export interface AllegationReportData extends ComplaintReportData {
-  //-- ers
-  violationType: string;
-  inProgress: string;
-  wasObserved: string;
-  details: string;
-}

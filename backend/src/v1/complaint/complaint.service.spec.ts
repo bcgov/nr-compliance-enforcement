@@ -15,6 +15,7 @@ import { Complaint } from "./entities/complaint.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
@@ -52,10 +53,11 @@ import {
   MockComplaintsAgencyRepository,
   MockComplaintsOfficerRepository,
   MockComplaintsRepositoryV2,
+  MockComplaintUpdatesRepository,
   MockUpdateComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -82,6 +84,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
         {
           provide: getRepositoryToken(HwcrComplaint),
@@ -160,6 +166,10 @@ describe("Testing: Complaint Service", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: MockComplaintUpdatesRepository,
         },
       ],
     }).compile();
@@ -308,6 +318,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
         {
           provide: getRepositoryToken(HwcrComplaint),
