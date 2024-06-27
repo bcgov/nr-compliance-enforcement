@@ -54,6 +54,7 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 describe("DocumentController", () => {
   let controller: DocumentController;
@@ -165,6 +166,10 @@ describe("DocumentController", () => {
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
       ],

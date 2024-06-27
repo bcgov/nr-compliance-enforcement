@@ -31,11 +31,9 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { format, toDate, toZonedTime } from "date-fns-tz";
 
-import parsePhoneNumber, { parsePhoneNumberWithError } from "libphonenumber-js";
-import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
-import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
-import { formatPhoneNumber } from "react-phone-number-input/input";
-import { formatPhonenumber } from "src/common/methods";
+import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
+import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
+import { formatPhonenumber } from "../../common/methods";
 
 // @SONAR_STOP@
 

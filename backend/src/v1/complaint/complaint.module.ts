@@ -24,6 +24,7 @@ import { PersonComplaintXrefModule } from "../person_complaint_xref/person_compl
 import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwcr_xref.module";
 import { AutomapperModule } from "@automapper/nestjs";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
+import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,
     AutomapperModule,
+    ComplaintUpdatesModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],

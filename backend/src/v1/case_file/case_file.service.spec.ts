@@ -50,6 +50,7 @@ import { AllegationComplaint } from "../allegation_complaint/entities/allegation
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -156,6 +157,10 @@ describe("Testing: Case File Service", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
       ],
     }).compile();

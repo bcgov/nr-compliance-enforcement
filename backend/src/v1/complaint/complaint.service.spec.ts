@@ -52,10 +52,12 @@ import {
   MockComplaintsAgencyRepository,
   MockComplaintsOfficerRepository,
   MockComplaintsRepositoryV2,
+  MockComplaintUpdatesRepository,
   MockUpdateComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import { ComplaintSearchParameters } from "src/types/models/complaints/complaint-search-parameters";
+import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -160,6 +162,14 @@ describe("Testing: Complaint Service", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: MockComplaintUpdatesRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: MockComplaintUpdatesRepository,
         },
       ],
     }).compile();
