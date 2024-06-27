@@ -738,8 +738,6 @@ export const upsertEquipment =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
       await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
-          console.log("CREATE");
-          console.log(res);
           dispatch(setCaseFile(res));
           if (!caseId) dispatch(setCaseId(res.caseIdentifier));
           ToggleSuccess(`Equipment has been updated`);
@@ -762,8 +760,6 @@ export const upsertEquipment =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, updateEquipmentInput);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
-          console.log("UPDATE");
-          console.log(res);
           dispatch(setCaseFile(res));
           ToggleSuccess(`Equipment has been updated`);
         } else {
