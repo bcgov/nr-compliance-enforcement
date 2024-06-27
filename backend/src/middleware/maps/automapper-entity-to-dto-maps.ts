@@ -891,19 +891,11 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_reported_utc_timestmp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.update_utc_timestamp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -938,11 +930,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_utc_datetime, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.location,
@@ -1174,19 +1162,11 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_reported_utc_timestmp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.update_utc_timestamp, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -1221,11 +1201,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.incidentDateTime,
-      mapFrom((source) => {
-        const utcDate = toDate(source.complaint_identifier.incident_utc_datetime, { timeZone: "UTC" });
-        const zonedDate = toZonedTime(utcDate, tz);
-        return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
-      }),
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
     ),
     forMember(
       (destination) => destination.location,

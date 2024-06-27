@@ -59,7 +59,6 @@ import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 
-
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
@@ -1356,6 +1355,21 @@ export class ComplaintService {
       return updates;
     };
 
+    const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
+      const utcDate = toDate(input, { timeZone: "UTC" });
+      const zonedDate = toZonedTime(utcDate, tz);
+
+      switch (output) {
+        case "date":
+          return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        case "time":
+          return format(zonedDate, "HH:mm", { timeZone: tz });
+        case "datetime":
+        default:
+          return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+      }
+    };
+
     try {
       if (complaintType) {
         builder = this._generateQueryBuilder(complaintType);
@@ -1415,11 +1429,17 @@ export class ComplaintService {
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
 
-      //-- set the report run date/time
-      const utcDate = toDate(new Date(), { timeZone: "UTC" });
-      const zonedDate = toZonedTime(utcDate, tz);
-      data.reportDate = format(zonedDate, "yyyy-MM-dd ", { timeZone: tz });
-      data.reportTime = format(zonedDate, "HH:mm", { timeZone: tz });
+      //-- problems in the automapper mean dates need to be handled
+      //-- seperatly
+      const current = new Date();
+      data.reportDate = _applyTimezone(current, tz, "date");
+      data.reportTime = _applyTimezone(current, tz, "time");
+
+      data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
+      data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
+      if (data?.incidentDateTime) {
+        data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
+      }
 
       return data;
     } catch (error) {

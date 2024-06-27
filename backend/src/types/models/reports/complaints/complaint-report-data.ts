@@ -5,12 +5,12 @@ export interface ComplaintReportData {
   reportTime: string;
 
   id: string;
-  reportedOn: string;
-  updatedOn: string;
+  reportedOn: Date | string;
+  updatedOn: Date | string;
   createdBy: string;
   officerAssigned: string;
   status: string;
-  incidentDateTime: string;
+  incidentDateTime: Date | string;
   location: string;
   latitude: string;
   longitude: string;
