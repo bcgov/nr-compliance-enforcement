@@ -701,11 +701,11 @@ export const deleteEquipment =
       if (res) {
         // remove equipment from state
         const {
-          cases: { equipment },
+          cases: { equipment, note, subject, reviewComplete },
         } = getState();
         const updatedEquipment = equipment?.filter((equipment) => equipment.id !== id);
 
-        dispatch(setCaseFile({ equipment: updatedEquipment }));
+        dispatch(setCaseFile({ equipment: updatedEquipment, note, subject, reviewComplete }));
         ToggleSuccess(`Equipment has been deleted`);
       } else {
         ToggleError(`Unable to update equipment`);
