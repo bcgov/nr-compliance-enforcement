@@ -15,6 +15,7 @@ import { Complaint } from "./entities/complaint.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
@@ -84,6 +85,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
         {
           provide: getRepositoryToken(HwcrComplaint),
@@ -318,6 +323,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
         {
           provide: getRepositoryToken(HwcrComplaint),

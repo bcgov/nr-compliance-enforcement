@@ -30,6 +30,9 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { format, toDate, toZonedTime } from "date-fns-tz";
+import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
+import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
+import { formatPhonenumber } from "../../common/methods";
 
 import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
 import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";

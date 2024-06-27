@@ -47,6 +47,7 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
@@ -146,6 +147,10 @@ describe("Testing: Case File Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
         CaseFileService,
         ComplaintService,

@@ -30,6 +30,7 @@ import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/moc
 import { DataSource } from "typeorm";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
@@ -149,6 +150,10 @@ describe("DocumentService", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintUpdate),
+          useValue: {},
         },
         ComplaintService,
         CodeTableService,
