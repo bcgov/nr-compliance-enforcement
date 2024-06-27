@@ -895,7 +895,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         const {
           complaint_identifier: { incident_reported_utc_timestmp: reported },
         } = source;
-        return reported ? reported : "";
+        return reported || "";
       }),
     ),
     forMember(
@@ -1167,7 +1167,12 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.reportedOn,
-      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { incident_reported_utc_timestmp: reported },
+        } = source;
+        return reported || "";
+      }),
     ),
     forMember(
       (destination) => destination.updatedOn,
