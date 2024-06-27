@@ -33,11 +33,6 @@ import { format, toDate, toZonedTime } from "date-fns-tz";
 import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
 import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
 import { formatPhonenumber } from "../../common/methods";
-
-import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
-import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
-import { formatPhonenumber } from "../../common/methods";
-
 // @SONAR_STOP@
 
 //-- define entity -> model mapping

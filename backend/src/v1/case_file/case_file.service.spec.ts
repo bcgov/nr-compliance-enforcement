@@ -51,7 +51,6 @@ import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
-import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;

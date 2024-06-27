@@ -54,7 +54,6 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
-import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
