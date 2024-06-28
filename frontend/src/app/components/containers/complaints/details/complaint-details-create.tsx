@@ -1146,16 +1146,6 @@ export const CreateComplaint: FC = () => {
             onSlideCountChange={handleSlideCountChange}
           />
         </fieldset>
-
-        {
-          <ComplaintLocation
-            parentCoordinates={{ lat: +latitude, lng: +longitude }}
-            complaintType={complaintType}
-            draggable={false}
-            hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
-            editComponent={false}
-          />
-        }
       </section>
     </div>
   );
