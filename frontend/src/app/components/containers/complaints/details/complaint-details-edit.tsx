@@ -1078,25 +1078,6 @@ export const ComplaintDetailsEdit: FC = () => {
                 </div>
               </div>
 
-              <div
-                className="comp-details-form-row"
-                id="reported-pair-id"
-              >
-                <label htmlFor="reported-select-id">Organization Reporting the Complaint</label>
-                <div className="comp-details-edit-input">
-                  <CompSelect
-                    id="reported-select-id"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    defaultOption={selectedReportedByCode}
-                    placeholder="Select"
-                    options={reportedByCodes}
-                    enableValidation={false}
-                    onChange={(e) => handleReportedByChange(e)}
-                  />
-                </div>
-              </div>
-
               {/* Address */}
               <div
                 className="comp-details-form-row"
@@ -1202,6 +1183,25 @@ export const ComplaintDetailsEdit: FC = () => {
                     international={false}
                     id="caller-info-alternate-phone-id"
                     errMsg={alternatePhoneMsg}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="comp-details-form-row"
+                id="reported-pair-id"
+              >
+                <label htmlFor="reported-select-id">Organization Reporting the Complaint</label>
+                <div className="comp-details-edit-input">
+                  <CompSelect
+                    id="reported-select-id"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    defaultOption={selectedReportedByCode}
+                    placeholder="Select"
+                    options={reportedByCodes}
+                    enableValidation={false}
+                    onChange={(e) => handleReportedByChange(e)}
                   />
                 </div>
               </div>
