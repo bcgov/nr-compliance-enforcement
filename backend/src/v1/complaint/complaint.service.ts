@@ -1439,7 +1439,10 @@ export class ComplaintService {
 
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
-      if (data?.incidentDateTime) {
+
+      //-- incidentDateTime may not be set, if there's no date
+      //-- don't try and apply the incident date
+      if (data.incidentDateTime) {
         data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
       }
 
