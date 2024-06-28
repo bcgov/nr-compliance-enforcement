@@ -35,7 +35,6 @@ import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { ComplaintLocation } from "./complaint-location";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
 import {
