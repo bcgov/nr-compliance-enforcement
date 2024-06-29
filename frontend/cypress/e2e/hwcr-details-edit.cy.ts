@@ -423,7 +423,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     // Reffered by / Complaint Agency
     cy.get("#reported-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Reporting Organization");
+      expect($label).to.contain.text("Organization Reporting the Complaint");
     });
     cy.get("#reported-pair-id input").should("exist");
   });
