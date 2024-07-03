@@ -111,6 +111,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   placeholder="Select"
                   enableValidation={false}
                   value={natureOfComplaint}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -130,6 +131,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   placeholder="Select"
                   enableValidation={false}
                   value={species}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -154,6 +156,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={violationType}
+                isClearable={true}
               />
             </div>
           </div>
@@ -237,6 +240,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               placeholder="Select"
               enableValidation={false}
               value={status}
+              isClearable={true}
             />
           </div>
         </div>
@@ -267,6 +271,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={region}
+                isClearable={true}
               />
             </div>
           </div>
@@ -287,6 +292,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={zone}
+                isClearable={true}
               />
             </div>
           </div>
@@ -308,6 +314,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={community}
+                isClearable={true}
               />
             </div>
           </div>
@@ -330,6 +337,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={officer}
+                isClearable={true}
               />
             </div>
           </div>
