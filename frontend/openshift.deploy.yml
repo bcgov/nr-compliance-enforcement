@@ -121,7 +121,10 @@ objects:
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
                 - name: SHOW_EXPERIMENTAL_FEATURES
-                  value: ${SHOW_EXPERIMENTAL_FEATURES}
+                  valueFrom:
+                    secretKeyRef:
+                      name: react-app
+                      key: show-experimental-features
                 - name: ENVIRONMENT_NAME
                   value: ${ENVIRONMENT_NAME}
               ports:
