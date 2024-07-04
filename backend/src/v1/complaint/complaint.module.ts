@@ -23,6 +23,7 @@ import { CodeTableModule } from "../code-table/code-table.module";
 import { PersonComplaintXrefModule } from "../person_complaint_xref/person_complaint_xref.module";
 import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwcr_xref.module";
 import { AutomapperModule } from "@automapper/nestjs";
+import { GeneralInformationComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { AutomapperModule } from "@automapper/nestjs";
     TypeOrmModule.forFeature([ViolationCode]),
     TypeOrmModule.forFeature([CosGeoOrgUnit]),
     TypeOrmModule.forFeature([ComplaintTypeCode]),
+    TypeOrmModule.forFeature([GeneralInformationComplaint]),
     CodeTableModule,
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,

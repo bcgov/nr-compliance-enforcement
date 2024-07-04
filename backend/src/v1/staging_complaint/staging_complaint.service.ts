@@ -44,7 +44,8 @@ export class StagingComplaintService {
     // ignore non HWCR/ERS complaints
     if (
       stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.HWCR &&
-      stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.ERS
+      stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.ERS &&
+      stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.GIR
     ) {
       return;
     }

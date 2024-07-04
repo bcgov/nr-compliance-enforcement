@@ -32,6 +32,7 @@ import { DrugMethod } from "../../types/app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining-outcome";
 import { Equipment } from "../../types/app/code-tables/equipment";
 import { PreventionType } from "../../types/app/code-tables/prevention-type";
+import { GirType } from "../../types/app/code-tables/gir-type";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -59,6 +60,7 @@ const initialState: CodeTableState = {
   "drug-methods": [],
   "drug-remaining-outcomes": [],
   equipment: [],
+  "gir-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -110,6 +112,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "drug-methods": drugUseMethods,
       "drug-remaining-outcomes": remainingDrugUse,
       equipment,
+      "gir-type": girType,
     },
   } = state;
 
@@ -200,6 +203,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(equipment).any()) {
       dispatch(fetchEquipment());
     }
+    if (!from(girType).any()) {
+      dispatch(fetchGirTypes());
+    }
   } catch (error) {}
 };
 
@@ -216,6 +222,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchAreaCodes());
     dispatch(fetchComplaintTypeCodes());
     dispatch(fetchReportedByCodes());
+    dispatch(fetchGirTypes());
   } catch (error) {
     console.error(error);
   }
@@ -529,6 +536,16 @@ export const fetchEquipment = (): AppThunk => async (dispatch) => {
   const response = await get<Array<Equipment>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.EQUIPMENT, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchGirTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.GIR_TYPE}`);
+
+  const response = await get<Array<GirType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.GIR_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
