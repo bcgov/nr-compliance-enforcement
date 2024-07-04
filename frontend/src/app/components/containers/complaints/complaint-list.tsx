@@ -54,6 +54,7 @@ export const generateComplaintRequestPayload = (
   };
 
   switch (complaintType) {
+    case COMPLAINT_TYPES.GIR:
     case COMPLAINT_TYPES.ERS:
       return {
         ...common,

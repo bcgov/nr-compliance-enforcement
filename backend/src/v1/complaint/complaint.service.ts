@@ -55,6 +55,8 @@ import { UUID, randomUUID } from "crypto";
 
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { toDate, toZonedTime, format } from "date-fns-tz";
+import { GeneralInformationComplaint } from "../gir_complaint/entities/gir_complaint.entity";
+import { GeneralInformationComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
@@ -70,6 +72,8 @@ export class ComplaintService {
   private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
+  @InjectRepository(GeneralInformationComplaint)
+  private _generalInformationComplaintRepository: Repository<GeneralInformationComplaint>;
   @InjectRepository(ComplaintUpdate)
   private _complaintUpdateRepository: Repository<ComplaintUpdate>;
 
@@ -140,8 +144,10 @@ export class ComplaintService {
     }
   };
 
-  private _generateQueryBuilder = (type: COMPLAINT_TYPE): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> => {
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+  private _generateQueryBuilder = (
+    type: COMPLAINT_TYPE,
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint> => {
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint>;
     switch (type) {
       case "ERS":
         builder = this._allegationComplaintRepository
@@ -157,6 +163,17 @@ export class ComplaintService {
             "violation_code.short_description",
             "violation_code.long_description",
           ]);
+        break;
+      case "GIR":
+        builder = this._generalInformationComplaintRepository
+          .createQueryBuilder("general")
+          .addSelect(
+            "GREATEST(complaint.update_utc_timestamp, general.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
+            "_update_utc_timestamp",
+          )
+          .leftJoinAndSelect("general.complaint_identifier", "complaint")
+          .leftJoin("general.gir_type_code", "gir")
+          .addSelect(["gir.gir_type_code", "gir.short_description", "gir.long_description"]);
         break;
       case "HWCR":
       default:
@@ -209,7 +226,7 @@ export class ComplaintService {
   };
 
   private _applyFilters(
-    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
+    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint>,
     {
       community,
       zone,
@@ -223,7 +240,7 @@ export class ComplaintService {
       violationCode,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint> {
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
         Community: community,
@@ -301,10 +318,10 @@ export class ComplaintService {
   }
 
   private _applySearch(
-    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
+    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint>,
     complaintType: COMPLAINT_TYPE,
     query: string,
-  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint> {
     builder.andWhere(
       new Brackets((qb) => {
         qb.orWhere("complaint.complaint_identifier ILIKE :query", {
@@ -380,6 +397,9 @@ export class ComplaintService {
             qb.orWhere("violation_code.long_description ILIKE :query", {
               query: `%${query}%`,
             });
+            break;
+          }
+          case "GIR": {
             break;
           }
           case "HWCR":
@@ -717,7 +737,9 @@ export class ComplaintService {
     id: string,
     complaintType?: COMPLAINT_TYPE,
   ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto> => {
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
+    let builder:
+      | SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint>
+      | SelectQueryBuilder<Complaint>;
 
     try {
       if (complaintType) {
@@ -757,6 +779,13 @@ export class ComplaintService {
             result as AllegationComplaint,
             "AllegationComplaint",
             "AllegationComplaintDto",
+          );
+        }
+        case "GIR": {
+          return this.mapper.map<GeneralInformationComplaint, GeneralInformationComplaintDto>(
+            result as GeneralInformationComplaint,
+            "GeneralInformationComplaint",
+            "GeneralInformationComplaintDto",
           );
         }
         case "HWCR": {
@@ -827,6 +856,15 @@ export class ComplaintService {
             complaints as Array<AllegationComplaint>,
             "AllegationComplaint",
             "AllegationComplaintDto",
+          );
+          results.complaints = items;
+          break;
+        }
+        case "GIR": {
+          const items = this.mapper.mapArray<GeneralInformationComplaint, GeneralInformationComplaintDto>(
+            complaints as Array<GeneralInformationComplaint>,
+            "GeneralInformationComplaint",
+            "GeneralInformationComplaintDto",
           );
           results.complaints = items;
           break;
@@ -1314,7 +1352,11 @@ export class ComplaintService {
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
     let data;
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
+    mapWildlifeReport(this.mapper, tz);
+    mapAllegationReport(this.mapper, tz);
+    let builder:
+      | SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GeneralInformationComplaint>
+      | SelectQueryBuilder<Complaint>;
 
     const _getUpdates = async (id: string) => {
       const builder = this._complaintUpdateRepository
@@ -1414,6 +1456,9 @@ export class ComplaintService {
             "HwcrComplaint",
             "WildlifeReportData",
           );
+          break;
+        }
+        case "GIR": {
           break;
         }
         case "ERS": {
