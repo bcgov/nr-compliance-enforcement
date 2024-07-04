@@ -76,7 +76,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     speciesIndex: 3,
     status: "Closed",
     statusIndex: 1,
-    assigned: "Chris Nesmith",
+    assigned: "Nesmith, Chris",
     assignedIndex: 1,
   };
 

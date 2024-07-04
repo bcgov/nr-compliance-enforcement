@@ -73,7 +73,7 @@ describe("HWCR Outcome Equipment", () => {
       if ($equipment.find("#equipment-save-button").length) {
         let sectionParams = {
           section: "EQUIPMENT",
-          officer: "Olivia Benson",
+          officer: "Benson, Olivia",
           date: "01",
           toastText: "Equipment has been updated",
           equipmentType: "Bear snare",

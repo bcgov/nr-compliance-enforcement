@@ -11,7 +11,7 @@ describe("COMPENF-258 Zone at a Glance - View Office Stats", () => {
     cy.get("#Clearwater\\ Office").should("exist"); //assumes cypress user's office is Clearwater
     //Expand the Clearwater Box
     cy.get(".comp-zag-office > div > img").eq(1).click(); //Assumes Clearwater is second office
-    cy.get("#officerNameENV\\ TestAcct").should("exist");
+    cy.get("#officerNameTestAcct\\,\\ ENV").should("exist");
     /* ==== End Cypress Studio ==== */
   });
 });

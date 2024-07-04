@@ -777,7 +777,7 @@ export const selectComplaintHeader =
           const {
             person: { firstName, lastName, id },
           } = assigned;
-          officerAssigned = `${firstName} ${lastName}`;
+          officerAssigned = `${lastName}, ${firstName}`;
           personGuid = id as string;
 
           result = { ...result, firstName, lastName, officerAssigned, personGuid };
