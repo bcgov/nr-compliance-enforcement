@@ -787,6 +787,7 @@ export const CreateComplaint: FC = () => {
                 wrapperClassName="comp-details-edit-calendar-input"
                 maxDate={currentDate}
                 monthsShown={2}
+                showPreviousMonths
               />
             </div>
           </div>
