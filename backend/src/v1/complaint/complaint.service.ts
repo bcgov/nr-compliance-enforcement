@@ -132,6 +132,8 @@ export class ComplaintService {
       case "violation_code":
       case "in_progress_ind":
         return "allegation";
+      case "area_name":
+        return "cos_organization";
       case "complaint_identifier":
       default:
         return "complaint";
