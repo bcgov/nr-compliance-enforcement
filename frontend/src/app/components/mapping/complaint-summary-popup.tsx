@@ -36,7 +36,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
 
   return (
     <Popup
-      keepInView={true}
+      keepInView={false}
       className="map-comp-popup"
     >
       <div className="map-comp-summary-popup-container">
