@@ -82,7 +82,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
       const bannerType = unmappedComplaints >= 1 ? "unmapped" : "no-results";
       const info =
         unmappedComplaints >= 1
-          ? `The exact location of ${unmappedComplaints} complaint${isPluralized} could not be determined.`
+          ? `${unmappedComplaints} complaint${isPluralized} could not be mapped`
           : "No complaints found.";
 
       return (

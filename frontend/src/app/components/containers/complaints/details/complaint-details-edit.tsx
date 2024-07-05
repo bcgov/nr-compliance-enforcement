@@ -1080,62 +1080,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
               <div
                 className="comp-details-form-row"
-                id="reported-pair-id"
-              >
-                <label htmlFor="reported-select-id">Reporting Organization</label>
-                <div className="comp-details-edit-input">
-                  <CompSelect
-                    id="reported-select-id"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    defaultOption={selectedReportedByCode}
-                    placeholder="Select"
-                    options={reportedByCodes}
-                    enableValidation={false}
-                    onChange={(e) => handleReportedByChange(e)}
-                  />
-                </div>
-              </div>
-
-              {/* Address */}
-              <div
-                className="comp-details-form-row"
-                id="address-pair-id"
-              >
-                <label>Address</label>
-                <div className="comp-details-edit-input">
-                  <input
-                    type="text"
-                    className="comp-form-control"
-                    defaultValue={address}
-                    id="complaint-address-id"
-                    onChange={(e) => handleAddressChange(e.target.value)}
-                    maxLength={120}
-                  />
-                </div>
-              </div>
-
-              {/* Email Address */}
-              <div
-                className="comp-details-form-row"
-                id="email-pair-id"
-              >
-                <label>Email</label>
-                <div className="comp-details-edit-input">
-                  <ValidationInput
-                    type="text"
-                    className="comp-form-control"
-                    defaultValue={email !== undefined ? email : ""}
-                    id="complaint-email-id"
-                    onChange={handleEmailChange}
-                    errMsg={emailMsg}
-                    maxLength={120}
-                  />
-                </div>
-              </div>
-
-              <div
-                className="comp-details-form-row"
                 id="primary-phone-pair-id"
               >
                 <label
@@ -1202,6 +1146,62 @@ export const ComplaintDetailsEdit: FC = () => {
                     international={false}
                     id="caller-info-alternate-phone-id"
                     errMsg={alternatePhoneMsg}
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div
+                className="comp-details-form-row"
+                id="address-pair-id"
+              >
+                <label>Address</label>
+                <div className="comp-details-edit-input">
+                  <input
+                    type="text"
+                    className="comp-form-control"
+                    defaultValue={address}
+                    id="complaint-address-id"
+                    onChange={(e) => handleAddressChange(e.target.value)}
+                    maxLength={120}
+                  />
+                </div>
+              </div>
+
+              {/* Email Address */}
+              <div
+                className="comp-details-form-row"
+                id="email-pair-id"
+              >
+                <label>Email</label>
+                <div className="comp-details-edit-input">
+                  <ValidationInput
+                    type="text"
+                    className="comp-form-control"
+                    defaultValue={email !== undefined ? email : ""}
+                    id="complaint-email-id"
+                    onChange={handleEmailChange}
+                    errMsg={emailMsg}
+                    maxLength={120}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="comp-details-form-row"
+                id="reported-pair-id"
+              >
+                <label htmlFor="reported-select-id">Organization Reporting the Complaint</label>
+                <div className="comp-details-edit-input">
+                  <CompSelect
+                    id="reported-select-id"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    defaultOption={selectedReportedByCode}
+                    placeholder="Select"
+                    options={reportedByCodes}
+                    enableValidation={false}
+                    onChange={(e) => handleReportedByChange(e)}
                   />
                 </div>
               </div>

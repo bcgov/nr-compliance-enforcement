@@ -40,7 +40,7 @@ export const CallerInformation: FC = () => {
               <dd id="comp-details-email">{email}</dd>
             </div>
             <div>
-              <dt>Reporting Organization</dt>
+              <dt>Organization Reporting the Complaint</dt>
               <dd id="comp-details-reported">{reportedByCode?.longDescription}</dd>
             </div>
           </dl>

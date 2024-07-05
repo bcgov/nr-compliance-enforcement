@@ -35,7 +35,6 @@ import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { ComplaintLocation } from "./complaint-location";
 import { AttachmentsCarousel } from "../../../common/attachments-carousel";
 import { COMSObject } from "../../../../types/coms/object";
 import {
@@ -1093,7 +1092,7 @@ export const CreateComplaint: FC = () => {
             className="comp-details-form-row"
             id="reported-pair-id"
           >
-            <label htmlFor="reported-select-id">Reporting Organization</label>
+            <label htmlFor="reported-select-id">Organization Reporting the Complaint</label>
             <div className="comp-details-edit-input">
               <CompSelect
                 id="reported-select-id"
@@ -1146,16 +1145,6 @@ export const CreateComplaint: FC = () => {
             onSlideCountChange={handleSlideCountChange}
           />
         </fieldset>
-
-        {
-          <ComplaintLocation
-            parentCoordinates={{ lat: +latitude, lng: +longitude }}
-            complaintType={complaintType}
-            draggable={false}
-            hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
-            editComponent={false}
-          />
-        }
       </section>
     </div>
   );

@@ -577,11 +577,17 @@ export const selectComplaintsByType =
 export const selectTotalMappedComplaints = (state: RootState): number => {
   const {
     complaints: {
-      mappedItems: { items },
+      mappedItems: { items, unmapped },
     },
   } = state;
 
-  return items ? items.length : 0;
+  if (items && unmapped) {
+    return items.length + unmapped;
+  } else if (!items && !unmapped) {
+    return 0;
+  } else {
+    return 0 + unmapped;
+  }
 };
 
 export const selectTotalUnmappedComplaints = (state: RootState): number => {
