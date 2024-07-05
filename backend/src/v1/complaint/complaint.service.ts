@@ -596,7 +596,7 @@ export class ComplaintService {
         const assigned = await this._getTotalAssignedComplaintsByOfficer(complaintType, officerId);
 
         let record = {
-          name: `${first_name} ${last_name}`,
+          name: `${last_name}, ${first_name}`,
           hwcrAssigned: complaintType === "HWCR" ? assigned : 0,
           allegationAssigned: complaintType === "ERS" ? assigned : 0,
           officerGuid: officerId,

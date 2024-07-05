@@ -119,11 +119,11 @@ export const getFirstInitialAndLastName = (fullName: string): string => {
     return words[0];
   } else {
     // Extract the first initial and last name
-    const firstInitial = words[0].charAt(0).toUpperCase();
+    const firstName = words[0];
     const lastName = words[words.length - 1];
 
     // Concatenate the first initial and last name with a space
-    return `${firstInitial}. ${lastName}`;
+    return `${lastName}, ${firstName}`;
   }
 };
 
