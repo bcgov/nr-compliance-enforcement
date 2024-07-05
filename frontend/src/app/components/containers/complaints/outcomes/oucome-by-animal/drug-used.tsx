@@ -75,12 +75,12 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   //-- use to validate the drug-used component inputs
   const isValid = (): boolean => {
     let result = true;
-    debugger;
+
     //-- validate that amount used is a positive number
     if (amountUsed && !isPositiveNum(amountUsed)) {
       setAmountUsedError("Must be a positive number");
       result = false;
-    } else if (Number.parseFloat(amountUsed) === 0) {
+    } else if (amountUsed && Number.parseFloat(amountUsed) === 0) {
       setAmountUsedError("Must be a positive number");
       result = false;
     } else if (!amountUsed) {
@@ -89,6 +89,9 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     }
 
     if (amountDiscarded && !isPositiveNum(amountDiscarded)) {
+      setAmountDiscardedError("Must be a positive number");
+      result = false;
+    } else if (amountDiscarded && Number.parseFloat(amountDiscarded) === 0) {
       setAmountDiscardedError("Must be a positive number");
       result = false;
     }
