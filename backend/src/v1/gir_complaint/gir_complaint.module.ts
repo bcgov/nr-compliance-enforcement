@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { GeneralInformationComplaint } from "./entities/gir_complaint.entity";
+import { GirComplaint } from "./entities/gir_complaint.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GeneralInformationComplaint])],
+  imports: [TypeOrmModule.forFeature([GirComplaint])],
 })
 export class GeneralInformationComplaintModule {}

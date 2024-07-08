@@ -6,7 +6,7 @@ import { GirTypeCode } from "../../gir_type_code/entities/gir_type_code.entity";
 
 @Entity()
 @Unique(["complaint_identifier"])
-export class GeneralInformationComplaint {
+export class GirComplaint {
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The Unique identifier for the general information complaint",

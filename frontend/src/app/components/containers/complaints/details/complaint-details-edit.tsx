@@ -59,6 +59,7 @@ import {
 import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
+import { GeneralInformationComplaint as GeneralInformationComplaintDto } from "../../../../types/app/complaints/general-complaint";
 import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
@@ -133,7 +134,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- complaint update object
   const [complaintUpdate, applyComplaintUpdate] = useState<
-    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto
+    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto | GeneralInformationComplaintDto
   >();
 
   // files to add to COMS when complaint is saved

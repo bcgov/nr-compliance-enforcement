@@ -13,7 +13,7 @@ import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attra
 import { ViolationCode } from "../../v1/violation_code/entities/violation_code.entity";
 import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
 import { ReportedByCode } from "../../v1/reported_by_code/entities/reported_by_code.entity";
-import { GeneralInformationComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
+import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
 
 //-- models (dto for now)
 import {
@@ -872,10 +872,11 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
+  girTypeCodeToGirTypeCodeDto(mapper);
 
-  createMap<GeneralInformationComplaint, GeneralInformationComplaintDto>(
+  createMap<GirComplaint, GeneralInformationComplaintDto>(
     mapper,
-    "GeneralInformationComplaint",
+    "GirComplaint",
     "GeneralInformationComplaintDto",
     forMember(
       (destination) => destination.id,
@@ -1054,6 +1055,19 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     ),
   );
 };
+
+const girTypeCodeToGirTypeCodeDto = (mapper: Mapper) => {
+  createMap<GirTypeCode, GirType>(
+    mapper,
+    "GirTypeCode",
+    "GirTypeCodeDto",
+    forMember(
+      (destination) => destination.girType,
+      mapFrom((source) => source.gir_type_code),
+    ),
+  );
+};
+
 //-- reporting data maps
 export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();

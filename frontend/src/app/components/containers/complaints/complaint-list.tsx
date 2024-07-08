@@ -13,6 +13,7 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
+import { GeneralComplaintListHeader } from "./headers/general-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
 import { selectDefaultPageSize, selectDefaultZone } from "../../../store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
@@ -22,6 +23,8 @@ import ComplaintPagination from "../../common/complaint-pagination";
 //-- new models
 import { AllegationComplaint } from "../../../types/app/complaints/allegation-complaint";
 import { WildlifeComplaint } from "../../../types/app/complaints/wildlife-complaint";
+import { GeneralInformationComplaintListItem } from "./list-items/general-complaint-list-item";
+import { GeneralInformationComplaint } from "../../../types/app/complaints/general-complaint";
 
 type Props = {
   type: string;
@@ -159,6 +162,14 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
             sortDirection={sortDirection}
           />
         );
+      case COMPLAINT_TYPES.GIR:
+        return (
+          <GeneralComplaintListHeader
+            handleSort={handleSort}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+          />
+        );
       case COMPLAINT_TYPES.HWCR:
       default:
         return (
@@ -190,6 +201,15 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
                       key={id}
                       type={type}
                       complaint={item as AllegationComplaint}
+                    />
+                  );
+                }
+                case COMPLAINT_TYPES.GIR: {
+                  return (
+                    <GeneralInformationComplaintListItem
+                      key={id}
+                      type={type}
+                      complaint={item as GeneralInformationComplaint}
                     />
                   );
                 }
