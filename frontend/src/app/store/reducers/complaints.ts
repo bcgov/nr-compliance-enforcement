@@ -38,7 +38,7 @@ import {
 import { Agency } from "../../types/app/code-tables/agency";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
-import { GeneralInformationComplaint as GeneralInformationComplaintDto } from "../../types/app/complaints/general-complaint";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
 
 const initialState: ComplaintState = {
   complaintItems: {
@@ -148,6 +148,26 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
+    updateGeneralIncidentComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaintDto>) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = current(state);
+      const { general } = complaintItems;
+
+      const index = general.findIndex(({ girId }) => girId === updatedComplaint.girId);
+
+      if (index !== -1) {
+        const { status, delegates } = updatedComplaint;
+
+        let complaint = { ...general[index], status, delegates };
+
+        const update = [...general];
+        update[index] = complaint;
+
+        const updatedItems = { ...complaintItems, general: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
     setMappedComplaints: (state, action) => {
       const { mappedItems } = state;
       const {
@@ -187,6 +207,7 @@ export const {
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
+  updateGeneralIncidentComplaintByRow,
   setMappedComplaints,
   setWebEOCUpdates,
   setComplaintStatus,
@@ -404,9 +425,32 @@ export const updateAllegationComplaintStatus =
       //-- add error handling
     }
   };
+export const updateGeneralIncidentComplaintStatus =
+  (complaint_identifier: string, newStatus: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      //-- update the status of the complaint
+      await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
+
+      //-- get the wildlife conflict and update its status
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/GIR/${complaint_identifier}`,
+      );
+      const response = await get<GeneralIncidentComplaintDto>(dispatch, parameters);
+      dispatch(updateGeneralIncidentComplaintByRow(response));
+      const result = response;
+
+      dispatch(setComplaint({ ...result }));
+    } catch (error) {
+      //-- add error handling
+    }
+  };
 
 export const updateComplaintById =
-  (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto, complaintType: string): AppThunk =>
+  (
+    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+    complaintType: string,
+  ): AppThunk =>
   async (dispatch) => {
     try {
       const { id } = complaint;
@@ -416,7 +460,7 @@ export const updateComplaintById =
         complaint,
       );
 
-      await patch<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, updateParams);
+      await patch<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(dispatch, updateParams);
 
       ToggleSuccess("Updates have been saved");
     } catch (error) {
@@ -434,7 +478,10 @@ export const getComplaintById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        parameters,
+      );
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -449,7 +496,10 @@ export const getComplaintStatusById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        parameters,
+      );
 
       if (response.status) {
         dispatch(setComplaintStatus(response.status));
@@ -581,7 +631,7 @@ export const selectComplaintsByType =
   (complaintType: string) =>
   (
     state: RootState,
-  ): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralInformationComplaintDto> => {
+  ): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralIncidentComplaintDto> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
@@ -639,7 +689,7 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
 
 export const selectComplaint = (
   state: RootState,
-): WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null => {
+): WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | null => {
   const {
     complaints: { complaint },
   } = state;
@@ -823,7 +873,7 @@ export const selectComplaintHeader =
           break;
         case COMPLAINT_TYPES.GIR:
           {
-            const { girType: girTypeCode } = complaint as GeneralInformationComplaintDto;
+            const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
             const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
             result = { ...result, girType, girTypeCode };
           }

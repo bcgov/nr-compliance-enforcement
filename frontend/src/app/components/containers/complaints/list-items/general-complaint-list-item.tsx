@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { GeneralInformationComplaint } from "../../../../types/app/complaints/general-complaint";
+import { GeneralIncidentComplaint } from "../../../../types/app/complaints/general-complaint";
 import { applyStatusClass, formatDateTime, truncateString } from "../../../../common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
@@ -9,7 +9,7 @@ import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
 
 type Props = {
   type: string;
-  complaint: GeneralInformationComplaint;
+  complaint: GeneralIncidentComplaint;
 };
 
 export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint }) => {

@@ -59,7 +59,7 @@ import {
 import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
-import { GeneralInformationComplaint as GeneralInformationComplaintDto } from "../../../../types/app/complaints/general-complaint";
+import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "../../../../types/app/complaints/general-complaint";
 import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
