@@ -1,1 +1,0 @@
-CREATE SEQUENCE complaint_sequence START 40000;

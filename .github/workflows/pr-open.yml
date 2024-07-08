@@ -35,7 +35,7 @@ jobs:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/' 'test-only-migrations')
+      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
       params: --set global.secrets.persist=false
 
   tests:
