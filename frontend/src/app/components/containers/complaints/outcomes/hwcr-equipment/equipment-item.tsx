@@ -139,7 +139,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             <div>
               <dt>Latitude/Longitude</dt>
               <dd>
-                {equipment.yCoordinate} {equipment.xCoordinate}
+                {equipment.yCoordinate}, {equipment.xCoordinate}
               </dd>
             </div>
             <div>
