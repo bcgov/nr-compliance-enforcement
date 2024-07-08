@@ -11,7 +11,7 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-com
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { GeneralInformationComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
@@ -487,9 +487,9 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
 };
 
 export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
-  createMap<GeneralInformationComplaintDto, GirComplaint>(
+  createMap<GeneralIncidentComplaintDto, GirComplaint>(
     mapper,
-    "GeneralInformationComplaintDto",
+    "GeneralIncidentComplaintDto",
     "GirComplaint",
     forMember(
       (dest) => dest.complaint_identifier.complaint_identifier,

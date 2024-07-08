@@ -45,8 +45,8 @@ import { ComplaintSequenceResetScheduler } from "./v1/complaint/complaint-sequen
 import { DocumentModule } from "./v1/document/document.module";
 import { CdogsModule } from "./external_api/cdogs/cdogs.module";
 import { GirTypeCodeModule } from "./v1/gir_type_code/gir_type_code.module";
-import { GeneralInformationComplaintModule } from "./v1/gir_complaint/gir_complaint.module";
-//import { GeneralInformationComplaint } from "./v1/gir_complaint/entities/gir_complaint.entity";
+import { GeneralIncidentComplaintModule } from "./v1/gir_complaint/gir_complaint.module";
+//import { GeneralIncidentComplaint } from "./v1/gir_complaint/entities/gir_complaint.entity";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -114,7 +114,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     DocumentModule,
     CdogsModule,
     GirTypeCodeModule,
-    GeneralInformationComplaintModule,
+    GeneralIncidentComplaintModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],

@@ -41,7 +41,7 @@ export class StagingComplaintService {
     // the incoming complaint may be an edit, let's check for that.  If it is an edit, we need to create this as an edit record in the staging table
     const existingComplaintJson = existingStagingComplaint?.complaintJsonb as WebEOCComplaint;
 
-    // ignore non HWCR/ERS complaints
+    // ignore non HWCR/ERS/GIR complaints
     if (
       stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.HWCR &&
       stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.ERS &&

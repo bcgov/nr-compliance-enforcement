@@ -58,7 +58,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { UUID, randomUUID } from "crypto";
 import { format, toDate, toZonedTime } from "date-fns-tz";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
-import { GeneralInformationComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -72,7 +72,7 @@ export class ComplaintService {
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
   @InjectRepository(GirComplaint)
-  private _generalInformationComplaintRepository: Repository<GirComplaint>;
+  private _generalIncidentComplaintRepository: Repository<GirComplaint>;
 
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
@@ -162,7 +162,7 @@ export class ComplaintService {
           ]);
         break;
       case "GIR":
-        builder = this._generalInformationComplaintRepository
+        builder = this._generalIncidentComplaintRepository
           .createQueryBuilder("general")
           .addSelect(
             "GREATEST(complaint.update_utc_timestamp, general.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
@@ -733,7 +733,7 @@ export class ComplaintService {
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
-  ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto> => {
+  ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -777,10 +777,10 @@ export class ComplaintService {
           );
         }
         case "GIR": {
-          return this.mapper.map<GirComplaint, GeneralInformationComplaintDto>(
+          return this.mapper.map<GirComplaint, GeneralIncidentComplaintDto>(
             result as GirComplaint,
             "GirComplaint",
-            "GeneralInformationComplaintDto",
+            "GeneralIncidentComplaintDto",
           );
         }
         case "HWCR": {
@@ -856,10 +856,10 @@ export class ComplaintService {
           break;
         }
         case "GIR": {
-          const items = this.mapper.mapArray<GirComplaint, GeneralInformationComplaintDto>(
+          const items = this.mapper.mapArray<GirComplaint, GeneralIncidentComplaintDto>(
             complaints as Array<GirComplaint>,
             "GirComplaint",
-            "GeneralInformationComplaintDto",
+            "GeneralIncidentComplaintDto",
           );
           results.complaints = items;
           break;
@@ -960,10 +960,10 @@ export class ComplaintService {
           break;
         }
         case "GIR": {
-          const items = this.mapper.mapArray<GirComplaint, GeneralInformationComplaintDto>(
+          const items = this.mapper.mapArray<GirComplaint, GeneralIncidentComplaintDto>(
             mappedComplaints as Array<GirComplaint>,
             "GirComplaint",
-            "GeneralInformationComplaintDto",
+            "GeneralIncidentComplaintDto",
           );
 
           results.complaints = items;
@@ -1025,8 +1025,8 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto> => {
+    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
         const result = delegates.find((item) => item.type === "ASSIGNEE");
@@ -1061,9 +1061,9 @@ export class ComplaintService {
           break;
         }
         case "GIR": {
-          entity = this.mapper.map<GeneralInformationComplaintDto, GirComplaint>(
-            model as GeneralInformationComplaintDto,
-            "GeneralInformationComplaintDto",
+          entity = this.mapper.map<GeneralIncidentComplaintDto, GirComplaint>(
+            model as GeneralIncidentComplaintDto,
+            "GeneralIncidentComplaintDto",
             "GirComplaint",
           );
           break;
@@ -1154,8 +1154,8 @@ export class ComplaintService {
             break;
           }
           case "GIR": {
-            const { girType, girId } = model as GeneralInformationComplaintDto;
-            await this._generalInformationComplaintRepository
+            const { girType, girId } = model as GeneralIncidentComplaintDto;
+            await this._generalIncidentComplaintRepository
               .createQueryBuilder()
               .update(GirComplaint)
               .set({
