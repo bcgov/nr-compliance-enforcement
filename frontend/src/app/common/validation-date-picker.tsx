@@ -46,6 +46,8 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           maxDate={maxDate}
           minDate={minDate}
           autoComplete="false"
+          monthsShown={2}
+          showPreviousMonths
         />
       </div>
       <div className={calculatedClass}>{errMsg}</div>
