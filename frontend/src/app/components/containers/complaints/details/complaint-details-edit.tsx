@@ -872,6 +872,8 @@ export const ComplaintDetailsEdit: FC = () => {
                     timeFormat="HH:mm"
                     wrapperClassName="comp-details-edit-calendar-input"
                     maxDate={maxDate}
+                    monthsShown={2}
+                    showPreviousMonths
                   />
                 </div>
               </div>

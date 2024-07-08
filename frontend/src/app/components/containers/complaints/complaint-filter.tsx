@@ -219,6 +219,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               selectsRange={true}
               isClearable={true}
               wrapperClassName="comp-filter-calendar-input"
+              showPreviousMonths
             />
           </div>
         </div>
