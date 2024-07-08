@@ -24,7 +24,7 @@ import ComplaintPagination from "../../common/complaint-pagination";
 import { AllegationComplaint } from "../../../types/app/complaints/allegation-complaint";
 import { WildlifeComplaint } from "../../../types/app/complaints/wildlife-complaint";
 import { GeneralInformationComplaintListItem } from "./list-items/general-complaint-list-item";
-import { GeneralInformationComplaint } from "../../../types/app/complaints/general-complaint";
+import { GeneralIncidentComplaint } from "../../../types/app/complaints/general-complaint";
 
 type Props = {
   type: string;
@@ -209,7 +209,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
                     <GeneralInformationComplaintListItem
                       key={id}
                       type={type}
-                      complaint={item as GeneralInformationComplaint}
+                      complaint={item as GeneralIncidentComplaint}
                     />
                   );
                 }

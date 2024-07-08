@@ -3,7 +3,7 @@ import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "../app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints/allegation-complaint";
-import { GeneralInformationComplaint as GeneralInformationComplaintDto } from "../app/complaints/general-complaint";
+import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "../app/complaints/general-complaint";
 import { WebEOCComplaintUpdateDTO } from "../app/complaints/webeoc-complaint-update";
 
 export interface ComplaintState {
