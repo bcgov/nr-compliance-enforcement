@@ -335,7 +335,7 @@ backup:
             value: "5432"
         fromGlobalSecret:
           - name: DATABASE_PASSWORD
-            key: password
+            key: databasePassword
           - name: POSTGRESQL_DATABASE
             key: databaseName
           - name: DATABASE_USER
