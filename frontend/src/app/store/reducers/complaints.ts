@@ -33,15 +33,18 @@ import {
   getSpeciesBySpeciesCode,
   getStatusByStatusCode,
   getViolationByViolationCode,
+  getGirTypeByGirTypeCode,
 } from "../../common/methods";
 import { Agency } from "../../types/app/code-tables/agency";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
+import { GeneralInformationComplaint as GeneralInformationComplaintDto } from "../../types/app/complaints/general-complaint";
 
 const initialState: ComplaintState = {
   complaintItems: {
     wildlife: [],
     allegations: [],
+    general: [],
   },
   totalCount: 0,
   complaint: null,
@@ -67,13 +70,16 @@ export const complaintSlice = createSlice({
       } = action;
       const { complaintItems } = state;
 
-      let update: ComplaintCollection = { wildlife: [], allegations: [] };
+      let update: ComplaintCollection = { wildlife: [], allegations: [], general: [] };
       switch (type) {
         case COMPLAINT_TYPES.ERS:
           update = { ...complaintItems, allegations: data };
           break;
         case COMPLAINT_TYPES.HWCR:
           update = { ...complaintItems, wildlife: data };
+          break;
+        case COMPLAINT_TYPES.GIR:
+          update = { ...complaintItems, general: data };
           break;
       }
       return { ...state, complaintItems: update };
@@ -294,7 +300,7 @@ export const getZoneAtAGlanceStats =
     try {
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/stats/${
-          type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : "ERS"
+          type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : type === ComplaintType.ALLEGATION_COMPLAINT ? "ERS" : "GIR"
         }/by-zone/${zone}`,
       );
 
@@ -552,6 +558,15 @@ export const selectAllegationComplaints = (state: RootState): Array<any> => {
   return allegations;
 };
 
+export const selectGeneralInformationComplaints = (state: RootState): Array<any> => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { general } = complaintItems;
+
+  return general;
+};
+
 export const selectTotalComplaintsByType =
   (complaintType: string) =>
   (state: RootState): number => {
@@ -564,10 +579,14 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> => {
+  (
+    state: RootState,
+  ): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralInformationComplaintDto> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
+      case COMPLAINT_TYPES.GIR:
+        return selectGeneralInformationComplaints(state);
       case COMPLAINT_TYPES.HWCR:
       default:
         return selectWildlifeComplaints(state);
@@ -618,7 +637,9 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
   }
 };
 
-export const selectComplaint = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
+export const selectComplaint = (
+  state: RootState,
+): WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null => {
   const {
     complaints: { complaint },
   } = state;
@@ -727,6 +748,7 @@ export const selectComplaintHeader =
         violation: violationCodes,
         species: speciesCodes,
         "nature-of-complaint": natureOfComplaints,
+        "gir-type": girTypeCodes,
       },
     } = state;
 
@@ -799,6 +821,13 @@ export const selectComplaintHeader =
             result = { ...result, violationType, violationTypeCode };
           }
           break;
+        case COMPLAINT_TYPES.GIR:
+          {
+            const { girType: girTypeCode } = complaint as GeneralInformationComplaintDto;
+            const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
+            result = { ...result, girType, girTypeCode };
+          }
+          break;
         case COMPLAINT_TYPES.HWCR:
         default:
           {
@@ -844,7 +873,15 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
 
     return null;
   };
+  // const getGirTypeByGirTypeCode = (code: string, codes: Array<GirType>): GirType | null => {
+  //   if (codes && from(codes).any(({ girType }) => girType === code)) {
+  //     const selected = from(codes).first(({ girType }) => girType === code);
 
+  //     return selected;
+  //   }
+
+  //   return null;
+  // };
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {

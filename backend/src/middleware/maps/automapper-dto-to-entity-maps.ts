@@ -12,7 +12,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { GeneralInformationComplaintDto } from "../../types/models/complaints/gir-complaint";
-import { GeneralInformationComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
+import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   createMap<ComplaintDto, Complaint>(
@@ -487,10 +487,10 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
 };
 
 export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
-  createMap<GeneralInformationComplaintDto, GeneralInformationComplaint>(
+  createMap<GeneralInformationComplaintDto, GirComplaint>(
     mapper,
     "GeneralInformationComplaintDto",
-    "GeneralInformationComplaint",
+    "GirComplaint",
     forMember(
       (dest) => dest.complaint_identifier.complaint_identifier,
       mapFrom((src) => src.id),
