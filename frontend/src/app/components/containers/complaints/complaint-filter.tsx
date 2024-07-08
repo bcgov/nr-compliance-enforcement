@@ -220,6 +220,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               isClearable={true}
               wrapperClassName="comp-filter-calendar-input"
               showPreviousMonths
+              maxDate={new Date()}
             />
           </div>
         </div>
