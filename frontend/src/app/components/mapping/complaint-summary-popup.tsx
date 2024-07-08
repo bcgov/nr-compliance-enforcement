@@ -55,7 +55,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                     id="comp-details-assigned-officer-name-text-id"
                     className="comp-padding-left-xs"
                   >
-                    {getFirstInitialAndLastName(officerAssigned)}
+                    {officerAssigned}
                   </span>
                 </div>
               </div>

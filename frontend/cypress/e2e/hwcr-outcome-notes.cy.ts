@@ -64,7 +64,7 @@ describe("HWCR Outcome Notes", () => {
 
         //validate the officer
         cy.get("#comp-notes-officer").should(($div) => {
-          expect($div).to.contain.text("ENV TestAcct");
+          expect($div).to.contain.text("TestAcct, ENV");
         });
 
         //validate the toast

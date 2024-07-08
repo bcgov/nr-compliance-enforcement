@@ -237,7 +237,7 @@ const parseAssessmentResponse = async (
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
-        return `${officer.person_guid.first_name} ${officer.person_guid.last_name}`;
+        return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
       });
 
     if (officerNames?.length) {
@@ -437,7 +437,7 @@ const parsePreventionResponse = async (
     let officerNames = officers
       .filter((person) => person.person_guid.person_guid === actor)
       .map((officer) => {
-        return `${officer.person_guid.first_name} ${officer.person_guid.last_name}`;
+        return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
       });
 
     if (officerNames?.length) {
