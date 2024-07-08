@@ -30,8 +30,8 @@ services:
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./backend/db/migrations:/flyway/sql"
-      - "./backend/db/test-only-migrations:/flyway/sql-test"
+      - "./migrations:/flyway/sql"
+      - "./test-only-migrations:/flyway/sql-test"
     environment:
       - FLYWAY_URL=jdbc:postgresql://database:5432/postgres
       - FLYWAY_USER=postgres

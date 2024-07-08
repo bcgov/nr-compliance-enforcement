@@ -1,160 +1,55 @@
-name: Pull Request
+name: PR
 
 on:
   pull_request:
 
 concurrency:
-  # PR open and close use the same group, allowing only one at a time
-  group: pr-${{ github.workflow }}-${{ github.event.number }}
+  # Cancel in progress for PR open and close
+  group: ${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
-  pr-greeting:
-    name: PR Greeting
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
-    runs-on: ubuntu-22.04
-    permissions:
-      pull-requests: write
-    steps:
-      - name: PR Greeting
-        uses: bcgov-nr/action-pr-description-add@v0.0.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          add_markdown: |
-            ---
-
-            Thanks for the PR!
-
-            Any successful deployments (not always required) will be available below.
-            [Backend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/api/) available
-            [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
-
-            Once merged, code will be promoted and handed off to following workflow run.
-            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
+  # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
     name: Builds
     runs-on: ubuntu-22.04
-    permissions:
-      packages: write
     strategy:
       matrix:
-        package: [backend, database, database-migrations, frontend, webeoc]
-        include:
-          - package: backend
-            triggers: ('backend/')
-            build_file: ./backend/Dockerfile
-            build_context: ./backend
-          - package: webeoc
-            triggers: ('webeoc/')
-            build_file: ./webeoc/Dockerfile
-            build_context: ./webeoc
-          - package: database
-            triggers: ('database/')
-            build_file: ./database/Dockerfile
-            build_context: ./database
-          - package: frontend
-            triggers: ('frontend/')
-            build_file: ./frontend/Dockerfile
-            build_context: ./frontend
-          - package: database-migrations
-            triggers: ('backend/db')
-            build_file: ./backend/db/Dockerfile
-            build_context: ./backend/db
+        package: [backend, frontend, migrations, webeoc]
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.3.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
         with:
+          keep_versions: 50
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
-          build_file: ${{ matrix.build_file }}
-          build_context: ${{ matrix.build_context }}
+          tag_fallback: latest
+          triggers: ('${{ matrix.package }}/')
+
+  # https://github.com/bcgov/quickstart-openshift-helpers
   deploys:
     name: Deploys
-    needs:
-      - builds
-    environment: dev
+    needs: [builds]
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/' 'test-only-migrations')
+      params: --set global.secrets.persist=false
+
+  tests:
+    name: Tests
+    if: needs.deploys.outputs.triggered == 'true'
+    needs: [deploys]
+    uses: ./.github/workflows/.tests.yml
+    with:
+      target: ${{ github.event.number }}
+
+  results:
+    name: PR Results
+    needs: [builds, deploys, tests]
+    if: always() && (!failure()) && (!cancelled())
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        name: [backend, database, init, frontend, webeoc]
-        include:
-          - name: backend
-            file: backend/openshift.deploy.yml
-            overwrite: true
-            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-              -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:${{ github.event.number }}
-              -p CPU_REQUEST=40m
-              -p CPU_LIMIT=80m
-              -p MEMORY_REQUEST=100Mi
-              -p MEMORY_LIMIT=200Mi
-              -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
-          - name: webeoc
-            file: webeoc/openshift.deploy.yml
-            overwrite: true
-            needs: [backend]
-            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=1
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
-            parameters: -p CPU_REQUEST=100m
-              -p CPU_LIMIT=200m
-              -p MEMORY_REQUEST=250Mi
-              -p MEMORY_LIMIT=500Mi
-          - name: frontend
-            file: frontend/openshift.deploy.yml
-            overwrite: true
-            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV}}
-              -p COMS_URL=${{vars.COMS_URL_DEV}}
-              -p COMS_BUCKET=${{vars.COMS_BUCKET_DEV}}
-              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_DEV }}
-              -p CPU_REQUEST=25m
-              -p CPU_LIMIT=50m
-              -p MEMORY_REQUEST=40Mi
-              -p MEMORY_LIMIT=80Mi
-              -p ENVIRONMENT_NAME=${{ vars.ENVIRONMENT_NAME_DEV }}
-          - name: init
-            file: common/openshift.init.yml
-            overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
-            ${{ matrix.parameters }}
-  cypress-tests:
-    needs: deploys
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GitCode
-        uses: actions/checkout@v3
-
-      - name: Run Cypress Test
-        uses: cypress-io/github-action@v5
-        with:
-          working-directory: ./frontend
-          command: npx cypress run --browser electron --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL_DEV }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cypress-artifacts
-          path: |-
-            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
-            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
+      - run: echo "Success!"

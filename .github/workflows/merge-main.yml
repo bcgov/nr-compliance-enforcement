@@ -1,327 +1,76 @@
-name: Merge to Main
+name: Merge
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
+      - "*.md"
+      - ".github/**"
+      - ".github/graphics/**"
+      - "!.github/workflows/**"
   workflow_dispatch:
+    inputs:
+      pr_no:
+        description: "PR-numbered container set to deploy"
+        type: number
+        required: true
 
 concurrency:
+  # Do not interrupt previous workflows
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  codeql:
-    name: Semantic Code Analysis
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
     runs-on: ubuntu-22.04
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    timeout-minutes: 1
     steps:
-      - uses: actions/checkout@v3
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
 
-      - name: Initialize
-        uses: github/codeql-action/init@v2
-        with:
-          languages: javascript
+  # https://github.com/bcgov/quickstart-openshift-helpers
+  deploy-test:
+    name: Deploy (test)
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      environment: test
 
-      # Autobuild attempts to build any compiled languages (C/C++, C#, or Java).
-      # If this step fails, then you should remove it and run the build manually (see below).
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-
-  deploys-test-nats:
-    name: Deploy NATS to TEST
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Set up OpenShift CLI
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ vars.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ vars.OC_NAMESPACE }}
-
-      - name: Add NATS Helm repo
-        run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-
-      - name: Check if NATS release exists in TEST
-        run: |
-          RELEASE_NAME=${{ github.event.repository.name }}-test-nats
-          if helm list -q | grep -q $RELEASE_NAME; then
-            echo "TEST Release $RELEASE_NAME already exists. Skipping install."
-            echo "release_exists=true" >> $GITHUB_ENV
-          else
-            echo "TEST Release $RELEASE_NAME does not exist. Proceeding with install."
-            echo "release_exists=false" >> $GITHUB_ENV
-          fi
-
-      - name: Deploy NATS to TEST using Helm
-        if: env.release_exists == 'false'
-        run: |
-          helm install ${{ github.event.repository.name }}-test-nats nats/nats \
-            --set config.jetstream.enabled=true \
-            --set config.jetstream.fileStore.pvc.size=200Mi \
-            --set config.jetstream.memoryStore.enabled=true \
-            --set config.jetstream.memoryStore.maxSize=250Mi \
-            --set cluster.enabled=true \
-            --set natsBox.enabled=false \
-            --set persistence.enabled=true \
-            --set persistence.size=200Mi \
-            --set container.merge.resources.requests.cpu=100m \
-            --set container.merge.resources.limits.cpu=200m \
-            --set container.merge.resources.requests.memory=100Mi \
-            --set container.merge.resources.limits.memory=400Mi \
-            --set reloader.enabled=false \
-            --set replicaCount=1
-
-  deploys-test-database:
-    name: Deploy Database to TEST
-    needs: codeql
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up OpenShift CLI
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ vars.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ vars.OC_NAMESPACE }}
-
-      - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters: -p ZONE=test
-            -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:test
-          penetration_test: false
-
-  deploys-test-backend:
-    name: Deploy Backend to TEST
-    needs:
-      - deploys-test-database
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters: -p ZONE=test -p PROMOTE=${{ github.repository }}/backend:test
-            -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
-            -p FLYWAY_LOCATIONS="filesystem:./sql, filesystem:./sql-test"
-          penetration_test: false
-
-  deploys-test:
-    name: TEST Deployments
-    needs:
-      - codeql
-      - deploys-test-nats
-      - deploys-test-backend
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up OpenShift CLI
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ vars.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ vars.OC_NAMESPACE }}
-
-      - name: Deploy Components
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          parameters: -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
-            -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
-          penetration_test: false
-    strategy:
-      matrix:
-        name: [frontend, init, webeoc]
-        include:
-          - name: webeoc
-            file: webeoc/openshift.deploy.yml
-            overwrite: true
-          - name: frontend
-            file: frontend/openshift.deploy.yml
-            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST }}
-              -p COMS_URL=${{ vars.COMS_URL_TEST }}
-              -p COMS_BUCKET=${{ vars.COMS_BUCKET_TEST }}
-              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_TEST }}
-              -p ENVIRONMENT_NAME=${{ vars.ENVIRONMENT_NAME_TEST }}
-            overwrite: true
-          - name: init
-            file: common/openshift.init.yml
-            overwrite: false
-
-  deploys-prod-nats:
-    name: Deploy NATS to PROD
-    needs:
-      - deploys-test
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Set up OpenShift CLI
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ vars.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ vars.OC_NAMESPACE }}
-
-      - name: Add NATS Helm repo
-        run: helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-
-      - name: Check if NATS release exists in PROD
-        run: |
-          RELEASE_NAME=${{ github.event.repository.name }}-prod-nats
-          if helm list -q | grep -q $RELEASE_NAME; then
-            echo "PROD Release $RELEASE_NAME already exists. Skipping install."
-            echo "release_exists=true" >> $GITHUB_ENV
-          else
-            echo "PROD Release $RELEASE_NAME does not exist. Proceeding with install."
-            echo "release_exists=false" >> $GITHUB_ENV
-          fi
-
-      - name: Deploy NATS to PROD using Helm
-        if: env.release_exists == 'false'
-        run: |
-          helm install ${{ github.event.repository.name }}-prod-nats nats/nats \
-            --set config.jetstream.enabled=true \
-            --set config.jetstream.fileStore.pvc.size=200Mi \
-            --set config.jetstream.memoryStore.enabled=true \
-            --set config.jetstream.memoryStore.maxSize=250Mi \
-            --set cluster.enabled=true \
-            --set natsBox.enabled=false \
-            --set persistence.enabled=true \
-            --set persistence.size=200Mi \
-            --set container.merge.resources.requests.cpu=100m \
-            --set container.merge.resources.limits.cpu=200m \
-            --set container.merge.resources.requests.memory=100Mi \
-            --set container.merge.resources.limits.memory=400Mi \
-            --set reloader.enabled=false \
-            --set replicaCount=1
-
-  deploys-prod-database:
-    name: Deploy Database to PROD
-    needs: deploys-test
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up OpenShift CLI
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ vars.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ vars.OC_NAMESPACE }}
-
-      - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters: -p ZONE=prod
-            -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:test
-          penetration_test: false
-
-  deploys-prod-backend:
-    name: Deploy Backend to PROD
-    needs:
-      - deploys-prod-database
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters: -p ZONE=prod -p PROMOTE=${{ github.repository }}/backend:test
-            -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE_MIGRATION=${{ github.repository }}/database-migrations:test
-            -p FLYWAY_LOCATIONS="filesystem:./sql"
-          penetration_test: false
-
-  deploys-prod:
-    name: Deploy Other Components to PROD
-    needs:
-      - deploys-prod-nats
-      - deploys-prod-backend
-    environment: prod
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        name: [frontend, init, webeoc]
-        include:
-          - name: webeoc
-            file: webeoc/openshift.deploy.yml
-            overwrite: true
-          - name: frontend
-            file: frontend/openshift.deploy.yml
-            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD }}
-              -p COMS_URL=${{ vars.COMS_URL_PROD }}
-              -p COMS_BUCKET=${{ vars.COMS_BUCKET_PROD }}
-              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_PROD }}
-            overwrite: true
-          - name: init
-            file: common/openshift.init.yml
-            overwrite: false
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          parameters: -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
-            -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
-          penetration_test: false
-
-  image-promotions:
-    name: Promote images to PROD
-    needs:
-      - deploys-prod
+  deploy-prod:
+    name: Deploy (prod)
+    needs: [deploy-test, vars]
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      environment: prod
+      params: --set backend.deploymentStrategy=RollingUpdate
+        --set frontend.deploymentStrategy=RollingUpdate
+        --set global.autoscaling=true
+        --set frontend.pdb.enabled=true
+        --set backend.pdb.enabled=true
+  promote:
+    name: Promote Images
+    needs: [deploy-prod, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
     strategy:
       matrix:
-        component: [backend, database, database-migrations, frontend, webeoc]
+        package: [migrations, backend, frontend, webeoc]
+    timeout-minutes: 1
     steps:
-      - uses: shrink/actions-docker-registry-tag@v3
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ needs.vars.outputs.pr }}
           tags: prod
