@@ -1,8 +1,8 @@
 import { WildlifeComplaintDto } from "./wildlife-complaint";
 import { AllegationComplaintDto } from "./allegation-complaint";
-import { GeneralInformationComplaintDto } from "./gir-complaint";
+import { GeneralIncidentComplaintDto } from "./gir-complaint";
 
 export interface SearchResults {
-  complaints: Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralInformationComplaintDto>;
+  complaints: Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralIncidentComplaintDto>;
   totalCount: number;
 }

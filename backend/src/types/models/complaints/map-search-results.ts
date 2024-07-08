@@ -1,8 +1,8 @@
 import { WildlifeComplaintDto } from "./wildlife-complaint";
 import { AllegationComplaintDto } from "./allegation-complaint";
-import { GeneralInformationComplaintDto } from "./gir-complaint";
+import { GeneralIncidentComplaintDto } from "./gir-complaint";
 
 export interface MapSearchResults {
-  complaints: WildlifeComplaintDto[] | AllegationComplaintDto[] | GeneralInformationComplaintDto[];
+  complaints: WildlifeComplaintDto[] | AllegationComplaintDto[] | GeneralIncidentComplaintDto[];
   unmappedComplaints: number;
 }

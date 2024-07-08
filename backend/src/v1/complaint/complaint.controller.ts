@@ -10,7 +10,7 @@ import { AllegationComplaintDto } from "../../types/models/complaints/allegation
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
-import { GeneralInformationComplaintDto } from "src/types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "src/types/models/complaints/gir-complaint";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -58,8 +58,8 @@ export class ComplaintController {
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto> {
+    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> {
     return await this.service.updateComplaintById(id, complaintType, model);
   }
 
@@ -68,11 +68,11 @@ export class ComplaintController {
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto> {
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> {
     return (await this.service.findById(id, complaintType)) as
       | WildlifeComplaintDto
       | AllegationComplaintDto
-      | GeneralInformationComplaintDto;
+      | GeneralIncidentComplaintDto;
   }
 
   @Post("/create/:complaintType")

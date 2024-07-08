@@ -5,4 +5,4 @@ import { GirComplaint } from "./entities/gir_complaint.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([GirComplaint])],
 })
-export class GeneralInformationComplaintModule {}
+export class GeneralIncidentComplaintModule {}

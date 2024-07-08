@@ -11,7 +11,7 @@ export const complaintTypeToName = (complaintType: string | undefined | null, si
     case COMPLAINT_TYPES.HWCR:
       return singular ? "Human Wildlife Conflict" : "Human Wildlife Conflicts";
     case COMPLAINT_TYPES.GIR:
-      return "General Information";
+      return "General Incident";
     default:
       return "";
   }

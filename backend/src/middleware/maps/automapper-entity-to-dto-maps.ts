@@ -29,7 +29,7 @@ import {
 import { DelegateDto } from "../../types/models/people/delegate";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
-import { GeneralInformationComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { format, toDate, toZonedTime } from "date-fns-tz";
@@ -874,10 +874,10 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
   reportedByCodeToReportedByDto(mapper);
   girTypeCodeToGirTypeCodeDto(mapper);
 
-  createMap<GirComplaint, GeneralInformationComplaintDto>(
+  createMap<GirComplaint, GeneralIncidentComplaintDto>(
     mapper,
     "GirComplaint",
-    "GeneralInformationComplaintDto",
+    "GeneralIncidentComplaintDto",
     forMember(
       (destination) => destination.id,
       mapFrom((source) => source.complaint_identifier.complaint_identifier),
