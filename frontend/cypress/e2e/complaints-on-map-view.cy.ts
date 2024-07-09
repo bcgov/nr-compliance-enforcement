@@ -127,7 +127,7 @@ describe("Complaints on map tests", () => {
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.get("#popup-community-label").should("exist");
-        cy.get("#popup-community-label").should("have.text", "CommunityKelowna");
+        cy.get("#popup-community-label").should("have.text", "Kelowna");
       }
 
       // click the "view details" button to navigate to the complaint
