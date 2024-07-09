@@ -2,19 +2,11 @@ import { FC } from "react";
 import { selectComplaintDetails, selectComplaintHeader } from "../../store/reducers/complaints";
 import { useAppSelector } from "../../hooks/hooks";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
-import {
-  applyStatusClass,
-  formatDate,
-  formatTime,
-  getAvatarInitials,
-  getFirstInitialAndLastName,
-} from "../../common/methods";
+import { applyStatusClass, formatDate, getFirstInitialAndLastName } from "../../common/methods";
 import COMPLAINT_TYPES, { complaintTypeToName } from "../../types/app/complaint-types";
-import { Button } from "react-bootstrap";
+import { Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Popup } from "react-leaflet";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface Props {
   complaint_identifier: string;
@@ -37,105 +29,61 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
   return (
     <Popup
       keepInView={true}
-      className="map-comp-popup"
+      className="comp-map-popup"
     >
-      <div className="map-comp-summary-popup-container">
-        <div className="map-comp-summary-popup-details">
-          <div className="map-comp-popup-header-container">
-            <div className="map-comp-summary-popup-header">
-              <div className="complaint-identifier">{complaint_identifier}</div>
-              <div className="complaint-assignee">
-                <div
-                  data-initials-sm={getAvatarInitials(officerAssigned)}
-                  className={
-                    "Not Assigned" === officerAssigned ? "leaflet-popup-not-assigned" : "comp-orange-avatar-sm"
-                  }
-                >
-                  <span
-                    id="comp-details-assigned-officer-name-text-id"
-                    className="comp-padding-left-xs"
-                  >
-                    {getFirstInitialAndLastName(officerAssigned)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="comp-complaint-info">
-              <div className="map-comp-summary-popup-subheading">
-                <div
-                  className={`comp-box-conflict-type ${
-                    renderHWCRSection ? "hwcr-conflict-type" : "allegation-conflict-type"
-                  }`}
-                >
-                  {complaintTypeToName(complaintType, true)}
-                </div>
-                {renderHWCRSection ? (
-                  <div className="comp-box-species-type">{species}</div>
-                ) : (
-                  violationInProgress && (
-                    <div
-                      id="comp-details-status-text-id"
-                      className="comp-box-violation-in-progress"
-                    >
-                      <FontAwesomeIcon
-                        id="violation-in-progress-icon"
-                        icon={faExclamationCircle}
-                      />
-                      {inProgressInd}
-                    </div>
-                  )
-                )}
-                <div
-                  id="comp-details-status-text-id"
-                  className={`badge ${applyStatusClass(status)}`}
-                >
-                  {status}
-                </div>
-              </div>
-            </div>
+      <div>
+        <div className="comp-map-popup-header">
+          <div className="comp-map-popup-header-title">
+            <h2>{complaint_identifier}</h2>
+            <Badge
+              id="comp-details-status-text-id"
+              className={`badge ${applyStatusClass(status)}`}
+            >
+              {status}
+            </Badge>
           </div>
-          <div className="map-comp-nature-of-complaint">{renderHWCRSection ? natureOfComplaint : violationType}</div>
-          <div className="map-comp-summary-popup-details-section">
-            <div className="comp-details-content">
+          <div className="comp-map-popup-header-meta">
+            {renderHWCRSection ? (
               <div>
-                <label>Logged</label>
-                <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                {formatDate(loggedDate)}
-                <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                {formatTime(loggedDate)}
+                <span>{species}</span> · <span>{natureOfComplaint}</span>
               </div>
-              <div id="popup-community-label">
-                <label>Community</label>
-                {area}
-              </div>
-              <div className="map-comp-popup-address">
-                <label>Location/Address</label>
-                <div>{location}</div>
-              </div>
+            ) : (
               <div>
-                <label>Last Updated</label>
-                {lastUpdated && (
-                  <>
-                    <i className="bi bi-calendar comp-margin-right-xxs"></i>
-                    {formatDate(lastUpdated)}
-                    <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                    {formatTime(lastUpdated)}
-                  </>
-                )}
-                {!lastUpdated && <>Not Available</>}
+                {violationType} · {inProgressInd}
               </div>
-            </div>
+            )}
           </div>
         </div>
-        <Link to={`/complaint/${complaintType}/${complaint_identifier}`}>
+        <div className="comp-map-popup-details">
+          <dl>
+            <div>
+              <dt className="text-muted">Date Logged</dt>
+              <dd>{formatDate(loggedDate)}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Officer Assigned</dt>
+              <dd>{getFirstInitialAndLastName(officerAssigned)}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Community</dt>
+              <dd>{area}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Location</dt>
+              <dd>{location}</dd>
+            </div>
+          </dl>
           <Button
-            id="view-complaint-details-button-id"
+            as="a"
             variant="primary"
+            size="sm"
+            className="comp-map-popup-details-btn"
+            id="view-complaint-details-button-id"
+            href={`/complaint/${complaintType}/${complaint_identifier}`}
           >
             View Details
           </Button>
-        </Link>
+        </div>
       </div>
     </Popup>
   );
