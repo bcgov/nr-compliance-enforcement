@@ -902,6 +902,14 @@ UPDATE agency_code SET display_order = 9 WHERE agency_code = 'OTHER';
 ------------------------------
 update  public.geo_organization_unit_code set administrative_office_ind = true where geo_organization_unit_code='COSHQ';
 
+
+-----------------------
+-- Move Hudson's Hope to Fort St. John Office in North Peace
+-- This is temporary and will likely need to be removed in the future
+-----------------------
+
+ update geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where parent_geo_org_unit_code = 'CHTWD' and child_geo_org_unit_code = 'HUDSONSH';
+
 --------------------------
 -- New Changes above this line
 -------------------------
@@ -909,3 +917,7 @@ update  public.geo_organization_unit_code set administrative_office_ind = true w
 UPDATE configuration
             SET    configuration_value = configuration_value::int + 1
             WHERE  configuration_code = 'CDTABLEVER';
+
+
+
+
