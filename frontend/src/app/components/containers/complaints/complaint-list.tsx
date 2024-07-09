@@ -98,6 +98,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
       dispatch(getComplaints(type, payload));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sortKey, sortDirection, page, pageSize]);
 
   useEffect(() => {
@@ -107,6 +108,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
       payload = { ...payload, query: searchQuery };
       dispatch(getComplaints(type, payload));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   useEffect(() => {
@@ -120,6 +122,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     return () => {
       dispatch(setComplaints({ type: { type }, data: [] }));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSort = (sortInput: string) => {

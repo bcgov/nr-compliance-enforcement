@@ -203,7 +203,7 @@ export const selectOfficersDropdown =
         const {
           person_guid: { person_guid: id, first_name, last_name },
         } = item;
-        return { value: id, label: `${first_name.substring(0, 1)} ${last_name}` };
+        return { value: id, label: `${last_name}, ${first_name}` };
       });
 
     return results;
@@ -265,7 +265,7 @@ export const selectOfficersByAgencyDropdown =
       })
       .map((officer: Officer) => ({
         value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
       }));
 
     return data;

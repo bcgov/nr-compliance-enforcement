@@ -54,7 +54,7 @@ export const HWCRFileReview: FC = () => {
           const {
             person_guid: { first_name: givenName, last_name: surName },
           } = officer[0];
-          displayName = `${givenName} ${surName}`;
+          displayName = `${surName}, ${givenName}`;
           setOfficerName(displayName);
           setReviewCompleteDate(reviewCompleteAction.date);
         }

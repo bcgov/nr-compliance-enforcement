@@ -46,7 +46,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
         <SortableHeader
           title="Community"
           sortFnc={handleSort}
-          sortKey="geo_organization_unit_code"
+          sortKey="area_name"
           currentSort={sortKey}
           sortDirection={sortDirection}
         />

@@ -47,8 +47,8 @@ export const selectNotesOfficer = (state: RootState) => {
 
   if (!action) {
     currentOfficer = {
-      initials: `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(0, 1)}`,
-      displayName: `${profile.givenName} ${profile.surName}`,
+      initials: `${profile.surName?.substring(0, 1)}${profile.givenName?.substring(0, 1)}`,
+      displayName: `${profile.surName}, ${profile.givenName}`,
     };
   } else {
     const { actor } = action;
@@ -58,8 +58,8 @@ export const selectNotesOfficer = (state: RootState) => {
         person_guid: { first_name: givenName, last_name: surName },
       } = officer;
       currentOfficer = {
-        initials: `${givenName?.substring(0, 1)}${surName?.substring(0, 1)}`,
-        displayName: `${givenName} ${surName}`,
+        initials: `${surName?.substring(0, 1)}${givenName?.substring(0, 1)}`,
+        displayName: `${surName}, ${givenName}`,
       };
     }
   }

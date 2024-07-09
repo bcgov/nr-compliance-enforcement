@@ -153,7 +153,7 @@ describe("HWCR File Review", () => {
 
       //validate the officer appeared
       cy.get("#file-review-officer-id").should(($div) => {
-        expect($div).to.contain.text("ENV C&E Test Acct 1");
+        expect($div).to.contain.text("OfficerC&E Test Acct 1, ENV");
       });
 
       cy.get("#file-review-save-button").click();

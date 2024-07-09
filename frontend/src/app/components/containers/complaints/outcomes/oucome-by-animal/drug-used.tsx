@@ -80,12 +80,18 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     if (amountUsed && !isPositiveNum(amountUsed)) {
       setAmountUsedError("Must be a positive number");
       result = false;
+    } else if (amountUsed && Number.parseFloat(amountUsed) === 0) {
+      setAmountUsedError("Must be a positive number");
+      result = false;
     } else if (!amountUsed) {
       setAmountUsedError(REQUIRED);
       result = false;
     }
 
     if (amountDiscarded && !isPositiveNum(amountDiscarded)) {
+      setAmountDiscardedError("Must be a positive number");
+      result = false;
+    } else if (amountDiscarded && Number.parseFloat(amountDiscarded) === 0) {
       setAmountDiscardedError("Must be a positive number");
       result = false;
     }
