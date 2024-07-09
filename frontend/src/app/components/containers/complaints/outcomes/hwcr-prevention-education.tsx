@@ -60,7 +60,7 @@ export const HWCRComplaintPrevention: FC = () => {
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }))
       : [];
   const handleDateChange = (date: Date | null) => {
@@ -139,7 +139,7 @@ export const HWCRComplaintPrevention: FC = () => {
         .filter((officer: Officer) => officer.person_guid.person_guid === assigned)
         .map((element: Officer) => {
           return {
-            label: `${element.person_guid?.first_name} ${element.person_guid?.last_name}`,
+            label: `${element.person_guid?.last_name}, ${element.person_guid?.first_name}`,
             value: assigned,
           } as Option;
         });

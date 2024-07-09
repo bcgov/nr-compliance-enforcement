@@ -57,7 +57,7 @@ describe("HWCR Outcome Assessments", () => {
         let sectionParams = {
           section: "ASSESSMENT",
           checkboxes: ["#ASSESSRISK"],
-          officer: "Olivia Benson",
+          officer: "Benson, Olivia",
           date: "01",
           actionRequired: "Yes",
           toastText: "Assessment has been saved",
@@ -124,7 +124,7 @@ describe("HWCR Outcome Assessments", () => {
         let sectionParams = {
           section: "ASSESSMENT",
           checkboxes: ["#ASSESSHIST"],
-          officer: "Jake Peralta",
+          officer: "Peralta, Jake",
           date: "01",
           actionRequired: "No",
           justification: "No public safety concern",

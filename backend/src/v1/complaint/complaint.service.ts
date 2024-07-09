@@ -132,6 +132,8 @@ export class ComplaintService {
       case "violation_code":
       case "in_progress_ind":
         return "allegation";
+      case "area_name":
+        return "cos_organization";
       case "complaint_identifier":
       default:
         return "complaint";
@@ -594,7 +596,7 @@ export class ComplaintService {
         const assigned = await this._getTotalAssignedComplaintsByOfficer(complaintType, officerId);
 
         let record = {
-          name: `${first_name} ${last_name}`,
+          name: `${last_name}, ${first_name}`,
           hwcrAssigned: complaintType === "HWCR" ? assigned : 0,
           allegationAssigned: complaintType === "ERS" ? assigned : 0,
           officerGuid: officerId,

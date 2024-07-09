@@ -37,7 +37,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
         id,
         person: { firstName, lastName },
       } = currentOfficer;
-      setDefaultOfficer({ label: `${firstName} ${lastName}`, value: id });
+      setDefaultOfficer({ label: `${lastName}, ${firstName}`, value: id });
     } else {
       setDefaultOfficer({ label: "Unknown", value: "" });
     }

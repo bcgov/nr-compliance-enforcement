@@ -123,7 +123,7 @@ export const isSidebarOpen = (state: RootState) => state.app.isSidebarOpen;
 
 export const profileInitials = (state: RootState) => {
   const { profile } = state.app;
-  return `${profile.givenName?.substring(0, 1)}${profile.surName?.substring(0, 1)}`;
+  return `${profile.surName?.substring(0, 1)}${profile.givenName?.substring(0, 1)}`;
 };
 
 export const userGuid = (state: RootState) => {
@@ -140,7 +140,7 @@ export const userId = (state: RootState) => {
 
 export const profileDisplayName = (state: RootState) => {
   const { profile } = state.app;
-  return `${profile.givenName} ${profile.surName}`;
+  return `${profile.surName}, ${profile.givenName}`;
 };
 
 export const profileIdir = (state: RootState): UUID => {
