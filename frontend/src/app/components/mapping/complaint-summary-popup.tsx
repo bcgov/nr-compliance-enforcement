@@ -3,9 +3,8 @@ import { selectComplaintDetails, selectComplaintHeader } from "../../store/reduc
 import { useAppSelector } from "../../hooks/hooks";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
 import { applyStatusClass, formatDate, getFirstInitialAndLastName } from "../../common/methods";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../types/app/complaint-types";
+import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { Badge, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { Popup } from "react-leaflet";
 
 interface Props {
@@ -14,8 +13,9 @@ interface Props {
 }
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
-  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, lastUpdated, status } =
-    useAppSelector(selectComplaintHeader(complaintType));
+  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status } = useAppSelector(
+    selectComplaintHeader(complaintType),
+  );
 
   const { violationInProgress, location, area } = useAppSelector(
     selectComplaintDetails(complaintType),
@@ -45,7 +45,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
           <div className="comp-map-popup-header-meta">
             {renderHWCRSection ? (
               <div>
-                <span>{species}</span> · <span>{natureOfComplaint}</span>
+                <span className="comp-box-species-type">{species}</span> · <span>{natureOfComplaint}</span>
               </div>
             ) : (
               <div>
@@ -62,11 +62,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </div>
             <div>
               <dt className="text-muted">Officer Assigned</dt>
-              <dd>{getFirstInitialAndLastName(officerAssigned)}</dd>
+              <dd id="comp-details-assigned-officer-name-text-id">{getFirstInitialAndLastName(officerAssigned)}</dd>
             </div>
             <div>
               <dt className="text-muted">Community</dt>
-              <dd>{area}</dd>
+              <dd id="popup-community-label">{area}</dd>
             </div>
             <div>
               <dt className="text-muted">Location</dt>
