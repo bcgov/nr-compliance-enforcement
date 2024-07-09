@@ -111,10 +111,10 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
               </div>
               {update.updLocationGeometryPoint?.coordinates && (
                 <div className="coordinates-section">
-                  <div className="complaint-description-label">Longitude:</div>
-                  <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[0]}</div>
                   <div className="complaint-description-label">Latitude:</div>
                   <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[1]}</div>
+                  <div className="complaint-description-label">Longitude:</div>
+                  <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[0]}</div>
                 </div>
               )}
             </div>

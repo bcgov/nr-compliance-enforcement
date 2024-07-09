@@ -64,10 +64,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
       const {
         person: { firstName, lastName },
       } = officer;
-
-      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
-
-      return firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
+      return `${lastName}, ${firstName}`;
     }
 
     return "";
@@ -82,7 +79,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
       const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
       const lastInitial = lastName.length > 0 ? lastName.substring(0, 1) : "";
-      const initials = firstInitial + lastInitial;
+      const initials = lastInitial + firstInitial;
 
       return initials;
     }

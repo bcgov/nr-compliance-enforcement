@@ -107,8 +107,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           auth_user_guid: authUserId,
         } = val;
 
-        const displayName = `${firstName} ${lastName}`;
-        const officerInitials = firstName?.substring(0, 1) + lastName?.substring(0, 1);
+        const displayName = `${lastName}, ${firstName} `;
+        const officerInitials = lastName?.substring(0, 1) + firstName?.substring(0, 1);
 
         // don't display the current user in the list since we already have the current user at the top of the modal
         if (authUserId === undefined || !compareUuidToString(authUserId, idir)) {

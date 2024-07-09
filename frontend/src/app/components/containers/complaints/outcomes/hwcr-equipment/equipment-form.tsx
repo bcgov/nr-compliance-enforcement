@@ -75,7 +75,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }))
       : [];
 

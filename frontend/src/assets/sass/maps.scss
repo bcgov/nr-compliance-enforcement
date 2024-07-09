@@ -26,6 +26,7 @@
 .map-comp-summary-popup-header {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
 }
 
 .map-comp-summary-popup-header .complaint-identifier {
@@ -36,7 +37,7 @@
 
 .map-comp-summary-popup-header .complaint-assignee {
   font-size: 16px;
-  margin-left: auto;
+  margin: 5px 0;
 }
 
 .map-comp-summary-popup-subheading {

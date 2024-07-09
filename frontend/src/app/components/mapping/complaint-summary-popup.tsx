@@ -45,11 +45,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
           <div className="comp-map-popup-header-meta">
             {renderHWCRSection ? (
               <div>
-                <span className="comp-box-species-type">{species}</span> Â· <span>{natureOfComplaint}</span>
+                <span className="comp-box-species-type">{species}</span> · <span>{natureOfComplaint}</span>
               </div>
             ) : (
               <div>
-                {violationType} Â· {inProgressInd}
+                {violationType} · {inProgressInd}
               </div>
             )}
           </div>
