@@ -1,4 +1,4 @@
-import React, {
+import {
   Component,
   useState,
   useCallback,
@@ -13,7 +13,7 @@ import React, {
   ReactElement,
   ErrorInfo,
 } from "react";
-
+import config from "../../config";
 type ComponentDidCatch = (error: Error, errorInfo: ErrorInfo) => void;
 
 interface ErrorBoundaryProps {
@@ -74,6 +74,10 @@ export function ErrorBoundaryContext({ children }: { children?: ReactNode }) {
       <ErrorBoundary
         error={error}
         onError={(error, errorInfo) => {
+          if (config.ENABLE_BOUNDARY_MESSAGES) {
+            console.error(error);
+            console.info(errorInfo);
+          }
           setError(error);
           setErrorInfo(errorInfo);
           componentDidCatch.current?.(error, errorInfo);
