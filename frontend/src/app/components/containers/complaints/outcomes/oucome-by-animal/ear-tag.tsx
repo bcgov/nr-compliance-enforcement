@@ -1,7 +1,5 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { Row, Col } from "react-bootstrap";
-import { BsXCircle, BsFillXCircleFill } from "react-icons/bs";
-import { CompIconButton } from "../../../../common/comp-icon-button";
+import { Button } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
@@ -49,70 +47,53 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   });
 
   return (
-    <div className="comp-animal-outcome-report-inner-spacing comp-padding-top-2">
-      <Row>
-        <Col>
-          <label
-            htmlFor={`comp-ear-tag-value-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Ear Tag
-          </label>
-          <CompInput
-            id={`comp-ear-tag-value-${id}`}
-            divid="comp-details-edit-y-coordinate-div"
-            type="input"
-            placeholder=""
-            inputClass="comp-form-control"
-            value={identifier}
-            error={error}
-            maxLength={7}
-            onChange={(evt: any) => {
-              const {
-                target: { value },
-              } = evt;
+    <div className="comp-ear-tag">
+      <div className="comp-ear-tag-form-item">
+        <label htmlFor={`comp-ear-tag-value-${id}`}>Identifier</label>
+        <CompInput
+          id={`comp-ear-tag-value-${id}`}
+          divid="comp-ear-tag-value"
+          type="input"
+          inputClass="comp-form-control"
+          value={identifier}
+          error={error}
+          maxLength={7}
+          onChange={(evt: any) => {
+            const {
+              target: { value },
+            } = evt;
 
-              if (value.length <= 6) {
-                updateModel("identifier", value);
-              }
-            }}
-          />
-        </Col>
-        <Col>
-          <label
-            htmlFor={`comp-ear-tag-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            &nbsp;
-          </label>
-          <CompSelect
-            id={`comp-ear-tag-${id}`}
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={ears}
-            enableValidation={false}
-            placeholder={"Select"}
-            onChange={(evt) => {
-              updateModel("ear", evt?.value);
-            }}
-            value={selectedEar}
-          />
-        </Col>
-        <Col className="mt-delete-button mb-2">
-          <CompIconButton onClick={() => remove(id)}>
-            <BsXCircle
-              size={24}
-              className="comp-outcome-remove-botton"
-            />
-            <BsFillXCircleFill
-              size={24}
-              className="comp-outcome-remove-botton-hover"
-            />
-          </CompIconButton>
-        </Col>
-        <Col></Col>
-        <Col></Col>
-      </Row>
+            if (value.length <= 6) {
+              updateModel("identifier", value);
+            }
+          }}
+        />
+      </div>
+      <div className="comp-ear-tag-form-item">
+        <label htmlFor={`comp-ear-tag-${id}`}>Side</label>
+        <CompSelect
+          id={`comp-ear-tag-${id}`}
+          classNamePrefix="comp-select"
+          className="comp-details-input comp-ear-tag-side-select"
+          options={ears}
+          enableValidation={false}
+          placeholder={"Ear side"}
+          onChange={(evt) => {
+            updateModel("ear", evt?.value);
+          }}
+          value={selectedEar}
+        />
+      </div>
+
+      <Button
+        variant="outline-primary"
+        size="sm"
+        aria-label="Delete ear tag"
+        onClick={() => remove(id)}
+      >
+        <i className="bi bi-trash3"></i>
+        <span>Delete</span>
+      </Button>
     </div>
   );
 });

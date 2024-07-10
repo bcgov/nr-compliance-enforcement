@@ -11,12 +11,11 @@ import {
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
 import { from } from "linq-to-typescript";
-import { BsTrash3, BsPencil, BsExclamationCircleFill } from "react-icons/bs";
-import { getAvatarInitials, formatDate, pad } from "../../../../../common/methods";
-import { CompTextIconButton } from "../../../../common/comp-text-icon-button";
+import { BsExclamationCircleFill } from "react-icons/bs";
+import { formatDate, pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { DrugItem } from "./drug-item";
-import { Card } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 
 type props = {
   index: number;
@@ -129,191 +128,129 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
       className="comp-animal-card comp-outcome-report-block"
       border={showSectionErrors ? "danger" : "default"}
     >
-      <Card.Body>
-        {showSectionErrors && (
-          <div className="section-error-message">
-            <BsExclamationCircleFill />
-            <span>Complete or delete section before closing the complaint.</span>
-          </div>
-        )}
-        <div>
-          <div className="equipment-item">
-            <div className="equipment-item-header">
-              <div className="title">
-                <h6>Animal {pad(animalNumber.toString(), 2)}</h6>
-              </div>
-              <div>
-                <CompTextIconButton
-                  buttonClasses="button-text"
-                  style={{ marginRight: "15px" }}
-                  text="Delete"
-                  icon={BsTrash3}
-                  click={() => handleDeleteItem()}
-                />
-                <CompTextIconButton
-                  buttonClasses="button-text"
-                  text="Edit"
-                  icon={BsPencil}
-                  click={() => hendleEnableEditMode()}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="comp-details-edit-container">
-            <div className="comp-details-edit-column">
-              <div className="comp-details-edit-container comp-details-nmargin-right-xxl">
-                <div className="comp-details-edit-column">
-                  <div className="comp-details-label-div-pair ">
-                    <label
-                      className="comp-details-inner-content-label"
-                      htmlFor="comp-animal-outcome-animal"
-                    >
-                      Animal
-                    </label>
-                    <div className="flex-container">
-                      <div className="comp-animal-outcome-animal">
-                        <b>{animal}</b>
-                      </div>
-                      {data?.sex && (
-                        <>
-                          <div className="comp-margin-right-xs">,</div>
-                          <div>{animalSex}</div>
-                        </>
-                      )}
-                      {data?.age && (
-                        <>
-                          <div className="comp-margin-right-xs">,</div>
-                          <div className="comp-margin-right-xs">{animalAge}</div>
-                        </>
-                      )}
-                      {data?.threatLevel && (
-                        <div className="badge comp-status-badge-threat-level comp-margin-right-xs">
-                          Category level: {animalThreatLevel}
-                        </div>
-                      )}
-                      {data?.conflictHistory && (
-                        <div className="badge comp-status-badge-conflict-history comp-margin-right-xs">
-                          Conflict history: {animalHistory}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {showSectionErrors && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Complete or delete section before closing the complaint.</span>
+        </div>
+      )}
 
-              {data?.tags && from(data?.tags).any() && (
-                <div className="comp-details-edit-column">
-                  <div className="comp-details-label-input-pair">
-                    <label className="label top">Ear Tag{data?.tags.length > 1 && "s"}</label>
-
-                    <div className="comp-animal-outcome-fill-space">
-                      <ul className="comp-ear-tag-list">
-                        {data?.tags.map(({ id, identifier, ear }) => (
-                          <li key={id}>
-                            {identifier} {ear === "L" ? leftEar?.label : rightEar?.label} side
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {data?.drugs && from(data?.drugs).any() && (
-                <div className="comp-details-edit-column">
-                  <div className="comp-details-label-input-pair">
-                    <label className="label top">Drug{data?.drugs.length > 1 && "s"}</label>
-                    <div className="comp-animal-outcome-fill-space">
-                      {data.drugs.map((item) => {
-                        const { officer, date } = data?.drugAuthorization || {};
-                        return (
-                          <DrugItem
-                            {...item}
-                            officer={officer}
-                            date={date}
-                            key={item.id}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="comp-details-edit-column">
-                <div className="comp-details-label-input-pair">
-                  <label
-                    htmlFor="comp-animal-outcome-result"
-                    className="label center"
-                  >
-                    Outcome
-                  </label>
-                  <div id="comp-animal-outcome-result">
-                    {data?.outcome ? (
-                      animalOutcome
-                    ) : (
-                      <span className="comp-animal-outcome-pending">Outcome pending</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="comp-details-edit-container">
-                <div className="comp-details-edit-column">
-                  <div className="comp-details-label-div-pair">
-                    <label
-                      className="comp-details-inner-content-label center"
-                      htmlFor="comp-animal-outcome-officer"
-                    >
-                      Officer
-                    </label>
-                    <div className="comp-animal-outcome-officer">
-                      {data?.officer ? (
-                        <div
-                          data-initials-sm={getAvatarInitials(outcomeOfficer)}
-                          className="comp-orange-avatar-sm comp-details-inner-content"
-                        >
-                          <span
-                            id="comp-review-required-officer"
-                            className="comp-padding-left-xs"
-                          >
-                            {outcomeOfficer}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="comp-animal-outcome-pending">Officer pending</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="comp-details-edit-column"
-                  id="complaint-supporting-date-div"
-                >
-                  <div className="comp-details-label-div-pair">
-                    <label
-                      className="comp-details-inner-content-label"
-                      htmlFor="comp-animal-outcome-date"
-                    >
-                      Date
-                    </label>
-                    <div
-                      className="bi comp-margin-right-xxs comp-details-inner-content"
-                      id="comp-animal-outcome-date"
-                    >
-                      {data?.date ? (
-                        formatDate(data?.date?.toString())
-                      ) : (
-                        <span className="comp-animal-outcome-pending">Date pending</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="supporting-width"></div>
-              </div>
-            </div>
+      <Card.Header className="comp-card-header">
+        <div className="comp-card-header-title">
+          <h4>Animal {pad(animalNumber.toString(), 2)}</h4>
+          <div className="comp-card-header-metadata fw-bold text-muted">
+            <span>{animal}</span>
+            {data?.sex && <span>{animalSex}</span>}
+            {data?.age && <span>{animalAge}</span>}
           </div>
         </div>
+        <div className="comp-card-header-actions">
+          <Button
+            onClick={() => hendleEnableEditMode()}
+            variant="outline-primary"
+            size="sm"
+          >
+            <i className="bi bi-pencil"></i>
+            <span>Edit</span>
+          </Button>
+          <Button
+            onClick={() => handleDeleteItem()}
+            variant="outline-primary"
+            size="sm"
+          >
+            <i className="bi bi-trash3"></i>
+            <span>Delete</span>
+          </Button>
+        </div>
+      </Card.Header>
+
+      <Card.Body>
+        <hr className="mt-0"></hr>
+        <Row
+          as="dl"
+          className="my-3"
+        >
+          {data?.threatLevel && (
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Category level</dt>
+              <dd>{animalThreatLevel}</dd>
+            </Col>
+          )}
+          {data?.conflictHistory && (
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Conflict history</dt>
+              <dd>{animalHistory}</dd>
+            </Col>
+          )}
+
+          {data?.tags && from(data?.tags).any() && (
+            <Col xs={12}>
+              <dt>Ear Tag{data?.tags.length > 1 && "s"}</dt>
+              <dd>
+                <ul className="comp-ear-tag-list">
+                  {data?.tags.map(({ id, identifier, ear }) => (
+                    <li key={id}>
+                      ID: {identifier} ({ear === "L" ? leftEar?.label : rightEar?.label} side)
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </Col>
+          )}
+        </Row>
+
+        {data?.drugs && from(data?.drugs).any() && (
+          <section>
+            <h5 className="fw-bold mb-3">Drugs</h5>
+
+            <div className="comp-animal-drug-list">
+              {data.drugs.map((item) => {
+                const { officer, date } = data?.drugAuthorization || {};
+                return (
+                  <DrugItem
+                    {...item}
+                    officer={officer}
+                    date={date}
+                    key={item.id}
+                  />
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        <section>
+          <h5 className="fw-bold mb-3">Outcome Details</h5>
+          <Row as="dl">
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Outcome</dt>
+              <dd>{data?.outcome ? animalOutcome : "Outcome pending"}</dd>
+            </Col>
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Officer</dt>
+              <dd>{data?.officer ? outcomeOfficer : "Officer pending"}</dd>
+            </Col>
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Date</dt>
+              <dd>{data?.date ? formatDate(data?.date?.toString()) : "Date pending"}</dd>
+            </Col>
+          </Row>
+        </section>
       </Card.Body>
     </Card>
   );

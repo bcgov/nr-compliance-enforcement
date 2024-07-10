@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
-import { formatDate, getAvatarInitials } from "../../../../../common/methods";
+import { formatDate } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
 import { selectComplaint } from "../../../../../store/reducers/complaints";
@@ -82,64 +82,80 @@ export const DrugItem: FC<props> = ({
   };
 
   return (
-    <div className="comp-padding-xs comp-drug-item">
-      <Row>
-        <Col md={2}>
-          <b>Vial #{vial}</b>
-        </Col>
-        <Col md={8}>
-          <b>{drugUsed}</b>
-        </Col>
-      </Row>
-      <Row>
-        <Col md={4}>
-          <span className="comp-fake-label">Amount used</span> {amountUsed}ml
-        </Col>
-        <Col md={4}>
-          <span className="comp-fake-label">Injection method</span> {injectedMethod}
-        </Col>
-        <Col md={3}>
-          <span className="comp-fake-label">Adverse reactions</span> {reactions}
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <span className="comp-fake-label">Fate of remaining drug in vial </span> {remaining}
-        </Col>
-        <Col md={3}>
-          {remainingUse === "DISC" && (
-            <>
-              <span className="comp-fake-label">Amount discarded</span> {amountDiscarded} {amountDiscarded ? "ml" : ""}
-            </>
-          )}
-        </Col>
-        <Col md={3}>
-          {remainingUse === "DISC" && (
-            <>
-              <span className="comp-fake-label">Discard method</span> {discardMethod}
-            </>
-          )}
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <span className="comp-fake-label">Officer</span>
-          <div
-            data-initials-sm={getAvatarInitials(assignedOfficer())}
-            className="comp-orange-avatar-sm comp-details-inner-content"
+    <Card className="comp-drug-item">
+      <Card.Body>
+        <Card.Title
+          as="h5"
+          className="fw-bold"
+        >
+          Vial #{vial} - {drugUsed}
+        </Card.Title>
+        <Row as="dl">
+          <Col
+            xs={12}
+            md={6}
           >
-            <span
-              id="comp-review-required-officer"
-              className="comp-padding-left-xs"
-            >
-              {assignedOfficer()}
-            </span>
-          </div>
-        </Col>
-        <Col md={6}>
-          <span className="comp-fake-label">Date</span> {formatDate(date?.toString())}
-        </Col>
-      </Row>
-    </div>
+            <dt>Injection method</dt>
+            <dd>{injectedMethod}</dd>
+          </Col>
+          <Col
+            xs={12}
+            md={6}
+          >
+            <dt>Amount used</dt>
+            <dd>{amountUsed}ml</dd>
+          </Col>
+          <Col
+            xs={12}
+            md={6}
+          >
+            <dt>Fate of remaining drug in vial</dt>
+            <dd>{remaining}</dd>
+          </Col>
+
+          {remainingUse === "DISC" && (
+            <>
+              <Col
+                xs={12}
+                md={6}
+              >
+                <dt>Amount discarded</dt>
+                <dd>
+                  {amountDiscarded} {amountDiscarded ? "ml" : ""}
+                </dd>
+              </Col>
+              <Col
+                xs={12}
+                md={6}
+              >
+                <dt>Discard method</dt>
+                <dd>{discardMethod}</dd>
+              </Col>
+            </>
+          )}
+          <Col
+            xs={12}
+            md={6}
+          >
+            <dt>Adverse Reactions</dt>
+            <dd>{reactions ? <>{reactions}</> : "None"}</dd>
+          </Col>
+          <Col
+            xs={12}
+            md={6}
+          >
+            <dt>Officer</dt>
+            <dd>{assignedOfficer()}</dd>
+          </Col>
+          <Col
+            xs={12}
+            md={6}
+          >
+            <dt>Date</dt>
+            <dd>{formatDate(date?.toString())}</dd>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
   );
 };
