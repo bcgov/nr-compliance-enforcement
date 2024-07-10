@@ -49,7 +49,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
               </div>
             ) : (
               <div>
-                {violationType} � {inProgressInd}
+                {violationType} • {inProgressInd}
               </div>
             )}
           </div>
