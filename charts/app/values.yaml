@@ -34,7 +34,6 @@ global:
     webeocComplaintHistorySeconds: ~
     webeocCronExpression: ~
     natsHost: ~
-    complaintsManagementApiUrl: ~
     backupDir: ~
     backupStrategy: ~
     numBackups: ~
@@ -259,14 +258,14 @@ bitnami-pg:
       podSecurityContext:
         enabled: false
       storage:
-        size: 200Mi
+        size: 256Mi
   primary:
     persistence:
       enabled: true
       storageClass: netapp-block-standard
       accessModes:
         - ReadWriteOnce
-      size: 100Mi
+      size: 256Mi
     containerSecurityContext:
       enabled: false
     podSecurityContext:
@@ -278,11 +277,11 @@ bitnami-pg:
           PGPASSWORD=$POSTGRES_PASSWORD psql -U postgres -d postgres -c "CREATE EXTENSION postgis;"
     resources:
       requests:
-        cpu: 50m
-        memory: 150Mi
-      limits:
-        cpu: 150m
+        cpu: 100m
         memory: 250Mi
+      limits:
+        cpu: 200m
+        memory: 500Mi
 
 backup:
   enabled: true
