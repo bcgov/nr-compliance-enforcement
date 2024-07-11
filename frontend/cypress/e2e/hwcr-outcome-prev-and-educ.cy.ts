@@ -50,7 +50,7 @@ describe("HWCR Outcome Prevention and Education", () => {
     let params = {
       section: "PREV&EDUC",
       checkboxes: ["#PROVSFTYIN", "#CNTCTBYLAW"],
-      officer: "Olivia Benson",
+      officer: "Benson, Olivia",
       date: "01",
       toastText: "Prevention and education has been saved",
     };
@@ -125,7 +125,7 @@ describe("HWCR Outcome Prevention and Education", () => {
         let params = {
           section: "PREV&EDUC",
           checkboxes: ["#CNTCTBIOVT"],
-          officer: "Jake Peralta",
+          officer: "Peralta, Jake",
           date: "01",
           toastText: "Prevention and education has been updated",
         };
