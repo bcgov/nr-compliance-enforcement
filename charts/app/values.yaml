@@ -20,7 +20,7 @@ global:
     bcGeocoderApiClientId: ~
     bcGeocoderApiKey: ~
     bcGeocoderApiUrl: ~
-    caseManagementApiUrl: https://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql
+    caseManagementApiUrl: "https://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql"
     postgresqlEnableLogging: false
     comsJwtAuthUri: ~
     cdogsUri: ~
