@@ -61,7 +61,10 @@ spec:
                   name: react-app
                   key: show-experimental-features
             - name: ENVIRONMENT_NAME
-              value: "production"
+              valueFrom:
+                    secretKeyRef:
+                      name: react-app
+                      key: environment-name
 
           ports:
             - name: http
