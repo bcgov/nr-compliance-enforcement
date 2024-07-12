@@ -4,9 +4,12 @@ import { ComplaintsPublisherService } from "../complaints-publisher/complaints-p
 import { Complaint } from "src/types/complaint-type";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
-import { WEBEOC_API_COMPLAINTS_LIST_PATH, WEBEOC_API_COMPLAINTS_UPDATE_PATH } from "src/common/constants";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
 import { toZonedTime, format } from "date-fns-tz";
+import { WEBEOC_FLAGS } from "src/common/webeoc-flags";
+import { WEBEOC_API_PATHS } from "src/common/webeoc-api-paths";
+import { ActionTaken } from "src/types/actions-taken/action-taken";
+import { ActionsTakenPublisherService } from "src/publishers/actions-taken-publisher.service";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {
@@ -14,18 +17,25 @@ export class WebEOCComplaintsScheduler {
   private cronJob: CronJob;
   private readonly logger = new Logger(WebEOCComplaintsScheduler.name);
 
-  constructor(private complaintsPublisherService: ComplaintsPublisherService) {}
+  constructor(
+    private complaintsPublisherService: ComplaintsPublisherService,
+    private readonly _actionsTakenPublisherService: ActionsTakenPublisherService,
+  ) {}
 
   onModuleInit() {
-    const FLAG_COS = "flag_COS"; // flag required for new complaints
-    const FLAG_UPD = "flag_UPD"; // flag required for complaint updates
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.fetchAndPublishComplaints(WEBEOC_API_COMPLAINTS_LIST_PATH, FLAG_COS, this.publishComplaint.bind(this));
       await this.fetchAndPublishComplaints(
-        WEBEOC_API_COMPLAINTS_UPDATE_PATH,
-        FLAG_UPD,
+        WEBEOC_API_PATHS.COMPLAINTS,
+        WEBEOC_FLAGS.COMPLAINTS,
+        this.publishComplaint.bind(this),
+      );
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_PATHS.COMPLAINT_UPDATES,
+        WEBEOC_FLAGS.COMPLAINT_UPDATES,
         this.publishComplaintUpdate.bind(this),
       );
+
+      await this._handleActionTaken(WEBEOC_API_PATHS.ACTIONS_TAKEN, this._publishAction.bind(this));
     });
 
     this.cronJob.start();
@@ -148,4 +158,58 @@ export class WebEOCComplaintsScheduler {
   private formatDate(date: Date): string {
     return format(date, "yyyy-MM-dd HH:mm:ss");
   }
+
+  //-- actions taken
+  private _fetchActions = async (path: string) => {
+    const dateFilter = this.getDateFilter();
+    const url = `${process.env.WEBEOC_URL}/${path}`;
+    const config: AxiosRequestConfig = {
+      headers: {
+        Cookie: this.cookie,
+      },
+    };
+
+    const body = {
+      customFilter: {
+        boolean: "and",
+        items: [
+          dateFilter,
+          {
+            fieldname: WEBEOC_FLAGS.ACTIONS_TAKEN,
+            operator: "Equals",
+            fieldvalue: "Yes",
+          },
+        ],
+      },
+    };
+
+    try {
+      const response = await axios.post(url, body, config);
+      return response?.data;
+    } catch (error) {
+      this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
+      throw error;
+    }
+  };
+
+  private _handleActionTaken = async (path: string, publish: any) => {
+    try {
+      await this.authenticateWithWebEOC();
+      const data = await this._fetchActions(path);
+
+      if (data) {
+        this.logger.debug(`Found ${data?.length} actions_taken from WebEOC`);
+
+        for (const item of data) {
+          await publish(item);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Unable to fetch data from WebEOC`, error);
+    }
+  };
+
+  private _publishAction = async (action: ActionTaken) => {
+    await this._actionsTakenPublisherService.publishAction(action);
+  };
 }

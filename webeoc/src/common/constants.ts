@@ -7,7 +7,3 @@ export const NATS_STREAM_NAME = "complaints_stream";
 export const STAGING_API_ENDPOINT_CREATES = "staging-complaint/webeoc-complaint";
 export const STAGING_API_ENDPOINT_UPDATES = "staging-complaint/webeoc-complaint-update";
 export const NATS_DURABLE_COMPLAINTS = "nats_durable_complaints";
-export const WEBEOC_API_COMPLAINTS_LIST_PATH =
-  "board/Conservation Officer Service/display/List - API COS Complaints Incidents";
-export const WEBEOC_API_COMPLAINTS_UPDATE_PATH =
-  "board/Conservation Officer Service/display/List - API COS Complaints Updates";
