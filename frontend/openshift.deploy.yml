@@ -113,13 +113,25 @@ objects:
                 - name: BACKEND_URL
                   value: http://${NAME}-${ZONE}-backend
                 - name: KEYCLOAK_URL
-                  value: ${KEYCLOAK_URL}
+                  valueFrom:
+                    secretKeyRef:
+                      name: react-app
+                      key: keycloak-url
                 - name: COMS_URL
-                  value: ${COMS_URL}
+                  valueFrom:
+                    secretKeyRef:
+                      name: react-app
+                      key: coms-url
                 - name: COMS_BUCKET
-                  value: ${COMS_BUCKET}
+                  valueFrom:
+                    secretKeyRef:
+                      name: react-app
+                      key: coms-bucket
                 - name: LOG_LEVEL
-                  value: ${LOG_LEVEL}
+                  valueFrom:
+                    secretKeyRef:
+                      name: react-app
+                      key: log-level
                 - name: SHOW_EXPERIMENTAL_FEATURES
                   valueFrom:
                     secretKeyRef:
