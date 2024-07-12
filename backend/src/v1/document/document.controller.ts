@@ -8,6 +8,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { format } from "date-fns";
+import { escape } from "escape-html";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -27,8 +28,6 @@ export class DocumentController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      this.logger.debug("TIMEZONE: ", tz);
-
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       const response = await this.service.exportComplaint(id, type, fileName, tz);
 
@@ -47,7 +46,7 @@ export class DocumentController {
       res.end(buffer);
     } catch (error) {
       this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
-      res.status(500).send(`exception: unable to export document for complaint: ${id} - error: ${error}`);
+      res.status(500).send(`exception: unable to export document for complaint: ${escape(id)}`);
     }
   }
 }

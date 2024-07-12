@@ -13,7 +13,7 @@ export const exportComplaint =
   async (dispatch) => {
     try {
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const tz: string = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
       const axiosConfig: AxiosRequestConfig = {
         responseType: "arraybuffer", // Specify response type as arraybuffer

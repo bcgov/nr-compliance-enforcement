@@ -75,7 +75,7 @@ export const CreateComplaint: FC = () => {
   let assignableOfficers: Option[] = officerList
     ? officerList.map((officer: Officer) => ({
         value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.first_name} ${officer.person_guid.last_name}`,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
       }))
     : [];
 
@@ -786,6 +786,8 @@ export const CreateComplaint: FC = () => {
                 timeFormat="HH:mm"
                 wrapperClassName="comp-details-edit-calendar-input"
                 maxDate={currentDate}
+                monthsShown={2}
+                showPreviousMonths
               />
             </div>
           </div>
