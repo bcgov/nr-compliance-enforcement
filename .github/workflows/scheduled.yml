@@ -77,7 +77,7 @@ jobs:
           FLYWAY_URL: jdbc:postgresql://postgres:5432/default
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
-          FLYWAY_LOCATIONS: filesystem:./migrations
+          FLYWAY_LOCATIONS: "filesystem:./migrations/sql, filesystem:./migrations/test-only-migrations"
           FLYWAY_DEFAULT_SCHEMA: "public"
         with:
           args: info migrate info
