@@ -2,6 +2,7 @@ FROM flyway/flyway:10-alpine
 
 # Copy migrations
 COPY ./sql /flyway/sql
+COPY ./test-only-migrations /flyway/test-only-migrations
 
 # Non-root user
 RUN adduser -D app
