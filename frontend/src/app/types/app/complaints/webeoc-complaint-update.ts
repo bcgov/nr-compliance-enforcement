@@ -14,4 +14,5 @@ export interface WebEOCComplaintUpdateDTO {
   createUtcTimestamp: string;
   updateUserId: string;
   updateUtcTimestamp: string;
+  webeocId?: string;
 }
