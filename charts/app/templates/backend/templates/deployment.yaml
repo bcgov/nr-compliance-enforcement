@@ -44,6 +44,8 @@ spec:
               value: "public"
             - name: FLYWAY_CONNECT_RETRIES
               value: "10"
+            - name: FLYWAY_LOCATIONS
+              value: "filesystem:/flyway/sql,filesystem:/flyway/sql-test"
           resources:
             limits:
               cpu: 200m
