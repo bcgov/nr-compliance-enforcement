@@ -40,6 +40,29 @@ spec:
               value: "http://{{ .Release.Name }}-backend"
             - name: LOG_LEVEL
               value: "info"
+            - name: KEYCLOAK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: react-app
+                  key: keycloak-url
+            - name: COMS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: react-app
+                  key: coms-url
+            - name: COMS_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: react-app
+                  key: coms-bucket
+            - name: SHOW_EXPERIMENTAL_FEATURES
+              valueFrom:
+                secretKeyRef:
+                  name: react-app
+                  key: show-experimental-features
+            - name: ENVIRONMENT_NAME
+              value: "production"
+
           ports:
             - name: http
               containerPort: 3000
