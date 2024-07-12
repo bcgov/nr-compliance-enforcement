@@ -48,6 +48,7 @@ import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.m
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ComplaintUpdate]),
+    TypeOrmModule.forFeature([GirComplaint]),
     CodeTableModule,
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,
