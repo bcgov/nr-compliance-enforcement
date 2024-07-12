@@ -62,10 +62,10 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const removedEquipmentOfficer = useAppSelector(selectOfficerByPersonGuid(`${removedEquipmentActor}`));
 
   const setEquipmentFullName = setEquipmentOfficer
-    ? `${setEquipmentOfficer.person_guid.first_name} ${setEquipmentOfficer.person_guid.last_name}`
+    ? `${setEquipmentOfficer.person_guid.last_name}, ${setEquipmentOfficer.person_guid.first_name}`
     : null;
   const removedEquipmentFullName = removedEquipmentOfficer
-    ? `${removedEquipmentOfficer.person_guid.first_name} ${removedEquipmentOfficer.person_guid.last_name}`
+    ? `${removedEquipmentOfficer.person_guid.last_name}, ${removedEquipmentOfficer.person_guid.first_name}`
     : null;
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
@@ -139,7 +139,9 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             <div>
               <dt>Latitude/Longitude</dt>
               <dd>
-                {equipment.yCoordinate} {equipment.xCoordinate}
+                {equipment.yCoordinate && equipment.xCoordinate
+                  ? `${equipment.yCoordinate}, ${equipment.xCoordinate}`
+                  : ""}
               </dd>
             </div>
             <div>

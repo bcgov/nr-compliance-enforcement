@@ -902,7 +902,6 @@ UPDATE agency_code SET display_order = 9 WHERE agency_code = 'OTHER';
 ------------------------------
 update  public.geo_organization_unit_code set administrative_office_ind = true where geo_organization_unit_code='COSHQ';
 
-
 ----------------------------------------------
 -- update staging_activity_code display_order
 ----------------------------------------------
@@ -931,6 +930,14 @@ ON CONFLICT DO NOTHING;
 INSERT INTO	configuration(configuration_code, configuration_value, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 SELECT 'AUINCPK', 'fk_table_346', 'The name of the field in the webEOC Action Taken Update API that refers to the webEOC internal PK of the parent incident record', true, user, now(), user, now()
 ON CONFLICT DO NOTHING;
+=======
+-----------------------
+-- Move Hudson's Hope to Fort St. John Office in North Peace
+-- This is temporary and will likely need to be removed in the future
+-----------------------
+
+ update geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where parent_geo_org_unit_code = 'CHTWD' and child_geo_org_unit_code = 'HUDSONSH';
+
 
 --------------------------
 -- New Changes above this line
@@ -939,4 +946,3 @@ ON CONFLICT DO NOTHING;
 UPDATE configuration
             SET    configuration_value = configuration_value::int + 1
             WHERE  configuration_code = 'CDTABLEVER';
-

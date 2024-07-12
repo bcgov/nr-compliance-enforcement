@@ -113,7 +113,6 @@ jobs:
               -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_DEV}}
               -p COMS_URL=${{vars.COMS_URL_DEV}}
               -p COMS_BUCKET=${{vars.COMS_BUCKET_DEV}}
-              -p SHOW_EXPERIMENTAL_FEATURES=${{ vars.SHOW_EXPERIMENTAL_FEATURES_DEV }}
               -p CPU_REQUEST=25m
               -p CPU_LIMIT=50m
               -p MEMORY_REQUEST=40Mi
