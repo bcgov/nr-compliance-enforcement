@@ -20,8 +20,6 @@ global:
     bcGeocoderApiClientId: ~
     bcGeocoderApiKey: ~
     bcGeocoderApiUrl: ~
-    caseManagementApiUrl: "https://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql"
-    postgresqlEnableLogging: "false"
     comsJwtAuthUri: ~
     cdogsUri: ~
     cdogsClientId: ~
@@ -49,6 +47,9 @@ global:
     jwksUri: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs"
     jwtIssuer: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
     keycloakClientId: "compliance-and-enforcement-digital-services-web-4794"
+    caseManagementApiUrl: "https://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql"
+    postgresqlEnableLogging: "false"
+
   #-- domain of the application, it is required, apps.silver.devops.gov.bc.ca for silver cluster and apps.devops.gov.bc.ca for gold cluster
   domain: "apps.silver.devops.gov.bc.ca" # it is apps.gold.devops.gov.bc.ca for gold cluster
   #-- the database Alias gives a nice way to switch to different databases, crunchy, patroni ... etc.
