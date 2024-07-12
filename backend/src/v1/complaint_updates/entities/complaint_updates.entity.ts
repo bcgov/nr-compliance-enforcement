@@ -95,6 +95,14 @@ export class ComplaintUpdate {
   })
   updateUtcTimestamp: Date | null;
 
+  @ApiProperty({
+    example: "123455",
+    description:
+      "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
+  })
+  @Column({ length: 20 })
+  webeoc_identifier: string;
+
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
   @JoinColumn([
     {

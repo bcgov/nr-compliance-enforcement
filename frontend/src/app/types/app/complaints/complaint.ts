@@ -28,4 +28,5 @@ export interface Complaint {
     officeLocation?: string;
   };
   delegates: Array<Delegate>;
+  webeocId: string;
 }
