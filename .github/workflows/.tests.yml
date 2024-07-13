@@ -36,7 +36,7 @@ jobs:
           echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
           echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
           echo "keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}"
-          ecjp "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
+          echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
         env:
           auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}
           auth_realm: ${{ vars.KEYCLOAK_REALM }}
