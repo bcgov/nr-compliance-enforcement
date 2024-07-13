@@ -5,9 +5,6 @@ metadata:
   name: {{ include "webeoc.fullname" . }}
   labels:
     {{- include "webeoc.labels" . | nindent 4 }}
-  annotations:
-      "helm.sh/hook": pre-install,post-install
-      "helm.sh/hook-weight": "2" # Execute after the backend
 spec:
   strategy:
     type: {{ .Values.webeoc.deploymentStrategy }}

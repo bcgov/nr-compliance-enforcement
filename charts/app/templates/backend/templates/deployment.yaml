@@ -5,8 +5,6 @@ metadata:
   name: {{ include "backend.fullname" . }}
   labels:
     {{- include "backend.labels" . | nindent 4 }}
-  annotations:
-      "helm.sh/hook": pre-install
 spec:
   strategy:
     type: {{ .Values.backend.deploymentStrategy }}
