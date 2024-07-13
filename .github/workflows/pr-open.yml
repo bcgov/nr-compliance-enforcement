@@ -43,8 +43,10 @@ jobs:
     if: needs.deploys.outputs.triggered == 'true'
     needs: [deploys]
     uses: ./.github/workflows/.tests.yml
+
     with:
       target: ${{ github.event.number }}
+    secrets: inherit # so that the tests github action can use the secrests that this action has access to
 
   results:
     name: PR Results
