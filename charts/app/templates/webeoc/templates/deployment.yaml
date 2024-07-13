@@ -43,6 +43,8 @@ spec:
               value: "0"
             - name: NATS_HOST
               value: nats://{{.Release.Name}}-nats:4222
+            - name: COMPLAINTS_MANAGEMENT_API_URL
+              value: https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/api/v1
           ports:
             - name: http
               containerPort: {{ .Values.webeoc.service.targetPort }}
