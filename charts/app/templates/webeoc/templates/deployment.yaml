@@ -42,7 +42,7 @@ spec:
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
             - name: NATS_HOST
-              value: nats://${NAME}-${ZONE}-nats:4222
+              value: nats://{{.Release.Name}}-nats:4222
           ports:
             - name: http
               containerPort: {{ .Values.webeoc.service.targetPort }}
