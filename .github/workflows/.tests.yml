@@ -32,17 +32,17 @@ jobs:
       - name: Debug secrets
         run: |
           echo "Checking secrets..."
-          echo "auth_base_url: ${{ vars.AUTH_BASE_URL }}"
-          echo "auth_realm: ${{ vars.AUTH_REALM }}"
-          echo "auth_client_id: ${{ vars.AUTH_CLIENT_ID }}"
+          echo "auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}"
+          echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
           echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
           echo "keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}"
+          ecjp "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
         env:
-          AUTH_BASE_URL: ${{ vars.AUTH_BASE_URL }}
-          AUTH_REALM: ${{ vars.AUTH_REALM }}
-          AUTH_CLIENT_ID: ${{ vars.AUTH_CLIENT_ID }}
-          KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}
-          KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
+          auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}
+          auth_realm: ${{ vars.KEYCLOAK_REALM }}
+          auth_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}
+          keycloak_user: ${{ vars.KEYCLOAK_USER }}
+          keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}
 
       - name: Run Cypress Test
         uses: cypress-io/github-action@v5
