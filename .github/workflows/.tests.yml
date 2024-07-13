@@ -29,6 +29,29 @@ jobs:
       - name: Checkout GitCode
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Debug secrets
+        run: |
+          echo "Checking secrets..."
+          echo "auth_base_url: ${{ vars.AUTH_BASE_URL }}"
+          echo "auth_realm: ${{ vars.AUTH_REALM }}"
+          echo "auth_client_id: ${{ vars.AUTH_CLIENT_ID }}"
+          echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
+          echo "keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}"
+        env:
+          AUTH_BASE_URL: ${{ vars.AUTH_BASE_URL }}
+          AUTH_REALM: ${{ vars.AUTH_REALM }}
+          AUTH_CLIENT_ID: ${{ vars.AUTH_CLIENT_ID }}
+          KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}
+          KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
+
       - name: Run Cypress Test
         uses: cypress-io/github-action@v5
         with:
