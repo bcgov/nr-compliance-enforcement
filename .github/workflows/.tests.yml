@@ -35,14 +35,10 @@ jobs:
           echo "auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}"
           echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
           echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
-          echo "keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}"
           echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
+          echo "keycloak_password length: ${#KEYCLOAK_PASSWORD}"
         env:
-          auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}
-          auth_realm: ${{ vars.KEYCLOAK_REALM }}
-          auth_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}
-          keycloak_user: ${{ vars.KEYCLOAK_USER }}
-          keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}
+          KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
 
       - name: Run Cypress Test
         uses: cypress-io/github-action@v5
