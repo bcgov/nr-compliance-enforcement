@@ -1,0 +1,102 @@
+{{- if .Values.webeoc.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webeoc.fullname" . }}
+  labels:
+    {{- include "webeoc.labels" . | nindent 4 }}
+spec:
+  strategy:
+    type: {{ .Values.webeoc.deploymentStrategy }}
+  {{- if not .Values.webeoc.autoscaling.enabled }}
+  replicas: {{ .Values.webeoc.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "webeoc.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+      labels:
+        {{- include "webeoc.labels" . | nindent 8 }}
+    spec:
+      {{- if .Values.webeoc.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.webeoc.podSecurityContext | nindent 12 }}
+      {{- end }}
+      containers:
+        - name: {{ include "webeoc.fullname" . }}
+          {{- if .Values.webeoc.securityContext }}
+          securityContext:
+            {{- toYaml .Values.webeoc.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{.Values.global.registry}}/{{.Values.global.repository}}/webeoc:{{ .Values.global.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ default "Always" .Values.webeoc.imagePullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{.Release.Name}}-webeoc
+          env:
+            - name: LOG_LEVEL
+              value: info
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+          ports:
+            - name: http
+              containerPort: {{ .Values.webeoc.service.targetPort }}
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - ls
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 30
+          livenessProbe:
+            successThreshold: 1
+            failureThreshold: 3
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - ls
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources: # this is optional
+            limits:
+              cpu: 80m
+              memory: 150Mi
+            requests:
+              cpu: 40m
+              memory: 75Mi
+      {{- with .Values.webeoc.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webeoc.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - {{ include "webeoc.fullname" . }}
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+              topologyKey: "kubernetes.io/hostname"
+
+{{- end }}

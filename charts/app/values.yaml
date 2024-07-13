@@ -103,6 +103,31 @@ backend:
     enabled: false # enable it in PRODUCTION for having pod disruption budget.
     minAvailable: 1 # the minimum number of pods that must be available during the disruption budget.
 
+#-- the components of the application, backend.
+webeoc:
+  #-- enable or disable backend
+  enabled: true
+  #-- the deployment strategy, can be "Recreate" or "RollingUpdate"
+  deploymentStrategy: Recreate
+  #-- autoscaling for the component. it is optional and is an object.
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 1
+    #-- the maximum number of replicas.
+    maxReplicas: 2
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+  service:
+    #-- the type of the service. it can be ClusterIP, NodePort, LoadBalancer, ExternalName. ClusterIP is the default and is recommended.
+    type: ClusterIP
+    port: 80 # this is the service port, where it will be exposed internal to the namespace.
+    targetPort: 3002 # this is container port where app listens on
+  pdb:
+    enabled: false # enable it in PRODUCTION for having pod disruption budget.
+    minAvailable: 1 # the minimum number of pods that must be available during the disruption budget.
+
 frontend:
   # -- enable or disable a component deployment.
   enabled: true
