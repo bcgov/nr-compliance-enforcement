@@ -5,6 +5,9 @@ metadata:
   name: {{ include "webeoc.fullname" . }}
   labels:
     {{- include "webeoc.labels" . | nindent 4 }}
+  annotations:
+      "helm.sh/hook": pre-install,post-install
+      "helm.sh/hook-weight": "2" # Execute after the backend
 spec:
   strategy:
     type: {{ .Values.webeoc.deploymentStrategy }}
@@ -41,6 +44,8 @@ spec:
               value: info
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
+            - name: NATS_HOST
+              value: nats://${NAME}-${ZONE}-nats:4222
           ports:
             - name: http
               containerPort: {{ .Values.webeoc.service.targetPort }}

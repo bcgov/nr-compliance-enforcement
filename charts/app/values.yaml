@@ -31,7 +31,6 @@ global:
     webeocUrl: ~
     webeocComplaintHistorySeconds: ~
     webeocCronExpression: ~
-    natsHost: ~
     backupDir: ~
     backupStrategy: ~
     numBackups: ~
