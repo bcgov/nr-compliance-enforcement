@@ -23,7 +23,7 @@ jobs:
   cypress-tests:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+      PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitCode
@@ -37,6 +37,7 @@ jobs:
           echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
           echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
           echo "keycloak_password length: ${#KEYCLOAK_PASSWORD}"
+          echo "test_secret: ${{ secrets.TEST_SECRET }}"
         env:
           KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
 
