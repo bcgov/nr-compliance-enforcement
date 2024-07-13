@@ -1,4 +1,7 @@
+import { UUID } from "crypto";
+
 export interface ActionTaken {
+  action_taken_guid: UUID;
   tablename: string;
   dataid: number;
   username: string;

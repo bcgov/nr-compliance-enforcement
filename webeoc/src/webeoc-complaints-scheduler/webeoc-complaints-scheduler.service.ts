@@ -10,6 +10,7 @@ import { WEBEOC_FLAGS } from "src/common/webeoc-flags";
 import { WEBEOC_API_PATHS } from "src/common/webeoc-api-paths";
 import { ActionTaken } from "src/types/actions-taken/action-taken";
 import { ActionsTakenPublisherService } from "src/publishers/actions-taken-publisher.service";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class WebEOCComplaintsScheduler {
@@ -24,16 +25,16 @@ export class WebEOCComplaintsScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      await this.fetchAndPublishComplaints(
-        WEBEOC_API_PATHS.COMPLAINTS,
-        WEBEOC_FLAGS.COMPLAINTS,
-        this.publishComplaint.bind(this),
-      );
-      await this.fetchAndPublishComplaints(
-        WEBEOC_API_PATHS.COMPLAINT_UPDATES,
-        WEBEOC_FLAGS.COMPLAINT_UPDATES,
-        this.publishComplaintUpdate.bind(this),
-      );
+      // await this.fetchAndPublishComplaints(
+      //   WEBEOC_API_PATHS.COMPLAINTS,
+      //   WEBEOC_FLAGS.COMPLAINTS,
+      //   this.publishComplaint.bind(this),
+      // );
+      // await this.fetchAndPublishComplaints(
+      //   WEBEOC_API_PATHS.COMPLAINT_UPDATES,
+      //   WEBEOC_FLAGS.COMPLAINT_UPDATES,
+      //   this.publishComplaintUpdate.bind(this),
+      // );
 
       await this._handleActionTaken(WEBEOC_API_PATHS.ACTIONS_TAKEN, this._publishAction.bind(this));
     });
@@ -210,6 +211,9 @@ export class WebEOCComplaintsScheduler {
   };
 
   private _publishAction = async (action: ActionTaken) => {
+    //-- apply an action_taken_guid
+    action.action_taken_guid = randomUUID();
+
     await this._actionsTakenPublisherService.publishAction(action);
   };
 }

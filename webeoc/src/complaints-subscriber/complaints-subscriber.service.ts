@@ -1,13 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, StringCodec } from "nats";
-import {
-  NATS_DURABLE_COMPLAINTS,
-  NATS_NEW_COMPLAINTS_TOPIC_NAME,
-  NATS_STREAM_NAME,
-  NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
-  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-  NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
-} from "../common/constants";
+import { NATS_DURABLE_COMPLAINTS, STREAMS, STREAM_TOPICS } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { Complaint } from "../types/complaint-type";
 import { ComplaintsPublisherService } from "src/complaints-publisher/complaints-publisher.service";
@@ -30,7 +23,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       this.jsm = await this.natsConnection.jetstreamManager();
       await this.setupStream();
       await this.subscribeToTopics();
-      this.logger.debug((await this.jsm.streams.info(NATS_STREAM_NAME)).state);
+      this.logger.debug((await this.jsm.streams.info(STREAMS.COMPLAINTS)).state);
     } catch (error) {
       this.logger.error("Failed to connect to NATS or set up stream:", error);
     }
@@ -40,12 +33,12 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     if (!this.jsm) throw new Error("JetStream Management client is not initialized.");
 
     const streamConfig = {
-      name: NATS_STREAM_NAME,
+      name: STREAMS.COMPLAINTS,
       subjects: [
-        NATS_NEW_COMPLAINTS_TOPIC_NAME,
-        NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-        NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
-        NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
+        STREAM_TOPICS.COMPLAINTS,
+        STREAM_TOPICS.STAGING_COMPLAINTS,
+        STREAM_TOPICS.COMPLAINT_UPDATE,
+        STREAM_TOPICS.STAGING_COMPLAINT_UPDATE,
       ],
       storage: StorageType.Memory,
       max_age: 10 * 60 * 60 * 1e9, // 10 minutes in nanoseconds
@@ -54,7 +47,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
     try {
       await this.jsm.streams.add(streamConfig);
-      await this.jsm.consumers.add(NATS_STREAM_NAME, {
+      await this.jsm.consumers.add(STREAMS.COMPLAINTS, {
         ack_policy: AckPolicy.Explicit,
         durable_name: NATS_DURABLE_COMPLAINTS,
       });
@@ -66,19 +59,19 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   private async subscribeToTopics() {
     const sc = StringCodec();
-    const consumer = await this.natsConnection.jetstream().consumers.get(NATS_STREAM_NAME, NATS_DURABLE_COMPLAINTS);
+    const consumer = await this.natsConnection.jetstream().consumers.get(STREAMS.COMPLAINTS, NATS_DURABLE_COMPLAINTS);
     const iter = await consumer.consume({ max_messages: 1 });
 
     for await (const message of iter) {
       const decodedData = sc.decode(message.data);
       try {
-        if (message.subject === NATS_NEW_COMPLAINTS_TOPIC_NAME) {
+        if (message.subject === STREAM_TOPICS.COMPLAINTS) {
           await this.handleNewComplaint(message, JSON.parse(decodedData));
-        } else if (message.subject === NATS_UPDATED_COMPLAINTS_TOPIC_NAME) {
+        } else if (message.subject === STREAM_TOPICS.COMPLAINT_UPDATE) {
           await this.handleUpdatedComplaint(message, JSON.parse(decodedData));
-        } else if (message.subject === NEW_STAGING_COMPLAINTS_TOPIC_NAME) {
+        } else if (message.subject === STREAM_TOPICS.STAGING_COMPLAINTS) {
           await this.handleStagedComplaint(message, decodedData);
-        } else if (message.subject === NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME) {
+        } else if (message.subject === STREAM_TOPICS.STAGING_COMPLAINT_UPDATE) {
           await this.handleStagedComplaintUpdate(message, JSON.parse(decodedData));
         }
       } catch (error) {

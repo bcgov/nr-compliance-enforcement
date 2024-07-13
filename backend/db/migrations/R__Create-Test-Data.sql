@@ -930,7 +930,6 @@ ON CONFLICT DO NOTHING;
 INSERT INTO	configuration(configuration_code, configuration_value, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 SELECT 'AUINCPK', 'fk_table_346', 'The name of the field in the webEOC Action Taken Update API that refers to the webEOC internal PK of the parent incident record', true, user, now(), user, now()
 ON CONFLICT DO NOTHING;
-=======
 -----------------------
 -- Move Hudson's Hope to Fort St. John Office in North Peace
 -- This is temporary and will likely need to be removed in the future
