@@ -49,9 +49,9 @@ global:
     caseManagementApiUrl: ~
     postgresqlEnableLogging: "false"
     flywayLocations:
-      dev: "filesystem:./flyway/sql, filesystem:./flyway/sql-test"
-      test: "filesystem:./flyway/sql, filesystem:./flyway/sql-test"
-      prod: "filesystem:./flyway/sql"
+      dev: "filesystem:/flyway/sql, filesystem:/flyway/sql-test"
+      test: "filesystem:/flyway/sql, filesystem:/flyway/sql-test"
+      prod: "filesystem:/flyway/sql"
 
   #-- domain of the application, it is required, apps.silver.devops.gov.bc.ca for silver cluster and apps.devops.gov.bc.ca for gold cluster
   domain: "apps.silver.devops.gov.bc.ca" # it is apps.gold.devops.gov.bc.ca for gold cluster
