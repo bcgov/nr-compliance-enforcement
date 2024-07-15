@@ -1422,3 +1422,53 @@ values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now())
 UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
 UPDATE species_code SET display_order = 3 where species_code = 'BOBCAT';
 
+-- CE-771
+INSERT INTO public.complaint
+(complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
+VALUES('24-900001', 'Test information on a CO Contact General Incident Type', 'Kelsey', '135 fake st', NULL, '555-555-5565', NULL, NULL, 'Cariboo Dr', 'tester call description 8', '2024-07-11 21:18:23.336', '2024-07-11 21:18:23.336', 'test2', 'FLYWAY','2024-07-11 21:18:23.336', 'FLYWAY','2024-07-11 21:18:23.336', 'BYLAW', 'COS', 'OPEN', 'VICTORIA', 'SRID=4326;POINT (0 0)'::public.geometry)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.gir_complaint
+(gir_complaint_guid, gir_type_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier)
+VALUES('eafd661b-4c18-4aa6-a39e-a70a5462d4ab'::uuid, 'COCNT', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', '24-900001')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.complaint
+(complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
+VALUES('24-900002', 'Test information on a CO Disposition General Incident Type', 'Kelsey', '135 fake st', NULL, '555-555-5565', NULL, NULL, 'Cariboo Dr', 'tester call description 8', '2024-07-11 21:18:23.336', '2024-07-11 21:18:23.336', 'test2', 'FLYWAY','2024-07-11 21:18:23.336', 'FLYWAY','2024-07-11 21:18:23.336', 'BYLAW', 'COS', 'OPEN', 'TUMBLER', 'SRID=4326;POINT (0 0)'::public.geometry)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.gir_complaint
+(gir_complaint_guid, gir_type_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier)
+VALUES('eafd661b-4c18-4aa6-a39e-a70a5462d4ac'::uuid, 'CODSP', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', '24-900002')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.complaint
+(complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
+VALUES('24-900003', 'Test information on a General Advice General Incident Type', 'Kelsey', '135 fake st', NULL, '555-555-5565', NULL, NULL, 'Cariboo Dr', 'tester call description 8', '2024-07-11 21:18:23.336', '2024-07-11 21:18:23.336', 'test2', 'FLYWAY','2024-07-11 21:18:23.336', 'FLYWAY','2024-07-11 21:18:23.336', 'BYLAW', 'COS', 'OPEN', 'SUGARCIR', 'SRID=4326;POINT (0 0)'::public.geometry)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.gir_complaint
+(gir_complaint_guid, gir_type_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier)
+VALUES('eafd661b-4c18-4aa6-a39e-a70a5462d4ad'::uuid, 'GENAD', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', '24-900003')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.complaint
+(complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
+VALUES('24-900004', 'Test information on a Media General Incident Type', 'Kelsey', '135 fake st', NULL, '555-555-5565', NULL, NULL, 'Cariboo Dr', 'tester call description 8', '2024-07-11 21:18:23.336', '2024-07-11 21:18:23.336', 'test2', 'FLYWAY','2024-07-11 21:18:23.336', 'FLYWAY','2024-07-11 21:18:23.336', 'BYLAW', 'COS', 'OPEN', 'SEYMOURA', 'SRID=4326;POINT (0 0)'::public.geometry)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.gir_complaint
+(gir_complaint_guid, gir_type_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier)
+VALUES('eafd661b-4c18-4aa6-a39e-a70a5462d4ae'::uuid, 'MEDIA', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', '24-900004')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.complaint
+(complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
+VALUES('24-900005', 'Test information on a Query General Incident Type', 'Kelsey', '135 fake st', NULL, '555-555-5565', NULL, NULL, 'Cariboo Dr', 'tester call description 8', '2024-07-11 21:18:23.336', '2024-07-11 21:18:23.336', 'test2', 'FLYWAY','2024-07-11 21:18:23.336', 'FLYWAY','2024-07-11 21:18:23.336', 'BYLAW', 'COS', 'OPEN', 'QUESNEL', 'SRID=4326;POINT (0 0)'::public.geometry)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.gir_complaint
+(gir_complaint_guid, gir_type_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier)
+VALUES('eafd661b-4c18-4aa6-a39e-a70a5462d4af'::uuid, 'QUERY', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', '24-900005')
+ON CONFLICT DO NOTHING;

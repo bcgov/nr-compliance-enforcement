@@ -4,7 +4,7 @@ HWLC and Enforcement list screens
 */
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 describe("Complaint Assign and Status Popover spec", { scrollBehavior: false }, () => {
-  const complaintTypes = ["#hwcr-tab", "#ers-tab"];
+  const complaintTypes = ["#hwcr-tab", "#ers-tab", "#gir-tab"];
 
   beforeEach(function () {
     cy.viewport("macbook-16");
