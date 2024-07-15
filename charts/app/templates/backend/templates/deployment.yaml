@@ -30,11 +30,11 @@ spec:
       {{- end }}
       initContainers:
         - name: {{ include "backend.fullname" . }}-init
-          image: "{{.Values.global.registry}}/{{.Values.global.repository}}/migrations:{{ .Values.global.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.global.registry }}/{{ .Values.global.repository }}/migrations:{{ .Values.global.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ default "Always" .Values.backend.imagePullPolicy }}
           envFrom:
             - secretRef:
-                name: {{.Release.Name}}-flyway
+                name: {{ .Release.Name }}-flyway
           env:
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
@@ -45,7 +45,15 @@ spec:
             - name: FLYWAY_CONNECT_RETRIES
               value: "10"
             - name: FLYWAY_LOCATIONS
-              value: "{{- if eq .Release.Namespace \"dev\" -}}{{ .Values.global.secrets.flywayLocations.dev }}{{- else if eq .Release.Namespace \"test\" -}}{{ .Values.global.secrets.flywayLocations.test }}{{- else if eq .Release.Namespace \"prod\" -}}{{ .Values.global.secrets.flywayLocations.prod }}{{- else -}}filesystem:./migrations/sql{{- end }}"
+              value: {{- if eq .Release.Namespace "dev" -}}
+                "{{ .Values.global.secrets.flywayLocations.dev }}"
+              {{- else if eq .Release.Namespace "test" -}}
+                "{{ .Values.global.secrets.flywayLocations.test }}"
+              {{- else if eq .Release.Namespace "prod" -}}
+                "{{ .Values.global.secrets.flywayLocations.prod }}"
+              {{- else -}}
+                "filesystem:./migrations/sql"
+              {{- end }}
           resources:
             limits:
               cpu: 200m
@@ -59,11 +67,11 @@ spec:
           securityContext:
             {{- toYaml .Values.backend.securityContext | nindent 12 }}
           {{- end }}
-          image: "{{.Values.global.registry}}/{{.Values.global.repository}}/backend:{{ .Values.global.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.global.registry }}/{{ .Values.global.repository }}/backend:{{ .Values.global.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ default "Always" .Values.backend.imagePullPolicy }}
           envFrom:
             - secretRef:
-                name: {{.Release.Name}}-backend
+                name: {{ .Release.Name }}-backend
           env:
             - name: LOG_LEVEL
               value: info
