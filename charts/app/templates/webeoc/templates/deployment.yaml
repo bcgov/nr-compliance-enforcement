@@ -21,6 +21,7 @@ spec:
       labels:
         {{- include "webeoc.labels" . | nindent 8 }}
     spec:
+      automountServiceAccountToken: false
       {{- if .Values.webeoc.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.webeoc.podSecurityContext | nindent 12 }}

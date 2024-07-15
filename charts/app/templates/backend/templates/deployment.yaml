@@ -24,6 +24,7 @@ spec:
       labels:
         {{- include "backend.labels" . | nindent 8 }}
     spec:
+      automountServiceAccountToken: false
       {{- if .Values.backend.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.backend.podSecurityContext | nindent 12 }}
