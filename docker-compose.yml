@@ -23,22 +23,22 @@ services:
     volumes:
       - /pgdata
   database-migrations:
-    image: flyway/flyway:9.10-alpine
+    image: flyway/flyway:10-alpine
     container_name: backend-migrations
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations:/flyway/sql"
-      - "./test-only-migrations:/flyway/sql-test"
+      - "./backend/db/migrations:/flyway/sql"
+      - "./backend/db/test-only-migrations:/flyway/sql-test"
     environment:
       - FLYWAY_URL=jdbc:postgresql://database:5432/postgres
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=default
       - FLYWAY_BASELINE_ON_MIGRATE=true
       - FLYWAY_DEFAULT_SCHEMA=public
-      - FLYWAY_LOCATIONS=filesystem:./sql, filesystem:./sql-test
+      - FLYWAY_LOCATIONS=filesystem:./flyway/sql, filesystem:./flyway/sql-test
     depends_on:
       database:
         condition: service_healthy
