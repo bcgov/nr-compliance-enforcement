@@ -44,7 +44,7 @@ spec:
               value: "public"
             - name: FLYWAY_CONNECT_RETRIES
               value: "10"
-                        - name: FLYWAY_LOCATIONS
+            - name: FLYWAY_LOCATIONS
               value: "{{- if eq .Release.Namespace \"dev\" -}}{{ .Values.global.secrets.flywayLocations.dev }}{{- else if eq .Release.Namespace \"test\" -}}{{ .Values.global.secrets.flywayLocations.test }}{{- else if eq .Release.Namespace \"prod\" -}}{{ .Values.global.secrets.flywayLocations.prod }}{{- else -}}filesystem:./migrations/sql{{- end }}"
           resources:
             limits:
