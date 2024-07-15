@@ -58,6 +58,9 @@ export const generateComplaintRequestPayload = (
 
   switch (complaintType) {
     case COMPLAINT_TYPES.GIR:
+      return {
+        ...common,
+      } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.ERS:
       return {
         ...common,
@@ -162,6 +165,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
             sortDirection={sortDirection}
           />
         );
+
       case COMPLAINT_TYPES.GIR:
         return (
           <GeneralComplaintListHeader

@@ -1,3 +1,5 @@
+import config from "../../../config";
+
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
@@ -11,7 +13,7 @@ export const complaintTypeToName = (complaintType: string | undefined | null, si
     case COMPLAINT_TYPES.HWCR:
       return singular ? "Human Wildlife Conflict" : "Human Wildlife Conflicts";
     case COMPLAINT_TYPES.GIR:
-      return "General Incident";
+      return config.SHOW_EXPERIMENTAL_FEATURES === false ? "" : "General Incident";
     default:
       return "";
   }
