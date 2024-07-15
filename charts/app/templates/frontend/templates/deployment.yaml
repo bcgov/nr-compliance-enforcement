@@ -6,6 +6,7 @@ metadata:
   labels:
     {{- include "frontend.labels" . | nindent 4 }}
 spec:
+  automountServiceAccountToken: false
   strategy:
     type: {{ .Values.frontend.deploymentStrategy }}
   {{- if not .Values.frontend.autoscaling.enabled }}

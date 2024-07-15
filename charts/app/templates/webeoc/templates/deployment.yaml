@@ -6,6 +6,7 @@ metadata:
   labels:
     {{- include "webeoc.labels" . | nindent 4 }}
 spec:
+  automountServiceAccountToken: false
   strategy:
     type: {{ .Values.webeoc.deploymentStrategy }}
   {{- if not .Values.webeoc.autoscaling.enabled }}
