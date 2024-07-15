@@ -49,9 +49,9 @@ global:
     caseManagementApiUrl: ~
     postgresqlEnableLogging: "false"
     flwayLocations:
-      dev: "filesystem:./migrations/sql-dev, filesystem:./migrations/test-only-migrations"
-      test: "filesystem:./migrations/sql-dev, filesystem:./migrations/test-only-migrations"
-      prod: "filesystem:./migrations/sql-dev"
+      dev: "filesystem:./migrations/sql, filesystem:./migrations/test-only-migrations"
+      test: "filesystem:./migrations/sql, filesystem:./migrations/test-only-migrations"
+      prod: "filesystem:./migrations/sql"
 
   #-- domain of the application, it is required, apps.silver.devops.gov.bc.ca for silver cluster and apps.devops.gov.bc.ca for gold cluster
   domain: "apps.silver.devops.gov.bc.ca" # it is apps.gold.devops.gov.bc.ca for gold cluster
