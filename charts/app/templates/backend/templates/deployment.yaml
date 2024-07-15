@@ -45,7 +45,7 @@ spec:
             - name: FLYWAY_CONNECT_RETRIES
               value: "10"
             - name: FLYWAY_LOCATIONS
-              value: "{{- if eq .Release.Namespace "dev" -}}{{ .Values.global.secrets.flywayLocations.dev }}{{- else if eq .Release.Namespace "test" -}}{{ .Values.global.secrets.flywayLocations.test }}{{- else if eq .Release.Namespace "prod" -}}{{ .Values.global.secrets.flywayLocations.prod }}{{- else -}}filesystem:./migrations/sql{{- end }}"
+              value: "{{- if eq .Release.Namespace "c1c7ed-dev" -}}{{ .Values.global.secrets.flywayLocations.dev }}{{- else if eq .Release.Namespace "c1c7ed-test" -}}{{ .Values.global.secrets.flywayLocations.test }}{{- else if eq .Release.Namespace "c1c7ed-prod" -}}{{ .Values.global.secrets.flywayLocations.prod }}{{- else -}}filesystem:./flyway/sql{{- end }}"
           resources:
             limits:
               cpu: 200m
