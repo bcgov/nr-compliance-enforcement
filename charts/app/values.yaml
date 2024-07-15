@@ -48,7 +48,7 @@ global:
     keycloakClientId: ~
     caseManagementApiUrl: ~
     postgresqlEnableLogging: "false"
-    flwayLocations:
+    flywayLocations:
       dev: "filesystem:./flyway/sql, filesystem:./flyway/sql-test"
       test: "filesystem:./flyway/sql, filesystem:./flyway/sql-test"
       prod: "filesystem:./flyway/sql"
