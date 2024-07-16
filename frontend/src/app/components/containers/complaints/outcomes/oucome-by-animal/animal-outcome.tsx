@@ -15,7 +15,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import { formatDate, pad } from "../../../../../common/methods";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
 import { DrugItem } from "./drug-item";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 
 type props = {
   index: number;
@@ -165,10 +165,9 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
       </Card.Header>
 
       <Card.Body>
-        <hr className="mt-0"></hr>
         <Row
           as="dl"
-          className="my-3"
+          className="mb-3"
         >
           {data?.threatLevel && (
             <Col
@@ -207,9 +206,14 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
 
         {data?.drugs && from(data?.drugs).any() && (
           <section>
+            <hr className="mt-0"></hr>
             <h5 className="fw-bold mb-3">Drugs</h5>
 
-            <div className="comp-animal-drug-list">
+            <ListGroup
+              as="ul"
+              variant="flush"
+            >
+              <hr className="my-0"></hr>
               {data.drugs.map((item) => {
                 const { officer, date } = data?.drugAuthorization || {};
                 return (
@@ -221,11 +225,12 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
                   />
                 );
               })}
-            </div>
+            </ListGroup>
           </section>
         )}
 
-        <section>
+        <section className="mt-0">
+          <hr className="mt-0"></hr>
           <h5 className="fw-bold mb-3">Outcome Details</h5>
           <Row as="dl">
             <Col

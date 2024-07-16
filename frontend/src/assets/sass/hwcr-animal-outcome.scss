@@ -31,6 +31,15 @@
     margin-top: 16px;
   }
 
+  label {
+    color: $gray-500;
+  }
+
+  .btn {
+    margin-top: 24px;
+    min-height: 38px;
+  }
+
   + .btn {
     margin-top: 16px;
   }
@@ -38,17 +47,34 @@
 
 .comp-ear-tag-form-item {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 4px;
+}
 
-  label {
-    margin-top: 6px;
-    margin-bottom: 0;
+@include media-breakpoint-up(lg) {
+  .comp-ear-tag {
+    .btn {
+      margin-top: 0;
+    }
+  }
+
+  .comp-ear-tag-form-item {
+    flex-direction: row;
+    gap: 8px;
+
+    label {
+      margin-top: 6px;
+    }
   }
 }
 
-.comp-ear-tag-side-select {
-  width: 160px;
+.comp-form-control.comp-ear-tag-id-input {
+  width: 120px;
+}
+
+.comp-ear-tag-side-input {
+  min-width: 120px;
 }
 
 .comp-ear-tag .comp-ear-tag-actions {
@@ -60,11 +86,7 @@
   }
 }
 
-.comp-animal-drugs-authorized-by {
-  order: 3;
-  margin-top: 32px;
-}
-
+// DRUG LIST AND FORM
 .comp-drug-list {
   list-style-type: none;
   padding-left: 0 !important;
@@ -72,6 +94,7 @@
 
 .comp-drug-item {
   border-radius: 0;
+  border-bottom: none;
   border-left: none;
   border-right: none;
 
@@ -99,7 +122,6 @@
   }
 
   + .comp-drug-item {
-    border-top: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
@@ -131,4 +153,9 @@
   &:last-of-type {
     margin-bottom: 16px;
   }
+}
+
+.comp-animal-drugs-authorized-by {
+  order: 3;
+  margin-top: 32px;
 }

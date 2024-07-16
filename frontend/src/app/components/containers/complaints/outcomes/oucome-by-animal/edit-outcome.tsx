@@ -10,7 +10,7 @@ import {
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, ListGroup } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
@@ -192,21 +192,23 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
       return (
         <>
-          {from(drugs)
-            .orderBy((item) => item.order)
-            .toArray()
-            .map((item, idx) => {
-              const { id } = item;
-              return (
-                <DrugUsed
-                  {...item}
-                  update={updateDrugUsed}
-                  remove={removeDrugUsed}
-                  key={id}
-                  ref={(el) => (drugRefs.current[idx] = el)}
-                />
-              );
-            })}
+          <ListGroup as="ul">
+            {from(drugs)
+              .orderBy((item) => item.order)
+              .toArray()
+              .map((item, idx) => {
+                const { id } = item;
+                return (
+                  <DrugUsed
+                    {...item}
+                    update={updateDrugUsed}
+                    remove={removeDrugUsed}
+                    key={id}
+                    ref={(el) => (drugRefs.current[idx] = el)}
+                  />
+                );
+              })}
+          </ListGroup>
 
           <DrugAuthorizedBy
             drugAuthorization={drugAuthorization ?? { ...defaultAuthorization, officer }}
@@ -401,12 +403,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 Animal Information
               </legend>
               <div className="comp-details-form-row">
-                <label
-                  htmlFor="select-species"
-                  className="label-margin-bottom"
-                >
-                  Species
-                </label>
+                <label htmlFor="select-species">Species</label>
 
                 <CompSelect
                   id="select-species"
@@ -421,12 +418,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 />
               </div>
               <div className="comp-details-form-row">
-                <label
-                  htmlFor="select-sex"
-                  className="label-margin-bottom"
-                >
-                  Sex
-                </label>
+                <label htmlFor="select-sex">Sex</label>
                 <CompSelect
                   id="select-sex"
                   classNamePrefix="comp-select"
@@ -441,12 +433,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 />
               </div>
               <div className="comp-details-form-row">
-                <label
-                  htmlFor="select-age"
-                  className="label-margin-bottom"
-                >
-                  Age
-                </label>
+                <label htmlFor="select-age">Age</label>
                 <CompSelect
                   id="select-age"
                   classNamePrefix="comp-select"
@@ -461,12 +448,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 />
               </div>
               <div className="comp-details-form-row">
-                <label
-                  htmlFor="select-category-level"
-                  className="label-margin-bottom"
-                >
-                  Category level
-                </label>
+                <label htmlFor="select-category-level">Category level</label>
                 <CompSelect
                   id="select-category-level"
                   classNamePrefix="comp-select"
@@ -481,12 +463,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 />
               </div>
               <div className="comp-details-form-row">
-                <label
-                  htmlFor="select-conflict-history"
-                  className="label-margin-bottom"
-                >
-                  Conflict history
-                </label>
+                <label htmlFor="select-conflict-history">Conflict history</label>
                 <CompSelect
                   id="select-conflict-history"
                   classNamePrefix="comp-select"
@@ -537,12 +514,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
             <fieldset>
               <legend>Outcome</legend>
               <div className="comp-details-form-row">
-                <label
-                  className="mb-2"
-                  htmlFor="select-ears"
-                >
-                  Outcome
-                </label>
+                <label htmlFor="select-ears">Outcome</label>
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="select-ears"

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Row, Col, Card } from "react-bootstrap";
+import { Row, Col, Card, ListGroup } from "react-bootstrap";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { formatDate } from "../../../../../common/methods";
@@ -82,80 +82,76 @@ export const DrugItem: FC<props> = ({
   };
 
   return (
-    <Card className="comp-drug-item">
-      <Card.Body>
-        <Card.Title
-          as="h5"
-          className="fw-bold"
-        >
-          Vial #{vial} - {drugUsed}
-        </Card.Title>
-        <Row as="dl">
-          <Col
-            xs={12}
-            md={6}
-          >
-            <dt>Injection method</dt>
-            <dd>{injectedMethod}</dd>
-          </Col>
-          <Col
-            xs={12}
-            md={6}
-          >
-            <dt>Amount used</dt>
-            <dd>{amountUsed}ml</dd>
-          </Col>
-          <Col
-            xs={12}
-            md={6}
-          >
-            <dt>Fate of remaining drug in vial</dt>
-            <dd>{remaining}</dd>
-          </Col>
+    <ListGroup.Item className="py-3 px-0">
+      <h5 className="mb-2 fw-bold">
+        Vial #{vial} - {drugUsed}
+      </h5>
 
-          {remainingUse === "DISC" && (
-            <>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Amount discarded</dt>
-                <dd>
-                  {amountDiscarded} {amountDiscarded ? "ml" : ""}
-                </dd>
-              </Col>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Discard method</dt>
-                <dd>{discardMethod}</dd>
-              </Col>
-            </>
-          )}
-          <Col
-            xs={12}
-            md={6}
-          >
-            <dt>Adverse Reactions</dt>
-            <dd>{reactions ? <>{reactions}</> : "None"}</dd>
-          </Col>
-          <Col
-            xs={12}
-            md={6}
-          >
-            <dt>Officer</dt>
-            <dd>{assignedOfficer()}</dd>
-          </Col>
-          <Col
-            xs={12}
-            md={6}
-          >
-            <dt>Date</dt>
-            <dd>{formatDate(date?.toString())}</dd>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+      <Row as="dl">
+        <Col
+          xs={12}
+          md={6}
+        >
+          <dt>Injection method</dt>
+          <dd>{injectedMethod}</dd>
+        </Col>
+        <Col
+          xs={12}
+          md={6}
+        >
+          <dt>Amount used</dt>
+          <dd>{amountUsed}ml</dd>
+        </Col>
+        <Col
+          xs={12}
+          md={6}
+        >
+          <dt>Fate of remaining drug in vial</dt>
+          <dd>{remaining}</dd>
+        </Col>
+
+        {remainingUse === "DISC" && (
+          <>
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Amount discarded</dt>
+              <dd>
+                {amountDiscarded} {amountDiscarded ? "ml" : ""}
+              </dd>
+            </Col>
+            <Col
+              xs={12}
+              md={6}
+            >
+              <dt>Discard method</dt>
+              <dd>{discardMethod}</dd>
+            </Col>
+          </>
+        )}
+        <Col
+          xs={12}
+          md={6}
+        >
+          <dt>Adverse Reactions</dt>
+          <dd>{reactions ? <>{reactions}</> : "None"}</dd>
+        </Col>
+        <Col
+          xs={12}
+          md={6}
+        >
+          <dt>Officer</dt>
+          <dd>{assignedOfficer()}</dd>
+        </Col>
+        <Col
+          xs={12}
+          md={6}
+        >
+          <dt>Date</dt>
+          <dd>{formatDate(date?.toString())}</dd>
+        </Col>
+      </Row>
+    </ListGroup.Item>
   );
 };

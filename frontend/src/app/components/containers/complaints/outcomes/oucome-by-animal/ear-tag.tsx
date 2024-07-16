@@ -54,7 +54,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
           id={`comp-ear-tag-value-${id}`}
           divid="comp-ear-tag-value"
           type="input"
-          inputClass="comp-form-control"
+          inputClass="comp-form-control comp-ear-tag-id-input"
           value={identifier}
           error={error}
           maxLength={7}
@@ -74,7 +74,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
         <CompSelect
           id={`comp-ear-tag-${id}`}
           classNamePrefix="comp-select"
-          className="comp-details-input comp-ear-tag-side-select"
+          className="comp-details-input comp-ear-tag-side-input"
           options={ears}
           enableValidation={false}
           placeholder={"Ear side"}
