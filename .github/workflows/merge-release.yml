@@ -1,8 +1,8 @@
-name: Merge
+name: Merge to Release
 
 on:
   push:
-    branches: [main]
+    branches: [release/**]
     paths-ignore:
       - "*.md"
       - ".github/**"
@@ -28,30 +28,24 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
-      # Get PR number for squash merges to main
+      # Get PR number for squash merges to release
       - name: PR Number
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
 
   # https://github.com/bcgov/quickstart-openshift-helpers
-  deploy-prod:
-    name: Deploy (prod)
-    needs: [deploy-test, vars]
+  deploy-test:
+    name: Deploy (test)
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      environment: prod
-      params: --set backend.deploymentStrategy=RollingUpdate
-        --set frontend.deploymentStrategy=RollingUpdate
-        --set global.autoscaling=true
-        --set frontend.pdb.enabled=true
-        --set backend.pdb.enabled=true
+      environment: test
 
   promote:
     name: Promote Images
-    needs: [deploy-prod, vars]
+    needs: [deploy-test, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -65,4 +59,4 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
-          tags: prod
+          tags: test
