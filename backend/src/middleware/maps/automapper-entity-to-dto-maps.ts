@@ -50,6 +50,10 @@ const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
       mapFrom((source) => source.area_code),
     ),
     forMember(
+      (destination) => destination.areaName,
+      mapFrom((source) => source.area_name),
+    ),
+    forMember(
       (destination) => destination.officeLocation,
       mapFrom((source) => source.office_location_code),
     ),
