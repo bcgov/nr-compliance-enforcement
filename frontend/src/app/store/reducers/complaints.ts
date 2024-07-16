@@ -40,6 +40,8 @@ import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
 
+type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
+
 const initialState: ComplaintState = {
   complaintItems: {
     wildlife: [],
@@ -229,6 +231,7 @@ export const getComplaints =
       startDateFilter,
       endDateFilter,
       violationFilter,
+      girTypeFilter,
       complaintStatusFilter,
       page,
       pageSize,
@@ -250,6 +253,7 @@ export const getComplaints =
         incidentReportedStart: startDateFilter,
         incidentReportedEnd: endDateFilter,
         violationCode: violationFilter?.value,
+        girTypeCode: girTypeFilter?.value,
         status: complaintStatusFilter?.value,
         page: page,
         pageSize: pageSize,
@@ -319,7 +323,7 @@ export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
     try {
-      let typeName = "";
+      let typeName;
       switch (type) {
         case ComplaintType.ALLEGATION_COMPLAINT:
           typeName = "ERS";
@@ -470,7 +474,7 @@ export const updateComplaintById =
         complaint,
       );
 
-      await patch<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(dispatch, updateParams);
+      await patch<dtoAlias>(dispatch, updateParams);
 
       ToggleSuccess("Updates have been saved");
     } catch (error) {

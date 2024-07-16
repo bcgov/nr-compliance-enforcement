@@ -648,6 +648,17 @@ export const selectViolationCodeDropdown = (state: RootState): Array<Option> => 
   });
   return data;
 };
+export const selectGirTypeCodeDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "gir-type": girType },
+  } = state;
+
+  const data = girType.map(({ girType, longDescription }) => {
+    const item: Option = { label: longDescription, value: girType };
+    return item;
+  });
+  return data;
+};
 
 export const selectJustificationCodeDropdown = (state: RootState): Array<Option> => {
   const {

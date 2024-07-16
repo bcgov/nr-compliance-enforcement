@@ -39,8 +39,19 @@ export const generateComplaintRequestPayload = (
   sortColumn: string,
   sortOrder: string,
 ): ComplaintRequestPayload => {
-  const { region, zone, community, officer, startDate, endDate, status, species, natureOfComplaint, violationType } =
-    filters;
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+    girType,
+  } = filters;
 
   const common = {
     sortColumn,
@@ -52,6 +63,7 @@ export const generateComplaintRequestPayload = (
     startDateFilter: startDate,
     endDateFilter: endDate,
     complaintStatusFilter: status,
+    girTypeFilter: girType,
     page,
     pageSize,
   };
@@ -60,6 +72,7 @@ export const generateComplaintRequestPayload = (
     case COMPLAINT_TYPES.GIR:
       return {
         ...common,
+        girTypeFilter: girType,
       } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.ERS:
       return {

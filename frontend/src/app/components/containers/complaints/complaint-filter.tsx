@@ -10,6 +10,7 @@ import {
   selectCascadedZone,
   selectCascadedCommunity,
   selectComplaintStatusWithPendingCodeDropdown,
+  selectGirTypeCodeDropdown,
 } from "../../../store/reducers/code-table";
 import { selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
@@ -25,7 +26,19 @@ type Props = {
 
 export const ComplaintFilter: FC<Props> = ({ type }) => {
   const {
-    state: { region, zone, community, officer, species, natureOfComplaint, violationType, status, startDate, endDate },
+    state: {
+      region,
+      zone,
+      community,
+      officer,
+      species,
+      natureOfComplaint,
+      violationType,
+      status,
+      startDate,
+      endDate,
+      girType,
+    },
     dispatch,
   } = useContext(ComplaintFilterContext);
 
@@ -37,6 +50,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown);
+  const girTypes = useAppSelector(selectGirTypeCodeDropdown);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -156,6 +170,29 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={violationType}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.GIR === type && ( // GIR only filter
+          <div id="comp-filter-gir-id">
+            <label htmlFor="gir-type-select-id">Gir Type</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="gir-type-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("girType", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={girTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={girType}
                 isClearable={true}
               />
             </div>

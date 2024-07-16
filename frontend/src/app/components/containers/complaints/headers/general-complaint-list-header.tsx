@@ -30,7 +30,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
         <SortableHeader
           title="GIR Type"
           sortFnc={handleSort}
-          sortKey="gir_type"
+          sortKey="gir_type_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
         />
