@@ -54,3 +54,9 @@ jobs:
         run: |
           RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
           oc label statefulset $RELEASE_NAME app=${{ github.event.repository.name }}-${{ github.event.number }}
+      - name: Label NATS PVCs
+        run: |
+          RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
+          for pvc in $(oc get pvc -l release=$RELEASE_NAME -o name); do
+            oc label $pvc app=${{ github.event.repository.name }}-${{ github.event.number }}
+          done
