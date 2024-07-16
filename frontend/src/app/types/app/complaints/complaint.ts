@@ -23,6 +23,7 @@ export interface Complaint {
   updatedBy: string;
   organization: {
     area: string;
+    areaName?: string;
     zone: string;
     region: string;
     officeLocation?: string;
