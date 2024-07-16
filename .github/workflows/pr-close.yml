@@ -1,48 +1,21 @@
-name: Pull Request Closed
+name: PR Closed
 
 on:
   pull_request:
-    types:
-      - closed
+    types: [closed]
 
 concurrency:
   # PR open and close use the same group, allowing only one at a time
-  group: pr-${{ github.workflow }}-${{ github.event.number }}
+  group: ${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
-  # Clean up OpenShift when PR closed, no conditions
-  cleanup-openshift:
-    name: Cleanup OpenShift
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Remove OpenShift artifacts
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
-          oc project ${{ vars.OC_NAMESPACE }}
-
-          # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret -l app=${{ github.event.repository.name }}-${{ github.event.number }}
-
-      - name: Uninstall NATS Helm Release
-        run: |
-          RELEASE_NAME=${{ github.event.repository.name }}-${{ github.event.number }}-nats
-          helm uninstall $RELEASE_NAME
-
-  # If merged into main, then handle any image promotions
-  image-promotions:
-    name: Image Promotions
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, database, database-migrations, frontend, webeoc]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ github.event.number }}
-          tags: test
+  cleanup:
+    name: Cleanup and Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      cleanup: helm
+      packages: backend frontend migrations
