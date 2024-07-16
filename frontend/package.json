@@ -1,6 +1,6 @@
 {
-  "name": "nr-sample-frontend",
-  "version": "0.5.0",
+  "name": "nr-sample-natcomplaints",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
