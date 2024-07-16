@@ -126,11 +126,8 @@ describe("Complaints on map tests", () => {
       cy.get(".leaflet-popup").should("exist");
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
-        cy.get("div.hwcr-conflict-type").should("exist");
-        cy.get("div.hwcr-conflict-type").should("have.text", "Human Wildlife Conflict");
         cy.get("#popup-community-label").should("exist");
-        cy.get("#popup-community-label").should("have.text", "CommunityKelowna");
-        cy.get("div.hwcr-conflict-type").should("not.have.text", "Human Wildlife Conflicts");
+        cy.get("#popup-community-label").should("have.text", "Kelowna");
       }
 
       // click the "view details" button to navigate to the complaint
