@@ -937,7 +937,6 @@ ON CONFLICT DO NOTHING;
 
  update geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where parent_geo_org_unit_code = 'CHTWD' and child_geo_org_unit_code = 'HUDSONSH';
 
-
 --------------------------
 -- New Changes above this line
 -------------------------

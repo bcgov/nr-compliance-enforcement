@@ -69,7 +69,9 @@ export class WebEOCComplaintsScheduler {
   }
 
   private async authenticateWithWebEOC(): Promise<string> {
+    this.logger.debug(`Grabbing complaints from ${process.env.WEBEOC_URL}`);
     const authUrl = `${process.env.WEBEOC_URL}/sessions`;
+
     const credentials = {
       username: process.env.WEBEOC_USERNAME,
       password: process.env.WEBEOC_PASSWORD,

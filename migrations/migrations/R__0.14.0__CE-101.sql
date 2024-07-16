@@ -156,7 +156,6 @@ AS $function$
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
     jsonb_cos_alt_phone CONSTANT text := 'cos_alt_phone';
     jsonb_cos_alt_phone_2 CONSTANT text := 'cos_alt_phone_2';
-     
     complaint_data jsonb;
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
