@@ -37,14 +37,14 @@ describe("COMPENF-37 Display ECR Details", () => {
   });
 
   it("it can select record", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "24-900001", false);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", false);
 
     //-- verify the right complaint identifier is selected and the animal type
-    cy.get(".comp-box-complaint-id").contains("24-900001");
+    cy.get(".comp-box-complaint-id").contains("23-900001");
   });
 
   it("it has correct call details", () => {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "24-900001", true);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", true);
 
     //-- verify the call details block
     cy.get('pre[id="comp-details-description"]').contains(callDetails.description);
@@ -57,13 +57,13 @@ describe("COMPENF-37 Display ECR Details", () => {
   });
 
   it("it has a map on screen with no marker", function () {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "24-900001", true);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", true);
     cy.verifyMapMarkerExists(false);
     cy.get(".comp-complaint-details-alert").should("exist");
   });
 
   it("validates breadcrumb styles", function () {
-    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "24-900001", true);
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", true);
 
     cy.get(".comp-nav-item-name-inverted > a").should("have.css", "text-decoration").should("include", "underline");
     cy.get(".comp-nav-item-name-inverted > a").should("have.css", "color").should("include", "rgb(255, 255, 255)");

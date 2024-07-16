@@ -319,11 +319,21 @@ export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
     try {
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/stats/${
-          type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : type === ComplaintType.ALLEGATION_COMPLAINT ? "ERS" : "GIR"
-        }/by-zone/${zone}`,
-      );
+      let typeName = "";
+      switch (type) {
+        case ComplaintType.ALLEGATION_COMPLAINT:
+          typeName = "ERS";
+          break;
+        case ComplaintType.GENERAL_COMPLAINT:
+          typeName = "GIR";
+          break;
+        case ComplaintType.HWCR_COMPLAINT:
+        default:
+          typeName = "HWCR";
+          break;
+      }
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/stats/${typeName}/by-zone/${zone}`);
 
       const response = await get<ZoneAtAGlanceStats>(dispatch, parameters);
 
@@ -929,15 +939,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
 
     return null;
   };
-  // const getGirTypeByGirTypeCode = (code: string, codes: Array<GirType>): GirType | null => {
-  //   if (codes && from(codes).any(({ girType }) => girType === code)) {
-  //     const selected = from(codes).first(({ girType }) => girType === code);
 
-  //     return selected;
-  //   }
-
-  //   return null;
-  // };
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
