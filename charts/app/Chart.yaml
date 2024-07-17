@@ -31,7 +31,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     alias: bitnami-pg
   - name: nats
-    version: 0.18.0
+    version: 1.1.12
     repository: "https://nats-io.github.io/k8s/helm/charts/"
 maintainers:
   - name: Om Mishra
