@@ -355,7 +355,7 @@ backup:
 # Deploys JetStream
 nats:
   enabled: true
-  config:
+  nats:
     replicaCount: 1
     resources:
       requests:
