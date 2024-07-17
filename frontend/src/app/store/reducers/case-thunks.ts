@@ -668,9 +668,7 @@ export const updateReview =
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
       if (res) {
         dispatch(setIsReviewedRequired(res.isReviewRequired));
-        if (res.reviewComplete) {
-          dispatch(setReviewComplete(res.reviewComplete));
-        }
+        dispatch(setReviewComplete(res.reviewComplete));
         dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
         ToggleSuccess("File review has been updated");
       } else {
