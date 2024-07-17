@@ -21,7 +21,7 @@ import {
   MockZoneCodeTableServiceRepository,
   MockRegionCodeTableServiceRepository,
   MockReportedByCodeTableRepository,
-  MockGirTypeCodeRepository as MockGirTypeCodeRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
