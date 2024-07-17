@@ -355,22 +355,23 @@ backup:
 # Deploys JetStream
 nats:
   enabled: true
-  replicaCount: 1
-  resources:
-    requests:
-      cpu: 100m
-      memory: 100Mi
-    limits:
-      cpu: 200m
-      memory: 400Mi
-  jetstream:
-    enabled: true
-    fileStore:
-      pvc:
-        size: 200Mi
-    memoryStore:
+  nats:
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 200m
+        memory: 400Mi
+    jetstream:
       enabled: true
-      maxSize: 250Mi
+      fileStore:
+        pvc:
+          size: 200Mi
+      memoryStore:
+        enabled: true
+        maxSize: 250Mi
   cluster:
     enabled: true
   natsBox:

@@ -20,7 +20,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Compliance and Enforcement - Complaint Management API")
     .setDescription("The Complicance and Enforcement - Complaint Management API")
-    .setVersion("1.0.0")
+    .setVersion("1.0")
     .addTag("Compliance and Enforcement - Complaint Management")
     .build();
 
