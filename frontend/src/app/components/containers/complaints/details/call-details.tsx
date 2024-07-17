@@ -26,6 +26,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     attractants,
     violationInProgress,
     violationObserved,
+    girType,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   return (
@@ -95,6 +96,15 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   >
                     {violationObserved ? "Yes" : "No"}
                   </dd>
+                </div>
+              </>
+            )}
+            {/* GIR Details */}
+            {complaintType === COMPLAINT_TYPES.GIR && (
+              <>
+                <div>
+                  <dt>General Incident Type</dt>
+                  <dd id="comp-details-general-incident-type">{girType}</dd>
                 </div>
               </>
             )}

@@ -38,7 +38,7 @@ import {
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
-import { SearchResults } from "src/types/models/complaints/search-results";
+import { SearchResults } from "../../types/models/complaints/search-results";
 import { ComplaintFilterParameters } from "../../types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
@@ -51,7 +51,7 @@ import { DelegateDto } from "../../types/models/people/delegate";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
-import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
+import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "../../types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 

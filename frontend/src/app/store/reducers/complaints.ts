@@ -721,7 +721,7 @@ export const selectComplaintDetails =
   (state: RootState): ComplaintDetails => {
     const {
       complaints: { complaint },
-      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable },
+      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable, "gir-type": girTypeCodes },
     } = state;
 
     const getAttractants = (
@@ -784,6 +784,14 @@ export const selectComplaintDetails =
           ...result,
           violationInProgress,
           violationObserved,
+        };
+      } else if (complaintType === "GIR") {
+        const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
+        const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
+        result = {
+          ...result,
+          girType,
+          girTypeCode,
         };
       }
 
