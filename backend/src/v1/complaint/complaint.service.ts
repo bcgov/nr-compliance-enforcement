@@ -76,7 +76,7 @@ export class ComplaintService {
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
   @InjectRepository(GirComplaint)
-  private _generalIncidentComplaintRepository: Repository<GirComplaint>;
+  private _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
   private _complaintUpdateRepository: Repository<ComplaintUpdate>;
 
@@ -172,7 +172,7 @@ export class ComplaintService {
           ]);
         break;
       case "GIR":
-        builder = this._generalIncidentComplaintRepository
+        builder = this._girComplaintRepository
           .createQueryBuilder("general")
           .addSelect(
             "GREATEST(complaint.update_utc_timestamp, general.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
@@ -1177,7 +1177,7 @@ export class ComplaintService {
           }
           case "GIR": {
             const { girType, girId } = model as GeneralIncidentComplaintDto;
-            await this._generalIncidentComplaintRepository
+            await this._girComplaintRepository
               .createQueryBuilder()
               .update(GirComplaint)
               .set({

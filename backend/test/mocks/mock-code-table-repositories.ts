@@ -835,7 +835,7 @@ export const MockReportedByCodeTableRepository = () => ({
   })),
 });
 
-export const MockGirTypeRepository = () => ({
+export const MockGirTypeCodeRepository = () => ({
   find: jest.fn().mockResolvedValue(girTypeCodes),
   createQueryBuilder: jest.fn(() => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),

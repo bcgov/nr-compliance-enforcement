@@ -23,7 +23,7 @@ import {
   MockCosOrganizationUnitCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
-  MockGirTypeRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
@@ -145,7 +145,7 @@ describe("DocumentController", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
         {
           provide: getRepositoryToken(PersonComplaintXref),

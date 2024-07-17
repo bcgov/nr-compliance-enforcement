@@ -23,7 +23,7 @@ import {
   MockReportedByCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
-  MockGirTypeRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -98,7 +98,7 @@ describe("Testing: CodeTable Controller", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
       ],
     })

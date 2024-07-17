@@ -33,7 +33,7 @@ import {
   MockReportedByCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
-  MockGirTypeRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
@@ -141,7 +141,7 @@ describe("Testing: Case File Service", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
         {
           provide: getRepositoryToken(PersonComplaintXref),

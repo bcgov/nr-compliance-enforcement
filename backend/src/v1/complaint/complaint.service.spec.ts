@@ -49,7 +49,7 @@ import {
   MockReportedByCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
-  MockGirTypeRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsAgencyRepository,
@@ -159,7 +159,7 @@ describe("Testing: Complaint Service", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
         {
           provide: getRepositoryToken(PersonComplaintXref),
@@ -332,6 +332,10 @@ describe("Testing: Complaint Service", () => {
           useFactory: MockAllegationComplaintRepository,
         },
         {
+          provide: getRepositoryToken(GirComplaint),
+          useFactory: MockGeneralIncidentComplaintRepository,
+        },
+        {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
@@ -393,7 +397,7 @@ describe("Testing: Complaint Service", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
         {
           provide: getRepositoryToken(ReportedByCode),

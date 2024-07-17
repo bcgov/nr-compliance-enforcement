@@ -75,7 +75,7 @@ export class CodeTableService {
   @InjectRepository(ComplaintTypeCode)
   private _complaintTypetRepository: Repository<ComplaintTypeCode>;
   @InjectRepository(GirTypeCode)
-  private _girTypeRepository: Repository<GirTypeCode>;
+  private _girTypeCodeRepository: Repository<GirTypeCode>;
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
 
@@ -524,7 +524,7 @@ export class CodeTableService {
         return results;
       }
       case "gir-type": {
-        const data = await this._girTypeRepository.find({ order: { display_order: "ASC" } });
+        const data = await this._girTypeCodeRepository.find({ order: { display_order: "ASC" } });
         let results = data.map(({ gir_type_code, short_description, long_description, display_order, active_ind }) => {
           let table: GirType = {
             girType: gir_type_code,

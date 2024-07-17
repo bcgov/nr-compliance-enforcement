@@ -21,6 +21,7 @@ import {
   MockCosOrganizationUnitCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
+  MockGirTypeCodeRepository as MockGirTypeCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
@@ -56,6 +57,7 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -139,6 +141,10 @@ describe("DocumentService", () => {
         {
           provide: getRepositoryToken(ReportedByCode),
           useFactory: MockReportedByCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeTableRepository,
         },
         {
           provide: getRepositoryToken(PersonComplaintXref),

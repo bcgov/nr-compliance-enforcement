@@ -21,7 +21,7 @@ import {
   MockZoneCodeTableServiceRepository,
   MockRegionCodeTableServiceRepository,
   MockReportedByCodeTableRepository,
-  MockGirTypeRepository,
+  MockGirTypeCodeRepository as MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
@@ -91,7 +91,7 @@ describe("Testing: CodeTable Service", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
       ],
     }).compile();
@@ -315,6 +315,10 @@ describe("Testing: CodeTable service", () => {
           provide: getRepositoryToken(ReportedByCode),
           useFactory: MockReportedByCodeTableRepository,
         },
+        {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeRepository,
+        },
       ],
     }).compile();
 
@@ -393,6 +397,10 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(ReportedByCode),
           useFactory: MockReportedByCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeRepository,
         },
       ],
     }).compile();
@@ -475,7 +483,7 @@ describe("Testing: CodeTable service", () => {
         },
         {
           provide: getRepositoryToken(GirTypeCode),
-          useFactory: MockGirTypeRepository,
+          useFactory: MockGirTypeCodeRepository,
         },
       ],
     }).compile();
