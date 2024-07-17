@@ -574,6 +574,43 @@ const complaintTypes = [
   },
 ];
 
+const girTypeCodes = [
+  {
+    gir_type_code: "COCNT",
+    short_description: "CO Contact",
+    long_description: "CO Contact",
+    display_order: 10,
+    active_ind: true,
+  },
+  {
+    gir_type_code: "CODSP",
+    short_description: "CO Disposition",
+    long_description: "CO Disposition",
+    display_order: 20,
+    active_ind: true,
+  },
+  {
+    gir_type_code: "GENAD",
+    short_description: "General Advice",
+    long_description: "General Advice",
+    display_order: 30,
+    active_ind: true,
+  },
+  {
+    gir_type_code: "MEDIA",
+    short_description: "Media",
+    long_description: "Media",
+    display_order: 40,
+    active_ind: true,
+  },
+  {
+    gir_type_code: "QUERY",
+    short_description: "Query",
+    long_description: "Query",
+    display_order: 50,
+    active_ind: true,
+  },
+];
 const regions = [
   { code: "KTNY", name: "Kootenay" },
   { code: "OKNGN", name: "Okanagan" },
@@ -795,5 +832,14 @@ export const MockReportedByCodeTableRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(reportedByCollection),
+  })),
+});
+
+export const MockGirTypeRepository = () => ({
+  find: jest.fn().mockResolvedValue(girTypeCodes),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(girTypeCodes),
   })),
 });

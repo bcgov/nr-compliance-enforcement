@@ -33,6 +33,7 @@ import {
   MockReportedByCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
+  MockGirTypeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
@@ -47,10 +48,13 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
+import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockGeneralIncidentComplaintRepository } from "../../../test/mocks/mock-general-incident-complaint-repository";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -136,6 +140,10 @@ describe("Testing: Case File Service", () => {
           useFactory: MockReportedByCodeTableRepository,
         },
         {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeRepository,
+        },
+        {
           provide: getRepositoryToken(PersonComplaintXref),
           useValue: {},
         },
@@ -146,6 +154,10 @@ describe("Testing: Case File Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(GirComplaint),
+          useFactory: MockGeneralIncidentComplaintRepository,
         },
         {
           provide: getRepositoryToken(ComplaintUpdate),
