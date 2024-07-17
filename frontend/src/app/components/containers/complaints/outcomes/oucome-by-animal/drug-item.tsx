@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Row, Col, Card, ListGroup } from "react-bootstrap";
+import { Row, Col, ListGroup } from "react-bootstrap";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { formatDate } from "../../../../../common/methods";
