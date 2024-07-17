@@ -352,7 +352,36 @@ backup:
           cpu: 20m
           memory: 128Mi
 
-#-- the components of the application, backend.
+# Deploys JetStream
+nats:
+  enabled: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 400Mi
+  jetstream:
+    enabled: true
+    fileStore:
+      pvc:
+        size: 200Mi
+    memoryStore:
+      enabled: true
+      maxSize: 250Mi
+  cluster:
+    enabled: true
+  natsBox:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 200Mi
+  reloader:
+    enabled: false
+
+#-- WebEOC Container
 webeoc:
   #-- enable or disable backend
   enabled: true
