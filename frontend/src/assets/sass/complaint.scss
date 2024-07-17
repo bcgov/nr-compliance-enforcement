@@ -470,23 +470,20 @@
 .comp-details-section {
   dl {
     display: flex;
-    flex-direction: column;
-    row-gap: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
     margin-bottom: 0;
 
     > div {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-    }
-
-    + dl {
-      margin-top: 8px;
     }
   }
 
   dt {
     flex: 0 0 auto;
+    font-size: 0.875rem;
     font-weight: 400;
     color: $gray-500;
   }
@@ -542,15 +539,14 @@
 @include media-breakpoint-up(lg) {
   .comp-details-section {
     dl {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+
       > div {
         display: flex;
-        flex-direction: row;
-        gap: 16px;
+        flex-direction: column;
       }
-    }
-
-    dt {
-      width: 16rem;
     }
 
     dd {
@@ -561,10 +557,6 @@
 
 @include media-breakpoint-up(xl) {
   .comp-details-section {
-    dt {
-      width: 18rem;
-    }
-
     dd {
       flex: 1 1 auto;
     }
