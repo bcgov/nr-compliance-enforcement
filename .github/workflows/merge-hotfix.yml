@@ -34,7 +34,7 @@ jobs:
         uses: bcgov-nr/action-get-pr@v0.0.1
 
   # https://github.com/bcgov/quickstart-openshift-helpers
-  deploy-test:
+  deploy-hotfix:
     name: Deploy (hotfix)
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
