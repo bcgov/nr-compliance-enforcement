@@ -10,5 +10,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.nats.nats.jetstream.fileStore.pvc.size }}
+      storage: {{ .Values.nats.config.jetstream.fileStore.pvc.size }}
 {{- end }}
