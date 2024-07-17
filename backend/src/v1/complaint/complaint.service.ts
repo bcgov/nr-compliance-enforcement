@@ -1068,10 +1068,7 @@ export class ComplaintService {
     try {
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to update the complaint
-      let entity: Complaint | HwcrComplaint | AllegationComplaint | GirComplaint = this.mapper.map<
-        ComplaintDto,
-        Complaint
-      >(model as ComplaintDto, "ComplaintDto", "Complaint");
+      let entity: Complaint | HwcrComplaint | AllegationComplaint | GirComplaint;
 
       switch (complaintType) {
         case "ERS": {
