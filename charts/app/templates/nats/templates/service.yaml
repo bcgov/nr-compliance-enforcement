@@ -7,9 +7,9 @@ metadata:
   labels:
     {{- include "nats.labels" . | nindent 4 }}
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
-    {{- include "nats.selectorLabels" .Subcharts.nats | nindent 4 }}
+    {{- include "nats.selectorLabels" . | nindent 4 }}
   ports:
     - name: nats
       port: 4222
