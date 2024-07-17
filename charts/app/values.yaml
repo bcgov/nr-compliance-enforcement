@@ -372,15 +372,16 @@ nats:
       memoryStore:
         enabled: true
         maxSize: 250Mi
-  cluster:
-    enabled: true
-  natsBox:
-    enabled: false
-  persistence:
-    enabled: true
-    size: 200Mi
-  reloader:
-    enabled: false
+  nats:
+    cluster:
+      enabled: true
+    natsBox:
+      enabled: false
+    persistence:
+      enabled: true
+      size: 200Mi
+    reloader:
+      enabled: false
 
 #-- WebEOC Container
 webeoc:
