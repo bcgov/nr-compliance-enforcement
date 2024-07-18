@@ -44,7 +44,6 @@ jobs:
         with:
           commands: |
             npm ci
-            npm install jest
             npm run test:cov
           dir: ${{ matrix.dir }}
           node_version: "22"
