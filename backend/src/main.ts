@@ -18,7 +18,7 @@ async function bootstrap() {
 
   process.env.TZ = "UTC";
   const config = new DocumentBuilder()
-    .setTitle("Compliance and Enforcement - Complaint Management API")
+    .setTitle("NatComplaints - Complaint Management API")
     .setDescription("The Complicance and Enforcement - Complaint Management API")
     .setVersion("1.0")
     .addTag("Compliance and Enforcement - Complaint Management")

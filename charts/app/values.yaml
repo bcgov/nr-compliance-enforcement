@@ -381,6 +381,15 @@ nats:
     size: 200Mi
   reloader:
     enabled: false
+  container:
+    merge:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 100Mi
+        limits:
+          cpu: 200m
+          memory: 400Mi
 
 #-- WebEOC Container
 webeoc:

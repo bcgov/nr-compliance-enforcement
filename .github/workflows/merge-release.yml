@@ -2,7 +2,7 @@ name: Merge to Release
 
 on:
   push:
-    branches: [release/**]
+    branches: [release/*]
     paths-ignore:
       - "*.md"
       - ".github/**"
