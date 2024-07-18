@@ -44,6 +44,7 @@ jobs:
         with:
           commands: |
             npm ci
+            npm install jest
             npm run test:cov
           dir: ${{ matrix.dir }}
           node_version: "22"
@@ -86,4 +87,3 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Success!"
-
