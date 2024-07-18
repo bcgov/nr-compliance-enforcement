@@ -21,7 +21,7 @@ async function bootstrap() {
     .setTitle("NatComplaints - Complaint Management API")
     .setDescription("NatComplaints - Complaint Management API")
     .setVersion("1.0")
-    .addTag("Compliance and Enforcement - Complaint Management")
+    .addTag("NatComplaints - Complaint Management")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
