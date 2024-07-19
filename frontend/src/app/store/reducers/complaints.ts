@@ -55,6 +55,8 @@ const initialState: ComplaintState = {
   mappedItems: { items: [], unmapped: 0 },
 
   webeocUpdates: [],
+
+  webeocChangeCount: 0,
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -160,6 +162,11 @@ export const complaintSlice = createSlice({
     setWebEOCUpdates: (state, action: PayloadAction<WebEOCComplaintUpdateDTO[]>) => {
       state.webeocUpdates = action.payload;
     },
+
+    setWebEOCChangeCount: (state, action: PayloadAction<number>) => {
+      state.webeocChangeCount = action.payload;
+    },
+
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
         state.complaint.status = action.payload;
@@ -183,6 +190,7 @@ export const {
   updateAllegationComplaintByRow,
   setMappedComplaints,
   setWebEOCUpdates,
+  setWebEOCChangeCount,
   setComplaintStatus,
 } = complaintSlice.actions;
 
@@ -344,6 +352,22 @@ export const getWebEOCUpdates =
       dispatch(setWebEOCUpdates(response));
     } catch (error) {
       console.error(`Unable to retrieve WebEOC updates for complaint ${complaintIdentifier}: ${error}`);
+    }
+  };
+
+export const getWebEOCChangeCount =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint-updates/count/${complaintIdentifier}`,
+      );
+      const response = await get<number[]>(dispatch, parameters);
+      const webEOCChangeCount =
+        response && response.length > 0 && response[0].hasOwnProperty("value") ? (response[0] as any).value : 0;
+      dispatch(setWebEOCChangeCount(webEOCChangeCount));
+    } catch (error) {
+      console.error(`Unable to retrieve WebEOC changes for complaint ${complaintIdentifier}: ${error}`);
     }
   };
 
@@ -922,6 +946,13 @@ export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintU
     complaints: { webeocUpdates },
   } = state;
   return webeocUpdates;
+};
+
+export const selectWebEOCChangeCount = (state: RootState): number | null => {
+  const {
+    complaints: { webeocChangeCount },
+  } = state;
+  return webeocChangeCount;
 };
 
 export default complaintSlice.reducer;

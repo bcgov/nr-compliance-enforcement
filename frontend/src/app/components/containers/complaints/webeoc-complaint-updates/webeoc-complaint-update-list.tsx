@@ -1,6 +1,11 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { getWebEOCUpdates, selectWebEOCComplaintUpdates } from "../../../../store/reducers/complaints";
+import {
+  getWebEOCUpdates,
+  selectWebEOCComplaintUpdates,
+  getWebEOCChangeCount,
+  selectWebEOCChangeCount,
+} from "../../../../store/reducers/complaints";
 import { WebEOCComplaintUpdateDTO } from "../../../../types/app/complaints/webeoc-complaint-update";
 import { formatDate, formatTime } from "../../../../common/methods";
 
@@ -11,12 +16,14 @@ type Props = {
 export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) => {
   const dispatch = useAppDispatch();
   const complaintUpdates = useAppSelector(selectWebEOCComplaintUpdates);
+  const changeCount = useAppSelector(selectWebEOCChangeCount);
   const [expandedUpdates, setExpandedUpdates] = useState<Record<string, boolean>>({});
   const [showLinks, setShowLinks] = useState<Record<string, boolean>>({});
   const descriptionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     dispatch(getWebEOCUpdates(complaintIdentifier));
+    dispatch(getWebEOCChangeCount(complaintIdentifier));
   }, [complaintIdentifier, dispatch]);
 
   const toggleExpand = (id: string) => {
@@ -44,6 +51,12 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
         <div className="comp-container comp-complaint-details-block">
           <div>
             <h6>Complaint Updates ({complaintUpdates.length})</h6>
+            {changeCount && changeCount > 0 && (
+              <div className="comp-complaint-update-count">
+                This ticket has been updated {changeCount} times since it was created. Please review the banners and the
+                Complaint details below to see the latest information/details
+              </div>
+            )}
           </div>
           {complaintUpdates.map((update: WebEOCComplaintUpdateDTO) => (
             <div
