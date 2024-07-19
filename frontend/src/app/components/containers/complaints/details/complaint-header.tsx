@@ -41,6 +41,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     violationType,
     species,
     complaintAgency,
+    girType,
   } = useAppSelector(selectComplaintHeader(complaintType));
 
   const dispatch = useAppDispatch();
@@ -230,6 +231,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               <span className="comp-box-species-type">{species}&nbsp;&nbsp;•&nbsp;&nbsp;</span>
             )}
             {readOnly && <span>{complaintType !== COMPLAINT_TYPES.ERS ? natureOfComplaint : violationType}</span>}
+            {readOnly && girType && complaintType === COMPLAINT_TYPES.GIR && <span>{girType}</span>}
           </div>
         </div>
       </div>

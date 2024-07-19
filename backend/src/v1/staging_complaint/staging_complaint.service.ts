@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, Repository } from "typeorm";
 import { StagingStatusCodeEnum } from "../../enum/staging_status_code.enum";
@@ -41,10 +41,11 @@ export class StagingComplaintService {
     // the incoming complaint may be an edit, let's check for that.  If it is an edit, we need to create this as an edit record in the staging table
     const existingComplaintJson = existingStagingComplaint?.complaintJsonb as WebEOCComplaint;
 
-    // ignore non HWCR/ERS complaints
+    // ignore non HWCR/ERS/GIR complaints
     if (
       stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.HWCR &&
-      stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.ERS
+      stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.ERS &&
+      stagingComplaint.report_type !== WEBEOC_REPORT_TYPE.GIR
     ) {
       return;
     }

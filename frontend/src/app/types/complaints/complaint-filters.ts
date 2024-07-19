@@ -10,6 +10,7 @@ export interface ComplaintFilters {
   natureOfComplaintFilter?: Option;
   speciesCodeFilter?: Option;
   violationFilter?: Option;
+  girTypeFilter?: Option;
   startDateFilter?: Date;
   endDateFilter?: Date;
   complaintStatusFilter?: Option;

@@ -7,6 +7,7 @@ import { Mapper } from "@automapper/core";
 
 import {
   applyAllegationComplaintMap,
+  applyGeneralInfomationComplaintMap,
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
   mapAllegationReport,
@@ -33,10 +34,11 @@ import {
   mapAttractantXrefDtoToAttractantHwcrXref,
   mapComplaintDtoToComplaint,
   mapWildlifeComplaintDtoToHwcrComplaint,
+  mapGirComplaintDtoToGirComplaint,
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
-import { SearchResults } from "src/types/models/complaints/search-results";
+import { SearchResults } from "../../types/models/complaints/search-results";
 import { ComplaintFilterParameters } from "../../types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
@@ -49,16 +51,19 @@ import { DelegateDto } from "../../types/models/people/delegate";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
-import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
+import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "../../types/zone_at_a_glance/zone_at_a_glance_stats";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { toDate, toZonedTime, format } from "date-fns-tz";
+import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 
+type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
@@ -70,6 +75,8 @@ export class ComplaintService {
   private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
+  @InjectRepository(GirComplaint)
+  private _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
   private _complaintUpdateRepository: Repository<ComplaintUpdate>;
 
@@ -94,10 +101,12 @@ export class ComplaintService {
     complaintToComplaintDtoMap(mapper);
     applyWildlifeComplaintMap(mapper);
     applyAllegationComplaintMap(mapper);
+    applyGeneralInfomationComplaintMap(mapper);
 
     //-- DTO -> ENTITY
     mapComplaintDtoToComplaint(mapper);
     mapWildlifeComplaintDtoToHwcrComplaint(mapper);
+    mapGirComplaintDtoToGirComplaint(mapper);
     mapAllegationComplaintDtoToAllegationComplaint(mapper);
     mapComplaintDtoToComplaintTable(mapper);
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
@@ -129,6 +138,8 @@ export class ComplaintService {
         return "wildlife";
       case "last_name":
         return "person";
+      case "gir_type_code":
+        return "general";
       case "violation_code":
       case "in_progress_ind":
         return "allegation";
@@ -140,8 +151,10 @@ export class ComplaintService {
     }
   };
 
-  private _generateQueryBuilder = (type: COMPLAINT_TYPE): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> => {
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
+  private _generateQueryBuilder = (
+    type: COMPLAINT_TYPE,
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> => {
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint>;
     switch (type) {
       case "ERS":
         builder = this._allegationComplaintRepository
@@ -157,6 +170,17 @@ export class ComplaintService {
             "violation_code.short_description",
             "violation_code.long_description",
           ]);
+        break;
+      case "GIR":
+        builder = this._girComplaintRepository
+          .createQueryBuilder("general")
+          .addSelect(
+            "GREATEST(complaint.update_utc_timestamp, general.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
+            "_update_utc_timestamp",
+          )
+          .leftJoinAndSelect("general.complaint_identifier", "complaint")
+          .leftJoin("general.gir_type_code", "gir")
+          .addSelect(["gir.gir_type_code", "gir.short_description", "gir.long_description"]);
         break;
       case "HWCR":
       default:
@@ -209,7 +233,7 @@ export class ComplaintService {
   };
 
   private _applyFilters(
-    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
+    builder: SelectQueryBuilder<complaintAlias>,
     {
       community,
       zone,
@@ -221,9 +245,10 @@ export class ComplaintService {
       natureOfComplaint,
       speciesCode,
       violationCode,
+      girTypeCode,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
+  ): SelectQueryBuilder<complaintAlias> {
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
         Community: community,
@@ -280,6 +305,14 @@ export class ComplaintService {
         }
         break;
       }
+      case "GIR": {
+        if (girTypeCode) {
+          builder.andWhere("general.gir_type_code = :GirTypeCode", {
+            GirTypeCode: girTypeCode,
+          });
+        }
+        break;
+      }
       case "HWCR":
       default: {
         if (natureOfComplaint) {
@@ -301,10 +334,10 @@ export class ComplaintService {
   }
 
   private _applySearch(
-    builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>,
+    builder: SelectQueryBuilder<complaintAlias>,
     complaintType: COMPLAINT_TYPE,
     query: string,
-  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint> {
+  ): SelectQueryBuilder<complaintAlias> {
     builder.andWhere(
       new Brackets((qb) => {
         qb.orWhere("complaint.complaint_identifier ILIKE :query", {
@@ -378,6 +411,12 @@ export class ComplaintService {
               query: `%${query}%`,
             });
             qb.orWhere("violation_code.long_description ILIKE :query", {
+              query: `%${query}%`,
+            });
+            break;
+          }
+          case "GIR": {
+            qb.orWhere("general.gir_type_code ILIKE :query", {
               query: `%${query}%`,
             });
             break;
@@ -716,8 +755,8 @@ export class ComplaintService {
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
-  ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto> => {
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
+  ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
       if (complaintType) {
@@ -757,6 +796,13 @@ export class ComplaintService {
             result as AllegationComplaint,
             "AllegationComplaint",
             "AllegationComplaintDto",
+          );
+        }
+        case "GIR": {
+          return this.mapper.map<GirComplaint, GeneralIncidentComplaintDto>(
+            result as GirComplaint,
+            "GirComplaint",
+            "GeneralIncidentComplaintDto",
           );
         }
         case "HWCR": {
@@ -827,6 +873,15 @@ export class ComplaintService {
             complaints as Array<AllegationComplaint>,
             "AllegationComplaint",
             "AllegationComplaintDto",
+          );
+          results.complaints = items;
+          break;
+        }
+        case "GIR": {
+          const items = this.mapper.mapArray<GirComplaint, GeneralIncidentComplaintDto>(
+            complaints as Array<GirComplaint>,
+            "GirComplaint",
+            "GeneralIncidentComplaintDto",
           );
           results.complaints = items;
           break;
@@ -926,6 +981,16 @@ export class ComplaintService {
           results.complaints = items;
           break;
         }
+        case "GIR": {
+          const items = this.mapper.mapArray<GirComplaint, GeneralIncidentComplaintDto>(
+            mappedComplaints as Array<GirComplaint>,
+            "GirComplaint",
+            "GeneralIncidentComplaintDto",
+          );
+
+          results.complaints = items;
+          break;
+        }
         case "HWCR":
         default: {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
@@ -982,8 +1047,8 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
+    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
         const result = delegates.find((item) => item.type === "ASSIGNEE");
@@ -1002,12 +1067,8 @@ export class ComplaintService {
 
     try {
       //-- convert the the dto from the client back into an entity
-      //-- so that it can be used to update the comaplaint
-      let entity: Complaint | HwcrComplaint | AllegationComplaint = this.mapper.map<ComplaintDto, Complaint>(
-        model as ComplaintDto,
-        "ComplaintDto",
-        "Complaint",
-      );
+      //-- so that it can be used to update the complaint
+      let entity: Complaint | HwcrComplaint | AllegationComplaint | GirComplaint;
 
       switch (complaintType) {
         case "ERS": {
@@ -1015,6 +1076,14 @@ export class ComplaintService {
             model as AllegationComplaintDto,
             "AllegationComplaintDto",
             "AllegationComplaint",
+          );
+          break;
+        }
+        case "GIR": {
+          entity = this.mapper.map<GeneralIncidentComplaintDto, GirComplaint>(
+            model as GeneralIncidentComplaintDto,
+            "GeneralIncidentComplaintDto",
+            "GirComplaint",
           );
           break;
         }
@@ -1100,6 +1169,21 @@ export class ComplaintService {
                 update_user_id: idir,
               })
               .where("allegation_complaint_guid = :ersId", { ersId })
+              .execute();
+            break;
+          }
+          case "GIR": {
+            const { girType, girId } = model as GeneralIncidentComplaintDto;
+            await this._girComplaintRepository
+              .createQueryBuilder()
+              .update(GirComplaint)
+              .set({
+                gir_type_code: {
+                  gir_type_code: girType,
+                },
+                update_user_id: idir,
+              })
+              .where("gir_complaint_guid = :girId", { girId })
               .execute();
             break;
           }
@@ -1314,7 +1398,9 @@ export class ComplaintService {
 
   getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
     let data;
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint> | SelectQueryBuilder<Complaint>;
+    mapWildlifeReport(this.mapper, tz);
+    mapAllegationReport(this.mapper, tz);
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     const _getUpdates = async (id: string) => {
       const builder = this._complaintUpdateRepository
@@ -1414,6 +1500,9 @@ export class ComplaintService {
             "HwcrComplaint",
             "WildlifeReportData",
           );
+          break;
+        }
+        case "GIR": {
           break;
         }
         case "ERS": {

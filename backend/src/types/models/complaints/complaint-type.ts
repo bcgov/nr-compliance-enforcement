@@ -1,1 +1,1 @@
-export type COMPLAINT_TYPE = "HWCR" | "ERS";
+export type COMPLAINT_TYPE = "HWCR" | "ERS" | "GIR";
