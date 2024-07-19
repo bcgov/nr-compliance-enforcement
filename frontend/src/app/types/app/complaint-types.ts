@@ -13,7 +13,7 @@ export const complaintTypeToName = (complaintType: string | undefined | null, si
     case COMPLAINT_TYPES.HWCR:
       return singular ? "Human Wildlife Conflict" : "Human Wildlife Conflicts";
     case COMPLAINT_TYPES.GIR:
-      return config.SHOW_EXPERIMENTAL_FEATURES === false ? "" : "General Incident";
+      return singular ? "General Incident" : "General Incidents";
     default:
       return "";
   }
