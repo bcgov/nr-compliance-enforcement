@@ -1,5 +1,5 @@
 export const AddWebEOCChangeCount = {
-  8: (state: any) => {
+  9: (state: any) => {
     return {
       ...state,
       complaints: {
