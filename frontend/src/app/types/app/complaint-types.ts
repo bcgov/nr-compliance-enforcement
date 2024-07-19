@@ -1,5 +1,3 @@
-import config from "../../../config";
-
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
