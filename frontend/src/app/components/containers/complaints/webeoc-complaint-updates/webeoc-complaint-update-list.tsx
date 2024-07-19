@@ -47,10 +47,12 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
 
   return (
     <>
-      {complaintUpdates && complaintUpdates.length > 0 && (
+      {((complaintUpdates && complaintUpdates.length > 0) || (changeCount && changeCount > 0)) && (
         <div className="comp-container comp-complaint-details-block">
           <div>
-            <h6>Complaint Updates ({complaintUpdates.length})</h6>
+            <h6>
+              Complaint Updates {complaintUpdates && complaintUpdates.length > 0 && "(" + complaintUpdates.length + ")"}
+            </h6>
             {changeCount && changeCount > 0 && (
               <div className="comp-complaint-update-count">
                 This ticket has been updated {changeCount} times since it was created. Please review the banners and the
@@ -58,80 +60,82 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
               </div>
             )}
           </div>
-          {complaintUpdates.map((update: WebEOCComplaintUpdateDTO) => (
-            <div
-              className="comp-complaint-update-item"
-              key={update.complaintUpdateGuid}
-            >
-              <div className="comp-complaint-update-item-row first-row">
-                <div className="update-number">Update {update.updateSeqNumber}:</div>
-                <div className="received">
-                  <span
-                    className="date-time-logged-label"
-                    id="date-time-logged-label-id"
-                  >
-                    Received
-                  </span>
-                  <i className="bi bi-calendar"></i>
-                  {formatDate(update.createUtcTimestamp)}
-                  <i className="bi bi-clock comp-margin-left-xs"></i>
-                  {formatTime(update.createUtcTimestamp)}
-                </div>
-              </div>
-              {update.updDetailText && (
-                <div className="complaint-description-section">
-                  <div className="complaint-description-label">Complaint description</div>
-                  <div
-                    className={`complaint-description-text ${
-                      expandedUpdates[update.complaintUpdateGuid] ? "expanded" : ""
-                    } ${showLinks[update.complaintUpdateGuid] ? "needs-gradient" : ""}`}
-                    ref={(el) => (descriptionRefs.current[update.complaintUpdateGuid] = el)}
-                    style={{
-                      maxHeight: expandedUpdates[update.complaintUpdateGuid] ? "none" : "6em",
-                      overflow: expandedUpdates[update.complaintUpdateGuid] ? "visible" : "hidden",
-                    }}
-                  >
-                    {update.updDetailText}
+          {complaintUpdates &&
+            complaintUpdates.length > 0 &&
+            complaintUpdates.map((update: WebEOCComplaintUpdateDTO) => (
+              <div
+                className="comp-complaint-update-item"
+                key={update.complaintUpdateGuid}
+              >
+                <div className="comp-complaint-update-item-row first-row">
+                  <div className="update-number">Update {update.updateSeqNumber}:</div>
+                  <div className="received">
+                    <span
+                      className="date-time-logged-label"
+                      id="date-time-logged-label-id"
+                    >
+                      Received
+                    </span>
+                    <i className="bi bi-calendar"></i>
+                    {formatDate(update.createUtcTimestamp)}
+                    <i className="bi bi-clock comp-margin-left-xs"></i>
+                    {formatTime(update.createUtcTimestamp)}
                   </div>
-                  {showLinks[update.complaintUpdateGuid] && (
-                    <div className="show-more-container">
-                      <button
-                        type="button"
-                        className="show-more-link"
-                        onClick={() => toggleExpand(update.complaintUpdateGuid)}
-                      >
-                        {expandedUpdates[update.complaintUpdateGuid] ? "Click to collapse" : "Click to expand"}
-                      </button>
-                    </div>
-                  )}
                 </div>
-              )}
-              <div className="complaint-location-section">
-                <div className="complaint-location-row">
-                  {update.updLocationSummaryText && (
-                    <div className="complaint-location-label-value-pair">
-                      <div className="complaint-location-label">Complaint location:</div>
-                      <div className="complaint-location-value">{update.updLocationSummaryText}</div>
+                {update.updDetailText && (
+                  <div className="complaint-description-section">
+                    <div className="complaint-description-label">Complaint description</div>
+                    <div
+                      className={`complaint-description-text ${
+                        expandedUpdates[update.complaintUpdateGuid] ? "expanded" : ""
+                      } ${showLinks[update.complaintUpdateGuid] ? "needs-gradient" : ""}`}
+                      ref={(el) => (descriptionRefs.current[update.complaintUpdateGuid] = el)}
+                      style={{
+                        maxHeight: expandedUpdates[update.complaintUpdateGuid] ? "none" : "6em",
+                        overflow: expandedUpdates[update.complaintUpdateGuid] ? "visible" : "hidden",
+                      }}
+                    >
+                      {update.updDetailText}
                     </div>
-                  )}
-                  {update.updLocationDetailedText && (
-                    <div className="complaint-location-label-value-pair">
-                      <div className="complaint-location-label">Location description:</div>
-                      <div className="complaint-location-value">{update.updLocationDetailedText}</div>
-                    </div>
-                  )}
+                    {showLinks[update.complaintUpdateGuid] && (
+                      <div className="show-more-container">
+                        <button
+                          type="button"
+                          className="show-more-link"
+                          onClick={() => toggleExpand(update.complaintUpdateGuid)}
+                        >
+                          {expandedUpdates[update.complaintUpdateGuid] ? "Click to collapse" : "Click to expand"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div className="complaint-location-section">
+                  <div className="complaint-location-row">
+                    {update.updLocationSummaryText && (
+                      <div className="complaint-location-label-value-pair">
+                        <div className="complaint-location-label">Complaint location:</div>
+                        <div className="complaint-location-value">{update.updLocationSummaryText}</div>
+                      </div>
+                    )}
+                    {update.updLocationDetailedText && (
+                      <div className="complaint-location-label-value-pair">
+                        <div className="complaint-location-label">Location description:</div>
+                        <div className="complaint-location-value">{update.updLocationDetailedText}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
+                {update.updLocationGeometryPoint?.coordinates && (
+                  <div className="coordinates-section">
+                    <div className="complaint-description-label">Latitude:</div>
+                    <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[1]}</div>
+                    <div className="complaint-description-label">Longitude:</div>
+                    <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[0]}</div>
+                  </div>
+                )}
               </div>
-              {update.updLocationGeometryPoint?.coordinates && (
-                <div className="coordinates-section">
-                  <div className="complaint-description-label">Latitude:</div>
-                  <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[1]}</div>
-                  <div className="complaint-description-label">Longitude:</div>
-                  <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[0]}</div>
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </>
