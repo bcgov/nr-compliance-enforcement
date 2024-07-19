@@ -20,7 +20,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("NatComplaints - Complaint Management API")
     .setDescription("NatComplaints - Complaint Management API")
-    .setVersion("1.0")
+    .setVersion("1.0.0")
     .addTag("NatComplaints - Complaint Management")
     .build();
 
