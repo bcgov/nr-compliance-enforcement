@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
+      - uses: actions/checkout@v4
       # Get PR number for squash merges to release
       - name: PR Number
         id: pr
