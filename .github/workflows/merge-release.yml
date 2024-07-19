@@ -33,16 +33,20 @@ jobs:
       - name: PR Number
         id: pr
         uses: ./.github/actions/get-pr-number
+      - name: Set PR Output
+        run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-test:
     name: Deploy (test)
+    needs: vars
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       environment: test
+      tag: ${{ needs.vars.outputs.pr }}
 
   promote:
     name: Promote Images
