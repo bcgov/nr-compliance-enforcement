@@ -10,6 +10,7 @@ import { REQUEST } from "@nestjs/core";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockGeneralIncidentComplaintRepository } from "../../../test/mocks/mock-general-incident-complaint-repository";
 import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
@@ -22,6 +23,7 @@ import {
   MockCosOrganizationUnitCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
@@ -55,6 +57,8 @@ import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 
 describe("DocumentController", () => {
   let controller: DocumentController;
@@ -140,6 +144,10 @@ describe("DocumentController", () => {
           useFactory: MockReportedByCodeTableRepository,
         },
         {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeRepository,
+        },
+        {
           provide: getRepositoryToken(PersonComplaintXref),
           useValue: {},
         },
@@ -150,6 +158,10 @@ describe("DocumentController", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(GirComplaint),
+          useFactory: MockGeneralIncidentComplaintRepository,
         },
         {
           provide: getRepositoryToken(ComplaintUpdate),

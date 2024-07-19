@@ -1,6 +1,7 @@
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
+  GIR: "GIR",
 };
 
 export const complaintTypeToName = (complaintType: string | undefined | null, singular?: boolean) => {
@@ -9,6 +10,8 @@ export const complaintTypeToName = (complaintType: string | undefined | null, si
       return "Enforcement";
     case COMPLAINT_TYPES.HWCR:
       return singular ? "Human Wildlife Conflict" : "Human Wildlife Conflicts";
+    case COMPLAINT_TYPES.GIR:
+      return singular ? "General Incident" : "General Incidents";
     default:
       return "";
   }

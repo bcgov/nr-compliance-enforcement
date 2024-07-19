@@ -19,6 +19,7 @@ import BaseCodeTable, {
   Community,
   ReportedBy,
   Equipment,
+  GirType,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -45,6 +46,7 @@ import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
 import { get } from "../../external_api/case_management";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -72,6 +74,8 @@ export class CodeTableService {
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
   @InjectRepository(ComplaintTypeCode)
   private _complaintTypetRepository: Repository<ComplaintTypeCode>;
+  @InjectRepository(GirTypeCode)
+  private _girTypeCodeRepository: Repository<GirTypeCode>;
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
 
@@ -517,6 +521,20 @@ export class CodeTableService {
             return table;
           },
         );
+        return results;
+      }
+      case "gir-type": {
+        const data = await this._girTypeCodeRepository.find({ order: { display_order: "ASC" } });
+        let results = data.map(({ gir_type_code, short_description, long_description, display_order, active_ind }) => {
+          let table: GirType = {
+            girType: gir_type_code,
+            shortDescription: short_description,
+            longDescription: long_description,
+            displayOrder: display_order,
+            isActive: active_ind,
+          };
+          return table;
+        });
         return results;
       }
     }

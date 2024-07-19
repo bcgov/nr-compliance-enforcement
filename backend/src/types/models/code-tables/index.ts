@@ -18,6 +18,7 @@ import { Justification } from "./justification";
 import { AssessmentType } from "./assessment-type";
 import { PreventionType } from "./prevention-type";
 import { Equipment } from "./equipment";
+import { GirType } from "./gir-type";
 
 export const AvailableCodeTables = [
   "agency",
@@ -46,6 +47,7 @@ export const AvailableCodeTables = [
   "drug-remaining-outcomes",
   "wildlife-outcomes",
   "equipment",
+  "gir-type",
 ];
 
 export const AvailableAgencies = ["cos"];
@@ -71,4 +73,5 @@ export {
   AssessmentType,
   PreventionType,
   Equipment,
+  GirType,
 };
