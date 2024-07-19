@@ -495,10 +495,6 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
       (dest) => dest.complaint_identifier.complaint_identifier,
       mapFrom((src) => src.id),
     ),
-    // forMember(
-    //   (dest) => dest.gir_type_code,
-    //   mapFrom((src) => src.girType),
-    // ),
     forMember(
       (dest) => dest.complaint_identifier.detail_text,
       mapFrom((src) => src.details),
