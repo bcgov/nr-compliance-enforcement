@@ -1,8 +1,9 @@
-name: Merge
+# Deploys hotfixes to the test environment
+name: Merge-Hotfix
 
 on:
   push:
-    branches: [main]
+    branches: [hotfix]
     paths-ignore:
       - "*.md"
       - ".github/**"
@@ -37,25 +38,20 @@ jobs:
         run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
 
   # https://github.com/bcgov/quickstart-openshift-helpers
-  deploy-prod:
-    name: Deploy (prod)
-    needs: [vars]
+  deploy-hotfix:
+    name: Deploy (hotfix)
+    needs: vars
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      environment: prod
+      environment: hotfix
       tag: ${{ needs.vars.outputs.pr }}
-      params: --set backend.deploymentStrategy=RollingUpdate
-        --set frontend.deploymentStrategy=RollingUpdate
-        --set global.autoscaling=true
-        --set frontend.pdb.enabled=true
-        --set backend.pdb.enabled=true
 
   promote:
     name: Promote Images
-    needs: [deploy-prod, vars]
+    needs: [deploy-hotfix, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -69,4 +65,4 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
-          tags: prod
+          tags: hotfix
