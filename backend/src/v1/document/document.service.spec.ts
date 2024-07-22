@@ -8,6 +8,7 @@ import { REQUEST } from "@nestjs/core";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockGeneralIncidentComplaintRepository } from "../../../test/mocks/mock-general-incident-complaint-repository";
 import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
@@ -20,6 +21,7 @@ import {
   MockCosOrganizationUnitCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
+  MockGirTypeCodeRepository as MockGirTypeCodeTableRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
@@ -42,6 +44,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
+import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
@@ -54,6 +57,7 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -139,6 +143,10 @@ describe("DocumentService", () => {
           useFactory: MockReportedByCodeTableRepository,
         },
         {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeTableRepository,
+        },
+        {
           provide: getRepositoryToken(PersonComplaintXref),
           useValue: {},
         },
@@ -149,6 +157,10 @@ describe("DocumentService", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(GirComplaint),
+          useFactory: MockGeneralIncidentComplaintRepository,
         },
         {
           provide: getRepositoryToken(ComplaintUpdate),
