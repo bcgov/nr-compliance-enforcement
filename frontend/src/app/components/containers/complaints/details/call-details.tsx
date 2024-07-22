@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Badge, Card, Col, Row } from "react-bootstrap";
+import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { formatDate, formatTime, renderCoordinates } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
@@ -7,7 +7,6 @@ import { ComplaintDetailsAttractant } from "../../../../types/complaints/details
 import { selectComplaintDetails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
-import { render } from "react-dom";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -31,22 +30,19 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
 
   return (
     <section className="comp-details-section">
+      <h3>Call Details</h3>
+
       <Card>
         <Card.Body>
-          <Card.Title as="h3">Call Details</Card.Title>
-
           {/* General Call Information */}
-          <Row
-            as="dl"
-            className="comp-call-details-group"
-          >
-            <Col xs={12}>
+          <dl className="comp-call-details-group">
+            <div>
               <dt>Complaint Description</dt>
               <dd>
                 <pre id="comp-details-description">{details}</pre>
               </dd>
-            </Col>
-            <Col xs={6}>
+            </div>
+            <div>
               <dt>Incident Date/Time</dt>
               <dd
                 className="comp-date-time-value"
@@ -60,11 +56,11 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                 <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                 {formatTime(incidentDateTime?.toString())}
               </dd>
-            </Col>
+            </div>
 
             {/* HWCR Details */}
             {complaintType === COMPLAINT_TYPES.HWCR && (
-              <Col xs={6}>
+              <div>
                 <dt>Attractants</dt>
                 <dd className="comp-details-attractants">
                   {!attractants ||
@@ -81,23 +77,17 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                       );
                     })}
                 </dd>
-              </Col>
+              </div>
             )}
 
             {/* ERS Details */}
             {complaintType === COMPLAINT_TYPES.ERS && (
-              <Row>
-                <Col
-                  xs={12}
-                  md={6}
-                >
+              <>
+                <div>
                   <dt>Violation In Progress</dt>
                   <dd id="comp-details-violation-in-progress">{violationInProgress ? "Yes" : "No"}</dd>
-                </Col>
-                <Col
-                  xs={12}
-                  md={6}
-                >
+                </div>
+                <div>
                   <dt>Violation Observed</dt>
                   <dd
                     id="comp-details-violation-observed"
@@ -105,69 +95,49 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
                   >
                     {violationObserved ? "Yes" : "No"}
                   </dd>
-                </Col>
-              </Row>
+                </div>
+              </>
             )}
+          </dl>
 
-            {/* Location Information */}
-            <>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Complaint Location</dt>
-                <dd id="comp-details-location">{location}</dd>
-              </Col>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Latitude/Longitude</dt>
-                <dd className="comp-lat-long">
-                  <span id="call-details-y-coordinate">{renderCoordinates(coordinates, Coordinates.Latitude)}</span>
-                  <span id="call-details-x-coordinate">{renderCoordinates(coordinates, Coordinates.Longitude)}</span>
-                </dd>
-              </Col>
-              {locationDescription && (
-                <Col xs={12}>
-                  <dt>Location Description</dt>
-                  <dd id="comp-details-location-description">{locationDescription}</dd>
-                </Col>
-              )}
-            </>
+          {/* Location Information */}
+          <dl className="comp-call-details-group">
+            <div>
+              <dt>Complaint Location</dt>
+              <dd id="comp-details-location">{location}</dd>
+            </div>
+            <div>
+              <dt>Location Description</dt>
+              <dd id="comp-details-location-description">{locationDescription}</dd>
+            </div>
+            <div>
+              <dt>Latitude/Longitude</dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-y-coordinate">{renderCoordinates(coordinates, Coordinates.Latitude)}</span>
+                <span id="call-details-x-coordinate">{renderCoordinates(coordinates, Coordinates.Longitude)}</span>
+              </dd>
+            </div>
+          </dl>
 
-            {/* Other Location Details */}
-            <>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Community</dt>
-                <dd id="comp-details-community">{area}</dd>
-              </Col>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Office</dt>
-                <dd id="comp-details-office">{office}</dd>
-              </Col>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Zone</dt>
-                <dd id="comp-details-zone">{zone}</dd>
-              </Col>
-              <Col
-                xs={12}
-                md={6}
-              >
-                <dt>Region</dt>
-                <dd id="comp-details-region">{region}</dd>
-              </Col>
-            </>
-          </Row>
+          {/* Other Location Details */}
+          <dl className="comp-call-details-group">
+            <div>
+              <dt>Community</dt>
+              <dd id="comp-details-community">{area}</dd>
+            </div>
+            <div>
+              <dt>Office</dt>
+              <dd id="comp-details-office">{office}</dd>
+            </div>
+            <div>
+              <dt>Zone</dt>
+              <dd id="comp-details-zone">{zone}</dd>
+            </div>
+            <div>
+              <dt>Region</dt>
+              <dd id="comp-details-region">{region}</dd>
+            </div>
+          </dl>
         </Card.Body>
       </Card>
     </section>
