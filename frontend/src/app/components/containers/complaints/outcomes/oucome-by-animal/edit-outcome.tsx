@@ -522,9 +522,11 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     className="comp-details-input"
                     options={outcomes}
                     enableValidation={false}
+                    placeholder={"Select"}
                     onChange={(evt) => {
                       updateModel("outcome", evt?.value);
                     }}
+                    defaultOption={getValue("outcome")}
                   />
                 </div>
               </div>
