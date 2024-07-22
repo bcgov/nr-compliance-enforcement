@@ -92,7 +92,12 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Complaints</h1>
-          <Button onClick={() => handleCreateClick()}>Create Complaint</Button>
+          <Button
+            size="sm"
+            onClick={() => handleCreateClick()}
+          >
+            Create Complaint
+          </Button>
         </div>
         {/* <!-- create list of complaint types --> */}
 
@@ -101,7 +106,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           {complaintTypes.map(({ id, code, name }) => {
             return (
               <Nav.Item
-                className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
+                className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
                 key={`${code}-tab-item`}
               >
                 <div

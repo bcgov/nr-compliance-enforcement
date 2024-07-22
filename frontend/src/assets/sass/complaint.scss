@@ -31,25 +31,22 @@
   }
 
   .btn {
-    margin: -0.5rem 0;
     font-size: 0.875rem;
   }
 }
 
-// SEARCH BAR
+// FILTER COMPONENT
+.comp-filter-bar {
+  display: flex;
+  flex-direction: column;
+}
+
 .search-bar {
   display: flex;
   flex-direction: row;
   gap: 8px;
 }
 
-// FILTER BAR
-.comp-filter-bar {
-  display: flex;
-  flex-direction: column;
-}
-
-// FILTER PILLS
 .filter-pills-container {
   display: flex;
   align-items: center;
@@ -59,7 +56,6 @@
   margin-top: 16px;
 }
 
-// ADD FILTER BUTTON
 .btn.filter-btn {
   border-radius: 100px;
 }
@@ -68,57 +64,6 @@
   display: none;
 }
 
-// FILTER FORM CONTROLS - DESKTOP
-.comp-filter-btn {
-  width: auto;
-  min-height: 34px;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  padding: 4px 5px 4px 10px;
-  background-color: $bc-gov-neutral-500;
-  color: white;
-  border-radius: 100px;
-  border-color: $bc-gov-neutral-500;
-  white-space: nowrap;
-}
-
-// FILTER CONTAINERS
-.comp-filter-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  + .comp-filter-container {
-    margin-top: 8px;
-  }
-
-  label {
-    margin-bottom: 6px;
-    font-size: 0.875rem;
-  }
-
-  .comp-select__control {
-    font-size: 0.875rem;
-  }
-}
-
-// COMPLAINTS DATA CONTAINER
-// Contains list and map interfaces
-.comp-data-container {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  flex: 1 1 auto;
-  overflow: hidden;
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-}
-
-// DESKTOP FILTER
 .comp-data-filters {
   display: none;
   border-right: 1px solid $gray-300;
@@ -148,79 +93,42 @@
   }
 }
 
-// Fixing width of datepicker in this container
-.react-datepicker {
+.comp-filter-btn {
+  width: auto;
+  min-height: 34px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.875rem;
   display: flex;
+  align-items: center;
   flex-direction: row;
-  flex-wrap: nowrap;
+  padding: 4px 5px 4px 10px;
+  background-color: $bc-gov-neutral-500;
+  color: white;
+  border-radius: 100px;
+  border-color: $bc-gov-neutral-500;
+  white-space: nowrap;
 }
 
-.react-datepicker-wrapper {
-  width: 100%;
-}
-
-.comp-data-list-map {
-  position: relative;
+.comp-filter-container {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
-  overflow: hidden;
+  gap: 12px;
 
-  .map-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+  + .comp-filter-container {
+    margin-top: 8px;
   }
 
-  .comp-map-alert {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 12px;
-    position: absolute;
-    top: 11px;
-    left: 58px;
-    margin: 0;
-    margin-right: 11px;
-    padding: 16px;
-    z-index: 999;
-    font-size: 0.75rem;
-    border: 1px solid $gray-300;
-    border-radius: 4px;
-    background-color: $bc-gov-neutral-100;
-    color: $black;
-
-    svg {
-      flex: 0 0 auto;
-    }
+  label {
+    margin-bottom: 6px;
+    font-size: 0.875rem;
   }
 
-  @include media-breakpoint-up(lg) {
-    .comp-map-alert {
-      left: 50%;
-      transform: translateX(-50%);
-      margin-right: 0;
-      font-size: 0.875rem;
-      white-space: nowrap;
-    }
-  }
-
-  .comp-table-container {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .comp-table-scroll-container {
-    flex: 1 1 auto;
-    overflow: auto;
+  .comp-select__control {
+    font-size: 0.875rem;
   }
 }
 
-// FILTER COMPONENT BREAKPOINTS
 @include media-breakpoint-up(xl) {
   .filter-btn-mobile {
     display: none;
@@ -234,6 +142,77 @@
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
+  }
+}
+
+// COMPLAINTS DATA CONTAINER
+// Contains list and map interfaces
+.comp-data-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+}
+
+// Fixing width of datepicker in this container
+.react-datepicker {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+// COMPLAINTS VIEW
+.comp-data-list-map {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.comp-table-container {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.comp-table-scroll-container {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.comp-map-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .map-container {
+    flex: 1 1 auto;
+  }
+
+  .alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0 12px;
+    height: 44px;
+    border-radius: 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid $gray-300;
+
+    .bi {
+      font-size: 1rem;
+    }
   }
 }
 
@@ -1507,11 +1486,6 @@ p {
   flex-grow: 0;
 }
 
-.comp-filter-left {
-  float: left;
-  width: 298px;
-}
-
 .comp-box-footer {
   margin-right: 24px;
   height: 100px;
@@ -1911,10 +1885,6 @@ p {
 .toggle-button-text.active {
   color: $gray-600 !important;
   margin-left: 4px;
-}
-
-.comp-filter-search {
-  margin-left: 16px;
 }
 
 .button-text {
