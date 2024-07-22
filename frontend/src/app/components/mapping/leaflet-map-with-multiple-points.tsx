@@ -80,7 +80,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
     const isPluralized = unmappedComplaints === 1 ? "" : "s";
 
     if (showBar()) {
-      const bannerType = unmappedComplaints >= 1 ? "warning" : "warning";
+      const bannerType = unmappedComplaints >= 1 ? "warning" : "info";
       const info =
         unmappedComplaints >= 1
           ? `${unmappedComplaints} complaint${isPluralized} could not be mapped`
