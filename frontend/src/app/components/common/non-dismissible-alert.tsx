@@ -1,13 +1,12 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Alert } from "react-bootstrap";
 
 const NonDismissibleAlert: React.FC = () => {
   return (
-    <div className="comp-complaint-details-alert">
-      <FontAwesomeIcon icon={faInfoCircle} />
+    <Alert variant="warning">
+      <i className="bi bi-info-circle-fill"></i>
       <span>The exact location of the complaint could not be determined.</span>
-    </div>
+    </Alert>
   );
 };
 

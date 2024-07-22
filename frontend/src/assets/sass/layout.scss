@@ -669,12 +669,11 @@ p {
 
 // TOGGLE BUTTON
 .toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   border-color: $gray-300;
   white-space: nowrap;
-
-  span {
-    margin-left: 8px;
-  }
 }
 
 @include media-breakpoint-down(xl) {
@@ -815,4 +814,20 @@ td.sticky-col {
   font-size: 16px;
   height: 36px;
   color: $bc-gov-primary-700;
+}
+
+// TABS
+.comp-tab {
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+  }
+}
+
+.comp-tab-active {
+  color: $bc-gov-primary;
+}
+
+.comp-tab-inactive {
+  color: $bc-gov-shade-300;
 }
