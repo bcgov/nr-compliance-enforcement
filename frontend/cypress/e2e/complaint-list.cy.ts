@@ -2,7 +2,7 @@
 Tests to verify complaint list specification functionality
 */
 describe("Complaint List Functionality", () => {
-  const complaintTypes = ["#hwcr-tab", "#ers-tab"];
+  const complaintTypes = ["#hwcr-tab", "#ers-tab", "#gir-tab"];
 
   beforeEach(function () {
     cy.viewport("macbook-16");
@@ -18,8 +18,12 @@ describe("Complaint List Functionality", () => {
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.get("#hwcr-tab").should("contain.text", "Human Wildlife Conflicts");
-      } else {
+      }
+      if ("#ers-tab".includes(complaintTypes[index])) {
         cy.get("#ers-tab").should("contain.text", "Enforcement");
+      }
+      if ("#gir-tab".includes(complaintTypes[index])) {
+        cy.get("#gir-tab").should("contain.text", "General Incident");
       }
     });
 

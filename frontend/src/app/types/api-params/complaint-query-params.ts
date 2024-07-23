@@ -16,4 +16,5 @@ export interface ComplaintQueryParams {
   violationCode?: string;
   status?: string;
   query?: string;
+  girTypeCode?: string;
 }

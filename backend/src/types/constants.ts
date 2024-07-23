@@ -6,4 +6,5 @@ export const ORDER_DIRECTION = {
 export const WEBEOC_REPORT_TYPE = {
   HWCR: "HWCR",
   ERS: "ERS",
+  GIR: "GIR",
 };

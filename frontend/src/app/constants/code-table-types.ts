@@ -24,6 +24,7 @@ export const CODE_TABLE_TYPES = {
   DRUG_METHOD_USE: "drug-methods",
   REMAINING_DRUG_USE: "drug-remaining-outcomes",
   EQUIPMENT: "equipment",
+  GIR_TYPE: "gir-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

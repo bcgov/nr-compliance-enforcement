@@ -551,7 +551,7 @@ button.modal-buttons {
   height: 38px;
 }
 
-@include media-breakpoint-down(xl) {
+@include media-breakpoint-down(lg) {
   .page-item:not(:first-of-type):not(:last-of-type):not(.active) {
     display: none;
   }
@@ -650,8 +650,47 @@ p {
 }
 
 // CARD
-.card-body {
-  padding: 24px;
+.comp-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 0;
+  background: transparent;
+  border: none;
+
+  h4,
+  h5 {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+.comp-card-header-title {
+  .badge {
+    margin-top: 2px;
+  }
+}
+
+.comp-card-header-metadata {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+
+  span + span {
+    &::before {
+      content: "•";
+      display: inline-block;
+      width: 20px;
+      text-align: center;
+    }
+  }
+}
+
+.comp-card-header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 // DROPDOWN MENU
@@ -660,6 +699,7 @@ p {
     display: none;
   }
 }
+
 .dropdown-item {
   i {
     margin-right: 8px;

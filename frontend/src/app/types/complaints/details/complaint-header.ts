@@ -16,4 +16,6 @@ export interface ComplaintHeader {
   personGuid: string;
   firstName?: string;
   lastName?: string;
+  girType?: string;
+  girTypeCode?: string;
 }
