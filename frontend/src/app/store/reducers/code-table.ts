@@ -570,6 +570,20 @@ export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => 
   });
   return data;
 };
+export const selectCreatableComplaintTypeDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "complaint-type": complaintTypes },
+  } = state;
+
+  // Filter out complaintType is "GIR" since it should not appear as a createable type.
+  const filteredTypes = complaintTypes.filter((complaintType) => complaintType.complaintType !== "GIR");
+
+  const data = filteredTypes.map(({ complaintType, longDescription }) => {
+    const item: Option = { label: longDescription, value: complaintType };
+    return item;
+  });
+  return data;
+};
 
 export const selectAgencyDropdown = (state: RootState): Array<Option> => {
   const {
