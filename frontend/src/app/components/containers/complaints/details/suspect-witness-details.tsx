@@ -9,14 +9,18 @@ export const SuspectWitnessDetails: FC = () => {
   return (
     <section className="comp-details-section">
       <h3>Subject of Complaint / Witness Details</h3>
-      <dl>
-        <div>
-          <dt>Description</dt>
-          <dd>
-            <pre id="comp-details-witness-details">{details}</pre>
-          </dd>
+      <div className="card">
+        <div className="card-body">
+          <dl>
+            <div>
+              <dt>Description</dt>
+              <dd>
+                <pre id="comp-details-witness-details">{details}</pre>
+              </dd>
+            </div>
+          </dl>
         </div>
-      </dl>
+      </div>
     </section>
   );
 };
