@@ -1058,7 +1058,6 @@ values
         CURRENT_TIMESTAMP
     ) ON CONFLICT DO NOTHING;
 
-
 --------------------------
 -- New Changes above this line
 -------------------------

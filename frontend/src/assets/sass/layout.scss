@@ -551,7 +551,7 @@ button.modal-buttons {
   height: 38px;
 }
 
-@include media-breakpoint-down(xl) {
+@include media-breakpoint-down(lg) {
   .page-item:not(:first-of-type):not(:last-of-type):not(.active) {
     display: none;
   }
