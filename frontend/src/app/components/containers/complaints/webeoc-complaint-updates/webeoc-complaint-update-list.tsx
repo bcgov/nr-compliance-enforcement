@@ -55,8 +55,8 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
             </h6>
             {changeCount && changeCount > 0 && (
               <div className="comp-complaint-update-count">
-                This ticket has been updated {changeCount} times since it was created. Please review the banners and the
-                Complaint details below to see the latest information/details
+                This ticket has been updated, or its content has been edited, {changeCount} times since it was created.
+                Please review all the details below to see the latest information.
               </div>
             )}
           </div>
