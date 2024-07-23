@@ -439,7 +439,11 @@
   }
 
   h4 {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1rem;
   }
 
   section + section {
@@ -467,7 +471,7 @@
   dl {
     display: flex;
     flex-direction: column;
-    row-gap: 16px;
+    row-gap: 12px;
     margin-bottom: 0;
 
     > div {
@@ -477,7 +481,7 @@
     }
 
     + dl {
-      margin-top: 16px;
+      margin-top: 8px;
     }
   }
 
@@ -656,8 +660,12 @@
     color: $gray-500;
   }
 
+  .comp-select__control {
+    min-width: 221px;
+  }
+
   + .comp-details-form-row {
-    margin-top: 24px;
+    margin-top: 16px;
   }
 }
 

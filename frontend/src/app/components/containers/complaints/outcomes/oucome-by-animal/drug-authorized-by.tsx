@@ -1,6 +1,5 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { DrugAuthorizationV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
-import { Col, Row } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
@@ -87,19 +86,20 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
   };
 
   return (
-    <div className="comp-animal-outcome-report-inner-spacing">
-      <Row>
-        <Col md={5}>
-          <div
-            className="drug-auth-details-label-input-pair"
-            id="officer-assigned-pair-id"
+    <fieldset className="comp-animal-drugs-authorized-by">
+      <legend>Drugs authorized by</legend>
+      <div className="comp-details-form">
+        <div
+          className="comp-details-form-row"
+          id="officer-assigned-pair-id"
+        >
+          <label
+            id="officer-assigned-authorization-select-label-id"
+            htmlFor="officer-assigned-authorization-select-id"
           >
-            <label
-              id="officer-assigned-authorization-select-label-id"
-              htmlFor="officer-assigned-authorization-select-id"
-            >
-              Officer
-            </label>
+            Officer
+          </label>
+          <div className="comp-details-input full-width">
             <CompSelect
               id="officer-assigned-authorization-select-id"
               classNamePrefix="comp-select"
@@ -114,19 +114,18 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
               errorMessage={officerError}
             />
           </div>
-        </Col>
-
-        <Col md="4">
-          <div
-            className="drug-auth-details-label-input-pair"
-            id="officer-assigned-pair-id"
+        </div>
+        <div
+          className="comp-details-form-row"
+          id="officer-assigned-pair-id"
+        >
+          <label
+            id="drug-authorization-incident-time-label-id"
+            htmlFor="drug-authorization-incident-time"
           >
-            <label
-              id="drug-authorization-incident-time-label-id"
-              htmlFor="drug-authorization-incident-time"
-            >
-              Date
-            </label>
+            Date
+          </label>
+          <div className="comp-details-input">
             <ValidationDatePicker
               id="drug-authorization-incident-time"
               maxDate={new Date()}
@@ -140,11 +139,9 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
               errMsg={authorizationDateError}
             />
           </div>
-        </Col>
-        <Col></Col>
-        <Col></Col>
-      </Row>
-    </div>
+        </div>
+      </div>
+    </fieldset>
   );
 });
 DrugAuthorizedBy.displayName = "DrugAuthorizedBy";
