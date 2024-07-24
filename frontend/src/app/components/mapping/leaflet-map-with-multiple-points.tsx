@@ -15,6 +15,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
 import { from } from "linq-to-typescript";
 import { MapGestureHandler } from "./map-gesture-handler";
+import { Alert } from "react-bootstrap";
 
 interface MapProps {
   complaintType: string;
@@ -86,13 +87,14 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
           : "No complaints found.";
 
       return (
-        <div
+        <Alert
+          variant="warning"
+          className="comp-complaint-details-alert"
           id={`complaint-${bannerType}-notification`}
-          className={`comp-map-alert comp-map-${bannerType}-alert`}
         >
-          <BsInfoCircleFill size={20} />
-          {info}
-        </div>
+          <i className="bi bi-info-circle-fill"></i>
+          <span>{info}</span>
+        </Alert>
       );
     }
 
@@ -100,7 +102,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
   };
 
   return (
-    <>
+    <div className="comp-map-container">
       {renderInformationBanner()}
       <MapContainer
         id="multi-point-map"
@@ -133,7 +135,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
           ))}
         </MarkerClusterGroup>
       </MapContainer>
-    </>
+    </div>
   );
 };
 

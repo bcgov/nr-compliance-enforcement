@@ -83,7 +83,7 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
         id="complaint-search"
         placeholder="Search..."
         aria-label="Search"
-        className="comp-form-control"
+        className="comp-form-control comp-search-input"
         aria-describedby="basic-addon2"
         onChange={(evt) => handleInputChange(evt)}
         onKeyDown={(evt) => handleKeyPress(evt)}

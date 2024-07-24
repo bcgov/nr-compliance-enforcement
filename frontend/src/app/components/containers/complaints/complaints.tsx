@@ -101,7 +101,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           {complaintTypes.map(({ id, code, name }) => {
             return (
               <Nav.Item
-                className={`nav-item comp-tab-${complaintType === code ? "active" : "inactive"}`}
+                className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
                 key={`${code}-tab-item`}
               >
                 <div
