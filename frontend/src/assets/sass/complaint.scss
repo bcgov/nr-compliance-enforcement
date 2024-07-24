@@ -825,20 +825,6 @@ p {
   background-color: $bc-gov-primary;
 }
 
-.comp-complaint-details-alert {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  border-radius: 4px;
-  background-color: $bc-brand-background-light-gray;
-  border: 1px solid $gray-300;
-  height: 56px;
-  padding: 16px;
-  font-size: 16px;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
 .comp-complaint-details-header {
   margin: 24px 24px 24px 24px;
 

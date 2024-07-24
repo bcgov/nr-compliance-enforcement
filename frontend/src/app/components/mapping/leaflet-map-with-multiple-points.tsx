@@ -89,7 +89,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
       return (
         <Alert
           variant="warning"
-          className="mb-0"
+          className="comp-complaint-details-alert"
           id={`complaint-${bannerType}-notification`}
         >
           <i className="bi bi-info-circle-fill"></i>
