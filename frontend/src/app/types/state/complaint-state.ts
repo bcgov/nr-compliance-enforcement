@@ -14,6 +14,7 @@ export interface ComplaintState {
   complaintLocation: Feature | null;
   mappedItems: MappedComplaintsState;
   webeocUpdates: WebEOCComplaintUpdateDTO[];
+  webeocChangeCount: number;
 }
 
 export interface ComplaintCollection {

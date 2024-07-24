@@ -20,4 +20,10 @@ export class ComplaintUpdatesController {
   findByComplaintId(@Param("id") id: string) {
     return this.configurationService.findByComplaintId(id);
   }
+
+  @Get("/count/:id")
+  @Roles(Role.COS_OFFICER)
+  getComplaintChangeCount(@Param("id") id: string) {
+    return this.configurationService.getComplaintChangeCount(id);
+  }
 }
