@@ -6,7 +6,12 @@ import { Officer } from "../../types/person/person";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "../../types/complaints/person-complaint-xref";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { updateWildlifeComplaintByRow, updateAllegationComplaintByRow, getComplaintById } from "./complaints";
+import {
+  updateWildlifeComplaintByRow,
+  updateAllegationComplaintByRow,
+  updateGeneralComplaintByRow,
+  getComplaintById,
+} from "./complaints";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
@@ -15,6 +20,7 @@ import { toggleNotification } from "./app";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
 import { OfficerDto } from "../../types/app/people/officer";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
 
 const initialState: OfficerState = {
   officers: [],
@@ -94,10 +100,15 @@ export const assignCurrentUserToComplaint =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        parameters,
+      );
 
       if (complaint_type === COMPLAINT_TYPES.HWCR) {
         dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
+      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
+        dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaintDto));
       } else {
         dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
       }
@@ -132,11 +143,16 @@ export const updateComplaintAssignee =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        parameters,
+      );
 
       // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
         dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
+      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
+        dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaintDto));
       } else {
         dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
       }
