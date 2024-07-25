@@ -199,7 +199,6 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
               </div>
             </dl>
           </td>
-          <td className={`comp-cell-width-110 comp-cell-child-expanded sticky-col sticky-col--right actions-col`}></td>
         </tr>
       )}
     </>
