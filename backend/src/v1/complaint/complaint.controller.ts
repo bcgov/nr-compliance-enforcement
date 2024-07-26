@@ -11,8 +11,7 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { GeneralIncidentComplaintDto } from "src/types/models/complaints/gir-complaint";
-
-type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
+import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
