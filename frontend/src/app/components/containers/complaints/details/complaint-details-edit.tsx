@@ -325,7 +325,7 @@ export const ComplaintDetailsEdit: FC = () => {
     (option) => option.value === (violationInProgress ? "Yes" : "No"),
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
-  const selectedGirTypeCode = girTypeCodes.find((option) => option.value === girType);
+  const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";
