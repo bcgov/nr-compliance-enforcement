@@ -141,8 +141,14 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
           className={`sortableHeader ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {location}, {locationSummary}
+          {location}
         </td>
+        <td
+          className={`sortableHeader ${isExpandedClass}`}
+          onClick={toggleExpand}
+        >
+          {locationSummary}
+        </td>{" "}
         <td
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
@@ -178,7 +184,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
           <td className="comp-cell-width-110 comp-cell-child-expanded sticky-col sticky-col--left"></td>
           <td
             onClick={toggleExpand}
-            colSpan={8}
+            colSpan={7}
             className="comp-cell-child-expanded"
           >
             <dl className="hwc-table-dl">
