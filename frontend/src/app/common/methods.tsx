@@ -12,6 +12,7 @@ import { GifReader } from "omggif";
 import { fromImage } from "imtool";
 import AttachmentEnum from "../constants/attachment-enum";
 import Option from "../types/app/option";
+import { GirType } from "../types/app/code-tables/gir-type";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -344,6 +345,15 @@ export const getNatureOfComplaintByNatureOfComplaintCode = (code: string, codes:
   return "";
 };
 
+export const getGirTypeByGirTypeCode = (code: string, codes: Array<GirType>): string => {
+  if (codes && from(codes).any(({ girType }) => girType === code)) {
+    const selected = from(codes).first(({ girType }) => girType === code);
+
+    return selected.longDescription;
+  }
+
+  return "";
+};
 export const pad = (num: string, size: number): string => {
   num = num.toString();
   while (num.length < size) num = "0" + num;

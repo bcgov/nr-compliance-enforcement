@@ -19,7 +19,7 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import {
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
-  selectComplaintTypeDropdown,
+  selectCreatableComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectReportedByDropdown,
   selectSpeciesCodeDropdown,
@@ -61,7 +61,7 @@ export const CreateComplaint: FC = () => {
   const officerList = useAppSelector(selectOfficersByAgency(agency));
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
-  const complaintTypeCodes = useAppSelector(selectComplaintTypeDropdown) as Option[];
+  const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown) as Option[];
   const areaCodes = useAppSelector(selectCommunityCodeDropdown);
   const attractantCodes = useAppSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];

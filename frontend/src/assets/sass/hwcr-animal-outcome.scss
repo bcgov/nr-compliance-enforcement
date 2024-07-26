@@ -1,271 +1,161 @@
 .comp-animal-card {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+
+  .comp-card-header {
+    padding-top: 16px;
+  }
+
+  dl {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    > div {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+
+  dl:empty {
+    display: none;
+  }
 }
 
-.comp-animal-outcome-report-block {
-  margin-left: 24px;
-  margin-right: 24px;
+// EAR TAGS
+.comp-ear-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
 
-  h6 {
-    padding-top: 0px;
-    font-weight: 700;
-    margin-bottom: 0px;
+  + .comp-ear-tag {
+    margin-top: 16px;
   }
 
   label {
     color: $gray-500;
   }
 
-  & .comp-details-label-input-pair {
-    min-height: inherit;
-  }
-
-  .comp-animal-outcome-report {
+  .btn {
     margin-top: 24px;
-    margin-bottom: 24px;
-    border: 1px solid $gray-300;
-    border-radius: 3px;
-    padding: 24px;
+    min-height: 38px;
   }
 
-  .comp-animal-outcome-report-inner-spacing {
-    padding: 18px 0px 18px 0px;
-  }
-
-  .comp-animal-outcome-report-button {
-    margin-top: 24px;
-    margin-bottom: 24px;
-  }
-
-  .comp-animal-outcome-report-button span {
-    margin-right: 8px;
-  }
-
-  .comp-animal-outcome-report-button button svg {
-    font-size: 18px;
-    vertical-align: text-top;
-    margin-top: 3px;
-  }
-
-  .comp-animal-outcome-report-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 8px;
-    flex: 1 0 0;
-  }
-
-  .comp-animal-outcome-report-actions button {
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .comp-animal-outcome-report-actions button span {
-    padding-right: 8px;
-  }
-
-  .comp-animal-outcome-report-actions button svg {
-    font-size: 16px;
-    vertical-align: text-top;
-    margin-top: 1px;
-  }
-
-  .comp-animal-outcome-cancel {
-    color: $bc-gov-primary-400;
-    border-color: $bc-gov-primary-400;
-    background-color: $white;
-  }
-
-  .comp-animal-outcome-cancel:hover {
-    background-color: $bc-gov-primary-400;
-    color: $white;
-  }
-
-  .comp-animal-outcome-save {
-    color: $white;
-    background-color: $bc-gov-primary-400;
-  }
-
-  .comp-animal-outcome-save:hover {
-    background-color: $white;
-    color: $bc-gov-primary-400;
-  }
-
-  .flex-container {
-    display: flex;
-  }
-
-  .flex-child:first-child {
-    margin-right: 20px;
-  }
-
-  .comp-animal-outcome-add-button {
-    text-decoration: none;
-    margin-bottom: 24px;
-    padding: 0px;
-    border-width: 0px;
-    color: $bc-gov-primary;
-    display: block;
-  }
-
-  .comp-animal-outcome {
-    margin-top: 24px;
-    margin-bottom: 24px;
-    border: 1px solid $gray-300;
-    border-radius: 3px;
-    padding: 24px;
-
-    .animal-item-edit {
-      font-size: 14px;
-
-      :hover {
-        text-decoration: underline;
-      }
-      span {
-        font-size: inherit;
-        padding-right: 0px;
-      }
-
-      svg {
-        font-size: inherit;
-      }
-    }
-
-    .animal-item-delete {
-      font-size: 14px;
-      padding-right: 10px;
-      :hover {
-        text-decoration: underline;
-      }
-      span {
-        font-size: inherit;
-        margin-right: 4px;
-        padding-right: 0px;
-      }
-
-      svg {
-        font-size: 16px;
-      }
-    }
-
-    .comp-ear-tag-list {
-      list-style: none;
-      padding-inline-start: 0px;
-      padding-left: 0px;
-    }
-
-    .comp-animal-outcome-fill-space {
-      width: 100%;
-    }
-
-    .comp-drug-item {
-      margin-bottom: 24px;
-      border: 1px solid $gray-300;
-      border-radius: 3px;
-      padding: 24px;
-
-      .comp-orange-avatar-sm::before {
-        margin-left: 25px;
-      }
-
-      .row {
-        margin-top: 5px;
-        margin-bottom: 5px;
-      }
-
-      .animal-outcome-item-edit {
-        font-size: 14px;
-
-        span {
-          margin-right: 7px;
-        }
-      }
-    }
-  }
-
-  .comp-details-inner-content-label {
-    &.top {
-      align-self: flex-start;
-    }
-
-    &.center {
-      align-self: center;
-    }
-  }
-
-  .comp-outcome-drug-label {
-    margin-right: 10px;
-    min-width: 10px !important;
-    max-width: inherit;
-  }
-
-  .comp-outcome-remove-botton {
-    color: $gray-500;
-  }
-
-  .comp-outcome-remove-botton-hover {
-    color: $black;
-  }
-
-  #comp-outcome-report-animal-information-heading {
-    margin-bottom: -12px;
-  }
-
-  #comp-outcome-report-outcome-heading {
-    margin-bottom: -22px;
-  }
-
-  .comp-outcome-animal-seperator {
-    clear: both;
-
-    margin-bottom: -20px;
+  + .btn {
     margin-top: 16px;
   }
 }
 
-.animal-outcome-label-input-pair {
+.comp-ear-tag-form-item {
   display: flex;
-  min-height: 70px;
-  margin-top: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
 
-  label {
-    color: $gray-500;
-    min-width: 191px;
-    max-width: 191px;
-    margin-top: 6px;
+@include media-breakpoint-up(lg) {
+  .comp-ear-tag {
+    .btn {
+      margin-top: 0;
+    }
   }
 
-  .animal-outcome-details-input {
-    flex-basis: 100%;
-    color: $gray-900;
+  .comp-ear-tag-form-item {
+    flex-direction: row;
+    gap: 8px;
 
-    i.bi {
-      color: $gray-500;
+    label {
+      margin-top: 6px;
     }
   }
 }
 
-.animal-drug-auth-label-input-pair {
+.comp-form-control.comp-ear-tag-id-input {
+  width: 120px;
+}
+
+.comp-ear-tag-side-input {
+  min-width: 120px;
+}
+
+.comp-ear-tag .comp-ear-tag-actions {
   display: flex;
-  min-height: 70px;
+  align-items: flex-end;
 
-  label {
-    color: $gray-500;
-    min-width: 191px;
-    max-width: 191px;
-    margin-top: 6px;
-  }
-
-  .animal-drug-auth-details-input {
-    flex-basis: 100%;
-    color: $gray-900;
-
-    i.bi {
-      color: $gray-500;
-    }
+  .btn {
+    min-height: 38px;
   }
 }
 
-.mt-delete-button {
-  margin-top: 36px;
+// DRUG LIST AND FORM
+.comp-drug-list {
+  list-style-type: none;
+  padding-left: 0 !important;
+}
+
+.comp-drug-item {
+  border-radius: 0;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+
+  .card-body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  dl {
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 8px;
+
+    > div {
+      flex-direction: column;
+      gap: 0;
+      width: 50%;
+    }
+
+    dd {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  + .comp-drug-item {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
+
+.comp-drug-form {
+  display: flex;
+  flex-direction: column;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+
+  .card-body {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .comp-add-drug-btn {
+    order: 2;
+    align-self: flex-start;
+  }
+
+  + .comp-drug-form {
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  &:last-of-type {
+    margin-bottom: 16px;
+  }
+}
+
+.comp-animal-drugs-authorized-by {
+  order: 3;
+  margin-top: 32px;
 }

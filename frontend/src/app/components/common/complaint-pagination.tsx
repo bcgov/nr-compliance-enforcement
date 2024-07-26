@@ -3,6 +3,7 @@ import { Form } from "react-bootstrap";
 import Select from "react-select";
 import Pagination from "react-bootstrap/Pagination";
 import Option from "../../types/app/option";
+import config from "../../../config";
 
 interface ComplaintPaginationProps {
   currentPage: number;
@@ -54,8 +55,8 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
     const items = [];
 
     // Calculate the range of pages to display based on the current page
-    const startPage = Math.max(1, lastPage > 10 ? currentPage - 4 : 1);
-    const endPage = Math.min(lastPage, startPage + 9);
+    const startPage = Math.max(1, lastPage > 5 ? currentPage - 4 : 1);
+    const endPage = Math.min(lastPage, startPage + 5);
 
     // Render the ellipsis if necessary
     if (startPage > 1) {
@@ -70,7 +71,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
       );
     }
 
-    if (startPage > 1 && lastPage > 10) {
+    if (startPage > 1 && lastPage > 5) {
       items.push(
         <Pagination.Ellipsis
           key="ellipsis-start"
@@ -141,13 +142,15 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
           <div className="pagination_controls_end">
             {/* Select total viewable records */}
-            <Select
-              menuPlacement="top"
-              id="resultsPerPageSelect"
-              options={pageSizeOptions}
-              classNamePrefix="comp-select"
-              defaultValue={defaultOption}
-            />
+            {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+              <Select
+                menuPlacement="top"
+                id="resultsPerPageSelect"
+                options={pageSizeOptions}
+                classNamePrefix="comp-select"
+                defaultValue={defaultOption}
+              />
+            )}
 
             {/* Go to specific page */}
             <div className="pagination_specific_page">

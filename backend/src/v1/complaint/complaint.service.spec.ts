@@ -35,6 +35,7 @@ import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
+import { MockGeneralIncidentComplaintRepository } from "../../../test/mocks/mock-general-incident-complaint-repository";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
 import {
   MockAttractantCodeTableRepository,
@@ -48,6 +49,7 @@ import {
   MockReportedByCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
+  MockGirTypeCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsAgencyRepository,
@@ -58,6 +60,8 @@ import {
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -84,6 +88,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AllegationComplaint),
           useFactory: MockAllegationComplaintRepository,
+        },
+        {
+          provide: getRepositoryToken(GirComplaint),
+          useFactory: MockGeneralIncidentComplaintRepository,
         },
         {
           provide: getRepositoryToken(ComplaintUpdate),
@@ -148,6 +156,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(ReportedByCode),
           useFactory: MockReportedByCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeRepository,
         },
         {
           provide: getRepositoryToken(PersonComplaintXref),
@@ -320,6 +332,10 @@ describe("Testing: Complaint Service", () => {
           useFactory: MockAllegationComplaintRepository,
         },
         {
+          provide: getRepositoryToken(GirComplaint),
+          useFactory: MockGeneralIncidentComplaintRepository,
+        },
+        {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
@@ -378,6 +394,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(ComplaintTypeCode),
           useFactory: MockComplaintTypeCodeTableRepository,
+        },
+        {
+          provide: getRepositoryToken(GirTypeCode),
+          useFactory: MockGirTypeCodeRepository,
         },
         {
           provide: getRepositoryToken(ReportedByCode),

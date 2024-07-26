@@ -16,5 +16,7 @@ export type ComplaintFilters = {
 
   violationType: DropdownOption | null;
 
+  girType?: DropdownOption | null;
+
   filters: Array<any>;
 };
