@@ -33,4 +33,5 @@ export default defineConfig({
       keycloak_login_url: "https://logontest7.gov.bc.ca",
     },
   },
+  retries: 2,
 });

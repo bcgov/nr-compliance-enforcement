@@ -909,6 +909,154 @@ update  public.geo_organization_unit_code set administrative_office_ind = true w
 -----------------------
 
  update geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where parent_geo_org_unit_code = 'CHTWD' and child_geo_org_unit_code = 'HUDSONSH';
+INSERT INTO
+  gir_type_code (
+    gir_type_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COCNT',
+  'CO Contact',
+  'CO Contact',
+  10,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+INSERT INTO
+  gir_type_code (
+    gir_type_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'CODSP',
+  'CO Disposition',
+  'CO Disposition',
+  20,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  gir_type_code (
+    gir_type_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GENAD',
+  'General Advice',
+  'General Advice',
+  30,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  gir_type_code (
+    gir_type_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'MEDIA',
+  'Media',
+  'Media',
+  40,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  gir_type_code (
+    gir_type_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'QUERY',
+  'Query',
+  'Query',
+  50,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+UPDATE complaint_type_code SET display_order = 10 where display_order = 1;
+UPDATE complaint_type_code SET display_order = 20 where display_order = 2;
+insert into complaint_type_code (complaint_type_code, short_description, long_description, display_order, active_ind, create_user_id, create_user_guid, create_utc_timestamp, update_user_id, update_user_guid, update_utc_timestamp)
+values ('GIR', 'GIR', 'General Incident Report', 30, false, user, null, now(), user, null, now()) ON CONFLICT DO NOTHING;
+
+UPDATE entity_code SET display_order = 10 where display_order = 1;
+UPDATE entity_code SET display_order = 20 where display_order = 2;
+UPDATE entity_code SET display_order = 30 where display_order = 3;
+UPDATE entity_code SET display_order = 40 where display_order = 4;
+UPDATE entity_code SET display_order = 50 where display_order = 5;
+insert into
+    public.entity_code (
+        entity_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'girtypecd',
+        'gir_type_code',
+        'GIR Type Code Table',
+        60,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
 
 --------------------------
 -- New Changes above this line

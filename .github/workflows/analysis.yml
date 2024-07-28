@@ -46,7 +46,7 @@ jobs:
             npm ci
             npm run test:cov
           dir: ${{ matrix.dir }}
-          node_version: "22"
+          node_version: "20"
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
             -Dsonar.organization=bcgov-sonarcloud
@@ -86,4 +86,3 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Success!"
-

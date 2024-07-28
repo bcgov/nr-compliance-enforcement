@@ -7,6 +7,7 @@ import {
   getComplaintById,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
+  updateGeneralIncidentComplaintStatus,
 } from "../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import Option from "../../../types/app/option";
@@ -61,8 +62,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
     try {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
         await dispatch(updateWildlifeComplaintStatus(complaint_identifier, status));
-      } else {
+      } else if (COMPLAINT_TYPES.ERS === complaint_type) {
         await dispatch(updateAllegationComplaintStatus(complaint_identifier, status));
+      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
+        await dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, status));
       }
 
       await dispatch(getComplaintById(complaint_identifier, complaint_type));

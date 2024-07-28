@@ -28,8 +28,19 @@ export const ComplaintFilterBar: FC<Props> = ({
 }) => {
   const { state, dispatch } = useContext(ComplaintFilterContext);
 
-  const { region, zone, community, officer, startDate, endDate, status, species, natureOfComplaint, violationType } =
-    state;
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+    girType,
+  } = state;
 
   const dateRangeLabel = (): string | undefined => {
     if (startDate !== null && endDate !== null) {
@@ -186,6 +197,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-region-filter"
             label={region?.label}
             name="region"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("girType") && (
+          <FilterButton
+            id="comp-gir-filter"
+            label={girType?.label}
+            name="girType"
             clear={removeFilter}
           />
         )}

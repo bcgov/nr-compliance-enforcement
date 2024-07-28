@@ -150,7 +150,7 @@ export class CaseFileService {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
       return caseFileDto;
     } else {
-      this.logger.error(`Case with complaint Id ${complaint_id} not found.`);
+      this.logger.debug(`Case with complaint Id ${complaint_id} not found.`);
       return null;
     }
   };

@@ -14,7 +14,6 @@ type Props = {
 };
 
 export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
-  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
   const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
@@ -35,13 +34,8 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
     locationDetail,
     locationSummary,
     delegates,
-    organization: { area: locationCode, zone },
+    organization: { areaName: location, zone },
   } = complaint;
-
-  const getLocationName = (input: string): string => {
-    const code = areaCodes.find((item) => item.area === input);
-    return code.areaName;
-  };
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
@@ -92,8 +86,6 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const natureCode = getNatureOfComplaint(natureOfComplaint);
   const species = getSpecies(speciesCode);
-
-  const location = getLocationName(locationCode);
 
   const statusButtonClass = `badge ${applyStatusClass(status)}`;
 
