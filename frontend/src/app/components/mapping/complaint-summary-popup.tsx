@@ -62,7 +62,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </div>
             <div>
               <dt className="text-muted">Officer Assigned</dt>
-              <dd id="comp-details-assigned-officer-name-text-id">{getFirstInitialAndLastName(officerAssigned)}</dd>
+              <dd id="comp-details-assigned-officer-name-text-id">{officerAssigned}</dd>
             </div>
             <div>
               <dt className="text-muted">Community</dt>
