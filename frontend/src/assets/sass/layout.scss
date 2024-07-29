@@ -551,7 +551,7 @@ button.modal-buttons {
   height: 38px;
 }
 
-@include media-breakpoint-down(xl) {
+@include media-breakpoint-down(lg) {
   .page-item:not(:first-of-type):not(:last-of-type):not(.active) {
     display: none;
   }
@@ -650,8 +650,47 @@ p {
 }
 
 // CARD
-.card-body {
-  padding: 24px;
+.comp-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 0;
+  background: transparent;
+  border: none;
+
+  h4,
+  h5 {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+.comp-card-header-title {
+  .badge {
+    margin-top: 2px;
+  }
+}
+
+.comp-card-header-metadata {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+
+  span + span {
+    &::before {
+      content: "•";
+      display: inline-block;
+      width: 20px;
+      text-align: center;
+    }
+  }
+}
+
+.comp-card-header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 // DROPDOWN MENU
@@ -660,6 +699,7 @@ p {
     display: none;
   }
 }
+
 .dropdown-item {
   i {
     margin-right: 8px;
@@ -669,12 +709,11 @@ p {
 
 // TOGGLE BUTTON
 .toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   border-color: $gray-300;
   white-space: nowrap;
-
-  span {
-    margin-left: 8px;
-  }
 }
 
 @include media-breakpoint-down(xl) {
@@ -815,4 +854,20 @@ td.sticky-col {
   font-size: 16px;
   height: 36px;
   color: $bc-gov-primary-700;
+}
+
+// TABS
+.comp-tab {
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+  }
+}
+
+.comp-tab-active {
+  color: $bc-gov-primary;
+}
+
+.comp-tab-inactive {
+  color: $bc-gov-shade-300;
 }

@@ -14,6 +14,7 @@ import { ViolationCode } from "../violation_code/entities/violation_code.entity"
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
+import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
     TypeOrmModule.forFeature([CosGeoOrgUnit]),
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([ReportedByCode]),
+    TypeOrmModule.forFeature([GirTypeCode]),
   ],
   controllers: [CodeTableController, CaseManagementCodeTableController],
   providers: [CodeTableService],

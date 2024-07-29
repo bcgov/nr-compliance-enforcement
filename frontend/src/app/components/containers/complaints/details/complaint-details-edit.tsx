@@ -22,6 +22,7 @@ import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
+  selectGirTypeCodeDropdown,
   selectReportedByDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
@@ -59,6 +60,7 @@ import {
 import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "../../../../types/app/complaints/general-complaint";
 import { UUID } from "crypto";
 import { Delegate } from "../../../../types/app/people/delegate";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
@@ -93,6 +95,7 @@ export const ComplaintDetailsEdit: FC = () => {
     attractants,
     violationInProgress,
     violationObserved,
+    girType,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
@@ -111,6 +114,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
+  const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
@@ -133,7 +137,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- complaint update object
   const [complaintUpdate, applyComplaintUpdate] = useState<
-    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto
+    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto | GeneralInformationComplaintDto
   >();
 
   // files to add to COMS when complaint is saved
@@ -321,7 +325,7 @@ export const ComplaintDetailsEdit: FC = () => {
     (option) => option.value === (violationInProgress ? "Yes" : "No"),
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
-
+  const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";
@@ -344,7 +348,16 @@ export const ComplaintDetailsEdit: FC = () => {
   const updateValidation = async (lat: number, lng: number) => {
     handleGeoPointChange(lat.toString(), lng.toString());
   };
-
+  //-- general incident complaint updates
+  const handleGirTypeChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (value) {
+        let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralInformationComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
+    }
+  };
   //-- wildlife complaint updates
   const handleNatureOfComplaintChange = (selected: Option | null) => {
     if (selected) {
@@ -829,6 +842,26 @@ export const ComplaintDetailsEdit: FC = () => {
                     placeholder="Select"
                     id="violation-type-select-id"
                     onChange={(e) => handleViolationTypeChange(e)}
+                    classNamePrefix="comp-select"
+                  />
+                </div>
+              )}
+
+              {complaintType === COMPLAINT_TYPES.GIR && (
+                <div
+                  className="comp-details-form-row"
+                  id="general-incident-type-pair-id"
+                >
+                  <label id="general-incident-label-id">
+                    General Incident Type<span className="required-ind">*</span>
+                  </label>
+                  <Select
+                    className="comp-details-input full-width"
+                    options={girTypeCodes}
+                    defaultValue={selectedGirTypeCode}
+                    placeholder="Select"
+                    id="gir-type-select-id"
+                    onChange={(e) => handleGirTypeChange(e)}
                     classNamePrefix="comp-select"
                   />
                 </div>

@@ -4,6 +4,7 @@
 export enum ComplaintType {
   HWCR_COMPLAINT = 0,
   ALLEGATION_COMPLAINT = 1,
+  GENERAL_COMPLAINT = 2,
 }
 
 export default ComplaintType;

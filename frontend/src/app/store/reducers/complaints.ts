@@ -33,15 +33,20 @@ import {
   getSpeciesBySpeciesCode,
   getStatusByStatusCode,
   getViolationByViolationCode,
+  getGirTypeByGirTypeCode,
 } from "../../common/methods";
 import { Agency } from "../../types/app/code-tables/agency";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
+
+type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
 const initialState: ComplaintState = {
   complaintItems: {
     wildlife: [],
     allegations: [],
+    general: [],
   },
   totalCount: 0,
   complaint: null,
@@ -55,6 +60,8 @@ const initialState: ComplaintState = {
   mappedItems: { items: [], unmapped: 0 },
 
   webeocUpdates: [],
+
+  webeocChangeCount: 0,
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -67,13 +74,16 @@ export const complaintSlice = createSlice({
       } = action;
       const { complaintItems } = state;
 
-      let update: ComplaintCollection = { wildlife: [], allegations: [] };
+      let update: ComplaintCollection = { wildlife: [], allegations: [], general: [] };
       switch (type) {
         case COMPLAINT_TYPES.ERS:
           update = { ...complaintItems, allegations: data };
           break;
         case COMPLAINT_TYPES.HWCR:
           update = { ...complaintItems, wildlife: data };
+          break;
+        case COMPLAINT_TYPES.GIR:
+          update = { ...complaintItems, general: data };
           break;
       }
       return { ...state, complaintItems: update };
@@ -121,7 +131,26 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
+    updateGeneralComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaintDto>) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = current(state);
+      const { general } = complaintItems;
 
+      const index = general.findIndex(({ girId }) => girId === updatedComplaint.girId);
+
+      if (index !== -1) {
+        const { status, delegates } = updatedComplaint;
+
+        let complaint = { ...general[index], status, delegates };
+
+        const update = [...general];
+        update[index] = complaint;
+
+        const updatedItems = { ...complaintItems, general: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
     updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaintDto>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
@@ -138,6 +167,26 @@ export const complaintSlice = createSlice({
         update[index] = complaint;
 
         const updatedItems = { ...complaintItems, allegations: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
+    updateGeneralIncidentComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaintDto>) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = current(state);
+      const { general } = complaintItems;
+
+      const index = general.findIndex(({ girId }) => girId === updatedComplaint.girId);
+
+      if (index !== -1) {
+        const { status, delegates } = updatedComplaint;
+
+        let complaint = { ...general[index], status, delegates };
+
+        const update = [...general];
+        update[index] = complaint;
+
+        const updatedItems = { ...complaintItems, general: update };
 
         return { ...state, complaintItems: updatedItems };
       }
@@ -160,6 +209,11 @@ export const complaintSlice = createSlice({
     setWebEOCUpdates: (state, action: PayloadAction<WebEOCComplaintUpdateDTO[]>) => {
       state.webeocUpdates = action.payload;
     },
+
+    setWebEOCChangeCount: (state, action: PayloadAction<number>) => {
+      state.webeocChangeCount = action.payload;
+    },
+
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
         state.complaint.status = action.payload;
@@ -180,9 +234,12 @@ export const {
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
+  updateGeneralComplaintByRow,
   updateAllegationComplaintByRow,
+  updateGeneralIncidentComplaintByRow,
   setMappedComplaints,
   setWebEOCUpdates,
+  setWebEOCChangeCount,
   setComplaintStatus,
 } = complaintSlice.actions;
 
@@ -202,6 +259,7 @@ export const getComplaints =
       startDateFilter,
       endDateFilter,
       violationFilter,
+      girTypeFilter,
       complaintStatusFilter,
       page,
       pageSize,
@@ -223,6 +281,7 @@ export const getComplaints =
         incidentReportedStart: startDateFilter,
         incidentReportedEnd: endDateFilter,
         violationCode: violationFilter?.value,
+        girTypeCode: girTypeFilter?.value,
         status: complaintStatusFilter?.value,
         page: page,
         pageSize: pageSize,
@@ -292,11 +351,21 @@ export const getZoneAtAGlanceStats =
   (zone: string, type: ComplaintType): AppThunk =>
   async (dispatch) => {
     try {
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/stats/${
-          type === ComplaintType.HWCR_COMPLAINT ? "HWCR" : "ERS"
-        }/by-zone/${zone}`,
-      );
+      let typeName;
+      switch (type) {
+        case ComplaintType.ALLEGATION_COMPLAINT:
+          typeName = "ERS";
+          break;
+        case ComplaintType.GENERAL_COMPLAINT:
+          typeName = "GIR";
+          break;
+        case ComplaintType.HWCR_COMPLAINT:
+        default:
+          typeName = "HWCR";
+          break;
+      }
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/stats/${typeName}/by-zone/${zone}`);
 
       const response = await get<ZoneAtAGlanceStats>(dispatch, parameters);
 
@@ -344,6 +413,22 @@ export const getWebEOCUpdates =
       dispatch(setWebEOCUpdates(response));
     } catch (error) {
       console.error(`Unable to retrieve WebEOC updates for complaint ${complaintIdentifier}: ${error}`);
+    }
+  };
+
+export const getWebEOCChangeCount =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint-updates/count/${complaintIdentifier}`,
+      );
+      const response = await get<number[]>(dispatch, parameters);
+      const webEOCChangeCount =
+        response && response.length > 0 && response[0].hasOwnProperty("value") ? (response[0] as any).value : 0;
+      dispatch(setWebEOCChangeCount(webEOCChangeCount));
+    } catch (error) {
+      console.error(`Unable to retrieve WebEOC changes for complaint ${complaintIdentifier}: ${error}`);
     }
   };
 
@@ -398,9 +483,32 @@ export const updateAllegationComplaintStatus =
       //-- add error handling
     }
   };
+export const updateGeneralIncidentComplaintStatus =
+  (complaint_identifier: string, newStatus: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      //-- update the status of the complaint
+      await updateComplaintStatus(dispatch, complaint_identifier, newStatus);
+
+      //-- get the wildlife conflict and update its status
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/GIR/${complaint_identifier}`,
+      );
+      const response = await get<GeneralIncidentComplaintDto>(dispatch, parameters);
+      dispatch(updateGeneralIncidentComplaintByRow(response));
+      const result = response;
+
+      dispatch(setComplaint({ ...result }));
+    } catch (error) {
+      //-- add error handling
+    }
+  };
 
 export const updateComplaintById =
-  (complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto, complaintType: string): AppThunk =>
+  (
+    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+    complaintType: string,
+  ): AppThunk =>
   async (dispatch) => {
     try {
       const { id } = complaint;
@@ -410,7 +518,7 @@ export const updateComplaintById =
         complaint,
       );
 
-      await patch<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, updateParams);
+      await patch<dtoAlias>(dispatch, updateParams);
 
       ToggleSuccess("Updates have been saved");
     } catch (error) {
@@ -428,7 +536,10 @@ export const getComplaintById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        parameters,
+      );
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -443,7 +554,10 @@ export const getComplaintStatusById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        parameters,
+      );
 
       if (response.status) {
         dispatch(setComplaintStatus(response.status));
@@ -552,6 +666,15 @@ export const selectAllegationComplaints = (state: RootState): Array<any> => {
   return allegations;
 };
 
+export const selectGeneralInformationComplaints = (state: RootState): Array<any> => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { general } = complaintItems;
+
+  return general;
+};
+
 export const selectTotalComplaintsByType =
   (complaintType: string) =>
   (state: RootState): number => {
@@ -564,10 +687,14 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> => {
+  (
+    state: RootState,
+  ): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralIncidentComplaintDto> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
+      case COMPLAINT_TYPES.GIR:
+        return selectGeneralInformationComplaints(state);
       case COMPLAINT_TYPES.HWCR:
       default:
         return selectWildlifeComplaints(state);
@@ -624,7 +751,9 @@ export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem
   }
 };
 
-export const selectComplaint = (state: RootState): WildlifeComplaintDto | AllegationComplaintDto | null => {
+export const selectComplaint = (
+  state: RootState,
+): WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | null => {
   const {
     complaints: { complaint },
   } = state;
@@ -636,7 +765,7 @@ export const selectComplaintDetails =
   (state: RootState): ComplaintDetails => {
     const {
       complaints: { complaint },
-      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable },
+      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable, "gir-type": girTypeCodes },
     } = state;
 
     const getAttractants = (
@@ -700,6 +829,14 @@ export const selectComplaintDetails =
           violationInProgress,
           violationObserved,
         };
+      } else if (complaintType === "GIR") {
+        const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
+        const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
+        result = {
+          ...result,
+          girType,
+          girTypeCode,
+        };
       }
 
       const org = areaCodes.find(({ area }) => area === areaCode);
@@ -733,6 +870,7 @@ export const selectComplaintHeader =
         violation: violationCodes,
         species: speciesCodes,
         "nature-of-complaint": natureOfComplaints,
+        "gir-type": girTypeCodes,
       },
     } = state;
 
@@ -803,6 +941,13 @@ export const selectComplaintHeader =
             const violationType = getViolationByViolationCode(violationTypeCode, violationCodes);
 
             result = { ...result, violationType, violationTypeCode };
+          }
+          break;
+        case COMPLAINT_TYPES.GIR:
+          {
+            const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
+            const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
+            result = { ...result, girType, girTypeCode };
           }
           break;
         case COMPLAINT_TYPES.HWCR:
@@ -922,6 +1067,13 @@ export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintU
     complaints: { webeocUpdates },
   } = state;
   return webeocUpdates;
+};
+
+export const selectWebEOCChangeCount = (state: RootState): number | null => {
+  const {
+    complaints: { webeocChangeCount },
+  } = state;
+  return webeocChangeCount;
 };
 
 export default complaintSlice.reducer;

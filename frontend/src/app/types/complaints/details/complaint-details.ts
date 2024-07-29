@@ -17,4 +17,6 @@ export interface ComplaintDetails {
   attractants?: Array<ComplaintDetailsAttractant>;
   violationInProgress?: boolean;
   violationObserved?: boolean;
+  girType?: string;
+  girTypeCode?: string;
 }

@@ -1,10 +1,8 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { useAppSelector } from "../../../../../hooks/hooks";
-import { Col, Row } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { CompInput } from "../../../../common/comp-input";
 import { CompSelect } from "../../../../common/comp-select";
-import { CompIconButton } from "../../../../common/comp-icon-button";
-import { BsFillXCircleFill, BsXCircle } from "react-icons/bs";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import Option from "../../../../../types/app/option";
 import { isPositiveNum } from "../../../../../common/methods";
@@ -217,215 +215,185 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   };
 
   return (
-    <div className="comp-animal-outcome-report-inner-spacing">
-      <Row>
-        <Col>
-          <label
-            htmlFor={`vial-number-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Vial number
-          </label>
-          <CompInput
-            id={`vial-number-${id}`}
-            divid={`vial-number-${id}-div`}
-            type="input"
-            placeholder=""
-            inputClass="comp-form-control"
-            value={vial}
-            error={vialError}
-            onChange={(evt: any) => {
-              const {
-                target: { value },
-              } = evt;
-              handleVialNumberChange(value);
-            }}
-          />
-        </Col>
-        <Col>
-          <label
-            htmlFor={`select-drug-name-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Drug name
-          </label>
-          <CompSelect
-            id={`select-drug-name-${id}`}
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={drugs}
-            enableValidation={true}
-            placeholder={"Select"}
-            errorMessage={drugError}
-            onChange={(evt) => {
-              handleDrugNameChange(evt);
-            }}
-            value={getValue("drug")}
-          />
-        </Col>
-        <Col>
-          <label
-            htmlFor={`amount-used-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Amount used (mL)
-          </label>
-          <CompInput
-            id={`amount-used-${id}`}
-            divid={`amount-used-${id}-div`}
-            type="input"
-            placeholder=""
-            inputClass="comp-form-control"
-            value={amountUsed}
-            error={amountUsedError}
-            onChange={(evt: any) => {
-              const {
-                target: { value },
-              } = evt;
-              handleAmountUsedChange(value ?? "");
-            }}
-          />
-        </Col>
-        <Col>
-          <label
-            htmlFor={`injection-method-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Injection method
-          </label>
-          <CompSelect
-            id={`injection-method-${id}`}
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={drugUseMethods}
-            enableValidation={true}
-            placeholder={"Select"}
-            errorMessage={injectionMethodError}
-            onChange={(evt) => {
-              handleInjectionMethodChange(evt);
-            }}
-            value={getValue("injection-method")}
-          />
-        </Col>
-        <Col>
-          <label
-            htmlFor={`adverse-reactions-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Adverse reactions
-          </label>
-          <CompInput
-            id={`adverse-reactions-${id}`}
-            divid={`adverse-reactions-${id}-div`}
-            type="input"
-            placeholder=""
-            inputClass="comp-form-control"
-            value={reactions}
-            onChange={(evt: any) => {
-              const {
-                target: { value },
-              } = evt;
-              updateModel("reactions", value);
-            }}
-          />
-        </Col>
-        <Col className="mt-delete-button mb-2">
-          <CompIconButton
+    <Card className="comp-drug-form">
+      <Card.Header className="comp-card-header px-0">
+        <div className="comp-card-header-title">
+          <h5>{drug ? <>{drug}</> : <>Add Drug</>}</h5>
+        </div>
+        <div className="comp-card-header-actions">
+          <Button
+            variant="outline-primary"
+            size="sm"
+            aria-label="Delete drug"
             onClick={() => {
               remove(id);
             }}
           >
-            <BsXCircle
-              size={24}
-              className="comp-outcome-remove-botton"
+            <i className="bi bi-trash3"></i>
+            <span>Delete</span>
+          </Button>
+        </div>
+      </Card.Header>
+      <Card.Body className="pt-0">
+        <div className="comp-details-form-row">
+          <label htmlFor={`vial-number-${id}`}>Vial number</label>
+          <div className="comp-details-input">
+            <CompInput
+              id={`vial-number-${id}`}
+              divid={`vial-number-${id}-div`}
+              type="input"
+              placeholder=""
+              inputClass="comp-form-control"
+              value={vial}
+              error={vialError}
+              onChange={(evt: any) => {
+                const {
+                  target: { value },
+                } = evt;
+                handleVialNumberChange(value);
+              }}
             />
-            <BsFillXCircleFill
-              size={24}
-              className="comp-outcome-remove-botton-hover"
+          </div>
+        </div>
+        <div className="comp-details-form-row">
+          <label htmlFor={`select-drug-name-${id}`}>Drug name</label>
+          <div className="comp-details-input full-width">
+            <CompSelect
+              id={`select-drug-name-${id}`}
+              classNamePrefix="comp-select"
+              options={drugs}
+              enableValidation={true}
+              placeholder={"Select"}
+              errorMessage={drugError}
+              onChange={(evt) => {
+                handleDrugNameChange(evt);
+              }}
+              value={getValue("drug")}
             />
-          </CompIconButton>
-        </Col>
-      </Row>
-      <Row className="comp-padding-top-md">
-        <Col>
-          <label
-            htmlFor={`remaining-drug-use-${id}`}
-            className="comp-margin-bottom-8"
-          >
-            Fate of remaining drug in vial
-          </label>
-          <CompSelect
-            id={`remaining-drug-use-${id}`}
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={remainingDrugUse}
-            enableValidation={false}
-            placeholder={"Select"}
-            onChange={(evt) => {
-              handleRemainingUsed(evt?.value ?? "");
-            }}
-            value={getValue("remaining")}
-          />
-        </Col>
-        <Col>
-          {showDiscarded && (
-            <>
-              <label
-                htmlFor={`amount-discarded-${id}`}
-                className="comp-margin-bottom-8"
-              >
-                Amount discarded (mL)
-              </label>
-              <CompInput
-                id={`amount-discarded-${id}`}
-                divid={`amount-discarded-${id}-div`}
-                type="input"
-                placeholder=""
-                inputClass="comp-form-control"
-                value={amountDiscarded}
-                error={amountDiscardedError}
-                onChange={(evt: any) => {
-                  const {
-                    target: { value },
-                  } = evt;
-                  handleAmountDiscardedChange(value ?? "");
-                }}
-              />
-            </>
-          )}
-        </Col>
-        <Col>
-          {showDiscarded && (
-            <>
-              <label
-                htmlFor={`discard-method-${id}`}
-                className="comp-margin-bottom-8"
-              >
-                Discard method
-              </label>
-              <CompInput
-                id={`discard-method-${id}`}
-                divid={`discard-method-${id}-div`}
-                type="input"
-                placeholder=""
-                inputClass="comp-form-control"
-                value={discardMethod}
-                error={discardMethodError}
-                onChange={(evt: any) => {
-                  const {
-                    target: { value },
-                  } = evt;
-                  handleDiscardMethodChange(value ?? "");
-                }}
-              />
-            </>
-          )}
-        </Col>
-        <Col></Col>
-      </Row>
+          </div>
+        </div>
 
-      <hr className="comp-outcome-animal-seperator" />
-    </div>
+        <div className="comp-details-form-row">
+          <label htmlFor={`injection-method-${id}`}>Injection method</label>
+          <div className="comp-details-input full-width">
+            <CompSelect
+              id={`injection-method-${id}`}
+              classNamePrefix="comp-select"
+              options={drugUseMethods}
+              enableValidation={true}
+              placeholder={"Select"}
+              errorMessage={injectionMethodError}
+              onChange={(evt) => {
+                handleInjectionMethodChange(evt);
+              }}
+              value={getValue("injection-method")}
+            />
+          </div>
+        </div>
+        <div className="comp-details-form-row">
+          <label htmlFor={`amount-used-${id}`}>Amount used (mL)</label>
+          <div className="comp-details-input">
+            <CompInput
+              id={`amount-used-${id}`}
+              divid={`amount-used-${id}-div`}
+              type="input"
+              placeholder=""
+              inputClass="comp-form-control"
+              value={amountUsed}
+              error={amountUsedError}
+              onChange={(evt: any) => {
+                const {
+                  target: { value },
+                } = evt;
+                handleAmountUsedChange(value ?? "");
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="comp-details-form-row">
+          <label htmlFor={`remaining-drug-use-${id}`}>Fate of remaining drug in vial</label>
+          <div className="comp-details-input full-width">
+            <CompSelect
+              id={`remaining-drug-use-${id}`}
+              classNamePrefix="comp-select"
+              options={remainingDrugUse}
+              enableValidation={false}
+              placeholder={"Select"}
+              onChange={(evt) => {
+                handleRemainingUsed(evt?.value ?? "");
+              }}
+              value={getValue("remaining")}
+            />
+          </div>
+        </div>
+
+        {showDiscarded && (
+          <>
+            <div className="comp-details-form-row">
+              <label htmlFor={`amount-discarded-${id}`}>Amount discarded (mL)</label>
+              <div className="comp-details-input">
+                <CompInput
+                  id={`amount-discarded-${id}`}
+                  divid={`amount-discarded-${id}-div`}
+                  type="input"
+                  placeholder=""
+                  inputClass="comp-form-control"
+                  value={amountDiscarded}
+                  error={amountDiscardedError}
+                  onChange={(evt: any) => {
+                    const {
+                      target: { value },
+                    } = evt;
+                    handleAmountDiscardedChange(value ?? "");
+                  }}
+                />
+              </div>
+            </div>
+            <div className="comp-details-form-row">
+              <label htmlFor={`discard-method-${id}`}>Discard method</label>
+              <div className="comp-details-input full-width">
+                <CompInput
+                  id={`discard-method-${id}`}
+                  divid={`discard-method-${id}-div`}
+                  type="input"
+                  placeholder=""
+                  inputClass="comp-form-control"
+                  value={discardMethod}
+                  error={discardMethodError}
+                  onChange={(evt: any) => {
+                    const {
+                      target: { value },
+                    } = evt;
+                    handleDiscardMethodChange(value ?? "");
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="comp-details-form-row">
+          <label htmlFor={`adverse-reactions-${id}`}>Adverse reactions</label>
+          <div className="comp-details-input full-width">
+            <CompInput
+              id={`adverse-reactions-${id}`}
+              divid={`adverse-reactions-${id}-div`}
+              type="input"
+              placeholder=""
+              inputClass="comp-form-control"
+              value={reactions}
+              onChange={(evt: any) => {
+                const {
+                  target: { value },
+                } = evt;
+                updateModel("reactions", value);
+              }}
+            />
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
   );
 });
 

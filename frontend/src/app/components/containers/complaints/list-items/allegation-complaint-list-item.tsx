@@ -15,7 +15,6 @@ type Props = {
 };
 
 export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
-  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
 
@@ -35,13 +34,8 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     locationDetail,
     locationSummary,
     delegates,
-    organization: { area: locationCode, zone },
+    organization: { areaName: location, zone },
   } = complaint;
-
-  const getLocationName = (input: string): string => {
-    const code = areaCodes.find((item) => item.area === input);
-    return code.areaName;
-  };
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
@@ -87,8 +81,6 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
   const updatedOnDateTime = formatDateTime(updatedOn.toString());
-
-  const location = getLocationName(locationCode);
 
   const statusButtonClass = `badge ${applyStatusClass(status)}`;
 
