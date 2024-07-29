@@ -13,16 +13,13 @@ interface Props {
 }
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
-  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status } = useAppSelector(
+  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
   const { violationInProgress, location, area } = useAppSelector(
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
-
-  // used to indicate what sections should be rendered in the popup
-  const renderHWCRSection = COMPLAINT_TYPES.HWCR === complaintType;
 
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
@@ -43,15 +40,19 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">
-            {renderHWCRSection ? (
+            {complaintType == "HWCR" && (
               <div>
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
               </div>
-            ) : (
+            )}
+
+            {complaintType == "ERS" && (
               <div>
                 {violationType} • {inProgressInd}
               </div>
             )}
+
+            {complaintType == "GIR" && <div>{girType}</div>}
           </div>
         </div>
         <div className="comp-map-popup-details">
@@ -62,7 +63,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </div>
             <div>
               <dt className="text-muted">Officer Assigned</dt>
-              <dd id="comp-details-assigned-officer-name-text-id">{getFirstInitialAndLastName(officerAssigned)}</dd>
+              <dd id="comp-details-assigned-officer-name-text-id">{officerAssigned}</dd>
             </div>
             <div>
               <dt className="text-muted">Community</dt>
