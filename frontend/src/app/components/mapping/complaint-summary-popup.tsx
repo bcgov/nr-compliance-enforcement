@@ -40,19 +40,19 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">
-            {complaintType == "HWCR" && (
+            {complaintType === "HWCR" && (
               <div>
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
               </div>
             )}
 
-            {complaintType == "ERS" && (
+            {complaintType === "ERS" && (
               <div>
                 {violationType} • {inProgressInd}
               </div>
             )}
 
-            {complaintType == "GIR" && <div>{girType}</div>}
+            {complaintType === "GIR" && <div>{girType}</div>}
           </div>
         </div>
         <div className="comp-map-popup-details">
