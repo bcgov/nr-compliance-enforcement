@@ -131,7 +131,26 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
+    updateGeneralComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaintDto>) => {
+      const { payload: updatedComplaint } = action;
+      const { complaintItems } = current(state);
+      const { general } = complaintItems;
 
+      const index = general.findIndex(({ girId }) => girId === updatedComplaint.girId);
+
+      if (index !== -1) {
+        const { status, delegates } = updatedComplaint;
+
+        let complaint = { ...general[index], status, delegates };
+
+        const update = [...general];
+        update[index] = complaint;
+
+        const updatedItems = { ...complaintItems, general: update };
+
+        return { ...state, complaintItems: updatedItems };
+      }
+    },
     updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaintDto>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
@@ -215,6 +234,7 @@ export const {
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
+  updateGeneralComplaintByRow,
   updateAllegationComplaintByRow,
   updateGeneralIncidentComplaintByRow,
   setMappedComplaints,

@@ -69,31 +69,30 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
   };
 
   return (
-    <>
+    <Card className="comp-map-container">
       {hideMarker && <NonDismissibleAlert />}
-      <Card>
-        <MapContainer
-          id="map"
-          center={markerPosition}
-          zoom={12}
-          style={{ height: "400px", width: "100%" }}
-          className="map-container"
-        >
-          <MapGestureHandler />
-          <Centerer />
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {!hideMarker && (
-            <Marker
-              data-testid="complaint-location-marker"
-              position={markerPosition}
-              icon={customMarkerIcon}
-              draggable={draggable}
-              eventHandlers={{ dragend: handleMarkerDragEnd }}
-            ></Marker>
-          )}
-        </MapContainer>
-      </Card>
-    </>
+
+      <MapContainer
+        id="map"
+        center={markerPosition}
+        zoom={12}
+        style={{ height: "400px", width: "100%" }}
+        className="map-container"
+      >
+        <MapGestureHandler />
+        <Centerer />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        {!hideMarker && (
+          <Marker
+            data-testid="complaint-location-marker"
+            position={markerPosition}
+            icon={customMarkerIcon}
+            draggable={draggable}
+            eventHandlers={{ dragend: handleMarkerDragEnd }}
+          ></Marker>
+        )}
+      </MapContainer>
+    </Card>
   );
 };
 

@@ -296,8 +296,8 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
             <CompInput
               id={`amount-used-${id}`}
               divid={`amount-used-${id}-div`}
-              type="input"
-              placeholder=""
+              type="number"
+              min={0}
               inputClass="comp-form-control"
               value={amountUsed}
               error={amountUsedError}
@@ -336,8 +336,8 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 <CompInput
                   id={`amount-discarded-${id}`}
                   divid={`amount-discarded-${id}-div`}
-                  type="input"
-                  placeholder=""
+                  type="number"
+                  min={0}
                   inputClass="comp-form-control"
                   value={amountDiscarded}
                   error={amountDiscardedError}

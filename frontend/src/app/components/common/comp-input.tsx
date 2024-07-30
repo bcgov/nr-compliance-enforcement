@@ -19,6 +19,8 @@ type Props = {
   cols?: number;
   placeholder?: string;
   maxLength?: number;
+  min?: number;
+  max?: number;
   step?: number | string;
 };
 
@@ -41,6 +43,8 @@ export const CompInput: FC<Props> = ({
   cols,
   step,
   maxLength,
+  min,
+  max,
   onBlur = noop,
   onChange = noop,
   onKeyDown = noop,
@@ -74,6 +78,8 @@ export const CompInput: FC<Props> = ({
     disabled: disabled,
     placeholder: placeholder,
     maxLength: maxLength,
+    min: min,
+    max: max,
   };
 
   if (type === "text") {

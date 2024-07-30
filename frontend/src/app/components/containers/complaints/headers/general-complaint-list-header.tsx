@@ -35,6 +35,14 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           sortDirection={sortDirection}
         />
 
+        <SortableHeader
+          title="Community"
+          sortFnc={handleSort}
+          sortKey="area_name"
+          currentSort={sortKey}
+          sortDirection={sortDirection}
+        />
+
         <th className="unsortable">
           <div className="comp-header-label">Location/Address</div>
         </th>
