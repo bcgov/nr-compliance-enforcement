@@ -24,7 +24,7 @@ export class OfficerController {
   }
 
   @Get()
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   findAll() {
     return this.officerService.findAll();
   }
@@ -48,7 +48,7 @@ export class OfficerController {
   }
 
   @Get("/find-by-userid/:userid")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   findByUserId(@Param("userid") userid: string) {
     return this.officerService.findByUserId(userid);
   }

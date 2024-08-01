@@ -21,7 +21,7 @@ export class CodeTableController {
   constructor(private readonly service: CodeTableService) {}
 
   @Get(":table")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
@@ -32,7 +32,7 @@ export class CodeTableController {
   }
 
   @Get("/organization-by-agency/:agency")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async getOrganizationsByAgency(@Param("agency") agency: string): Promise<OrganizationCodeTable[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
@@ -43,7 +43,7 @@ export class CodeTableController {
   }
 
   @Get("/regions-by-agency/:agency")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async getRegionsByAgency(@Param("agency") agency: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
@@ -54,7 +54,7 @@ export class CodeTableController {
   }
 
   @Get("/zones-by-agency/:agency")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async getZonesByAgency(@Param("agency") agency: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
@@ -65,7 +65,7 @@ export class CodeTableController {
   }
 
   @Get("/communities-by-agency/:agency")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async getCommunitiesByAgency(@Param("agency") agency: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
@@ -84,7 +84,7 @@ export class CaseManagementCodeTableController {
   private readonly logger = new Logger(CaseManagementCodeTableController.name);
 
   @Get(":table")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     this.logger.debug("in case management: " + JSON.stringify(table));
     if (!AvailableCodeTables.includes(table)) {
