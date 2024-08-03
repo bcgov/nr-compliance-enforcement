@@ -26,6 +26,8 @@ import { AutomapperModule } from "@automapper/nestjs";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
+import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
+import { StagingComplaintModule } from "../staging_complaint/staging_complaint.module";
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.m
     AttractantHwcrXrefModule,
     AutomapperModule,
     ComplaintUpdatesModule,
+    StagingComplaintModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService],

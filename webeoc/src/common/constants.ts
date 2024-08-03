@@ -12,6 +12,16 @@ export const STREAM_TOPICS = {
   STAGING_COMPLAINTS: "new_staging_complaints",
   COMPLAINT_UPDATE: "updated_complaints",
   STAGING_COMPLAINT_UPDATE: "new_staging_complaint_update",
+  STAGE_ACTION_TAKEN: "stage-action-taken",
+  STAGE_UPDATE_ACTION_TAKEN: "stage-update-action-taken",
   ACTION_TAKEN: "action-taken",
   UPDATE_ACTION_TAKEN: "update-action-taken",
+};
+
+export const STAGING_APIS = {
+  ACTION_TAKEN: "complaint/staging/action-taken",
+};
+
+export const PROCESSING_APIS = {
+  ACTION_TAKEN: "complaint/process/action-taken",
 };

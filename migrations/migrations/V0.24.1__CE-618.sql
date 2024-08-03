@@ -49,10 +49,10 @@ comment on column public.action_taken.update_utc_timestamp is 'The timestamp whe
 CREATE TABLE
   action_taken_h (
     h_action_taken_guid uuid NOT NULL DEFAULT uuid_generate_v4 (),
-    target_row_id varchar(20) NOT NULL,
+    target_row_id uuid NOT NULL,
     operation_type char(1) NOT NULL,
     operation_user_id varchar(32) NOT NULL DEFAULT current_user,
-    operation_executed_at timestamp NOT NULL DEFAULT now (),
+    operation_executed_at timestamp NOT NULL DEFAULT now(),
     data_after_executed_operation jsonb,
     CONSTRAINT "PK_h_action_taken_guid" PRIMARY KEY (h_action_taken_guid)
   );
@@ -78,18 +78,21 @@ CREATE
 or REPLACE TRIGGER actntkn_history_trigger BEFORE INSERT
 OR DELETE
 OR
-UPDATE ON action_taken FOR EACH ROW EXECUTE PROCEDURE audit_history ('action_taken_h', 'action_taken_guid');
+UPDATE ON action_taken FOR EACH ROW
+EXECUTE PROCEDURE audit_history ('action_taken_h', 'action_taken_guid');
 
 -- 
 -- Add new webeoc_identifier column to complaint 
 -- 
-ALTER TABLE public.complaint ADD webeoc_identifier VARCHAR(20) NULL;
+ALTER TABLE public.complaint
+ADD webeoc_identifier VARCHAR(20) NULL;
 
 COMMENT ON COLUMN public.complaint.webeoc_identifier IS 'Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs';
 
 -- 
 -- Add new webeoc_identifier column to complaint_update 
 -- 
-ALTER TABLE public.complaint_update ADD webeoc_identifier VARCHAR(20) NULL;
+ALTER TABLE public.complaint_update
+ADD webeoc_identifier VARCHAR(20) NULL;
 
 COMMENT ON COLUMN public.complaint_update.webeoc_identifier IS 'Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs';

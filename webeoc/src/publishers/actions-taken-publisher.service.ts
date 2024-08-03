@@ -21,19 +21,49 @@ export class ActionsTakenPublisherService {
 
   private codec = JSONCodec<ActionTaken>();
 
-  publishAction = async (action: ActionTaken): Promise<void> => {
+  //--
+  //-- Adds a message to nats to send an action taken to the
+  //-- NatCom backend in order to stage an action-taken
+  //-- The action-taken is the payload that will be sent to the NatCom backend
+  //--
+  publishStagedActionTaken = async (action: ActionTaken): Promise<void> => {
     try {
       const msg = this.codec.encode(action);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-${action.action_taken_guid}-${action.action_datetime}`);
-      const ack = await this.jsClient.publish(STREAM_TOPICS.ACTION_TAKEN, msg, { headers: natsHeaders });
+      natsHeaders.set("Nats-Msg-Id", `action-taken-staging-${action.action_taken_guid}-${action.action_datetime}`);
+      const ack = await this.jsClient.publish(STREAM_TOPICS.STAGE_ACTION_TAKEN, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
-        this.logger.debug(`New action-taken: ${action.action_taken_guid}`);
+        this.logger.debug(`Action-taken ready to be added to staging table: ${action.action_taken_guid}`);
       } else {
-        this.logger.debug(`Action-taken already published: ${action.action_taken_guid}`);
+        this.logger.debug(`Action-taken already added to staging table: ${action.action_taken_guid}`);
       }
     } catch (error) {
-      this.logger.error(`Error publishing action-taken: ${error.message}`, error.stack);
+      this.logger.error(`Unable to process request: ${error.message}`, error.stack);
+      throw error;
+    }
+  };
+
+  //--
+  //-- Adds a message to the nats message queue to send a request to the
+  //-- NatCom backend to convert a staged action-taken to an actual action-taken
+  //-- the id thats used is the unique identifier for the action-taken due to the lack of
+  //-- complaint-id at this point
+  //--
+  publishActionTaken = async (id: string): Promise<void> => {
+    try {
+      const natsHeaders = headers(); // used to look for complaints that have already been submitted
+      natsHeaders.set("Nats-Msg-Id", `action-taken-process-${id}`);
+      const ack = await this.jsClient.publish(STREAM_TOPICS.ACTION_TAKEN, id, {
+        headers: natsHeaders,
+      });
+
+      if (!ack?.duplicate) {
+        this.logger.debug(`Action-taken ready to be moved to action-taken table: ${id}`);
+      } else {
+        this.logger.debug(`Action-taken already added to action-taken table: ${id}`);
+      }
+    } catch (error) {
+      this.logger.error(`Unable to process request: ${error.message}`, error.stack);
       throw error;
     }
   };

@@ -1,8 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, StringCodec } from "nats";
+import { AckPolicy, connect, JetStreamManager, JsMsg, NatsConnection, StorageType, StringCodec } from "nats";
 import { ActionsTakenPublisherService } from "src/publishers/actions-taken-publisher.service";
 import { NATS_DURABLE_COMPLAINTS, STREAM_TOPICS, STREAMS } from "src/common/constants";
 import { ActionTaken } from "src/types/actions-taken/action-taken";
+import { ComplaintApiService } from "src/complaint-api-service/complaint-api.service";
+import { ActionTakenDto } from "src/types/actions-taken/action-taken-dto";
 
 @Injectable()
 export class ActionsTakenSubscriberService implements OnModuleInit {
@@ -11,9 +13,8 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   private jsm: JetStreamManager | null = null;
 
   constructor(
-    // private readonly service: StagingComplaintsApiService,
-    // private readonly complaintsPublisherService: ComplaintsPublisherService,
-    private readonly _publisher: ActionsTakenPublisherService,
+    private readonly service: ComplaintApiService,
+    private readonly publisher: ActionsTakenPublisherService,
   ) {}
 
   async onModuleInit() {
@@ -33,7 +34,12 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
 
     const streamConfig = {
       name: STREAMS.ACTIONS_TAKEN,
-      subjects: [STREAM_TOPICS.ACTION_TAKEN, STREAM_TOPICS.UPDATE_ACTION_TAKEN],
+      subjects: [
+        STREAM_TOPICS.ACTION_TAKEN,
+        STREAM_TOPICS.UPDATE_ACTION_TAKEN,
+        STREAM_TOPICS.STAGE_ACTION_TAKEN,
+        STREAM_TOPICS.STAGE_UPDATE_ACTION_TAKEN,
+      ],
       storage: StorageType.Memory,
       max_age: 10 * 60 * 60 * 1e9, // 10 minutes in nanoseconds
       duplicateWindow: 10 * 60 * 1e9, // 10 minutes in nanoseconds
@@ -61,10 +67,11 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
     for await (const message of iter) {
       const decodedData = sc.decode(message.data);
       try {
+        //-- push a new message to add the action-taken to the staging table
         if (message.subject === STREAM_TOPICS.ACTION_TAKEN) {
-          await this.handleNewComplaint(message, JSON.parse(decodedData));
-        } else if (message.subject === STREAM_TOPICS.UPDATE_ACTION_TAKEN) {
-          await this.handleNewComplaint(message, JSON.parse(decodedData));
+          await this.publishActionTaken(message, decodedData);
+        } else if (message.subject === STREAM_TOPICS.STAGE_ACTION_TAKEN) {
+          await this.stageActionTaken(message, JSON.parse(decodedData));
         }
       } catch (error) {
         this.logger.error(`Error processing message from ${message.subject}`, error);
@@ -73,13 +80,46 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
     }
   }
 
-  private async handleNewComplaint(message, action: ActionTaken) {
+  //--
+  //-- sends the the action-taken to the NatCom backend to be
+  //-- added to the staging table
+  //--
+  private async stageActionTaken(message, action: ActionTaken) {
     this.logger.debug("Received action-taken:", action?.action_taken_guid);
     const success = await message.ackAck();
     if (success) {
-      console.log(success);
-      // await this.service.createNewComplaintInStaging(complaintMessage);
-      // this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage.incident_number);
+      //-- reshape the action taken, only send the required data
+      const {
+        action_taken_guid: actionTakenId,
+        action_logged_by: loggedBy,
+        action_datetime: actionTimestamp,
+        action_details: details,
+        fk_table_345: webeocId,
+      } = action;
+
+      const record: ActionTakenDto = {
+        actionTakenId,
+        webeocId,
+        loggedBy,
+        actionTimestamp,
+        details,
+        isUpdate: false,
+      };
+
+      this.logger.debug("post message to complaint api for staging");
+      await this.service.stageActionTaken(record);
+      //-- this shouldn't happen here, it should be happening in the backend
+      await this.publisher.publishActionTaken(webeocId);
     }
   }
+
+  //--
+  //-- sends staged action-taken id to the NatCom backend to be
+  //-- published to the action-taken table
+  //--
+  private publishActionTaken = async (message: JsMsg, id: string) => {
+    this.logger.debug("Porcess Staged action-taken:", id);
+    this.service.publishActionTaken(id);
+    message.ackAck();
+  };
 }

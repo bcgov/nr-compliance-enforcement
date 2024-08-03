@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CronExpression } from "@nestjs/schedule";
-import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
+import { ComplaintsPublisherService } from "../publishers/complaints-publisher.service";
 import { Complaint } from "src/types/complaint-type";
 import axios, { AxiosRequestConfig } from "axios";
 import { CronJob } from "cron";
@@ -13,10 +13,10 @@ import { ActionsTakenPublisherService } from "src/publishers/actions-taken-publi
 import { randomUUID } from "crypto";
 
 @Injectable()
-export class WebEOCComplaintsScheduler {
+export class WebEocScheduler {
   private cookie: string;
   private cronJob: CronJob;
-  private readonly logger = new Logger(WebEOCComplaintsScheduler.name);
+  private readonly logger = new Logger(WebEocScheduler.name);
 
   constructor(
     private complaintsPublisherService: ComplaintsPublisherService,
@@ -25,11 +25,14 @@ export class WebEOCComplaintsScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      // await this.fetchAndPublishComplaints(
-      //   WEBEOC_API_PATHS.COMPLAINTS,
-      //   WEBEOC_FLAGS.COMPLAINTS,
-      //   this.publishComplaint.bind(this),
-      // );
+      //-- don't remove these items, these control complaints and complaint updates
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_PATHS.COMPLAINTS,
+        WEBEOC_FLAGS.COMPLAINTS,
+        this.publishComplaint.bind(this),
+      );
+
+      //moo
       // await this.fetchAndPublishComplaints(
       //   WEBEOC_API_PATHS.COMPLAINT_UPDATES,
       //   WEBEOC_FLAGS.COMPLAINT_UPDATES,
@@ -216,6 +219,6 @@ export class WebEOCComplaintsScheduler {
     //-- apply an action_taken_guid
     action.action_taken_guid = randomUUID();
 
-    await this._actionsTakenPublisherService.publishAction(action);
+    await this._actionsTakenPublisherService.publishStagedActionTaken(action);
   };
 }
