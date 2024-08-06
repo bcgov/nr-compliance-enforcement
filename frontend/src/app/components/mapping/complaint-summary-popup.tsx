@@ -13,6 +13,7 @@ interface Props {
 }
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
+
   const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
@@ -20,9 +21,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
   const { violationInProgress, location, area } = useAppSelector(
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
-
-  // used to indicate what sections should be rendered in the popup
-  const renderHWCRSection = COMPLAINT_TYPES.HWCR === complaintType;
 
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
@@ -43,6 +41,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">
+
             {renderHWCRSection ? (
               <div>
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>

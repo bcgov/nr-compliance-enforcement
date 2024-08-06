@@ -114,6 +114,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
+
   const agency = getUserAgency();
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
