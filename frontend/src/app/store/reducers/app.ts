@@ -6,7 +6,7 @@ import Profile from "../../types/app/profile";
 import { UUID } from "crypto";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
-import { generateApiParameters, get } from "../../common/api";
+import { generateApiParameters, get, patch } from "../../common/api";
 import { AUTH_TOKEN } from "../../service/user-service";
 
 import { DropdownOption } from "../../types/app/drop-down-option";
@@ -16,7 +16,7 @@ import { ConfigurationType } from "../../types/configurations/configuration";
 import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
 import { NotificationState } from "../../types/state/notification-state";
-import { ToggleError } from "../../common/toast";
+import { ToggleError, ToggleSuccess } from "../../common/toast";
 import { CodeTableVersionState } from "../../types/state/code-table-version-state";
 import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
@@ -35,6 +35,8 @@ enum ActionTypes {
   SET_CONFIGURATIONS = "app/CONFIGURATIONS",
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
+  SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
+  UPDATE_FEATURE_FLAG = "app/UPDATE_FEATURE_FLAG",
 }
 //-- action creators
 
@@ -51,6 +53,16 @@ export const setConfigurations = (configurations: ConfigurationState) => ({
 export const setCodeTableVersion = (version: CodeTableVersionState) => ({
   type: ActionTypes.SET_CODE_TABLE_VERSION,
   payload: version,
+});
+
+export const setFeatureFlag = (features: any) => ({
+  type: ActionTypes.SET_FEATURE_FLAG,
+  payload: features,
+});
+
+export const updateFeatureFlagState = (feature: any) => ({
+  type: ActionTypes.UPDATE_FEATURE_FLAG,
+  payload: feature,
 });
 
 export const toggleSidebar = () => ({
@@ -245,6 +257,18 @@ export const selectOfficerAgency = (state: RootState): string => {
   return agency;
 };
 
+export const isExperimentalFeatureActive = (state: RootState): boolean => {
+  const { features } = state.app.featureFlag;
+  return features.some((feature: any) => feature.feature_code === "EXPERMFTRS");
+};
+
+export const checkFeatureActive =
+  (featureCode: string) =>
+  (state: RootState): boolean => {
+    const { features } = state.app.featureFlag.appFeatures;
+    return features.some((feature: any) => feature.featureCode === featureCode && feature.isActive === true);
+  };
+
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
   const token = localStorage.getItem(AUTH_TOKEN);
@@ -385,13 +409,50 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const getFeatureFlag = (): AppThunk => async (dispatch) => {
+  try {
+    console.log("ALOOOOO");
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/feature-flag`);
+    const response: any = await get(dispatch, parameters);
+    if (response) {
+      dispatch(
+        setFeatureFlag({
+          allFeatures: response,
+          //if user has multiple roles (COS, CEEB, ...) default feature flag to COS's features
+          appFeatures: response.find((item: any) => item.agency === "COS"),
+        }),
+      );
+    }
+  } catch (error) {
+    ToggleError("Unable to get feature flag");
+  }
+};
+
+export const updateFeatureFlag =
+  (id: string, isActive: boolean): AppThunk =>
+  async (dispatch) => {
+    try {
+      const update = {
+        feature_agency_xref_guid: id,
+        active_ind: isActive,
+      };
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/${id}`, update);
+      const response = await patch(dispatch, parameters);
+      console.log(response);
+      if (response) {
+        ToggleSuccess("Feature has been updated");
+      }
+    } catch (err) {
+      ToggleError("Unable to update feature");
+    }
+  };
+
 export const validateComsAccess =
   (token: string): ThunkAction<Promise<ComsInviteResponse>, RootState, unknown, Action<ComsInviteResponse>> =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(`${config.COMS_URL}/permission/invite/${token}`);
       const response = await get(dispatch, parameters);
-      console.log(response);
       return { status: "success" };
     } catch (error) {
       const { response } = error as AxiosError;
@@ -444,6 +505,13 @@ const initialState: AppState = {
       configurationCode: "",
       configurationValue: "",
       activeInd: true,
+    },
+  },
+  featureFlag: {
+    allFeatures: [],
+    appFeatures: {
+      agency: "COS",
+      features: [],
     },
   },
 };
@@ -556,6 +624,18 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       } = action;
       const update = { complaintManagement, caseManagement };
       return { ...state, codeTableVersion: update };
+    }
+    case ActionTypes.SET_FEATURE_FLAG: {
+      const { payload } = action;
+      return { ...state, featureFlag: payload };
+    }
+    case ActionTypes.UPDATE_FEATURE_FLAG: {
+      const { payload } = action;
+      const { features } = state.featureFlag.appFeatures;
+      features.map((feature: any) => {
+        if (feature.id === payload.id) feature.isActive = payload.isActive;
+      });
+      return { ...state, featureFlag: { ...features } };
     }
     default:
       return state;

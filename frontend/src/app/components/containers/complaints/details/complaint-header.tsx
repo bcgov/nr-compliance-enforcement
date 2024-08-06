@@ -7,10 +7,10 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../
 
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
-import { openModal } from "../../../../store/reducers/app";
+import { checkFeatureActive, openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
-import config from "../../../../../config";
 import { exportComplaint } from "../../../../store/reducers/documents-thunks";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -43,6 +43,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     complaintAgency,
     girType,
   } = useAppSelector(selectComplaintHeader(complaintType));
+  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
@@ -94,7 +95,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           <div className="comp-complaint-breadcrumb">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
-                {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+                {showExperimentalFeature && (
                   <li className="breadcrumb-item">
                     <i className="bi bi-house-door"></i> Home
                   </li>

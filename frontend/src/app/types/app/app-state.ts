@@ -26,4 +26,6 @@ export interface AppState {
 
   configurations: ConfigurationState;
   codeTableVersion: CodeTableVersionState;
+
+  featureFlag: any;
 }
