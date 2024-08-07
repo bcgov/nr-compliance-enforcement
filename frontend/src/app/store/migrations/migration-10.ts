@@ -3,6 +3,7 @@ export const AddAgencyCode = {
     return {
       ...state,
       codeTables: {
+        ...state.codeTables,
         violation: {
           agencyCode: "COS",
         },
