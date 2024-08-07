@@ -19,7 +19,7 @@ export class OfficeController {
   constructor(private readonly officeService: OfficeService) {}
 
   @Get("/offices-by-agency")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async findOffices(): Promise<Array<OfficeAssignmentDto>> {
     const result = await this.officeService.findOffices();
     return result;

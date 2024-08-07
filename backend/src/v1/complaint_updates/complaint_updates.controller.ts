@@ -16,13 +16,13 @@ export class ComplaintUpdatesController {
   private readonly logger = new Logger(ComplaintUpdatesController.name);
 
   @Get("/:id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   findByComplaintId(@Param("id") id: string) {
     return this.configurationService.findByComplaintId(id);
   }
 
   @Get("/count/:id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   getComplaintChangeCount(@Param("id") id: string) {
     return this.configurationService.getComplaintChangeCount(id);
   }
