@@ -19,6 +19,7 @@ import { CompSelect } from "../../common/comp-select";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
 import Option from "../../../types/app/option";
+import { getUserAgency } from "../../../service/user-service";
 
 type Props = {
   type: string;
@@ -46,10 +47,11 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   if (officers && officers[0]?.value !== "Unassigned") {
     officers.unshift({ value: "Unassigned", label: "Unassigned" });
   }
+  const agency = getUserAgency();
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
-  const violationTypes = useAppSelector(selectViolationCodeDropdown);
+  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
