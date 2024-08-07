@@ -93,7 +93,6 @@ export const CompSelect: FC<Props> = ({
         defaultValue={defaultOption}
         isDisabled={isDisabled}
         menuPlacement="auto"
-        menuPosition="fixed"
         isClearable={isClearable ?? false}
       />
       {enableValidation && <div className="error-message">{errorMessage}</div>}

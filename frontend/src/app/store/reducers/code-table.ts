@@ -651,13 +651,29 @@ export const selectSpeciesCodeDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectViolationCodeDropdown = (state: RootState): Array<Option> => {
+export const selectViolationCodeDropdown =
+  (agency: string) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { violation },
+    } = state;
+
+    const data = violation
+      .filter(({ agencyCode }) => agencyCode === agency)
+      .map(({ violation, longDescription }) => {
+        const item: Option = { label: longDescription, value: violation };
+        return item;
+      });
+    return data;
+  };
+
+export const selectGirTypeCodeDropdown = (state: RootState): Array<Option> => {
   const {
-    codeTables: { violation },
+    codeTables: { "gir-type": girType },
   } = state;
 
-  const data = violation.map(({ violation, longDescription }) => {
-    const item: Option = { label: longDescription, value: violation };
+  const data = girType.map(({ girType, longDescription }) => {
+    const item: Option = { label: longDescription, value: girType };
     return item;
   });
   return data;

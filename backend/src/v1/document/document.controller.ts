@@ -19,7 +19,7 @@ export class DocumentController {
   constructor(private readonly service: DocumentService) {}
 
   @Get("/export-complaint/:type")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async exportComplaint(
     @Param("type") type: COMPLAINT_TYPE,
     @Query("id") id: string,

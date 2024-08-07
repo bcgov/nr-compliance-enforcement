@@ -87,7 +87,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
 
   return (
     <fieldset className="comp-animal-drugs-authorized-by">
-      <legend>Drugs authorized by</legend>
+      <legend>Drugs administered by</legend>
       <div className="comp-details-form">
         <div
           className="comp-details-form-row"

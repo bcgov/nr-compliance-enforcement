@@ -140,8 +140,8 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
           <h4>Animal {pad(animalNumber.toString(), 2)}</h4>
           <div className="comp-card-header-metadata fw-bold text-muted">
             <span>{animal}</span>
-            {data?.sex && <span>{animalSex}</span>}
-            {data?.age && <span>{animalAge}</span>}
+            {data?.sex && <>{data?.sex === "U" ? <span>Sex unknown</span> : <span>{animalSex}</span>}</>}
+            {data?.age && <>{data?.age === "UNKN" ? <span>Age unknown</span> : <span>{animalAge}</span>}</>}
           </div>
         </div>
         <div className="comp-card-header-actions">
