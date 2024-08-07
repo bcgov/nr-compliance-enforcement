@@ -141,7 +141,7 @@ export const DrugItem: FC<props> = ({
           xs={12}
           md={6}
         >
-          <dt>Officer</dt>
+          <dt>Drug administred by</dt>
           <dd>{assignedOfficer()}</dd>
         </Col>
         <Col
