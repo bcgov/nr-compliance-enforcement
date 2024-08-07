@@ -51,13 +51,14 @@ import { UUID } from "crypto";
 import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
 import { ComplaintAlias } from "../../../../types/app/aliases";
 import AttachmentEnum from "../../../../constants/attachment-enum";
+import { getUserAgency } from "../../../../service/user-service";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const userid = useAppSelector(userId);
-  const agency = useAppSelector(selectOfficerAgency);
+  const agency = getUserAgency();
   const officerList = useAppSelector(selectOfficersByAgency(agency));
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
@@ -65,7 +66,7 @@ export const CreateComplaint: FC = () => {
   const areaCodes = useAppSelector(selectCommunityCodeDropdown);
   const attractantCodes = useAppSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
-  const violationTypeCodes = useAppSelector(selectViolationCodeDropdown) as Option[];
+  const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
   const handleSlideCountChange = (count: number) => {
@@ -88,7 +89,9 @@ export const CreateComplaint: FC = () => {
 
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
-  const [complaintType, setComplaintType] = useState<string>(COMPLAINT_TYPES.HWCR);
+  const [complaintType, setComplaintType] = useState<string>(
+    agency == "EPO" ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR,
+  );
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
@@ -132,7 +135,7 @@ export const CreateComplaint: FC = () => {
         locationSummary: "",
         locationDetail: "",
         status: "OPEN",
-        ownedBy: "COS",
+        ownedBy: agency,
         reportedByOther: "",
         reportedOn: currentDate,
         updatedOn: currentDate,
@@ -626,29 +629,31 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           {/* Complaint Type */}
-          <div
-            className="comp-details-form-row"
-            id="nature-of-complaint-pair-id"
-          >
-            <label
-              id="nature-of-complaint-label-id"
-              htmlFor="complaint-type-select-id"
+          {agency === "COS" && (
+            <div
+              className="comp-details-form-row"
+              id="nature-of-complaint-pair-id"
             >
-              Complaint Type<span className="required-ind">*</span>
-            </label>
-            <div className="comp-details-edit-input">
-              <ValidationSelect
-                id="complaint-type-select-id"
-                options={complaintTypeCodes}
-                placeholder="Select"
-                className="comp-details-input"
-                classNamePrefix="comp-select"
-                defaultValue={complaintTypeCodes.find((option) => option.value === complaintType)}
-                onChange={(e) => handleComplaintChange(e)}
-                errMsg={complaintTypeMsg}
-              />
+              <label
+                id="nature-of-complaint-label-id"
+                htmlFor="complaint-type-select-id"
+              >
+                Complaint Type<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-edit-input">
+                <ValidationSelect
+                  id="complaint-type-select-id"
+                  options={complaintTypeCodes}
+                  placeholder="Select"
+                  className="comp-details-input"
+                  classNamePrefix="comp-select"
+                  defaultValue={complaintTypeCodes.find((option) => option.value === complaintType)}
+                  onChange={(e) => handleComplaintChange(e)}
+                  errMsg={complaintTypeMsg}
+                />
+              </div>
             </div>
-          </div>
+          )}
           <div
             className="comp-details-form-row"
             id="officer-assigned-pair-id"
