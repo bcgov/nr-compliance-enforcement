@@ -55,6 +55,13 @@ export class ViolationCode {
   @Column()
   update_utc_timestamp: Date;
 
+  @ApiProperty({
+    example: "COS",
+    description: "The agency code",
+  })
+  @Column({ length: 10 })
+  agency_code: string;
+
   constructor(violation_code?: string) {
     this.violation_code = violation_code;
   }
