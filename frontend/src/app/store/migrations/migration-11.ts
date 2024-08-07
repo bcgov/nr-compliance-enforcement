@@ -29,10 +29,6 @@ export const RebuildCodeTable = {
         equipment: [],
         "gir-type": [],
         violation: [],
-        // violation: {
-        //   agencyCode: "COS",
-        //   violation: [],
-        // },
       },
     };
   },
