@@ -29,7 +29,7 @@ export class ComplaintController {
   private readonly logger = new Logger(ComplaintController.name);
 
   @Get(":complaintType")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async findAllByType(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto | AllegationComplaintDto>> {
@@ -37,19 +37,19 @@ export class ComplaintController {
   }
 
   @Get("/map/search/:complaintType")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   mapSearch(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
     return this.service.mapSearch(complaintType, model);
   }
 
   @Get("/search/:complaintType")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   search(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
     return this.service.search(complaintType, model);
   }
 
   @Patch("/update-status-by-id/:id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async updateComplaintStatusById(@Param("id") id: string, @Body() model: any): Promise<ComplaintDto> {
     const { status } = model;
     try {
@@ -60,7 +60,7 @@ export class ComplaintController {
   }
 
   @Patch("/update-by-id/:complaintType/:id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
@@ -70,7 +70,7 @@ export class ComplaintController {
   }
 
   @Get("/by-complaint-identifier/:complaintType/:id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
@@ -82,7 +82,7 @@ export class ComplaintController {
   }
 
   @Post("/create/:complaintType")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async create(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Body() model: WildlifeComplaintDto | AllegationComplaintDto,
@@ -91,7 +91,7 @@ export class ComplaintController {
   }
 
   @Get("/stats/:complaintType/by-zone/:zone")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   statsByZone(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("zone") zone: string,
