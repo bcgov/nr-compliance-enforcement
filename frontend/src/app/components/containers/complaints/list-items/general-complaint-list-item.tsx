@@ -141,7 +141,6 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
           className={`sortableHeader ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-        <td
           {location}
         </td>
         <td
