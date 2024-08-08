@@ -72,6 +72,10 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
           await this.publishActionTaken(message, decodedData);
         } else if (message.subject === STREAM_TOPICS.STAGE_ACTION_TAKEN) {
           await this.stageActionTaken(message, JSON.parse(decodedData));
+        } else if (message.subject === STREAM_TOPICS.UPDATE_ACTION_TAKEN) {
+          await this.publishActionTakenUpdate(message, decodedData);
+        } else if (message.subject === STREAM_TOPICS.STAGE_UPDATE_ACTION_TAKEN) {
+          await this.stageActionTakenUpdate(message, JSON.parse(decodedData));
         }
       } catch (error) {
         this.logger.error(`Error processing message from ${message.subject}`, error);
@@ -84,7 +88,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- sends the the action-taken to the NatCom backend to be
   //-- added to the staging table
   //--
-  private async stageActionTaken(message, action: ActionTaken) {
+  private stageActionTaken = async (message, action: ActionTaken) => {
     this.logger.debug("Received action-taken:", action?.action_taken_guid);
     const success = await message.ackAck();
     if (success) {
@@ -111,15 +115,55 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
       //-- this shouldn't happen here, it should be happening in the backend
       await this.publisher.publishActionTaken(webeocId);
     }
-  }
+  };
+
+  private stageActionTakenUpdate = async (message, action: ActionTaken) => {
+    this.logger.debug("Received action-taken-update:", action?.action_taken_guid);
+    const success = await message.ackAck();
+
+    if (success) {
+      //-- reshape the action taken, only send the required data
+      const {
+        action_taken_guid: actionTakenId,
+        action_logged_by: loggedBy,
+        action_datetime: actionTimestamp,
+        action_details: details,
+        fk_table_346: webeocId,
+      } = action;
+
+      const record: ActionTakenDto = {
+        actionTakenId,
+        webeocId,
+        loggedBy,
+        actionTimestamp,
+        details,
+        isUpdate: true,
+      };
+
+      this.logger.debug("post message to complaint api for staging");
+      await this.service.stageActionTakenUpdate(record);
+      //-- this shouldn't happen here, it should be happening in the backend
+      await this.publisher.publishActionTakenUpdate(webeocId);
+    }
+  };
 
   //--
   //-- sends staged action-taken id to the NatCom backend to be
   //-- published to the action-taken table
   //--
   private publishActionTaken = async (message: JsMsg, id: string) => {
-    this.logger.debug("Porcess Staged action-taken:", id);
+    this.logger.debug("Process Staged action-taken:", id);
     this.service.publishActionTaken(id);
+    message.ackAck();
+  };
+
+  //--
+  //-- sends staged action-taken-update id to the NatCom backend to be
+  //-- published to the action-taken table
+  //--
+  private publishActionTakenUpdate = async (message: JsMsg, id: string) => {
+    this.logger.debug("Prcess Staged action-taken-update:", id);
+    this.service.publishActionTakenUpdate(id);
     message.ackAck();
   };
 }

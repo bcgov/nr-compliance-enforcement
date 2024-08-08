@@ -9,7 +9,8 @@ export interface ActionTaken {
   entrydate: Date;
   subscribername: string;
   prevdataid: string;
-  fk_table_345: string;
+  fk_table_345?: string;
+  fk_table_346?: string;
   action_datetime: Date;
   action_logged_by: string;
   action_logged_by_position: string;

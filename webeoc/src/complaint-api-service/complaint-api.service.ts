@@ -27,6 +27,20 @@ export class ComplaintApiService {
     }
   };
 
+  //-- send the action taken to the complaint-management backend and add
+  //-- the action taken to the staging table for processing
+  stageActionTakenUpdate = async (record: ActionTakenDto) => {
+    try {
+      const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_APIS.UPDATE_ACTION_TAKEN}`;
+      this.logger.debug(`Posting action-taken-update to staging. API URL: ${url}`);
+
+      await axios.post(url, record, this._apiConfig);
+    } catch (error) {
+      this.logger.error("Error calling ActionTaken Staging Api:", error);
+      throw error;
+    }
+  };
+
   publishActionTaken = async (id: string) => {
     try {
       const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.ACTION_TAKEN}/${id}`;
@@ -38,17 +52,16 @@ export class ComplaintApiService {
       throw error;
     }
   };
-}
 
-/*
+  publishActionTakenUpdate = async (id: string) => {
     try {
-      this.logger.debug("Creating new complaint based on new complaint from webeoc.");
-      const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/staging-complaint/process/${complaint_identifier}`;
-      this.logger.debug(`Posting new complaint. API URL: ${apiUrl}`);
+      const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.UPDATE_ACTION_TAKEN}/${id}`;
+      this.logger.debug(`Processing action-taken-update from staging. API URL: ${url}`);
 
-      await axios.post(apiUrl, {}, this._apiConfig);
+      await axios.post(url, {}, this._apiConfig);
     } catch (error) {
-      this.logger.error("Error calling Complaint API:", error);
+      this.logger.error("Error calling ActionTaken Processing Api:", error);
       throw error;
     }
-*/
+  };
+}

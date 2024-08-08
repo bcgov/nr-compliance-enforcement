@@ -32,14 +32,14 @@ export class WebEocScheduler {
         this.publishComplaint.bind(this),
       );
 
-      //moo
-      // await this.fetchAndPublishComplaints(
-      //   WEBEOC_API_PATHS.COMPLAINT_UPDATES,
-      //   WEBEOC_FLAGS.COMPLAINT_UPDATES,
-      //   this.publishComplaintUpdate.bind(this),
-      // );
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_PATHS.COMPLAINT_UPDATES,
+        WEBEOC_FLAGS.COMPLAINT_UPDATES,
+        this.publishComplaintUpdate.bind(this),
+      );
 
       await this._handleActionTaken(WEBEOC_API_PATHS.ACTIONS_TAKEN, this._publishAction.bind(this));
+      await this._handleActionTakenUpdate(WEBEOC_API_PATHS.ACTIONS_TAKEN_UPDATES, this._publishActionUpdate.bind(this));
     });
 
     this.cronJob.start();
@@ -198,6 +198,38 @@ export class WebEocScheduler {
     }
   };
 
+  private _fetchActionUpdates = async (path: string) => {
+    const dateFilter = this.getDateFilter();
+    const url = `${process.env.WEBEOC_URL}/${path}`;
+    const config: AxiosRequestConfig = {
+      headers: {
+        Cookie: this.cookie,
+      },
+    };
+
+    const body = {
+      customFilter: {
+        boolean: "and",
+        items: [
+          dateFilter,
+          {
+            fieldname: WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES,
+            operator: "Equals",
+            fieldvalue: "Yes",
+          },
+        ],
+      },
+    };
+
+    try {
+      const response = await axios.post(url, body, config);
+      return response?.data;
+    } catch (error) {
+      this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
+      throw error;
+    }
+  };
+
   private _handleActionTaken = async (path: string, publish: any) => {
     try {
       await this.authenticateWithWebEOC();
@@ -215,10 +247,34 @@ export class WebEocScheduler {
     }
   };
 
+  private _handleActionTakenUpdate = async (path: string, publish: any) => {
+    try {
+      await this.authenticateWithWebEOC();
+      const data = await this._fetchActionUpdates(path);
+
+      if (data) {
+        this.logger.debug(`Found ${data?.length} action_taken_updates from WebEOC`);
+
+        for (const item of data) {
+          await publish(item);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Unable to fetch data from WebEOC`, error);
+    }
+  };
+
   private _publishAction = async (action: ActionTaken) => {
     //-- apply an action_taken_guid
     action.action_taken_guid = randomUUID();
 
     await this._actionsTakenPublisherService.publishStagedActionTaken(action);
+  };
+
+  private _publishActionUpdate = async (action: ActionTaken) => {
+    //-- apply an action_taken_guid
+    action.action_taken_guid = randomUUID();
+
+    await this._actionsTakenPublisherService.publishStagedActionTakenUpdate(action);
   };
 }

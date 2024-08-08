@@ -7,10 +7,11 @@ import { StagingActivityCodeEnum } from "../../enum/staging_activity_code.enum";
 import { StagingActivityCode } from "../staging_activity_code/entities/staging_activity_code.entity";
 import { WebEOCComplaint } from "../../types/webeoc-complaint";
 import { StagingComplaint } from "./entities/staging_complaint.entity";
-import { WEBEOC_REPORT_TYPE } from "../../types/constants";
+import { ACTION_TAKEN_ACTION_TYPES, ACTION_TAKEN_TYPES, WEBEOC_REPORT_TYPE } from "../../types/constants";
 import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
+import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 
 @Injectable()
 export class StagingComplaintService {
@@ -24,6 +25,9 @@ export class StagingComplaintService {
 
     @InjectRepository(Complaint)
     private complaintRepository: Repository<Complaint>,
+
+    @InjectRepository(ComplaintUpdate)
+    private complaintUpdateRepository: Repository<ComplaintUpdate>,
   ) {}
 
   // Creates a new Complaint record in the staging table based on data retrieved from WebEOC.  The new complaint is created based off of the data in the staging table
@@ -217,15 +221,32 @@ export class StagingComplaintService {
     }
   };
 
+  private _findComplaintUpdateIdByWebeocId = async (webeocId: string): Promise<string> => {
+    try {
+      const result = (await this.complaintUpdateRepository
+        .createQueryBuilder("update")
+        .where("update.webeoc_identifier = :webeocId", { webeocId })
+        .orderBy("update.update_utc_timestamp", "DESC")
+        .getOne()) as ComplaintUpdate;
+
+      return result?.complaintId;
+    } catch (error) {
+      this.logger.error(
+        `Unable to find parent complaint update for action-taken-update webeocId: ${webeocId}: error: ${error}`,
+      );
+      throw Error(`Unable to find parent complaint update for action-taken-update webeocId: ${webeocId}`);
+    }
+  };
+
   //-- staging and processing functionality
   //-- add any type of object to the staging table so that it can be processed and added to the correct type
   stageObject = async (type: string, entity: any) => {
-    const _hasExistingActionTaken = async (complaintId): Promise<boolean> => {
+    const _hasExistingActionTaken = async (complaintId, type: string): Promise<boolean> => {
       try {
         const result = await this.repository
           .createQueryBuilder("staging")
           .where("staging.complaint_identifier = :complaintId", { complaintId })
-          .andWhere("staging.staging_activity_code = :status", { status: "ACTIONCTE" })
+          .andWhere("staging.staging_activity_code = :status", { status: type })
           .getOne();
 
         if (result === null) {
@@ -267,23 +288,57 @@ export class StagingComplaintService {
       }
     };
 
+    const _findComplaintUpdateGuidByWebeocId = async (webeocId: string): Promise<string> => {
+      try {
+        const result = (await this.complaintUpdateRepository
+          .createQueryBuilder("update")
+          .where("update.webeoc_identifier = :webeocId", { webeocId })
+          .orderBy("update.update_utc_timestamp", "DESC")
+          .getOne()) as ComplaintUpdate;
+
+        return result?.complaintUpdateGuid;
+      } catch (error) {
+        this.logger.error(
+          `Unable to find parent complaint update for action-taken-update webeocId: ${webeocId}: error: ${error}`,
+        );
+        throw Error(`Unable to find parent complaint update for action-taken-update webeocId: ${webeocId}`);
+      }
+    };
+
     try {
-      if (type === "ACTION-TAKEN") {
+      if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN) {
         //-- check to see if there is a duplicate action-taken
         const complaintId = await this._findComplaintIdByWebeocId(entity["webeocId"]);
+        this.logger.log("webeocId: ", entity["webeocId"]);
 
-        if (complaintId !== null) {
-          const hasExisting = await _hasExistingActionTaken(complaintId);
+        if (complaintId !== undefined) {
+          const hasExisting = await _hasExistingActionTaken(complaintId, ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN);
 
           //-- I'm not sure this is right the original story CE-618 isn't
           //-- exactly clear on how to handle an edit
           if (hasExisting) {
-            console.log("has existing action taken");
-            console.log("has existing: ", hasExisting);
             //-- do we update the existing action taken?
           } else {
             const actionTaken = { ...entity, complaintId };
-            const result = await _stageActionTaken(actionTaken, "ACTIONCTE");
+            const result = await _stageActionTaken(actionTaken, ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN);
+            if (result) {
+            }
+          }
+        }
+      } else if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN_UPDATE) {
+        const complaintId = await this._findComplaintUpdateIdByWebeocId(entity["webeocId"]);
+        const complaintUpdateGuid = await _findComplaintUpdateGuidByWebeocId(entity["webeocId"]);
+
+        if (complaintId !== undefined) {
+          const hasExisting = await _hasExistingActionTaken(complaintId, ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN);
+
+          //-- I'm not sure this is right the original story CE-618 isn't
+          //-- exactly clear on how to handle an edit
+          if (hasExisting) {
+            //-- do we update the existing action taken?
+          } else {
+            const actionTaken = { ...entity, complaintId, complaintUpdateGuid };
+            const result = await _stageActionTaken(actionTaken, ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN);
             if (result) {
             }
           }
@@ -291,18 +346,28 @@ export class StagingComplaintService {
       }
     } catch (error) {
       this.logger.error(
-        `Unable to stage action-taken: ${JSON.stringify(entity)} unable to identify parent complaint: ${error}`,
+        `Unable to stage ${type}: ${JSON.stringify(entity)} unable to identify parent complaint: ${error}`,
       );
     }
-    //-- in future move the complaint staging here
-    // else if(type === "COMPLAINT"){}
   };
 
   processObject = async (type: string, id: string) => {
-    if (type === "ACTION-TAKEN") {
+    if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN) {
       const complaintId = await this._findComplaintIdByWebeocId(id);
-      if (complaintId !== null) {
-        await this.repository.manager.query("SELECT public.process_staging_activity_taken($1)", [complaintId]);
+      if (complaintId !== undefined) {
+        await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [
+          complaintId,
+          ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN,
+        ]);
+      }
+    } else if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN_UPDATE) {
+      const complaintId = await this._findComplaintUpdateIdByWebeocId(id);
+
+      if (complaintId !== undefined) {
+        await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [
+          complaintId,
+          ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN,
+        ]);
       }
     }
   };

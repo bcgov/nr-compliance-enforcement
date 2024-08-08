@@ -1,9 +1,9 @@
--- DROP FUNCTION public.process_staging_activity_taken;
-SET
-  TIMEZONE = 'America/Vancouver';
-
+-- DROP FUNCTION public.process_staging_activity_taken(varchar);
 CREATE
-OR REPLACE FUNCTION process_staging_activity_taken (complaint_id character varying) RETURNS void LANGUAGE PLPGSQL AS $$
+OR REPLACE FUNCTION public.process_staging_activity_taken (
+  complaint_id character varying,
+  action_taken_type character varying
+) RETURNS void LANGUAGE plpgsql AS $function$
 DECLARE
   WEBEOC_USER_ID CONSTANT varchar(6) := 'webeoc'; 
   WEBEOC_ACTION_TIMESTAMP CONSTANT timestamp := NOW()::timestamp;
@@ -11,9 +11,7 @@ DECLARE
   STAGING_STATUS_CODE_PENDING CONSTANT varchar(7) := 'PENDING';
   STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
   STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
-
-  STAGING_ACTIVITY_CODE_ACTION_TAKEN CONSTANT varchar(9) := 'ACTIONCTE';
-
+  
   -- select the stage object
   staged_data jsonb;
 
@@ -31,7 +29,7 @@ BEGIN
   FROM   staging_complaint sc
   WHERE  sc.complaint_identifier = complaint_id
   AND    sc.staging_status_code = STAGING_STATUS_CODE_PENDING 
-  AND    sc.staging_activity_code = STAGING_ACTIVITY_CODE_ACTION_TAKEN; 
+  AND    sc.staging_activity_code = action_taken_type; 
     
   IF staged_data IS NULL THEN
     RETURN;
@@ -68,7 +66,7 @@ BEGIN
   SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
   WHERE  complaint_identifier = complaint_id
   AND    staging_status_code = STAGING_STATUS_CODE_PENDING 
-  AND    staging_activity_code = STAGING_ACTIVITY_CODE_ACTION_TAKEN;
+  AND    staging_activity_code = action_taken_type;
 
   EXCEPTION
   WHEN OTHERS THEN
@@ -77,7 +75,7 @@ BEGIN
     SET    staging_status_code = STAGING_STATUS_CODE_ERROR
     WHERE  complaint_identifier = complaint_id
     AND    staging_status_code = STAGING_STATUS_CODE_PENDING 
-    AND    staging_activity_code = STAGING_ACTIVITY_CODE_ACTION_TAKEN;
+    AND    staging_activity_code = action_taken_type;
   
 
 RAISE notice 'complaint_id: %', complaint_id;
@@ -88,4 +86,4 @@ RAISE notice '_logged_by: %', _logged_by;
 RAISE notice '_action_timestamp: %', _action_timestamp;
 
 END;
-$$;
+$function$;

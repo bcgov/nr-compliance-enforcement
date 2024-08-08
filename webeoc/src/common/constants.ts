@@ -20,8 +20,10 @@ export const STREAM_TOPICS = {
 
 export const STAGING_APIS = {
   ACTION_TAKEN: "complaint/staging/action-taken",
+  UPDATE_ACTION_TAKEN: "complaint/staging/action-taken-update",
 };
 
 export const PROCESSING_APIS = {
   ACTION_TAKEN: "complaint/process/action-taken",
+  UPDATE_ACTION_TAKEN: "complaint/process/action-taken-update",
 };

@@ -14,6 +14,13 @@ export class ComplaintUpdate {
   complaintUpdateGuid: string;
 
   @ApiProperty({
+    example: "24-00001",
+    description: "unique complaint_identifier from webeoc.",
+  })
+  @Column("text", { name: "complaint_identifier", nullable: false })
+  complaintId: string;
+
+  @ApiProperty({
     example: "2",
     description:
       "An integer that is used to reflect the order that complaint updates were entered into the call center system.",

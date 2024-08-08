@@ -17,7 +17,6 @@ import { Public } from "src/auth/decorators/public.decorator";
 import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
 import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 
-
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
 @Controller({
@@ -111,5 +110,19 @@ export class ComplaintController {
   @UseGuards(ApiKeyGuard)
   processNewActionTaken(@Param("id") id: string) {
     this.stagingService.processObject("ACTION-TAKEN", id);
+  }
+
+  @Public()
+  @Post("/staging/action-taken-update")
+  @UseGuards(ApiKeyGuard)
+  stageNewActionTakenUpdate(@Body() action: ActionTaken) {
+    this.stagingService.stageObject("ACTION-TAKEN-UPDATE", action);
+  }
+
+  @Public()
+  @Post("/process/action-taken-update/:id")
+  @UseGuards(ApiKeyGuard)
+  processNewActionTakenUpdate(@Param("id") id: string) {
+    this.stagingService.processObject("ACTION-TAKEN-UPDATE", id);
   }
 }
