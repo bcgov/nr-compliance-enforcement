@@ -19,13 +19,13 @@ export class ConfigurationController {
   private readonly logger = new Logger(ConfigurationController.name);
 
   @Get()
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   findAll() {
     return this.configurationService.findAll();
   }
 
   @Get(":configurationCode")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async findOne(@Param("configurationCode") configurationCode: string, @Token() token) {
     try {
       const result = await this.configurationService.findOne(configurationCode);

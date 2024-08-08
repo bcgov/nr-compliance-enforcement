@@ -651,17 +651,22 @@ export const selectSpeciesCodeDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectViolationCodeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { violation },
-  } = state;
+export const selectViolationCodeDropdown =
+  (agency: string) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { violation },
+    } = state;
 
-  const data = violation.map(({ violation, longDescription }) => {
-    const item: Option = { label: longDescription, value: violation };
-    return item;
-  });
-  return data;
-};
+    const data = violation
+      .filter(({ agencyCode }) => agencyCode === agency)
+      .map(({ violation, longDescription }) => {
+        const item: Option = { label: longDescription, value: violation };
+        return item;
+      });
+    return data;
+  };
+
 export const selectGirTypeCodeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "gir-type": girType },
