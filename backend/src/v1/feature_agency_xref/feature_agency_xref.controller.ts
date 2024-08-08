@@ -4,6 +4,8 @@ import { CreateFeatureAgencyXrefDto } from "./dto/create-feature_agency_xref.dto
 import { UpdateFeatureAgencyXrefDto } from "./dto/update-feature_agency_xref.dto";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
+import { Roles } from "src/auth/decorators/roles.decorator";
+import { Role } from "src/enum/role.enum";
 
 const agencyRoleMap = {
   COS: ["COS Officer", "COS administrator"],
@@ -25,6 +27,7 @@ export class FeatureAgencyXrefController {
   }
 
   @Get()
+  @Roles(Role.TEMPORARY_TEST_ADMIN)
   findAll() {
     return this.featureAgencyXrefService.findAll();
   }
@@ -48,6 +51,11 @@ export class FeatureAgencyXrefController {
       }),
     );
     return result;
+  }
+
+  @Get("find-by-agency/:agencyCode")
+  async findByAgency(@Param("agencyCode") agencyCode: string) {
+    return await this.featureAgencyXrefService.findByAgency(agencyCode);
   }
 
   @Get(":id")

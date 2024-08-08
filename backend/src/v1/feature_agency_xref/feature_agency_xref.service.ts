@@ -62,7 +62,6 @@ export class FeatureAgencyXrefService {
       )
       .where("featureAgencyXref.agency_code = :agency_code", { agency_code: agencyCode })
       .getMany();
-    console.log(data2);
     const result2 = data2.map((feature) => {
       return {
         id: feature.feature_agency_xref_guid,
@@ -72,7 +71,6 @@ export class FeatureAgencyXrefService {
         isActive: feature.active_ind,
       };
     });
-    console.log(result2);
     return result2;
   }
 
