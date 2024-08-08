@@ -1,5 +1,5 @@
 export const RebuildCodeTable = {
-  10: (state: any) => {
+  11: (state: any) => {
     return {
       ...state,
       codeTables: {
