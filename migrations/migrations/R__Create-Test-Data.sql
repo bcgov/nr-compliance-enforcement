@@ -1058,6 +1058,144 @@ values
         CURRENT_TIMESTAMP
     ) ON CONFLICT DO NOTHING;
 
+insert into
+    public.team (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'HI',
+        'Heavy Industry',
+        'Heavy Industry',
+        10,
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'OPS',
+        'Operations',
+        'Operations',
+        20,
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'REACTIVE',
+        'REACTIVE',
+        'REACTIVE',
+        30,
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'RIPM',
+        'Recycling Integrated Pest Management',
+        'Recycling Integrated Pest Management',
+        40,
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'PLAN',
+        'Planned',
+        'Planned',
+        50,
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+
+
+
 --------------------------
 -- New Changes above this line
 -------------------------
