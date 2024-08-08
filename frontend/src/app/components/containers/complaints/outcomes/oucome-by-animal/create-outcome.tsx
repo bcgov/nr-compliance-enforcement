@@ -24,6 +24,7 @@ import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/
 import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
 import { v4 as uuidv4 } from "uuid";
+import { ToggleError } from "../../../../../common/toast";
 
 type props = {
   index: number;
@@ -372,7 +373,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const handleSave = () => {
     if (isValid()) {
       save(data);
-    }
+    } else ToggleError("Error adding animal outcome");
   };
 
   const handleCancel = () => {

@@ -2,8 +2,7 @@ import { FC } from "react";
 import { selectComplaintDetails, selectComplaintHeader } from "../../store/reducers/complaints";
 import { useAppSelector } from "../../hooks/hooks";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
-import { applyStatusClass, formatDate, getFirstInitialAndLastName } from "../../common/methods";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
+import { applyStatusClass, formatDate } from "../../common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { Popup } from "react-leaflet";
 
@@ -13,16 +12,13 @@ interface Props {
 }
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
-  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status } = useAppSelector(
+  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
   const { violationInProgress, location, area } = useAppSelector(
     selectComplaintDetails(complaintType),
   ) as ComplaintDetails;
-
-  // used to indicate what sections should be rendered in the popup
-  const renderHWCRSection = COMPLAINT_TYPES.HWCR === complaintType;
 
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
@@ -43,15 +39,17 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">
-            {renderHWCRSection ? (
+            {complaintType === "HWCR" && (
               <div>
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
               </div>
-            ) : (
+            )}
+            {complaintType === "ERS" && (
               <div>
                 {violationType} • {inProgressInd}
               </div>
             )}
+            {complaintType === "GIR" && <div>{girType}</div>}
           </div>
         </div>
         <div className="comp-map-popup-details">
@@ -62,7 +60,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </div>
             <div>
               <dt className="text-muted">Officer Assigned</dt>
-              <dd id="comp-details-assigned-officer-name-text-id">{getFirstInitialAndLastName(officerAssigned)}</dd>
+              <dd id="comp-details-assigned-officer-name-text-id">{officerAssigned}</dd>
             </div>
             <div>
               <dt className="text-muted">Community</dt>

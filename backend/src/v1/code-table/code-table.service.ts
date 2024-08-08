@@ -238,16 +238,19 @@ export class CodeTableService {
       }
       case "violation": {
         const data = await this._violationsRepository.find({ order: { display_order: "ASC" } });
-        let results = data.map(({ violation_code, short_description, long_description, display_order, active_ind }) => {
-          let table: Violation = {
-            violation: violation_code,
-            shortDescription: short_description,
-            longDescription: long_description,
-            displayOrder: display_order,
-            isActive: active_ind,
-          };
-          return table;
-        });
+        let results = data.map(
+          ({ violation_code, short_description, long_description, display_order, active_ind, agency_code }) => {
+            let table: Violation = {
+              violation: violation_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+              agencyCode: agency_code,
+            };
+            return table;
+          },
+        );
         return results;
       }
       case "complaint-type": {
