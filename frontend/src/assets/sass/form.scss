@@ -43,6 +43,12 @@
   pointer-events: all;
 }
 
+// DATE PICKER - FIXES
+// Fixes issue where the prop to enable clickable icon doesn't appear to work.
+.react-datepicker__input-container svg {
+  pointer-events: none;
+}
+
 // RADIO GROUPS
 .comp-radio-btn {
   display: flex;
@@ -65,7 +71,7 @@
   display: none;
 }
 
-//LAT/LONG INPUTS
+// LAT/LONG INPUTS
 .comp-lat-long-input {
   display: grid;
   grid-template-columns: auto auto;

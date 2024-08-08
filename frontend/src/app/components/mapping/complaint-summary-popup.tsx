@@ -2,8 +2,7 @@ import { FC } from "react";
 import { selectComplaintDetails, selectComplaintHeader } from "../../store/reducers/complaints";
 import { useAppSelector } from "../../hooks/hooks";
 import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
-import { applyStatusClass, formatDate, getFirstInitialAndLastName } from "../../common/methods";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
+import { applyStatusClass, formatDate } from "../../common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { Popup } from "react-leaflet";
 
@@ -45,13 +44,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
               </div>
             )}
-
             {complaintType === "ERS" && (
               <div>
                 {violationType} • {inProgressInd}
               </div>
             )}
-
             {complaintType === "GIR" && <div>{girType}</div>}
           </div>
         </div>
