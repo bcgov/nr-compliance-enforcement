@@ -45,13 +45,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
               </div>
             )}
-
             {complaintType === "ERS" && (
               <div>
                 {violationType} • {inProgressInd}
               </div>
             )}
-
             {complaintType === "GIR" && <div>{girType}</div>}
           </div>
         </div>

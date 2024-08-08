@@ -68,6 +68,7 @@ import { Button, Card } from "react-bootstrap";
 import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
+import { getUserAgency } from "../../../../service/user-service";
 
 export type ComplaintParams = {
   id: string;
@@ -113,7 +114,9 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
-  const violationTypeCodes = useSelector(selectViolationCodeDropdown) as Option[];
+
+  const agency = getUserAgency();
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));

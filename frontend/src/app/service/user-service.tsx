@@ -58,6 +58,14 @@ const hasRole = (roles: any) => {
   return includesRoles;
 };
 
+export const getUserAgency = () => {
+  let agency = "COS";
+  if (hasRole("CEEB")) {
+    agency = "EPO";
+  }
+  return agency;
+};
+
 const UserService = {
   initKeycloak,
   doLogin,
@@ -67,6 +75,7 @@ const UserService = {
   updateToken,
   getUsername,
   hasRole,
+  getUserAgency,
 };
 
 export default UserService;
