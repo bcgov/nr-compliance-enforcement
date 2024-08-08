@@ -25,16 +25,16 @@ export class WebEOCComplaintsScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
-      // await this.fetchAndPublishComplaints(
-      //   WEBEOC_API_PATHS.COMPLAINTS,
-      //   WEBEOC_FLAGS.COMPLAINTS,
-      //   this.publishComplaint.bind(this),
-      // );
-      // await this.fetchAndPublishComplaints(
-      //   WEBEOC_API_PATHS.COMPLAINT_UPDATES,
-      //   WEBEOC_FLAGS.COMPLAINT_UPDATES,
-      //   this.publishComplaintUpdate.bind(this),
-      // );
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_PATHS.COMPLAINTS,
+        WEBEOC_FLAGS.COMPLAINTS,
+        this.publishComplaint.bind(this),
+      );
+      await this.fetchAndPublishComplaints(
+        WEBEOC_API_PATHS.COMPLAINT_UPDATES,
+        WEBEOC_FLAGS.COMPLAINT_UPDATES,
+        this.publishComplaintUpdate.bind(this),
+      );
 
       await this._handleActionTaken(WEBEOC_API_PATHS.ACTIONS_TAKEN, this._publishAction.bind(this));
     });

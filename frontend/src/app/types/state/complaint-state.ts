@@ -4,6 +4,7 @@ import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints/allegation-complaint";
 import { WebEOCComplaintUpdateDTO } from "../app/complaints/webeoc-complaint-update";
+import { ActionTaken } from "../app/complaints/action-taken";
 
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
@@ -13,6 +14,8 @@ export interface ComplaintState {
   complaintLocation: Feature | null;
   mappedItems: MappedComplaintsState;
   webeocUpdates: WebEOCComplaintUpdateDTO[];
+  actions: ActionTaken[];
+  webeocChangeCount: number;
 }
 
 export interface ComplaintCollection {

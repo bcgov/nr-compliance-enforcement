@@ -20,4 +20,19 @@ export class ComplaintUpdatesController {
   findByComplaintId(@Param("id") id: string) {
     return this.configurationService.findByComplaintId(id);
   }
+  @Get("/related/:id")
+  @Roles(Role.COS_OFFICER)
+  findRelatedDataById(@Param("id") id: string) {
+    return this.configurationService.findRelatedDataById(id);
+  }
+  @Get("/actions/:id")
+  @Roles(Role.COS_OFFICER)
+  findActionsById(@Param("id") id: string) {
+    return this.configurationService.findActionsByComplaintId(id);
+  }
+  @Get("/count/:id")
+  @Roles(Role.COS_OFFICER)
+  getComplaintChangeCount(@Param("id") id: string) {
+    return this.configurationService.getComplaintChangeCount(id);
+  }
 }

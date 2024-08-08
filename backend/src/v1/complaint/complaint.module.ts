@@ -25,6 +25,7 @@ import { AttractantHwcrXrefModule } from "../attractant_hwcr_xref/attractant_hwc
 import { AutomapperModule } from "@automapper/nestjs";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
+import { ActionTaken } from "../complaint_updates/entities/action_taken.entity";
 
 @Module({
   imports: [
@@ -46,6 +47,8 @@ import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.m
     TypeOrmModule.forFeature([CosGeoOrgUnit]),
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([ComplaintUpdate]),
+    TypeOrmModule.forFeature([GirComplaint]),
+    TypeOrmModule.forFeature([ActionTaken]),
     CodeTableModule,
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,

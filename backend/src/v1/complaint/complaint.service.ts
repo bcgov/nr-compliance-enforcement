@@ -28,6 +28,7 @@ import { Office } from "../office/entities/office.entity";
 
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { CodeTableService } from "../code-table/code-table.service";
+import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import {
   mapAllegationComplaintDtoToAllegationComplaint,
   mapAttractantXrefDtoToAttractantHwcrXref,
@@ -58,6 +59,9 @@ import { toDate, toZonedTime, format } from "date-fns-tz";
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
+import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { ActionTakenDto } from "src/types/models/complaints/action-taken";
+import { ActionTaken } from "../complaint_updates/entities/action_taken.entity";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -72,7 +76,8 @@ export class ComplaintService {
   private _allegationComplaintRepository: Repository<AllegationComplaint>;
   @InjectRepository(ComplaintUpdate)
   private _complaintUpdateRepository: Repository<ComplaintUpdate>;
-
+  @InjectRepository(ActionTaken)
+  private _actionTakenRepository: Repository<ActionTaken>;
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
@@ -84,6 +89,7 @@ export class ComplaintService {
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
+    private readonly _compliantUpdatesService: ComplaintUpdatesService,
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private dataSource: DataSource,
@@ -851,6 +857,88 @@ export class ComplaintService {
     }
   };
 
+  findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
+    try {
+      const udpates = await this._compliantUpdatesService.findByComplaintId(id);
+      const actions = await this._compliantUpdatesService.findActionsByComplaintId(id);
+
+      // const combinedUpdates = async (id: string) => {
+      //   const builder = this._complaintUpdateRepository
+      //     .createQueryBuilder("updates")
+      //     .where({
+      //       complaintIdentifier: {
+      //         complaint_identifier: id,
+      //       },
+      //     })
+      //     .orderBy({
+      //       update_seq_number: "DESC",
+      //     });
+
+      //   const result = await builder.getMany();
+
+      //   const updates = result?.map((item) => {
+      //     const utcDate = toDate(item.createUtcTimestamp, { timeZone: "UTC" });
+      //     const zonedDate = toZonedTime(utcDate, "PST"); // HACK for now: FIX
+      //     let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: "PST" });
+      //     let updatedAt = format(zonedDate, "HH:mm", { timeZone: "PST" });
+
+      //     const latitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[1] : null;
+      //     const longitude = item.updLocationGeometryPoint ? item?.updLocationGeometryPoint?.coordinates[0] : null;
+
+      //     let record: ComplaintUpdateDto = {
+      //       sequenceId: item.updateSeqNumber,
+      //       description: item.updDetailText,
+      //       updatedOn: updatedOn,
+      //       updatedAt: updatedAt,
+      //       updateOn: `${updatedOn} ${updatedAt}`,
+      //       location: {
+      //         summary: item?.updLocationSummaryText,
+      //         details: item.updLocationDetailedText,
+      //         latitude,
+      //         longitude,
+      //       },
+      //     };
+      //     return record;
+      //   });
+
+      //   return updates;
+      // };
+      // const combinedActions = async (id: string) => {
+      //   const builder = this._actionTakenRepository
+      //     .createQueryBuilder("actions")
+      //     .where({
+      //       complaintIdentifier: {
+      //         complaint_identifier: id,
+      //       },
+      //     })
+      //     .orderBy({
+      //       update_seq_number: "DESC",
+      //     });
+
+      //   const result = await builder.getMany();
+
+      //   const updates = result?.map((item) => {
+      //     const utcDate = toDate(item.actionUtcTimestamp, { timeZone: "UTC" });
+
+      //     let record: ActionTakenDto = {
+      //       actionTakenGuid: item.actionTakenGuid,
+      //       complaintIdentifier: item.complaintIdentifier.complaint_identifier,
+      //       actionDetailsTxt: item.actionDetailsTxt,
+      //       loggedByTxt: item.loggedByTxt,
+      //       actionUtcTimestamp: utcDate,
+      //     };
+      //     return record;
+      //   });
+
+      //   return updates;
+      // };
+      let fullResults: RelatedDataDto = { updates: udpates, actions: actions };
+      return fullResults;
+    } catch (error) {
+      this.logger.error(error);
+    }
+  };
+
   mapSearch = async (complaintType: COMPLAINT_TYPE, model: ComplaintSearchParameters): Promise<MapSearchResults> => {
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
@@ -959,6 +1047,7 @@ export class ComplaintService {
 
       //-- check to make sure that only one record was updated
       if (result.affected === 1) {
+        const dummy = await this.findRelatedDataById(id);
         const complaint = await this.findById(id);
         return complaint as ComplaintDto;
       } else {

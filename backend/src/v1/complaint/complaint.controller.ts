@@ -11,6 +11,9 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 
+import { RelatedDataDto } from "src/types/models/complaints/related-data";
+
+
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
 @Controller({
@@ -68,9 +71,15 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
-    return (await this.service.findById(id, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
+    return (await this.service.findById(id, complaintType)) as
+      | WildlifeComplaintDto
+      | AllegationComplaintDto;
   }
-
+  @Get("/related-data/:id")
+  @Roles(Role.COS_OFFICER)
+  async findRelatedDataById(@Param("id") id: string): Promise<RelatedDataDto> {
+    return (await this.service.findRelatedDataById(id));
+  }
   @Post("/create/:complaintType")
   @Roles(Role.COS_OFFICER)
   async create(

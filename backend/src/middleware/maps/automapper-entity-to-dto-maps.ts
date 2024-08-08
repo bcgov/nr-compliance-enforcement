@@ -878,6 +878,207 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     ),
   );
 };
+export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
+  violationCodeToViolationDto(mapper);
+  agencyCodeToAgencyDto(mapper);
+  cosGeoOrgUnitToOrganizationDtoMap(mapper);
+  personComplaintToDelegateDtoMap(mapper);
+  reportedByCodeToReportedByDto(mapper);
+  girTypeCodeToGirTypeCodeDto(mapper);
+
+  createMap<GirComplaint, GeneralIncidentComplaintDto>(
+    mapper,
+    "GirComplaint",
+    "GeneralIncidentComplaintDto",
+    forMember(
+      (destination) => destination.id,
+      mapFrom((source) => source.complaint_identifier.complaint_identifier),
+    ),
+    forMember(
+      (destination) => destination.details,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.detail_text !== null ? complaint.detail_text : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.name,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_name !== null ? complaint.caller_name : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.address,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_address !== null ? complaint.caller_address : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.email,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_email !== null ? complaint.caller_email : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone1,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_1 !== null ? complaint.caller_phone_1 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone2,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_2 !== null ? complaint.caller_phone_2 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone3,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_phone_3 !== null ? complaint.caller_phone_3 : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.location,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { type: locationType, coordinates },
+          },
+        } = source;
+        return { type: locationType, coordinates };
+      }),
+    ),
+    forMember(
+      (destination) => destination.locationSummary,
+      mapFrom((source) => source.complaint_identifier.location_summary_text),
+    ),
+    forMember(
+      (destination) => destination.locationDetail,
+      mapFrom((source) => source.complaint_identifier.location_detailed_text),
+    ),
+    forMember(
+      (destination) => destination.status,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            complaint_status_code: { complaint_status_code },
+          },
+        } = source;
+        return complaint_status_code;
+      }),
+    ),
+    forMember(
+      (destination) => destination.reportedBy,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { reported_by_code: reportedBy },
+        } = source;
+        if (reportedBy) {
+          const code = mapper.map<ReportedByCode, ReportedBy>(reportedBy, "ReportedByCode", "ReportedByCodeDto");
+          return code.reportedBy;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.ownedBy,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { owned_by_agency_code: agency },
+        } = source;
+        if (agency !== null) {
+          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
+          return code.agency;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.reportedByOther,
+      mapFrom((source) => source.complaint_identifier.reported_by_other_text),
+    ),
+    forMember(
+      (destination) => destination.incidentDateTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+    ),
+    forMember(
+      (destination) => destination.reportedOn,
+      mapFrom((source) => source.complaint_identifier.incident_reported_utc_timestmp),
+    ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.update_utc_timestamp),
+    ),
+    forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id),
+    ),
+    forMember(
+      (destination) => destination.updatedBy,
+      mapFrom((source) => source.update_user_id),
+    ),
+    forMember(
+      (destination) => destination.organization,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+        return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
+          sourceOrganization,
+          "CosGeoOrgUnit",
+          "OrganizationCodeTable",
+        );
+      }),
+    ),
+    forMember(
+      (destination) => destination.delegates,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { person_complaint_xref: people },
+        } = source;
+
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+
+        return delegates;
+      }),
+    ),
+    forMember(
+      (destination) => destination.girId,
+      mapFrom((src) => src.gir_complaint_guid),
+    ),
+    forMember(
+      (destination) => destination.girType,
+      mapFrom((src) => {
+        const item = mapper.map<GirTypeCode, GirType>(src.gir_type_code, "GirTypeCode", "GirTypeCodeDto");
+        if (item !== null) {
+          return item.girType;
+        }
+
+        return "";
+      }),
+    ),
+  );
+};
+
+const girTypeCodeToGirTypeCodeDto = (mapper: Mapper) => {
+  createMap<GirTypeCode, GirType>(
+    mapper,
+    "GirTypeCode",
+    "GirTypeCodeDto",
+    forMember(
+      (destination) => destination.girType,
+      mapFrom((source) => source.gir_type_code),
+    ),
+  );
+};
 
 //-- reporting data maps
 export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {

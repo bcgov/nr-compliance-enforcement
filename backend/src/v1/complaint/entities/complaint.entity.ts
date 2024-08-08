@@ -7,6 +7,7 @@ import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
+import { RelatedDataDto } from "src/types/models/complaints/related-data";
 
 @Entity()
 export class Complaint {
@@ -114,6 +115,14 @@ export class Complaint {
   caller_phone_3: string;
 
   @ApiProperty({
+    example: "123455",
+    description:
+      "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
+  })
+  @Column({ length: 20 })
+  webeoc_identifier: string;
+
+  @ApiProperty({
     example: "43.43,-123.55",
     description: "The lat/long point of the complaint",
   })
@@ -191,14 +200,6 @@ export class Complaint {
   })
   @Column()
   update_utc_timestamp: Date;
-
-  @ApiProperty({
-    example: "123455",
-    description:
-      "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
-  })
-  @Column({ length: 20 })
-  webeoc_identifier: string;
 
   constructor(
     detail_text?: string,

@@ -144,6 +144,7 @@ export const CreateComplaint: FC = () => {
         delegates: [],
         createdBy: userid,
         updatedBy: userid,
+        webeocId: "",
       };
 
       applyComplaintData(model);
