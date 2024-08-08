@@ -7,7 +7,7 @@ import { AddEquipment } from "./migrations/migration-6";
 import { AddIsInEdit } from "./migrations/migration-7";
 import { AddGirTypeCode } from "./migrations/migration-8";
 import { AddWebEOCChangeCount } from "./migrations/migration-9";
-import { AddAgencyCode } from "./migrations/migration-10";
+import { RebuildCodeTable } from "./migrations/migration-11";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -29,7 +29,7 @@ migration = {
   ...AddIsInEdit,
   ...AddGirTypeCode,
   ...AddWebEOCChangeCount,
-  ...AddAgencyCode,
+  ...RebuildCodeTable,
 };
 
 export default migration;
