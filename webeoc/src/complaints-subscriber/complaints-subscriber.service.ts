@@ -65,7 +65,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     for await (const message of iter) {
       const decodedData = sc.decode(message.data);
       try {
-
         if (message.subject === STREAM_TOPICS.COMPLAINTS) {
           await this.handleNewComplaint(message, JSON.parse(decodedData));
         } else if (message.subject === STREAM_TOPICS.COMPLAINT_UPDATE) {
@@ -73,11 +72,6 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         } else if (message.subject === STREAM_TOPICS.STAGING_COMPLAINTS) {
           await this.handleStagedComplaint(message, decodedData);
         } else if (message.subject === STREAM_TOPICS.STAGING_COMPLAINT_UPDATE) {
-          const index: number = decodedData.search(/000540/);
-
-          if (index !== -1) {
-            console.log("LOOK HERE!");
-          }
           await this.handleStagedComplaintUpdate(message, JSON.parse(decodedData));
         }
       } catch (error) {
