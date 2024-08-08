@@ -26,6 +26,7 @@ import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
 import { StandaloneConfirmCancelModal } from "../../../../modal/instances/standalone-cancel-confirm-modal";
+import { ToggleError } from "../../../../../common/toast";
 
 type props = {
   index: number;
@@ -350,7 +351,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     if (isValid()) {
       update(data);
       toggle("");
-    }
+    } else ToggleError("Error updating animal outcome");
   };
 
   const handleCancel = () => {
