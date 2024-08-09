@@ -30,6 +30,7 @@ export class FeatureAgencyXrefController {
   }
 
   @Get("features-by-agency/:agencyCode")
+  @Roles(Role.TEMPORARY_TEST_ADMIN, Role.CEEB, Role.COS_OFFICER)
   async findByAgency(@Param("agencyCode") agencyCode: string) {
     return await this.featureAgencyXrefService.findByAgency(agencyCode);
   }
@@ -40,6 +41,7 @@ export class FeatureAgencyXrefController {
   }
 
   @Patch(":id")
+  @Roles(Role.TEMPORARY_TEST_ADMIN)
   update(@Param("id") id: UUID, @Body() updateAttractantHwcrXrefDto: UpdateFeatureAgencyXrefDto) {
     return this.featureAgencyXrefService.update(id, updateAttractantHwcrXrefDto);
   }
