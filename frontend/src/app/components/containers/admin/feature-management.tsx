@@ -1,57 +1,50 @@
 import { FC, useEffect, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { assignOfficerToOffice, selectOfficersDropdown } from "../../../store/reducers/officer";
-import { CompSelect } from "../../common/comp-select";
-import Option from "../../../types/app/option";
-import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown } from "../../../store/reducers/office";
+import { useAppDispatch } from "../../../hooks/hooks";
 import { ToastContainer } from "react-toastify";
-import { ToggleSuccess } from "../../../common/toast";
-import {
-  clearNotification,
-  selectNotification,
-  checkFeatureActive,
-  updateFeatureFlag,
-} from "../../../store/reducers/app";
-import { Table, Form, InputGroup } from "react-bootstrap";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
+import { ToggleError, ToggleSuccess } from "../../../common/toast";
+import { Table } from "react-bootstrap";
+import { generateApiParameters, get, patch } from "../../../common/api";
+import config from "../../../../config";
 
 export const FeatureManagement: FC = () => {
   const dispatch = useAppDispatch();
-  const officers = useAppSelector(selectOfficersDropdown(true));
-  const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
-  const notification = useAppSelector(selectNotification);
-  //for demo, COS for now
-  // const allFeatures = useAppSelector((state) => state.app.featureFlag.allFeatures);
-  // console.log(allFeatures);
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
-  const showGir = useAppSelector(checkFeatureActive(FEATURE_TYPES.GIR_COMPLAINT));
-  const showActionTaken = useAppSelector(checkFeatureActive(FEATURE_TYPES.ACTION_TAKEN));
 
-  const [experimental, setExperimental] = useState<boolean>(false);
-  const [gir, setGir] = useState<boolean>(false);
-  const [actionTaken, setActionTaken] = useState<boolean>(false);
+  const [featureData, setFeatureData] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (officeAssignments) dispatch(fetchOfficeAssignments());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setExperimental(showExperimentalFeature);
-  }, [showExperimentalFeature]);
-  useEffect(() => {
-    setGir(showGir);
-  }, [showGir]);
-  useEffect(() => {
-    setActionTaken(showActionTaken);
-  }, [showActionTaken]);
-
-  useEffect(() => {
-    const { type } = notification;
-    if (type !== "") {
-      dispatch(clearNotification());
+  const getAllFeatureFlags = async () => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/all`);
+    const response: any = await get(dispatch, parameters);
+    if (response) {
+      setFeatureData(response);
     }
-  }, [dispatch, notification]);
+  };
+
+  const updateFeatureFlag = async (id: string, active_ind: boolean) => {
+    try {
+      const update = {
+        feature_agency_xref_guid: id,
+        active_ind: active_ind,
+      };
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/${id}`, update);
+      const response = await patch(dispatch, parameters);
+      if (response) {
+        ToggleSuccess("Feature has been updated");
+      }
+    } catch (err) {
+      ToggleError("Unable to update feature");
+    }
+  };
+
+  useEffect(() => {
+    getAllFeatureFlags();
+  }, []);
+
+  const handleChange = (item: any, i: number) => {
+    const updateFeatureData = [...featureData];
+    updateFeatureData.splice(i, 1, { ...featureData[i], active_ind: !item.active_ind });
+    setFeatureData(updateFeatureData);
+    updateFeatureFlag(item.feature_agency_xref_guid, !item.active_ind);
+  };
 
   return (
     <>
@@ -62,8 +55,6 @@ export const FeatureManagement: FC = () => {
             <h1>Feature Management</h1>
           </div>
           <p>Manage features within different agency.</p>
-
-          <h6>Agency: COS</h6>
           <div className="comp-table">
             <Table
               bordered
@@ -74,67 +65,32 @@ export const FeatureManagement: FC = () => {
               <thead>
                 <tr>
                   <th>No</th>
+                  <th>Agency</th>
                   <th>Feature</th>
-                  <th style={{ maxWidth: "100px" }}>Description</th>
                   <th style={{ width: "80px", textAlign: "center" }}>Active</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Experimental Features</td>
-                  <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
-                    Features that were included as early prototypes or placeholders , may be used to solicit feedback
-                    from user groups.
-                  </td>
-                  <td style={{ width: "80px", textAlign: "center" }}>
-                    <input
-                      type="checkbox"
-                      id="feature1"
-                      checked={experimental}
-                      onChange={() => {
-                        setExperimental(!experimental);
-                        dispatch(updateFeatureFlag("479fb225-9491-4a2d-a4f2-19c429b08228", !experimental));
-                      }}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>GIR Complaints</td>
-                  <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
-                    Load and display general Incident Report (GIR)  incidents from webEOC.
-                  </td>
-                  <td style={{ width: "80px", textAlign: "center" }}>
-                    <input
-                      type="checkbox"
-                      id="feature2"
-                      checked={gir}
-                      onChange={() => {
-                        setGir(!gir);
-                        dispatch(updateFeatureFlag("87d4a9c1-c420-4e2f-aeff-1c15475d4242", !gir));
-                      }}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Actions Taken</td>
-                  <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
-                    Load and display actions taken for incidents and updates from webEOC.
-                  </td>
-                  <td style={{ width: "80px", textAlign: "center" }}>
-                    <input
-                      type="checkbox"
-                      id="feature3"
-                      checked={actionTaken}
-                      onChange={() => {
-                        setActionTaken(!actionTaken);
-                        dispatch(updateFeatureFlag("9ebaebac-a67b-4e82-b558-7b942b46440b", !actionTaken));
-                      }}
-                    />
-                  </td>
-                </tr>
+                {featureData &&
+                  featureData?.map((item, i) => {
+                    return (
+                      <tr key={item.feature_agency_xref_guid}>
+                        <td>{i + 1}</td>
+                        <td>{item.agency_code.agency_code}</td>
+                        <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
+                          {item.feature_code.short_description}
+                        </td>
+                        <td style={{ width: "80px", textAlign: "center" }}>
+                          <input
+                            type="checkbox"
+                            id="feature1"
+                            checked={item.active_ind}
+                            onChange={() => handleChange(item, i)}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </Table>
           </div>

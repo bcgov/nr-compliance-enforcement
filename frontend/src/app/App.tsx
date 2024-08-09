@@ -10,7 +10,7 @@ import ColorReference, { MiscReference, SpaceReference } from "./components/refe
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
-import { fetchAllCodeTables } from "./store/reducers/code-table";
+import { fetchAllCodeTables, fetchComplaintCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
@@ -27,7 +27,11 @@ const App: FC = () => {
 
   useEffect(() => {
     dispatch(getOfficerDefaultZone());
-    dispatch(fetchAllCodeTables());
+    if (Roles.CEEB) {
+      dispatch(fetchComplaintCodeTables);
+    } else {
+      dispatch(fetchAllCodeTables());
+    }
     dispatch(getOfficers());
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());

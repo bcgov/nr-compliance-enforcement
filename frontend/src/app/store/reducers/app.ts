@@ -7,7 +7,7 @@ import { UUID } from "crypto";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
 import { generateApiParameters, get, patch } from "../../common/api";
-import { AUTH_TOKEN } from "../../service/user-service";
+import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
 
 import { DropdownOption } from "../../types/app/drop-down-option";
 
@@ -36,7 +36,6 @@ enum ActionTypes {
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
   SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
-  UPDATE_FEATURE_FLAG = "app/UPDATE_FEATURE_FLAG",
 }
 //-- action creators
 
@@ -58,11 +57,6 @@ export const setCodeTableVersion = (version: CodeTableVersionState) => ({
 export const setFeatureFlag = (features: any) => ({
   type: ActionTypes.SET_FEATURE_FLAG,
   payload: features,
-});
-
-export const updateFeatureFlagState = (feature: any) => ({
-  type: ActionTypes.UPDATE_FEATURE_FLAG,
-  payload: feature,
 });
 
 export const toggleSidebar = () => ({
@@ -257,15 +251,10 @@ export const selectOfficerAgency = (state: RootState): string => {
   return agency;
 };
 
-export const isExperimentalFeatureActive = (state: RootState): boolean => {
-  const { features } = state.app.featureFlag;
-  return features.some((feature: any) => feature.feature_code === "EXPERMFTRS");
-};
-
 export const checkFeatureActive =
   (featureCode: string) =>
   (state: RootState): boolean => {
-    const { features } = state.app.featureFlag.appFeatures;
+    const features = state.app.featureFlags;
     return features.some((feature: any) => feature.featureCode === featureCode && feature.isActive === true);
   };
 
@@ -411,40 +400,18 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
 
 export const getFeatureFlag = (): AppThunk => async (dispatch) => {
   try {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/feature-flag`);
+    const agency = getUserAgency();
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/feature-agency-xref/features-by-agency/${agency}`,
+    );
     const response: any = await get(dispatch, parameters);
     if (response) {
-      dispatch(
-        setFeatureFlag({
-          allFeatures: response,
-          //if user has multiple roles (COS, CEEB, ...) default feature flag to COS's features
-          appFeatures: response.find((item: any) => item.agency === "COS"),
-        }),
-      );
+      dispatch(setFeatureFlag(response));
     }
   } catch (error) {
     ToggleError("Unable to get feature flag");
   }
 };
-
-export const updateFeatureFlag =
-  (id: string, isActive: boolean): AppThunk =>
-  async (dispatch) => {
-    try {
-      const update = {
-        feature_agency_xref_guid: id,
-        active_ind: isActive,
-      };
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/${id}`, update);
-      const response = await patch(dispatch, parameters);
-      console.log(response);
-      if (response) {
-        ToggleSuccess("Feature has been updated");
-      }
-    } catch (err) {
-      ToggleError("Unable to update feature");
-    }
-  };
 
 export const validateComsAccess =
   (token: string): ThunkAction<Promise<ComsInviteResponse>, RootState, unknown, Action<ComsInviteResponse>> =>
@@ -506,13 +473,7 @@ const initialState: AppState = {
       activeInd: true,
     },
   },
-  featureFlag: {
-    allFeatures: [],
-    appFeatures: {
-      agency: "COS",
-      features: [],
-    },
-  },
+  featureFlags: [],
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -626,15 +587,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     }
     case ActionTypes.SET_FEATURE_FLAG: {
       const { payload } = action;
-      return { ...state, featureFlag: payload };
-    }
-    case ActionTypes.UPDATE_FEATURE_FLAG: {
-      const { payload } = action;
-      const { features } = state.featureFlag.appFeatures;
-      features.map((feature: any) => {
-        if (feature.id === payload.id) feature.isActive = payload.isActive;
-      });
-      return { ...state, featureFlag: { ...features } };
+      return { ...state, featureFlags: payload };
     }
     default:
       return state;

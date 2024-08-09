@@ -1,5 +1,6 @@
 import { CodeTableVersionState } from "../state/code-table-version-state";
 import { ConfigurationState } from "../state/configuration-state";
+import { FeatureFlagState } from "../state/feature-flag-state";
 import { LoadingState } from "../state/loading-state";
 import { NotificationState } from "../state/notification-state";
 import Profile from "./profile";
@@ -27,5 +28,5 @@ export interface AppState {
   configurations: ConfigurationState;
   codeTableVersion: CodeTableVersionState;
 
-  featureFlag: any;
+  featureFlags: Array<FeatureFlagState>;
 }
