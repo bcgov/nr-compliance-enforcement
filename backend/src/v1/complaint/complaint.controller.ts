@@ -78,9 +78,7 @@ export class ComplaintController {
     @Param("id") id: string,
   ): Promise<dtoAlias> {
     return (await this.service.findById(id, complaintType)) as
-      |
-      | WildlifeComplaintDto
-     
+      WildlifeComplaintDto
       | AllegationComplaintDto
       | GeneralIncidentComplaintDto;
   }
